@@ -1,0 +1,41 @@
+Process Hacker
+
+1.1.1.0
+ * Memory editor is now properly activated from the Hacker Window
+ * Fixed obscure bug where the process list disables itself
+
+1.1.0.5
+ * Upgraded messageboxes when performing operations on processes and threads to OKCancel
+ * Fixed checking for dangerous PIDs on XP
+ * Fixed getting icons for certain processes on XP
+ * Fixed crashes when attempting to read from invalid memory locations
+ * Fixed crash when opening help window after closing it
+ * Fixed default menu item text drawing
+
+1.1.0.0
+ * Fixed certain programs' modules not having a description
+ * Major refactoring in code
+ * Moved memory editor panel into its own form
+ * Moved search into its own form
+ * Merged string scanning and heap scanning into the Search form
+ * Removed debug programs option
+ * Now has proper main menu
+ * Search results window is now on its own thread
+ * Search results list now uses VirtualMode - huge speed increase
+ * Added "prevent overlapping results" option
+ * Made memory editor windows spawn in separate threads
+ * Removed all Application.DoEvents() calls
+ * Fixed cursor problems
+ * Now displays busy cursor on startup
+ * Intersect menu is now sorted
+ * Fixed form focusing
+ * Added Window menu items in all forms
+
+1.0.1.0
+ * Fixed occasional "Object not set to an instance of object" error
+ * Added link to SourceForge project page
+ * Fixed FlatStyle inconsistencies
+ * Fixed "invalid characters in path name" problem on Windows XP
+
+1.0.0.0
+ * Initial release
