@@ -274,6 +274,14 @@ namespace ProcessHacker
 
                 try
                 {
+                    try
+                    {
+                        if (processSelected != null)
+                            processSelected.Close();
+                    }
+                    catch
+                    { }
+
                     processSelected = Process.GetProcessById(processSelectedPID);
 
                     UpdateProcessExtra();
@@ -292,8 +300,13 @@ namespace ProcessHacker
                 processSelectedPID = -1;
                 lastSelectedPID = -1;
 
-                if (processSelected != null)
-                    processSelected.Close();
+                try
+                {
+                    if (processSelected != null)
+                        processSelected.Close();
+                }
+                catch
+                { }
 
                 processSelected = null;
 
