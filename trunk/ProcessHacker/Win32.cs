@@ -31,6 +31,7 @@ namespace ProcessHacker
 
         public const int DONT_RESOLVE_DLL_REFERENCES = 0x1;
         public const int ERROR_NO_MORE_ITEMS = 259;
+        public const int MAXIMUM_SUPPORTED_EXTENSION = 512;
         public const int PROCESS_DUP_HANDLE = 0x0040;
         public const int PROCESS_QUERY_INFORMATION = 0x0400;
         public const int PROCESS_VM_OPERATION = 0x0008;
@@ -39,11 +40,13 @@ namespace ProcessHacker
         public const uint SE_PRIVILEGE_ENABLED = 0x00000002;
         public const uint SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000;
         public const int SEE_MASK_INVOKEIDLIST = 0xc;
+        public const int SIZE_OF_80387_REGISTERS = 80;
         public const uint SHGFI_ICON = 0x100;
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
         public const int SW_SHOW = 5;
+        public const int THREAD_GET_CONTEXT = 0x0008;
         public const int THREAD_SUSPEND_RESUME = 0x0002;
         public const int THREAD_TERMINATE = 0x0001;
         public const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
@@ -52,6 +55,23 @@ namespace ProcessHacker
         #endregion    
 
         #region Imported Enums   
+
+        [Flags]
+        public enum CONTEXT_FLAGS : int
+        {
+            CONTEXT_i386 = 0x00010000,
+            CONTEXT_i486 = 0x00010000,
+            CONTEXT_CONTROL = CONTEXT_i386 | 0x00000001,
+            CONTEXT_INTEGER = CONTEXT_i386 | 0x00000002,
+            CONTEXT_SEGMENTS = CONTEXT_i386 | 0x00000004,
+            CONTEXT_FLOATING_POINT = CONTEXT_i386 | 0x00000008,
+            CONTEXT_DEBUG_REGISTERS = CONTEXT_i386 | 0x00000010,
+            CONTEXT_EXTENDED_REGISTERS = CONTEXT_i386 | 0x00000020,
+            CONTEXT_FULL = CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS,
+            CONTEXT_ALL = CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS |
+                          CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS |
+                          CONTEXT_EXTENDED_REGISTERS
+        }
   
         public enum DEPFLAGS : int
         {
@@ -256,6 +276,9 @@ namespace ProcessHacker
         [DllImport("kernel32.dll")]
         public static extern int ResumeThread(int ThreadHandle);
 
+        [DllImport("kernel32.dll")]
+        public static extern int GetThreadContext(int ThreadHandle, ref CONTEXT Context);
+
         [DllImport("shell32.dll")]
         public static extern int ShellExecuteEx(
             [MarshalAs(UnmanagedType.Struct)] ref SHELLEXECUTEINFO s);
@@ -417,6 +440,63 @@ namespace ProcessHacker
         #endregion
 
         #region Imported Structs
+
+        // NOTE: This x86 CONTEXT ONLY!!!
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CONTEXT
+        {
+            public CONTEXT_FLAGS ContextFlags;
+
+            public int Dr0;
+            public int Dr1;
+            public int Dr2;
+            public int Dr3;
+            public int Dr4;
+            public int Dr5;
+            public int Dr6;
+            public int Dr7;
+
+            public FLOATING_SAVE_AREA FloatSave;
+
+            public int SegGs;
+            public int SegFs;
+            public int SegEs;
+            public int SegDs;
+
+            public int Edi;
+            public int Esi;
+            public int Ebx;
+            public int Edx;
+            public int Ecx;
+            public int Eax;
+
+            public int Ebp;
+            public int Eip;
+            public int SegCs;
+            public int EFlags;
+            public int Esp;
+            public int SegSs;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMUM_SUPPORTED_EXTENSION)]
+            public byte[] ExtendedRegisters;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FLOATING_SAVE_AREA
+        {
+            public int ControlWord;
+            public int StatusWord;
+            public int TagWord;
+            public int ErrorOffset;
+            public int ErrorSelector;
+            public int DataOffset;
+            public int DataSelector;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SIZE_OF_80387_REGISTERS)]
+            public byte[] RegisterArea;
+
+            public int Cr0NpxState;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct HEAPENTRY32

@@ -4,6 +4,8 @@ Process Hacker
  * Memory editor is now properly activated from the Hacker Window
  * Fixed obscure bug where the process list disables itself
  * Added my email address
+ * Added CONTEXT code
+ * Now bolds the kernel name when the System process is selected
 
 1.1.0.5
  * Upgraded messageboxes when performing operations on processes and threads to OKCancel

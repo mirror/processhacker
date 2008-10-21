@@ -88,6 +88,8 @@ namespace ProcessHacker
         string[] dangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 
+        string[] kernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
+
         #endregion
 
         #region Events
@@ -1573,6 +1575,7 @@ namespace ProcessHacker
             int RequiredSize = 0;
             int[] ImageBases;
             List<int> done = new List<int>();
+            ListViewItem primary = null;
 
             Win32.EnumDeviceDrivers(null, 0, ref RequiredSize);
 
@@ -1622,7 +1625,31 @@ namespace ProcessHacker
                 item.SubItems[2].Text = "";
                 item.SubItems[3].Text = desc;
 
-                listModules.Items.Add(item);
+                try
+                {            
+                    bool kernel = false;
+
+                    foreach (string k in kernelNames)
+                    {
+                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        {
+                            kernel = true;
+
+                            break;
+                        }
+                    }
+
+                    if (kernel)
+                    {
+                        primary = item;
+                    }
+                    else
+                    {
+                        listModules.Items.Add(item);
+                    }
+                }
+                catch
+                { }
 
                 done.Add(ImageBases[i]);
             }
@@ -1630,6 +1657,12 @@ namespace ProcessHacker
             // sorts the list
             listModules.Sorting = SortOrder.Ascending;
             listModules.Sorting = SortOrder.None;
+
+            if (primary != null)
+            {
+                primary.Font = new Font(primary.Font, FontStyle.Bold);
+                listModules.Items.Insert(0, primary);
+            }
 
             listModules.EndUpdate();
         }
