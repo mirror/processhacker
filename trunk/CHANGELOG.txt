@@ -3,6 +3,7 @@ Process Hacker
 1.1.1.0
  * Memory editor is now properly activated from the Hacker Window
  * Fixed obscure bug where the process list disables itself
+ * Added my email address
 
 1.1.0.5
  * Upgraded messageboxes when performing operations on processes and threads to OKCancel

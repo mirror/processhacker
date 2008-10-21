@@ -37,24 +37,42 @@ namespace ProcessHacker
             this.Close();
         }
 
+        private void TryStart(string command)
+        {
+            try
+            {
+                Process.Start(command);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
         private void linkHexBox_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://sourceforge.net/projects/hexbox");
+            TryStart("http://sourceforge.net/projects/hexbox");
         }
 
         private void linkVistaMenu_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/");
+            TryStart("http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/");
         }
 
         private void linkFamFamFam_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://www.famfamfam.com/lab/icons/silk/");
+            TryStart("http://www.famfamfam.com/lab/icons/silk/");
         }
 
         private void linkSourceforge_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://sourceforge.net/projects/processhacker");
+            TryStart("http://sourceforge.net/projects/processhacker");
+        }
+
+        private void linkEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            TryStart("mailto:wj32.64@gmail.com");
         }
     }
 }

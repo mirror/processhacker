@@ -37,6 +37,7 @@
             this.linkHexBox = new System.Windows.Forms.LinkLabel();
             this.labelBy = new System.Windows.Forms.Label();
             this.linkSourceforge = new System.Windows.Forms.LinkLabel();
+            this.linkEmail = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,7 +95,7 @@
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(174, 183);
+            this.linkFamFamFam.Location = new System.Drawing.Point(174, 172);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(81, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -105,7 +106,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(174, 166);
+            this.linkVistaMenu.Location = new System.Drawing.Point(174, 156);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(57, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -116,7 +117,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(174, 149);
+            this.linkHexBox.Location = new System.Drawing.Point(174, 140);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(79, 13);
             this.linkHexBox.TabIndex = 7;
@@ -145,11 +146,23 @@
             this.linkSourceforge.Text = "http://sourceforge.net/projects/processhacker";
             this.linkSourceforge.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSourceforge_LinkClicked);
             // 
+            // linkEmail
+            // 
+            this.linkEmail.AutoSize = true;
+            this.linkEmail.Location = new System.Drawing.Point(12, 203);
+            this.linkEmail.Name = "linkEmail";
+            this.linkEmail.Size = new System.Drawing.Size(190, 13);
+            this.linkEmail.TabIndex = 10;
+            this.linkEmail.TabStop = true;
+            this.linkEmail.Text = "Send feedback to wj32.64@gmail.com";
+            this.linkEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEmail_LinkClicked);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 253);
+            this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
             this.Controls.Add(this.linkHexBox);
@@ -187,6 +200,7 @@
         private System.Windows.Forms.LinkLabel linkHexBox;
         private System.Windows.Forms.Label labelBy;
         private System.Windows.Forms.LinkLabel linkSourceforge;
+        private System.Windows.Forms.LinkLabel linkEmail;
 
     }
 }
