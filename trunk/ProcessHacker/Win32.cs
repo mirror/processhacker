@@ -27,6 +27,11 @@ namespace ProcessHacker
 {
     public class Win32
     {
+        public delegate int EnumWindowsProc(int hwnd, int param);
+        public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
+
+        public const int SYMBOL_NAME_MAXSIZE = 255;
+
         #region Imported Consts
 
         public const int DONT_RESOLVE_DLL_REFERENCES = 0x1;
@@ -132,6 +137,27 @@ namespace ProcessHacker
             Module32 = 0x00000010,
             Inherit = 0x80000000,
             All = 0x0000001F
+        }
+
+        public enum SYMBOL_FLAGS : int
+        {
+            SYMFLAG_CLR_TOKEN = 0x00040000,
+            SYMFLAG_CONSTANT = 0x00000100,
+            SYMFLAG_EXPORT = 0x00000200,
+            SYMFLAG_FORWARDER = 0x00000400,
+            SYMFLAG_FRAMEREL = 0x00000020,
+            SYMFLAG_FUNCTION = 0x00000800,
+            SYMFLAG_ILREL = 0x00010000,
+            SYMFLAG_LOCAL = 0x00000080,
+            SYMFLAG_METADATA = 0x00020000,
+            SYMFLAG_PARAMETER = 0x00000040,
+            SYMFLAG_REGISTER = 0x00000008,
+            SYMFLAG_REGREL = 0x00000010,
+            SYMFLAG_SLOT = 0x00008000,
+            SYMFLAG_THUNK = 0x00002000,
+            SYMFLAG_TLSREL = 0x00004000,
+            SYMFLAG_VALUEPRESENT = 0x00000001,
+            SYMFLAG_VIRTUAL = 0x00001000
         }
 
         public enum SYSTEM_HANDLE_FLAGS : byte
@@ -252,31 +278,51 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.Struct)] ref TOKEN_PRIVILEGES NewState, int BufferLength,
             int PreviousState, int ReturnLength);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymCleanup(int ProcessHandle);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymEnumSymbols(int ProcessHandle, int BaseOfDll, int Mask,
+            [MarshalAs(UnmanagedType.FunctionPtr)] SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymEnumSymbols(int ProcessHandle, int BaseOfDll, string Mask,
+            [MarshalAs(UnmanagedType.FunctionPtr)] SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymFromAddr(int ProcessHandle, long Address, ref long Displacement, ref SYMBOL_INFO Symbol);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymFromIndex(int ProcessHandle, long BaseOfDll, int Index, ref SYMBOL_INFO Symbol);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymInitialize(int ProcessHandle, int UserSearchPath, int InvadeProcess);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessDEPPolicy(int ProcessHandle, ref DEPFLAGS Flags, ref int Permanent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int CloseHandle(int Handle);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int TerminateProcess(int ProcessHandle, int ExitCode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int OpenProcess(int DesiredAccess, int InheritHandle, int ProcessId);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int OpenThread(int DesiredAccess, int InheritHandle, int ThreadId);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int TerminateThread(int ThreadHandle, int ExitCode);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int SuspendThread(int ThreadHandle);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int ResumeThread(int ThreadHandle);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetThreadContext(int ThreadHandle, ref CONTEXT Context);
 
         [DllImport("shell32.dll")]
@@ -420,8 +466,6 @@ namespace ProcessHacker
 
         [DllImport("user32.dll")]
         public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
-
-        public delegate int EnumWindowsProc(int hwnd, int param);
 
         [DllImport("user32.dll")]
         public static extern int SetActiveWindow(int hWnd); 
@@ -643,6 +687,31 @@ namespace ProcessHacker
         {
             public int SID; // ptr to a SID object
             public int Attributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYMBOL_INFO
+        {
+            public int SizeOfStruct;
+            public int TypeIndex;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public long[] Reserved;
+
+            public int Index;
+            public int Size;
+            public long ModBase;
+            public SYMBOL_FLAGS Flags;
+            public long Value;
+            public long Address;
+            public int Register;
+            public int Scope;
+            public int Tag;
+            public int NameLen;
+            public int MaxNameLen;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SYMBOL_NAME_MAXSIZE)]
+            public string Name;
         }
 
         [StructLayout(LayoutKind.Sequential)]

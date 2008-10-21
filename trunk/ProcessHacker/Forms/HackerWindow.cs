@@ -1760,7 +1760,7 @@ namespace ProcessHacker
                 foreach (ProcessModule m in p.Modules)
                 {
                     item = new ListViewItem();
-
+ 
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
