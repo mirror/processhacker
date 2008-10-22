@@ -116,7 +116,6 @@
             this.columnThreadState = new System.Windows.Forms.ColumnHeader();
             this.columnCPUTime = new System.Windows.Forms.ColumnHeader();
             this.columnPriority = new System.Windows.Forms.ColumnHeader();
-            this.columnWaitReason = new System.Windows.Forms.ColumnHeader();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -838,8 +837,7 @@
             this.columnThreadID,
             this.columnThreadState,
             this.columnCPUTime,
-            this.columnPriority,
-            this.columnWaitReason});
+            this.columnPriority});
             this.listThreads.ContextMenuStrip = this.menuThread2;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -871,11 +869,6 @@
             // 
             this.columnPriority.Text = "Priority";
             this.columnPriority.Width = 80;
-            // 
-            // columnWaitReason
-            // 
-            this.columnWaitReason.Text = "Wait Reason";
-            this.columnWaitReason.Width = 100;
             // 
             // tabModules
             // 
@@ -1190,7 +1183,6 @@
         private System.Windows.Forms.GroupBox groupSearch;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.MenuItem inspectThreadMenuItem;
-        private System.Windows.Forms.ColumnHeader columnWaitReason;
     }
 }
 
