@@ -82,6 +82,8 @@ namespace ProcessHacker
 
         Point lastMenuLocation;
 
+        List<ListView> listViews = new List<ListView>();
+
         string[] dangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 
@@ -220,6 +222,14 @@ namespace ProcessHacker
             goToInMemoryViewModuleMenuItem_Click(null, null);
         }
 
+        private void listProcesses_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Delete)
+            {
+                terminateMenuItem_Click(null, null);
+            }
+        }
+
         private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
         {
             processSelectedItems = listProcesses.SelectedItems.Count;
@@ -316,6 +326,37 @@ namespace ProcessHacker
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void selectAllHackerMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (ListView c in listViews)
+            {
+                if (c.Focused)
+                {
+                    try
+                    {
+                        SelectAll(c);
+                    }
+                    catch
+                    { }
+                }
+            }
+        }
+
+        private void refreshMenuItem_Click(object sender, EventArgs e)
+        {
+            ReloadProcessList();
+
+            processSelectedPID = -1;
+            lastSelectedPID = -1;
+
+            if (processSelected != null)
+                processSelected.Close();
+
+            listThreads.Items.Clear();
+            treeMisc.Nodes.Clear();
+            InitMiscInfo();
         }
 
         #endregion
@@ -732,7 +773,7 @@ namespace ProcessHacker
                 }
                 catch { return; }
 
-                if (IsDangerousPID(process.Id))
+                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(process.Id))
                 {
                     DialogResult result = MessageBox.Show("The process with PID " + process.Id + " is a system process. Are you" +
                         " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
@@ -1011,6 +1052,16 @@ namespace ProcessHacker
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
+            {
+                DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
+                    " sure you want to terminate the selected threads?", "Process Hacker", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+
+                if (result == DialogResult.No)
+                    return;
+            }
+
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
@@ -1044,6 +1095,16 @@ namespace ProcessHacker
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
+            {
+                DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
+                    " sure you want to suspend the selected threads?", "Process Hacker", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+
+                if (result == DialogResult.No)
+                    return;
+            }
+
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
@@ -1312,6 +1373,25 @@ namespace ProcessHacker
 
                 return null;
             }
+        }
+
+        public void ReloadProcessList()
+        {
+            processUpdaterThread.Suspend();
+
+            pids = new List<int>();
+            processMemoryUsage = new System.Collections.Hashtable();
+            processUsername = new System.Collections.Hashtable();
+            processTotalMilliseconds = new System.Collections.Hashtable();
+
+            this.Cursor = Cursors.WaitCursor;
+
+            listProcesses.BeginUpdate();
+            processListUpdatedOnce = false;
+            listProcesses.Items.Clear();
+            UpdateProcessExtra();
+
+            processUpdaterThread.Resume();
         }
 
         private void SaveSettings()
@@ -2019,6 +2099,9 @@ namespace ProcessHacker
             regexSearchMenuItem.Click += new EventHandler(PerformSearch);
             stringScanMenuItem.Click += new EventHandler(PerformSearch);
             heapScanMenuItem.Click += new EventHandler(PerformSearch);
+
+            listViews.Add(listProcesses);
+            listViews.Add(listThreads);
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

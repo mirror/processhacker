@@ -32,6 +32,7 @@
             this.textUpdateInterval = new System.Windows.Forms.NumericUpDown();
             this.buttonClose = new System.Windows.Forms.Button();
             this.checkShowProcessDomains = new System.Windows.Forms.CheckBox();
+            this.checkWarnDangerous = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,7 +67,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(217, 71);
+            this.buttonClose.Location = new System.Drawing.Point(217, 94);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -78,20 +79,33 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(15, 40);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(12, 61);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
-            this.checkShowProcessDomains.Size = new System.Drawing.Size(239, 18);
+            this.checkShowProcessDomains.Size = new System.Drawing.Size(141, 18);
             this.checkShowProcessDomains.TabIndex = 3;
-            this.checkShowProcessDomains.Text = "Show process domains (applies after restart)";
+            this.checkShowProcessDomains.Text = "Show process domains";
             this.checkShowProcessDomains.UseVisualStyleBackColor = true;
             this.checkShowProcessDomains.CheckedChanged += new System.EventHandler(this.checkShowProcessDomains_CheckedChanged);
+            // 
+            // checkWarnDangerous
+            // 
+            this.checkWarnDangerous.AutoSize = true;
+            this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkWarnDangerous.Location = new System.Drawing.Point(12, 38);
+            this.checkWarnDangerous.Name = "checkWarnDangerous";
+            this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
+            this.checkWarnDangerous.TabIndex = 4;
+            this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
+            this.checkWarnDangerous.UseVisualStyleBackColor = true;
+            this.checkWarnDangerous.CheckedChanged += new System.EventHandler(this.checkWarnDangerous_CheckedChanged);
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(304, 106);
+            this.ClientSize = new System.Drawing.Size(304, 129);
+            this.Controls.Add(this.checkWarnDangerous);
             this.Controls.Add(this.checkShowProcessDomains);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.textUpdateInterval);
@@ -116,5 +130,6 @@
         private System.Windows.Forms.NumericUpDown textUpdateInterval;
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.CheckBox checkShowProcessDomains;
+        private System.Windows.Forms.CheckBox checkWarnDangerous;
     }
 }

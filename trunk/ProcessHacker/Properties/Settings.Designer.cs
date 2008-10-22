@@ -142,5 +142,17 @@ namespace ProcessHacker.Properties {
                 this["ShowProcessDomains"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WarnDangerous {
+            get {
+                return ((bool)(this["WarnDangerous"]));
+            }
+            set {
+                this["WarnDangerous"] = value;
+            }
+        }
     }
 }

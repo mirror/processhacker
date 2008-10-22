@@ -10,6 +10,9 @@ Process Hacker
  * Changed Search button to a SplitButton
  * Added username column
  * Now shows process description and filename in tooltip
+ * Added more "options"
+ * Added keyboard shortcuts for terminating process(es) (Del) and refreshing (F5)
+ * Added some menu items - Select All and Refresh
 
 1.1.0.5
  * Upgraded messageboxes when performing operations on processes and threads to OKCancel

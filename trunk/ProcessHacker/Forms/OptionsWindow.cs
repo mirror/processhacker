@@ -30,12 +30,17 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
+        bool _needsReload = false;
+
         public OptionsWindow()
         {
             InitializeComponent();
 
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
+            checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowProcessDomains;
+
+            _needsReload = false;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -55,7 +60,17 @@ namespace ProcessHacker
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
+            if (_needsReload)
+                Program.HackerWindow.ReloadProcessList();
+
             this.Close();
+        }
+
+        private void checkWarnDangerous_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
+
+            _needsReload = true;
         }
 
         private void checkShowProcessDomains_CheckedChanged(object sender, EventArgs e)

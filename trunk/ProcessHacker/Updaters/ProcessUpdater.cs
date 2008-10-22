@@ -100,9 +100,12 @@ namespace ProcessHacker
                             }
                             catch { }
 
-                            processMemoryUsage.Add(p.Id, memoryUsage);
-                            processUsername.Add(p.Id, username);
-                            processTotalMilliseconds.Add(p.Id, 0);
+                            try { processMemoryUsage.Add(p.Id, memoryUsage); }
+                            catch { }
+                            try { processUsername.Add(p.Id, username); }     
+                            catch { }
+                            try { processTotalMilliseconds.Add(p.Id, 0); }  
+                            catch { }
                             
                             lock (processQueue)
                                 processQueue.Enqueue(task);
