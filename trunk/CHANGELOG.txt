@@ -6,6 +6,7 @@ Process Hacker
  * Added my email address
  * Added CONTEXT code
  * Now bolds the kernel name when the System process is selected
+ * Fixed opening Memory Editor from Results Window
 
 1.1.0.5
  * Upgraded messageboxes when performing operations on processes and threads to OKCancel

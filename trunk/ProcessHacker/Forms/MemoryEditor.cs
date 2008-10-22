@@ -49,12 +49,6 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(Id, this);
 
-            hexBoxMemory.Select();
-            hexBoxMemory.Focus();
-        }
-
-        private void MemoryEditor_Load(object sender, EventArgs e)
-        {
             _phandle = Win32.OpenProcess(Win32.PROCESS_VM_READ | Win32.PROCESS_VM_WRITE | Win32.PROCESS_VM_OPERATION, 0, _pid);
 
             if (_phandle == 0)
@@ -80,6 +74,12 @@ namespace ProcessHacker
                 this.Close();
             }
 
+            hexBoxMemory.Select();
+            hexBoxMemory.Focus();
+        }
+
+        private void MemoryEditor_Load(object sender, EventArgs e)
+        {
             Program.UpdateWindows();
         }
 
