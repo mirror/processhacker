@@ -28,8 +28,11 @@ namespace ProcessHacker
     public delegate void SearchProgressChanged(string progress);
     public delegate void SearchError(string message);
 
+    /// <summary>
+    /// Defines a generic process memory searcher with status events. 
+    /// </summary>
     public interface ISearcher
-    {
+    {              
         event SearchFinished SearchFinished;
         event SearchProgressChanged SearchProgressChanged;
         event SearchError SearchError;
@@ -39,6 +42,9 @@ namespace ProcessHacker
         void Search();
     }
 
+    /// <summary>
+    /// A base process memory searcher. All searchers should inherit from this class.
+    /// </summary>
     public class Searcher : ISearcher
     {
         private int _pid;
@@ -49,6 +55,10 @@ namespace ProcessHacker
         public virtual event SearchProgressChanged SearchProgressChanged;
         public virtual event SearchError SearchError;
 
+        /// <summary>
+        /// Creates a dummy searcher which does nothing.
+        /// </summary>
+        /// <param name="PID">This parameter has no effect.</param>
         public Searcher(int PID)
         {
             _pid = PID;
@@ -56,22 +66,34 @@ namespace ProcessHacker
             _results = new List<string[]>();
         }
 
+        /// <summary>
+        /// The PID of the process to be searched.
+        /// </summary>
         public int PID
         {
             get { return _pid; }
         }
 
+        /// <summary>
+        /// The parameters of the search.
+        /// </summary>
         public Dictionary<string, object> Params
         {
             get { return _params; }
         }
 
+        /// <summary>
+        /// A <see cref="List"/> containing the search results.
+        /// </summary>
         public List<string[]> Results
         {
             get { return _results; }
             set { _results = value; }
         }
 
+        /// <summary>
+        /// This is a dummy function, and should be overridden.
+        /// </summary>
         public virtual void Search()
         {
         }

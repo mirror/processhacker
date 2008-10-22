@@ -23,17 +23,28 @@ using System.Text;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// The type of search to be performed.
+    /// </summary>
     public enum SearchType
     {
         Literal, Regex, String, Heap  
     }
 
+    /// <summary>
+    /// Contains a <see cref="Searcher"/> class, a search type and a PID.                        
+    /// </summary>
     public class SearchOptions
-    {                              
+    {                                      
         private int _pid;
         private SearchType _type = SearchType.Literal;
         private Searcher _searcher;
-
+                          
+        /// <summary>
+        /// Creates a search with the specified PID and search type.
+        /// </summary>
+        /// <param name="PID">The PID of the process to be searched.</param>
+        /// <param name="type">The type of search (<see cref="SearchType"/>) to be performed.</param>
         public SearchOptions(int PID, SearchType type)
         {
             _pid = PID;
@@ -53,12 +64,18 @@ namespace ProcessHacker
 
             Type = type;  
         }  
-
+                                                          
+        /// <summary>
+        /// The PID associated with this search.
+        /// </summary>
         public int PID
         {
             get { return _pid; }
         }
 
+        /// <summary>
+        /// The type of search to be performed.
+        /// </summary>
         public SearchType Type
         {
             get { return _type; }
@@ -101,6 +118,9 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// The <see cref="Searcher"/> class.
+        /// </summary>
         public Searcher Searcher
         {
             get { return _searcher; }

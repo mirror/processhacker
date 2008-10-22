@@ -27,8 +27,16 @@ namespace ProcessHacker
 {
     static class Program
     {
+        /// <summary>
+        /// The main Process Hacker window instance
+        /// </summary>
         public static HackerWindow HackerWindow;
+
+        /// <summary>
+        /// The Results Window ID Generator
+        /// </summary>
         public static IdGenerator ResultsIds = new IdGenerator();
+
         public static Dictionary<string, MemoryEditor> MemoryEditors = new Dictionary<string, MemoryEditor>();
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
@@ -64,9 +72,9 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the memory editor form.
         /// </summary>
-        /// <param name="PID"></param>
-        /// <param name="address"></param>
-        /// <param name="length"></param>
+        /// <param name="PID">The PID of the process to edit</param>
+        /// <param name="address">The address to start editing at</param>
+        /// <param name="length">The length to edit</param>
         /// <returns></returns>
         public static MemoryEditor GetMemoryEditor(int PID, int address, int length)
         {
@@ -74,12 +82,12 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Creates an instance of the memory editor form and invokes an action on the main thread.
+        /// Creates an instance of the memory editor form and invokes an action on the memory editor's thread.
         /// </summary>
-        /// <param name="PID"></param>
-        /// <param name="address"></param>
-        /// <param name="length"></param>
-        /// <param name="action"></param>
+        /// <param name="PID">The PID of the process to edit</param>
+        /// <param name="address">The address to start editing at</param>
+        /// <param name="length">The length to edit</param>
+        /// <param name="action">The action to be invoked on the memory editor's thread</param>
         /// <returns>Memory editor form</returns>
         public static MemoryEditor GetMemoryEditor(int PID, int address, int length, MemoryEditorInvokeAction action)
         {

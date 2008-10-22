@@ -25,11 +25,21 @@ namespace ProcessHacker
 {
     public static class Misc
     {
+        /// <summary>
+        /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".
+        /// </summary>
+        /// <param name="time">The <see cref="DateTime"/> object to format.</param>
+        /// <returns></returns>
         public static string GetNiceDateTime(DateTime time)
-        {
+        {         
             return time.ToString("dd/MM/yy hh:mm:ss");
         }
 
+        /// <summary>
+        /// Formats a size into a string representation, postfixing it with the correct unit.
+        /// </summary>
+        /// <param name="size">The size to format.</param>
+        /// <returns></returns>
         public static string GetNiceSizeName(long size)
         {
             string[] names = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
@@ -45,6 +55,11 @@ namespace ProcessHacker
             return String.Format("{0:f2}", s) + " " + names[i];
         }
 
+        /// <summary>
+        /// Formats a <see cref="TimeSpan"/> object into a string representation.
+        /// </summary>
+        /// <param name="time">The <see cref="TimeSpan"/> to format.</param>
+        /// <returns></returns>
         public static string GetNiceTimeSpan(TimeSpan time)
         {
             return String.Format("{0:d3}:{1:d2}:{2:d3}",
@@ -53,6 +68,11 @@ namespace ProcessHacker
                                 time.Milliseconds);
         }
 
+        /// <summary>
+        /// Parses a path string and returns the actual path name, removing \SystemRoot and \??\.
+        /// </summary>
+        /// <param name="path">The path to parse.</param>
+        /// <returns></returns>
         public static string GetRealPath(string path)
         {
             if (path.ToLower().StartsWith("\\systemroot"))
@@ -62,7 +82,13 @@ namespace ProcessHacker
             else
                 return path;
         }
-
+        
+        /// <summary>
+        /// Returns a <see cref="ProcessThread"/> object of the specified thread ID.
+        /// </summary>
+        /// <param name="p">The process which the thread belongs to.</param>
+        /// <param name="id">The ID of the thread.</param>
+        /// <returns></returns>
         public static ProcessThread GetThreadById(Process p, int id)
         {
             foreach (ProcessThread t in p.Threads)
@@ -72,6 +98,11 @@ namespace ProcessHacker
             return null;
         }
 
+        /// <summary>
+        /// Makes a character printable by converting unprintable characters to a dot ('.').
+        /// </summary>
+        /// <param name="c">The character to convert.</param>
+        /// <returns></returns>
         public static char MakePrintableChar(char c)
         {
             if (c >= ' ' && c <= '~')
@@ -80,6 +111,11 @@ namespace ProcessHacker
                 return '.';
         }
 
+        /// <summary>
+        /// Makes a string printable by converting unprintable characters to a dot ('.').
+        /// </summary>
+        /// <param name="s">The string to convert.</param>
+        /// <returns></returns>
         public static string MakePrintable(string s)
         {
             StringBuilder sb = new StringBuilder();

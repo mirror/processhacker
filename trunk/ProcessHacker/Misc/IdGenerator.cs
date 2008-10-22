@@ -23,11 +23,35 @@ using System.Text;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides a facility for generating unique Ids.
+    /// </summary>
     public class IdGenerator
     {
         List<int> _ids = new List<int>();
-        int _id = 0;
+        int _id;
 
+        /// <summary>
+        /// Creates a new instance of the class with a starting ID of 0.
+        /// </summary>
+        public IdGenerator()
+        {
+            _id = 0;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the class with the specified starting ID.
+        /// </summary>
+        /// <param name="start">The starting ID.</param>
+        public IdGenerator(int start)
+        {
+            _id = start;
+        }
+
+        /// <summary>
+        /// Generates a new ID.
+        /// </summary>
+        /// <returns></returns>
         public int Pop()
         {
             if (_ids.Count > 0)
@@ -42,6 +66,10 @@ namespace ProcessHacker
             return _id++;
         }
 
+        /// <summary>
+        /// Makes an ID available for use.
+        /// </summary>
+        /// <param name="id"></param>
         public void Push(int id)
         {
             _ids.Add(id);

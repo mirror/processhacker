@@ -22,6 +22,9 @@ using System.Text;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Contains methods to parse numbers from string representations using different bases.
+    /// </summary>
     public class BaseConverter
     {
         private static int[] _reverseChars = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -37,13 +40,18 @@ namespace ProcessHacker
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        public static string ReverseString(string number)
+        /// <summary>
+        /// Reverses a string.
+        /// </summary>
+        /// <param name="str">The string to be reversed</param>
+        /// <returns>The reversed string.</returns>
+        public static string ReverseString(string str)
         {
             StringBuilder sb = new StringBuilder();
 
-            for (int i = number.Length - 1; i >= 0; i--)
+            for (int i = str.Length - 1; i >= 0; i--)
             {
-                sb.Append(number[i]);
+                sb.Append(str[i]);
             }
 
             return sb.ToString();
@@ -52,6 +60,9 @@ namespace ProcessHacker
         /// <summary>
         /// Converts a string to a number using the specified base.
         /// </summary>
+        /// <remarks>
+        /// This function does not parse prefixes; to do so, use <see cref="ToNumberParse"/>.
+        /// </remarks>
         /// <param name="number">The string to convert</param>
         /// <param name="b">The base to use</param>
         /// <returns></returns>
@@ -85,13 +96,25 @@ namespace ProcessHacker
                 return result;
         }
 
+        /// <summary>
+        /// Converts a string to a number, parsing prefixes to determine the base.
+        /// </summary>
+        /// <param name="number">The string to convert.</param>
+        /// <returns></returns>
         public static decimal ToNumberParse(string number)
         {
             return ToNumberParse(number, true);
         }
 
+        /// <summary>
+        /// Converts a string to a number, parsing prefixes to determine the base.
+        /// </summary>
+        /// <param name="number">The string to convert.</param>
+        /// <param name="allowNonStandardExts">Enables or disables non-standard prefixes for 
+        /// bases 2 (b), 3 (t), 4 (q), 12 (w) and 32 (r).</param>
+        /// <returns></returns>
         public static decimal ToNumberParse(string number, bool allowNonStandardExts)
-        {
+        {                              
             if (number == "")
                 return 0;
 
