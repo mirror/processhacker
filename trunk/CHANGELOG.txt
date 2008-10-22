@@ -8,6 +8,8 @@ Process Hacker
  * Now bolds the kernel name when the System process is selected
  * Fixed opening Memory Editor from Results Window
  * Changed Search button to a SplitButton
+ * Added username column
+ * Now shows process description and filename in tooltip
 
 1.1.0.5
  * Upgraded messageboxes when performing operations on processes and threads to OKCancel
