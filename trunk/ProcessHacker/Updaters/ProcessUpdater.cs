@@ -30,6 +30,7 @@ namespace ProcessHacker
     public partial class HackerWindow : Form
     {
         Hashtable processMemoryUsage = new Hashtable();
+        Hashtable processUsername = new Hashtable();
         Hashtable processTotalMilliseconds = new Hashtable();
 
         bool processListUpdatedOnce = false;
@@ -58,6 +59,7 @@ namespace ProcessHacker
                             Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
                             IntPtr icon;
                             string memoryUsage = "";
+                            string username = "";
 
                             task.Type = UpdateTaskType.Add;
                             task.Process = p;
@@ -91,7 +93,15 @@ namespace ProcessHacker
                             }
                             catch { }
 
+                            try
+                            {
+                                username = Win32.GetProcessUsername(p.Handle.ToInt32(), 
+                                    Properties.Settings.Default.ShowProcessDomains);
+                            }
+                            catch { }
+
                             processMemoryUsage.Add(p.Id, memoryUsage);
+                            processUsername.Add(p.Id, username);
                             processTotalMilliseconds.Add(p.Id, 0);
                             
                             lock (processQueue)
@@ -122,6 +132,7 @@ namespace ProcessHacker
                             processQueue.Enqueue(task);
 
                         processMemoryUsage.Remove(pid);
+                        processUsername.Remove(pid);
                         processTotalMilliseconds.Remove(pid);
                         newpids.Remove(pid);
                     }
@@ -184,6 +195,7 @@ namespace ProcessHacker
 
                         item.SubItems.Add(new ListViewItem.ListViewSubItem());
                         item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
 
                         try
                         {
@@ -206,8 +218,21 @@ namespace ProcessHacker
                             }
                         }
 
+                        try
+                        {
+                            item.ToolTipText =
+                                FileVersionInfo.GetVersionInfo(
+                                Misc.GetRealPath(task.Process.MainModule.FileName)).FileDescription + " - " +
+                                Misc.GetRealPath(task.Process.MainModule.FileName);
+                        }
+                        catch
+                        {
+
+                        }
+
                         item.SubItems[1].Text = task.Process.Id.ToString();
                         item.SubItems[2].Text = memoryUsage;
+                        item.SubItems[3].Text = processUsername[task.Process.Id].ToString();
 
                         item.ImageIndex = task.SmallIcon;
 

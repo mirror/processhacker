@@ -18,7 +18,7 @@
       <Value Profile="(Default)">200, 200</Value>
     </Setting>
     <Setting Name="SplitterDistance" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">300</Value>
+      <Value Profile="(Default)">355</Value>
     </Setting>
     <Setting Name="WindowState" Type="System.Windows.Forms.FormWindowState" Scope="User">
       <Value Profile="(Default)">Normal</Value>
@@ -28,6 +28,9 @@
     </Setting>
     <Setting Name="SearchType" Type="System.String" Scope="User">
       <Value Profile="(Default)">&amp;Literal Search...</Value>
+    </Setting>
+    <Setting Name="ShowProcessDomains" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

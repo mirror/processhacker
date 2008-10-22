@@ -104,6 +104,7 @@
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.columnPvtMemory = new System.Windows.Forms.ColumnHeader();
+            this.columnUsername = new System.Windows.Forms.ColumnHeader();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
@@ -716,13 +717,15 @@
             this.listProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
             this.columnPID,
-            this.columnPvtMemory});
+            this.columnPvtMemory,
+            this.columnUsername});
             this.listProcesses.ContextMenuStrip = this.menuProcess2;
             this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
+            this.listProcesses.ShowItemToolTips = true;
             this.listProcesses.Size = new System.Drawing.Size(355, 436);
             this.listProcesses.SmallImageList = this.imageList;
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
@@ -745,6 +748,11 @@
             // 
             this.columnPvtMemory.Text = "Pvt. Memory";
             this.columnPvtMemory.Width = 80;
+            // 
+            // columnUsername
+            // 
+            this.columnUsername.Text = "User";
+            this.columnUsername.Width = 80;
             // 
             // tabControl
             // 
@@ -1215,6 +1223,7 @@
         private System.Windows.Forms.MenuItem stringScanMenuItem;
         private System.Windows.Forms.MenuItem heapScanMenuItem;
         private System.Windows.Forms.MenuItem newResultsWindowMenuItem;
+        private System.Windows.Forms.ColumnHeader columnUsername;
     }
 }
 

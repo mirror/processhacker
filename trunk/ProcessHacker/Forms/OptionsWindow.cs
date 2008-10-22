@@ -35,6 +35,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
+            checkShowProcessDomains.Checked = Properties.Settings.Default.ShowProcessDomains;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -55,6 +56,11 @@ namespace ProcessHacker
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void checkShowProcessDomains_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.ShowProcessDomains = checkShowProcessDomains.Checked;
         }
     }
 }

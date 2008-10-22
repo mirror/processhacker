@@ -20,6 +20,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -32,6 +33,7 @@ namespace ProcessHacker
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
+        public const int SID_SIZE = 1024;
         public const int SYMBOL_NAME_MAXSIZE = 255;
 
         #region Imported Consts
@@ -143,6 +145,20 @@ namespace ProcessHacker
         {
             ObjectBasicInformation,
             ObjectTypeInformation
+        }
+
+        public enum SID_NAME_USE : int
+        {
+              SidTypeUser = 1,
+              SidTypeGroup,
+              SidTypeDomain,
+              SidTypeAlias,
+              SidTypeWellKnownGroup,
+              SidTypeDeletedAccount,
+              SidTypeInvalid,
+              SidTypeUnknown,
+              SidTypeComputer,
+              SidTypeLabel
         }
 
         public enum SnapshotFlags : uint
@@ -265,26 +281,34 @@ namespace ProcessHacker
         public static extern int OpenProcessToken(int ProcessHandle, int DesiredAccess,
             ref int TokenHandle);
 
-        [DllImport("advapi32", CharSet = CharSet.Auto)]
-        public static extern int GetTokenInformation(
-            int hToken,
-            TOKEN_INFORMATION_CLASS tokenInfoClass,
-            IntPtr TokenInformation,
-            int tokeInfoLength,
-            ref int reqLength
-        );
-
-        [DllImport("advapi32", CharSet = CharSet.Auto)]
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int ConvertSidToStringSid(
             int pSID,
             [In, Out, MarshalAs(UnmanagedType.LPTStr)] ref string pStringSid
         );
 
-        [DllImport("advapi32", CharSet = CharSet.Auto)]
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int ConvertStringSidToSid(
             [In, MarshalAs(UnmanagedType.LPTStr)] string pStringSid,
             ref IntPtr pSID
         );
+
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_USER TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
+
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int LookupAccountSid(string SystemName,
+            int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
+            [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
+            ref SID_NAME_USE Use);
+
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int LookupAccountSid(int SystemName,
+            int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
+            [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
+            ref SID_NAME_USE Use);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupPrivilegeValue(string SystemName, string PrivilegeName,
@@ -748,7 +772,14 @@ namespace ProcessHacker
             public string szDisplayName;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)]
             public string szTypeName;
-        }    
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SID
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SID_SIZE)]
+            public byte[] SIDContents;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SID_AND_ATTRIBUTES
@@ -874,6 +905,10 @@ namespace ProcessHacker
         public struct TOKEN_USER
         {
             public SID_AND_ATTRIBUTES User;
+
+            // space for random crap
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SID_SIZE)]
+            public byte[] SIDContents;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -909,6 +944,39 @@ namespace ProcessHacker
             } while (Process32Next(snapshot, ref proc) != 0);
 
             return "(unknown)";
+        }
+
+        public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
+        {
+            StringBuilder name = new StringBuilder(255);
+            StringBuilder domain = new StringBuilder(255);
+            int token = 0;
+            TOKEN_USER user = new TOKEN_USER();
+            SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
+            int retlen = 0;
+            int namelen = 255;
+            int domainlen = 255;
+
+            if (OpenProcessToken(ProcessHandle, TOKEN_QUERY, ref token) == 0)
+                return "";
+
+            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
+                Marshal.SizeOf(user), ref retlen) == 0)
+                return "";
+
+            if (LookupAccountSid(0, user.User.SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
+                return "";
+
+            CloseHandle(token);
+
+            if (IncludeDomain)
+            {
+                return domain.ToString() + "\\" + name.ToString();
+            }
+            else
+            {
+                return name.ToString();
+            }
         }
 
         public static int EnableTokenPrivilege(string Privilege)

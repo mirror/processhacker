@@ -85,7 +85,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        [global::System.Configuration.DefaultSettingValueAttribute("355")]
         public int SplitterDistance {
             get {
                 return ((int)(this["SplitterDistance"]));
@@ -128,6 +128,18 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["SearchType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowProcessDomains {
+            get {
+                return ((bool)(this["ShowProcessDomains"]));
+            }
+            set {
+                this["ShowProcessDomains"] = value;
             }
         }
     }
