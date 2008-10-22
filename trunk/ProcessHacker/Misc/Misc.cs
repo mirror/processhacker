@@ -19,6 +19,7 @@
 
 using System;
 using System.Text;
+using System.Diagnostics;
 
 namespace ProcessHacker
 {
@@ -60,6 +61,15 @@ namespace ProcessHacker
                 return path.Substring(4);
             else
                 return path;
+        }
+
+        public static ProcessThread GetThreadById(Process p, int id)
+        {
+            foreach (ProcessThread t in p.Threads)
+                if (t.Id == id)
+                    return t;
+
+            return null;
         }
 
         public static char MakePrintableChar(char c)

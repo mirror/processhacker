@@ -64,6 +64,7 @@
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.menuThread = new System.Windows.Forms.ContextMenu();
+            this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -115,6 +116,7 @@
             this.columnThreadState = new System.Windows.Forms.ColumnHeader();
             this.columnCPUTime = new System.Windows.Forms.ColumnHeader();
             this.columnPriority = new System.Windows.Forms.ColumnHeader();
+            this.columnWaitReason = new System.Windows.Forms.ColumnHeader();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -428,6 +430,7 @@
             // menuThread
             // 
             this.menuThread.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.inspectThreadMenuItem,
             this.terminateThreadMenuItem,
             this.suspendThreadMenuItem,
             this.resumeThreadMenuItem,
@@ -437,36 +440,45 @@
             this.selectAllThreadMenuItem});
             this.menuThread.Popup += new System.EventHandler(this.menuThread_Popup);
             // 
+            // inspectThreadMenuItem
+            // 
+            this.inspectThreadMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.inspectThreadMenuItem.Index = 0;
+            this.inspectThreadMenuItem.Text = "&Inspect";
+            this.inspectThreadMenuItem.Visible = false;
+            this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
+            // 
             // terminateThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.terminateThreadMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.terminateThreadMenuItem.Index = 0;
+            this.terminateThreadMenuItem.Index = 1;
             this.terminateThreadMenuItem.Text = "&Terminate";
             this.terminateThreadMenuItem.Click += new System.EventHandler(this.terminateThreadMenuItem_Click);
             // 
             // suspendThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.suspendThreadMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendThreadMenuItem.Index = 1;
+            this.suspendThreadMenuItem.Index = 2;
             this.suspendThreadMenuItem.Text = "&Suspend";
             this.suspendThreadMenuItem.Click += new System.EventHandler(this.suspendThreadMenuItem_Click);
             // 
             // resumeThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.resumeThreadMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeThreadMenuItem.Index = 2;
+            this.resumeThreadMenuItem.Index = 3;
             this.resumeThreadMenuItem.Text = "&Resume";
             this.resumeThreadMenuItem.Click += new System.EventHandler(this.resumeThreadMenuItem_Click);
             // 
             // menuItem4
             // 
-            this.menuItem4.Index = 3;
+            this.menuItem4.Index = 4;
             this.menuItem4.Text = "-";
             // 
             // priorityThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityThreadMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityThreadMenuItem.Index = 4;
+            this.priorityThreadMenuItem.Index = 5;
             this.priorityThreadMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.timeCriticalThreadMenuItem,
             this.highestThreadMenuItem,
@@ -528,12 +540,12 @@
             // 
             // menuItem9
             // 
-            this.menuItem9.Index = 5;
+            this.menuItem9.Index = 6;
             this.menuItem9.Text = "-";
             // 
             // selectAllThreadMenuItem
             // 
-            this.selectAllThreadMenuItem.Index = 6;
+            this.selectAllThreadMenuItem.Index = 7;
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
@@ -663,6 +675,7 @@
             // 
             // readWriteMemoryMemoryMenuItem
             // 
+            this.readWriteMemoryMemoryMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.readWriteMemoryMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_edit);
             this.readWriteMemoryMemoryMenuItem.Index = 1;
             this.readWriteMemoryMemoryMenuItem.Text = "Read/Write Memory...";
@@ -825,7 +838,8 @@
             this.columnThreadID,
             this.columnThreadState,
             this.columnCPUTime,
-            this.columnPriority});
+            this.columnPriority,
+            this.columnWaitReason});
             this.listThreads.ContextMenuStrip = this.menuThread2;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -836,6 +850,7 @@
             this.listThreads.TabIndex = 2;
             this.listThreads.UseCompatibleStateImageBehavior = false;
             this.listThreads.View = System.Windows.Forms.View.Details;
+            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             this.listThreads.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listThreads_MouseDown);
             // 
             // columnThreadID
@@ -856,6 +871,11 @@
             // 
             this.columnPriority.Text = "Priority";
             this.columnPriority.Width = 80;
+            // 
+            // columnWaitReason
+            // 
+            this.columnWaitReason.Text = "Wait Reason";
+            this.columnWaitReason.Width = 100;
             // 
             // tabModules
             // 
@@ -947,6 +967,7 @@
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
+            this.listMemory.DoubleClick += new System.EventHandler(this.listMemory_DoubleClick);
             this.listMemory.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMemory_MouseDown);
             // 
             // columnHeader1
@@ -1168,6 +1189,8 @@
         private System.Windows.Forms.MenuItem exitMenuItem;
         private System.Windows.Forms.GroupBox groupSearch;
         private System.Windows.Forms.MenuItem windowMenuItem;
+        private System.Windows.Forms.MenuItem inspectThreadMenuItem;
+        private System.Windows.Forms.ColumnHeader columnWaitReason;
     }
 }
 

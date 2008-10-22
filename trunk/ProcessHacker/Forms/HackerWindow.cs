@@ -18,7 +18,6 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -26,10 +25,8 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using Be.Windows.Forms;
 
 namespace ProcessHacker
 {
@@ -252,6 +249,11 @@ namespace ProcessHacker
 
         #region Lists
 
+        private void listMemory_DoubleClick(object sender, EventArgs e)
+        {
+            readWriteMemoryMemoryMenuItem_Click(null, null);
+        }
+
         private void listModules_DoubleClick(object sender, EventArgs e)
         {
             goToInMemoryViewModuleMenuItem_Click(null, null);
@@ -319,6 +321,11 @@ namespace ProcessHacker
 
                 UpdateProcessExtra();
             }
+        }
+
+        private void listThreads_DoubleClick(object sender, EventArgs e)
+        {
+            inspectThreadMenuItem_Click(null, null);
         }
 
         #endregion
@@ -917,6 +924,8 @@ namespace ProcessHacker
 
         private void menuThread_Popup(object sender, EventArgs e)
         {
+            inspectThreadMenuItem.Enabled = false;
+
             if (listProcesses.SelectedItems.Count == 0 || listThreads.SelectedItems.Count == 0)
             {
                 terminateThreadMenuItem.Enabled = false;
@@ -926,7 +935,12 @@ namespace ProcessHacker
                 return;
             }
             else if (listThreads.SelectedItems.Count > 0)
-            {
+            {      
+                if (listThreads.SelectedItems.Count == 1)
+                {
+                    inspectThreadMenuItem.Enabled = true;
+                }
+
                 terminateThreadMenuItem.Enabled = true;
                 suspendThreadMenuItem.Enabled = true;
                 resumeThreadMenuItem.Enabled = true;
@@ -1012,23 +1026,37 @@ namespace ProcessHacker
             }
         }
 
-        private void terminateThreadMenuItem_Click(object sender, EventArgs e)
+        private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Process process;
+            return;
+            ThreadWindow window;
 
             try
             {
-                process = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                window = Program.GetThreadWindow(processSelectedPID,
+                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
+                    new Program.ThreadWindowInvokeAction(delegate(ThreadWindow f)
+                {
+                    try
+                    {
+                        f.Show();
+                        f.Activate();
+                    }
+                    catch
+                    { }
+                }));
             }
-            catch { return; }
+            catch
+            { }
+        }
 
+        private void terminateThreadMenuItem_Click(object sender, EventArgs e)
+        {
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    ProcessThread thread = GetThreadById(process, Int32.Parse(item.SubItems[0].Text));
-
-                    int handle = Win32.OpenThread(Win32.THREAD_TERMINATE, 0, thread.Id);
+                    int handle = Win32.OpenThread(Win32.THREAD_TERMINATE, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -1057,21 +1085,11 @@ namespace ProcessHacker
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Process process;
-
-            try
-            {
-                process = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
-            }
-            catch { return; }
-
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    ProcessThread thread = GetThreadById(process, Int32.Parse(item.SubItems[0].Text));
-
-                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, thread.Id);
+                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -1099,21 +1117,11 @@ namespace ProcessHacker
 
         private void resumeThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Process process;
-
-            try
-            {
-                process = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
-            }
-            catch { return; }
-
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    ProcessThread thread = GetThreadById(process, Int32.Parse(item.SubItems[0].Text));
-
-                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, thread.Id);
+                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -1286,6 +1294,8 @@ namespace ProcessHacker
             }
             catch
             {
+                this.Cursor = Cursors.Default;
+
                 return null;
             }
         }
@@ -1333,15 +1343,6 @@ namespace ProcessHacker
         #endregion   
 
         #region Helper functions
-
-        private ProcessThread GetThreadById(Process p, int id)
-        {
-            foreach (ProcessThread t in p.Threads)
-                if (t.Id == id)
-                    return t;
-
-            return null;
-        }
 
         private bool IsDangerousPID(int pid)
         {

@@ -33,9 +33,12 @@ namespace ProcessHacker
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
+        public static Dictionary<string, ThreadWindow> ThreadWindows = new Dictionary<string, ThreadWindow>();
+        public static Dictionary<string, Thread> ThreadThreads = new Dictionary<string, Thread>();
 
         public delegate void ResultsWindowInvokeAction(ResultsWindow f);
         public delegate void MemoryEditorInvokeAction(MemoryEditor f);
+        public delegate void ThreadWindowInvokeAction(ThreadWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
         /// <summary>
@@ -167,6 +170,54 @@ namespace ProcessHacker
             return rw;
         }
 
+        /// <summary>
+        /// Creates an instance of the thread window on a separate thread.
+        /// </summary>
+        /// <param name="PID"></param>
+        /// <returns></returns>
+        public static ThreadWindow GetThreadWindow(int PID, int TID)
+        {
+            return GetThreadWindow(PID, TID, new ThreadWindowInvokeAction(delegate { }));
+        }
+
+        /// <summary>
+        /// Creates an instance of the thread window on a separate thread and invokes an action on that thread.
+        /// </summary>
+        /// <param name="PID"></param>
+        /// <param name="action">The action to be performed.</param>
+        /// <returns></returns>
+        public static ThreadWindow GetThreadWindow(int PID, int TID, ThreadWindowInvokeAction action)
+        {
+            ThreadWindow tw = null;
+            string id = "";
+
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                tw = new ThreadWindow(PID, TID);
+
+                id = tw.Id;
+
+                action(tw);
+
+                try
+                {
+                    Application.Run(tw);
+                }
+                catch
+                { }
+
+                Program.ThreadThreads.Remove(id);
+            }));
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+
+            while (id == "") Thread.Sleep(1);
+            Program.ThreadThreads.Add(id, t);
+
+            return tw;
+        }
+
         public static void FocusWindow(Form f)
         {
             if (f.InvokeRequired)
@@ -256,6 +307,12 @@ namespace ProcessHacker
                 Texts.Add(f.Text);
             }
 
+            foreach (Form f in Program.ThreadWindows.Values)
+            {
+                TextToForm.Add(f.Text, f);
+                Texts.Add(f.Text);
+            }
+
             Texts.Sort();
 
             UpdateWindow(HackerWindow, Texts, TextToForm);
@@ -268,6 +325,11 @@ namespace ProcessHacker
             foreach (Form f in ResultsWindows.Values)
             {
                  UpdateWindow(f, Texts, TextToForm);
+            }
+
+            foreach (Form f in ThreadWindows.Values)
+            {
+                UpdateWindow(f, Texts, TextToForm);
             }
         }
 

@@ -49,18 +49,24 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(Id, this);
 
+            hexBoxMemory.Select();
+            hexBoxMemory.Focus();
+        }
+
+        private void MemoryEditor_Load(object sender, EventArgs e)
+        {
             _phandle = Win32.OpenProcess(Win32.PROCESS_VM_READ | Win32.PROCESS_VM_WRITE | Win32.PROCESS_VM_OPERATION, 0, _pid);
 
             if (_phandle == 0)
             {
                 this.Visible = false;
-                MessageBox.Show("Could not open process.", "Process Hacker",  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not open process.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
                 return;
             }
 
-            this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() + 
-                "), 0x" + String.Format("{0:x}", _address) + "-0x" + 
+            this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
+                "), 0x" + String.Format("{0:x}", _address) + "-0x" +
                 String.Format("{0:x}", _address + _length) + " - Memory Editor";
 
             try
@@ -74,12 +80,6 @@ namespace ProcessHacker
                 this.Close();
             }
 
-            hexBoxMemory.Select();
-            hexBoxMemory.Focus();
-        }
-
-        private void MemoryEditor_Load(object sender, EventArgs e)
-        {
             Program.UpdateWindows();
         }
 

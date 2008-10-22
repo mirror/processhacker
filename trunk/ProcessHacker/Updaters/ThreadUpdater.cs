@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
+using System;
 
 namespace ProcessHacker
 {
@@ -30,6 +31,7 @@ namespace ProcessHacker
         Hashtable threadCPUTime = new Hashtable();
         Hashtable threadPriority = new Hashtable();
         Hashtable threadState = new Hashtable();
+        Hashtable threadWaitReason = new Hashtable();
 
         /// <summary>
         /// Finds new, removed and modified threads to add to the task queue.
@@ -68,6 +70,7 @@ namespace ProcessHacker
                             threadState = new Hashtable();
                             threadCPUTime = new Hashtable();
                             threadPriority = new Hashtable();
+                            threadWaitReason = new Hashtable();
                             lastSelectedPID = processSelectedPID;
                         }
 
@@ -87,6 +90,7 @@ namespace ProcessHacker
                                 t.TotalProcessorTime.Seconds,
                                 t.TotalProcessorTime.Milliseconds));
                                 threadPriority.Add(t.Id, t.PriorityLevel.ToString());
+                                threadWaitReason.Add(t.Id, t.WaitReason.ToString());
 
                                 lock (threadQueue)
                                     threadQueue.Enqueue(task);
@@ -100,10 +104,12 @@ namespace ProcessHacker
                                 t.TotalProcessorTime.Seconds,
                                 t.TotalProcessorTime.Milliseconds);
                             string priority = t.PriorityLevel.ToString();
+                            string waitreason = t.WaitReason.ToString();
 
                             if (threadState[t.Id].ToString() != state ||
                                 threadCPUTime[t.Id].ToString() != cputime ||
-                                threadPriority[t.Id].ToString() != priority)
+                                threadPriority[t.Id].ToString() != priority ||
+                                threadWaitReason[t.Id].ToString() != waitreason)
                             {
                                 UpdateTask task = new UpdateTask();
 
@@ -113,6 +119,7 @@ namespace ProcessHacker
                                 threadState[t.Id] = state;
                                 threadCPUTime[t.Id] = cputime;
                                 threadPriority[t.Id] = priority;
+                                threadWaitReason[t.Id] = waitreason;
 
                                 lock (threadQueue)
                                     threadQueue.Enqueue(task);
@@ -142,6 +149,7 @@ namespace ProcessHacker
                             threadState.Remove(tid);
                             threadCPUTime.Remove(tid);
                             threadPriority.Remove(tid);
+                            threadWaitReason.Remove(tid);
                             newtids.Remove(tid);
                         }
 
@@ -173,11 +181,13 @@ namespace ProcessHacker
                             item.SubItems.Add(new ListViewItem.ListViewSubItem());
                             item.SubItems.Add(new ListViewItem.ListViewSubItem());
                             item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
 
                             item.SubItems[0].Text = task.Thread.Id.ToString();
                             item.SubItems[1].Text = task.Thread.ThreadState.ToString();
                             item.SubItems[2].Text = Misc.GetNiceTimeSpan(task.Thread.TotalProcessorTime);
                             item.SubItems[3].Text = task.Thread.PriorityLevel.ToString();
+                            item.SubItems[4].Text = task.Thread.WaitReason.ToString();
                         }
                         catch
                         {
@@ -198,6 +208,8 @@ namespace ProcessHacker
                                     item.SubItems[2].Text = threadCPUTime[task.TID].ToString();
                                 if (threadPriority.ContainsKey(task.TID))
                                     item.SubItems[3].Text = threadPriority[task.TID].ToString();
+                                if (threadWaitReason.ContainsKey(task.TID))
+                                    item.SubItems[4].Text = threadWaitReason[task.TID].ToString();
 
                                 break;
                             }

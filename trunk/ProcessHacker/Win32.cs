@@ -29,6 +29,8 @@ namespace ProcessHacker
     {
         public delegate int EnumWindowsProc(int hwnd, int param);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
+        public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
+        public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
         public const int SYMBOL_NAME_MAXSIZE = 255;
 
@@ -61,6 +63,14 @@ namespace ProcessHacker
 
         #region Imported Enums   
 
+        public enum ADDRESS_MODE : int
+        {
+            AddrMode1616,
+            AddrMode1632,
+            AddrModeReal,
+            AddrModeFlat
+        }
+
         [Flags]
         public enum CONTEXT_FLAGS : int
         {
@@ -90,6 +100,13 @@ namespace ProcessHacker
             LF32_FIXED = 0x00000001,
             LF32_FREE = 0x00000002,
             LF32_MOVEABLE = 0x00000004
+        }
+
+        public enum MachineType : int
+        {
+            IMAGE_FILE_MACHINE_i386 = 0x014c,
+            IMAGE_FILE_MACHINE_IA64 = 0x0200,
+            IMAGE_FILE_MACHINE_AMD64 = 0x8664
         }
 
         public enum MEMORY_PROTECTION : int
@@ -293,10 +310,24 @@ namespace ProcessHacker
         public static extern int SymFromAddr(int ProcessHandle, long Address, ref long Displacement, ref SYMBOL_INFO Symbol);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymFromIndex(int ProcessHandle, long BaseOfDll, int Index, ref SYMBOL_INFO Symbol);
+        public static extern int SymFromIndex(int ProcessHandle, int BaseOfDll, int Index, ref SYMBOL_INFO Symbol);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymFunctionTableAccess64(int ProcessHandle, int AddrBase);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int SymGetModuleBase64(int ProcessHandle, int dwAddr);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
         public static extern int SymInitialize(int ProcessHandle, int UserSearchPath, int InvadeProcess);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
+            [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
+            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord, int ReadMemoryRoutine,
+            [MarshalAs(UnmanagedType.FunctionPtr)] FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            [MarshalAs(UnmanagedType.FunctionPtr)] GetModuleBaseProc64 GetModuleBaseRoutine,
+            int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessDEPPolicy(int ProcessHandle, ref DEPFLAGS Flags, ref int Permanent);
@@ -485,6 +516,14 @@ namespace ProcessHacker
 
         #region Imported Structs
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ADDRESS64
+        {
+            public long Offset;
+            public short Segment;
+            public ADDRESS_MODE Mode;
+        }
+
         // NOTE: This x86 CONTEXT ONLY!!!
         [StructLayout(LayoutKind.Sequential)]
         public struct CONTEXT
@@ -500,8 +539,9 @@ namespace ProcessHacker
             public int Dr6;
             public int Dr7;
 
+            [MarshalAs(UnmanagedType.Struct)]
             public FLOATING_SAVE_AREA FloatSave;
-
+                     
             public int SegGs;
             public int SegFs;
             public int SegEs;
@@ -543,6 +583,18 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct FPO_DATA
+        {
+            public int ulOffStart;
+            public int cbProcSize;
+            public int cdwLocals;
+            public short cdwParams;
+
+            public long Part1;
+            public long Part2;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct HEAPENTRY32
         {
             public int dwSize;
@@ -563,6 +615,22 @@ namespace ProcessHacker
             public int th32ProcessID;
             public int th32HeapID;
             public int dwFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KDHELP64
+        {
+            public long Thread;
+            public int ThCallbackStack;
+            public int ThCallbackBSTore;
+            public int NextCallback;
+            public int FramePointer;
+            public long KiCallUserMode;
+            public long KeUserCallbackDispatcher;
+            public long SystemRangeStart;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public long[] Reserved;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -687,6 +755,30 @@ namespace ProcessHacker
         {
             public int SID; // ptr to a SID object
             public int Attributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct STACKFRAME64
+        {
+            public ADDRESS64 AddrPC;
+            public ADDRESS64 AddrReturn;
+            public ADDRESS64 AddrFrame;
+            public ADDRESS64 AddrStack;
+            public ADDRESS64 AddrBStore;
+
+            [MarshalAs(UnmanagedType.LPStruct)]
+            public FPO_DATA FuncTableEntry;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public long[] Params;
+
+            public int Far;
+            public int Virtual;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+            public long[] Reserved;
+
+            KDHELP64 KdHelp;
         }
 
         [StructLayout(LayoutKind.Sequential)]
