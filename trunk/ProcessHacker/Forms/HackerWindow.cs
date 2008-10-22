@@ -163,46 +163,7 @@ namespace ProcessHacker
 
         private void buttonSearch_Click(object sender, EventArgs e)
         {
-            string selectedItem = comboSearch.SelectedItem.ToString();
-            ResultsWindow rw = Program.GetResultsWindow(processSelectedPID, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
-            {
-                if (selectedItem == "Literal Search")
-                {
-                    if (f.EditSearch(SearchType.Literal) == DialogResult.OK)
-                    {
-                        f.Show();
-                        f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-                else if (selectedItem == "Regex Search")
-                {
-                    if (f.EditSearch(SearchType.Regex) == DialogResult.OK)
-                    {
-                        f.Show();
-                        f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-                else if (selectedItem == "String Scan")
-                {
-                    f.SearchOptions.Type = SearchType.String;
-                    f.Show();
-                    f.StartSearch();
-                }
-                else if (selectedItem == "Heap Scan")
-                {
-                    f.SearchOptions.Type = SearchType.Heap;
-                    f.Show();
-                    f.StartSearch();
-                }
-            }));
+            PerformSearch(buttonSearch.Text);
         }
 
         private void buttonVirtualProtect_Click(object sender, EventArgs e)
@@ -273,7 +234,6 @@ namespace ProcessHacker
                 }
 
                 treeMisc.Enabled = true;
-                comboSearch.Enabled = true;
                 buttonSearch.Enabled = true;
 
                 try
@@ -316,7 +276,6 @@ namespace ProcessHacker
 
                 listThreads.Items.Clear();
                 treeMisc.Enabled = false;
-                comboSearch.Enabled = false;
                 buttonSearch.Enabled = false;
 
                 UpdateProcessExtra();
@@ -1260,6 +1219,61 @@ namespace ProcessHacker
             this.Size = Properties.Settings.Default.WindowSize;
             this.WindowState = Properties.Settings.Default.WindowState;
             splitMain.SplitterDistance = Properties.Settings.Default.SplitterDistance;
+            buttonSearch.Text = Properties.Settings.Default.SearchType;
+        }
+
+        private void PerformSearch(string text)
+        {
+            ResultsWindow rw = Program.GetResultsWindow(processSelectedPID, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
+            {
+                if (text == "&New Results Window...")
+                {
+                    f.Show();
+                }
+                else if (text == "&Literal Search...")
+                {
+                    if (f.EditSearch(SearchType.Literal) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&Regex Search...")
+                {
+                    if (f.EditSearch(SearchType.Regex) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&String Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.String;
+                    f.Show();
+                    f.StartSearch();
+                }
+                else if (text == "&Heap Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.Heap;
+                    f.Show();
+                    f.StartSearch();
+                }
+            }));
+
+            buttonSearch.Text = text;
+        }
+
+        private void PerformSearch(object sender, EventArgs e)
+        {
+            PerformSearch(((MenuItem)sender).Text);
         }
 
         private MemoryEditor ReadWriteMemory()
@@ -1313,6 +1327,8 @@ namespace ProcessHacker
             Properties.Settings.Default.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
             Properties.Settings.Default.SplitterDistance = splitMain.SplitterDistance;
+
+            Properties.Settings.Default.SearchType = buttonSearch.Text;
 
             try
             {
@@ -1996,8 +2012,13 @@ namespace ProcessHacker
             timerFire_Tick(null, null);
 
             listProcesses_SelectedIndexChanged(null, null);
-            comboSearch.SelectedItem = "Literal Search";
             tabControl.SelectedTab = tabProcess;
+
+            newResultsWindowMenuItem.Click +=new EventHandler(PerformSearch);
+            literalSearchMenuItem.Click += new EventHandler(PerformSearch);
+            regexSearchMenuItem.Click += new EventHandler(PerformSearch);
+            stringScanMenuItem.Click += new EventHandler(PerformSearch);
+            heapScanMenuItem.Click += new EventHandler(PerformSearch);
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

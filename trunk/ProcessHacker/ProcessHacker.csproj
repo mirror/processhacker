@@ -172,6 +172,9 @@
     <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
+    <Compile Include="Components\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\UtilitiesButton.cs">
       <SubType>UserControl</SubType>
     </Compile>

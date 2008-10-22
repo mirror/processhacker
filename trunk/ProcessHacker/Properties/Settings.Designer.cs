@@ -118,5 +118,17 @@ namespace ProcessHacker.Properties {
                 this["DebugMem"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("&Literal Search...")]
+        public string SearchType {
+            get {
+                return ((string)(this["SearchType"]));
+            }
+            set {
+                this["SearchType"] = value;
+            }
+        }
     }
 }
