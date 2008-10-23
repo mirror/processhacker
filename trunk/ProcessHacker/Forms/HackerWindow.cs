@@ -321,6 +321,7 @@ namespace ProcessHacker
         private void helpMenuItem_Click(object sender, EventArgs e)
         {
             helpForm.Show();
+            helpForm.Activate();
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)
