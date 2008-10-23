@@ -186,12 +186,22 @@ namespace ProcessHacker
                     {
                         ListViewItem item = new ListViewItem();
                         string memoryUsage = "";
+                        string processUsername = "";
 
                         lock (processMemoryUsage)
                         {
                             try
                             {
                                 memoryUsage = processMemoryUsage[task.Process.Id].ToString();
+                            }
+                            catch { }
+                        }
+
+                        lock (processUsername)
+                        {
+                            try
+                            {
+                                processUsername = processUsername[task.Process.Id].ToString();
                             }
                             catch { }
                         }
@@ -235,7 +245,7 @@ namespace ProcessHacker
 
                         item.SubItems[1].Text = task.Process.Id.ToString();
                         item.SubItems[2].Text = memoryUsage;
-                        item.SubItems[3].Text = processUsername[task.Process.Id].ToString();
+                        item.SubItems[3].Text = processUsername;
 
                         item.ImageIndex = task.SmallIcon;
 
