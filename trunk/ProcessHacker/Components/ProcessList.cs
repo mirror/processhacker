@@ -127,8 +127,12 @@ namespace ProcessHacker.Components
 
             try
             {
-                litem.ToolTipText = FileVersionInfo.GetVersionInfo(
-                    Misc.GetRealPath(pitem.Process.MainModule.FileName)).ToString();
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(
+                    Misc.GetRealPath(pitem.Process.MainModule.FileName));
+
+                litem.ToolTipText = info.FileName + "\n" + 
+                    info.FileDescription + " (" + info.FileVersion + ")\n" + 
+                    info.CompanyName;
             }
             catch
             { }
