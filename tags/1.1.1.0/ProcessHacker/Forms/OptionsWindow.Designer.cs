@@ -1,0 +1,133 @@
+﻿namespace ProcessHacker
+{
+    partial class OptionsWindow
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.label1 = new System.Windows.Forms.Label();
+            this.textUpdateInterval = new System.Windows.Forms.NumericUpDown();
+            this.buttonClose = new System.Windows.Forms.Button();
+            this.checkShowProcessDomains = new System.Windows.Forms.CheckBox();
+            this.checkWarnDangerous = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(83, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Update Interval:";
+            // 
+            // textUpdateInterval
+            // 
+            this.textUpdateInterval.Increment = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+            this.textUpdateInterval.Location = new System.Drawing.Point(101, 12);
+            this.textUpdateInterval.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textUpdateInterval.Name = "textUpdateInterval";
+            this.textUpdateInterval.Size = new System.Drawing.Size(66, 20);
+            this.textUpdateInterval.TabIndex = 1;
+            this.textUpdateInterval.Leave += new System.EventHandler(this.textUpdateInterval_Leave);
+            // 
+            // buttonClose
+            // 
+            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonClose.Location = new System.Drawing.Point(217, 94);
+            this.buttonClose.Name = "buttonClose";
+            this.buttonClose.Size = new System.Drawing.Size(75, 23);
+            this.buttonClose.TabIndex = 2;
+            this.buttonClose.Text = "&Close";
+            this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            // 
+            // checkShowProcessDomains
+            // 
+            this.checkShowProcessDomains.AutoSize = true;
+            this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(12, 61);
+            this.checkShowProcessDomains.Name = "checkShowProcessDomains";
+            this.checkShowProcessDomains.Size = new System.Drawing.Size(141, 18);
+            this.checkShowProcessDomains.TabIndex = 3;
+            this.checkShowProcessDomains.Text = "Show process domains";
+            this.checkShowProcessDomains.UseVisualStyleBackColor = true;
+            // 
+            // checkWarnDangerous
+            // 
+            this.checkWarnDangerous.AutoSize = true;
+            this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkWarnDangerous.Location = new System.Drawing.Point(12, 38);
+            this.checkWarnDangerous.Name = "checkWarnDangerous";
+            this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
+            this.checkWarnDangerous.TabIndex = 4;
+            this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
+            this.checkWarnDangerous.UseVisualStyleBackColor = true;
+            // 
+            // OptionsWindow
+            // 
+            this.AcceptButton = this.buttonClose;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(304, 129);
+            this.Controls.Add(this.checkWarnDangerous);
+            this.Controls.Add(this.checkShowProcessDomains);
+            this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.textUpdateInterval);
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "OptionsWindow";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Options";
+            ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown textUpdateInterval;
+        private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.CheckBox checkShowProcessDomains;
+        private System.Windows.Forms.CheckBox checkWarnDangerous;
+    }
+}

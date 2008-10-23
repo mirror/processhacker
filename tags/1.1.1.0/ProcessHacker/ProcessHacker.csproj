@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EEEA1778-1702-4964-8793-A98FE37E4D2B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProcessHacker</RootNamespace>
+    <AssemblyName>ProcessHacker</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>ProcessHacker.ico</ApplicationIcon>
+    <StartupObject>ProcessHacker.Program</StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\Be.Windows.Forms.HexBox\ByteCollection.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DataMap.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\Design\HexFontEditor.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DynamicByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\DynamicFileByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\FileByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\FileDataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\HexBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\Be.Windows.Forms.HexBox\IByteProvider.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\MemoryDataBlock.cs" />
+    <Compile Include="Components\Be.Windows.Forms.HexBox\NativeMethods.cs" />
+    <Compile Include="Forms\HelpWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HelpWindow.Designer.cs">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HackerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HackerWindow.Designer.cs">
+      <DependentUpon>HackerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Updaters\ProcessUpdater.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Forms\PromptBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PromptBox.Designer.cs">
+      <DependentUpon>PromptBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\HackerWindow.resx">
+      <DependentUpon>HackerWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Components\Be.Windows.Forms.HexBox\HexBox.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Updaters\ThreadUpdater.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\VistaMenu\VistaMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Win32.cs">
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
+    <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.resx">
+      <DependentUpon>HexBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\UtilitiesButton.resx">
+      <DependentUpon>UtilitiesButton.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutWindow.resx">
+      <DependentUpon>AboutWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HelpWindow.resx">
+      <DependentUpon>HelpWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MemoryEditor.resx">
+      <DependentUpon>MemoryEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptionsWindow.resx">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InformationBox.resx">
+      <DependentUpon>InformationBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PromptBox.resx">
+      <DependentUpon>PromptBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ResultsWindow.resx">
+      <DependentUpon>ResultsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SearchWindow.resx">
+      <DependentUpon>SearchWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ThreadWindow.resx">
+      <DependentUpon>ThreadWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Help.htm">
+      <SubType>Form</SubType>
+    </EmbeddedResource>
+    <None Include="Resources\information.png" />
+    <None Include="Resources\page_save.png" />
+    <None Include="Resources\arrow_up.png" />
+    <None Include="Resources\page_gear.png" />
+    <None Include="app.config" />
+    <None Include="Resources\folder_explore.png" />
+    <None Include="Resources\pencil_go.png" />
+    <Compile Include="Components\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\UtilitiesButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\UtilitiesButton.Designer.cs">
+      <DependentUpon>UtilitiesButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MemoryEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MemoryEditor.Designer.cs">
+      <DependentUpon>MemoryEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ResultsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ResultsWindow.Designer.cs">
+      <DependentUpon>ResultsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SearchWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SearchWindow.Designer.cs">
+      <DependentUpon>SearchWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ThreadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ThreadWindow.Designer.cs">
+      <DependentUpon>ThreadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Misc\BaseConverter.cs" />
+    <Compile Include="Misc\FixNumbers.cs" />
+    <Compile Include="Misc\IdGenerator.cs" />
+    <Compile Include="Misc\Misc.cs" />
+    <Compile Include="Misc\ParseInfix.cs" />
+    <Compile Include="Searchers\HeapSearcher.cs" />
+    <Compile Include="Searchers\RegexSearcher.cs" />
+    <Compile Include="Searchers\StringSearcher.cs" />
+    <Compile Include="SearchOptions.cs" />
+    <Compile Include="Searchers\LiteralSearcher.cs" />
+    <Compile Include="Searchers\Searcher.cs" />
+    <Compile Include="Updaters\CPUTimeUpdater.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutWindow.Designer.cs">
+      <DependentUpon>AboutWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OptionsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptionsWindow.Designer.cs">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InformationBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InformationBox.Designer.cs">
+      <DependentUpon>InformationBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Misc\Tokenizer.cs" />
+    <Compile Include="UpdateTask.cs" />
+    <None Include="app.manifest" />
+    <None Include="Resources\control_stop_blue.png" />
+    <None Include="Resources\control_play_blue.png" />
+    <None Include="Resources\control_pause_blue.png" />
+    <None Include="Resources\control_equalizer_blue.png" />
+    <None Include="Resources\control_equalizer.png" />
+    <None Include="Resources\find.png" />
+    <None Include="Resources\page.png" />
+    <None Include="Resources\lock_edit.png" />
+    <None Include="Resources\application_view_detail.png" />
+    <None Include="Resources\page_copy.png" />
+    <None Include="Resources\cross.png" />
+    <None Include="Resources\page_edit.png" />
+    <None Include="Resources\arrow_right.png" />
+    <None Include="Resources\application_delete.png" />
+    <None Include="Resources\control_play.png" />
+    <None Include="Resources\control_pause.png" />
+    <None Include="Resources\control_stop.png" />
+    <None Include="Resources\application.png" />
+    <None Include="Resources\help.png" />
+    <None Include="Resources\application_form_magnify.png" />
+    <None Include="Resources\door_out.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pencil.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\disk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_relationship.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ProcessHacker.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
