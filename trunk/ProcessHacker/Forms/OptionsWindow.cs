@@ -58,11 +58,11 @@ namespace ProcessHacker
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
-            Properties.Settings.Default.ShowProcessDomains = checkShowProcessDomains.Checked;
-
             if (checkShowProcessDomains.Checked != Properties.Settings.Default.ShowProcessDomains)
                 Program.HackerWindow.ReloadProcessList();
+
+            Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
+            Properties.Settings.Default.ShowProcessDomains = checkShowProcessDomains.Checked;
 
             this.Close();
         }
