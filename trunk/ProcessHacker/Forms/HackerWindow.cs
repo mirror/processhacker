@@ -106,7 +106,7 @@ namespace ProcessHacker
         private void buttonCloseVirtualProtect_Click(object sender, EventArgs e)
         {
             CloseVirtualProtect();
-        }  
+        }
 
         private void buttonGetProcAddress_Click(object sender, EventArgs e)
         {
@@ -363,7 +363,7 @@ namespace ProcessHacker
             if (listMemory.SelectedItems.Count == 1 && listProcesses.SelectedItems.Count == 1)
             {
                 EnableAllMenuItems(menuMemory);
-            }      
+            }
             else
             {
                 DisableAllMenuItems(menuMemory);
@@ -498,7 +498,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", 
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -856,9 +856,9 @@ namespace ProcessHacker
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
             SelectAll(listProcesses.Items);
-        }             
+        }
 
-        #endregion  
+        #endregion
 
         #region Thread Context Menu
 
@@ -875,7 +875,7 @@ namespace ProcessHacker
                 return;
             }
             else if (listThreads.SelectedItems.Count > 0)
-            {      
+            {
                 if (listThreads.SelectedItems.Count == 1)
                 {
                     inspectThreadMenuItem.Enabled = true;
@@ -1014,7 +1014,7 @@ namespace ProcessHacker
                     }
 
                     if (Win32.TerminateThread(handle, 0) == 0)
-                    {                  
+                    {
                         Win32.CloseHandle(handle);
                         throw new Exception("Could not terminate thread");
                     }
@@ -1355,7 +1355,7 @@ namespace ProcessHacker
             listThreads.Enabled = false;
         }
 
-        #endregion   
+        #endregion
 
         #region Helper functions
 
@@ -1425,7 +1425,7 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Updaters  
+        #region Updaters
 
         #region Misc Decl.
 
@@ -1567,7 +1567,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        string newtext = miscinfo[i][j] + ": " + 
+                        string newtext = miscinfo[i][j] + ": " +
                             miscinfofuncs[i][j].Invoke(p);
 
                         if (treeMisc.Nodes[i].Nodes[j].Text != newtext)
@@ -1642,7 +1642,7 @@ namespace ProcessHacker
                 item.SubItems[3].Text = desc;
 
                 try
-                {            
+                {
                     bool kernel = false;
 
                     foreach (string k in kernelNames)
@@ -1704,7 +1704,7 @@ namespace ProcessHacker
             {
                 while (true)
                 {
-                    if (Win32.VirtualQueryEx(p.Handle.ToInt32(), address, ref info, 
+                    if (Win32.VirtualQueryEx(p.Handle.ToInt32(), address, ref info,
                         Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
                     {
                         break;
@@ -1776,7 +1776,7 @@ namespace ProcessHacker
                 foreach (ProcessModule m in p.Modules)
                 {
                     item = new ListViewItem();
- 
+
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
                     item.SubItems.Add(new ListViewItem.ListViewSubItem());
@@ -1956,7 +1956,7 @@ namespace ProcessHacker
             UpdateMiscInfo();
             DoThreadListUpdate();
             ThreadQueueUpdated();
-                             
+
             this.Cursor = Cursors.Default;
         }
 
@@ -1976,16 +1976,16 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
-            
-            PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered", 
+
+            PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-                                 
+
             property.SetValue(listMemory, true, null);
             property.SetValue(listModules, true, null);
             property.SetValue(listThreads, true, null);
             typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
                 treeMisc, true, null);
-                                      
+
             if (Win32.EnableTokenPrivilege("SeDebugPrivilege") == 0)
                 MessageBox.Show("Debug privilege could not be acquired!" +
                     " This will result in reduced functionality.", "Process Hacker",
@@ -2002,7 +2002,7 @@ namespace ProcessHacker
             listProcesses_SelectedIndexChanged(null, null);
             tabControl.SelectedTab = tabProcess;
 
-            newResultsWindowMenuItem.Click +=new EventHandler(PerformSearch);
+            newResultsWindowMenuItem.Click += new EventHandler(PerformSearch);
             literalSearchMenuItem.Click += new EventHandler(PerformSearch);
             regexSearchMenuItem.Click += new EventHandler(PerformSearch);
             stringScanMenuItem.Click += new EventHandler(PerformSearch);
@@ -2029,4 +2029,4 @@ namespace ProcessHacker
             Program.UpdateWindows();
         }
     }
-}                           
+}
