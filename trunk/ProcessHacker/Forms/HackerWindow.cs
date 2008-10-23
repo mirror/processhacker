@@ -56,12 +56,11 @@ namespace ProcessHacker
 
         HelpWindow helpForm = new HelpWindow();
 
+        ProcessProvider processP = new ProcessProvider();
+
         // Queue of list update tasks
-        Queue<UpdateTask> processQueue = new Queue<UpdateTask>();
         Queue<UpdateTask> threadQueue = new Queue<UpdateTask>();
-        List<int> pids = new List<int>();
         List<int> tids = new List<int>();
-        Thread processUpdaterThread;
         Thread threadUpdaterThread;
         //Thread cpuTimeUpdaterThread;
 
@@ -82,7 +81,7 @@ namespace ProcessHacker
 
         Point lastMenuLocation;
 
-        List<ListView> listViews = new List<ListView>();
+        List<Control> listViews = new List<Control>();
 
         string[] dangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
@@ -337,7 +336,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        SelectAll(c);
+                        SelectAll(c.Items);
                     }
                     catch
                     { }
@@ -462,61 +461,6 @@ namespace ProcessHacker
                 catch
                 { }
             }
-        }
-
-        #endregion
-
-        #region Menu Fixes
-
-        private void listHeap_MouseDown(object sender, MouseEventArgs e)
-        {
-            lastMenuLocation = e.Location;
-        }
-
-        private void listMemory_MouseDown(object sender, MouseEventArgs e)
-        {
-            lastMenuLocation = e.Location;
-        }
-
-        private void listModules_MouseDown(object sender, MouseEventArgs e)
-        {
-            lastMenuLocation = e.Location;
-        }
-
-        private void listProcesses_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                lastMenuLocation = e.Location;
-        }
-
-        private void listThreads_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                lastMenuLocation = e.Location;
-        }
-
-        private void menuMemory2_Opening(object sender, CancelEventArgs e)
-        {
-            menuMemory.Show(listMemory, lastMenuLocation);
-            e.Cancel = true;
-        }
-
-        private void menuModule2_Opening(object sender, CancelEventArgs e)
-        {
-            menuModule.Show(listModules, lastMenuLocation);
-            e.Cancel = true;
-        }
-
-        private void menuProcess2_Opening(object sender, CancelEventArgs e)
-        {
-            menuProcess.Show(listProcesses, lastMenuLocation);
-            e.Cancel = true;
-        }
-
-        private void menuThread2_Opening(object sender, CancelEventArgs e)
-        {
-            menuThread.Show(listThreads, lastMenuLocation);
-            e.Cancel = true;
         }
 
         #endregion
@@ -916,7 +860,7 @@ namespace ProcessHacker
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            SelectAll(listProcesses);
+            SelectAll(listProcesses.Items);
         }             
 
         #endregion  
@@ -1209,7 +1153,7 @@ namespace ProcessHacker
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            SelectAll(listThreads);
+            SelectAll(listThreads.Items);
         }
 
         #endregion
@@ -1218,8 +1162,6 @@ namespace ProcessHacker
 
         private void timerFire_Tick(object sender, EventArgs e)
         {
-            ProcessQueueUpdated();
-            ThreadQueueUpdated();
             UpdateMiscInfo();
         }
 
@@ -1378,21 +1320,14 @@ namespace ProcessHacker
 
         public void ReloadProcessList()
         {
-            processUpdaterThread.Suspend();
-
-            pids = new List<int>();
-            processMemoryUsage = new System.Collections.Hashtable();
-            processUsername = new System.Collections.Hashtable();
-            processTotalMilliseconds = new System.Collections.Hashtable();
+            
 
             this.Cursor = Cursors.WaitCursor;
 
             listProcesses.BeginUpdate();
-            processListUpdatedOnce = false;
             listProcesses.Items.Clear();
             UpdateProcessExtra();
 
-            processUpdaterThread.Resume();
         }
 
         private void SaveSettings()
@@ -1419,9 +1354,9 @@ namespace ProcessHacker
             { }
         }
 
-        private void SelectAll(ListView list)
+        private void SelectAll(ListView.ListViewItemCollection items)
         {
-            foreach (ListViewItem item in list.Items)
+            foreach (ListViewItem item in items)
                 item.Selected = true;
         }
 
@@ -2045,7 +1980,6 @@ namespace ProcessHacker
         private void formViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Stop threads
-            processUpdaterThread.Abort();
             threadUpdaterThread.Abort();
 
             SaveSettings();
@@ -2057,16 +1991,12 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
-
-            this.Cursor = Cursors.WaitCursor;
-            listProcesses.BeginUpdate();
             
             PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered", 
                 BindingFlags.NonPublic | BindingFlags.Instance);
                                  
             property.SetValue(listMemory, true, null);
             property.SetValue(listModules, true, null);
-            property.SetValue(listProcesses, true, null);
             property.SetValue(listThreads, true, null);
             typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
                 treeMisc, true, null);
@@ -2077,14 +2007,6 @@ namespace ProcessHacker
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
             InitMiscInfo();
-
-            processUpdaterThread = new Thread(new ThreadStart(ProcessListUpdater));
-            processUpdaterThread.Priority = ThreadPriority.Lowest;
-            processUpdaterThread.Start();
-
-            threadUpdaterThread = new Thread(new ThreadStart(ThreadListUpdater));
-            threadUpdaterThread.Priority = ThreadPriority.Lowest;
-            threadUpdaterThread.Start();
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
@@ -2103,10 +2025,21 @@ namespace ProcessHacker
 
             listViews.Add(listProcesses);
             listViews.Add(listThreads);
+
+            listProcesses.ContextMenu = menuProcess;
+            listThreads.ContextMenu = menuThread;
+            listModules.ContextMenu = menuModule;
+            listMemory.ContextMenu = menuMemory;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
+            threadUpdaterThread = new Thread(new ThreadStart(ThreadListUpdater));
+            threadUpdaterThread.Priority = ThreadPriority.Lowest;
+            threadUpdaterThread.Start();
+            processP.Interval = 500;
+            listProcesses.Provider = processP;
+            processP.Enabled = true;
             LoadSettings();
             Program.UpdateWindows();
         }

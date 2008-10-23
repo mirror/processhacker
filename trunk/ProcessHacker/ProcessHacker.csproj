@@ -69,9 +69,6 @@
     <Compile Include="Forms\HackerWindow.Designer.cs">
       <DependentUpon>HackerWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Updaters\ProcessUpdater.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Forms\PromptBox.cs">
       <SubType>Form</SubType>
@@ -120,6 +117,10 @@
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.resx">
       <DependentUpon>HexBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProcessList.resx">
+      <DependentUpon>ProcessList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\UtilitiesButton.resx">
@@ -172,6 +173,13 @@
     <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
+    <Compile Include="Components\ProcessList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProcessList.Designer.cs">
+      <DependentUpon>ProcessList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\ProcessProvider.cs" />
     <Compile Include="Components\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -210,15 +218,13 @@
     <Compile Include="Misc\IdGenerator.cs" />
     <Compile Include="Misc\Misc.cs" />
     <Compile Include="Misc\ParseInfix.cs" />
+    <Compile Include="Providers\Provider.cs" />
     <Compile Include="Searchers\HeapSearcher.cs" />
     <Compile Include="Searchers\RegexSearcher.cs" />
     <Compile Include="Searchers\StringSearcher.cs" />
     <Compile Include="SearchOptions.cs" />
     <Compile Include="Searchers\LiteralSearcher.cs" />
     <Compile Include="Searchers\Searcher.cs" />
-    <Compile Include="Updaters\CPUTimeUpdater.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\AboutWindow.cs">
       <SubType>Form</SubType>
     </Compile>

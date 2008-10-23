@@ -36,12 +36,8 @@
             this.buttonGetProcAddress = new System.Windows.Forms.Button();
             this.textProcName = new System.Windows.Forms.TextBox();
             this.labelProcedureName = new System.Windows.Forms.Label();
-            this.menuModule2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuThread2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.timerFire = new System.Windows.Forms.Timer(this.components);
-            this.menuProcess2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.menuMemory2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panelVirtualProtect = new System.Windows.Forms.Panel();
             this.buttonCloseVirtualProtect = new System.Windows.Forms.Button();
             this.buttonVirtualProtect = new System.Windows.Forms.Button();
@@ -100,11 +96,7 @@
             this.readWriteMemoryMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteAddressMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.splitMain = new System.Windows.Forms.SplitContainer();
-            this.listProcesses = new System.Windows.Forms.ListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
-            this.columnPID = new System.Windows.Forms.ColumnHeader();
-            this.columnPvtMemory = new System.Windows.Forms.ColumnHeader();
-            this.columnUsername = new System.Windows.Forms.ColumnHeader();
+            this.listProcesses = new ProcessHacker.Components.ProcessList();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
@@ -137,13 +129,13 @@
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
+            this.refreshMenuItem = new System.Windows.Forms.MenuItem();
+            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.optionsMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
-            this.refreshMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
@@ -223,40 +215,16 @@
             this.labelProcedureName.TabIndex = 0;
             this.labelProcedureName.Text = "Function Name/Ordinal:";
             // 
-            // menuModule2
-            // 
-            this.menuModule2.Name = "menuModule";
-            this.menuModule2.Size = new System.Drawing.Size(61, 4);
-            this.menuModule2.Opening += new System.ComponentModel.CancelEventHandler(this.menuModule2_Opening);
-            // 
-            // menuThread2
-            // 
-            this.menuThread2.Name = "menuProcess";
-            this.menuThread2.Size = new System.Drawing.Size(61, 4);
-            this.menuThread2.Opening += new System.ComponentModel.CancelEventHandler(this.menuThread2_Opening);
-            // 
             // timerFire
             // 
             this.timerFire.Interval = 250;
             this.timerFire.Tick += new System.EventHandler(this.timerFire_Tick);
-            // 
-            // menuProcess2
-            // 
-            this.menuProcess2.Name = "menuProcess";
-            this.menuProcess2.Size = new System.Drawing.Size(61, 4);
-            this.menuProcess2.Opening += new System.ComponentModel.CancelEventHandler(this.menuProcess2_Opening);
             // 
             // imageList
             // 
             this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList.Images.SetKeyName(0, "process_small");
-            // 
-            // menuMemory2
-            // 
-            this.menuMemory2.Name = "menuModule";
-            this.menuMemory2.Size = new System.Drawing.Size(61, 4);
-            this.menuMemory2.Opening += new System.ComponentModel.CancelEventHandler(this.menuMemory2_Opening);
             // 
             // panelVirtualProtect
             // 
@@ -711,53 +679,20 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(804, 464);
+            this.splitMain.Size = new System.Drawing.Size(804, 426);
             this.splitMain.SplitterDistance = 355;
             this.splitMain.TabIndex = 3;
             // 
             // listProcesses
             // 
-            this.listProcesses.AllowColumnReorder = true;
-            this.listProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnName,
-            this.columnPID,
-            this.columnPvtMemory,
-            this.columnUsername});
-            this.listProcesses.ContextMenuStrip = this.menuProcess2;
             this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listProcesses.FullRowSelect = true;
-            this.listProcesses.HideSelection = false;
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
-            this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(355, 463);
-            this.listProcesses.SmallImageList = this.imageList;
-            this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.listProcesses.TabIndex = 0;
-            this.listProcesses.UseCompatibleStateImageBehavior = false;
-            this.listProcesses.View = System.Windows.Forms.View.Details;
+            this.listProcesses.Provider = null;
+            this.listProcesses.Size = new System.Drawing.Size(355, 425);
+            this.listProcesses.TabIndex = 4;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProcesses_MouseDown);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
-            // 
-            // columnName
-            // 
-            this.columnName.Text = "Name";
-            this.columnName.Width = 120;
-            // 
-            // columnPID
-            // 
-            this.columnPID.Text = "PID";
-            // 
-            // columnPvtMemory
-            // 
-            this.columnPvtMemory.Text = "Pvt. Memory";
-            this.columnPvtMemory.Width = 80;
-            // 
-            // columnUsername
-            // 
-            this.columnUsername.Text = "User";
-            this.columnUsername.Width = 80;
             // 
             // tabControl
             // 
@@ -769,7 +704,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(445, 464);
+            this.tabControl.Size = new System.Drawing.Size(445, 426);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -779,7 +714,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(437, 438);
+            this.tabProcess.Size = new System.Drawing.Size(437, 400);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -853,7 +788,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(425, 373);
+            this.treeMisc.Size = new System.Drawing.Size(425, 335);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -862,7 +797,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(437, 438);
+            this.tabThreads.Size = new System.Drawing.Size(437, 400);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -877,18 +812,16 @@
             this.columnThreadState,
             this.columnCPUTime,
             this.columnPriority});
-            this.listThreads.ContextMenuStrip = this.menuThread2;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
             this.listThreads.Location = new System.Drawing.Point(6, 6);
             this.listThreads.Name = "listThreads";
-            this.listThreads.Size = new System.Drawing.Size(425, 426);
+            this.listThreads.Size = new System.Drawing.Size(425, 388);
             this.listThreads.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listThreads.TabIndex = 2;
             this.listThreads.UseCompatibleStateImageBehavior = false;
             this.listThreads.View = System.Windows.Forms.View.Details;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
-            this.listThreads.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listThreads_MouseDown);
             // 
             // columnThreadID
             // 
@@ -915,7 +848,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(437, 438);
+            this.tabModules.Size = new System.Drawing.Size(437, 400);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -931,19 +864,17 @@
             this.columnBaseAddress,
             this.columnModuleSize,
             this.columnDescription});
-            this.listModules.ContextMenuStrip = this.menuModule2;
             this.listModules.FullRowSelect = true;
             this.listModules.HideSelection = false;
             this.listModules.Location = new System.Drawing.Point(6, 6);
             this.listModules.MultiSelect = false;
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(425, 426);
+            this.listModules.Size = new System.Drawing.Size(425, 388);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
             this.listModules.DoubleClick += new System.EventHandler(this.listModules_DoubleClick);
-            this.listModules.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listModules_MouseDown);
             // 
             // columnModuleName
             // 
@@ -971,7 +902,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(437, 438);
+            this.tabMemory.Size = new System.Drawing.Size(437, 400);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -988,19 +919,17 @@
             this.columnHeader3,
             this.columnHeader4,
             this.columnHeader5});
-            this.listMemory.ContextMenuStrip = this.menuMemory2;
             this.listMemory.FullRowSelect = true;
             this.listMemory.HideSelection = false;
             this.listMemory.Location = new System.Drawing.Point(6, 6);
             this.listMemory.MultiSelect = false;
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(425, 426);
+            this.listMemory.Size = new System.Drawing.Size(425, 388);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
             this.listMemory.DoubleClick += new System.EventHandler(this.listMemory_DoubleClick);
-            this.listMemory.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMemory_MouseDown);
             // 
             // columnHeader1
             // 
@@ -1046,6 +975,26 @@
             this.exitMenuItem});
             this.hackerMenuItem.Text = "&Hacker";
             // 
+            // refreshMenuItem
+            // 
+            this.vistaMenu.SetImage(this.refreshMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
+            this.refreshMenuItem.Index = 0;
+            this.refreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
+            this.refreshMenuItem.Text = "&Refresh";
+            this.refreshMenuItem.Click += new System.EventHandler(this.refreshMenuItem_Click);
+            // 
+            // selectAllHackerMenuItem
+            // 
+            this.selectAllHackerMenuItem.Index = 1;
+            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+            this.selectAllHackerMenuItem.Text = "&Select All";
+            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 2;
+            this.menuItem1.Text = "-";
+            // 
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
@@ -1074,26 +1023,6 @@
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 2;
-            this.menuItem1.Text = "-";
-            // 
-            // selectAllHackerMenuItem
-            // 
-            this.selectAllHackerMenuItem.Index = 1;
-            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
-            this.selectAllHackerMenuItem.Text = "&Select All";
-            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
-            // 
-            // refreshMenuItem
-            // 
-            this.vistaMenu.SetImage(this.refreshMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
-            this.refreshMenuItem.Index = 0;
-            this.refreshMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
-            this.refreshMenuItem.Text = "&Refresh";
-            this.refreshMenuItem.Click += new System.EventHandler(this.refreshMenuItem_Click);
-            // 
             // windowMenuItem
             // 
             this.windowMenuItem.Index = 1;
@@ -1107,7 +1036,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 464);
+            this.ClientSize = new System.Drawing.Size(804, 426);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.panelVirtualProtect);
             this.Controls.Add(this.panelProc);
@@ -1148,8 +1077,6 @@
         private System.Windows.Forms.ColumnHeader columnThreadState;
         private System.Windows.Forms.ColumnHeader columnCPUTime;
         private System.Windows.Forms.ColumnHeader columnModuleSize;
-        private System.Windows.Forms.ContextMenuStrip menuModule2;
-        private System.Windows.Forms.ContextMenuStrip menuThread2;
         private System.Windows.Forms.Timer timerFire;
         private System.Windows.Forms.ColumnHeader columnPriority;
         private System.Windows.Forms.Panel panelProc;
@@ -1158,10 +1085,6 @@
         private System.Windows.Forms.Button buttonGetProcAddress;
         private System.Windows.Forms.TextBox textProcAddress;
         private System.Windows.Forms.SplitContainer splitMain;
-        private System.Windows.Forms.ListView listProcesses;
-        private System.Windows.Forms.ColumnHeader columnName;
-        private System.Windows.Forms.ColumnHeader columnPID;
-        private System.Windows.Forms.ColumnHeader columnPvtMemory;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabModules;
         private System.Windows.Forms.TabPage tabMemory;
@@ -1171,7 +1094,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
-        private System.Windows.Forms.ContextMenuStrip menuMemory2;
         private System.Windows.Forms.Panel panelVirtualProtect;
         private System.Windows.Forms.Button buttonCloseVirtualProtect;
         private System.Windows.Forms.Button buttonVirtualProtect;
@@ -1194,7 +1116,6 @@
         private System.Windows.Forms.MenuItem normalMenuItem;
         private System.Windows.Forms.MenuItem belowNormalMenuItem;
         private System.Windows.Forms.MenuItem idleMenuItem;
-        private System.Windows.Forms.ContextMenuStrip menuProcess2;
         private System.Windows.Forms.ContextMenu menuThread;
         private System.Windows.Forms.MenuItem terminateThreadMenuItem;
         private System.Windows.Forms.MenuItem suspendThreadMenuItem;
@@ -1252,10 +1173,10 @@
         private System.Windows.Forms.MenuItem stringScanMenuItem;
         private System.Windows.Forms.MenuItem heapScanMenuItem;
         private System.Windows.Forms.MenuItem newResultsWindowMenuItem;
-        private System.Windows.Forms.ColumnHeader columnUsername;
         private System.Windows.Forms.MenuItem refreshMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;
+        private ProcessHacker.Components.ProcessList listProcesses;
     }
 }
 

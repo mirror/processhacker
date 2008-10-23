@@ -41,6 +41,7 @@ namespace ProcessHacker
             while (true)
             {
                 DoThreadListUpdate();
+                this.BeginInvoke(new MethodInvoker(ThreadQueueUpdated));
 
                 Thread.Sleep(RefreshInterval);
             }
