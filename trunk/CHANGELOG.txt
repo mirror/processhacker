@@ -1,7 +1,8 @@
 Process Hacker
 
 1.1.2.0
- * Rewrote process list and thread list code
+ * Completly rewrote process list code
+ * Added lots of information to process tooltips
 
 1.1.1.0
  * Memory editor is now properly activated from the Hacker Window

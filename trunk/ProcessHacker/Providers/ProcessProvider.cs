@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
@@ -90,13 +91,17 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    try
+                    // doesn't work on different thread for some reason.
+                    Program.HackerWindow.Invoke(new MethodInvoker(delegate
                     {
-                        item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            Properties.Settings.Default.ShowProcessDomains);
-                    }
-                    catch
-                    { }
+                        try
+                        {
+                            item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                                Properties.Settings.Default.ShowProcessDomains);
+                        }
+                        catch
+                        { }
+                    }));
 
                     newdictionary.Add(p.Id, item);
                     this.CallDictionaryAdded(item);
@@ -117,13 +122,16 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    try
+                    Program.HackerWindow.Invoke(new MethodInvoker(delegate
                     {
-                        newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            Properties.Settings.Default.ShowProcessDomains);
-                    }
-                    catch
-                    { }
+                        try
+                        {
+                            newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                                Properties.Settings.Default.ShowProcessDomains);
+                        }
+                        catch
+                        { }
+                    }));
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.Username != item.Username)

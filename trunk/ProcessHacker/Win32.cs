@@ -987,12 +987,15 @@ namespace ProcessHacker
 
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
                 Marshal.SizeOf(user), ref retlen) == 0)
+            {
+                CloseHandle(token);
                 return "";
+            }
+
+            CloseHandle(token);
 
             if (LookupAccountSid(0, user.User.SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
                 return "";
-
-            CloseHandle(token);
 
             if (IncludeDomain)
             {

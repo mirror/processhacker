@@ -300,6 +300,22 @@ namespace ProcessHacker
 
         #region Main Menu
 
+        private void selectAllHackerMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Control c in listViews)
+            {
+                if (c.Focused)
+                {
+                    try
+                    {
+                        SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
+                    }
+                    catch
+                    { }
+                }
+            }
+        }
+
         private void aboutMenuItem_Click(object sender, EventArgs e)
         {
             AboutWindow about = new AboutWindow();
@@ -326,37 +342,6 @@ namespace ProcessHacker
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void selectAllHackerMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ListView c in listViews)
-            {
-                if (c.Focused)
-                {
-                    try
-                    {
-                        SelectAll(c.Items);
-                    }
-                    catch
-                    { }
-                }
-            }
-        }
-
-        private void refreshMenuItem_Click(object sender, EventArgs e)
-        {
-            ReloadProcessList();
-
-            processSelectedPID = -1;
-            lastSelectedPID = -1;
-
-            if (processSelected != null)
-                processSelected.Close();
-
-            listThreads.Items.Clear();
-            treeMisc.Nodes.Clear();
-            InitMiscInfo();
         }
 
         #endregion
@@ -1318,18 +1303,6 @@ namespace ProcessHacker
             }
         }
 
-        public void ReloadProcessList()
-        {
-            
-
-            this.Cursor = Cursors.WaitCursor;
-
-            listProcesses.BeginUpdate();
-            listProcesses.Items.Clear();
-            UpdateProcessExtra();
-
-        }
-
         private void SaveSettings()
         {
             Properties.Settings.Default.RefreshInterval = RefreshInterval;
@@ -2030,6 +2003,9 @@ namespace ProcessHacker
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
+            processP.Interval = 500;
+            listProcesses.Provider = processP;
+            processP.Enabled = true;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -2037,9 +2013,6 @@ namespace ProcessHacker
             threadUpdaterThread = new Thread(new ThreadStart(ThreadListUpdater));
             threadUpdaterThread.Priority = ThreadPriority.Lowest;
             threadUpdaterThread.Start();
-            processP.Interval = 500;
-            listProcesses.Provider = processP;
-            processP.Enabled = true;
             LoadSettings();
             Program.UpdateWindows();
         }

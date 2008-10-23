@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ProcessHacker.Components
 {
@@ -19,6 +20,14 @@ namespace ProcessHacker.Components
 
             listProcesses.KeyDown += new KeyEventHandler(ProcessList_KeyDown);
             listProcesses.SelectedIndexChanged += new System.EventHandler(listProcesses_SelectedIndexChanged);
+        }
+
+        public override bool Focused
+        {
+            get
+            {
+                return listProcesses.Focused;
+            }
         }
 
         public override ContextMenu ContextMenu
@@ -54,10 +63,17 @@ namespace ProcessHacker.Components
             {
                 _provider = value;
 
+                listProcesses.Items.Clear();
+
                 if (_provider != null)
                 {
+                    foreach (ProcessItem item in _provider.Dictionary.Values)
+                    {
+                        provider_DictionaryAdded(item);
+                    }
+
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.Invoke);
+                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
                     _provider.ClearEvents();
                     _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
@@ -78,6 +94,14 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
 
+            try
+            {
+                litem.ToolTipText = FileVersionInfo.GetVersionInfo(
+                    Misc.GetRealPath(pitem.Process.MainModule.FileName)).ToString();
+            }
+            catch
+            { }
+
             if (pitem.Icon == null)
             {
                 litem.ImageKey = "Generic";
@@ -95,6 +119,7 @@ namespace ProcessHacker.Components
             ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
 
             litem.SubItems[2].Text = pitem.MemoryUsage;
+            litem.SubItems[3].Text = pitem.Username;
         }
 
         private void provider_DictionaryRemoved(object item)
