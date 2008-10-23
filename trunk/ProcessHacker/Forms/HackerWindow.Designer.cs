@@ -141,12 +141,11 @@
             this.optionsMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
-            this.processesMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.refreshMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
             this.splitMain.Panel1.SuspendLayout();
@@ -1032,55 +1031,60 @@
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.hackerMenuItem,
-            this.processesMenuItem,
             this.windowMenuItem});
             // 
             // hackerMenuItem
             // 
             this.hackerMenuItem.Index = 0;
             this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.refreshMenuItem,
+            this.selectAllHackerMenuItem,
+            this.menuItem1,
             this.aboutMenuItem,
             this.optionsMenuItem,
             this.helpMenuItem,
-            this.exitMenuItem,
-            this.menuItem1,
-            this.selectAllHackerMenuItem});
+            this.exitMenuItem});
             this.hackerMenuItem.Text = "&Hacker";
             // 
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 0;
+            this.aboutMenuItem.Index = 3;
             this.aboutMenuItem.Text = "&About...";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // optionsMenuItem
             // 
             this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
-            this.optionsMenuItem.Index = 1;
+            this.optionsMenuItem.Index = 4;
             this.optionsMenuItem.Text = "&Options...";
             this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
             // 
             // helpMenuItem
             // 
             this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
-            this.helpMenuItem.Index = 2;
+            this.helpMenuItem.Index = 5;
             this.helpMenuItem.Text = "&Help...";
             this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
             // 
             // exitMenuItem
             // 
             this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitMenuItem.Index = 3;
+            this.exitMenuItem.Index = 6;
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
-            // processesMenuItem
+            // menuItem1
             // 
-            this.processesMenuItem.Index = 1;
-            this.processesMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.refreshMenuItem});
-            this.processesMenuItem.Text = "&Processes";
+            this.menuItem1.Index = 2;
+            this.menuItem1.Text = "-";
+            // 
+            // selectAllHackerMenuItem
+            // 
+            this.selectAllHackerMenuItem.Index = 1;
+            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+            this.selectAllHackerMenuItem.Text = "&Select All";
+            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
             // 
             // refreshMenuItem
             // 
@@ -1092,24 +1096,12 @@
             // 
             // windowMenuItem
             // 
-            this.windowMenuItem.Index = 2;
+            this.windowMenuItem.Index = 1;
             this.windowMenuItem.Text = "&Window";
             // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 4;
-            this.menuItem1.Text = "-";
-            // 
-            // selectAllHackerMenuItem
-            // 
-            this.selectAllHackerMenuItem.Index = 5;
-            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
-            this.selectAllHackerMenuItem.Text = "&Select All";
-            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
             // 
             // HackerWindow
             // 
@@ -1261,7 +1253,6 @@
         private System.Windows.Forms.MenuItem heapScanMenuItem;
         private System.Windows.Forms.MenuItem newResultsWindowMenuItem;
         private System.Windows.Forms.ColumnHeader columnUsername;
-        private System.Windows.Forms.MenuItem processesMenuItem;
         private System.Windows.Forms.MenuItem refreshMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;

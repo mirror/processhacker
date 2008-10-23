@@ -85,7 +85,6 @@
             this.checkShowProcessDomains.TabIndex = 3;
             this.checkShowProcessDomains.Text = "Show process domains";
             this.checkShowProcessDomains.UseVisualStyleBackColor = true;
-            this.checkShowProcessDomains.CheckedChanged += new System.EventHandler(this.checkShowProcessDomains_CheckedChanged);
             // 
             // checkWarnDangerous
             // 
@@ -97,7 +96,6 @@
             this.checkWarnDangerous.TabIndex = 4;
             this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
             this.checkWarnDangerous.UseVisualStyleBackColor = true;
-            this.checkWarnDangerous.CheckedChanged += new System.EventHandler(this.checkWarnDangerous_CheckedChanged);
             // 
             // OptionsWindow
             // 
