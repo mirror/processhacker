@@ -9,17 +9,58 @@ namespace ProcessHacker.Components
     {
         ProcessProvider _provider;
         public event KeyEventHandler KeyDown;
+        public event MouseEventHandler MouseDown;
+        public event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
 
         public ProcessList()
         {
             InitializeComponent();
 
-            typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listProcesses, true, null);
-
             listProcesses.KeyDown += new KeyEventHandler(ProcessList_KeyDown);
+            listProcesses.MouseDown += new MouseEventHandler(listProcesses_MouseDown);
+            listProcesses.MouseUp += new MouseEventHandler(listProcesses_MouseUp);
             listProcesses.SelectedIndexChanged += new System.EventHandler(listProcesses_SelectedIndexChanged);
+        }
+
+        private void listProcesses_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (this.MouseUp != null)
+                this.MouseUp(sender, e);
+        }
+
+        private void listProcesses_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (this.MouseDown != null)
+                this.MouseDown(sender, e);
+        }
+
+        private void listProcesses_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            if (this.SelectedIndexChanged != null)
+                this.SelectedIndexChanged(sender, e);
+        }
+
+        private void ProcessList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (this.KeyDown != null)
+                this.KeyDown(sender, e);
+        }
+
+        #region Properties
+
+        public bool DoubleBuffered
+        {
+            get
+            {
+                return (bool)typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).GetValue(listProcesses, null);
+            }
+            set
+            {
+                typeof(ListView).GetProperty("DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listProcesses, value, null);
+            }
         }
 
         public override bool Focused
@@ -41,20 +82,6 @@ namespace ProcessHacker.Components
             get { return listProcesses.ContextMenuStrip; }
             set { listProcesses.ContextMenuStrip = value; }
         }
-
-        public void listProcesses_SelectedIndexChanged(object sender, System.EventArgs e)
-        {
-            if (this.SelectedIndexChanged != null)
-                this.SelectedIndexChanged(sender, e);
-        }
-
-        public void ProcessList_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (this.KeyDown != null)
-                this.KeyDown(sender, e);
-        }
-
-        #region Core Process List
 
         public ProcessProvider Provider
         {
@@ -81,6 +108,10 @@ namespace ProcessHacker.Components
                 }
             }
         }
+
+        #endregion
+
+        #region Core Process List
 
         private void provider_DictionaryAdded(object item)
         {
@@ -126,11 +157,12 @@ namespace ProcessHacker.Components
         {
             ProcessItem pitem = (ProcessItem)item;
             int index = listProcesses.Items[pitem.PID.ToString()].Index;
-            int selected = listProcesses.SelectedItems.Count;
+            bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
+            int selectedCount = listProcesses.SelectedItems.Count;
 
             listProcesses.Items[pitem.PID.ToString()].Remove();
 
-            if (selected == 1)
+            if (selected && selectedCount == 1)
             {
                 if (listProcesses.Items.Count == 0)
                 { }

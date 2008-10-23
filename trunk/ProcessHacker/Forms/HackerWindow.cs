@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
@@ -58,11 +57,11 @@ namespace ProcessHacker
 
         ProcessProvider processP = new ProcessProvider();
 
-        // Queue of list update tasks
         Queue<UpdateTask> threadQueue = new Queue<UpdateTask>();
         List<int> tids = new List<int>();
         Thread threadUpdaterThread;
-        //Thread cpuTimeUpdaterThread;
+
+        bool processListDragging = false;
 
         int processSelectedItems;
         int processSelectedPID;
@@ -227,6 +226,17 @@ namespace ProcessHacker
             {
                 terminateMenuItem_Click(null, null);
             }
+        }
+
+        private void listProcesses_MouseDown(object sender, MouseEventArgs e)
+        {
+            processListDragging = true;
+        }
+
+        private void listProcesses_MouseUp(object sender, MouseEventArgs e)
+        {
+            processListDragging = false;
+            UpdateProcessExtra();
         }
 
         private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
@@ -1935,6 +1945,8 @@ namespace ProcessHacker
 
             if (listProcesses.SelectedItems.Count != 1)
                 return;
+            if (processListDragging)
+                return;
 
             this.Cursor = Cursors.WaitCursor;
             Application.DoEvents();
@@ -1973,7 +1985,7 @@ namespace ProcessHacker
             property.SetValue(listThreads, true, null);
             typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
                 treeMisc, true, null);
-
+                                      
             if (Win32.EnableTokenPrivilege("SeDebugPrivilege") == 0)
                 MessageBox.Show("Debug privilege could not be acquired!" +
                     " This will result in reduced functionality.", "Process Hacker",

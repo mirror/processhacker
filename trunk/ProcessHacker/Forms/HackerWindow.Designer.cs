@@ -678,7 +678,7 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(804, 404);
+            this.splitMain.Size = new System.Drawing.Size(804, 466);
             this.splitMain.SplitterDistance = 355;
             this.splitMain.TabIndex = 3;
             // 
@@ -692,7 +692,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(445, 404);
+            this.tabControl.Size = new System.Drawing.Size(445, 466);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -702,7 +702,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(437, 378);
+            this.tabProcess.Size = new System.Drawing.Size(437, 440);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -764,7 +764,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(425, 313);
+            this.treeMisc.Size = new System.Drawing.Size(425, 375);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -773,26 +773,24 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(437, 378);
+            this.tabThreads.Size = new System.Drawing.Size(437, 440);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
             // 
             // listThreads
             // 
-            this.listThreads.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listThreads.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnThreadID,
             this.columnThreadState,
             this.columnCPUTime,
             this.columnPriority});
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
-            this.listThreads.Location = new System.Drawing.Point(6, 6);
+            this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
-            this.listThreads.Size = new System.Drawing.Size(425, 366);
+            this.listThreads.Size = new System.Drawing.Size(431, 434);
             this.listThreads.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listThreads.TabIndex = 2;
             this.listThreads.UseCompatibleStateImageBehavior = false;
@@ -824,7 +822,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(437, 378);
+            this.tabModules.Size = new System.Drawing.Size(437, 268);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -832,21 +830,19 @@
             // listModules
             // 
             this.listModules.AllowColumnReorder = true;
-            this.listModules.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listModules.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnModuleName,
             this.columnBaseAddress,
             this.columnModuleSize,
             this.columnDescription});
+            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listModules.FullRowSelect = true;
             this.listModules.HideSelection = false;
-            this.listModules.Location = new System.Drawing.Point(6, 6);
+            this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.MultiSelect = false;
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(425, 366);
+            this.listModules.Size = new System.Drawing.Size(431, 262);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -878,7 +874,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(437, 378);
+            this.tabMemory.Size = new System.Drawing.Size(437, 268);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -886,22 +882,20 @@
             // listMemory
             // 
             this.listMemory.AllowColumnReorder = true;
-            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listMemory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4,
             this.columnHeader5});
+            this.listMemory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listMemory.FullRowSelect = true;
             this.listMemory.HideSelection = false;
-            this.listMemory.Location = new System.Drawing.Point(6, 6);
+            this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.MultiSelect = false;
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(425, 366);
+            this.listMemory.Size = new System.Drawing.Size(431, 262);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -998,12 +992,15 @@
             // listProcesses
             // 
             this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listProcesses.DoubleBuffered = true;
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(355, 403);
+            this.listProcesses.Size = new System.Drawing.Size(355, 465);
             this.listProcesses.TabIndex = 4;
+            this.listProcesses.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listProcesses_MouseUp);
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
+            this.listProcesses.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProcesses_MouseDown);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // buttonSearch
@@ -1026,7 +1023,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 404);
+            this.ClientSize = new System.Drawing.Size(804, 466);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.panelVirtualProtect);
             this.Controls.Add(this.panelProc);
