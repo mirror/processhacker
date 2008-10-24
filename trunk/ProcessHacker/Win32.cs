@@ -947,6 +947,29 @@ namespace ProcessHacker
             return "(unknown)";
         }
 
+        public static int GetProcessParent(int pid)
+        {
+            PROCESSENTRY32 proc = new PROCESSENTRY32();
+            int snapshot = 0;
+
+            snapshot = CreateToolhelp32Snapshot(SnapshotFlags.Process, pid);
+
+            if (snapshot == 0)
+                return -1;
+
+            proc.dwSize = Marshal.SizeOf(typeof(PROCESSENTRY32));
+
+            Process32First(snapshot, ref proc);
+
+            do
+            {
+                if (proc.th32ProcessID == pid)
+                    return proc.th32ParentProcessID;
+            } while (Process32Next(snapshot, ref proc) != 0);
+
+            return -1;
+        }
+
         public static Icon GetProcessIcon(Process p)
         {
             Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
