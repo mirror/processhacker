@@ -88,6 +88,14 @@ namespace ProcessHacker.Components
             get { return _provider; }
             set
             {
+                if (_provider != null)
+                {
+                    _provider.Invoke -= new ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded -= new ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                }
+
                 _provider = value;
 
                 listProcesses.Items.Clear();
@@ -100,8 +108,7 @@ namespace ProcessHacker.Components
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.ClearEvents();
+                    _provider.Invoke += new ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);

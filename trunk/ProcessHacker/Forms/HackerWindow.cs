@@ -47,6 +47,11 @@ namespace ProcessHacker
             get { return vistaMenu; }
         }
 
+        public ProcessProvider ProcessProvider
+        {
+            get { return processP; }
+        }
+
         #endregion
 
         #region Variables

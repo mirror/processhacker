@@ -70,7 +70,7 @@ namespace ProcessHacker
         /// <summary>
         /// Occurs when the provider needs to invoke a method on another thread.
         /// </summary>
-        public ProviderInvokeMethod Invoke;
+        public event ProviderInvokeMethod Invoke;
 
         /// <summary>
         /// Occurs when the provider adds an item to the dictionary.
