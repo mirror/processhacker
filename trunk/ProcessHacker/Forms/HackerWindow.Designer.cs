@@ -691,9 +691,7 @@
             this.listProcesses.Provider = null;
             this.listProcesses.Size = new System.Drawing.Size(355, 444);
             this.listProcesses.TabIndex = 4;
-            this.listProcesses.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listProcesses_MouseUp);
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProcesses_MouseDown);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabControl

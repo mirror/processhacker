@@ -34,7 +34,7 @@ namespace ProcessHacker
         delegate void QueueUpdatedCallback();
         delegate void AddIconCallback(Icon icon);
         delegate void AddListViewItemCallback(ListView lv, string[] text);
-
+        
         #region Properties
 
         public MenuItem WindowMenuItem
@@ -80,10 +80,6 @@ namespace ProcessHacker
         Process memoryProcess;
         int memoryAddress;
         int memorySize;
-
-        int imageIndex = 1;
-
-        Point lastMenuLocation;
 
         List<Control> listViews = new List<Control>();
 
@@ -231,17 +227,6 @@ namespace ProcessHacker
             {
                 terminateMenuItem_Click(null, null);
             }
-        }
-
-        private void listProcesses_MouseDown(object sender, MouseEventArgs e)
-        {
-            processListDragging = true;
-        }
-
-        private void listProcesses_MouseUp(object sender, MouseEventArgs e)
-        {
-            processListDragging = false;
-            UpdateProcessExtra();
         }
 
         private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)

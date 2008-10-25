@@ -3,7 +3,6 @@ Process Hacker
 1.1.2.0
  * Completly rewrote process list code
  * Added lots of information to process tooltips
- * Made it easier to select multiple items
 
 1.1.1.0
  * Memory editor is now properly activated from the Hacker Window
