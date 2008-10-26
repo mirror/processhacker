@@ -48,7 +48,7 @@ namespace ProcessHacker
         {
             Process[] processes = Process.GetProcesses();
             List<int> pids = new List<int>();
-            Dictionary<int, ProcessItem> newdictionary = new Dictionary<int,ProcessItem>();
+            Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
 
             foreach (int key in Dictionary.Keys)
                 newdictionary.Add(key, Dictionary[key]);

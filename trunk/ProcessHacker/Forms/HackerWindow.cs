@@ -52,6 +52,11 @@ namespace ProcessHacker
             get { return processP; }
         }
 
+        public ThreadProvider ThreadProvider
+        {
+            get { return threadP; }
+        }
+
         #endregion
 
         #region Variables
@@ -61,10 +66,7 @@ namespace ProcessHacker
         HelpWindow helpForm = new HelpWindow();
 
         ProcessProvider processP = new ProcessProvider();
-
-        Queue<UpdateTask> threadQueue = new Queue<UpdateTask>();
-        List<int> tids = new List<int>();
-        Thread threadUpdaterThread;
+        ThreadProvider threadP;
 
         bool processListDragging = false;
 
@@ -1930,6 +1932,13 @@ namespace ProcessHacker
         {
             listModules.Items.Clear();
             listMemory.Items.Clear();
+                                  
+            listThreads.Provider = null;
+
+            if (threadP != null)
+                threadP.Kill();
+
+            threadP = null;
 
             GC.Collect();
 
@@ -1941,11 +1950,14 @@ namespace ProcessHacker
             this.Cursor = Cursors.WaitCursor;
             Application.DoEvents();
 
+            threadP = new ThreadProvider(processSelectedPID);
+            listThreads.Provider = threadP;
+            threadP.Interval = Properties.Settings.Default.RefreshInterval;
+            threadP.Enabled = true;
+
             UpdateModuleInfo();
             UpdateMemoryInfo();
             UpdateMiscInfo();
-            DoThreadListUpdate();
-            ThreadQueueUpdated();
 
             this.Cursor = Cursors.Default;
         }
@@ -1954,8 +1966,8 @@ namespace ProcessHacker
 
         private void formViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Stop threads
-            threadUpdaterThread.Abort();
+            threadP.Kill();
+            processP.Kill();
 
             SaveSettings();
 
@@ -1972,7 +1984,6 @@ namespace ProcessHacker
 
             property.SetValue(listMemory, true, null);
             property.SetValue(listModules, true, null);
-            property.SetValue(listThreads, true, null);
             typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
                 treeMisc, true, null);
 
@@ -2005,16 +2016,13 @@ namespace ProcessHacker
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
-            processP.Interval = 500;
+            processP.Interval = RefreshInterval;
             listProcesses.Provider = processP;
             processP.Enabled = true;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            threadUpdaterThread = new Thread(new ThreadStart(ThreadListUpdater));
-            threadUpdaterThread.Priority = ThreadPriority.Lowest;
-            threadUpdaterThread.Start();
             LoadSettings();
             Program.UpdateWindows();
         }

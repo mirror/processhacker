@@ -54,6 +54,12 @@ namespace ProcessHacker
     /// </summary>
     /// <param name="item">The removed item.</param>
     public delegate void ProviderDictionaryRemoved(object item);
+
+    /// <summary>
+    /// Represents a handler called when an error occurs while updating.
+    /// </summary>
+    /// <param name="ex">The raised exception.</param>
+    public delegate void ProviderError(Exception ex);
                                                           
     /// <summary>
     /// Provides services for continuously updating a dictionary.
@@ -86,6 +92,11 @@ namespace ProcessHacker
         /// Occurs when the provider removes an item from the dictionary.
         /// </summary>
         public event ProviderDictionaryRemoved DictionaryRemoved;
+
+        /// <summary>
+        /// Occurs when an exception is raised while updating.
+        /// </summary>
+        public event ProviderError Error;
                                                            
         Thread _thread;
         Dictionary<TKey, TValue> _dictionary;
@@ -160,24 +171,23 @@ namespace ProcessHacker
                     _busy = true;
 
                     if (ProviderUpdate != null)
-                        ProviderUpdate();
-                    
+                    {
+                        try
+                        {
+                            ProviderUpdate();
+                        }
+                        catch (Exception ex)
+                        {
+                            if (Error != null)
+                                Error(ex);
+                        }
+                    }
+
                     _busy = false;
                 }
 
                 Thread.Sleep(_interval);
             }
-        }
-
-        /// <summary>
-        /// Updates the dictionary after waiting for the current update operation to finish.
-        /// </summary>
-        public void UpdateNow()
-        {
-            while (_busy) Thread.Sleep(10);
-
-            if (ProviderUpdate != null)
-                ProviderUpdate();
         }
 
         /// <summary>
@@ -188,6 +198,11 @@ namespace ProcessHacker
             DictionaryAdded = null;
             DictionaryModified = null;
             DictionaryRemoved = null;
+        }
+
+        public void Kill()
+        {
+            _thread.Abort();
         }
 
         protected void CallDictionaryAdded(object item)

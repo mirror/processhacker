@@ -101,9 +101,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Updaters\ThreadUpdater.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Components\VistaMenu\OwnerDrawnMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -119,12 +116,17 @@
       <DependentUpon>HexBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\ThreadList.resx">
+      <DependentUpon>ThreadList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ProcessList.resx">
       <DependentUpon>ProcessList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ProcessTree.resx">
       <DependentUpon>ProcessTree.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\UtilitiesButton.resx">
       <DependentUpon>UtilitiesButton.cs</DependentUpon>
@@ -176,6 +178,12 @@
     <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
+    <Compile Include="Components\ThreadList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ThreadList.Designer.cs">
+      <DependentUpon>ThreadList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\ProcessList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -188,6 +196,7 @@
     <Compile Include="Components\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Providers\ThreadProvider.cs" />
     <Compile Include="Providers\ProcessProvider.cs" />
     <Compile Include="Components\SplitButton.cs">
       <SubType>Component</SubType>

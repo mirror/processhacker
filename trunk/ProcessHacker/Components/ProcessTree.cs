@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace ProcessHacker.Components
+namespace ProcessHacker
 {
     public partial class ProcessTree : UserControl
     {

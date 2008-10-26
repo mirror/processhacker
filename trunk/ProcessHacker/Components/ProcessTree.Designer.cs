@@ -1,4 +1,4 @@
-﻿namespace ProcessHacker.Components
+﻿namespace ProcessHacker
 {
     partial class ProcessTree
     {

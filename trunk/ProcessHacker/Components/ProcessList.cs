@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace ProcessHacker.Components
+namespace ProcessHacker
 {
     public partial class ProcessList : UserControl
     {
