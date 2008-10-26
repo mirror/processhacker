@@ -296,7 +296,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
+                        Misc.SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
                     }
                     catch
                     { }
@@ -352,6 +352,15 @@ namespace ProcessHacker
                 if (listMemory.SelectedItems.Count > 1)
                 {
                     copyMemoryMenuItem.Enabled = true;
+                }
+
+                if (listMemory.Items.Count > 0)
+                {
+                    selectAllMemoryMenuItem.Enabled = true;
+                }
+                else
+                {
+                    selectAllMemoryMenuItem.Enabled = false;
                 }
             }
         }
@@ -441,6 +450,11 @@ namespace ProcessHacker
             }
         }
 
+        private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listMemory.Items);
+        }
+
         #endregion
 
         #region Module Context Menu
@@ -470,6 +484,15 @@ namespace ProcessHacker
                 {
                     copyFileNameMenuItem.Enabled = true;
                     copyModuleMenuItem.Enabled = true;
+                }
+
+                if (listModules.Items.Count > 0)
+                {
+                    selectAllModuleMenuItem.Enabled = true;
+                }
+                else
+                {
+                    selectAllModuleMenuItem.Enabled = false;
                 }
             }
         }
@@ -591,6 +614,11 @@ namespace ProcessHacker
             memorySize = module.ModuleMemorySize;
 
             ReadWriteMemory(true);
+        }
+
+        private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listModules.Items);
         }
 
         #endregion
@@ -865,7 +893,7 @@ namespace ProcessHacker
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            SelectAll(listProcesses.Items);
+            Misc.SelectAll(listProcesses.Items);
         }
 
         #endregion
@@ -1171,7 +1199,7 @@ namespace ProcessHacker
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            SelectAll(listThreads.Items);
+            Misc.SelectAll(listThreads.Items);
         }
 
         #endregion
@@ -1361,12 +1389,6 @@ namespace ProcessHacker
             }
             catch
             { }
-        }
-
-        private void SelectAll(ListView.ListViewItemCollection items)
-        {
-            foreach (ListViewItem item in items)
-                item.Selected = true;
         }
 
         private void ShowVirtualProtect()
@@ -2046,6 +2068,8 @@ namespace ProcessHacker
 
             listViews.Add(listProcesses);
             listViews.Add(listThreads);
+            listViews.Add(listModules);
+            listViews.Add(listMemory);
 
             ListViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, listProcesses.List, null);
             ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);

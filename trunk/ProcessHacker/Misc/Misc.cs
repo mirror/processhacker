@@ -151,5 +151,15 @@ namespace ProcessHacker
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Selects all of the specified items.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        public static void SelectAll(ListView.ListViewItemCollection items)
+        {
+            foreach (ListViewItem item in items)
+                item.Selected = true;
+        }
     }
 }

@@ -1,5 +1,8 @@
 Process Hacker
 
+1.1.4.0
+ * Enabled Select All for all lists on the main window
+
 1.1.3.5
  * Now saves column settings
  * Now saves results and memory window settings

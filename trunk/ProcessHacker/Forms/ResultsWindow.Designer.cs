@@ -53,9 +53,9 @@ namespace ProcessHacker
             this.buttonEdit = new System.Windows.Forms.Button();
             this.buttonFind = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -75,7 +75,7 @@ namespace ProcessHacker
             this.listResults.Location = new System.Drawing.Point(12, 35);
             this.listResults.Name = "listResults";
             this.listResults.ShowItemToolTips = true;
-            this.listResults.Size = new System.Drawing.Size(464, 380);
+            this.listResults.Size = new System.Drawing.Size(464, 338);
             this.listResults.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listResults.TabIndex = 13;
             this.listResults.UseCompatibleStateImageBehavior = false;
@@ -156,10 +156,6 @@ namespace ProcessHacker
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            // 
             // mainMenu
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -170,11 +166,15 @@ namespace ProcessHacker
             this.windowMenuItem.Index = 0;
             this.windowMenuItem.Text = "&Window";
             // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            // 
             // ResultsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(488, 427);
+            this.ClientSize = new System.Drawing.Size(488, 385);
             this.Controls.Add(this.buttonIntersect);
             this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonFind);
