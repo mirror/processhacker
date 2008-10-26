@@ -1243,6 +1243,9 @@ namespace ProcessHacker
             splitMain.SplitterDistance = Properties.Settings.Default.SplitterDistance;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
 
+            if (tabControl.TabPages[Properties.Settings.Default.SelectedTab] != null)
+                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.SelectedTab];
+
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessListViewColumns, listProcesses.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
@@ -1356,6 +1359,8 @@ namespace ProcessHacker
             Properties.Settings.Default.SplitterDistance = splitMain.SplitterDistance;
 
             Properties.Settings.Default.SearchType = buttonSearch.Text;
+
+            Properties.Settings.Default.SelectedTab = tabControl.SelectedTab.Name;
 
             Properties.Settings.Default.ProcessListViewColumns = ColumnSettings.SaveSettings(listProcesses.List);
             Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
@@ -2044,7 +2049,6 @@ namespace ProcessHacker
             timerFire_Tick(null, null);
 
             listProcesses_SelectedIndexChanged(null, null);
-            tabControl.SelectedTab = tabProcess;
 
             newResultsWindowMenuItem.Click += new EventHandler(PerformSearch);
             literalSearchMenuItem.Click += new EventHandler(PerformSearch);
@@ -2071,11 +2075,22 @@ namespace ProcessHacker
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            LoadSettings();
             Program.UpdateWindows();
 
+            // huge hack
+            listModules.Items.Add(new ListViewItem("b"));
+            listModules.Items.Add(new ListViewItem("a"));
             listModules.Sorting = SortOrder.Ascending;
             listModules.Sorting = SortOrder.None;
+            listModules.Items.Add(new ListViewItem("c"));
+            tabControl.SelectedTab = tabProcess;
+            tabControl.SelectedTab = tabThreads;
+            tabControl.SelectedTab = tabModules;
+            tabControl.SelectedTab = tabMemory;
+
+            listModules.Items.Clear();  
+
+            LoadSettings();
         }
     }
 }

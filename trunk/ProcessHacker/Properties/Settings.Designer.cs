@@ -238,5 +238,17 @@ namespace ProcessHacker.Properties {
                 this["ResultsListViewColumns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("tabProcesses")]
+        public string SelectedTab {
+            get {
+                return ((string)(this["SelectedTab"]));
+            }
+            set {
+                this["SelectedTab"] = value;
+            }
+        }
     }
 }
