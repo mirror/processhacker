@@ -1,5 +1,6 @@
 Note to SVN users:
 If you use SVN code you may encounter weird bugs. Please use releases instead.
+There is also a built EXE in ProcessHacker/Release/bin/ which should be the latest working build.
 
 Process Hacker is developed using Visual C# 2008 Express Edition, 
 but should work under 2005 as well, since it is targeted for .NET 2.0 and 
