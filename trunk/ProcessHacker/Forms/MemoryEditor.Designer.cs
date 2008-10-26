@@ -173,6 +173,7 @@ namespace ProcessHacker
             // 
             this.vistaMenu.SetImage(this.menuItem6, global::ProcessHacker.Properties.Resources.page);
             this.menuItem6.Index = 0;
+            this.menuItem6.Shortcut = System.Windows.Forms.Shortcut.F5;
             this.menuItem6.Text = "&Read";
             this.menuItem6.Click += new System.EventHandler(this.menuItem6_Click);
             // 
@@ -187,6 +188,7 @@ namespace ProcessHacker
             // 
             this.vistaMenu.SetImage(this.menuItem2, global::ProcessHacker.Properties.Resources.disk);
             this.menuItem2.Index = 2;
+            this.menuItem2.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
             this.menuItem2.Text = "&Save...";
             this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
             // 
@@ -261,6 +263,7 @@ namespace ProcessHacker
             this.Name = "MemoryEditor";
             this.Text = "Memory Editor";
             this.Load += new System.EventHandler(this.MemoryEditor_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MemoryEditor_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -187,6 +187,7 @@ namespace ProcessHacker
             this.Name = "ResultsWindow";
             this.Text = "Results";
             this.Load += new System.EventHandler(this.ResultsWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ResultsWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

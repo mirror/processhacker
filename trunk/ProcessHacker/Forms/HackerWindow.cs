@@ -1242,6 +1242,11 @@ namespace ProcessHacker
             this.WindowState = Properties.Settings.Default.WindowState;
             splitMain.SplitterDistance = Properties.Settings.Default.SplitterDistance;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
+
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessListViewColumns, listProcesses.List);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
         }
 
         private void PerformSearch(string text)
@@ -1340,7 +1345,7 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.RefreshInterval = RefreshInterval;
 
-            if (this.WindowState != FormWindowState.Minimized)
+            if (this.WindowState == FormWindowState.Normal)
             {
                 Properties.Settings.Default.WindowLocation = this.Location;
                 Properties.Settings.Default.WindowSize = this.Size;
@@ -1352,6 +1357,11 @@ namespace ProcessHacker
 
             Properties.Settings.Default.SearchType = buttonSearch.Text;
 
+            Properties.Settings.Default.ProcessListViewColumns = ColumnSettings.SaveSettings(listProcesses.List);
+            Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
+            Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
+            Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
+            
             try
             {
                 Properties.Settings.Default.Save();

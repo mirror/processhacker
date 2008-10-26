@@ -67,6 +67,18 @@ namespace ProcessHacker
 
             listResults.ContextMenu = ListViewMenu.GetMenu(listResults, 
                 new RetrieveVirtualItemEventHandler(listResults_RetrieveVirtualItem));
+
+            this.Size = Properties.Settings.Default.ResultsWindowSize;
+
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ResultsListViewColumns, listResults);
+        }
+
+        private void ResultsWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+                Properties.Settings.Default.ResultsWindowSize = this.Size;
+
+            Properties.Settings.Default.ResultsListViewColumns = ColumnSettings.SaveSettings(listResults);
         }
 
         public MenuItem WindowMenuItem

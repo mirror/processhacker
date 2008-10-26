@@ -196,6 +196,7 @@
     <Compile Include="Components\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\ListViewMenu.cs" />
     <Compile Include="Providers\ThreadProvider.cs" />
     <Compile Include="Providers\ProcessProvider.cs" />

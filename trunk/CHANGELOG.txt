@@ -1,5 +1,9 @@
 Process Hacker
 
+1.1.3.5
+ * Now saves column settings
+ * Now saves results and memory window settings
+
 1.1.3.0
  * Completely rewrote thread list code
  * Can now display kernel threads on Vista

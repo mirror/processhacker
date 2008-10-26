@@ -35,5 +35,26 @@
     <Setting Name="WarnDangerous" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ProcessListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ThreadListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ResultsWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">504, 482</Value>
+    </Setting>
+    <Setting Name="ModuleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MemoryListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MemoryWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">791, 503</Value>
+    </Setting>
+    <Setting Name="ResultsListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

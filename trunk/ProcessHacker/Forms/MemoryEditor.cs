@@ -81,6 +81,14 @@ namespace ProcessHacker
         private void MemoryEditor_Load(object sender, EventArgs e)
         {
             Program.UpdateWindows();
+
+            this.Size = Properties.Settings.Default.MemoryWindowSize;
+        }
+
+        private void MemoryEditor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Normal)
+                Properties.Settings.Default.MemoryWindowSize = this.Size;
         }
 
         public bool ReadOnly

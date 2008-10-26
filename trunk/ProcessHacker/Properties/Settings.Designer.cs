@@ -154,5 +154,89 @@ namespace ProcessHacker.Properties {
                 this["WarnDangerous"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProcessListViewColumns {
+            get {
+                return ((string)(this["ProcessListViewColumns"]));
+            }
+            set {
+                this["ProcessListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ThreadListViewColumns {
+            get {
+                return ((string)(this["ThreadListViewColumns"]));
+            }
+            set {
+                this["ThreadListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("504, 482")]
+        public global::System.Drawing.Size ResultsWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["ResultsWindowSize"]));
+            }
+            set {
+                this["ResultsWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ModuleListViewColumns {
+            get {
+                return ((string)(this["ModuleListViewColumns"]));
+            }
+            set {
+                this["ModuleListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MemoryListViewColumns {
+            get {
+                return ((string)(this["MemoryListViewColumns"]));
+            }
+            set {
+                this["MemoryListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("791, 503")]
+        public global::System.Drawing.Size MemoryWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["MemoryWindowSize"]));
+            }
+            set {
+                this["MemoryWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ResultsListViewColumns {
+            get {
+                return ((string)(this["ResultsListViewColumns"]));
+            }
+            set {
+                this["ResultsListViewColumns"] = value;
+            }
+        }
     }
 }
