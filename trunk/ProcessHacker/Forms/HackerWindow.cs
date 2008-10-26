@@ -947,6 +947,7 @@ namespace ProcessHacker
                 catch (Exception ex)
                 {
                     priorityThreadMenuItem.Text = "(" + ex.Message + ")";
+                    priorityThreadMenuItem.Enabled = false;
                 }
             }
             else
@@ -987,7 +988,7 @@ namespace ProcessHacker
             if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
-                    " sure you want to terminate the selected threads?", "Process Hacker", MessageBoxButtons.YesNo,
+                    " sure you want to terminate the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
                 if (result == DialogResult.No)
@@ -1030,7 +1031,7 @@ namespace ProcessHacker
             if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
-                    " sure you want to suspend the selected threads?", "Process Hacker", MessageBoxButtons.YesNo,
+                    " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
                 if (result == DialogResult.No)
