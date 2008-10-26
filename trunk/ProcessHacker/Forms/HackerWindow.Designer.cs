@@ -58,6 +58,7 @@
             this.belowNormalMenuItem = new System.Windows.Forms.MenuItem();
             this.idleMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
+            this.copyProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.menuThread = new System.Windows.Forms.ContextMenu();
             this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -74,6 +75,7 @@
             this.lowestThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.idleThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
+            this.copyThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +86,7 @@
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuModule = new System.Windows.Forms.ContextMenu();
             this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyModuleMenuItem = new System.Windows.Forms.MenuItem();
             this.openContainingFolderMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
@@ -95,10 +98,14 @@
             this.changeMemoryProtectionMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteMemoryMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteAddressMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.copyMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.listProcesses = new ProcessHacker.ProcessList();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newResultsWindowMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -107,6 +114,7 @@
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.treeMisc = new System.Windows.Forms.TreeView();
             this.tabThreads = new System.Windows.Forms.TabPage();
+            this.listThreads = new ProcessHacker.ThreadList();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -129,9 +137,6 @@
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
-            this.listProcesses = new ProcessHacker.ProcessList();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
@@ -296,6 +301,7 @@
             this.menuItem5,
             this.priorityMenuItem,
             this.menuItem7,
+            this.copyProcessMenuItem,
             this.selectAllMenuItem});
             this.menuProcess.Popup += new System.EventHandler(this.menuProcess_Popup);
             // 
@@ -393,9 +399,15 @@
             this.menuItem7.Index = 6;
             this.menuItem7.Text = "-";
             // 
+            // copyProcessMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyProcessMenuItem.Index = 7;
+            this.copyProcessMenuItem.Text = "C&opy";
+            // 
             // selectAllMenuItem
             // 
-            this.selectAllMenuItem.Index = 7;
+            this.selectAllMenuItem.Index = 8;
             this.selectAllMenuItem.Text = "Select &All";
             this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
             // 
@@ -409,6 +421,7 @@
             this.menuItem4,
             this.priorityThreadMenuItem,
             this.menuItem9,
+            this.copyThreadMenuItem,
             this.selectAllThreadMenuItem});
             this.menuThread.Popup += new System.EventHandler(this.menuThread_Popup);
             // 
@@ -515,9 +528,15 @@
             this.menuItem9.Index = 6;
             this.menuItem9.Text = "-";
             // 
+            // copyThreadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyThreadMenuItem.Index = 7;
+            this.copyThreadMenuItem.Text = "C&opy";
+            // 
             // selectAllThreadMenuItem
             // 
-            this.selectAllThreadMenuItem.Index = 7;
+            this.selectAllThreadMenuItem.Index = 8;
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
@@ -567,6 +586,7 @@
             // 
             this.menuModule.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.copyFileNameMenuItem,
+            this.copyModuleMenuItem,
             this.openContainingFolderMenuItem,
             this.propertiesMenuItem,
             this.menuItem3,
@@ -578,55 +598,60 @@
             // 
             // copyFileNameMenuItem
             // 
-            this.vistaMenu.SetImage(this.copyFileNameMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyFileNameMenuItem.Index = 0;
-            this.copyFileNameMenuItem.Text = "&Copy File Name";
+            this.copyFileNameMenuItem.Text = "&Copy File Name(s)";
             this.copyFileNameMenuItem.Click += new System.EventHandler(this.copyFileNameMenuItem_Click);
+            // 
+            // copyModuleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyModuleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyModuleMenuItem.Index = 1;
+            this.copyModuleMenuItem.Text = "Copy";
             // 
             // openContainingFolderMenuItem
             // 
             this.vistaMenu.SetImage(this.openContainingFolderMenuItem, global::ProcessHacker.Properties.Resources.folder_explore);
-            this.openContainingFolderMenuItem.Index = 1;
+            this.openContainingFolderMenuItem.Index = 2;
             this.openContainingFolderMenuItem.Text = "&Open Containing Folder";
             this.openContainingFolderMenuItem.Click += new System.EventHandler(this.openContainingFolderMenuItem_Click);
             // 
             // propertiesMenuItem
             // 
             this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_view_detail);
-            this.propertiesMenuItem.Index = 2;
+            this.propertiesMenuItem.Index = 3;
             this.propertiesMenuItem.Text = "Prope&rties...";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
             // menuItem3
             // 
-            this.menuItem3.Index = 3;
+            this.menuItem3.Index = 4;
             this.menuItem3.Text = "-";
             // 
             // goToInMemoryViewModuleMenuItem
             // 
             this.goToInMemoryViewModuleMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.goToInMemoryViewModuleMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
-            this.goToInMemoryViewModuleMenuItem.Index = 4;
+            this.goToInMemoryViewModuleMenuItem.Index = 5;
             this.goToInMemoryViewModuleMenuItem.Text = "&Go To In Memory View";
             this.goToInMemoryViewModuleMenuItem.Click += new System.EventHandler(this.goToInMemoryViewModuleMenuItem_Click);
             // 
             // getFuncAddressMenuItem
             // 
-            this.getFuncAddressMenuItem.Index = 5;
+            this.getFuncAddressMenuItem.Index = 6;
             this.getFuncAddressMenuItem.Text = "Get &Function Address...";
             this.getFuncAddressMenuItem.Click += new System.EventHandler(this.getFuncAddressMenuItem_Click);
             // 
             // changeMemoryProtectionModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.changeMemoryProtectionModuleMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.changeMemoryProtectionModuleMenuItem.Index = 6;
+            this.changeMemoryProtectionModuleMenuItem.Index = 7;
             this.changeMemoryProtectionModuleMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionModuleMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionModuleMenuItem_Click);
             // 
             // readMemoryModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.readMemoryModuleMenuItem, global::ProcessHacker.Properties.Resources.page);
-            this.readMemoryModuleMenuItem.Index = 7;
+            this.readMemoryModuleMenuItem.Index = 8;
             this.readMemoryModuleMenuItem.Text = "Read Memory...";
             this.readMemoryModuleMenuItem.Click += new System.EventHandler(this.readMemoryModuleMenuItem_Click);
             // 
@@ -635,7 +660,9 @@
             this.menuMemory.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.changeMemoryProtectionMemoryMenuItem,
             this.readWriteMemoryMemoryMenuItem,
-            this.readWriteAddressMemoryMenuItem});
+            this.readWriteAddressMemoryMenuItem,
+            this.menuItem2,
+            this.copyMemoryMenuItem});
             this.menuMemory.Popup += new System.EventHandler(this.menuMemory_Popup);
             // 
             // changeMemoryProtectionMemoryMenuItem
@@ -660,6 +687,17 @@
             this.readWriteAddressMemoryMenuItem.Text = "Read/Write Address...";
             this.readWriteAddressMemoryMenuItem.Click += new System.EventHandler(this.readWriteAddressMemoryMenuItem_Click);
             // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 3;
+            this.menuItem2.Text = "-";
+            // 
+            // copyMemoryMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyMemoryMenuItem.Index = 4;
+            this.copyMemoryMenuItem.Text = "C&opy";
+            // 
             // splitMain
             // 
             this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -674,9 +712,21 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(804, 425);
+            this.splitMain.Size = new System.Drawing.Size(804, 432);
             this.splitMain.SplitterDistance = 355;
             this.splitMain.TabIndex = 3;
+            // 
+            // listProcesses
+            // 
+            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listProcesses.DoubleBuffered = true;
+            this.listProcesses.Location = new System.Drawing.Point(0, 0);
+            this.listProcesses.Name = "listProcesses";
+            this.listProcesses.Provider = null;
+            this.listProcesses.Size = new System.Drawing.Size(355, 431);
+            this.listProcesses.TabIndex = 4;
+            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
+            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabControl
             // 
@@ -688,7 +738,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(445, 425);
+            this.tabControl.Size = new System.Drawing.Size(445, 432);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -698,7 +748,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(437, 399);
+            this.tabProcess.Size = new System.Drawing.Size(437, 406);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -714,6 +764,18 @@
             this.groupSearch.TabIndex = 4;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "Search";
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 3;
+            this.buttonSearch.Text = "Search button";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // menuSearch
             // 
@@ -760,7 +822,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(425, 334);
+            this.treeMisc.Size = new System.Drawing.Size(425, 341);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -769,10 +831,21 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(437, 399);
+            this.tabThreads.Size = new System.Drawing.Size(437, 406);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Location = new System.Drawing.Point(3, 3);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(431, 400);
+            this.listThreads.TabIndex = 0;
+            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
             // tabModules
             // 
@@ -780,7 +853,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(437, 399);
+            this.tabModules.Size = new System.Drawing.Size(437, 406);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -797,10 +870,9 @@
             this.listModules.FullRowSelect = true;
             this.listModules.HideSelection = false;
             this.listModules.Location = new System.Drawing.Point(3, 3);
-            this.listModules.MultiSelect = false;
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(431, 393);
+            this.listModules.Size = new System.Drawing.Size(431, 400);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -832,7 +904,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(437, 420);
+            this.tabMemory.Size = new System.Drawing.Size(437, 406);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -850,10 +922,9 @@
             this.listMemory.FullRowSelect = true;
             this.listMemory.HideSelection = false;
             this.listMemory.Location = new System.Drawing.Point(3, 3);
-            this.listMemory.MultiSelect = false;
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(431, 414);
+            this.listMemory.Size = new System.Drawing.Size(431, 400);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -947,41 +1018,6 @@
             this.windowMenuItem.Index = 1;
             this.windowMenuItem.Text = "&Window";
             // 
-            // listProcesses
-            // 
-            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listProcesses.DoubleBuffered = true;
-            this.listProcesses.Location = new System.Drawing.Point(0, 0);
-            this.listProcesses.Name = "listProcesses";
-            this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(355, 424);
-            this.listProcesses.TabIndex = 4;
-            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 3;
-            this.buttonSearch.Text = "Search button";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Location = new System.Drawing.Point(3, 3);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(431, 393);
-            this.listThreads.TabIndex = 0;
-            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
-            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -990,7 +1026,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 425);
+            this.ClientSize = new System.Drawing.Size(804, 432);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.panelVirtualProtect);
             this.Controls.Add(this.panelProc);
@@ -1126,6 +1162,11 @@
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;
         private ProcessHacker.ProcessList listProcesses;
         private ThreadList listThreads;
+        private System.Windows.Forms.MenuItem copyProcessMenuItem;
+        private System.Windows.Forms.MenuItem copyThreadMenuItem;
+        private System.Windows.Forms.MenuItem copyModuleMenuItem;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem copyMemoryMenuItem;
     }
 }
 

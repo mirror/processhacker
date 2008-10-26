@@ -73,7 +73,6 @@ namespace ProcessHacker
             this.listResults.FullRowSelect = true;
             this.listResults.HideSelection = false;
             this.listResults.Location = new System.Drawing.Point(12, 35);
-            this.listResults.MultiSelect = false;
             this.listResults.Name = "listResults";
             this.listResults.ShowItemToolTips = true;
             this.listResults.Size = new System.Drawing.Size(464, 380);

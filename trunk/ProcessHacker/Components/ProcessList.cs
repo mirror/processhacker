@@ -132,6 +132,11 @@ namespace ProcessHacker
             set { listProcesses.ContextMenuStrip = value; }
         }
 
+        public ListView List
+        {
+            get { return listProcesses; }
+        }
+
         public ProcessProvider Provider
         {
             get { return _provider; }

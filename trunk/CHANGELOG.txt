@@ -7,6 +7,7 @@ Process Hacker
  * Now displays process 0 as System Idle Process
  * Fixed thread list for System Idle Process
  * Now displays description for System
+ * Now has a good system of copying list items (currently in every ListView)
 
 1.1.2.0
  * Completely rewrote process list code

@@ -348,6 +348,11 @@ namespace ProcessHacker
 
                 if (listProcesses.SelectedItems.Count == 1)
                     readWriteAddressMemoryMenuItem.Enabled = true;
+
+                if (listMemory.SelectedItems.Count > 1)
+                {
+                    copyMemoryMenuItem.Enabled = true;
+                }
             }
         }
 
@@ -460,12 +465,28 @@ namespace ProcessHacker
             else
             {
                 DisableAllMenuItems(menuModule);
+
+                if (listModules.SelectedItems.Count > 1)
+                {
+                    copyFileNameMenuItem.Enabled = true;
+                    copyModuleMenuItem.Enabled = true;
+                }
             }
         }
 
         private void copyFileNameMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(listModules.SelectedItems[0].ToolTipText);
+            string text = "";
+
+            for (int i = 0; i < listModules.SelectedItems.Count; i++)
+            {
+                text += listModules.SelectedItems[i].ToolTipText;
+
+                if (i != listModules.SelectedItems.Count - 1)
+                    text += "\r\n";
+            }
+
+            Clipboard.SetText(text);
         }
 
         private void openContainingFolderMenuItem_Click(object sender, EventArgs e)
@@ -578,6 +599,15 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
+            if (listProcesses.Items.Count == 0)
+            {
+                selectAllMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllMenuItem.Enabled = true;
+            }
+
             if (listProcesses.SelectedItems.Count == 0)
             {
                 terminateMenuItem.Enabled = false;
@@ -585,6 +615,7 @@ namespace ProcessHacker
                 resumeMenuItem.Enabled = false;
                 closeActiveWindowMenuItem.Enabled = false;
                 priorityMenuItem.Enabled = false;
+                copyProcessMenuItem.Enabled = false;
             }
             else
             {
@@ -653,6 +684,7 @@ namespace ProcessHacker
                 closeActiveWindowMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
+                copyProcessMenuItem.Enabled = true;
             }
         }
 
@@ -844,12 +876,23 @@ namespace ProcessHacker
         {
             inspectThreadMenuItem.Enabled = false;
 
+            if (listThreads.Items.Count == 0)
+            {
+                selectAllThreadMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllThreadMenuItem.Enabled = true;
+            }
+
             if (listProcesses.SelectedItems.Count == 0 || listThreads.SelectedItems.Count == 0)
             {
                 terminateThreadMenuItem.Enabled = false;
                 suspendThreadMenuItem.Enabled = false;
                 resumeThreadMenuItem.Enabled = false;
                 priorityThreadMenuItem.Enabled = false;
+                copyThreadMenuItem.Enabled = false;
+
                 return;
             }
             else if (listThreads.SelectedItems.Count > 0)
@@ -863,6 +906,7 @@ namespace ProcessHacker
                 suspendThreadMenuItem.Enabled = true;
                 resumeThreadMenuItem.Enabled = true;
                 priorityThreadMenuItem.Enabled = true;
+                copyThreadMenuItem.Enabled = true;
             }
 
             priorityThreadMenuItem.Text = "&Priority";
@@ -2000,6 +2044,11 @@ namespace ProcessHacker
 
             listViews.Add(listProcesses);
             listViews.Add(listThreads);
+
+            ListViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, listProcesses.List, null);
+            ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
+            ListViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
+            ListViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
 
             listProcesses.ContextMenu = menuProcess;
             listThreads.ContextMenu = menuThread;

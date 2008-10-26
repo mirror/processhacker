@@ -83,6 +83,11 @@ namespace ProcessHacker
             set { listThreads.ContextMenuStrip = value; }
         }
 
+        public ListView List
+        {
+            get { return listThreads; }
+        }
+
         public ThreadProvider Provider
         {
             get { return _provider; }

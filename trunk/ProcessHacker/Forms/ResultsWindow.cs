@@ -64,6 +64,9 @@ namespace ProcessHacker
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
             Program.UpdateWindows();
+
+            listResults.ContextMenu = ListViewMenu.GetMenu(listResults, 
+                new RetrieveVirtualItemEventHandler(listResults_RetrieveVirtualItem));
         }
 
         public MenuItem WindowMenuItem
