@@ -24,8 +24,16 @@ using System.Collections;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides methods for loading and saving ListView column settings.
+    /// </summary>
     public static class ColumnSettings
     {
+        /// <summary>
+        /// Saves the column settings of the specified ListView to a string.
+        /// </summary>
+        /// <param name="lv"></param>
+        /// <returns></returns>
         public static string SaveSettings(ListView lv)
         {     
             string result = "";
@@ -43,6 +51,11 @@ namespace ProcessHacker
             return result;
         }
 
+        /// <summary>
+        /// Loads column settings from a string to a ListView.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="lv"></param>
         public static void LoadSettings(string settings, ListView lv)
         {
             string[] list = settings.Split('|');

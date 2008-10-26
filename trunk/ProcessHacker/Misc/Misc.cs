@@ -20,6 +20,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
@@ -29,6 +30,26 @@ namespace ProcessHacker
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 
         public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
+
+        /// <summary>
+        /// Disables the menu items contained in the specified menu. 
+        /// </summary>
+        /// <param name="menu">The menu.</param>
+        public static void DisableAllMenuItems(Menu menu)
+        {
+            foreach (MenuItem item in menu.MenuItems)
+                item.Enabled = false;
+        }
+
+        /// <summary>
+        /// Enables the menu items contained in the specified menu. 
+        /// </summary>
+        /// <param name="menu">The menu.</param>
+        public static void EnableAllMenuItems(Menu menu)
+        {
+            foreach (MenuItem item in menu.MenuItems)
+                item.Enabled = true;
+        }
 
         /// <summary>
         /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".

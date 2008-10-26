@@ -340,11 +340,11 @@ namespace ProcessHacker
         {
             if (listMemory.SelectedItems.Count == 1 && listProcesses.SelectedItems.Count == 1)
             {
-                EnableAllMenuItems(menuMemory);
+                Misc.EnableAllMenuItems(menuMemory);
             }
             else
             {
-                DisableAllMenuItems(menuMemory);
+                Misc.DisableAllMenuItems(menuMemory);
 
                 if (listProcesses.SelectedItems.Count == 1)
                     readWriteAddressMemoryMenuItem.Enabled = true;
@@ -451,7 +451,7 @@ namespace ProcessHacker
             {
                 if (Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text) == 4)
                 {
-                    DisableAllMenuItems(menuModule);
+                    Misc.DisableAllMenuItems(menuModule);
 
                     copyFileNameMenuItem.Enabled = true;
                     openContainingFolderMenuItem.Enabled = true;
@@ -459,12 +459,12 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    EnableAllMenuItems(menuModule);
+                    Misc.EnableAllMenuItems(menuModule);
                 }
             }
             else
             {
-                DisableAllMenuItems(menuModule);
+                Misc.DisableAllMenuItems(menuModule);
 
                 if (listModules.SelectedItems.Count > 1)
                 {
@@ -1220,18 +1220,6 @@ namespace ProcessHacker
         {
             foreach (ListViewItem item in list.SelectedItems)
                 item.Selected = false;
-        }
-
-        private void DisableAllMenuItems(ContextMenu menu)
-        {
-            foreach (MenuItem item in menu.MenuItems)
-                item.Enabled = false;
-        }
-
-        private void EnableAllMenuItems(ContextMenu menu)
-        {
-            foreach (MenuItem item in menu.MenuItems)
-                item.Enabled = true;
         }
 
         private void LoadSettings()

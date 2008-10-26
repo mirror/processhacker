@@ -34,6 +34,8 @@ namespace ProcessHacker
         {
             ContextMenu menu = new ContextMenu();
 
+            menu.Tag = lv;
+            menu.Popup += new EventHandler(ListViewMenu_Popup);
             AddMenuItems(menu.MenuItems, lv, retrieveVirtualItem);
 
             return menu;
@@ -56,6 +58,21 @@ namespace ProcessHacker
                 item.Click += new EventHandler(ListViewMenuItem_Click);
 
                 items.Add(item);
+            }
+        }
+
+        private static void ListViewMenu_Popup(object sender, EventArgs e)
+        {
+            ContextMenu citem = (ContextMenu)sender;
+            ListView lv = (ListView)citem.Tag;
+
+            if (lv.SelectedIndices.Count == 0)
+            {
+                Misc.DisableAllMenuItems(citem);
+            }
+            else
+            {
+                Misc.EnableAllMenuItems(citem);
             }
         }
 
