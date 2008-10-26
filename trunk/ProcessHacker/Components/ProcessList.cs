@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -45,6 +46,54 @@ namespace ProcessHacker
         {
             if (this.KeyDown != null)
                 this.KeyDown(sender, e);
+        }
+
+        private string GetKernelFileName()
+        {
+            int RequiredSize = 0;
+            int[] ImageBases;
+
+            Win32.EnumDeviceDrivers(null, 0, ref RequiredSize);
+            ImageBases = new int[RequiredSize];
+            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), ref RequiredSize);
+
+            for (int i = 0; i < RequiredSize; i++)
+            {
+                if (ImageBases[i] == 0)
+                    continue;
+
+                StringBuilder name = new StringBuilder(256);
+                StringBuilder filename = new StringBuilder(256);
+                string realname = "";
+
+                Win32.GetDeviceDriverBaseName(ImageBases[i], name, 255);
+                Win32.GetDeviceDriverFileName(ImageBases[i], filename, 255);
+
+                try
+                {
+                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(filename.ToString()));
+                    bool kernel = false;
+
+                    realname = fi.FullName;
+
+                    foreach (string k in Misc.KernelNames)
+                    {
+                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        {
+                            kernel = true;
+
+                            break;
+                        }
+                    }
+
+                    if (kernel)
+                        return realname;
+                }
+                catch
+                { }
+            }
+
+            return "";
         }
 
         #region Properties
@@ -133,8 +182,19 @@ namespace ProcessHacker
 
             try
             {
+                string filename = "";
+
+                if (pitem.PID == 4)
+                {
+                    filename = GetKernelFileName();
+                }
+                else
+                {
+                    filename = pitem.Process.MainModule.FileName;
+                }
+
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
-                    Misc.GetRealPath(pitem.Process.MainModule.FileName));
+                    Misc.GetRealPath(filename));
 
                 litem.ToolTipText = info.FileName + "\n" + 
                     info.FileDescription + " (" + info.FileVersion + ")\n" + 

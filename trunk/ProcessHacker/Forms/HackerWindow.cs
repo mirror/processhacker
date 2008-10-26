@@ -68,11 +68,8 @@ namespace ProcessHacker
         ProcessProvider processP = new ProcessProvider();
         ThreadProvider threadP;
 
-        bool processListDragging = false;
-
         int processSelectedItems;
         int processSelectedPID;
-        int lastSelectedPID = -1;
         Process processSelected;
 
         Process virtualProtectProcess;
@@ -84,11 +81,6 @@ namespace ProcessHacker
         int memorySize;
 
         List<Control> listViews = new List<Control>();
-
-        string[] dangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
-                                      "smss.exe", "wininit.exe", "winlogon.exe" };
-
-        string[] kernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
 
         #endregion
 
@@ -239,11 +231,6 @@ namespace ProcessHacker
             {
                 processSelectedPID = Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text);
 
-                if (processSelectedPID != lastSelectedPID)
-                {
-                    listThreads.Items.Clear();
-                }
-
                 treeMisc.Enabled = true;
                 buttonSearch.Enabled = true;
 
@@ -273,7 +260,6 @@ namespace ProcessHacker
             else
             {
                 processSelectedPID = -1;
-                lastSelectedPID = -1;
 
                 try
                 {
@@ -1361,7 +1347,7 @@ namespace ProcessHacker
             {
                 Process p = Process.GetProcessById(pid);
 
-                foreach (string s in dangerousNames)
+                foreach (string s in Misc.DangerousNames)
                 {
                     if ((Environment.SystemDirectory + "\\" + s).ToLower() == Misc.GetRealPath(p.MainModule.FileName).ToLower())
                     {
@@ -1638,7 +1624,7 @@ namespace ProcessHacker
                 {
                     bool kernel = false;
 
-                    foreach (string k in kernelNames)
+                    foreach (string k in Misc.KernelNames)
                     {
                         if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
                         {
@@ -1945,7 +1931,7 @@ namespace ProcessHacker
 
             if (listProcesses.SelectedItems.Count != 1)
                 return;
-            if (processListDragging)
+            if (processSelectedPID == 0)
                 return;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1967,7 +1953,9 @@ namespace ProcessHacker
 
         private void formViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            threadP.Kill();
+            if (threadP != null)
+                threadP.Kill();
+
             processP.Kill();
 
             SaveSettings();
@@ -2026,6 +2014,9 @@ namespace ProcessHacker
         {
             LoadSettings();
             Program.UpdateWindows();
+
+            listModules.Sorting = SortOrder.Ascending;
+            listModules.Sorting = SortOrder.None;
         }
     }
 }

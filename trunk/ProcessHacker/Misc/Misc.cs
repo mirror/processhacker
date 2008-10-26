@@ -25,6 +25,11 @@ namespace ProcessHacker
 {
     public static class Misc
     {
+        public static string[] DangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
+                                      "smss.exe", "wininit.exe", "winlogon.exe" };
+
+        public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
+
         /// <summary>
         /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".
         /// </summary>

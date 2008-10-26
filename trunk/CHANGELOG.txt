@@ -4,6 +4,9 @@ Process Hacker
  * Completely rewrote thread list code
  * Can now display kernel threads on Vista
  * Disables thread priority menu item when there is an error
+ * Now displays process 0 as System Idle Process
+ * Fixed thread list for System Idle Process
+ * Now displays description for System
 
 1.1.2.0
  * Completely rewrote process list code

@@ -84,7 +84,10 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.Name = p.MainModule.ModuleName;
+                        if (p.Id == 0)
+                            item.Name = "System Idle Process";
+                        else
+                            item.Name = p.MainModule.ModuleName;
                     }
                     catch
                     {
