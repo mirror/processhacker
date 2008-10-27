@@ -38,7 +38,8 @@ namespace ProcessHacker
 
             if (_phandle == 0)
             {
-                MessageBox.Show("Could not open process handle!", "Process Hacker", MessageBoxButtons.OK,
+                MessageBox.Show("Could not open process handle:\n\n" + Win32.GetLastErrorMessage(), 
+                    "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
                 this.Close();
