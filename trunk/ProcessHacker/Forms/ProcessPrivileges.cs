@@ -133,14 +133,17 @@ namespace ProcessHacker
             {
                 if (Win32.WriteTokenPrivilege(_phandle, item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
                 {
-                    if (MessageBox.Show("Could not enable " + item.Text + ".", "Process Hacker",
+                    if (MessageBox.Show("Could not enable " + item.Text + ":\n\n" + Win32.GetLastErrorMessage(), "Process Hacker",
                         MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                         return;
                 }
                 else
                 {
-                    item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
-                    item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                    if (item.SubItems[1].Text != "Enabled By Default")
+                    {
+                        item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                        item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                    }
                 }
             }
         }
@@ -151,7 +154,7 @@ namespace ProcessHacker
             {
                 if (item.SubItems[1].Text == "Enabled By Default")
                 {
-                    if (MessageBox.Show("Could not disable " + item.Text + ".", "Process Hacker",
+                    if (MessageBox.Show("Could not disable " + item.Text + ":\n\nInvalid operation.", "Process Hacker",
                         MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                         return;
 
@@ -160,7 +163,7 @@ namespace ProcessHacker
 
                 if (Win32.WriteTokenPrivilege(_phandle, item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED) == 0)
                 {
-                    if (MessageBox.Show("Could not disable " + item.Text + ".", "Process Hacker",
+                    if (MessageBox.Show("Could not disable " + item.Text + ":\n\n" + Win32.GetLastErrorMessage(), "Process Hacker",
                         MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                         return;
                 }
@@ -181,7 +184,7 @@ namespace ProcessHacker
                 {
                     if (Win32.WriteTokenPrivilege(_phandle, item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED) == 0)
                     {
-                        if (MessageBox.Show("Could not remove " + item.Text + ".", "Process Hacker",
+                        if (MessageBox.Show("Could not remove " + item.Text + ":\n\n" + Win32.GetLastErrorMessage(), "Process Hacker",
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                             return;
                     }
@@ -191,6 +194,11 @@ namespace ProcessHacker
                     }
                 }
             }
+        }
+
+        private void selectAllMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listPrivileges.Items);
         }
     }
 }

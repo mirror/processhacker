@@ -34,7 +34,6 @@ namespace ProcessHacker
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
-
         #region Imported Consts
 
         public const int ANYSIZE_ARRAY = 1;
@@ -1052,6 +1051,23 @@ namespace ProcessHacker
 
         #endregion
 
+        public static string GetLastErrorMessage()
+        {
+            return GetErrorMessage(Marshal.GetLastWin32Error());
+        }
+
+        public static string GetErrorMessage(int ErrorCode)
+        {
+            try
+            {
+                throw new System.ComponentModel.Win32Exception(ErrorCode);
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         public static string GetNameFromPID(int pid)
         {
             PROCESSENTRY32 proc = new PROCESSENTRY32();
@@ -1092,7 +1108,7 @@ namespace ProcessHacker
         {
             StringBuilder sb = null;
             int size = 0;
-
+                         
             LookupPrivilegeName(0, ref Luid, sb, ref size);
             sb = new StringBuilder(size);
             LookupPrivilegeName(0, ref Luid, sb, ref size);

@@ -35,12 +35,13 @@
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
             this.menuPrivileges = new System.Windows.Forms.ContextMenu();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.enableMenuItem = new System.Windows.Forms.MenuItem();
             this.disableMenuItem = new System.Windows.Forms.MenuItem();
             this.removeMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,48 +93,55 @@
             // menuPrivileges
             // 
             this.menuPrivileges.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.copyMenuItem,
-            this.menuItem1,
             this.enableMenuItem,
             this.disableMenuItem,
-            this.removeMenuItem});
+            this.removeMenuItem,
+            this.menuItem2,
+            this.copyMenuItem,
+            this.selectAllMenuItem});
             this.menuPrivileges.Popup += new System.EventHandler(this.menuPrivileges_Popup);
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 1;
-            this.menuItem1.Text = "-";
             // 
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 0;
+            this.copyMenuItem.Index = 4;
             this.copyMenuItem.Text = "&Copy";
             // 
             // enableMenuItem
             // 
             this.vistaMenu.SetImage(this.enableMenuItem, global::ProcessHacker.Properties.Resources.tick);
-            this.enableMenuItem.Index = 2;
+            this.enableMenuItem.Index = 0;
             this.enableMenuItem.Text = "&Enable";
             this.enableMenuItem.Click += new System.EventHandler(this.enableMenuItem_Click);
             // 
             // disableMenuItem
             // 
             this.vistaMenu.SetImage(this.disableMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.disableMenuItem.Index = 3;
+            this.disableMenuItem.Index = 1;
             this.disableMenuItem.Text = "&Disable";
             this.disableMenuItem.Click += new System.EventHandler(this.disableMenuItem_Click);
             // 
             // removeMenuItem
             // 
             this.vistaMenu.SetImage(this.removeMenuItem, global::ProcessHacker.Properties.Resources.delete);
-            this.removeMenuItem.Index = 4;
+            this.removeMenuItem.Index = 2;
             this.removeMenuItem.Text = "&Remove";
             this.removeMenuItem.Click += new System.EventHandler(this.removeMenuItem_Click);
             // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // selectAllMenuItem
+            // 
+            this.selectAllMenuItem.Index = 5;
+            this.selectAllMenuItem.Text = "Select &All";
+            this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 3;
+            this.menuItem2.Text = "-";
             // 
             // ProcessPrivileges
             // 
@@ -165,10 +173,11 @@
         private System.Windows.Forms.ColumnHeader columnDesc;
         private System.Windows.Forms.ContextMenu menuPrivileges;
         private System.Windows.Forms.MenuItem copyMenuItem;
-        private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem enableMenuItem;
         private System.Windows.Forms.MenuItem disableMenuItem;
         private System.Windows.Forms.MenuItem removeMenuItem;
         private wyDay.Controls.VistaMenu vistaMenu;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private System.Windows.Forms.MenuItem selectAllMenuItem;
     }
 }
