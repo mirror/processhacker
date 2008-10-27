@@ -56,7 +56,8 @@ namespace ProcessHacker
                 return;
             }
 
-            handle = Win32.OpenProcess(Win32.PROCESS_VM_READ | Win32.PROCESS_QUERY_INFORMATION, 0, PID);
+            handle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ |
+                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
 
             if (handle == 0)
             {

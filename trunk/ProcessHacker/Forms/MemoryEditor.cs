@@ -49,7 +49,9 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(Id, this);
 
-            _phandle = Win32.OpenProcess(Win32.PROCESS_VM_READ | Win32.PROCESS_VM_WRITE | Win32.PROCESS_VM_OPERATION, 0, _pid);
+            _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ |
+                Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | 
+                Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION, 0, _pid);
 
             if (_phandle == 0)
             {

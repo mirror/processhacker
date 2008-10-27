@@ -51,7 +51,8 @@ namespace ProcessHacker
             bool opt_img = (bool)Params["image"];
             bool opt_map = (bool)Params["mapped"];
 
-            handle = Win32.OpenProcess(Win32.PROCESS_VM_READ | Win32.PROCESS_QUERY_INFORMATION, 0, PID);
+            handle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ | 
+                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
 
             if (handle == 0)
             {

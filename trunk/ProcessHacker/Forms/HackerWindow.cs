@@ -767,7 +767,7 @@ namespace ProcessHacker
                 {
                     foreach (ProcessThread thread in process.Threads)
                     {
-                        int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, thread.Id);
+                        int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, thread.Id);
 
                         if (handle == 0)
                         {
@@ -810,7 +810,7 @@ namespace ProcessHacker
                 {
                     foreach (ProcessThread thread in process.Threads)
                     {
-                        int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, thread.Id);
+                        int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, thread.Id);
 
                         if (handle == 0)
                         {
@@ -855,6 +855,14 @@ namespace ProcessHacker
                         return;
                 }
             }
+        }
+
+        private void privilegesMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessPrivileges privForm = new ProcessPrivileges(processSelectedPID);
+
+            if (privForm != null)
+                privForm.ShowDialog();
         }
 
         #region Priority
@@ -1057,7 +1065,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_TERMINATE, 0, Int32.Parse(item.SubItems[0].Text));
+                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_TERMINATE, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -1100,7 +1108,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
+                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -1132,7 +1140,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
+                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
 
                     if (handle == 0)
                     {
@@ -2045,7 +2053,7 @@ namespace ProcessHacker
             typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
                 treeMisc, true, null);
 
-            if (Win32.EnableTokenPrivilege("SeDebugPrivilege") == 0)
+            if (Win32.WriteTokenPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
                 MessageBox.Show("Debug privilege could not be acquired!" +
                     " This will result in reduced functionality.", "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2100,9 +2108,9 @@ namespace ProcessHacker
             tabControl.SelectedTab = tabModules;
             tabControl.SelectedTab = tabMemory;
 
-            listModules.Items.Clear();  
+            listModules.Items.Clear();
 
-            LoadSettings();
+            LoadSettings(); 
         }
     }
 }

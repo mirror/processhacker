@@ -250,5 +250,29 @@ namespace ProcessHacker.Properties {
                 this["SelectedTab"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PrivilegeListColumns {
+            get {
+                return ((string)(this["PrivilegeListColumns"]));
+            }
+            set {
+                this["PrivilegeListColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("464, 473")]
+        public global::System.Drawing.Size PrivilegeWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["PrivilegeWindowSize"]));
+            }
+            set {
+                this["PrivilegeWindowSize"] = value;
+            }
+        }
     }
 }

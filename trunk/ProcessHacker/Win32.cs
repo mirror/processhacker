@@ -34,37 +34,54 @@ namespace ProcessHacker
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
-        public const int SID_SIZE = 1024;
-        public const int SYMBOL_NAME_MAXSIZE = 255;
 
         #region Imported Consts
 
+        public const int ANYSIZE_ARRAY = 1;
         public const int DONT_RESOLVE_DLL_REFERENCES = 0x1;
         public const int ERROR_NO_MORE_ITEMS = 259;
         public const int MAXIMUM_SUPPORTED_EXTENSION = 512;
-        public const int PROCESS_DUP_HANDLE = 0x0040;
-        public const int PROCESS_QUERY_INFORMATION = 0x0400;
-        public const int PROCESS_VM_OPERATION = 0x0008;
-        public const int PROCESS_VM_READ = 0x0010;
-        public const int PROCESS_VM_WRITE = 0x0020;
-        public const uint SE_PRIVILEGE_ENABLED = 0x00000002;
-        public const uint SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000;
         public const int SEE_MASK_INVOKEIDLIST = 0xc;
-        public const int SIZE_OF_80387_REGISTERS = 80;
         public const uint SHGFI_ICON = 0x100;
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
+        public const int SID_SIZE = 1024;
+        public const int SIZE_OF_80387_REGISTERS = 80;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
         public const int SW_SHOW = 5;
-        public const int THREAD_GET_CONTEXT = 0x0008;
-        public const int THREAD_SUSPEND_RESUME = 0x0002;
-        public const int THREAD_TERMINATE = 0x0001;
-        public const int TOKEN_ADJUST_PRIVILEGES = 0x00000020;
-        public const int TOKEN_QUERY = 0x00000008;
+        public const int SYMBOL_NAME_MAXSIZE = 255;
 
         #endregion    
 
         #region Imported Enums   
+                       
+        [Flags]
+        public enum ACCESS_TOKEN_RIGHTS : uint
+        {
+            TOKEN_ASSIGN_PRIMARY = 0x0001,
+            TOKEN_DUPLICATE = 0x0002,
+            TOKEN_IMPERSONATE = 0x0004,
+            TOKEN_QUERY = 0x0008,
+            TOKEN_QUERY_SOURCE = 0x0010,
+            TOKEN_ADJUST_PRIVILEGES = 0x0020,
+            TOKEN_ADJUST_GROUPS = 0x0040,
+            TOKEN_ADJUST_DEFAULT = 0x0080,
+            TOKEN_ADJUST_SESSIONID = 0x0100,
+            TOKEN_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
+                TOKEN_ASSIGN_PRIMARY |
+                TOKEN_DUPLICATE |
+                TOKEN_IMPERSONATE |
+                TOKEN_QUERY |
+                TOKEN_QUERY_SOURCE |
+                TOKEN_ADJUST_PRIVILEGES |
+                TOKEN_ADJUST_GROUPS |
+                TOKEN_ADJUST_DEFAULT |
+                TOKEN_ADJUST_SESSIONID,
+            TOKEN_READ = STANDARD_RIGHTS.STANDARD_RIGHTS_READ | TOKEN_QUERY,
+            TOKEN_WRITE = STANDARD_RIGHTS.STANDARD_RIGHTS_WRITE |
+                TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT,
+            TOKEN_EXECUTE = STANDARD_RIGHTS.STANDARD_RIGHTS_EXECUTE
+        }
 
         public enum ADDRESS_MODE : int
         {
@@ -98,6 +115,7 @@ namespace ProcessHacker
             PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 0x00000002
         }
 
+        [Flags]
         public enum HEAPENTRY32FLAGS : int
         {
             LF32_FIXED = 0x00000001,
@@ -148,6 +166,36 @@ namespace ProcessHacker
             ObjectTypeInformation
         }
 
+        [Flags]
+        public enum PROCESS_RIGHTS : uint
+        {
+            PROCESS_TERMINATE = 0x0001,
+            PROCESS_CREATE_THREAD = 0x0002,
+            PROCESS_SET_SESSIONID = 0x0004,
+            PROCESS_VM_OPERATION = 0x0008,
+            PROCESS_VM_READ = 0x0010,
+            PROCESS_VM_WRITE = 0x0020,
+            PROCESS_DUP_HANDLE = 0x0040,
+            PROCESS_CREATE_PROCESS = 0x0080,
+            PROCESS_SET_QUOTA = 0x0100,
+            PROCESS_SET_INFORMATION = 0x0200,
+            PROCESS_QUERY_INFORMATION = 0x0400,
+            PROCESS_SUSPEND_RESUME = 0x0800,
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
+            PROCESS_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | 
+                STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
+        }
+
+        [Flags]
+        public enum SE_PRIVILEGE_ATTRIBUTES : uint
+        {
+            SE_PRIVILEGE_DISABLED = 0x00000000,
+            SE_PRIVILEGE_ENABLED_BY_DEFAULT = 0x00000001,
+            SE_PRIVILEGE_ENABLED = 0x00000002,
+            SE_PRIVILEGE_REMOVED = 0x00000004,
+            SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
+        }
+
         public enum SID_NAME_USE : int
         {
               SidTypeUser = 1,
@@ -162,6 +210,7 @@ namespace ProcessHacker
               SidTypeLabel
         }
 
+        [Flags]
         public enum SnapshotFlags : uint
         {
             HeapList = 0x00000001,
@@ -170,9 +219,36 @@ namespace ProcessHacker
             Module = 0x00000008,
             Module32 = 0x00000010,
             Inherit = 0x80000000,
-            All = 0x0000001F
+            All = 0x0000001f
         }
 
+        [Flags]
+        public enum STANDARD_RIGHTS : uint
+        {
+            DELETE                           =0x00010000,
+            READ_CONTROL                     =0x00020000,
+            WRITE_DAC                        =0x00040000,
+            WRITE_OWNER                      =0x00080000,
+            SYNCHRONIZE                      =0x00100000,
+
+            STANDARD_RIGHTS_REQUIRED         =0x000f0000,
+
+            STANDARD_RIGHTS_READ             =READ_CONTROL,
+            STANDARD_RIGHTS_WRITE            =READ_CONTROL,
+            STANDARD_RIGHTS_EXECUTE          =READ_CONTROL,
+
+            STANDARD_RIGHTS_ALL              =0x001f0000,
+
+            SPECIFIC_RIGHTS_ALL              =0x0000ffff,
+            ACCESS_SYSTEM_SECURITY = 0x01000000,
+            MAXIMUM_ALLOWED = 0x02000000,
+            GENERIC_READ                     =0x80000000,
+            GENERIC_WRITE                    =0x40000000,
+            GENERIC_EXECUTE                  =0x20000000,
+            GENERIC_ALL                      =0x10000000
+        }
+
+        [Flags]
         public enum SYMBOL_FLAGS : int
         {
             SYMFLAG_CLR_TOKEN = 0x00040000,
@@ -258,6 +334,24 @@ namespace ProcessHacker
             SystemSessionProcessesInformation    
         }
 
+        [Flags]
+        public enum THREAD_RIGHTS : uint
+        {
+            THREAD_TERMINATE = 0x0001,
+            THREAD_SUSPEND_RESUME = 0x0002,
+            THREAD_GET_CONTEXT = 0x0008,
+            THREAD_SET_CONTEXT = 0x0010,
+            THREAD_QUERY_INFORMATION = 0x0040,
+            THREAD_SET_INFORMATION = 0x0020,
+            THREAD_SET_THREAD_TOKEN = 0x0080,
+            THREAD_IMPERSONATE = 0x0100,
+            THREAD_DIRECT_IMPERSONATION = 0x0200,
+            THREAD_SET_LIMITED_INFORMATION = 0x0400,
+            THREAD_QUERY_LIMITED_INFORMATION = 0x0800,
+            THREAD_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
+                STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
+        }
+
         public enum TOKEN_INFORMATION_CLASS
         {
             TokenUser = 1,
@@ -271,7 +365,24 @@ namespace ProcessHacker
             TokenImpersonationLevel,
             TokenStatistics,
             TokenRestrictedSids,
-            TokenSessionId
+            TokenSessionId,
+            TokenGroupsAndPrivileges,
+            TokenSessionReference,
+            TokenSandBoxInert,
+            TokenAuditPolicy,
+            TokenOrigin,
+            TokenElevationType,
+            TokenLinkedToken,
+            TokenElevation,
+            TokenHasRestrictions,
+            TokenAccessInformation,
+            TokenVirtualizationAllowed,
+            TokenVirtualizationEnabled,
+            TokenIntegrityLevel,
+            TokenUIAccess,
+            TokenMandatoryPolicy,
+            TokenLogonSid,
+            MaxTokenInfoClass  // MaxTokenInfoClass should always be the last enum
         }
 
         #endregion
@@ -279,7 +390,7 @@ namespace ProcessHacker
         #region Imported Functions
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int OpenProcessToken(int ProcessHandle, int DesiredAccess,
+        public static extern int OpenProcessToken(int ProcessHandle, ACCESS_TOKEN_RIGHTS DesiredAccess,
             ref int TokenHandle);
 
         [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
@@ -300,6 +411,11 @@ namespace ProcessHacker
             int TokenInformationLength, ref int ReturnLength);
 
         [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_PRIVILEGES TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
+                                     
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupAccountSid(string SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
             [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
@@ -308,8 +424,16 @@ namespace ProcessHacker
         [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupAccountSid(int SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
-            [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
+            [Out] StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
             ref SID_NAME_USE Use);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int LookupPrivilegeDisplayName(int SystemName, string Name,
+            [Out] StringBuilder DisplayName, ref int DisplayNameSize, ref int LanguageId);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int LookupPrivilegeName(int SystemName, ref LUID Luid,
+            [Out] StringBuilder Name, ref int RequiredSize);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupPrivilegeValue(string SystemName, string PrivilegeName,
@@ -364,10 +488,10 @@ namespace ProcessHacker
         public static extern int TerminateProcess(int ProcessHandle, int ExitCode);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int OpenProcess(int DesiredAccess, int InheritHandle, int ProcessId);
+        public static extern int OpenProcess(PROCESS_RIGHTS DesiredAccess, int InheritHandle, int ProcessId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int OpenThread(int DesiredAccess, int InheritHandle, int ThreadId);
+        public static extern int OpenThread(THREAD_RIGHTS DesiredAccess, int InheritHandle, int ThreadId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int TerminateThread(int ThreadHandle, int ExitCode);
@@ -669,7 +793,7 @@ namespace ProcessHacker
         public struct LUID_AND_ATTRIBUTES
         {
             public LUID Luid;
-            public UInt32 Attributes;
+            public SE_PRIVILEGE_ATTRIBUTES Attributes;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -897,9 +1021,13 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct TOKEN_PRIVILEGES
         {
-            public UInt32 PrivilegeCount;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+            public uint PrivilegeCount;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ANYSIZE_ARRAY)]
             public LUID_AND_ATTRIBUTES[] Privileges;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+            public LUID_AND_ATTRIBUTES[] Privileges2;
         }  
 
         [StructLayout(LayoutKind.Sequential)]
@@ -945,6 +1073,31 @@ namespace ProcessHacker
             } while (Process32Next(snapshot, ref proc) != 0);
 
             return "(unknown)";
+        }
+
+        public static string GetPrivilegeDisplayName(string PrivilegeName)
+        {
+            StringBuilder sb = null;
+            int size = 0;
+            int languageId = 0;
+
+            LookupPrivilegeDisplayName(0, PrivilegeName, sb, ref size, ref languageId);
+            sb = new StringBuilder(size);
+            LookupPrivilegeDisplayName(0, PrivilegeName, sb, ref size, ref languageId);
+
+            return sb.ToString();
+        }
+
+        public static string GetPrivilegeName(LUID Luid)
+        {
+            StringBuilder sb = null;
+            int size = 0;
+
+            LookupPrivilegeName(0, ref Luid, sb, ref size);
+            sb = new StringBuilder(size);
+            LookupPrivilegeName(0, ref Luid, sb, ref size);
+
+            return sb.ToString();
         }
 
         public static int GetProcessParent(int pid)
@@ -1005,7 +1158,7 @@ namespace ProcessHacker
             int namelen = 255;
             int domainlen = 255;
 
-            if (OpenProcessToken(ProcessHandle, TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return "";
 
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
@@ -1030,22 +1183,49 @@ namespace ProcessHacker
             }
         }
 
-        public static int EnableTokenPrivilege(string Privilege)
+        public static TOKEN_PRIVILEGES ReadTokenPrivileges(int ProcessHandle)
+        {
+            int token = 0;
+            int retlen = 0;
+            TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
+
+            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+                return new TOKEN_PRIVILEGES() { PrivilegeCount = 0 };
+
+            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, ref tkp,
+                Marshal.SizeOf(tkp), ref retlen) == 0)
+            {
+                CloseHandle(token);
+                return new TOKEN_PRIVILEGES() { PrivilegeCount = 0 };
+            }
+
+            CloseHandle(token);
+
+            return tkp;
+        }
+
+        public static int WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
+        {
+            return WriteTokenPrivilege(Process.GetCurrentProcess().Handle.ToInt32(), PrivilegeName, Attributes);
+        }
+
+        public static int WriteTokenPrivilege(int ProcessHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
             int token = 0;
             TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
 
             tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
 
-            if (OpenProcessToken(Process.GetCurrentProcess().Handle.ToInt32(),
-                 TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle,
+                ACCESS_TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES | ACCESS_TOKEN_RIGHTS.TOKEN_QUERY,
+                ref token) == 0)
                 return 0;
 
-            if (LookupPrivilegeValue(null, Privilege, ref tkp.Privileges[0].Luid) == 0)
+            if (LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid) == 0)
                 return 0;
 
             tkp.PrivilegeCount = 1;
-            tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+            tkp.Privileges[0].Attributes = Attributes;  
 
             AdjustTokenPrivileges(token, 0, ref tkp, 0, 0, 0);
 

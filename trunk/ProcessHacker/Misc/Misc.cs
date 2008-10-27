@@ -26,10 +26,52 @@ namespace ProcessHacker
 {
     public static class Misc
     {
+        #region Constants
+
         public static string[] DangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 
         public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
+
+        public static string[] PrivilegeNames = {
+            "SeCreateTokenPrivilege",
+            "SeAssignPrimaryTokenPrivilege",
+            "SeLockMemoryPrivilege",
+            "SeIncreaseQuotaPrivilege",
+            "SeUnsolicitedInputPrivilege",
+            "SeMachineAccountPrivilege",
+            "SeTcbPrivilege",
+            "SeSecurityPrivilege",
+            "SeTakeOwnershipPrivilege",
+            "SeLoadDriverPrivilege",
+            "SeSystemProfilePrivilege",
+            "SeSystemtimePrivilege",
+            "SeProfileSingleProcessPrivilege",
+            "SeIncreaseBasePriorityPrivilege",
+            "SeCreatePagefilePrivilege",
+            "SeCreatePermanentPrivilege",
+            "SeBackupPrivilege",
+            "SeRestorePrivilege",
+            "SeShutdownPrivilege",
+            "SeDebugPrivilege",
+            "SeAuditPrivilege",
+            "SeSystemEnvironmentPrivilege",
+            "SeChangeNotifyPrivilege",
+            "SeRemoteShutdownPrivilege",
+            "SeUndockPrivilege",
+            "SeSyncAgentPrivilege",
+            "SeEnableDelegationPrivilege",
+            "SeManageVolumePrivilege",
+            "SeImpersonatePrivilege",
+            "SeCreateGlobalPrivilege",
+            "SeTrustedCredManAccessPrivilege",
+            "SeRelabelPrivilege",
+            "SeIncreaseWorkingSetPrivilege",
+            "SeTimeZonePrivilege",
+            "SeCreateSymbolicLinkPrivilege"
+            };
+
+        #endregion
 
         /// <summary>
         /// Disables the menu items contained in the specified menu. 

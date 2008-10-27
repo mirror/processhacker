@@ -272,7 +272,7 @@ namespace ProcessHacker
                 Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
                 Win32.MEMORY_BASIC_INFORMATION info2 = new Win32.MEMORY_BASIC_INFORMATION();
                 int address = 0;
-                int handle = Win32.OpenProcess(Win32.PROCESS_QUERY_INFORMATION, 0, _pid);
+                int handle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, _pid);
 
                 if (handle == 0)
                 {

@@ -67,7 +67,7 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
-            _phandle = Win32.OpenProcess(Win32.PROCESS_VM_READ, 0, _pid);
+            _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ, 0, _pid);
 
             if (_phandle == 0)
             {
@@ -79,8 +79,8 @@ namespace ProcessHacker
                 return;
             }
 
-            _thandle = Win32.OpenThread(Win32.THREAD_GET_CONTEXT |
-                Win32.THREAD_TERMINATE | Win32.THREAD_SUSPEND_RESUME, 0, _tid);
+            _thandle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
+                Win32.THREAD_RIGHTS.THREAD_TERMINATE | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, _tid);
 
             if (_thandle == 0)
             {
