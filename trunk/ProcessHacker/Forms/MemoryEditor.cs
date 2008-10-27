@@ -56,7 +56,8 @@ namespace ProcessHacker
             if (_phandle == 0)
             {
                 this.Visible = false;
-                MessageBox.Show("Could not open process.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not open process:\n\n" + Win32.GetLastErrorMessage(), 
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
                 return;
             }
@@ -72,7 +73,8 @@ namespace ProcessHacker
             catch
             {
                 this.Visible = false;
-                MessageBox.Show("Could not read process memory.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not read process memory:\n\n" + Win32.GetLastErrorMessage(), 
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
 
@@ -165,7 +167,7 @@ namespace ProcessHacker
             if (Win32.WriteProcessMemory(_phandle, _address,
                 _data, _length, ref wrotememory) == 0)
             {
-                MessageBox.Show("Could not write to process memory.",
+                MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
@@ -173,7 +175,7 @@ namespace ProcessHacker
 
             if (wrotememory == 0)
             {
-                MessageBox.Show("Could not write to process memory.",
+                MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);  
             }
         }

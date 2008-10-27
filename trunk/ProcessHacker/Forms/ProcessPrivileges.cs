@@ -42,6 +42,7 @@ namespace ProcessHacker
                     MessageBoxIcon.Error);
 
                 this.Close();
+                return;
             }
 
             typeof(ListView).GetProperty("DoubleBuffered",
@@ -124,6 +125,15 @@ namespace ProcessHacker
             else
             {
                 Misc.EnableAllMenuItems(menuPrivileges);
+            }
+
+            if (listPrivileges.Items.Count > 0)
+            {
+                selectAllMenuItem.Enabled = true;
+            }
+            else
+            {
+                selectAllMenuItem.Enabled = false;
             }
         }
 

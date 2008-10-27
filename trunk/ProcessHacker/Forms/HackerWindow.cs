@@ -142,13 +142,9 @@ namespace ProcessHacker
                 textProcAddress.SelectAll();
                 textProcAddress.Focus();
             }
-            else if (Marshal.GetLastWin32Error() == 0x7f)
-            {
-                textProcAddress.Text = "Not found.";
-            }
             else
             {
-                textProcAddress.Text = "Error.";
+                textProcAddress.Text = Win32.GetLastErrorMessage();
             }
 
             // don't unload libraries we had before
@@ -180,7 +176,8 @@ namespace ProcessHacker
                 if (Win32.VirtualProtectEx(virtualProtectProcess.Handle.ToInt32(), virtualProtectAddress,
                     virtualProtectSize, newprotect, ref old) == 0)
                 {
-                    MessageBox.Show("There was an error setting memory protection.", "Process Hacker",
+                    MessageBox.Show("There was an error setting memory protection:\n\n" + 
+                        Win32.GetLastErrorMessage(), "Process Hacker",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -644,6 +641,7 @@ namespace ProcessHacker
                 closeActiveWindowMenuItem.Enabled = false;
                 priorityMenuItem.Enabled = false;
                 copyProcessMenuItem.Enabled = false;
+                privilegesMenuItem.Enabled = false;
             }
             else
             {
@@ -652,6 +650,7 @@ namespace ProcessHacker
                 if (listProcesses.SelectedItems.Count == 1)
                 {
                     priorityMenuItem.Enabled = true;
+                    privilegesMenuItem.Enabled = true;
                     terminateMenuItem.Text = "&Terminate Process";
                     closeActiveWindowMenuItem.Text = "&Close Active Window";
                     suspendMenuItem.Text = "&Suspend Process";
@@ -702,6 +701,7 @@ namespace ProcessHacker
                 else
                 {
                     priorityMenuItem.Enabled = false;
+                    privilegesMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
                     closeActiveWindowMenuItem.Text = "&Close Active Windows";
                     suspendMenuItem.Text = "&Suspend Processes";
@@ -771,13 +771,13 @@ namespace ProcessHacker
 
                         if (handle == 0)
                         {
-                            throw new Exception("Could not open process handle.");
+                            throw new Exception("Could not open thread handle:\n\n" + Win32.GetLastErrorMessage());
                         }
 
                         if (Win32.SuspendThread(handle) == -1)
                         {
                             Win32.CloseHandle(handle);
-                            throw new Exception("Could not suspend thread.");
+                            throw new Exception("Could not suspend thread:\n\n" + Win32.GetLastErrorMessage());
                         }
 
                         Win32.CloseHandle(handle);
@@ -814,13 +814,13 @@ namespace ProcessHacker
 
                         if (handle == 0)
                         {
-                            throw new Exception("Could not open process handle.");
+                            throw new Exception("Could not open thread handle:\n\n" + Win32.GetLastErrorMessage());
                         }
 
                         if (Win32.ResumeThread(handle) == -1)
                         {
                             Win32.CloseHandle(handle);
-                            throw new Exception("Could not resume thread.");
+                            throw new Exception("Could not resume thread:\n\n" + Win32.GetLastErrorMessage());
                         }
 
                         Win32.CloseHandle(handle);
@@ -861,8 +861,12 @@ namespace ProcessHacker
         {
             ProcessPrivileges privForm = new ProcessPrivileges(processSelectedPID);
 
-            if (privForm != null)
+            try
+            {
                 privForm.ShowDialog();
+            }
+            catch
+            { }
         }
 
         #region Priority
@@ -1069,13 +1073,13 @@ namespace ProcessHacker
 
                     if (handle == 0)
                     {
-                        throw new Exception("Could not open thread");
+                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     if (Win32.TerminateThread(handle, 0) == 0)
                     {
                         Win32.CloseHandle(handle);
-                        throw new Exception("Could not terminate thread");
+                        throw new Exception("Could not terminate thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     Win32.CloseHandle(handle);
@@ -1112,13 +1116,13 @@ namespace ProcessHacker
 
                     if (handle == 0)
                     {
-                        throw new Exception("Could not open thread");
+                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     if (Win32.SuspendThread(handle) == -1)
                     {
                         Win32.CloseHandle(handle);
-                        throw new Exception("Could not suspend thread");
+                        throw new Exception("Could not suspend thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     Win32.CloseHandle(handle);
@@ -1144,13 +1148,13 @@ namespace ProcessHacker
 
                     if (handle == 0)
                     {
-                        throw new Exception("Could not open thread");
+                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     if (Win32.ResumeThread(handle) == -1)
                     {
                         Win32.CloseHandle(handle);
-                        throw new Exception("Could not resume thread");
+                        throw new Exception("Could not resume thread:\n\n" + Win32.GetLastErrorMessage());
                     }
 
                     Win32.CloseHandle(handle);

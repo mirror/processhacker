@@ -61,7 +61,7 @@ namespace ProcessHacker
 
             if (handle == 0)
             {
-                SearchError("Could not open process");
+                SearchError("Could not open process: " + Win32.GetLastErrorMessage());
                 return;
             }
 

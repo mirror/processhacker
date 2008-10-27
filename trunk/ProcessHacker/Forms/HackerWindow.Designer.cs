@@ -49,6 +49,7 @@
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.closeActiveWindowMenuItem = new System.Windows.Forms.MenuItem();
+            this.privilegesMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.priorityMenuItem = new System.Windows.Forms.MenuItem();
             this.realTimeMenuItem = new System.Windows.Forms.MenuItem();
@@ -104,9 +105,11 @@
             this.copyMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.listProcesses = new ProcessHacker.ProcessList();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newResultsWindowMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -115,6 +118,7 @@
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.treeMisc = new System.Windows.Forms.TreeView();
             this.tabThreads = new System.Windows.Forms.TabPage();
+            this.listThreads = new ProcessHacker.ThreadList();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -137,10 +141,6 @@
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
-            this.privilegesMenuItem = new System.Windows.Forms.MenuItem();
-            this.listProcesses = new ProcessHacker.ProcessList();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
@@ -302,8 +302,8 @@
             this.suspendMenuItem,
             this.resumeMenuItem,
             this.closeActiveWindowMenuItem,
-            this.privilegesMenuItem,
             this.menuItem5,
+            this.privilegesMenuItem,
             this.priorityMenuItem,
             this.menuItem7,
             this.copyProcessMenuItem,
@@ -339,9 +339,16 @@
             this.closeActiveWindowMenuItem.Text = "&Close Active Window";
             this.closeActiveWindowMenuItem.Click += new System.EventHandler(this.closeActiveWindowMenuItem_Click);
             // 
+            // privilegesMenuItem
+            // 
+            this.vistaMenu.SetImage(this.privilegesMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
+            this.privilegesMenuItem.Index = 5;
+            this.privilegesMenuItem.Text = "Pr&ivileges...";
+            this.privilegesMenuItem.Click += new System.EventHandler(this.privilegesMenuItem_Click);
+            // 
             // menuItem5
             // 
-            this.menuItem5.Index = 5;
+            this.menuItem5.Index = 4;
             this.menuItem5.Text = "-";
             // 
             // priorityMenuItem
@@ -741,6 +748,18 @@
             this.splitMain.SplitterDistance = 355;
             this.splitMain.TabIndex = 3;
             // 
+            // listProcesses
+            // 
+            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listProcesses.DoubleBuffered = true;
+            this.listProcesses.Location = new System.Drawing.Point(0, 0);
+            this.listProcesses.Name = "listProcesses";
+            this.listProcesses.Provider = null;
+            this.listProcesses.Size = new System.Drawing.Size(355, 475);
+            this.listProcesses.TabIndex = 4;
+            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
+            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
+            // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabProcess);
@@ -777,6 +796,18 @@
             this.groupSearch.TabIndex = 4;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "Search";
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 3;
+            this.buttonSearch.Text = "Search button";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // menuSearch
             // 
@@ -836,6 +867,17 @@
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Location = new System.Drawing.Point(3, 3);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(431, 444);
+            this.listThreads.TabIndex = 0;
+            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
             // tabModules
             // 
@@ -1007,48 +1049,6 @@
             // 
             this.windowMenuItem.Index = 1;
             this.windowMenuItem.Text = "&Window";
-            // 
-            // privilegesMenuItem
-            // 
-            this.vistaMenu.SetImage(this.privilegesMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.privilegesMenuItem.Index = 4;
-            this.privilegesMenuItem.Text = "Pr&ivileges...";
-            this.privilegesMenuItem.Click += new System.EventHandler(this.privilegesMenuItem_Click);
-            // 
-            // listProcesses
-            // 
-            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listProcesses.DoubleBuffered = true;
-            this.listProcesses.Location = new System.Drawing.Point(0, 0);
-            this.listProcesses.Name = "listProcesses";
-            this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(355, 475);
-            this.listProcesses.TabIndex = 4;
-            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 3;
-            this.buttonSearch.Text = "Search button";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Location = new System.Drawing.Point(3, 3);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(431, 444);
-            this.listThreads.TabIndex = 0;
-            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
             // vistaMenu
             // 

@@ -72,14 +72,9 @@ namespace ProcessHacker
                     } while (Win32.Heap32Next(ref heap) != 0);
                 } while (Win32.Heap32ListNext(snapshot, ref hlist) != 0);
             }
-            else if (Marshal.GetLastWin32Error() == 5)
-            {
-                SearchError("Access is denied");
-                return;                   
-            }
             else
             {
-                SearchError("Error " + Marshal.GetLastWin32Error().ToString());
+                SearchError(Win32.GetLastErrorMessage());
                 return;
             }
 
