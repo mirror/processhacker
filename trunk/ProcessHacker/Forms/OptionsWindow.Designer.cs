@@ -81,9 +81,9 @@
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkShowProcessDomains.Location = new System.Drawing.Point(12, 61);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
-            this.checkShowProcessDomains.Size = new System.Drawing.Size(141, 18);
+            this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
-            this.checkShowProcessDomains.Text = "Show process domains";
+            this.checkShowProcessDomains.Text = "Show user/group domains";
             this.checkShowProcessDomains.UseVisualStyleBackColor = true;
             // 
             // checkWarnDangerous

@@ -98,12 +98,14 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.PrivilegeWindowSize = this.Size;
             Properties.Settings.Default.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
+
+            Win32.CloseHandle(_phandle);
         }
 
         private string GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
             if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED_BY_DEFAULT) != 0)
-                return "Enabled By Default";
+                return "Default Enabled";
             else if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) != 0)
                 return "Enabled";
             else if (Attributes == Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED)

@@ -35,13 +35,13 @@
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
             this.menuPrivileges = new System.Windows.Forms.ContextMenu();
-            this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.enableMenuItem = new System.Windows.Forms.MenuItem();
             this.disableMenuItem = new System.Windows.Forms.MenuItem();
             this.removeMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.copyMenuItem = new System.Windows.Forms.MenuItem();
+            this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,6 +82,7 @@
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonClose.Location = new System.Drawing.Point(361, 397);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
@@ -100,12 +101,6 @@
             this.copyMenuItem,
             this.selectAllMenuItem});
             this.menuPrivileges.Popup += new System.EventHandler(this.menuPrivileges_Popup);
-            // 
-            // copyMenuItem
-            // 
-            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 4;
-            this.copyMenuItem.Text = "&Copy";
             // 
             // enableMenuItem
             // 
@@ -128,9 +123,16 @@
             this.removeMenuItem.Text = "&Remove";
             this.removeMenuItem.Click += new System.EventHandler(this.removeMenuItem_Click);
             // 
-            // vistaMenu
+            // menuItem2
             // 
-            this.vistaMenu.ContainerControl = this;
+            this.menuItem2.Index = 3;
+            this.menuItem2.Text = "-";
+            // 
+            // copyMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyMenuItem.Index = 4;
+            this.copyMenuItem.Text = "&Copy";
             // 
             // selectAllMenuItem
             // 
@@ -138,10 +140,9 @@
             this.selectAllMenuItem.Text = "Select &All";
             this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
             // 
-            // menuItem2
+            // vistaMenu
             // 
-            this.menuItem2.Index = 3;
-            this.menuItem2.Text = "-";
+            this.vistaMenu.ContainerControl = this;
             // 
             // ProcessPrivileges
             // 

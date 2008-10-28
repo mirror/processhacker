@@ -195,6 +195,19 @@ namespace ProcessHacker
             SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
         }
 
+        public enum SID_ATTRIBUTES : uint
+        {
+            SE_GROUP_MANDATORY = 0x00000001,
+            SE_GROUP_ENABLED_BY_DEFAULT = 0x00000002,
+            SE_GROUP_ENABLED = 0x00000004,
+            SE_GROUP_OWNER = 0x00000008,
+            SE_GROUP_USE_FOR_DENY_ONLY = 0x00000010,
+            SE_GROUP_INTEGRITY = 0x00000020,
+            SE_GROUP_INTEGRITY_ENABLED = 0x00000040,
+            SE_GROUP_LOGON_ID = 0xc0000000,
+            SE_GROUP_RESOURCE = 0x20000000
+        }
+
         public enum SID_NAME_USE : int
         {
               SidTypeUser = 1,
@@ -403,6 +416,11 @@ namespace ProcessHacker
             [In, MarshalAs(UnmanagedType.LPTStr)] string pStringSid,
             ref IntPtr pSID
         );
+
+        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_GROUPS TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
 
         [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
@@ -909,7 +927,7 @@ namespace ProcessHacker
         public struct SID_AND_ATTRIBUTES
         {
             public int SID; // ptr to a SID object
-            public int Attributes;
+            public SID_ATTRIBUTES Attributes;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1018,6 +1036,15 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct TOKEN_GROUPS
+        {
+            public uint GroupCount;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+            public SID_AND_ATTRIBUTES[] Groups;
+        }  
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct TOKEN_PRIVILEGES
         {
             public uint PrivilegeCount;
@@ -1025,7 +1052,7 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = ANYSIZE_ARRAY)]
             public LUID_AND_ATTRIBUTES[] Privileges;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
             public LUID_AND_ATTRIBUTES[] Privileges2;
         }  
 
@@ -1050,6 +1077,27 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        public static string GetAccountName(int SID, bool IncludeDomain)
+        {
+            StringBuilder name = new StringBuilder(255);
+            StringBuilder domain = new StringBuilder(255);
+            int namelen = 255;
+            int domainlen = 255;
+            SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
+
+            if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
+                return "";
+
+            if (IncludeDomain)
+            {
+                return domain.ToString() + "\\" + name.ToString();
+            }
+            else
+            {
+                return name.ToString();
+            }
+        }
 
         public static string GetLastErrorMessage()
         {
@@ -1165,14 +1213,9 @@ namespace ProcessHacker
 
         public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
         {
-            StringBuilder name = new StringBuilder(255);
-            StringBuilder domain = new StringBuilder(255);
             int token = 0;
             TOKEN_USER user = new TOKEN_USER();
-            SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
             int retlen = 0;
-            int namelen = 255;
-            int domainlen = 255;
 
             if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return "";
@@ -1186,17 +1229,28 @@ namespace ProcessHacker
 
             CloseHandle(token);
 
-            if (LookupAccountSid(0, user.User.SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
-                return "";
+            return GetAccountName(user.User.SID, IncludeDomain); 
+        }
 
-            if (IncludeDomain)
+        public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle)
+        {
+            int token = 0;
+            int retlen = 0;
+            TOKEN_GROUPS tkg = new TOKEN_GROUPS();
+
+            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+                return new TOKEN_GROUPS() { GroupCount = 0 };
+
+            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, ref tkg,
+                Marshal.SizeOf(tkg), ref retlen) == 0)
             {
-                return domain.ToString() + "\\" + name.ToString();
+                CloseHandle(token);
+                return new TOKEN_GROUPS() { GroupCount = 0 };
             }
-            else
-            {
-                return name.ToString();
-            }
+
+            CloseHandle(token);
+
+            return tkg;
         }
 
         public static TOKEN_PRIVILEGES ReadTokenPrivileges(int ProcessHandle)

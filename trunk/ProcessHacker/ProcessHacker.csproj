@@ -152,6 +152,10 @@
       <DependentUpon>InformationBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProcessGroups.resx">
+      <DependentUpon>ProcessGroups.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProcessPrivileges.resx">
       <DependentUpon>ProcessPrivileges.cs</DependentUpon>
     </EmbeddedResource>
@@ -198,6 +202,12 @@
     </Compile>
     <Compile Include="Components\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProcessGroups.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessGroups.Designer.cs">
+      <DependentUpon>ProcessGroups.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProcessPrivileges.cs">
       <SubType>Form</SubType>
@@ -273,6 +283,7 @@
       <DependentUpon>InformationBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Misc\Tokenizer.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UpdateTask.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
@@ -314,6 +325,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\user.png" />
+    <None Include="Resources\group.png" />
     <None Include="Resources\delete.png" />
     <None Include="Resources\tick.png" />
   </ItemGroup>

@@ -38,7 +38,7 @@ namespace ProcessHacker
 
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
-            checkShowProcessDomains.Checked = Properties.Settings.Default.ShowProcessDomains;
+            checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -59,7 +59,7 @@ namespace ProcessHacker
         private void buttonClose_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
-            Properties.Settings.Default.ShowProcessDomains = checkShowProcessDomains.Checked;
+            Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
 
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
 

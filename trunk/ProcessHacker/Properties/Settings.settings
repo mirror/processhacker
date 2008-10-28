@@ -29,7 +29,7 @@
     <Setting Name="SearchType" Type="System.String" Scope="User">
       <Value Profile="(Default)">&amp;Literal Search...</Value>
     </Setting>
-    <Setting Name="ShowProcessDomains" Type="System.Boolean" Scope="User">
+    <Setting Name="ShowAccountDomains" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="WarnDangerous" Type="System.Boolean" Scope="User">
@@ -64,6 +64,12 @@
     </Setting>
     <Setting Name="PrivilegeWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">464, 473</Value>
+    </Setting>
+    <Setting Name="GroupListColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="GroupWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">477, 468</Value>
     </Setting>
   </Settings>
 </SettingsFile>

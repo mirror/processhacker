@@ -119,7 +119,7 @@ namespace ProcessHacker
                         try
                         {
                             item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                Properties.Settings.Default.ShowProcessDomains);
+                                Properties.Settings.Default.ShowAccountDomains);
                         }
                         catch
                         { }
@@ -149,7 +149,7 @@ namespace ProcessHacker
                         try
                         {
                             newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                Properties.Settings.Default.ShowProcessDomains);
+                                Properties.Settings.Default.ShowAccountDomains);
                         }
                         catch
                         { }

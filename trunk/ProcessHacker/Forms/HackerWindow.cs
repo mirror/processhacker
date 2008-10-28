@@ -869,6 +869,18 @@ namespace ProcessHacker
             { }
         }
 
+        private void groupsMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessGroups grpForm = new ProcessGroups(processSelectedPID);
+
+            try
+            {
+                grpForm.ShowDialog();
+            }
+            catch
+            { }
+        }
+
         #region Priority
 
         private void realTimeMenuItem_Click(object sender, EventArgs e)

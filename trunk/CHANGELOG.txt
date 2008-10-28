@@ -2,6 +2,7 @@ Process Hacker
 
 1.1.4.5
  * Fixed crash when attempting to open privileges for System on XP
+ * Added Groups Window (to view process groups)
 
 1.1.4.0
  * Enabled Select All for all lists on the main window
