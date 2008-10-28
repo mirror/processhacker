@@ -164,7 +164,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    if (item.SubItems[1].Text != "Enabled By Default")
+                    if (item.SubItems[1].Text != "Default Enabled")
                     {
                         item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
                         item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
@@ -177,7 +177,7 @@ namespace ProcessHacker
         {
             foreach (ListViewItem item in listPrivileges.SelectedItems)
             {
-                if (item.SubItems[1].Text == "Enabled By Default")
+                if (item.SubItems[1].Text == "Default Enabled")
                 {
                     if (MessageBox.Show("Could not disable " + item.Text + ":\n\nInvalid operation.", "Process Hacker",
                         MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
