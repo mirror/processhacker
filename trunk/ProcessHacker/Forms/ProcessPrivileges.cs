@@ -51,6 +51,18 @@ namespace ProcessHacker
 
             Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(_phandle);
 
+            if (privileges.PrivilegeCount == 0)
+            {
+                Win32.CloseHandle(_phandle);
+
+                MessageBox.Show("Could not read process privileges:\n\n" + Win32.GetLastErrorMessage(),
+                "Process Hacker", MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+
+                this.Close();
+                return;
+            }
+
             if (privileges.PrivilegeCount > 0)
             {
                 string name = Win32.GetPrivilegeName(privileges.Privileges[0].Luid);

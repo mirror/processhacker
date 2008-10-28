@@ -1,5 +1,8 @@
 Process Hacker
 
+1.1.4.5
+ * Fixed crash when attempting to open privileges for System on XP
+
 1.1.4.0
  * Enabled Select All for all lists on the main window
  * Added Privileges Window (to enable, disable and remove privileges)
