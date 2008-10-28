@@ -166,6 +166,24 @@ namespace ProcessHacker
         }
 
         [Flags]
+        public enum POLICY_RIGHTS : uint
+        {
+            POLICY_VIEW_LOCAL_INFORMATION = 0x00000001,
+            POLICY_VIEW_AUDIT_INFORMATION = 0x00000002,
+            POLICY_GET_PRIVATE_INFORMATION = 0x00000004,
+            POLICY_TRUST_ADMIN = 0x00000008,
+            POLICY_CREATE_ACCOUNT = 0x00000010,
+            POLICY_CREATE_SECRET = 0x00000020,
+            POLICY_CREATE_PRIVILEGE = 0x00000040,
+            POLICY_SET_DEFAULT_QUOTA_LIMITS = 0x00000080,
+            POLICY_SET_AUDIT_REQUIREMENTS = 0x00000100,
+            POLICY_AUDIT_LOG_ADMIN = 0x00000200,
+            POLICY_SERVER_ADMIN = 0x00000400,
+            POLICY_LOOKUP_NAMES = 0x00000800,
+            POLICY_NOTIFICATION = 0x00001000
+        }
+
+        [Flags]
         public enum PROCESS_RIGHTS : uint
         {
             PROCESS_TERMINATE = 0x0001,
@@ -399,7 +417,18 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Imported Functions
+        #region Imported Functions  
+     
+        [DllImport("advapi32", SetLastError = true)]
+        public static extern int LsaAddAccountRights(int PolicyHandle, int AccountSid,
+            LSA_UNICODE_STRING[] UserRights, uint CountOfRights);
+
+        [DllImport("advapi32", SetLastError = true)]
+        public static extern int LsaOpenPolicy(int SystemName, LSA_OBJECT_ATTRIBUTES ObjectAttributes,
+            POLICY_RIGHTS DesiredAccess, ref int PolicyHandle);
+
+        [DllImport("advapi32", SetLastError = true)]
+        public static extern int LsaClose(int Handle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int OpenProcessToken(int ProcessHandle, ACCESS_TOKEN_RIGHTS DesiredAccess,
@@ -797,6 +826,27 @@ namespace ProcessHacker
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
             public long[] Reserved;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LSA_OBJECT_ATTRIBUTES
+        {
+            uint Length;
+            int RootDirectory;
+            int ObjectName;
+            uint Attributes;
+            int SecurityDescriptor;
+            int SecurityQualityOfService;
+        }   
+  
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LSA_UNICODE_STRING
+        {
+            public ushort Length;
+            public ushort MaximumLength;
+
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Buffer;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1211,6 +1261,27 @@ namespace ProcessHacker
             }
         }
 
+        public static int GetProcessSID(int ProcessHandle)
+        {
+            int token = 0;
+            TOKEN_USER user = new TOKEN_USER();
+            int retlen = 0;
+
+            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+                return 0;
+
+            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
+                Marshal.SizeOf(user), ref retlen) == 0)
+            {
+                CloseHandle(token);
+                return 0;
+            }
+
+            CloseHandle(token);
+
+            return user.User.SID;
+        }
+
         public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
         {
             int token = 0;
@@ -1230,6 +1301,17 @@ namespace ProcessHacker
             CloseHandle(token);
 
             return GetAccountName(user.User.SID, IncludeDomain); 
+        }
+
+        public static int OpenLocalPolicy()
+        {
+            LSA_OBJECT_ATTRIBUTES attributes = new LSA_OBJECT_ATTRIBUTES();
+            int handle = 0;
+
+            if (LsaOpenPolicy(0, attributes, POLICY_RIGHTS.POLICY_CREATE_PRIVILEGE, ref handle) == 0)
+                return 0;
+
+            return handle;
         }
 
         public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle)
