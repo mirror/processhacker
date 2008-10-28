@@ -111,15 +111,19 @@ dt {
       <dt>Terminate Process(es)</dt>
       <dd>Uses the standard .NET method <code>process.Kill()</code> to terminate a process.</dd>
 
-      <dt>Close Active Window(s)</dt>
-      <dd>Closes the active window of the process.</dd>
-
       <dt>Suspend Process(es)</dt>
       <dd>Windows does not have a built-in method of suspending processes, so this will suspend each
       of the process's threads using the Windows API function <code>SuspendThread()</code>.</dd>
 
       <dt>Resume Process(es)</dt>
       <dd>Resumes the process by resuming each of its threads using <code>ResumeThread()</code>.</dd>
+
+      <dt>Close Active Window(s)</dt>
+      <dd>Closes the active window of the process.</dd>
+      
+      <dt>Privileges...</dt>
+      <dd>Opens a window allowing you to view, enable, disable or remove any of the program's
+      privileges.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.
