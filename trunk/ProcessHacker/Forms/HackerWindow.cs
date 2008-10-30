@@ -465,6 +465,7 @@ namespace ProcessHacker
                     Misc.DisableAllMenuItems(menuModule);
 
                     copyFileNameMenuItem.Enabled = true;
+                    copyModuleMenuItem.Enabled = true;
                     openContainingFolderMenuItem.Enabled = true;
                     propertiesMenuItem.Enabled = true;
                 }
@@ -482,15 +483,15 @@ namespace ProcessHacker
                     copyFileNameMenuItem.Enabled = true;
                     copyModuleMenuItem.Enabled = true;
                 }
+            }
 
-                if (listModules.Items.Count > 0)
-                {
-                    selectAllModuleMenuItem.Enabled = true;
-                }
-                else
-                {
-                    selectAllModuleMenuItem.Enabled = false;
-                }
+            if (listModules.Items.Count > 0)
+            {
+                selectAllModuleMenuItem.Enabled = true;
+            }
+            else
+            {
+                selectAllModuleMenuItem.Enabled = false;
             }
         }
 
@@ -1302,7 +1303,7 @@ namespace ProcessHacker
                 }
                 else if (text == "&Literal Search...")
                 {
-                    if (f.EditSearch(SearchType.Literal) == DialogResult.OK)
+                    if (f.EditSearch(SearchType.Literal, FormStartPosition.CenterScreen) == DialogResult.OK)
                     {
                         f.Show();
                         f.StartSearch();
@@ -1314,7 +1315,7 @@ namespace ProcessHacker
                 }
                 else if (text == "&Regex Search...")
                 {
-                    if (f.EditSearch(SearchType.Regex) == DialogResult.OK)
+                    if (f.EditSearch(SearchType.Regex, FormStartPosition.CenterScreen) == DialogResult.OK)
                     {
                         f.Show();
                         f.StartSearch();

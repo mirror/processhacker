@@ -120,11 +120,18 @@ namespace ProcessHacker
 
         public DialogResult EditSearch(SearchType type)
         {
+            return EditSearch(type, FormStartPosition.CenterParent);
+        }
+
+        public DialogResult EditSearch(SearchType type, FormStartPosition sp)
+        {
             DialogResult dr = DialogResult.Cancel;
 
             _so.Type = type;
 
             SearchWindow sw = new SearchWindow(_pid, _so);
+
+            sw.StartPosition = sp;
 
             if ((dr = sw.ShowDialog()) == DialogResult.OK)
             {
