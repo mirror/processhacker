@@ -145,11 +145,16 @@ namespace ProcessHacker
             PAGE_WRITECOPY = 0x08
         }
 
+        [Flags]
         public enum MEMORY_STATE : int
         {
             MEM_COMMIT = 0x1000,
+            MEM_RESERVE = 0x2000,  
             MEM_FREE = 0x10000,
-            MEM_RESERVE = 0x2000
+            MEM_RESET = 0x80000,
+            MEM_TOP_DOWN = 0x100000,
+            MEM_PHYSICAL = 0x400000,
+            MEM_LARGE_PAGES = 0x20000000
         }
 
         public enum MEMORY_TYPE : int
@@ -419,55 +424,55 @@ namespace ProcessHacker
 
         #region Imported Functions  
      
-        [DllImport("advapi32", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaAddAccountRights(int PolicyHandle, int AccountSid,
             LSA_UNICODE_STRING[] UserRights, uint CountOfRights);
 
-        [DllImport("advapi32", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaOpenPolicy(int SystemName, LSA_OBJECT_ATTRIBUTES ObjectAttributes,
             POLICY_RIGHTS DesiredAccess, ref int PolicyHandle);
 
-        [DllImport("advapi32", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaClose(int Handle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int OpenProcessToken(int ProcessHandle, ACCESS_TOKEN_RIGHTS DesiredAccess,
             ref int TokenHandle);
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int ConvertSidToStringSid(
             int pSID,
             [In, Out, MarshalAs(UnmanagedType.LPTStr)] ref string pStringSid
         );
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int ConvertStringSidToSid(
             [In, MarshalAs(UnmanagedType.LPTStr)] string pStringSid,
             ref IntPtr pSID
         );
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_GROUPS TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_USER TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_PRIVILEGES TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
-                                     
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupAccountSid(string SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
             [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
             ref SID_NAME_USE Use);
 
-        [DllImport("advapi32", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int LookupAccountSid(int SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
             [Out] StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
@@ -551,11 +556,18 @@ namespace ProcessHacker
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetThreadContext(int ThreadHandle, ref CONTEXT Context);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int CreateRemoteThread(int ProcessHandle, int ThreadAttributes,
+            int StackSize, int StartAddress, int Parameter, int CreationFlags, ref int ThreadId); 
+
         [DllImport("shell32.dll")]
         public static extern int ShellExecuteEx(
             [MarshalAs(UnmanagedType.Struct)] ref SHELLEXECUTEINFO s);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int SetWindowsHookEx(int HookId, int HookFunction, int Module, int ThreadId);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int LoadLibrary(string FileName);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
@@ -582,6 +594,9 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int VirtualProtectEx(int Process, int Address, int Size, int NewProtect, ref int OldProtect);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int VirtualAllocEx(int Process, int Address, int Size, MEMORY_STATE Type, MEMORY_PROTECTION Protect);
 
         [DllImport("kernel32.dll")]
         public static extern int DebugActiveProcess(int PID);
