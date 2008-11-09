@@ -25,18 +25,10 @@ namespace ProcessHacker
     public class HeapSearcher : Searcher
     {
         public HeapSearcher(int PID) : base(PID) { }
-        public override event SearchFinished SearchFinished;
-        public override event SearchProgressChanged SearchProgressChanged;
-        public override event SearchError SearchError;
-        void h_SearchProgressChanged(string progress) { }
-        void h_SearchFinished() { }
 
         public override void Search()
         {
             Results.Clear();
-
-            SearchFinished += new SearchFinished(h_SearchFinished);
-            SearchProgressChanged += new SearchProgressChanged(h_SearchProgressChanged);
 
             int snapshot;
             Win32.HEAPLIST32 hlist = new Win32.HEAPLIST32();
@@ -59,7 +51,7 @@ namespace ProcessHacker
 
                     do
                     {
-                        this.SearchProgressChanged(
+                        CallSearchProgressChanged(
                             String.Format("Searching 0x{0:x8} ({1} found)...", heap.dwAddress, count));
 
                         if (heap.dwBlockSize <= minsize)
@@ -74,11 +66,11 @@ namespace ProcessHacker
             }
             else
             {
-                SearchError(Win32.GetLastErrorMessage());
+                CallSearchError(Win32.GetLastErrorMessage());
                 return;
             }
 
-            SearchFinished();
+            CallSearchFinished();
         }
     }
 }

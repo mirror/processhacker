@@ -53,34 +53,6 @@ namespace ProcessHacker
         #endregion    
 
         #region Imported Enums   
-                       
-        [Flags]
-        public enum ACCESS_TOKEN_RIGHTS : uint
-        {
-            TOKEN_ASSIGN_PRIMARY = 0x0001,
-            TOKEN_DUPLICATE = 0x0002,
-            TOKEN_IMPERSONATE = 0x0004,
-            TOKEN_QUERY = 0x0008,
-            TOKEN_QUERY_SOURCE = 0x0010,
-            TOKEN_ADJUST_PRIVILEGES = 0x0020,
-            TOKEN_ADJUST_GROUPS = 0x0040,
-            TOKEN_ADJUST_DEFAULT = 0x0080,
-            TOKEN_ADJUST_SESSIONID = 0x0100,
-            TOKEN_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
-                TOKEN_ASSIGN_PRIMARY |
-                TOKEN_DUPLICATE |
-                TOKEN_IMPERSONATE |
-                TOKEN_QUERY |
-                TOKEN_QUERY_SOURCE |
-                TOKEN_ADJUST_PRIVILEGES |
-                TOKEN_ADJUST_GROUPS |
-                TOKEN_ADJUST_DEFAULT |
-                TOKEN_ADJUST_SESSIONID,
-            TOKEN_READ = STANDARD_RIGHTS.STANDARD_RIGHTS_READ | TOKEN_QUERY,
-            TOKEN_WRITE = STANDARD_RIGHTS.STANDARD_RIGHTS_WRITE |
-                TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT,
-            TOKEN_EXECUTE = STANDARD_RIGHTS.STANDARD_RIGHTS_EXECUTE
-        }
 
         public enum ADDRESS_MODE : int
         {
@@ -216,6 +188,14 @@ namespace ProcessHacker
             SE_PRIVILEGE_ENABLED = 0x00000002,
             SE_PRIVILEGE_REMOVED = 0x00000004,
             SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
+        }
+
+        public enum SECURITY_IMPERSONATION_LEVEL : int
+        {
+            SecurityAnonymous,
+            SecurityIdentification,
+            SecurityImpersonation,
+            SecurityDelegation
         }
 
         public enum SID_ATTRIBUTES : uint
@@ -420,6 +400,40 @@ namespace ProcessHacker
             MaxTokenInfoClass  // MaxTokenInfoClass should always be the last enum
         }
 
+        [Flags]
+        public enum TOKEN_RIGHTS : uint
+        {
+            TOKEN_ASSIGN_PRIMARY = 0x0001,
+            TOKEN_DUPLICATE = 0x0002,
+            TOKEN_IMPERSONATE = 0x0004,
+            TOKEN_QUERY = 0x0008,
+            TOKEN_QUERY_SOURCE = 0x0010,
+            TOKEN_ADJUST_PRIVILEGES = 0x0020,
+            TOKEN_ADJUST_GROUPS = 0x0040,
+            TOKEN_ADJUST_DEFAULT = 0x0080,
+            TOKEN_ADJUST_SESSIONID = 0x0100,
+            TOKEN_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
+                TOKEN_ASSIGN_PRIMARY |
+                TOKEN_DUPLICATE |
+                TOKEN_IMPERSONATE |
+                TOKEN_QUERY |
+                TOKEN_QUERY_SOURCE |
+                TOKEN_ADJUST_PRIVILEGES |
+                TOKEN_ADJUST_GROUPS |
+                TOKEN_ADJUST_DEFAULT |
+                TOKEN_ADJUST_SESSIONID,
+            TOKEN_READ = STANDARD_RIGHTS.STANDARD_RIGHTS_READ | TOKEN_QUERY,
+            TOKEN_WRITE = STANDARD_RIGHTS.STANDARD_RIGHTS_WRITE |
+                TOKEN_ADJUST_PRIVILEGES | TOKEN_ADJUST_GROUPS | TOKEN_ADJUST_DEFAULT,
+            TOKEN_EXECUTE = STANDARD_RIGHTS.STANDARD_RIGHTS_EXECUTE
+        }
+
+        public enum TOKEN_TYPE : int
+        {
+            TokenPrimary = 1,
+            TokenImpersonation
+        }
+
         #endregion
 
         #region Imported Functions  
@@ -436,7 +450,7 @@ namespace ProcessHacker
         public static extern int LsaClose(int Handle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int OpenProcessToken(int ProcessHandle, ACCESS_TOKEN_RIGHTS DesiredAccess,
+        public static extern int OpenProcessToken(int ProcessHandle, TOKEN_RIGHTS DesiredAccess,
             ref int TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -450,6 +464,18 @@ namespace ProcessHacker
             [In, MarshalAs(UnmanagedType.LPTStr)] string pStringSid,
             ref IntPtr pSID
         );
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int CreateProcessWithTokenW(int Token, int LogonFlags,
+            [MarshalAs(UnmanagedType.LPWStr)] string ApplicationName,
+            [MarshalAs(UnmanagedType.LPWStr)] string CommandLine, int CreationFlags,
+            int Environment, int CurrentDirectory, STARTUPINFO StartupInfo,
+            PROCESS_INFORMATION ProcessInfo);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int DuplicateTokenEx(int ExistingToken, TOKEN_RIGHTS DesiredAccess,
+            int TokenAttributes, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType,
+            ref int NewToken);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
@@ -949,6 +975,15 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESS_INFORMATION
+        {
+            int hProcess;
+            int hThread;
+            int dwProcessId;
+            int dwThreadId;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct SHELLEXECUTEINFO
         {
             public int cbSize;
@@ -1017,6 +1052,29 @@ namespace ProcessHacker
             public long[] Reserved;
 
             KDHELP64 KdHelp;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct STARTUPINFO
+        {
+            int cb;
+            [MarshalAs(UnmanagedType.LPTStr)] string lpReserved;
+            [MarshalAs(UnmanagedType.LPTStr)] string lpDesktop;
+            [MarshalAs(UnmanagedType.LPTStr)] string lpTitle;
+            int dwX;
+            int dwY;
+            int dwXSize;
+            int dwYSize;
+            int dwXCountChars;
+            int dwYCountChars;
+            int dwFillAttribute;
+            int dwFlags;
+            short wShowWindow;
+            short cbReserved2;
+            byte lpReserved2;
+            int hStdInput;
+            int hStdOutput;
+            int hStdError;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1119,7 +1177,7 @@ namespace ProcessHacker
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
             public LUID_AND_ATTRIBUTES[] Privileges2;
-        }  
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct TOKEN_USER
@@ -1282,7 +1340,7 @@ namespace ProcessHacker
             TOKEN_USER user = new TOKEN_USER();
             int retlen = 0;
 
-            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return 0;
 
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
@@ -1303,7 +1361,7 @@ namespace ProcessHacker
             TOKEN_USER user = new TOKEN_USER();
             int retlen = 0;
 
-            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return "";
 
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
@@ -1335,7 +1393,7 @@ namespace ProcessHacker
             int retlen = 0;
             TOKEN_GROUPS tkg = new TOKEN_GROUPS();
 
-            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return new TOKEN_GROUPS() { GroupCount = 0 };
 
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, ref tkg,
@@ -1356,9 +1414,9 @@ namespace ProcessHacker
             int retlen = 0;
             TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
 
-            if (OpenProcessToken(ProcessHandle, ACCESS_TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 return new TOKEN_PRIVILEGES() { PrivilegeCount = 0 };
-
+                                              
             if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, ref tkp,
                 Marshal.SizeOf(tkp), ref retlen) == 0)
             {
@@ -1384,7 +1442,7 @@ namespace ProcessHacker
             tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
 
             if (OpenProcessToken(ProcessHandle,
-                ACCESS_TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES | ACCESS_TOKEN_RIGHTS.TOKEN_QUERY,
+                TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES | TOKEN_RIGHTS.TOKEN_QUERY,
                 ref token) == 0)
                 return 0;
 

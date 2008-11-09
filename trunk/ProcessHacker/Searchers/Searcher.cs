@@ -51,9 +51,9 @@ namespace ProcessHacker
         private Dictionary<string, object> _params;
         private List<string[]> _results;
 
-        public virtual event SearchFinished SearchFinished;
-        public virtual event SearchProgressChanged SearchProgressChanged;
-        public virtual event SearchError SearchError;
+        public event SearchFinished SearchFinished;
+        public event SearchProgressChanged SearchProgressChanged;
+        public event SearchError SearchError;
 
         /// <summary>
         /// Creates a dummy searcher which does nothing.
@@ -96,6 +96,24 @@ namespace ProcessHacker
         /// </summary>
         public virtual void Search()
         {
+        }
+
+        protected void CallSearchFinished()
+        {
+            if (SearchFinished != null)
+                SearchFinished();
+        }
+
+        protected void CallSearchProgressChanged(string progress)
+        {
+            if (SearchProgressChanged != null)
+                SearchProgressChanged(progress);
+        }
+
+        protected void CallSearchError(string message)
+        {
+            if (SearchError != null)
+                SearchError(message);
         }
     }
 }

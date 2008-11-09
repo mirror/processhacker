@@ -205,6 +205,22 @@ namespace ProcessHacker
             _thread.Abort();
         }
 
+        private void CallEvent(Delegate e, object item, bool useInvoke)
+        {
+            if (useInvoke)
+            {
+                this.Invoke(new InvokeDelegate(delegate(object item_)
+                {
+                    CallEvent(e, item_, false);
+                }), item);
+            }
+            else
+            {
+                if (e != null)
+                    e.DynamicInvoke(item);
+            }
+        }
+
         protected void CallDictionaryAdded(object item)
         {
             CallDictionaryAdded(item, _useInvoke);
@@ -212,18 +228,7 @@ namespace ProcessHacker
 
         protected void CallDictionaryAdded(object item, bool useInvoke)
         {
-            if (useInvoke)
-            {
-                this.Invoke(new InvokeDelegate(delegate(object item_)
-                {
-                    CallDictionaryAdded(item, false);
-                }), item);
-            }
-            else
-            {
-                if (this.DictionaryAdded != null)
-                    this.DictionaryAdded(item);
-            }
+            CallEvent(this.DictionaryAdded, item, useInvoke);
         }
 
         protected void CallDictionaryModified(object item)
@@ -233,18 +238,7 @@ namespace ProcessHacker
 
         protected void CallDictionaryModified(object item, bool useInvoke)
         {
-            if (useInvoke)
-            {
-                this.Invoke(new InvokeDelegate(delegate(object item_)
-                {
-                    CallDictionaryModified(item, false);
-                }), item);
-            }
-            else
-            {
-                if (this.DictionaryModified != null)
-                    this.DictionaryModified(item);
-            }
+            CallEvent(this.DictionaryModified, item, useInvoke);
         }
 
         protected void CallDictionaryRemoved(object item)
@@ -254,18 +248,7 @@ namespace ProcessHacker
 
         protected void CallDictionaryRemoved(object item, bool useInvoke)
         {
-            if (useInvoke)
-            {
-                this.Invoke(new InvokeDelegate(delegate(object item_)
-                {
-                    CallDictionaryRemoved(item, false);
-                }), item);
-            }
-            else
-            {
-                if (this.DictionaryRemoved != null)
-                    this.DictionaryRemoved(item);
-            }
+            CallEvent(this.DictionaryRemoved, item, useInvoke);
         }
     }
 }

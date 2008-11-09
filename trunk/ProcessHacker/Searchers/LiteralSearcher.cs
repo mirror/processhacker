@@ -25,18 +25,10 @@ namespace ProcessHacker
     public class LiteralSearcher : Searcher
     {
         public LiteralSearcher(int PID) : base(PID) { }
-        public override event SearchFinished SearchFinished;
-        public override event SearchProgressChanged SearchProgressChanged;
-        public override event SearchError SearchError;
-        void h_SearchProgressChanged(string progress) { }
-        void h_SearchFinished() { }
 
         public override void Search()
         {
             Results.Clear();
-
-            SearchFinished += new SearchFinished(h_SearchFinished);
-            SearchProgressChanged += new SearchProgressChanged(h_SearchProgressChanged);
 
             byte[] text = (byte[])Params["text"];
             int handle = 0;
@@ -52,7 +44,7 @@ namespace ProcessHacker
 
             if (text.Length == 0)
             {
-                SearchFinished();
+                CallSearchFinished();
                 return;
             }
 
@@ -61,7 +53,7 @@ namespace ProcessHacker
 
             if (handle == 0)
             {
-                SearchError("Could not open process: " + Win32.GetLastErrorMessage());
+                CallSearchError("Could not open process: " + Win32.GetLastErrorMessage());
                 return;
             }
 
@@ -96,7 +88,7 @@ namespace ProcessHacker
                     byte[] data = new byte[info.RegionSize];
                     int bytesRead = 0;
 
-                    this.SearchProgressChanged(
+                    CallSearchProgressChanged(
                         String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress, count));
 
                     Win32.ReadProcessMemory(handle, info.BaseAddress, data, info.RegionSize, ref bytesRead);
@@ -138,7 +130,7 @@ namespace ProcessHacker
 
             Win32.CloseHandle(handle);
 
-            SearchFinished();
+            CallSearchFinished();
         }
     }
 }
