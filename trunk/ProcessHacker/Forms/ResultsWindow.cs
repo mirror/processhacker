@@ -120,18 +120,32 @@ namespace ProcessHacker
 
         public DialogResult EditSearch(SearchType type)
         {
-            return EditSearch(type, FormStartPosition.CenterParent);
+            return EditSearch(type, this.Location, this.Size);
         }
 
-        public DialogResult EditSearch(SearchType type, FormStartPosition sp)
+        public DialogResult EditSearch(SearchType type, System.Drawing.Point location, System.Drawing.Size size)
         {
             DialogResult dr = DialogResult.Cancel;
 
             _so.Type = type;
 
             SearchWindow sw = new SearchWindow(_pid, _so);
+            System.Drawing.Rectangle workingArea = Screen.GetWorkingArea(sw);
 
-            sw.StartPosition = sp;
+            sw.StartPosition = FormStartPosition.Manual;
+            sw.Location = new System.Drawing.Point(
+                location.X + (size.Width - sw.Width) / 2,
+                location.Y + (size.Height - sw.Height) / 2);
+
+            if (sw.Location.X < workingArea.Left)
+                sw.Location = new System.Drawing.Point(workingArea.Left, sw.Location.Y);
+            if (sw.Location.Y < workingArea.Top)
+                sw.Location = new System.Drawing.Point(sw.Location.X, workingArea.Top);
+
+            if (sw.Location.X + sw.Size.Width > workingArea.Width)
+                sw.Location = new System.Drawing.Point(workingArea.Width - sw.Size.Width, sw.Location.Y);
+            if (sw.Location.Y + sw.Size.Height > workingArea.Height)
+                sw.Location = new System.Drawing.Point(sw.Location.X, workingArea.Height - sw.Size.Height);
 
             if ((dr = sw.ShowDialog()) == DialogResult.OK)
             {

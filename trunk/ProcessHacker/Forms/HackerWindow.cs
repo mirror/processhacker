@@ -1295,6 +1295,9 @@ namespace ProcessHacker
 
         private void PerformSearch(string text)
         {
+            Point location = this.Location;
+            System.Drawing.Size size = this.Size;
+
             ResultsWindow rw = Program.GetResultsWindow(processSelectedPID, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
             {
                 if (text == "&New Results Window...")
@@ -1303,7 +1306,7 @@ namespace ProcessHacker
                 }
                 else if (text == "&Literal Search...")
                 {
-                    if (f.EditSearch(SearchType.Literal, FormStartPosition.CenterScreen) == DialogResult.OK)
+                    if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
                     {
                         f.Show();
                         f.StartSearch();
@@ -1315,7 +1318,7 @@ namespace ProcessHacker
                 }
                 else if (text == "&Regex Search...")
                 {
-                    if (f.EditSearch(SearchType.Regex, FormStartPosition.CenterScreen) == DialogResult.OK)
+                    if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
                     {
                         f.Show();
                         f.StartSearch();
