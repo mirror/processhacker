@@ -150,8 +150,12 @@ namespace ProcessHacker
                 }
 
                 _provider = value;
-
+                
                 listProcesses.Items.Clear();
+
+                foreach (string k in imageList.Images.Keys)
+                    if (k != "Generic")
+                        imageList.Images.RemoveByKey(k);
 
                 if (_provider != null)
                 {
@@ -234,8 +238,10 @@ namespace ProcessHacker
             int index = listProcesses.Items[pitem.PID.ToString()].Index;
             bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
             int selectedCount = listProcesses.SelectedItems.Count;
+            ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
 
-            listProcesses.Items[pitem.PID.ToString()].Remove();
+            imageList.Images.RemoveByKey(litem.ImageKey);
+            litem.Remove();
 
             if (selected && selectedCount == 1)
             {

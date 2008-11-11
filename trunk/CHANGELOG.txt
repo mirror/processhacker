@@ -1,5 +1,8 @@
 Process Hacker
 
+1.1.5.0
+ * Fixed memory leak with process icons
+
 1.1.4.5
  * Fixed crash when attempting to open privileges for System on XP
  * Added Groups Window (to view process groups)

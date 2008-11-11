@@ -80,7 +80,12 @@ namespace ProcessHacker
                     item.PID = p.Id;
                     item.Process = p;
 
-                    item.Icon = Win32.GetProcessIcon(p);
+                    try
+                    {
+                        item.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
+                    }
+                    catch
+                    { }
 
                     try
                     {
