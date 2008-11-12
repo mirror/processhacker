@@ -643,6 +643,7 @@ namespace ProcessHacker
                 priorityMenuItem.Enabled = false;
                 copyProcessMenuItem.Enabled = false;
                 privilegesMenuItem.Enabled = false;
+                groupsMenuItem.Enabled = false;
             }
             else
             {
@@ -652,6 +653,7 @@ namespace ProcessHacker
                 {
                     priorityMenuItem.Enabled = true;
                     privilegesMenuItem.Enabled = true;
+                    groupsMenuItem.Enabled = true;
                     terminateMenuItem.Text = "&Terminate Process";
                     closeActiveWindowMenuItem.Text = "&Close Active Window";
                     suspendMenuItem.Text = "&Suspend Process";
@@ -703,6 +705,7 @@ namespace ProcessHacker
                 {
                     priorityMenuItem.Enabled = false;
                     privilegesMenuItem.Enabled = false;
+                    groupsMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
                     closeActiveWindowMenuItem.Text = "&Close Active Windows";
                     suspendMenuItem.Text = "&Suspend Processes";

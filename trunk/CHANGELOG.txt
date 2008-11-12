@@ -2,6 +2,8 @@ Process Hacker
 
 1.1.5.0
  * Fixed memory leak with process icons
+ * Removed useless starting "\" in account names
+ * Fixed group menu item enabling and disabling
 
 1.1.4.5
  * Fixed crash when attempting to open privileges for System on XP

@@ -1214,7 +1214,7 @@ namespace ProcessHacker
 
             if (IncludeDomain)
             {
-                return domain.ToString() + "\\" + name.ToString();
+                return ((domain.ToString() != "") ? domain.ToString() + "\\" : "") + name.ToString();
             }
             else
             {
