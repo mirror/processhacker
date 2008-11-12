@@ -239,8 +239,10 @@ namespace ProcessHacker
             bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
             int selectedCount = listProcesses.SelectedItems.Count;
             ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+            string image = litem.ImageKey;
 
-            imageList.Images.RemoveByKey(litem.ImageKey);
+            litem.ImageKey = "Generic";
+            imageList.Images.RemoveByKey(image);
             litem.Remove();
 
             if (selected && selectedCount == 1)
