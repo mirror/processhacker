@@ -13,6 +13,7 @@ namespace ProcessHacker
         public event MouseEventHandler MouseDown;
         public event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
+        private int _id = 1;
 
         public ProcessList()
         {
@@ -214,12 +215,12 @@ namespace ProcessHacker
 
             if (pitem.Icon == null)
             {
-                litem.ImageKey = "Generic";
+                litem.ImageIndex = 0;
             }
             else
             {
-                imageList.Images.Add(pitem.PID.ToString(), pitem.Icon);
-                litem.ImageKey = pitem.PID.ToString();
+                imageList.Images.Add(pitem.Icon);
+                litem.ImageIndex = _id++;
             }
         }
 
@@ -239,11 +240,10 @@ namespace ProcessHacker
             bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
             int selectedCount = listProcesses.SelectedItems.Count;
             ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
-            string image = litem.ImageKey;
+            int imageIndex = litem.ImageIndex;
 
-            litem.ImageKey = "Generic";
-            imageList.Images.RemoveByKey(image);
             litem.Remove();
+            imageList.Images[imageIndex].Dispose();
 
             if (selected && selectedCount == 1)
             {
