@@ -325,6 +325,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\table_sort.png" />
     <None Include="Resources\user.png" />
     <None Include="Resources\group.png" />
     <None Include="Resources\delete.png" />

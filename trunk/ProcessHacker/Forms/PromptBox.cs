@@ -47,7 +47,6 @@ namespace ProcessHacker
         {                          
             InitializeComponent();
 
-
             if (value == "")
             {
                 textValue.Text = LastValue;

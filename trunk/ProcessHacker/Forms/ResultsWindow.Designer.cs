@@ -49,12 +49,13 @@ namespace ProcessHacker
             this.columnLength = new System.Windows.Forms.ColumnHeader();
             this.columnString = new System.Windows.Forms.ColumnHeader();
             this.labelText = new System.Windows.Forms.Label();
+            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
+            this.windowMenuItem = new System.Windows.Forms.MenuItem();
+            this.buttonFilter = new System.Windows.Forms.Button();
             this.buttonIntersect = new System.Windows.Forms.Button();
             this.buttonEdit = new System.Windows.Forms.Button();
             this.buttonFind = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
-            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
-            this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
@@ -75,7 +76,7 @@ namespace ProcessHacker
             this.listResults.Location = new System.Drawing.Point(12, 35);
             this.listResults.Name = "listResults";
             this.listResults.ShowItemToolTips = true;
-            this.listResults.Size = new System.Drawing.Size(464, 338);
+            this.listResults.Size = new System.Drawing.Size(464, 296);
             this.listResults.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listResults.TabIndex = 13;
             this.listResults.UseCompatibleStateImageBehavior = false;
@@ -113,6 +114,27 @@ namespace ProcessHacker
             this.labelText.Size = new System.Drawing.Size(32, 13);
             this.labelText.TabIndex = 19;
             this.labelText.Text = "Text";
+            // 
+            // mainMenu
+            // 
+            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.windowMenuItem});
+            // 
+            // windowMenuItem
+            // 
+            this.windowMenuItem.Index = 0;
+            this.windowMenuItem.Text = "&Window";
+            // 
+            // buttonFilter
+            // 
+            this.buttonFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonFilter.Image = global::ProcessHacker.Properties.Resources.table_sort;
+            this.buttonFilter.Location = new System.Drawing.Point(392, 5);
+            this.buttonFilter.Name = "buttonFilter";
+            this.buttonFilter.Size = new System.Drawing.Size(24, 24);
+            this.buttonFilter.TabIndex = 22;
+            this.buttonFilter.UseVisualStyleBackColor = true;
+            this.buttonFilter.Click += new System.EventHandler(this.buttonFilter_Click);
             // 
             // buttonIntersect
             // 
@@ -156,16 +178,6 @@ namespace ProcessHacker
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // mainMenu
-            // 
-            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.windowMenuItem});
-            // 
-            // windowMenuItem
-            // 
-            this.windowMenuItem.Index = 0;
-            this.windowMenuItem.Text = "&Window";
-            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -174,7 +186,8 @@ namespace ProcessHacker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(488, 385);
+            this.ClientSize = new System.Drawing.Size(488, 343);
+            this.Controls.Add(this.buttonFilter);
             this.Controls.Add(this.buttonIntersect);
             this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonFind);
@@ -209,5 +222,6 @@ namespace ProcessHacker
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem windowMenuItem;
+        private System.Windows.Forms.Button buttonFilter;
     }
 }
