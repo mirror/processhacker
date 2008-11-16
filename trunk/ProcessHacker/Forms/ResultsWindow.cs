@@ -441,19 +441,33 @@ namespace ProcessHacker
                 item = new MenuItem("Regex...", new EventHandler(filterMenuItem_Clicked));
                 item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
+                    try
+                    {
+                        System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex(s2);
 
-                    return r.IsMatch(s1);
+                        return r.IsMatch(s1);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 });
                 columnMenu.MenuItems.Add(item);
 
                 item = new MenuItem("Regex (case-insensitive)...", new EventHandler(filterMenuItem_Clicked));
                 item.Tag = new Matcher(delegate(string s1, string s2)
                 {
-                    System.Text.RegularExpressions.Regex r = 
-                        new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    try
+                    {
+                        System.Text.RegularExpressions.Regex r =
+                            new System.Text.RegularExpressions.Regex(s2, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 
-                    return r.IsMatch(s1);
+                        return r.IsMatch(s1);
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 });
                 columnMenu.MenuItems.Add(item);
 
