@@ -249,7 +249,7 @@ namespace ProcessHacker
                 values += "\r\n64-bit Integer, big-endian, signed: " + ((long)value).ToString();
             }
 
-            valuesForm = new InformationBox(values);
+            valuesForm = new InformationBox(values.Trim());
             valuesForm.ShowDialog();
         }
 
