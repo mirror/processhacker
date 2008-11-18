@@ -218,6 +218,17 @@
     </Compile>
     <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\ListViewMenu.cs" />
+    <Compile Include="Misc\Utils.cs" />
+    <Compile Include="PE\SectionFlags.cs" />
+    <Compile Include="PE\ImageCharacteristics.cs" />
+    <Compile Include="PE\COFFHeader.cs" />
+    <Compile Include="PE\COFFOptionalHeader.cs" />
+    <Compile Include="PE\SectionHeader.cs" />
+    <Compile Include="PE\DllCharacteristics.cs" />
+    <Compile Include="PE\ImageDataDirectory.cs" />
+    <Compile Include="PE\ImageSubsystem.cs" />
+    <Compile Include="PE\MachineType.cs" />
+    <Compile Include="PE\PEFile.cs" />
     <Compile Include="Providers\ThreadProvider.cs" />
     <Compile Include="Providers\ProcessProvider.cs" />
     <Compile Include="Components\SplitButton.cs">

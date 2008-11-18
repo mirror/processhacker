@@ -173,6 +173,7 @@ namespace ProcessHacker
 
                 buttonFind.Image = global::ProcessHacker.Properties.Resources.cross;
                 buttonEdit.Enabled = false;
+                buttonFilter.Enabled = false;
                 buttonIntersect.Enabled = false;
                 buttonSave.Enabled = false;
 
@@ -222,6 +223,7 @@ namespace ProcessHacker
                 buttonFind.Image = global::ProcessHacker.Properties.Resources.arrow_refresh;
                 this.Cursor = Cursors.Default;
                 buttonEdit.Enabled = true;
+                buttonFilter.Enabled = true;
                 buttonIntersect.Enabled = true;
                 buttonSave.Enabled = true;
                 buttonFind.Enabled = true;
