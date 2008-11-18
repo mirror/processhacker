@@ -27,7 +27,7 @@ using System.IO;
 namespace ProcessHacker.PE
 {
     /// <summary>
-    /// Represents a COFF header.
+    /// Represents a section header.
     /// </summary>
     public class SectionHeader
     {
