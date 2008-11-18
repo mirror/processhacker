@@ -39,9 +39,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThreadWindow));
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.threadMenuItem = new System.Windows.Forms.MenuItem();
-            this.suspendMenuItem = new System.Windows.Forms.MenuItem();
-            this.resumeMenuItem = new System.Windows.Forms.MenuItem();
-            this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.listViewCallStack = new System.Windows.Forms.ListView();
@@ -53,6 +50,9 @@
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.suspendMenuItem = new System.Windows.Forms.MenuItem();
+            this.resumeMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.groupBoxCallStack.SuspendLayout();
             this.groupRegisters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -72,30 +72,6 @@
             this.resumeMenuItem,
             this.terminateMenuItem});
             this.threadMenuItem.Text = "&Thread";
-            // 
-            // suspendMenuItem
-            // 
-            this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendMenuItem.Index = 0;
-            this.suspendMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
-            this.suspendMenuItem.Text = "&Suspend";
-            this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
-            // 
-            // resumeMenuItem
-            // 
-            this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeMenuItem.Index = 1;
-            this.resumeMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
-            this.resumeMenuItem.Text = "&Resume";
-            this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
-            // 
-            // terminateMenuItem
-            // 
-            this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.terminateMenuItem.Index = 2;
-            this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlDel;
-            this.terminateMenuItem.Text = "&Terminate";
-            this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
             // 
             // windowMenuItem
             // 
@@ -119,7 +95,7 @@
             this.listViewCallStack.FullRowSelect = true;
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
-            this.listViewCallStack.Size = new System.Drawing.Size(322, 202);
+            this.listViewCallStack.Size = new System.Drawing.Size(322, 181);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -142,7 +118,7 @@
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 12);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 227);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 206);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -152,7 +128,7 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 245);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 224);
             this.groupRegisters.Name = "groupRegisters";
             this.groupRegisters.Size = new System.Drawing.Size(334, 132);
             this.groupRegisters.TabIndex = 2;
@@ -188,11 +164,35 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // suspendMenuItem
+            // 
+            this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
+            this.suspendMenuItem.Index = 0;
+            this.suspendMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
+            this.suspendMenuItem.Text = "&Suspend";
+            this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
+            // 
+            // resumeMenuItem
+            // 
+            this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
+            this.resumeMenuItem.Index = 1;
+            this.resumeMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
+            this.resumeMenuItem.Text = "&Resume";
+            this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
+            // 
+            // terminateMenuItem
+            // 
+            this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.terminateMenuItem.Index = 2;
+            this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlDel;
+            this.terminateMenuItem.Text = "&Terminate";
+            this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
+            // 
             // ThreadWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 389);
+            this.ClientSize = new System.Drawing.Size(358, 368);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;

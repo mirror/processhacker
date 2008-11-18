@@ -39,14 +39,20 @@ namespace ProcessHacker
 
         public static Dictionary<string, MemoryEditor> MemoryEditors = new Dictionary<string, MemoryEditor>();
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
+
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
+
         public static Dictionary<string, ThreadWindow> ThreadWindows = new Dictionary<string, ThreadWindow>();
         public static Dictionary<string, Thread> ThreadThreads = new Dictionary<string, Thread>();
+
+        public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
+        public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
         public delegate void ResultsWindowInvokeAction(ResultsWindow f);
         public delegate void MemoryEditorInvokeAction(MemoryEditor f);
         public delegate void ThreadWindowInvokeAction(ThreadWindow f);
+        public delegate void PEWindowInvokeAction(PEWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
         /// <summary>
@@ -75,7 +81,6 @@ namespace ProcessHacker
         /// <param name="PID">The PID of the process to edit</param>
         /// <param name="address">The address to start editing at</param>
         /// <param name="length">The length to edit</param>
-        /// <returns></returns>
         public static MemoryEditor GetMemoryEditor(int PID, int address, int length)
         {
             return GetMemoryEditor(PID, address, length, new MemoryEditorInvokeAction(delegate {}));
@@ -133,8 +138,6 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the results window on a separate thread.
         /// </summary>
-        /// <param name="PID"></param>
-        /// <returns></returns>
         public static ResultsWindow GetResultsWindow(int PID)
         {
             return GetResultsWindow(PID, new ResultsWindowInvokeAction(delegate { }));
@@ -143,9 +146,7 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the results window on a separate thread and invokes an action on that thread.
         /// </summary>
-        /// <param name="PID"></param>
         /// <param name="action">The action to be performed.</param>
-        /// <returns></returns>
         public static ResultsWindow GetResultsWindow(int PID, ResultsWindowInvokeAction action)
         {
             ResultsWindow rw = null;
@@ -181,8 +182,6 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the thread window on a separate thread.
         /// </summary>
-        /// <param name="PID"></param>
-        /// <returns></returns>
         public static ThreadWindow GetThreadWindow(int PID, int TID)
         {
             return GetThreadWindow(PID, TID, new ThreadWindowInvokeAction(delegate { }));
@@ -191,9 +190,7 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the thread window on a separate thread and invokes an action on that thread.
         /// </summary>
-        /// <param name="PID"></param>
         /// <param name="action">The action to be performed.</param>
-        /// <returns></returns>
         public static ThreadWindow GetThreadWindow(int PID, int TID, ThreadWindowInvokeAction action)
         {
             ThreadWindow tw = null;
@@ -224,6 +221,50 @@ namespace ProcessHacker
             Program.ThreadThreads.Add(id, t);
 
             return tw;
+        }
+
+        /// <summary>
+        /// Creates an instance of the PE window on a separate thread.
+        /// </summary>
+        public static PEWindow GetPEWindow(string path)
+        {
+            return GetPEWindow(path, new PEWindowInvokeAction(delegate { }));
+        }
+
+        /// <summary>
+        /// Creates an instance of the thread window on a separate thread and invokes an action on that thread.
+        /// </summary>
+        /// <param name="action">The action to be performed.</param>
+        public static PEWindow GetPEWindow(string path, PEWindowInvokeAction action)
+        {
+            PEWindow pw = null;
+            string id = "";
+
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                pw = new PEWindow(path);
+
+                id = pw.Id;
+
+                action(pw);
+
+                try
+                {
+                    Application.Run(pw);
+                }
+                catch
+                { }
+
+                Program.PEThreads.Remove(id);
+            }));
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+
+            while (id == "") Thread.Sleep(1);
+            Program.PEThreads.Add(id, t);
+
+            return pw;
         }
 
         public static void FocusWindow(Form f)
@@ -321,6 +362,12 @@ namespace ProcessHacker
                 Texts.Add(f.Text);
             }
 
+            foreach (Form f in Program.PEWindows.Values)
+            {
+                TextToForm.Add(f.Text, f);
+                Texts.Add(f.Text);
+            }
+
             Texts.Sort();
 
             UpdateWindow(HackerWindow, Texts, TextToForm);
@@ -336,6 +383,11 @@ namespace ProcessHacker
             }
 
             foreach (Form f in ThreadWindows.Values)
+            {
+                UpdateWindow(f, Texts, TextToForm);
+            }
+
+            foreach (Form f in PEWindows.Values)
             {
                 UpdateWindow(f, Texts, TextToForm);
             }

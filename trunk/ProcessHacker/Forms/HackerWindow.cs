@@ -301,6 +301,24 @@ namespace ProcessHacker
             }
         }
 
+        private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                PEWindow pw = Program.GetPEWindow(ofd.FileName, new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                {
+                    try
+                    {
+                        f.Show();
+                    }
+                    catch
+                    { }
+                }));
+            }
+        }
+
         private void aboutMenuItem_Click(object sender, EventArgs e)
         {
             AboutWindow about = new AboutWindow();
@@ -544,11 +562,14 @@ namespace ProcessHacker
             {
                 if (item.SubItems[0].Text == address)
                 {
+                    DeselectAll(listMemory);
                     item.Selected = true;
                     tabControl.SelectedTab = tabMemory;
                     listMemory.EnsureVisible(item.Index);
                     listMemory.Select();
                     listMemory.Focus();
+
+                    break;
                 }
             }
         }

@@ -38,7 +38,7 @@ namespace ProcessHacker.PE
 
             // windows-specific fields
             if (this.Magic == COFFOptionalHeader.PE32Magic)
-                this.ImageBase = br.ReadUInt32();
+                this.ImageBase = br.ReadUInt64() & 0xffffffff; // the specs are wrong...
             else if (this.Magic == COFFOptionalHeader.PE32PlusMagic)
                 this.ImageBase = br.ReadUInt64();
             else

@@ -152,6 +152,10 @@
       <DependentUpon>InformationBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PEWindow.resx">
+      <DependentUpon>PEWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProcessGroups.resx">
       <DependentUpon>ProcessGroups.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -204,6 +208,12 @@
     <Compile Include="Components\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PEWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PEWindow.Designer.cs">
+      <DependentUpon>PEWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProcessGroups.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,13 +229,14 @@
     <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\ListViewMenu.cs" />
     <Compile Include="Misc\Utils.cs" />
+    <Compile Include="PE\ExportData.cs" />
     <Compile Include="PE\SectionFlags.cs" />
     <Compile Include="PE\ImageCharacteristics.cs" />
     <Compile Include="PE\COFFHeader.cs" />
     <Compile Include="PE\COFFOptionalHeader.cs" />
     <Compile Include="PE\SectionHeader.cs" />
     <Compile Include="PE\DllCharacteristics.cs" />
-    <Compile Include="PE\ImageDataDirectory.cs" />
+    <Compile Include="PE\ImageData.cs" />
     <Compile Include="PE\ImageSubsystem.cs" />
     <Compile Include="PE\MachineType.cs" />
     <Compile Include="PE\PEFile.cs" />

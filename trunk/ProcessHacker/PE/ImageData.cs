@@ -100,7 +100,7 @@ namespace ProcessHacker.PE
     /// Represents a data directory containing the address and size of a table 
     /// or string in the image.
     /// </summary>
-    public struct ImageDataDirectory
+    public struct ImageData
     {
         /// <summary>
         /// The relative virtual address (RVA) of the table.

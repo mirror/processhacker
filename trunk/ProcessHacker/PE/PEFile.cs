@@ -30,7 +30,10 @@ namespace ProcessHacker.PE
 
         private COFFHeader _coffHeader;
         private COFFOptionalHeader _coffOptionalHeader;
+        private Dictionary<ImageDataType, ImageData> _imageData = new Dictionary<ImageDataType,ImageData>();
         private List<SectionHeader> _sections = new List<SectionHeader>();
+
+        public ExportData ExportData;
 
         public PEFile(string path)
         {
@@ -67,9 +70,33 @@ namespace ProcessHacker.PE
             // read COFF optional header
             _coffOptionalHeader = new COFFOptionalHeader(br);
 
+            // read image data directory
+            for (int i = 0; i < _coffOptionalHeader.NumberOfRvaAndSizes; i++)
+            {
+                _imageData.Add((ImageDataType)i, new ImageData()
+                {
+                    VirtualAddress = br.ReadUInt32(),
+                    Size = br.ReadUInt32()
+                });
+            }
+
+            // read section headers
             for (int i = 0; i < _coffHeader.NumberOfSections; i++)
             {
                 _sections.Add(new SectionHeader(br));
+            }
+
+            // read export table
+            if (_imageData.ContainsKey(ImageDataType.ExportTable))
+            {
+                ImageData iD = _imageData[ImageDataType.ExportTable];
+
+                if (iD.VirtualAddress != 0)
+                {
+                    s.Seek(iD.VirtualAddress + _coffOptionalHeader.BaseOfCode, SeekOrigin.Begin);
+
+                    this.ExportData = new ExportData(br, _coffOptionalHeader.BaseOfCode);
+                }
             }
         }
 
@@ -81,6 +108,11 @@ namespace ProcessHacker.PE
         public COFFOptionalHeader COFFOptionalHeader
         {
             get { return _coffOptionalHeader; }
+        }
+
+        public Dictionary<ImageDataType, ImageData> ImageData
+        {
+            get { return _imageData; }
         }
 
         public List<SectionHeader> Sections

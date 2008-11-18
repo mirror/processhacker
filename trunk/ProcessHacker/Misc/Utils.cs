@@ -110,9 +110,22 @@ namespace ProcessHacker
             }
         }
 
-        public static bool ColorsEqual(Color a, Color b)
+        public static string FlagsToString(Type e, uint value)
         {
-            return (a.R == b.R) && (a.G == b.G) && (a.B == b.B) && (a.A == b.A);
+            string r = "";
+
+            foreach (uint flag in Enum.GetValues(e))
+            {
+                if ((value & flag) == flag)
+                {
+                    r += Enum.GetName(e, flag) + ", ";
+                }
+            }
+
+            if (r.EndsWith(", "))
+                r = r.Remove(r.Length - 3, 2);
+
+            return r;
         }
 
         public static int IntCeilDiv(int a, int b)

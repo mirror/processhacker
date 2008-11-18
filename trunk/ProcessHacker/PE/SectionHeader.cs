@@ -35,7 +35,7 @@ namespace ProcessHacker.PE
         {
             int i = 0;
 
-            while (i <= 8)
+            while (i < 8)
             {
                 byte b = br.ReadByte();
 
