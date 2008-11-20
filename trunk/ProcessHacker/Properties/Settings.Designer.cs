@@ -310,5 +310,77 @@ namespace ProcessHacker.Properties {
                 this["PEWindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PECOFFHColumns {
+            get {
+                return ((string)(this["PECOFFHColumns"]));
+            }
+            set {
+                this["PECOFFHColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PECOFFOHColumns {
+            get {
+                return ((string)(this["PECOFFOHColumns"]));
+            }
+            set {
+                this["PECOFFOHColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PEImageDataColumns {
+            get {
+                return ((string)(this["PEImageDataColumns"]));
+            }
+            set {
+                this["PEImageDataColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PESectionsColumns {
+            get {
+                return ((string)(this["PESectionsColumns"]));
+            }
+            set {
+                this["PESectionsColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PEExportsColumns {
+            get {
+                return ((string)(this["PEExportsColumns"]));
+            }
+            set {
+                this["PEExportsColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PEImportsColumns {
+            get {
+                return ((string)(this["PEImportsColumns"]));
+            }
+            set {
+                this["PEImportsColumns"] = value;
+            }
+        }
     }
 }

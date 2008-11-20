@@ -240,6 +240,15 @@ namespace ProcessHacker
             PEWindow pw = null;
             string id = "";
 
+            if (PEWindows.ContainsKey(path))
+            {
+                pw = PEWindows[path];
+
+                pw.Invoke(new MethodInvoker(delegate { action(pw); }));
+
+                return pw;
+            }
+
             Thread t = new Thread(new ThreadStart(delegate
             {
                 pw = new PEWindow(path);

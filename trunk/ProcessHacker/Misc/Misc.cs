@@ -105,6 +105,58 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the file name of the currently running kernel.
+        /// </summary>
+        /// <returns>The kernel file name.</returns>
+        public static string GetKernelFileName()
+        {
+            int RequiredSize = 0;
+            int[] ImageBases;
+
+            Win32.EnumDeviceDrivers(null, 0, ref RequiredSize);
+            ImageBases = new int[RequiredSize];
+            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), ref RequiredSize);
+
+            for (int i = 0; i < RequiredSize; i++)
+            {
+                if (ImageBases[i] == 0)
+                    continue;
+
+                StringBuilder name = new StringBuilder(256);
+                StringBuilder filename = new StringBuilder(256);
+                string realname = "";
+
+                Win32.GetDeviceDriverBaseName(ImageBases[i], name, 255);
+                Win32.GetDeviceDriverFileName(ImageBases[i], filename, 255);
+
+                try
+                {
+                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(filename.ToString()));
+                    bool kernel = false;
+
+                    realname = fi.FullName;
+
+                    foreach (string k in Misc.KernelNames)
+                    {
+                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        {
+                            kernel = true;
+
+                            break;
+                        }
+                    }
+
+                    if (kernel)
+                        return realname;
+                }
+                catch
+                { }
+            }
+
+            return "";
+        }
+
+        /// <summary>
         /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".
         /// </summary>
         /// <param name="time">The <see cref="DateTime"/> object to format.</param>

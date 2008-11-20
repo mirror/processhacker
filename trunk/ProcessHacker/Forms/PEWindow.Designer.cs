@@ -101,7 +101,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(423, 405);
+            this.tabControl.Size = new System.Drawing.Size(423, 402);
             this.tabControl.TabIndex = 0;
             // 
             // tabCOFFHeader
@@ -110,7 +110,7 @@
             this.tabCOFFHeader.Location = new System.Drawing.Point(4, 22);
             this.tabCOFFHeader.Name = "tabCOFFHeader";
             this.tabCOFFHeader.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCOFFHeader.Size = new System.Drawing.Size(415, 379);
+            this.tabCOFFHeader.Size = new System.Drawing.Size(415, 376);
             this.tabCOFFHeader.TabIndex = 0;
             this.tabCOFFHeader.Text = "COFF Header";
             this.tabCOFFHeader.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@
             this.listCOFFHeader.Location = new System.Drawing.Point(3, 3);
             this.listCOFFHeader.Name = "listCOFFHeader";
             this.listCOFFHeader.ShowItemToolTips = true;
-            this.listCOFFHeader.Size = new System.Drawing.Size(409, 373);
+            this.listCOFFHeader.Size = new System.Drawing.Size(409, 370);
             this.listCOFFHeader.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listCOFFHeader.TabIndex = 0;
             this.listCOFFHeader.UseCompatibleStateImageBehavior = false;
@@ -148,7 +148,7 @@
             this.tabCOFFOptionalHeader.Location = new System.Drawing.Point(4, 22);
             this.tabCOFFOptionalHeader.Name = "tabCOFFOptionalHeader";
             this.tabCOFFOptionalHeader.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCOFFOptionalHeader.Size = new System.Drawing.Size(415, 343);
+            this.tabCOFFOptionalHeader.Size = new System.Drawing.Size(415, 376);
             this.tabCOFFOptionalHeader.TabIndex = 1;
             this.tabCOFFOptionalHeader.Text = "COFF Optional Header";
             this.tabCOFFOptionalHeader.UseVisualStyleBackColor = true;
@@ -164,7 +164,7 @@
             this.listCOFFOptionalHeader.Location = new System.Drawing.Point(3, 3);
             this.listCOFFOptionalHeader.Name = "listCOFFOptionalHeader";
             this.listCOFFOptionalHeader.ShowItemToolTips = true;
-            this.listCOFFOptionalHeader.Size = new System.Drawing.Size(409, 337);
+            this.listCOFFOptionalHeader.Size = new System.Drawing.Size(409, 370);
             this.listCOFFOptionalHeader.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listCOFFOptionalHeader.TabIndex = 1;
             this.listCOFFOptionalHeader.UseCompatibleStateImageBehavior = false;
@@ -186,7 +186,7 @@
             this.tabImageData.Location = new System.Drawing.Point(4, 22);
             this.tabImageData.Name = "tabImageData";
             this.tabImageData.Padding = new System.Windows.Forms.Padding(3);
-            this.tabImageData.Size = new System.Drawing.Size(415, 343);
+            this.tabImageData.Size = new System.Drawing.Size(415, 376);
             this.tabImageData.TabIndex = 5;
             this.tabImageData.Text = "Image Data";
             this.tabImageData.UseVisualStyleBackColor = true;
@@ -203,7 +203,7 @@
             this.listImageData.Location = new System.Drawing.Point(3, 3);
             this.listImageData.Name = "listImageData";
             this.listImageData.ShowItemToolTips = true;
-            this.listImageData.Size = new System.Drawing.Size(409, 337);
+            this.listImageData.Size = new System.Drawing.Size(409, 370);
             this.listImageData.TabIndex = 2;
             this.listImageData.UseCompatibleStateImageBehavior = false;
             this.listImageData.View = System.Windows.Forms.View.Details;
@@ -229,7 +229,7 @@
             this.tabSections.Location = new System.Drawing.Point(4, 22);
             this.tabSections.Name = "tabSections";
             this.tabSections.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSections.Size = new System.Drawing.Size(415, 343);
+            this.tabSections.Size = new System.Drawing.Size(415, 376);
             this.tabSections.TabIndex = 2;
             this.tabSections.Text = "Sections";
             this.tabSections.UseVisualStyleBackColor = true;
@@ -248,7 +248,7 @@
             this.listSections.Location = new System.Drawing.Point(3, 3);
             this.listSections.Name = "listSections";
             this.listSections.ShowItemToolTips = true;
-            this.listSections.Size = new System.Drawing.Size(409, 337);
+            this.listSections.Size = new System.Drawing.Size(409, 370);
             this.listSections.TabIndex = 1;
             this.listSections.UseCompatibleStateImageBehavior = false;
             this.listSections.View = System.Windows.Forms.View.Details;
@@ -283,7 +283,7 @@
             this.tabExports.Location = new System.Drawing.Point(4, 22);
             this.tabExports.Name = "tabExports";
             this.tabExports.Padding = new System.Windows.Forms.Padding(3);
-            this.tabExports.Size = new System.Drawing.Size(415, 343);
+            this.tabExports.Size = new System.Drawing.Size(415, 376);
             this.tabExports.TabIndex = 3;
             this.tabExports.Text = "Exports";
             this.tabExports.UseVisualStyleBackColor = true;
@@ -301,7 +301,7 @@
             this.listExports.Location = new System.Drawing.Point(3, 3);
             this.listExports.Name = "listExports";
             this.listExports.ShowItemToolTips = true;
-            this.listExports.Size = new System.Drawing.Size(409, 337);
+            this.listExports.Size = new System.Drawing.Size(409, 370);
             this.listExports.SmallImageList = this.imageList;
             this.listExports.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listExports.TabIndex = 0;
@@ -341,7 +341,7 @@
             this.tabImports.Location = new System.Drawing.Point(4, 22);
             this.tabImports.Name = "tabImports";
             this.tabImports.Padding = new System.Windows.Forms.Padding(3);
-            this.tabImports.Size = new System.Drawing.Size(415, 343);
+            this.tabImports.Size = new System.Drawing.Size(415, 376);
             this.tabImports.TabIndex = 4;
             this.tabImports.Text = "Imports";
             this.tabImports.UseVisualStyleBackColor = true;
@@ -357,7 +357,7 @@
             this.listImports.Location = new System.Drawing.Point(3, 3);
             this.listImports.Name = "listImports";
             this.listImports.ShowItemToolTips = true;
-            this.listImports.Size = new System.Drawing.Size(409, 337);
+            this.listImports.Size = new System.Drawing.Size(409, 370);
             this.listImports.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listImports.TabIndex = 1;
             this.listImports.UseCompatibleStateImageBehavior = false;
@@ -381,7 +381,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(423, 405);
+            this.ClientSize = new System.Drawing.Size(423, 402);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

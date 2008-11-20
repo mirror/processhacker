@@ -20,17 +20,28 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
             listCOFFHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFHeader);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
+
             Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
             listCOFFOptionalHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFOptionalHeader);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
+
             Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
             listImageData.ContextMenu = ListViewMenu.GetMenu(listImageData);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
+
             Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
             listSections.ContextMenu = ListViewMenu.GetMenu(listSections);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
+
             Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
-            listExports.ContextMenu = ListViewMenu.GetMenu(listExports, 
+            listExports.ContextMenu = ListViewMenu.GetMenu(listExports,
                 new RetrieveVirtualItemEventHandler(listExports_RetrieveVirtualItem));
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
+
             Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
             listImports.ContextMenu = ListViewMenu.GetMenu(listImports);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
 
             _path = path;
             this.Text = "PE File - " + path;
@@ -52,6 +63,12 @@ namespace ProcessHacker
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.PECOFFHColumns = ColumnSettings.SaveSettings(listCOFFHeader);
+            Properties.Settings.Default.PECOFFOHColumns = ColumnSettings.SaveSettings(listCOFFOptionalHeader);
+            Properties.Settings.Default.PEImageDataColumns = ColumnSettings.SaveSettings(listImageData);
+            Properties.Settings.Default.PESectionsColumns = ColumnSettings.SaveSettings(listSections);
+            Properties.Settings.Default.PEExportsColumns = ColumnSettings.SaveSettings(listExports);
+            Properties.Settings.Default.PEImportsColumns = ColumnSettings.SaveSettings(listImports);
             Properties.Settings.Default.PEWindowSize = this.Size;
         }
 
@@ -211,8 +228,8 @@ namespace ProcessHacker
 
                 item.Text = sh.Name;
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualAddress.ToString("x8")));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x8")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualSize.ToString("x")));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x8")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
                     Misc.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
 
@@ -231,7 +248,7 @@ namespace ProcessHacker
                 for (int i = 0; i < _peFile.ImportData.ImportLookupTable.Count; i++)
                 {
                     listImports.Groups.Add(new ListViewGroup(_peFile.ImportData.ImportDirectoryTable[i].Name));
-
+                             
                     for (int j = 0; j < _peFile.ImportData.ImportLookupTable[i].Count; j++)
                     {
                         ImportLookupEntry entry = _peFile.ImportData.ImportLookupTable[i][j];
