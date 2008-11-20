@@ -42,12 +42,11 @@ namespace ProcessHacker
 
         public ResultsWindow(int PID)
         {
-            InitializeComponent();
+            InitializeComponent();     
+
+            Misc.SetDoubleBuffered(listResults, typeof(ListView), true);
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
-            typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listResults, true, null);
 
             _pid = PID;
 

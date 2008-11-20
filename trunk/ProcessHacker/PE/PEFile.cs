@@ -61,7 +61,7 @@ namespace ProcessHacker.PE
 
             byte[] peSig = br.ReadBytes(4);
 
-            if (!Utils.BytesEqual(peSig, PEFile.PESignature))
+            if (!Misc.BytesEqual(peSig, PEFile.PESignature))
                 throw new Exception("Invalid PE signature.");
 
             // read COFF header
@@ -93,11 +93,30 @@ namespace ProcessHacker.PE
 
                 if (iD.VirtualAddress != 0)
                 {
-                    s.Seek(iD.VirtualAddress + _coffOptionalHeader.BaseOfCode, SeekOrigin.Begin);
+                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
 
-                    this.ExportData = new ExportData(br, _coffOptionalHeader.BaseOfCode);
+                    this.ExportData = new ExportData(br, this);
                 }
             }
+        }
+
+        public static long RvaToVa(PEFile peFile, long rva)
+        {
+            SectionHeader section = null;
+
+            foreach (SectionHeader sh in peFile.Sections)
+            {
+                if (rva >= sh.VirtualAddress && rva < sh.VirtualAddress + sh.VirtualSize)
+                {
+                    section = sh;
+                    break;
+                }
+            }
+
+            if (section == null)
+                throw new Exception("Relative virtual address has no matching section.");
+
+            return section.PointerToRawData + rva - section.VirtualAddress;
         }
 
         public COFFHeader COFFHeader

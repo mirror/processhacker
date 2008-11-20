@@ -32,6 +32,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            Misc.SetDoubleBuffered(listPrivileges, typeof(ListView), true);
+
             listPrivileges.ContextMenu = menuPrivileges;
 
             _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);

@@ -2089,13 +2089,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-
-            property.SetValue(listMemory, true, null);
-            property.SetValue(listModules, true, null);
-            typeof(TreeView).GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(
-                treeMisc, true, null);
+            Misc.SetDoubleBuffered(listMemory, typeof(ListView), true);
+            Misc.SetDoubleBuffered(listModules, typeof(ListView), true);
+            Misc.SetDoubleBuffered(treeMisc, typeof(TreeView), true);
 
             if (Win32.WriteTokenPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
                 MessageBox.Show("Debug privilege could not be acquired!" +

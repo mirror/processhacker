@@ -39,7 +39,7 @@ namespace ProcessHacker.PE
 
     public class ExportData
     {
-        public ExportData(BinaryReader br, uint imageBase)
+        public ExportData(BinaryReader br, PEFile peFile)
         {                 
             this.ExportFlags = br.ReadUInt32();
             this.TimeDateStamp = br.ReadUInt32();
@@ -54,20 +54,55 @@ namespace ProcessHacker.PE
             this.OrdinalTableRVA = br.ReadUInt32();
 
             // read address table
-            br.BaseStream.Seek(imageBase + this.ExportAddressTableRVA, SeekOrigin.Begin);
+            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.ExportAddressTableRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.AddressTableEntries; i++)
             {
                 uint address = br.ReadUInt32();
 
-                this.ExportAddressTable.Add(new ExportEntry()
+                ExportEntry entry = new ExportEntry();
+                ImageData iD = peFile.ImageData[ImageDataType.ExportTable];
+
+                if (address >= iD.VirtualAddress && address < iD.VirtualAddress + iD.Size)
                 {
-                    ExportRVA = address
-                });
+                    entry.Type = ExportEntry.ExportType.Forwarder;
+                }
+                else
+                {
+                    entry.Type = ExportEntry.ExportType.Export;
+                }
+
+                entry.ExportRVA = address;
+
+                this.ExportAddressTable.Add(entry);
+            }
+
+            for (int i = 0; i < this.ExportAddressTable.Count; i++)
+            {
+                ExportEntry entry = this.ExportAddressTable[i];
+
+                if (entry.Type == ExportEntry.ExportType.Forwarder)
+                {
+                    br.BaseStream.Seek(PEFile.RvaToVa(peFile, entry.ExportRVA), SeekOrigin.Begin);
+
+                    string temp = "";
+
+                    while (true)
+                    {
+                        byte b = br.ReadByte();
+
+                        if (b == 0)
+                            break;
+
+                        temp += (char)b;
+                    }
+
+                    entry.ForwardedString = temp;
+                }
             }
 
             // read ordinal table
-            br.BaseStream.Seek(imageBase + this.OrdinalTableRVA, SeekOrigin.Begin);
+            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.OrdinalTableRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.AddressTableEntries; i++)
             {
@@ -75,7 +110,7 @@ namespace ProcessHacker.PE
             }
 
             // read name pointer table
-            br.BaseStream.Seek(imageBase + this.NamePointerRVA, SeekOrigin.Begin);
+            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.NamePointerRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.NumberOfNamePointers; i++)
             {
@@ -85,7 +120,7 @@ namespace ProcessHacker.PE
             // read names
             for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
             {
-                br.BaseStream.Seek(imageBase + this.ExportNamePointerTable[i], SeekOrigin.Begin);
+                br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.ExportNamePointerTable[i]), SeekOrigin.Begin);
 
                 string temp = "";
 

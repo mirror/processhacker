@@ -228,7 +228,6 @@
     </Compile>
     <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\ListViewMenu.cs" />
-    <Compile Include="Misc\Utils.cs" />
     <Compile Include="PE\ExportData.cs" />
     <Compile Include="PE\SectionFlags.cs" />
     <Compile Include="PE\ImageCharacteristics.cs" />

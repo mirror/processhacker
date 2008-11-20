@@ -18,8 +18,10 @@
  */
 
 using System;
-using System.Text;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -72,6 +74,15 @@ namespace ProcessHacker
             };
 
         #endregion
+
+        /// <summary>
+        /// Converts a 32-bit Unix time value into a DateTime object.
+        /// </summary>
+        /// <param name="time">The Unix time value.</param>
+        public static DateTime DateTimeFromUnixTime(uint time)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0).Add(new TimeSpan(0, 0, 0, (int)time));
+        }
 
         /// <summary>
         /// Disables the menu items contained in the specified menu. 
@@ -203,5 +214,266 @@ namespace ProcessHacker
             foreach (ListViewItem item in items)
                 item.Selected = true;
         }
+
+        /// <summary>
+        /// Enables or disables double buffering for a control.
+        /// </summary>
+        /// <param name="c">The control.</param>
+        /// <param name="t">The type of the control.</param>
+        /// <param name="value">The new setting.</param>
+        public static void SetDoubleBuffered(Control c, Type t, bool value)
+        {
+            PropertyInfo property = t.GetProperty("DoubleBuffered",
+               BindingFlags.NonPublic | BindingFlags.Instance);
+
+            property.SetValue(c, value, null);
+        }
+
+        #region Stuff from PNG.Net
+
+        public enum Endianness
+        {
+            Little, Big
+        }
+
+        public static bool ArrayContains<T>(T[] array, T element)
+        {
+            foreach (T e in array)
+                if (e.Equals(element))
+                    return true;
+
+            return false;
+        }
+
+        public static bool BytesEqual(byte[] b1, byte[] b2)
+        {
+            for (int i = 0; i < b1.Length; i++)
+                if (b1[i] != b2[i])
+                    return false;
+
+            return true;
+        }
+
+        public static int BytesToInt(byte[] data, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static uint BytesToUInt(byte[] data, Endianness type)
+        {
+            return BytesToUInt(data, 0, type);
+        }
+
+        public static uint BytesToUInt(byte[] data, int offset, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (uint)(data[offset]) | (uint)(data[offset + 1] << 8) |
+                    (uint)(data[offset + 2] << 16) | (uint)(data[offset + 3] << 24);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (uint)(data[offset] << 24) | (uint)(data[offset + 1] << 16) |
+                    (uint)(data[offset + 2] << 8) | (uint)(data[offset + 3]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static ushort BytesToUShort(byte[] data, Endianness type)
+        {
+            return BytesToUShort(data, 0, type);
+        }
+
+        public static ushort BytesToUShort(byte[] data, int offset, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (ushort)(data[offset] | (data[offset + 1] << 8));
+            }
+            else if (type == Endianness.Big)
+            {
+                return (ushort)((data[offset] << 8) | data[offset + 1]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
+        public static string FlagsToString(Type e, long value)
+        {
+            string r = "";
+
+            for (int i = 0; i < 32; i++)
+            {
+                long fv = 1 << i;
+                                  
+                if ((value & fv) == fv)
+                {
+                    r += Enum.GetName(e, fv) + ", ";
+                }
+            }
+
+            if (r.EndsWith(", "))
+                r = r.Remove(r.Length - 2, 2);
+
+            return r;
+        }
+
+        public static int IntCeilDiv(int a, int b)
+        {
+            return (int)Math.Ceiling(((double)a / b));
+        }
+
+        public static byte[] IntToBytes(int n, Endianness type)
+        {
+            byte[] data = new byte[4];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+                data[2] = (byte)((n >> 16) & 0xff);
+                data[3] = (byte)((n >> 24) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 24) & 0xff);
+                data[1] = (byte)((n >> 16) & 0xff);
+                data[2] = (byte)((n >> 8) & 0xff);
+                data[3] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
+        public static byte[] ReverseBytes(byte[] data)
+        {
+            byte[] newdata = new byte[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+                newdata[i] = data[data.Length - i - 1];
+
+            return newdata;
+        }
+
+        public static uint ReverseEndian(uint n)
+        {
+            uint b0 = n & 0xff;
+            uint b1 = (n >> 8) & 0xff;
+            uint b2 = (n >> 16) & 0xff;
+            uint b3 = (n >> 24) & 0xff;
+
+            b0 <<= 24;
+            b1 <<= 16;
+            b2 <<= 8;
+
+            return b0 | b1 | b2 | b3;
+        }
+
+        public static int ReadInt(Stream s, Endianness type)
+        {
+            byte[] buffer = new byte[4];
+
+            if (s.Read(buffer, 0, 4) == 0)
+                throw new EndOfStreamException();
+
+            return BytesToInt(buffer, type);
+        }
+
+        public static string ReadString(Stream s, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            if (s.Read(buffer, 0, length) == 0)
+                throw new EndOfStreamException();
+
+            return System.Text.ASCIIEncoding.ASCII.GetString(buffer);
+        }
+
+        public static uint ReadUInt(Stream s, Endianness type)
+        {
+            byte[] buffer = new byte[4];
+
+            if (s.Read(buffer, 0, 4) == 0)
+                throw new EndOfStreamException();
+
+            return BytesToUInt(buffer, type);
+        }
+
+        public static uint RoundUpAddress(uint address, uint align)
+        {
+            uint t = (uint)Math.Ceiling((double)address / align);
+
+            return t * align;
+        }
+
+        public static byte[] UIntToBytes(uint n, Endianness type)
+        {
+            byte[] data = new byte[4];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+                data[2] = (byte)((n >> 16) & 0xff);
+                data[3] = (byte)((n >> 24) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 24) & 0xff);
+                data[1] = (byte)((n >> 16) & 0xff);
+                data[2] = (byte)((n >> 8) & 0xff);
+                data[3] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
+        public static byte[] UShortToBytes(ushort n, Endianness type)
+        {
+            byte[] data = new byte[2];
+
+            if (type == Endianness.Little)
+            {
+                data[0] = (byte)(n & 0xff);
+                data[1] = (byte)((n >> 8) & 0xff);
+            }
+            else if (type == Endianness.Big)
+            {
+                data[0] = (byte)((n >> 8) & 0xff);
+                data[1] = (byte)(n & 0xff);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+
+            return data;
+        }
+
+        #endregion
     }
 }

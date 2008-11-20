@@ -17,6 +17,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            Misc.SetDoubleBuffered(listGroups, typeof(ListView), true);
+
             listGroups.ContextMenu = ListViewMenu.GetMenu(listGroups);
 
             _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
@@ -30,9 +32,6 @@ namespace ProcessHacker
                 this.Close();
                 return;
             }
-
-            typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listGroups, true, null);
 
             Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_phandle);
 
