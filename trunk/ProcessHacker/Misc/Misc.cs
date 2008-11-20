@@ -178,6 +178,27 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Determines whether the array is empty (all 0's).
+        /// </summary>
+        /// <param name="array">The array to search.</param>
+        /// <returns>True if the array is empty; otherwise false.</returns>
+        public static bool IsEmpty(byte[] array)
+        {
+            bool empty = true;
+
+            foreach (byte b in array)
+            {
+                if (b != 0)
+                {
+                    empty = false;
+                    break;
+                }
+            }
+
+            return empty;
+        }
+
+        /// <summary>
         /// Makes a character printable by converting unprintable characters to a dot ('.').
         /// </summary>
         /// <param name="c">The character to convert.</param>
@@ -203,6 +224,28 @@ namespace ProcessHacker
                 sb.Append(MakePrintableChar(s[i]));
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Reads a null-terminated string from a stream.
+        /// </summary>
+        /// <param name="s">The stream to read from.</param>
+        /// <returns>The read string.</returns>
+        public static string ReadString(Stream s)
+        {
+            string temp = "";
+
+            while (true)
+            {
+                int b = s.ReadByte();
+
+                if (b == 0)
+                    break;
+
+                temp += (char)(byte)b;
+            }
+
+            return temp;
         }
 
         /// <summary>

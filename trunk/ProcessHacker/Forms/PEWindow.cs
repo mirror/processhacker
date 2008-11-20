@@ -18,8 +18,6 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
-            listExports.ContextMenu = ListViewMenu.GetMenu(listExports);
             Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
             listCOFFHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFHeader);
             Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
@@ -28,21 +26,33 @@ namespace ProcessHacker
             listImageData.ContextMenu = ListViewMenu.GetMenu(listImageData);
             Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
             listSections.ContextMenu = ListViewMenu.GetMenu(listSections);
+            Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
+            listExports.ContextMenu = ListViewMenu.GetMenu(listExports, 
+                new RetrieveVirtualItemEventHandler(listExports_RetrieveVirtualItem));
+            Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
+            listImports.ContextMenu = ListViewMenu.GetMenu(listImports);
 
             _path = path;
             this.Text = "PE File - " + path;
 
             Program.PEWindows.Add(Id, this);
 
-            if (!this.Read(path))
-            {
-                this.Close();
-            }
+            this.Size = Properties.Settings.Default.PEWindowSize;
         }
 
         private void PEWindow_Load(object sender, EventArgs e)
         {
             Program.UpdateWindows();
+
+            if (!this.Read(_path))
+            {
+                this.Close();
+            }
+        }
+
+        private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.PEWindowSize = this.Size;
         }
 
         public string Id
@@ -79,7 +89,11 @@ namespace ProcessHacker
             _peFile = peFile;
 
             // preprare lists
-            listExports.VirtualListSize = _peFile.ExportData.ExportOrdinalTable.Count;
+
+            if (_peFile.ExportData != null)
+                listExports.VirtualListSize = _peFile.ExportData.ExportOrdinalTable.Count;
+            else
+                listExports.VirtualListSize = 0;
 
             #region COFF Header
 
@@ -203,6 +217,40 @@ namespace ProcessHacker
                     Misc.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
 
                 listSections.Items.Add(item);
+            }
+
+            #endregion
+
+            #region Imports
+
+            listImports.Items.Clear();
+            listImports.Groups.Clear();
+
+            if (_peFile.ImportData != null)
+            {
+                for (int i = 0; i < _peFile.ImportData.ImportLookupTable.Count; i++)
+                {
+                    listImports.Groups.Add(new ListViewGroup(_peFile.ImportData.ImportDirectoryTable[i].Name));
+
+                    for (int j = 0; j < _peFile.ImportData.ImportLookupTable[i].Count; j++)
+                    {
+                        ImportLookupEntry entry = _peFile.ImportData.ImportLookupTable[i][j];
+                        ListViewItem item = new ListViewItem(listImports.Groups[listImports.Groups.Count - 1]);
+
+                        if (entry.UseOrdinal)
+                        {
+                            item.Text = "(Ordinal " + entry.Ordinal.ToString() + ")";
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                        }
+                        else
+                        {
+                            item.Text = entry.NameEntry.Name;
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, entry.NameEntry.Hint.ToString()));
+                        }
+
+                        listImports.Items.Add(item);
+                    }
+                }
             }
 
             #endregion

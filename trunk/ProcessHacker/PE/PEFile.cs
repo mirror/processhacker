@@ -34,6 +34,7 @@ namespace ProcessHacker.PE
         private List<SectionHeader> _sections = new List<SectionHeader>();
 
         public ExportData ExportData;
+        public ImportData ImportData;
 
         public PEFile(string path)
         {
@@ -96,6 +97,19 @@ namespace ProcessHacker.PE
                     s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
 
                     this.ExportData = new ExportData(br, this);
+                }
+            }
+
+            // read import table
+            if (_imageData.ContainsKey(ImageDataType.ImportTable))
+            {
+                ImageData iD = _imageData[ImageDataType.ImportTable];
+
+                if (iD.VirtualAddress != 0)
+                {
+                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
+
+                    this.ImportData = new ImportData(br, this);
                 }
             }
         }

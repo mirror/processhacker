@@ -298,5 +298,17 @@ namespace ProcessHacker.Properties {
                 this["GroupWindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("439, 413")]
+        public global::System.Drawing.Size PEWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["PEWindowSize"]));
+            }
+            set {
+                this["PEWindowSize"] = value;
+            }
+        }
     }
 }

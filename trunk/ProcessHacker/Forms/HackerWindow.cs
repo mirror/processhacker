@@ -482,6 +482,7 @@ namespace ProcessHacker
                 {
                     Misc.DisableAllMenuItems(menuModule);
 
+                    inspectModuleMenuItem.Enabled = true;
                     copyFileNameMenuItem.Enabled = true;
                     copyModuleMenuItem.Enabled = true;
                     openContainingFolderMenuItem.Enabled = true;
@@ -663,6 +664,7 @@ namespace ProcessHacker
                 closeActiveWindowMenuItem.Enabled = false;
                 priorityMenuItem.Enabled = false;
                 copyProcessMenuItem.Enabled = false;
+                inspectProcessMenuItem.Enabled = false;
                 privilegesMenuItem.Enabled = false;
                 groupsMenuItem.Enabled = false;
             }
@@ -673,6 +675,7 @@ namespace ProcessHacker
                 if (listProcesses.SelectedItems.Count == 1)
                 {
                     priorityMenuItem.Enabled = true;
+                    inspectProcessMenuItem.Enabled = true;
                     privilegesMenuItem.Enabled = true;
                     groupsMenuItem.Enabled = true;
                     terminateMenuItem.Text = "&Terminate Process";
@@ -725,6 +728,7 @@ namespace ProcessHacker
                 else
                 {
                     priorityMenuItem.Enabled = false;
+                    inspectProcessMenuItem.Enabled = false;
                     privilegesMenuItem.Enabled = false;
                     groupsMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
@@ -2151,6 +2155,50 @@ namespace ProcessHacker
             listModules.Items.Clear();
 
             LoadSettings(); 
+        }
+
+        private void inspectProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PEWindow pw = Program.GetPEWindow(Misc.GetRealPath(processSelected.MainModule.FileName),
+                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                {
+                    try
+                    {
+                        f.Show();
+                    }
+                    catch
+                    { }
+                }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void inspectModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PEWindow pw = Program.GetPEWindow(listModules.SelectedItems[0].ToolTipText,
+                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                    {
+                        try
+                        {
+                            f.Show();
+                        }
+                        catch
+                        { }
+                    }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
     }
 }

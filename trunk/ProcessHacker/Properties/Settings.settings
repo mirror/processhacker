@@ -71,5 +71,8 @@
     <Setting Name="GroupWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">477, 468</Value>
     </Setting>
+    <Setting Name="PEWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">439, 413</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
