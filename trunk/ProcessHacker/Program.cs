@@ -59,7 +59,7 @@ namespace ProcessHacker
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
             if (Environment.Version.Major < 2)
             {
@@ -69,10 +69,26 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
+            Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow());
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            ErrorDialog ed = new ErrorDialog(e.ExceptionObject as Exception);
+
+            ed.ShowDialog();
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            ErrorDialog ed = new ErrorDialog(e.Exception);
+
+            ed.ShowDialog();
         }
 
         /// <summary>

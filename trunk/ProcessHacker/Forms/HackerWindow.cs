@@ -2335,7 +2335,7 @@ namespace ProcessHacker
                 timerMessages.Enabled = true;
                 timer.Dispose();
             });
-            timer.Start();
+            timer.Start(); 
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
