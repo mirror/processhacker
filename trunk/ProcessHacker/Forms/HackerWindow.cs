@@ -710,6 +710,20 @@ namespace ProcessHacker
 
                 if (listProcesses.SelectedItems.Count == 1)
                 {
+                    try
+                    {
+                        int parent = Win32.GetProcessParent(processSelectedPID);
+                        ListViewItem item = listProcesses.List.Items[parent.ToString()];
+
+                        goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
+                        goToParentProcessMenuItem.Enabled = true;
+                    }
+                    catch
+                    {
+                        goToParentProcessMenuItem.Text = "Go to Parent";
+                        goToParentProcessMenuItem.Enabled = false;
+                    }
+
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
                     searchProcessMenuItem.Enabled = true;
@@ -764,6 +778,7 @@ namespace ProcessHacker
                 }
                 else
                 {
+                    goToParentProcessMenuItem.Enabled = false;
                     priorityMenuItem.Enabled = false;
                     inspectProcessMenuItem.Enabled = false;
                     searchProcessMenuItem.Enabled = false;
@@ -931,6 +946,21 @@ namespace ProcessHacker
                         return;
                 }
             }
+        }
+
+        private void goToParentProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int parent = Win32.GetProcessParent(processSelectedPID);
+                ListViewItem item = listProcesses.List.Items[parent.ToString()];
+
+                DeselectAll(listProcesses.List);
+                item.Selected = true;
+                item.EnsureVisible();
+            }
+            catch
+            { }
         }
 
         private void inspectProcessMenuItem_Click(object sender, EventArgs e)
