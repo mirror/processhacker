@@ -13,6 +13,7 @@ namespace ProcessHacker
     {
         private string _path;
         private PEFile _peFile;
+        private List<long> _exportVAs;
 
         public PEWindow(string path)
         {
@@ -47,8 +48,6 @@ namespace ProcessHacker
             listImports.ContextMenu = ListViewMenu.GetMenu(listImports);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
 
-            this.Size = Properties.Settings.Default.PEWindowSize;
-
             try
             {
                 this.Read(_path);
@@ -64,6 +63,8 @@ namespace ProcessHacker
 
         private void PEWindow_Load(object sender, EventArgs e)
         {
+            this.Size = Properties.Settings.Default.PEWindowSize;
+
             Program.UpdateWindows();
         }
 
@@ -102,11 +103,6 @@ namespace ProcessHacker
             _peFile = peFile;
 
             // preprare lists
-
-            if (_peFile.ExportData != null)
-                listExports.VirtualListSize = _peFile.ExportData.ExportOrdinalTable.Count;
-            else
-                listExports.VirtualListSize = 0;
 
             #region COFF Header
 
@@ -234,6 +230,29 @@ namespace ProcessHacker
 
             #endregion
 
+            #region
+
+            if (_peFile.ExportData != null)
+            {
+                listExports.VirtualListSize = _peFile.ExportData.ExportOrdinalTable.Count;
+
+                _exportVAs = new List<long>();
+
+                for (int i = 0; i < _peFile.ExportData.ExportAddressTable.Count; i++)
+                {
+                    ExportEntry entry = _peFile.ExportData.ExportAddressTable[i];
+
+                    if (entry.ExportRVA != 0)
+                        _exportVAs.Add(PEFile.RvaToVa(_peFile, entry.ExportRVA));
+                }
+            }
+            else  
+            {
+                listExports.VirtualListSize = 0;
+            }
+
+            #endregion
+
             #region Imports
 
             listImports.Items.Clear();
@@ -302,7 +321,7 @@ namespace ProcessHacker
                     e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x8");
 
                     if (entry.ExportRVA != 0)
-                        e.Item.SubItems[3].Text = "0x" + PEFile.RvaToVa(_peFile, entry.ExportRVA).ToString("x8");
+                        e.Item.SubItems[3].Text = "0x" + _exportVAs[e.ItemIndex].ToString("x8");
                 }
                 else if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {                             

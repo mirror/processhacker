@@ -56,7 +56,7 @@ namespace ProcessHacker.PE
             // get location of PE signature
             s.Seek(0x3c, SeekOrigin.Begin);
 
-            byte peSigLoc = br.ReadByte();
+            uint peSigLoc = br.ReadUInt32();
 
             s.Seek(peSigLoc, SeekOrigin.Begin);
 
