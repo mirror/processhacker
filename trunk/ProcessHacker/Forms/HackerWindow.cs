@@ -483,6 +483,7 @@ namespace ProcessHacker
                     Misc.DisableAllMenuItems(menuModule);
 
                     inspectModuleMenuItem.Enabled = true;
+                    searchModuleMenuItem.Enabled = true;
                     copyFileNameMenuItem.Enabled = true;
                     copyModuleMenuItem.Enabled = true;
                     openContainingFolderMenuItem.Enabled = true;
@@ -683,26 +684,9 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
-            if (listProcesses.Items.Count == 0)
-            {
-                selectAllMenuItem.Enabled = false;
-            }
-            else
-            {
-                selectAllMenuItem.Enabled = true;
-            }
-
             if (listProcesses.SelectedItems.Count == 0)
             {
-                terminateMenuItem.Enabled = false;
-                suspendMenuItem.Enabled = false;
-                resumeMenuItem.Enabled = false;
-                closeActiveWindowMenuItem.Enabled = false;
-                priorityMenuItem.Enabled = false;
-                copyProcessMenuItem.Enabled = false;
-                inspectProcessMenuItem.Enabled = false;
-                privilegesMenuItem.Enabled = false;
-                groupsMenuItem.Enabled = false;
+                Misc.DisableAllMenuItems(menuProcess);
             }
             else
             {
@@ -712,6 +696,7 @@ namespace ProcessHacker
                 {
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
+                    searchProcessMenuItem.Enabled = true;
                     privilegesMenuItem.Enabled = true;
                     groupsMenuItem.Enabled = true;
                     terminateMenuItem.Text = "&Terminate Process";
@@ -765,6 +750,7 @@ namespace ProcessHacker
                 {
                     priorityMenuItem.Enabled = false;
                     inspectProcessMenuItem.Enabled = false;
+                    searchProcessMenuItem.Enabled = false;
                     privilegesMenuItem.Enabled = false;
                     groupsMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
@@ -778,6 +764,15 @@ namespace ProcessHacker
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
                 copyProcessMenuItem.Enabled = true;
+            }
+
+            if (listProcesses.Items.Count == 0)
+            {
+                selectAllMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllMenuItem.Enabled = true;
             }
         }
 
