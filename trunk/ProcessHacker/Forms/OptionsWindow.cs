@@ -37,6 +37,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
+            textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
         }
@@ -58,6 +59,7 @@ namespace ProcessHacker
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
+            Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
 

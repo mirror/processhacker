@@ -2,6 +2,7 @@ Process Hacker
 
 1.2.0.0
  * Added PE Inspector (can read exe/dll/sys files and their properties)
+ * Added "Search Online" menu item
 
 1.1.5.0
  * Fixed memory leak with process icons

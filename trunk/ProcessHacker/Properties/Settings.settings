@@ -92,5 +92,8 @@
     <Setting Name="PEImportsColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="SearchEngine" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.google.com/search?q=%s</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

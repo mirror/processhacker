@@ -382,5 +382,17 @@ namespace ProcessHacker.Properties {
                 this["PEImportsColumns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.google.com/search?q=%s")]
+        public string SearchEngine {
+            get {
+                return ((string)(this["SearchEngine"]));
+            }
+            set {
+                this["SearchEngine"] = value;
+            }
+        }
     }
 }

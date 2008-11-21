@@ -514,6 +514,19 @@ namespace ProcessHacker
             }
         }
 
+        private void searchModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
+                    listModules.SelectedItems[0].Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void copyFileNameMenuItem_Click(object sender, EventArgs e)
         {
             string text = "";
@@ -1000,6 +1013,19 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        private void searchProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
+                    listProcesses.SelectedItems[0].Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {

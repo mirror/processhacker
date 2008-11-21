@@ -33,6 +33,8 @@
             this.buttonClose = new System.Windows.Forms.Button();
             this.checkShowProcessDomains = new System.Windows.Forms.CheckBox();
             this.checkWarnDangerous = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textSearchEngine = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,7 +69,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(217, 94);
+            this.buttonClose.Location = new System.Drawing.Point(217, 114);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -79,7 +81,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(12, 61);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(11, 88);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -90,19 +92,39 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(12, 38);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(12, 64);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
             this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
             this.checkWarnDangerous.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 41);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(80, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Search Engine:";
+            // 
+            // textSearchEngine
+            // 
+            this.textSearchEngine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textSearchEngine.Location = new System.Drawing.Point(98, 38);
+            this.textSearchEngine.Name = "textSearchEngine";
+            this.textSearchEngine.Size = new System.Drawing.Size(194, 20);
+            this.textSearchEngine.TabIndex = 6;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(304, 129);
+            this.ClientSize = new System.Drawing.Size(304, 149);
+            this.Controls.Add(this.textSearchEngine);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.checkWarnDangerous);
             this.Controls.Add(this.checkShowProcessDomains);
             this.Controls.Add(this.buttonClose);
@@ -129,5 +151,7 @@
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.CheckBox checkShowProcessDomains;
         private System.Windows.Forms.CheckBox checkWarnDangerous;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textSearchEngine;
     }
 }
