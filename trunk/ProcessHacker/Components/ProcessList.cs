@@ -190,38 +190,48 @@ namespace ProcessHacker
 
         private void provider_DictionaryModified(object item)
         {
-            ProcessItem pitem = (ProcessItem)item;
-            ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+            try
+            {
+                ProcessItem pitem = (ProcessItem)item;
+                ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
 
-            litem.SubItems[2].Text = pitem.MemoryUsage;
-            litem.SubItems[3].Text = pitem.Username;
+                litem.SubItems[2].Text = pitem.MemoryUsage;
+                litem.SubItems[3].Text = pitem.Username;
+            }
+            catch
+            { }
         }
 
         private void provider_DictionaryRemoved(object item)
         {
-            ProcessItem pitem = (ProcessItem)item;
-            int index = listProcesses.Items[pitem.PID.ToString()].Index;
-            bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
-            int selectedCount = listProcesses.SelectedItems.Count;
-            ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
-            int imageIndex = litem.ImageIndex;
-
-            litem.Remove();
-            imageList.Images[imageIndex].Dispose();
-
-            if (selected && selectedCount == 1)
+            try
             {
-                if (listProcesses.Items.Count == 0)
-                { }
-                else if (index > (listProcesses.Items.Count - 1))
+                ProcessItem pitem = (ProcessItem)item;
+                int index = listProcesses.Items[pitem.PID.ToString()].Index;
+                bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
+                int selectedCount = listProcesses.SelectedItems.Count;
+                ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+                int imageIndex = litem.ImageIndex;
+
+                litem.Remove();
+                imageList.Images[imageIndex].Dispose();
+
+                if (selected && selectedCount == 1)
                 {
-                    listProcesses.Items[listProcesses.Items.Count - 1].Selected = true;
-                }
-                else 
-                {
-                    listProcesses.Items[index].Selected = true;
+                    if (listProcesses.Items.Count == 0)
+                    { }
+                    else if (index > (listProcesses.Items.Count - 1))
+                    {
+                        listProcesses.Items[listProcesses.Items.Count - 1].Selected = true;
+                    }
+                    else
+                    {
+                        listProcesses.Items[index].Selected = true;
+                    }
                 }
             }
+            catch
+            { }
         }
 
         #endregion
