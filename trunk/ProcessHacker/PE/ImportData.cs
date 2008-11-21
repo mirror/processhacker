@@ -107,6 +107,8 @@ namespace ProcessHacker.PE
                         }
                         catch
                         {
+                            entry.UseOrdinal = true;
+                            entry.Ordinal = (ushort)(number & 0xffff);
                             continue;
                         }
                     }

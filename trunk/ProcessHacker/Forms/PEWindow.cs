@@ -244,14 +244,27 @@ namespace ProcessHacker
             listImports.Groups.Clear();
 
             if (_peFile.ImportData != null)
-            {
-                for (int i = 0; i < _peFile.ImportData.ImportLookupTable.Count; i++)
-                {
-                    listImports.Groups.Add(new ListViewGroup(_peFile.ImportData.ImportDirectoryTable[i].Name));
-                             
-                    for (int j = 0; j < _peFile.ImportData.ImportLookupTable[i].Count; j++)
+            {      
+                List<KeyValuePair<string, int>> list = new List<KeyValuePair<string,int>>();
+
+                for (int i = 0; i < _peFile.ImportData.ImportDirectoryTable.Count; i++)
+                    list.Add(new KeyValuePair<string,int>(_peFile.ImportData.ImportDirectoryTable[i].Name, i));
+
+                list.Sort(new Comparison<KeyValuePair<string, int>>(
+                    delegate(KeyValuePair<string, int> kvp1, KeyValuePair<string, int> kvp2)
                     {
-                        ImportLookupEntry entry = _peFile.ImportData.ImportLookupTable[i][j];
+                        return StringComparer.CurrentCultureIgnoreCase.Compare(kvp1.Key, kvp2.Key);
+                    }));
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    int index = list[i].Value;
+
+                    listImports.Groups.Add(new ListViewGroup(list[i].Key));
+
+                    for (int j = 0; j < _peFile.ImportData.ImportLookupTable[index].Count; j++)
+                    {
+                        ImportLookupEntry entry = _peFile.ImportData.ImportLookupTable[index][j];
                         ListViewItem item = new ListViewItem(listImports.Groups[listImports.Groups.Count - 1]);
 
                         if (entry.UseOrdinal)
@@ -279,19 +292,23 @@ namespace ProcessHacker
         {
             if (_peFile != null)
             {
+                ExportEntry entry = _peFile.ExportData.ExportAddressTable[e.ItemIndex];
+                
                 e.Item = new ListViewItem();
 
-                e.Item.Text = _peFile.ExportData.ExportNameTable[e.ItemIndex];
+                if (e.ItemIndex < _peFile.ExportData.ExportNameTable.Count)
+                    e.Item.Text = _peFile.ExportData.ExportNameTable[e.ItemIndex];
+
                 e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, (e.ItemIndex + 1).ToString()));
                 e.Item.SubItems.Add(new ListViewItem.ListViewSubItem());
                 e.Item.SubItems.Add(new ListViewItem.ListViewSubItem());  
 
-                ExportEntry entry = _peFile.ExportData.ExportAddressTable[e.ItemIndex];
-
                 if (entry.Type == ExportEntry.ExportType.Export)
                 {
                     e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x8");
-                    e.Item.SubItems[3].Text = "0x" + PEFile.RvaToVa(_peFile, entry.ExportRVA).ToString("x8");
+
+                    if (entry.ExportRVA != 0)
+                        e.Item.SubItems[3].Text = "0x" + PEFile.RvaToVa(_peFile, entry.ExportRVA).ToString("x8");
                 }
                 else if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {                             
