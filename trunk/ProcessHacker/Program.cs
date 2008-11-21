@@ -328,11 +328,18 @@ namespace ProcessHacker
                         }
                     }
 
+                    windowMenuItem.MenuItems.Add(new MenuItem("-"));
+
+                    item = new MenuItem("&Always On Top");
+                    item.Tag = f;
+                    item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
+                    item.Checked = f.TopMost;
+                    windowMenuItem.MenuItems.Add(item);
+
                     item = new MenuItem("&Close");
                     item.Tag = f;
                     item.Click += new EventHandler(windowCloseItemClicked);
                     windowMenuItem.MenuItems.Add(item);
-
                     vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.application_delete);
                 }
             }
@@ -402,6 +409,15 @@ namespace ProcessHacker
             Form f = (Form)((MenuItem)sender).Tag;
 
             Program.FocusWindow(f);
+        }
+
+        private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
+        {
+            Form f = (Form)((MenuItem)sender).Tag;
+
+            f.Invoke(new MethodInvoker(delegate { f.TopMost = !f.TopMost; }));
+
+            Program.UpdateWindows();
         }
 
         private static void windowCloseItemClicked(object sender, EventArgs e)
