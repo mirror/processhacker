@@ -394,5 +394,77 @@ namespace ProcessHacker.Properties {
                 this["SearchEngine"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("170, 255, 170")]
+        public global::System.Drawing.Color ColorNewProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorNewProcesses"]));
+            }
+            set {
+                this["ColorNewProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 170, 170")]
+        public global::System.Drawing.Color ColorRemovedProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorRemovedProcesses"]));
+            }
+            set {
+                this["ColorRemovedProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 255, 170")]
+        public global::System.Drawing.Color ColorOwnProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorOwnProcesses"]));
+            }
+            set {
+                this["ColorOwnProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 85, 85")]
+        public global::System.Drawing.Color ColorHighlight {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorHighlight"]));
+            }
+            set {
+                this["ColorHighlight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("170, 204, 255")]
+        public global::System.Drawing.Color ColorSystemProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorSystemProcesses"]));
+            }
+            set {
+                this["ColorSystemProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int HighlightingDuration {
+            get {
+                return ((int)(this["HighlightingDuration"]));
+            }
+            set {
+                this["HighlightingDuration"] = value;
+            }
+        }
     }
 }

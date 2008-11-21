@@ -127,13 +127,15 @@ namespace ProcessHacker
         private void provider_DictionaryAdded(object item)
         {
             ThreadItem titem = (ThreadItem)item;
-            ListViewItem litem = new ListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem = listThreads.Items.Add(titem.TID.ToString(), titem.TID.ToString(), 0);
-
+            litem.Name = titem.TID.ToString();
+            litem.Text = titem.TID.ToString();
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
+
+            listThreads.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(object item)

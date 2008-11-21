@@ -17,6 +17,7 @@ namespace ProcessHacker
     public class HighlightedListViewItem : ListViewItem
     {
         private static Dictionary<ListViewItemState, Color> _colors = new Dictionary<ListViewItemState, Color>();
+        private static int _highlightingDuration = 1000;
 
         static HighlightedListViewItem()
         {
@@ -29,8 +30,13 @@ namespace ProcessHacker
             get { return _colors; }
         }
 
+        public static int HighlightingDuration
+        {
+            get { return _highlightingDuration; }
+            set { _highlightingDuration = value; }
+        }
+
         private Color _normalColor = SystemColors.Window;
-        private int _highlightingDuration = 1000;
 
         public HighlightedListViewItem() : this("") { }
 
@@ -44,6 +50,12 @@ namespace ProcessHacker
         {
             this.BackColor = _colors[ListViewItemState.Removed];
             this.PerformDelayed(new MethodInvoker(delegate { base.Remove(); }));  
+        }
+
+        public Color NormalColor
+        {
+            get { return _normalColor; }
+            set { _normalColor = value; }
         }
 
         public void SetTemporaryState(ListViewItemState state)

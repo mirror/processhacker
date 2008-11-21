@@ -2171,6 +2171,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
+            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+
             Misc.SetDoubleBuffered(listMemory, typeof(ListView), true);
             Misc.SetDoubleBuffered(listModules, typeof(ListView), true);
             Misc.SetDoubleBuffered(treeMisc, typeof(TreeView), true);

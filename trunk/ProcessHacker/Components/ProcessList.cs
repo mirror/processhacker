@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Text;
+using System.Drawing;
 
 namespace ProcessHacker
 {
     public partial class ProcessList : UserControl
     {
         ProcessProvider _provider;
-        public event KeyEventHandler KeyDown;
-        public event MouseEventHandler MouseDown;
-        public event MouseEventHandler MouseUp;
+        public new event KeyEventHandler KeyDown;
+        public new event MouseEventHandler MouseDown;
+        public new event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
         private int _id = 1;
 
@@ -130,12 +130,23 @@ namespace ProcessHacker
 
         #region Core Process List
 
+        private Color GetProcessColor(ProcessItem p)
+        {
+            if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
+                return Properties.Settings.Default.ColorSystemProcesses;
+            else if (p.UsernameWithDomain == Win32.GetProcessUsername(Process.GetCurrentProcess().Handle.ToInt32(), true))
+                return Properties.Settings.Default.ColorOwnProcesses;
+            else
+                return SystemColors.Window;
+        }
+
         private void provider_DictionaryAdded(object item)
         {
             ProcessItem pitem = (ProcessItem)item;
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
             litem.Name = pitem.PID.ToString();
+            litem.NormalColor = this.GetProcessColor(pitem);
             litem.Text = pitem.Name;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));

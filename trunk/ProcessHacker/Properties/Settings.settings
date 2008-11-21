@@ -95,5 +95,23 @@
     <Setting Name="SearchEngine" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://www.google.com/search?q=%s</Value>
     </Setting>
+    <Setting Name="ColorNewProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">170, 255, 170</Value>
+    </Setting>
+    <Setting Name="ColorRemovedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 170, 170</Value>
+    </Setting>
+    <Setting Name="ColorOwnProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 255, 170</Value>
+    </Setting>
+    <Setting Name="ColorHighlight" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 85, 85</Value>
+    </Setting>
+    <Setting Name="ColorSystemProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">170, 204, 255</Value>
+    </Setting>
+    <Setting Name="HighlightingDuration" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

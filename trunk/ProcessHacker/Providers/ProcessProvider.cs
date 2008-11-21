@@ -34,6 +34,7 @@ namespace ProcessHacker
         public string Name;
         public string MemoryUsage;
         public string Username;
+        public string UsernameWithDomain;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -125,6 +126,8 @@ namespace ProcessHacker
                         {
                             item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
                                 Properties.Settings.Default.ShowAccountDomains);
+                            item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                                true);
                         }
                         catch
                         { }

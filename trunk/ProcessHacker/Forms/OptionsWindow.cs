@@ -30,8 +30,6 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
-        bool _needsReload = false;
-
         public OptionsWindow()
         {
             InitializeComponent();
@@ -40,6 +38,12 @@ namespace ProcessHacker
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
+
+            textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
+            colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
+            colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemovedProcesses;
+            colorOwnProcesses.Color = Properties.Settings.Default.ColorOwnProcesses;
+            colorSystemProcesses.Color = Properties.Settings.Default.ColorSystemProcesses;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -67,6 +71,16 @@ namespace ProcessHacker
 
             if (Program.HackerWindow.ThreadProvider != null)
                 Program.HackerWindow.ThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
+
+            Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
+            Properties.Settings.Default.ColorNewProcesses = colorNewProcesses.Color;
+            Properties.Settings.Default.ColorRemovedProcesses = colorRemovedProcesses.Color;
+            Properties.Settings.Default.ColorOwnProcesses = colorOwnProcesses.Color;
+            Properties.Settings.Default.ColorSystemProcesses = colorSystemProcesses.Color;
+
+            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
+            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
             this.Close();
         }

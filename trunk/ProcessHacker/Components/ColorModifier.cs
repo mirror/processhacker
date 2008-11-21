@@ -10,6 +10,8 @@ namespace ProcessHacker.Components
 {
     public partial class ColorModifier : UserControl
     {
+        private Color _color;
+
         public ColorModifier()
         {
             InitializeComponent();
@@ -22,13 +24,30 @@ namespace ProcessHacker.Components
             cd.Color = panelColor.BackColor;
 
             if (cd.ShowDialog() == DialogResult.OK)
+            {
+                _color = cd.Color;
                 panelColor.BackColor = cd.Color;
+            }
         }
 
         public Color Color
         {
-            get { return panelColor.BackColor; }
-            set { panelColor.BackColor = value; }
+            get { return _color; }
+            set
+            {
+                _color = value;
+                panelColor.BackColor = value;
+            }
+        }
+
+        private void panelColor_MouseEnter(object sender, EventArgs e)
+        {
+            panelColor.BackColor = Color.FromArgb(0xcc, _color);
+        }
+
+        private void panelColor_MouseLeave(object sender, EventArgs e)
+        {
+            panelColor.BackColor = _color;
         }
     }
 }
