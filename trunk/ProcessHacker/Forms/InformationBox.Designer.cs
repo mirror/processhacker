@@ -30,6 +30,7 @@
         {
             this.textValues = new System.Windows.Forms.TextBox();
             this.buttonClose = new System.Windows.Forms.Button();
+            this.buttonSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textValues
@@ -57,11 +58,23 @@
             this.buttonClose.UseVisualStyleBackColor = true;
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
+            // buttonSave
+            // 
+            this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonSave.Location = new System.Drawing.Point(328, 217);
+            this.buttonSave.Name = "buttonSave";
+            this.buttonSave.Size = new System.Drawing.Size(75, 23);
+            this.buttonSave.TabIndex = 2;
+            this.buttonSave.Text = "Save...";
+            this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+            // 
             // InformationBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 252);
+            this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.textValues);
             this.MaximizeBox = false;
@@ -80,6 +93,7 @@
 
         private System.Windows.Forms.TextBox textValues;
         private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.Button buttonSave;
 
     }
 }

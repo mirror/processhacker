@@ -61,13 +61,9 @@ namespace ProcessHacker
             foreach (int pid in Dictionary.Keys)
             {
                 if (!pids.Contains(pid))
-                {
-                    ProcessItem item = new ProcessItem();
-
-                    item.PID = pid;
-
+                {                 
+                    this.CallDictionaryRemoved(this.Dictionary[pid]);
                     newdictionary.Remove(pid);
-                    this.CallDictionaryRemoved(item);
                 }
             }
 
@@ -142,6 +138,8 @@ namespace ProcessHacker
                     ProcessItem item = Dictionary[p.Id];
                     ProcessItem newitem = new ProcessItem();
 
+                    newitem.Icon = item.Icon;
+                    newitem.Name = item.Name;
                     newitem.PID = item.PID;
                     newitem.Process = item.Process;
 
@@ -158,6 +156,8 @@ namespace ProcessHacker
                         {
                             newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
                                 Properties.Settings.Default.ShowAccountDomains);
+                            newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                                true);
                         }
                         catch
                         { }

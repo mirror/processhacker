@@ -65,12 +65,8 @@ namespace ProcessHacker
             {
                 if (!tids.Contains(tid))
                 {
-                    ThreadItem item = new ThreadItem();
-
-                    item.TID = tid;
-
+                    this.CallDictionaryRemoved(this.Dictionary[tid]);
                     newdictionary.Remove(tid);
-                    this.CallDictionaryRemoved(item);
                 }
             }
 

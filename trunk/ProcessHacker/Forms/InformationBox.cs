@@ -40,5 +40,13 @@ namespace ProcessHacker
         {
             this.Close();
         }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+                System.IO.File.WriteAllText(sfd.FileName, textValues.Text);
+        }
     }
 }

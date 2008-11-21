@@ -5,6 +5,7 @@ Process Hacker
  * Added "Search Online" menu item
  * Added highlighting of processes and threads
  * Added "Always on Top" menu item
+ * Added status bar messages and log
 
 1.1.5.0
  * Fixed memory leak with process icons

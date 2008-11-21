@@ -34,30 +34,6 @@ namespace ProcessHacker
         delegate void QueueUpdatedCallback();
         delegate void AddIconCallback(Icon icon);
         delegate void AddListViewItemCallback(ListView lv, string[] text);
-        
-        #region Properties
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
-        }
-
-        public ProcessProvider ProcessProvider
-        {
-            get { return processP; }
-        }
-
-        public ThreadProvider ThreadProvider
-        {
-            get { return threadP; }
-        }
-
-        #endregion
 
         #region Variables
 
@@ -81,6 +57,33 @@ namespace ProcessHacker
         int memorySize;
 
         List<Control> listViews = new List<Control>();
+
+        Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
+        List<string> log = new List<string>();
+
+        #endregion
+
+        #region Properties
+
+        public MenuItem WindowMenuItem
+        {
+            get { return windowMenuItem; }
+        }
+
+        public wyDay.Controls.VistaMenu VistaMenu
+        {
+            get { return vistaMenu; }
+        }
+
+        public ProcessProvider ProcessProvider
+        {
+            get { return processP; }
+        }
+
+        public ThreadProvider ThreadProvider
+        {
+            get { return threadP; }
+        }
 
         #endregion
 
@@ -317,6 +320,19 @@ namespace ProcessHacker
                     { }
                 }));
             }
+        }
+
+        private void logMenuItem_Click(object sender, EventArgs e)
+        {
+            string str = "";
+
+            foreach (string item in log)
+                str += item + "\r\n";
+
+            InformationBox box = new InformationBox(str);
+
+            box.TopMost = this.TopMost;
+            box.ShowDialog();
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
@@ -957,6 +973,7 @@ namespace ProcessHacker
 
             try
             {
+                privForm.TopMost = this.TopMost;
                 privForm.ShowDialog();
             }
             catch
@@ -969,6 +986,7 @@ namespace ProcessHacker
 
             try
             {
+                grpForm.TopMost = this.TopMost;
                 grpForm.ShowDialog();
             }
             catch
@@ -1025,6 +1043,24 @@ namespace ProcessHacker
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(listProcesses.Items);
+        }
+
+        #endregion
+
+        #region Providers
+
+        public void processP_DictionaryAdded(object item)
+        {
+            ProcessItem pitem = (ProcessItem)item;
+
+            this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
+        }
+
+        public void processP_DictionaryRemoved(object item)
+        {
+            ProcessItem pitem = (ProcessItem)item;
+
+            this.QueueMessage("Terminated Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
         }
 
         #endregion
@@ -1342,6 +1378,25 @@ namespace ProcessHacker
             UpdateMiscInfo();
         }
 
+        private void timerMessages_Tick(object sender, EventArgs e)
+        {
+            if (statusMessages.Count != 0)
+            {
+                KeyValuePair<string, Icon> v = statusMessages.Dequeue();
+                statusText.Text = v.Key;
+
+                if (v.Value != null)
+                    statusIcon.Icon = v.Value;
+                else
+                    statusIcon.Icon = null;
+            }
+            else
+            {
+                statusText.Text = "";
+                statusIcon.Icon = null;
+            }
+        }
+
         #endregion
 
         #endregion
@@ -1454,6 +1509,12 @@ namespace ProcessHacker
         private void PerformSearch(object sender, EventArgs e)
         {
             PerformSearch(((MenuItem)sender).Text);
+        }
+
+        private void QueueMessage(string message, Icon icon)
+        {
+            log.Add(DateTime.Now.ToString() + ": " + message);
+            statusMessages.Enqueue(new KeyValuePair<string,Icon>(message, icon));
         }
 
         private MemoryEditor ReadWriteMemory()
@@ -2219,6 +2280,22 @@ namespace ProcessHacker
             processP.Interval = RefreshInterval;
             listProcesses.Provider = processP;
             processP.Enabled = true;
+
+            processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
+            processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
+
+            statusText.Text = "Waiting...";
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 5000;
+            timer.Tick += new EventHandler(delegate(object o, EventArgs e)
+            {
+                statusText.Text = "";
+                statusMessages.Clear();
+                log.Clear();
+                timerMessages.Enabled = true;
+                timer.Dispose();
+            });
+            timer.Start();
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
