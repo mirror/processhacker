@@ -50,6 +50,7 @@
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.closeActiveWindowMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.goToParentProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.privilegesMenuItem = new System.Windows.Forms.MenuItem();
             this.groupsMenuItem = new System.Windows.Forms.MenuItem();
@@ -153,7 +154,6 @@
             this.statusIcon = new System.Windows.Forms.StatusBarPanel();
             this.statusText = new System.Windows.Forms.StatusBarPanel();
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
-            this.goToParentProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
             this.splitMain.Panel1.SuspendLayout();
@@ -355,12 +355,20 @@
             this.vistaMenu.SetImage(this.closeActiveWindowMenuItem, global::ProcessHacker.Properties.Resources.application_delete);
             this.closeActiveWindowMenuItem.Index = 3;
             this.closeActiveWindowMenuItem.Text = "&Close Active Window";
+            this.closeActiveWindowMenuItem.Visible = false;
             this.closeActiveWindowMenuItem.Click += new System.EventHandler(this.closeActiveWindowMenuItem_Click);
             // 
             // menuItem5
             // 
             this.menuItem5.Index = 4;
             this.menuItem5.Text = "-";
+            // 
+            // goToParentProcessMenuItem
+            // 
+            this.vistaMenu.SetImage(this.goToParentProcessMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.goToParentProcessMenuItem.Index = 5;
+            this.goToParentProcessMenuItem.Text = "Go to Parent";
+            this.goToParentProcessMenuItem.Click += new System.EventHandler(this.goToParentProcessMenuItem_Click);
             // 
             // inspectProcessMenuItem
             // 
@@ -1155,13 +1163,6 @@
             // 
             this.timerMessages.Interval = 2000;
             this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
-            // 
-            // goToParentProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.goToParentProcessMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
-            this.goToParentProcessMenuItem.Index = 5;
-            this.goToParentProcessMenuItem.Text = "Go to Parent";
-            this.goToParentProcessMenuItem.Click += new System.EventHandler(this.goToParentProcessMenuItem_Click);
             // 
             // HackerWindow
             // 
