@@ -4,6 +4,7 @@ Process Hacker
  * Added PE Inspector (can read exe/dll/sys files and their properties)
  * Added "Search Online" menu item
  * Added highlighting of processes and threads
+ * Added "Always on Top" menu item
 
 1.1.5.0
  * Fixed memory leak with process icons

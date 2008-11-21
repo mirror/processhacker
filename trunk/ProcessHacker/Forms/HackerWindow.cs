@@ -2156,6 +2156,8 @@ namespace ProcessHacker
 
         private void formViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.AlwaysOnTop = this.TopMost;
+
             if (threadP != null)
                 threadP.Kill();
 
@@ -2171,6 +2173,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
