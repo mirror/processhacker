@@ -133,10 +133,9 @@ namespace ProcessHacker
         private void provider_DictionaryAdded(object item)
         {
             ProcessItem pitem = (ProcessItem)item;
-            ListViewItem litem = new ListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem = listProcesses.Items.Add(pitem.PID.ToString(), pitem.Name, 0);
-
+            litem.Name = pitem.PID.ToString();
             litem.Text = pitem.Name;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
@@ -174,6 +173,8 @@ namespace ProcessHacker
                 imageList.Images.Add(pitem.Icon);
                 litem.ImageIndex = _id++;
             }
+
+            listProcesses.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(object item)
