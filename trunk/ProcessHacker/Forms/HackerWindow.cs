@@ -1052,8 +1052,18 @@ namespace ProcessHacker
         public void processP_DictionaryAdded(object item)
         {
             ProcessItem pitem = (ProcessItem)item;
+            string parentText = "";
 
-            this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
+            try
+            {
+                ProcessItem parent = processP.Dictionary[Win32.GetProcessParent(pitem.PID)];
+
+                parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
+            }
+            catch
+            { }
+
+            this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")" + parentText, pitem.Icon);
         }
 
         public void processP_DictionaryRemoved(object item)
