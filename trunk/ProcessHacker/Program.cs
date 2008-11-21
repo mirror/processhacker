@@ -129,7 +129,6 @@ namespace ProcessHacker
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
 
-            while (id == "") Thread.Sleep(1);
             Program.MemoryEditorsThreads.Add(id, t);
 
             return ed;
@@ -238,7 +237,6 @@ namespace ProcessHacker
         public static PEWindow GetPEWindow(string path, PEWindowInvokeAction action)
         {
             PEWindow pw = null;
-            string id = "";
 
             if (PEWindows.ContainsKey(path))
             {
@@ -253,8 +251,6 @@ namespace ProcessHacker
             {
                 pw = new PEWindow(path);
 
-                id = pw.Id;
-
                 action(pw);
 
                 try
@@ -264,14 +260,13 @@ namespace ProcessHacker
                 catch
                 { }
 
-                Program.PEThreads.Remove(id);
+                Program.PEThreads.Remove(path);
             }));
 
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
 
-            while (id == "") Thread.Sleep(1);
-            Program.PEThreads.Add(id, t);
+            Program.PEThreads.Add(path, t);
 
             return pw;
         }

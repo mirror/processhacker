@@ -18,6 +18,10 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            _path = path;
+            this.Text = "PE File - " + path;
+            Program.PEWindows.Add(Id, this);
+
             Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
             listCOFFHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFHeader);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
@@ -43,22 +47,24 @@ namespace ProcessHacker
             listImports.ContextMenu = ListViewMenu.GetMenu(listImports);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
 
-            _path = path;
-            this.Text = "PE File - " + path;
-
-            Program.PEWindows.Add(Id, this);
-
             this.Size = Properties.Settings.Default.PEWindowSize;
+
+            try
+            {
+                this.Read(_path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading the specified file:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                this.Close();
+            }
         }
 
         private void PEWindow_Load(object sender, EventArgs e)
         {
             Program.UpdateWindows();
-
-            if (!this.Read(_path))
-            {
-                this.Close();
-            }
         }
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -87,21 +93,11 @@ namespace ProcessHacker
             get { return vistaMenu; }
         }
 
-        private bool Read(string path)
+        private void Read(string path)
         {
             PEFile peFile;
      
-            try
-            {
-                peFile = new PEFile(path);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading the specified file:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return false;
-            }
+            peFile = new PEFile(path);
 
             _peFile = peFile;
 
@@ -284,8 +280,6 @@ namespace ProcessHacker
             }
 
             #endregion
-
-            return true;
         }
 
         private void listExports_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
