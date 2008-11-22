@@ -28,12 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DisassemblyWindow));
             this.listDisasm = new System.Windows.Forms.ListView();
             this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnRaw = new System.Windows.Forms.ColumnHeader();
             this.columnCode = new System.Windows.Forms.ColumnHeader();
             this.columnComment = new System.Windows.Forms.ColumnHeader();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.menuLine = new System.Windows.Forms.ContextMenu();
+            this.followMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listDisasm
@@ -53,17 +60,19 @@
             this.listDisasm.Location = new System.Drawing.Point(12, 12);
             this.listDisasm.Name = "listDisasm";
             this.listDisasm.ShowItemToolTips = true;
-            this.listDisasm.Size = new System.Drawing.Size(498, 509);
+            this.listDisasm.Size = new System.Drawing.Size(498, 488);
+            this.listDisasm.SmallImageList = this.imageList;
             this.listDisasm.TabIndex = 0;
             this.listDisasm.UseCompatibleStateImageBehavior = false;
             this.listDisasm.View = System.Windows.Forms.View.Details;
             this.listDisasm.VirtualMode = true;
+            this.listDisasm.SelectedIndexChanged += new System.EventHandler(this.listDisasm_SelectedIndexChanged);
             this.listDisasm.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listDisasm_RetrieveVirtualItem);
             // 
             // columnAddress
             // 
             this.columnAddress.Text = "Address";
-            this.columnAddress.Width = 80;
+            this.columnAddress.Width = 100;
             // 
             // columnRaw
             // 
@@ -80,16 +89,50 @@
             this.columnComment.Text = "Comment";
             this.columnComment.Width = 100;
             // 
+            // imageList
+            // 
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "arrow_left.png");
+            this.imageList.Images.SetKeyName(1, "arrow_right.png");
+            this.imageList.Images.SetKeyName(2, "arrow_rotate_anticlockwise.png");
+            this.imageList.Images.SetKeyName(3, "arrow_branch.png");
+            this.imageList.Images.SetKeyName(4, "arrow_rotate_clockwise.png");
+            // 
+            // menuLine
+            // 
+            this.menuLine.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.followMenuItem,
+            this.copyMenuItem});
+            // 
+            // followMenuItem
+            // 
+            this.vistaMenu.SetImage(this.followMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.followMenuItem.Index = 0;
+            this.followMenuItem.Text = "&Follow";
+            this.followMenuItem.Click += new System.EventHandler(this.followMenuItem_Click);
+            // 
+            // copyMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyMenuItem.Index = 1;
+            this.copyMenuItem.Text = "&Copy";
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            // 
             // DisassemblyWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(522, 533);
+            this.ClientSize = new System.Drawing.Size(522, 512);
             this.Controls.Add(this.listDisasm);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DisassemblyWindow";
             this.Text = "Disassembly";
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -101,6 +144,11 @@
         private System.Windows.Forms.ColumnHeader columnRaw;
         private System.Windows.Forms.ColumnHeader columnCode;
         private System.Windows.Forms.ColumnHeader columnComment;
+        private wyDay.Controls.VistaMenu vistaMenu;
+        private System.Windows.Forms.ContextMenu menuLine;
+        private System.Windows.Forms.MenuItem followMenuItem;
+        private System.Windows.Forms.MenuItem copyMenuItem;
+        private System.Windows.Forms.ImageList imageList;
 
     }
 }
