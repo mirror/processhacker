@@ -37,6 +37,7 @@ namespace ProcessHacker
     {
         private static Dictionary<ListViewItemState, Color> _colors = new Dictionary<ListViewItemState, Color>();
         private static int _highlightingDuration = 1000;
+        private static bool _stateHighlighting = true;
 
         static HighlightedListViewItem()
         {
@@ -49,10 +50,22 @@ namespace ProcessHacker
             get { return _colors; }
         }
 
+        /// <summary>
+        /// Gets or sets the duration, in milliseconds, of state highlighting.
+        /// </summary>
         public static int HighlightingDuration
         {
             get { return _highlightingDuration; }
             set { _highlightingDuration = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether state highlighting is on.
+        /// </summary>
+        public static bool StateHighlighting
+        {
+            get { return _stateHighlighting; }
+            set { _stateHighlighting = value; }
         }
 
         private Color _normalColor = SystemColors.Window;
@@ -61,14 +74,28 @@ namespace ProcessHacker
 
         public HighlightedListViewItem(string text) : base(text)
         {
-            this.BackColor = _colors[ListViewItemState.New];
-            this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+            if (_stateHighlighting)
+            {
+                this.BackColor = _colors[ListViewItemState.New];
+                this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+            }
+            else
+            {
+                this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+            }
         }
 
         public override void Remove()
         {
-            this.BackColor = _colors[ListViewItemState.Removed];
-            this.PerformDelayed(new MethodInvoker(delegate { base.Remove(); }));  
+            if (_stateHighlighting)
+            {
+                this.BackColor = _colors[ListViewItemState.Removed];
+                this.PerformDelayed(new MethodInvoker(delegate { base.Remove(); }));
+            }
+            else
+            {
+                base.Remove();
+            }
         }
 
         public Color NormalColor

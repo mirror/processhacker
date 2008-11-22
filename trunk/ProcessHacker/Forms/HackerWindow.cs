@@ -2317,12 +2317,13 @@ namespace ProcessHacker
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
+
+            HighlightedListViewItem.StateHighlighting = false;
             processP.Interval = RefreshInterval;
             listProcesses.Provider = processP;
-            processP.Enabled = true;
-
             processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
+            processP.Enabled = true;
 
             statusText.Text = "Waiting...";
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -2334,6 +2335,7 @@ namespace ProcessHacker
                 log.Clear();
                 timerMessages.Enabled = true;
                 timer.Dispose();
+                HighlightedListViewItem.StateHighlighting = true;
             });
             timer.Start(); 
         }
