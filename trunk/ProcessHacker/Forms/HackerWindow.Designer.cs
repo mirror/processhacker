@@ -489,7 +489,6 @@
             this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.inspectThreadMenuItem.Index = 0;
             this.inspectThreadMenuItem.Text = "&Inspect";
-            this.inspectThreadMenuItem.Visible = false;
             this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
             // 
             // terminateThreadMenuItem

@@ -26,6 +26,9 @@ using System.IO;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides services for retrieving symbol information.
+    /// </summary>
     public class Symbols
     {
         private static List<KeyValuePair<int, string>> _libraryLookup;
@@ -62,6 +65,9 @@ namespace ProcessHacker
 
             PEFile file = new PEFile(realPath);
             List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+
+            if (file.ExportData == null)
+                return;
 
             for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
             {

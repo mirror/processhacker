@@ -169,6 +169,8 @@ namespace ProcessHacker
 
                 return;
             }
+            
+            this.Text = Symbols.GetSymbolName(context.Eax); 
 
             listViewCallStack.Enabled = true;
             listViewRegisters.Enabled = true;
@@ -194,7 +196,7 @@ namespace ProcessHacker
                 }
             }
 
-            WalkCallStack(context);
+            //WalkCallStack(context);
         }
 
         private void suspendMenuItem_Click(object sender, EventArgs e)

@@ -1231,7 +1231,6 @@ namespace ProcessHacker
 
         private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
-#if FALSE
             ThreadWindow window;
 
             try
@@ -1251,7 +1250,6 @@ namespace ProcessHacker
             }
             catch
             { }
-#endif
         }
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
@@ -2366,7 +2364,25 @@ namespace ProcessHacker
 
             listModules.Items.Clear();
 
-            LoadSettings();        
+            LoadSettings();
+
+            // load symbols on a separate thread
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                        {
+                            statusIcon.Icon = null;
+                            statusText.Text = "Loading symbols for " + module.ModuleName + "...";
+                        }));
+  
+                    Symbols.LoadLibrary(module.FileName);
+                }
+            }));
+
+            t.Priority = ThreadPriority.Lowest;
+            t.Start();
         }
     }
 }

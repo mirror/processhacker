@@ -119,7 +119,7 @@
             this.listViewCallStack.FullRowSelect = true;
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
-            this.listViewCallStack.Size = new System.Drawing.Size(322, 181);
+            this.listViewCallStack.Size = new System.Drawing.Size(322, 180);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -142,7 +142,7 @@
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 12);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 206);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 205);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -152,7 +152,7 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 224);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 223);
             this.groupRegisters.Name = "groupRegisters";
             this.groupRegisters.Size = new System.Drawing.Size(334, 132);
             this.groupRegisters.TabIndex = 2;
@@ -192,7 +192,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 368);
+            this.ClientSize = new System.Drawing.Size(358, 367);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
