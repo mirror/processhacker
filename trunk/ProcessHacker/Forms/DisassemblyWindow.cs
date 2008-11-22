@@ -24,13 +24,14 @@ namespace ProcessHacker
             while ((maxCount != -1 && _disasm.Count < maxCount) || (maxCount == -1))
             {
                 byte[] data = new byte[16];
+                long pos = s.Position;
 
                 s.Read(data, 0, 16);
                 s.Seek(disasm.Disassemble(data, 16, 0, Asm.DISASM_FILE) - 16, SeekOrigin.Current);
 
                 _disasm.Add(new string[]
                 {
-                    "0x" + s.Position.ToString("x8"),
+                    "0x" + pos.ToString("x8"),
                     disasm.Result.Dump.ToString(),
                     disasm.Result.Result.ToString(),
                     disasm.Result.Comment
