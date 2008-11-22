@@ -77,7 +77,11 @@ namespace ProcessHacker
             try
             {
                 listDisasm.SelectedIndices.Clear();
-                listDisasm.SelectedIndices.Add(this.GetShortJumpItemIndex(selected));
+
+                int index = this.GetShortJumpItemIndex(selected);
+
+                listDisasm.SelectedIndices.Add(index);
+                listDisasm.EnsureVisible(index);
             }
             catch
             { }
