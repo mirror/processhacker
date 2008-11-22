@@ -105,6 +105,7 @@
             this.menuLine.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.followMenuItem,
             this.copyMenuItem});
+            this.menuLine.Popup += new System.EventHandler(this.menuLine_Popup);
             // 
             // followMenuItem
             // 

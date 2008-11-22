@@ -135,5 +135,17 @@ namespace ProcessHacker
             if (e.KeyCode == Keys.Enter)
                 followMenuItem_Click(null, null);
         }
+
+        private void menuLine_Popup(object sender, EventArgs e)
+        {
+            if (listDisasm.SelectedIndices.Count == 0)
+            {
+                Misc.DisableAllMenuItems(menuLine);
+            }
+            else
+            {
+                Misc.EnableAllMenuItems(menuLine);
+            }
+        }
     }
 }
