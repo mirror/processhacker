@@ -242,15 +242,15 @@ namespace ProcessHacker.Asm
 
         public struct Disasm
         {
-            public uint IP;            // Instrucion pointer
-            public string Dump;        // Hexadecimal dump of the command
+            public int IP;            // Instrucion pointer
+            public StringBuilder Dump;        // Hexadecimal dump of the command
             public StringBuilder Result;      // Disassembled command
             public string Comment;     // Brief comment
             public int CmdType;        // One of C_xxx
             public int MemType;        // Type of addressed variable in memory
             public int NPrefix;        // Number of prefixes
             public int Indexed;        // Address contains register(s)
-            public uint JmpConst;      // Constant jump address
+            public int JmpConst;      // Constant jump address
             public int JmpTable;      // Possible address of switch table
             public int AdrConst;      // Constant part of address
             public int ImmConst;      // Immediate constant
@@ -273,20 +273,20 @@ namespace ProcessHacker.Asm
 
         public static bool Ideal;                // Force IDEAL decoding mode
         public static bool Lowercase = true;            // Force lowercase display
-        public static int TabArguments;         // Tab between mnemonic and arguments
-        public static int ExtraSpace;           // Extra space between arguments
+        public static bool TabArguments;         // Tab between mnemonic and arguments
+        public static bool ExtraSpace;           // Extra space between arguments
         public static int PutDefSeg;            // Display default segments in listing
         public static int ShowMemSize;          // Always show memory size
         public static int ShowNear;             // Show NEAR modifiers
-        public static int ShortStringCmds;      // Use short form of string commands
+        public static bool ShortStringCmds;      // Use short form of string commands
         public static int SizeSens;             // How to decode size-sensitive mnemonics
         public static bool Symbolic;             // Show symbolic addresses in disasm
         public static int Farcalls;             // Accept far calls, returns & addresses
-        public static int DecodeVxd;            // Decode VxD calls (Win95/98)
+        public static bool DecodeVxd;            // Decode VxD calls (Win95/98)
         public static int Privileged;           // Accept privileged commands
         public static int IOCommand;            // Accept I/O commands
         public static int BadShift;             // Accept shift out of range 1..31
-        public static int ExtraPrefix;          // Accept superfluous prefixes
+        public static bool ExtraPrefix;          // Accept superfluous prefixes
         public static int LockedBus;            // Accept LOCK prefixes
         public static int StackAlign;           // Accept unaligned stack operations
         public static int IsWindowsNT;          // When checking for dangers, assume NT

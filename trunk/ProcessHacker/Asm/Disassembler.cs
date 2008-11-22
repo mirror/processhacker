@@ -1,6 +1,6 @@
-﻿/* Original file: asmserv.c
+﻿/* Original file: disasm.c
  * 
- * Free Disassembler and Assembler -- Command data and service routines
+ * Free Disassembler and Assembler -- Disassembler
  *
  * Copyright (C) 2008 wj32
  * Copyright (C) 2001 Oleh Yuschuk
@@ -44,7 +44,7 @@ namespace ProcessHacker.Asm
 
             private byte* _cmd;
             private byte* _pFixup;
-            private uint _size;
+            private int _size;
             private Disasm _da;
             private int _mode;
 
@@ -864,7 +864,1107 @@ namespace ProcessHacker.Asm
                     _da.Result.Append("1");
             }
 
+            private void DecodeIA()
+            {
+                int addr;
 
+                if (_size < 1 + _addrSize)
+                {
+                    _da.Error = DAE_CROSS;
+                    return;
+                }
+
+                _dispSize = _addrSize;
+
+                if (_mode < DISASM_DATA)
+                    return;
+
+                if (_dataSize == 1)
+                    _da.MemType = DEC_BYTE;
+                else if (_dataSize == 2)
+                    _da.MemType = DEC_WORD;
+                else if (_dataSize == 4)
+                    _da.MemType = DEC_DWORD;
+
+                if (_addrSize == 2)
+                    addr = *(ushort*)(_cmd + 1);
+                else
+                {
+                    addr = *(int*)(_cmd + 1);
+
+                    if (_pFixup == null)
+                        _pFixup = _cmd + 1;
+
+                    _da.FixupSize += 4;
+                }
+
+                _da.AdrConst = addr;
+
+                if (addr == 0)
+                    _da.ZeroConst = 1;
+
+                if (_mode >= DISASM_FILE)
+                    MemAdr(SEG_DS, "", addr, _dataSize);
+            }
+
+            private void DecodeRJ(int offsize, int nextIp)
+            {
+                int i;
+                int addr;
+                string s = "";
+
+                if (_size < offsize + 1)
+                {
+                    _da.Error = DAE_CROSS;
+                    return;
+                }
+
+                _dispSize = offsize;
+
+                if (_mode < DISASM_DATA)
+                    return;
+
+                if (offsize == 1)
+                    addr = (sbyte)_cmd[1] + nextIp;
+                else if (offsize == 2)
+                    addr = *(short*)(_cmd + 1) + nextIp;
+                else
+                    addr = *(int*)(_cmd + 1) + nextIp;
+
+                if (_dataSize == 2)
+                    addr &= 0xffff;
+
+                _da.JmpConst = addr;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    if (offsize == 1)
+                        _da.Result.Append(Lowercase ? "short " : "SHORT ");
+
+                    if (_mode >= DISASM_CODE)
+                    {
+                        s = DecodeAddress(addr, out _da.Comment);
+                        i = s.Length;
+                    }
+                    else
+                    {
+                        i = 0;
+                    }
+
+                    if (!Symbolic || i == 0)
+                        _da.Result.Append(string.Format("{0:x8}", addr));
+                    else
+                        _da.Result.Append(s);
+
+                    if (!Symbolic && i != 0 && _da.Comment != "")
+                        _da.Comment = s;
+                }
+            }
+
+            private void DecodeJF()
+            {
+                int addr, seg;
+
+                if (_size < (1 + _addrSize + 2))
+                {
+                    _da.Error = DAE_CROSS;
+                    return;
+                }
+
+                _dispSize = _addrSize;
+                _immSize = 2;
+
+                if (_mode < DISASM_DATA)
+                    return;
+
+                if (_addrSize == 2)
+                {
+                    addr = *(ushort*)(_cmd + 1);
+                    seg = *(ushort*)(_cmd + 3);
+                }
+                else
+                {
+                    addr = *(int*)(_cmd + 1);
+                    seg = *(ushort*)(_cmd + 5);
+                }
+
+                _da.JmpConst = addr;
+                _da.ImmConst = seg;
+
+                if (addr == 0 || seg == 0)
+                    _da.ZeroConst = 1;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    _da.Result.Append(string.Format("{0} {1:x4}:{1:x8}",
+                        Lowercase ? "far" : "FAR", seg, addr));
+                }
+            }
+
+            private void DecodeSG(int index)
+            {
+                if (_mode < DISASM_DATA)
+                    return;
+
+                index &= 0x07;
+
+                if (index >= 6)
+                    _softError = DAE_BADSEG;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    _da.Result.Append(Lowercase ? SegName[index].ToLower() : SegName[index]);
+                }
+            }
+
+            private void DecodeCR(int index)
+            {
+                _hasRM = true;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    index = (index >> 3) & 0x07;
+                    _da.Result.Append(Lowercase ? CrName[index].ToLower() : CrName[index]);
+                }
+            }
+
+            private void DecodeDR(int index)
+            {
+                _hasRM = true;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    index = (index >> 3) & 0x07;
+                    _da.Result.Append(Lowercase ? DrName[index].ToLower() : DrName[index]);
+                }
+            }
+
+            private int Get3DNowSuffix()
+            {
+                int c, sib;
+                int offset;
+
+                if (_size < 3)
+                    return -1;
+
+                offset = 3;
+                c = _cmd[3] & 0xc7;
+
+                if ((c & 0xc0) == 0xc0)
+                { }
+                else if (_addrSize == 2)
+                {
+                    if (c == 0x06)
+                        offset += 2;
+                    else if ((c & 0xc0) == 0x40)
+                        offset++;
+                    else if ((c & 0xc0) == 0x80)
+                        offset += 2;
+                }
+                else if (c == 0x05)
+                    offset += 4;
+                else if ((c & 0x07) == 0x04)
+                {
+                    if (_size < 4)
+                        return -1;
+
+                    sib = _cmd[3];
+                    offset++;
+
+                    if (c == 0x04 && (sib & 0x07) == 0x05)
+                        offset += 4;
+                    else if ((c & 0xc0) == 0x40)
+                        offset += 1;
+                    else if ((c & 0xc0) == 0x80)
+                        offset += 4;
+                }
+                else if ((c & 0xc0) == 0x40)
+                    offset += 1;
+                else if ((c & 0xc0) == 0x80)
+                    offset += 4;
+
+                if (offset >= _size)
+                    return -1;
+
+                return _cmd[offset];
+            }
+
+            private int CheckCondition(int code, int flags)
+            {
+                int cond, temp;
+
+                switch (code & 0x0e)
+                {
+                    case 0:
+                        cond = flags & 0x0800;
+                        break;
+                    case 2:
+                        cond = flags & 0x0001;
+                        break;
+                    case 4:
+                        cond = flags & 0x0040;
+                        break;
+                    case 6:
+                        cond = flags & 0x0041;
+                        break;
+                    case 8:
+                        cond = flags & 0x0080;
+                        break;
+                    case 10:
+                        cond = flags & 0x0004;
+                        break;
+                    case 12:
+                        temp = flags & 0x0880;
+                        cond = (temp == 0x0800 || temp == 0x0080) ? 1 : 0;
+                        break;
+                    case 14:
+                        temp = flags & 0x0880;
+                        cond = (temp == 0x0800 || temp == 0x0080 || (flags & 0x0040) != 0) ? 1 : 0;
+                        break;
+
+                    default:
+                        return -1;
+                }
+
+                if ((code & 0x01) == 0)
+                    return (cond != 0) ? 1 : 0;
+                else
+                    return (cond == 0) ? 1 : 0;
+            }
+
+            private int Disasm(byte* src, int srcsize, int srcIp, int disasmmode)
+            {
+                bool repeated, is3dnow;
+                int searchi = 0;
+                int i, j, isprefix, operand, mnemosize, arg;
+                int u, code;
+                int lockprefix;
+                int repprefix;
+                int cxsize;
+                string name, pname;
+                TCmdData pd = new TCmdData();
+                TCmdData pdan;
+
+                #region Initialization
+
+                _dataSize = _addrSize = 4;
+                _segPrefix = SEG_UNDEF;
+                _hasRM = _hasSIB = false;
+                _dispSize = _immSize = 0;
+                lockprefix = 0;
+                repprefix = 0;
+                _nDump = 0;
+                _nResult = 0;
+                _cmd = src;
+                _size = srcsize;
+                _pFixup = null;
+                _softError = 0;
+                is3dnow = false;
+                _da.Result = new StringBuilder();
+                _da.Dump = new StringBuilder();
+                _da.IP = srcIp;
+                _da.Comment = "";
+                _da.CmdType = C_BAD;
+                _da.NPrefix = 0;
+                _da.MemType = DEC_UNKNOWN;
+                _da.Indexed = 0;
+                _da.JmpConst = 0;
+                _da.JmpTable = 0;
+                _da.AdrConst = 0;
+                _da.ImmConst = 0;
+                _da.ZeroConst = 0;
+                _da.FixupOffset = 0;
+                _da.FixupSize = 0;
+                _da.Warnings = 0;
+                _da.Error = DAE_NOERR;
+                _mode = disasmmode;
+
+                u = 0;
+                repeated = false;
+
+                #endregion
+
+                while (_size > 0)
+                {
+                    isprefix = 1;
+
+                    #region Switch
+
+                    switch (*_cmd)
+                    {
+                        case 0x26:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_ES;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x2e:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_CS;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x36:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_SS;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x3e:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_DS;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x64:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_FS;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x65:
+                            if (_segPrefix == SEG_UNDEF)
+                                _segPrefix = SEG_GS;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x66:
+                            if (_dataSize == 4)
+                                _dataSize = 2;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0x67:
+                            if (_addrSize == 4)
+                                _addrSize = 2;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0xf0:
+                            if (lockprefix == 0)
+                                lockprefix = 0xf0;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0xf2:
+                            if (repprefix == 0)
+                                repprefix = 0xf2;
+                            else
+                                repeated = true;
+                            break;
+
+                        case 0xf3:
+                            if (repprefix == 0)
+                                repprefix = 0xf3;
+                            else
+                                repprefix = 1;
+                            break;
+
+                        default:
+                            isprefix = 0;
+                            break;
+                    }
+
+                    #endregion
+
+                    if (isprefix == 0 || repeated)
+                        break;
+                    if (_mode >= DISASM_FILE)
+                        _da.Dump.Append(string.Format("{0:x2}:", *_cmd));
+
+                    _da.NPrefix++;
+                    _cmd++;
+                    srcIp++;
+                    _size--;
+                    u++;
+                }
+
+                if (repeated)
+                {
+                    if (_mode >= DISASM_FILE)
+                    {
+                        _da.Dump = new StringBuilder(_da.Dump.ToString().Substring(0, 2));
+                        _da.NPrefix = 1;
+
+                        #region Switch
+
+                        switch (_cmd[-u])
+                        {
+                            case 0x26:
+                                pname = SegName[SEG_ES];
+                                break;
+                            case 0x2e:
+                                pname = SegName[SEG_CS];
+                                break;
+                            case 0x36:
+                                pname = SegName[SEG_SS];
+                                break;
+                            case 0x3e:
+                                pname = SegName[SEG_DS];
+                                break;
+                            case 0x64:
+                                pname = SegName[SEG_FS];
+                                break;
+                            case 0x65:
+                                pname = SegName[SEG_GS];
+                                break;
+                            case 0x66:
+                                pname = "DATASIZE";
+                                break;
+                            case 0x67:
+                                pname = "ADDRSIZE";
+                                break;
+                            case 0xf0:
+                                pname = "LOCK";
+                                break;
+                            case 0xf2:
+                                pname = "REPNE";
+                                break;
+                            case 0xf3:
+                                pname = "REPE";
+                                break;
+                            default:
+                                pname = "?";
+                                break;
+                        }
+
+                        #endregion
+
+                        _da.Result.Append((Lowercase ? "prefix" : "PREFIX") + " " + (Lowercase ? pname.ToLower() : pname));
+
+                        if (!ExtraPrefix)
+                            _da.Comment = "Superfluous prefix";
+                    }
+
+                    _da.Warnings |= DAW_PREFIX;
+
+                    if (lockprefix != 0)
+                        _da.Warnings |= DAW_LOCK;
+
+                    _da.CmdType = C_RARE;
+
+                    return 1;
+                }
+
+                if (lockprefix != 0)
+                {
+                    if (_mode >= DISASM_FILE)
+                        _da.Result.Append("LOCK ");
+
+                    _da.Warnings |= DAW_LOCK;
+                }
+
+                code = 0;
+
+                if (_size > 0) *(((byte*)&code) + 0) = _cmd[0];
+                if (_size > 1) *(((byte*)&code) + 1) = _cmd[1];
+                if (_size > 2) *(((byte*)&code) + 2) = _cmd[2];
+
+                if (repprefix != 0)
+                    code = (code << 8) | repprefix;
+
+                if (DecodeVxd && (code & 0xffff) == 0x20cd)
+                    pd = VxdCmd[0];
+                else
+                {
+                    for (searchi = 0; searchi < CmdData.Length; searchi++)
+                    {
+                        TCmdData pdi = CmdData[searchi];
+
+                        if (((code ^ pdi.Code) & pdi.Mask) != 0)
+                            continue;
+
+                        if (_mode >= DISASM_FILE && ShortStringCmds &&
+                            (pdi.Arg1 == MSO || pdi.Arg1 == MDE || pdi.Arg2 == MSO || pdi.Arg2 == MDE))
+                            continue;
+
+                        pd = pdi;
+                        break;
+                    }
+                }
+
+                if ((pd.Type & C_TYPEMASK) == C_NOW)
+                {
+                    is3dnow = true;
+                    j = Get3DNowSuffix();
+
+                    if (j < 0)
+                        _da.Error = DAE_CROSS;
+                    else
+                    {
+                        for (; searchi < CmdData.Length; searchi++)
+                        {
+                            if (((code ^ pd.Code) & pd.Mask) != 0)
+                                continue;
+
+                            if (((byte*)&pd.Code)[2] == j)
+                                break;
+                        }
+                    }
+                }
+
+                if (pd.Mask == 0)
+                {
+                    _da.CmdType = C_BAD;
+
+                    if (_size < 2)
+                        _da.Error = DAE_CROSS;
+                    else
+                        _da.Error = DAE_BADCMD;
+                }
+                else
+                {
+                    _da.CmdType = pd.Type;
+                    cxsize = pd.Type;
+
+                    if (_segPrefix == SEG_FS || _segPrefix == SEG_GS || lockprefix != 0)
+                        _da.CmdType |= C_RARE;
+
+                    if (pd.Bits == PR)
+                        _da.Warnings |= DAW_PRIV;
+                    else if (pd.Bits == WP)
+                        _da.Warnings |= DAW_IO;
+
+                    if (_cmd[0] == 0x44 || _cmd[0] == 0x4C ||
+                        (_size >= 3 && (_cmd[0] == 0x81 || _cmd[0] == 0x83) &&
+                        (_cmd[1] == 0xC4 || _cmd[1] == 0xEC) && (_cmd[2] & 0x03) != 0))
+                    {
+                        _da.Warnings |= DAW_STACK;
+                        _da.CmdType |= C_RARE;
+                    }
+
+                    if (_cmd[0] == 0x8e)
+                        _da.Warnings |= DAW_SEGMENT;
+
+                    if (pd.Length == 2)
+                    {
+                        if (_size == 0)
+                            _da.Error = DAE_CROSS;
+                        else
+                        {
+                            if (_mode >= DISASM_FILE)
+                                _da.Dump.Append(string.Format("{0:x2}", *_cmd));
+
+                            _cmd++;
+                            srcIp++;
+                            _size--;
+                        }
+                    }
+
+                    if (_size == 0)
+                        _da.Error = DAE_CROSS;
+
+                    if ((pd.Bits & WW) != 0 && (*_cmd & WW) == 0)
+                        _dataSize = 1;
+                    else if ((pd.Bits & W3) != 0 && (*_cmd & W3) == 0)
+                        _dataSize = 1;
+                    else if ((pd.Bits & FF) != 0)
+                        _dataSize = 2;
+
+                    if (_mode >= DISASM_FILE)
+                    {
+                        if (pd.Name[0] == '&')
+                            mnemosize = _dataSize;
+                        else if (pd.Name[0] == '$')
+                            mnemosize = _addrSize;
+                        else
+                            mnemosize = 0;
+
+                        if (mnemosize != 0)
+                        {
+                            name = "";
+
+                            for (i = 0, j = 1; j < pd.Name.Length; j++)
+                            {
+                                if (pd.Name[j] == ':')
+                                {
+                                    if (mnemosize == 4)
+                                        i = 0;
+                                    else
+                                        break;
+                                }
+                                else if (pd.Name[j] == '*')
+                                {
+                                    if (mnemosize == 4 && SizeSens != 2)
+                                        name += 'D';
+                                    else if (mnemosize != 4 && SizeSens != 0)
+                                        name += 'W';
+                                }
+                                else
+                                    name += pd.Name[j];
+                            }
+                        }
+                        else
+                        {
+                            name = pd.Name.Split(',')[0];
+                        }
+
+                        if (repprefix != 0 && TabArguments)
+                        {
+                            for (i = 0; i < name.Length && name[i] != ' '; i++)
+                                _da.Result.Append(name[i]);
+
+                            if (name[i] == ' ')
+                            {
+                                _da.Result.Append(' ');
+                                i++;
+                            }
+
+                            while (_da.Result.Length < 8)
+                                _da.Result.Append(' ');
+
+                            for (; i < name.Length; i++)
+                                _da.Result.Append(name[i]);
+                        }
+                        else
+                            _da.Result.Append(name);
+
+                        if (Lowercase)
+                            _da.Result = new StringBuilder(_da.Result.ToString().ToLower());
+                    }
+
+                    for (operand = 0; operand < 3; operand++)
+                    {
+                        if (_da.Error != 0)
+                            break;
+
+                        if (operand == 0 && pd.Arg2 != NNN && pd.Arg2 < PseudoOp)
+                            _addComment = false;
+                        else
+                            _addComment = true;
+
+                        if (operand == 0)
+                            arg = pd.Arg1;
+                        else if (operand == 1)
+                            arg = pd.Arg2;
+                        else
+                            arg = pd.Arg3;
+
+                        if (arg == NNN)
+                            break;
+
+                        if ((_mode >= DISASM_FILE) && arg < PseudoOp)
+                        {
+                            if (operand == 0)
+                            {
+                                _da.Result.Append(' ');
+
+                                if (TabArguments)
+                                {
+                                    while (_da.Result.Length < 8)
+                                        _da.Result.Append(' ');
+                                }
+                            }
+                            else
+                            {
+                                _da.Result.Append(',');
+
+                                if (ExtraSpace)
+                                    _da.Result.Append(' ');
+                            }
+                        }
+
+                        #region Switch
+
+                        switch (arg)
+                        {
+                            case REG:
+                                if (_size < 2)
+                                    _da.Error = DAE_CROSS;
+                                else
+                                    DecodeRG(_cmd[1] >> 3, _dataSize, REG);
+
+                                _hasRM = true;
+                                break;
+
+                            case RCM:
+                                DecodeRG(_cmd[0], _dataSize, RCM);
+                                break;
+
+                            case RG4:
+                                if (_size < 2)
+                                    _da.Error = DAE_CROSS;
+                                else
+                                    DecodeRG(_cmd[1] >> 3, 4, RG4);
+
+                                _hasRM = true;
+                                break;
+
+                            case RAC:
+                                DecodeRG(REG_EAX, _dataSize, RAC);
+                                break;
+
+                            case RAX:
+                                DecodeRG(REG_EAX, 2, RAX);
+                                break;
+
+                            case RDX:
+                                DecodeRG(REG_EDX, 2, RDX);
+                                break;
+
+                            case RCL:
+                                DecodeRG(REG_ECX, 1, RCL);
+                                break;
+
+                            case RS0:
+                                DecodeST(0, 0);
+                                break;
+
+                            case RST:
+                                DecodeST(_cmd[0], 0);
+                                break;
+
+                            case RMX:
+                                if (_size < 2)
+                                    _da.Error = DAE_CROSS;
+                                else
+                                    DecodeMX(_cmd[1] >> 3);
+
+                                _hasRM = true;
+                                break;
+
+                            case R3D:
+                                if (_size < 2)
+                                    _da.Error = DAE_CROSS;
+                                else
+                                    DecodeNR(_cmd[1] >> 3);
+
+                                _hasRM = true;
+                                break;
+
+                            case MRG:
+                            case MRJ:
+                            case MR1:
+                            case MR2:
+                            case MR4:
+                            case MR8:
+                            case MRD:
+                            case MMA:
+                            case MML:
+                            case MM6:
+                            case MMB:
+                            case MD2:
+                            case MB2:
+                            case MD4:
+                            case MD8:
+                            case MDA:
+                            case MF4:
+                            case MF8:
+                            case MFA:
+                            case MFE:
+                            case MFS:
+                            case MFX:
+                                DecodeMR(arg);
+                                break;
+
+                            case MMS:
+                                DecodeMR(arg);
+                                _da.Warnings |= DAW_FARADDR;
+                                break;
+
+                            case RR4:
+                            case RR8:
+                            case RRD:
+                                if ((_cmd[1] & 0xc0) != 0xc0)
+                                    _softError = DAE_REGISTER;
+
+                                DecodeMR(arg);
+                                break;
+
+                            case MSO:
+                                DecodeSO();
+                                break;
+
+                            case MDE:
+                                DecodeDE();
+                                break;
+
+                            case MXL:
+                                DecodeXL();
+                                break;
+
+                            case IMM:
+                            case IMU:
+                                if ((pd.Bits & SS) != 0 && (*_cmd & 0x02) != 0)
+                                    DecodeIM(1, _dataSize, arg);
+                                else
+                                    DecodeIM(_dataSize, 0, arg);
+
+                                break;
+
+                            case VXD:
+                                DecodeVX();
+                                break;
+
+                            case IMX:
+                                DecodeIM(1, _dataSize, arg);
+                                break;
+
+                            case C01:
+                                DecodeC1();
+                                break;
+
+                            case IMS:
+                            case IM1:
+                                DecodeIM(1, 0, arg);
+                                break;
+
+                            case IM2:
+                                DecodeIM(2, 0, arg);
+
+                                if ((_da.ImmConst & 0x03) != 0)
+                                    _da.Warnings |= DAW_STACK;
+
+                                break;
+
+                            case IMA:
+                                DecodeIA();
+                                break;
+
+                            case JOB:
+                                DecodeRJ(1, srcIp + 2);
+                                break;
+
+                            case JOW:
+                                DecodeRJ(_dataSize, srcIp + _dataSize + 1);
+                                break;
+
+                            case JMF:
+                                DecodeJF();
+                                _da.Warnings |= DAW_FARADDR;
+                                break;
+
+                            case SGM:
+                                if (_size < 2)
+                                    _da.Error = DAE_CROSS;
+                                else
+                                    DecodeSG(_cmd[1] >> 3);
+
+                                _hasRM = true;
+                                break;
+
+                            case SCM:
+                                DecodeSG(_cmd[0] >> 3);
+
+                                if ((_da.CmdType & C_TYPEMASK) == C_POP)
+                                    _da.Warnings |= DAW_SEGMENT;
+
+                                break;
+
+                            case CRX:
+                                if ((_cmd[1] & 0xc0) != 0xc0)
+                                    _da.Error |= DAE_REGISTER;
+
+                                DecodeCR(_cmd[1]);
+                                break;
+
+                            case DRX:
+                                if ((_cmd[1] & 0xc0) != 0xc0)
+                                    _da.Error |= DAE_REGISTER;
+
+                                DecodeDR(_cmd[1]);
+                                break;
+
+                            case PRN:
+                                break;
+
+                            case PRF:
+                                _da.Warnings |= DAW_FARADDR;
+                                break;
+
+                            case PAC:
+                                DecodeRG(REG_EAX, _dataSize, PAC);
+                                break;
+
+                            case PAH:
+                            case PFL:
+                                break;
+
+                            case PS0:
+                                DecodeST(0, 1);
+                                break;
+
+                            case PS1:
+                                DecodeST(1, 1);
+                                break;
+
+                            case PCX:
+                                DecodeRG(REG_ECX, cxsize, PCX);
+                                break;
+
+                            case PDI:
+                                DecodeRG(REG_EDI, 4, PDI);
+                                break;
+
+                            default:
+                                _da.Error = DAE_INTERN;
+                                break;
+                        }
+
+                        #endregion
+                    }
+
+                    if (_pFixup != null && _da.FixupSize > 0)
+                        _da.FixupOffset = (int)(_pFixup - src);
+
+                    if (_da.MemType == DEC_UNKNOWN &&
+                        (_segPrefix != SEG_UNDEF || (_addrSize != 4 && pd.Name[0] != '$')))
+                    {
+                        _da.Warnings |= DAW_PREFIX;
+                        _da.CmdType |= C_RARE;
+                    }
+
+                    if (_addrSize != 4)
+                        _da.CmdType |= C_RARE;
+                }
+
+                if (is3dnow)
+                {
+                    if (_immSize != 0)
+                        _da.Error = DAE_BADCMD;
+                    else
+                        _immSize = 1;
+                }
+
+                if (_da.Error != 0)
+                {
+                    if (_mode >= DISASM_FILE)
+                        _da.Result = new StringBuilder("???");
+
+                    if (_da.Error == DAE_BADCMD &&
+                        (*_cmd == 0x0f || *_cmd == 0xff)
+                        && _size > 0)
+                    {
+                        if (_mode >= DISASM_FILE)
+                            _da.Dump.Append(string.Format("{0:x2}", *_cmd));
+
+                        _cmd++;
+                        _size--;
+                    }
+
+                    if (_size > 0)
+                    {
+                        if (_mode >= DISASM_FILE)
+                            _da.Dump.Append(string.Format("{0:x2}", *_cmd));
+
+                        _cmd++;
+                        _size--;
+                    }
+                }
+                else
+                {
+                    if (_mode >= DISASM_FILE)
+                    {
+                        _da.Dump.Append(string.Format("{0:x2}", *_cmd++));
+
+                        if (_hasRM)
+                            _da.Dump.Append(string.Format("{0:x2}", *_cmd++));
+                        if (_hasSIB)
+                            _da.Dump.Append(string.Format("{0:x2}", *_cmd++));
+
+                        if (_dispSize != 0)
+                        {
+                            _da.Dump.Append(' ');
+
+                            for (i = 0; i < _dispSize; i++)
+                            {
+                                _da.Dump.Append(string.Format("{0:x2}", *_cmd++));
+                            }
+                        }
+
+                        if (_immSize != 0)
+                        {
+                            _da.Dump.Append(' ');
+
+                            for (i = 0; i < _immSize; i++)
+                            {
+                                _da.Dump.Append(string.Format("{0:x2}", *_cmd++));
+                            }
+                        }
+                    }
+                    else
+                        _cmd += 1 + (_hasRM ? 1 : 0) + (_hasSIB ? 1 : 0) + _dispSize + _immSize;
+
+                    _size -= 1 + (_hasRM ? 1 : 0) + (_hasSIB ? 1 : 0) + _dispSize + _immSize;
+                }
+
+                if (_da.Error == 0 && _softError != 0)
+                    _da.Error = _softError;
+
+                if (_mode >= DISASM_FILE)
+                {
+                    if (_da.Error != DAE_NOERR)
+                    {
+                        switch (_da.Error)
+                        {
+                            case DAE_CROSS:
+                                _da.Comment = "Command crosses end of memory block";
+                                break;
+
+                            case DAE_BADCMD:
+                                _da.Comment = "Unknown command";
+                                break;
+
+                            case DAE_BADSEG:
+                                _da.Comment = "Undefined segment register";
+                                break;
+
+                            case DAE_MEMORY:
+                                _da.Comment = "Illegal use of register";
+                                break;
+
+                            case DAE_REGISTER:
+                                _da.Comment = "Memory address not allowed";
+                                break;
+
+                            case DAE_INTERN:
+                                _da.Comment = "Internal disassembler error";
+                                break;
+
+                            default:
+                                _da.Comment = "Unknown error";
+                                break;
+                        }
+                    }
+                    else if ((_da.Warnings & DAW_PRIV) != 0 && Privileged == 0)
+                        _da.Comment = "Privileged command";
+                    else if ((_da.Warnings & DAW_IO) != 0 && IOCommand == 0)
+                        _da.Comment = "I/O command";
+                    else if ((_da.Warnings & DAW_FARADDR) != 0 && Farcalls == 0)
+                    {
+                        if ((_da.CmdType & C_TYPEMASK) == C_JMP)
+                            _da.Comment = "Far jump";
+                        else if ((_da.CmdType & C_TYPEMASK) == C_CAL)
+                            _da.Comment = "Far call";
+                        else if ((_da.CmdType & C_TYPEMASK) == C_RET)
+                            _da.Comment = "Far return";
+                    }
+                    else if ((_da.Warnings & DAW_SEGMENT) != 0 && Farcalls == 0)
+                        _da.Comment = "Modification of segment register";
+                    else if ((_da.Warnings & DAW_SHIFT) != 0 && BadShift == 0)
+                        _da.Comment = "Shift constant out of range 1..31";
+                    else if ((_da.Warnings & DAW_LOCK) != 0 && LockedBus == 0)
+                        _da.Comment = "LOCK prefix";
+                    else if ((_da.Warnings & DAW_STACK) != 0 && StackAlign == 0)
+                        _da.Comment = "Unaligned stack operation";
+                }
+
+                return srcsize - _size;
+            }
+
+            public Disasm Result
+            {
+                get { return _da; }
+            }
         }
     }
 }
