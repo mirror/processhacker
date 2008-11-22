@@ -129,5 +129,11 @@ namespace ProcessHacker
             catch
             { }
         }
+
+        private void listDisasm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                followMenuItem_Click(null, null);
+        }
     }
 }

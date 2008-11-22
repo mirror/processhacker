@@ -68,6 +68,7 @@
             this.listDisasm.VirtualMode = true;
             this.listDisasm.SelectedIndexChanged += new System.EventHandler(this.listDisasm_SelectedIndexChanged);
             this.listDisasm.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listDisasm_RetrieveVirtualItem);
+            this.listDisasm.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listDisasm_KeyDown);
             // 
             // columnAddress
             // 
