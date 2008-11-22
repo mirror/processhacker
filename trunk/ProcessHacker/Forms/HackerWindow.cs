@@ -2323,21 +2323,23 @@ namespace ProcessHacker
             listProcesses.Provider = processP;
             processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
+            processP.Updated += new ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
             statusText.Text = "Waiting...";
-            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-            timer.Interval = 5000;
-            timer.Tick += new EventHandler(delegate(object o, EventArgs e)
+        }
+
+        private void processP_Updated()
+        {
+            this.Invoke(new MethodInvoker(delegate
             {
                 statusText.Text = "";
                 statusMessages.Clear();
                 log.Clear();
                 timerMessages.Enabled = true;
-                timer.Dispose();
                 HighlightedListViewItem.StateHighlighting = true;
-            });
-            timer.Start(); 
+                processP.Updated -= new ProviderUpdateOnce(processP_Updated);
+            }));
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

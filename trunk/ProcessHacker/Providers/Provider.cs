@@ -74,6 +74,11 @@ namespace ProcessHacker
         protected event ProviderUpdateOnce ProviderUpdate;
 
         /// <summary>
+        /// Occurs when the provider has been updated.
+        /// </summary>
+        public event ProviderUpdateOnce Updated;
+
+        /// <summary>
         /// Occurs when the provider needs to invoke a method on another thread.
         /// </summary>
         public ProviderInvokeMethod Invoke;
@@ -104,6 +109,7 @@ namespace ProcessHacker
         bool _busy = false;
         bool _enabled = false;
         bool _useInvoke = false;
+        int _runCount = 0;
         int _interval;
 
         /// <summary>
@@ -145,6 +151,14 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the number of times this provider has updated.
+        /// </summary>
+        public int RunCount
+        {
+            get { return _runCount; }
+        }
+
+        /// <summary>
         /// Gets or sets the interval to wait between each update.
         /// </summary>
         public int Interval
@@ -175,12 +189,16 @@ namespace ProcessHacker
                         try
                         {
                             ProviderUpdate();
+                            _runCount++;
                         }
                         catch (Exception ex)
                         {
                             if (Error != null)
                                 Error(ex);
                         }
+
+                        if (Updated != null)
+                            Updated();
                     }
 
                     _busy = false;
