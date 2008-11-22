@@ -13,7 +13,7 @@ namespace ProcessHacker
             InitializeComponent();
         }
 
-        public bool DoubleBuffered
+        public new bool DoubleBuffered
         {
             get
             {

@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -196,6 +198,10 @@
     <None Include="app.config" />
     <None Include="Resources\folder_explore.png" />
     <None Include="Resources\pencil_go.png" />
+    <Compile Include="Asm\Disassembler.cs" />
+    <Compile Include="Asm\AsmMisc.cs" />
+    <Compile Include="Asm\AsmData.cs" />
+    <Compile Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
     </Compile>

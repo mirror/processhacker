@@ -1231,7 +1231,7 @@ namespace ProcessHacker
 
         private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
-            return;
+#if FALSE
             ThreadWindow window;
 
             try
@@ -1251,6 +1251,7 @@ namespace ProcessHacker
             }
             catch
             { }
+#endif
         }
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)

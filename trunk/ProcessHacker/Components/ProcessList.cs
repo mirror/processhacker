@@ -70,7 +70,7 @@ namespace ProcessHacker
 
         #region Properties
 
-        public bool DoubleBuffered
+        public new bool DoubleBuffered
         {
             get
             {

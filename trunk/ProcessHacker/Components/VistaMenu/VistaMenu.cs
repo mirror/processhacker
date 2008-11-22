@@ -18,7 +18,7 @@ namespace wyDay.Controls
     [ProvideProperty("Image", typeof(MenuItem))]
     public partial class VistaMenu : System.ComponentModel.Component, IExtenderProvider, ISupportInitialize
     {
-        private IContainer components;
+        private IContainer components = null;
         private Hashtable properties = new Hashtable();
         private Hashtable menuParents = new Hashtable();
 

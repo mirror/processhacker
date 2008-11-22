@@ -27,9 +27,9 @@ namespace ProcessHacker
     public partial class ThreadList : UserControl
     {
         ThreadProvider _provider;
-        public event KeyEventHandler KeyDown;
-        public event MouseEventHandler MouseDown;
-        public event MouseEventHandler MouseUp;
+        public new event KeyEventHandler KeyDown;
+        public new event MouseEventHandler MouseDown;
+        public new event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
 
         public ThreadList()
@@ -68,7 +68,7 @@ namespace ProcessHacker
 
         #region Properties
 
-        public bool DoubleBuffered
+        public new bool DoubleBuffered
         {
             get
             {

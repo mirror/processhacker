@@ -96,12 +96,17 @@ namespace ProcessHacker
             if (_stateHighlighting)
             {
                 this.BackColor = _colors[ListViewItemState.Removed];
-                this.PerformDelayed(new MethodInvoker(delegate { base.Remove(); }));
+                this.PerformDelayed(new MethodInvoker(RemoveThis));
             }
             else
             {
                 base.Remove();
             }
+        }
+
+        private void RemoveThis()
+        {
+            base.Remove();
         }
 
         public Color NormalColor
