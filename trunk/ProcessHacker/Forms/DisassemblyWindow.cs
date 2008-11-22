@@ -17,6 +17,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listDisasm.ContextMenu = ListViewMenu.GetMenu(listDisasm, 
+                new RetrieveVirtualItemEventHandler(listDisasm_RetrieveVirtualItem));
+
             Asm.Disassembler disasm = new Asm.Disassembler();
 
             s.Seek(position, SeekOrigin.Begin);

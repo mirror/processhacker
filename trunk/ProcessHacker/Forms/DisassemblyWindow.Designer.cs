@@ -73,12 +73,12 @@
             // columnCode
             // 
             this.columnCode.Text = "Code";
-            this.columnCode.Width = 140;
+            this.columnCode.Width = 180;
             // 
             // columnComment
             // 
             this.columnComment.Text = "Comment";
-            this.columnComment.Width = 160;
+            this.columnComment.Width = 100;
             // 
             // DisassemblyWindow
             // 
