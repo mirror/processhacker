@@ -150,7 +150,7 @@ namespace ProcessHacker
                 if ((PutDefSeg != 0 || seg != defSeg) && seg != SEG_UNDEF)
                     pr += SegName[seg] + ":";
 
-                if (Ideal)
+                if (!Ideal)
                     pr += "[";
 
                 pr += descr;

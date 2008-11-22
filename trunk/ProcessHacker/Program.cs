@@ -61,6 +61,10 @@ namespace ProcessHacker
         [STAThread]
         public static void Main()
         {
+            Asm.LockedBus = 1;
+            Asm.Lowercase = true;
+            Asm.ExtraSpace = true;
+
             if (Environment.Version.Major < 2)
             {
                 MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
