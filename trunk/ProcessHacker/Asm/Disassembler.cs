@@ -1132,7 +1132,15 @@ namespace ProcessHacker.Asm
                     return (cond == 0) ? 1 : 0;
             }
 
-            private int Disasm(byte* src, int srcsize, int srcIp, int disasmmode)
+            public int Disasm(byte[] src, int srcsize, int srcIp, int disasmmode)
+            {
+                fixed (byte* pSrc = src)
+                {
+                    return Disasm(pSrc, srcsize, srcIp, disasmmode);
+                }
+            }
+
+            public int Disasm(byte* src, int srcsize, int srcIp, int disasmmode)
             {
                 bool repeated, is3dnow;
                 int searchi = 0;
@@ -1143,7 +1151,6 @@ namespace ProcessHacker.Asm
                 int cxsize;
                 string name, pname;
                 TCmdData pd = new TCmdData();
-                TCmdData pdan;
 
                 #region Initialization
 
