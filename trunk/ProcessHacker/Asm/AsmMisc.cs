@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProcessHacker.Asm
+namespace ProcessHacker
 {
     public unsafe partial class Asm
     {

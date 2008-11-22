@@ -308,6 +308,7 @@
             this.listExports.UseCompatibleStateImageBehavior = false;
             this.listExports.View = System.Windows.Forms.View.Details;
             this.listExports.VirtualMode = true;
+            this.listExports.DoubleClick += new System.EventHandler(this.listExports_DoubleClick);
             this.listExports.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listExports_RetrieveVirtualItem);
             // 
             // columnExportName

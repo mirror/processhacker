@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProcessHacker.Asm
+namespace ProcessHacker
 {
     public unsafe partial class Asm
     {
@@ -38,8 +38,6 @@ namespace ProcessHacker.Asm
             private int _dispSize;
             private int _immSize;
             private int _softError;
-            private int _nDump;
-            private int _nResult;
             private bool _addComment;
 
             private byte* _cmd;
@@ -152,7 +150,7 @@ namespace ProcessHacker.Asm
                 if ((PutDefSeg != 0 || seg != defSeg) && seg != SEG_UNDEF)
                     pr += SegName[seg] + ":";
 
-                if (!Ideal)
+                if (Ideal)
                     pr += "[";
 
                 pr += descr;
@@ -440,7 +438,7 @@ namespace ProcessHacker.Asm
                     else
                         DecodeRG(c, regsize, type);
 
-                    if (!memonly)
+                    if (memonly)
                         _softError = DAE_MEMORY;
 
                     return;
@@ -1132,15 +1130,15 @@ namespace ProcessHacker.Asm
                     return (cond == 0) ? 1 : 0;
             }
 
-            public int Disasm(byte[] src, int srcsize, int srcIp, int disasmmode)
+            public int Disassemble(byte[] src, int srcsize, int srcIp, int disasmmode)
             {
                 fixed (byte* pSrc = src)
                 {
-                    return Disasm(pSrc, srcsize, srcIp, disasmmode);
+                    return Disassemble(pSrc, srcsize, srcIp, disasmmode);
                 }
             }
 
-            public int Disasm(byte* src, int srcsize, int srcIp, int disasmmode)
+            public int Disassemble(byte* src, int srcsize, int srcIp, int disasmmode)
             {
                 bool repeated, is3dnow;
                 int searchi = 0;
@@ -1160,8 +1158,6 @@ namespace ProcessHacker.Asm
                 _dispSize = _immSize = 0;
                 lockprefix = 0;
                 repprefix = 0;
-                _nDump = 0;
-                _nResult = 0;
                 _cmd = src;
                 _size = srcsize;
                 _pFixup = null;

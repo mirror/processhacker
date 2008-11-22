@@ -25,6 +25,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.PE;
+using System.IO;
 
 namespace ProcessHacker
 {
@@ -348,6 +349,14 @@ namespace ProcessHacker
                     e.Item.Text += " > " + entry.ForwardedString;
                 }
             }
+        }
+
+        private void listExports_DoubleClick(object sender, EventArgs e)
+        {
+            DisassemblyWindow dw = new DisassemblyWindow(new FileStream(_path, FileMode.Open, FileAccess.Read), 
+                PEFile.RvaToVa(_peFile, _peFile.ExportData.ExportAddressTable[listExports.SelectedIndices[0]].ExportRVA), -1);
+
+            dw.Show();
         }
     }
 }
