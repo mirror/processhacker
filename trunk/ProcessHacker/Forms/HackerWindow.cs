@@ -85,6 +85,11 @@ namespace ProcessHacker
             get { return threadP; }
         }
 
+        public ProcessList ProcessList
+        {
+            get { return listProcesses; }
+        }
+
         #endregion
 
         #region Events
@@ -2319,6 +2324,7 @@ namespace ProcessHacker
             listMemory.ContextMenu = menuMemory;
 
             HighlightedListViewItem.StateHighlighting = false;
+            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             processP.Interval = RefreshInterval;
             listProcesses.Provider = processP;
             processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);

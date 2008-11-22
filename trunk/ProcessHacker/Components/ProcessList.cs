@@ -253,6 +253,21 @@ namespace ProcessHacker
             { }
         }
 
+        public void RefreshColors()
+        {
+            foreach (ListViewItem litem in listProcesses.Items)
+            {
+                try
+                {
+                    ProcessItem item = _provider.Dictionary[int.Parse(litem.Name)];
+
+                    (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(item);
+                }
+                catch
+                { }
+            }
+        }
+
         #endregion
 
         #region Interfacing

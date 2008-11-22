@@ -83,6 +83,7 @@ namespace ProcessHacker
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
             Properties.Settings.Default.Save();
+            Program.HackerWindow.ProcessList.RefreshColors();
             this.Close();
         }
     }

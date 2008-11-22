@@ -27,7 +27,7 @@ namespace ProcessHacker
 {
     public enum ListViewItemState
     {
-        New, Removed
+        Normal, New, Removed
     }
 
     /// <summary>
@@ -36,6 +36,7 @@ namespace ProcessHacker
     public class HighlightedListViewItem : ListViewItem
     {
         private static Dictionary<ListViewItemState, Color> _colors = new Dictionary<ListViewItemState, Color>();
+        private ListViewItemState _state = ListViewItemState.Normal;
         private static int _highlightingDuration = 1000;
         private static bool _stateHighlighting = true;
 
@@ -77,7 +78,12 @@ namespace ProcessHacker
             if (_stateHighlighting)
             {
                 this.BackColor = _colors[ListViewItemState.New];
-                this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+                _state = ListViewItemState.New;
+                this.PerformDelayed(new MethodInvoker(delegate
+                {
+                    this.BackColor = _normalColor;
+                    _state = ListViewItemState.Normal;
+                }));
             }
             else
             {
@@ -101,13 +107,24 @@ namespace ProcessHacker
         public Color NormalColor
         {
             get { return _normalColor; }
-            set { _normalColor = value; }
+            set
+            {
+                _normalColor = value;
+
+                if (_state == ListViewItemState.Normal)
+                    this.BackColor = value;
+            }
         }
 
         public void SetTemporaryState(ListViewItemState state)
         {
             this.BackColor = _colors[state];
-            this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+            _state = state;
+            this.PerformDelayed(new MethodInvoker(delegate
+            {
+                this.BackColor = _normalColor;
+                _state = ListViewItemState.Normal;
+            }));
         }
 
         private void PerformDelayed(MethodInvoker method)
