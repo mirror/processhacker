@@ -39,6 +39,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThreadWindow));
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.threadMenuItem = new System.Windows.Forms.MenuItem();
+            this.suspendMenuItem = new System.Windows.Forms.MenuItem();
+            this.resumeMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.listViewCallStack = new System.Windows.Forms.ListView();
@@ -50,9 +53,6 @@
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.suspendMenuItem = new System.Windows.Forms.MenuItem();
-            this.resumeMenuItem = new System.Windows.Forms.MenuItem();
-            this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.groupBoxCallStack.SuspendLayout();
             this.groupRegisters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -72,6 +72,30 @@
             this.resumeMenuItem,
             this.terminateMenuItem});
             this.threadMenuItem.Text = "&Thread";
+            // 
+            // suspendMenuItem
+            // 
+            this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
+            this.suspendMenuItem.Index = 0;
+            this.suspendMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
+            this.suspendMenuItem.Text = "&Suspend";
+            this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
+            // 
+            // resumeMenuItem
+            // 
+            this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
+            this.resumeMenuItem.Index = 1;
+            this.resumeMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
+            this.resumeMenuItem.Text = "&Resume";
+            this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
+            // 
+            // terminateMenuItem
+            // 
+            this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.terminateMenuItem.Index = 2;
+            this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlDel;
+            this.terminateMenuItem.Text = "&Terminate";
+            this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
             // 
             // windowMenuItem
             // 
@@ -163,30 +187,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // suspendMenuItem
-            // 
-            this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendMenuItem.Index = 0;
-            this.suspendMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
-            this.suspendMenuItem.Text = "&Suspend";
-            this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
-            // 
-            // resumeMenuItem
-            // 
-            this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeMenuItem.Index = 1;
-            this.resumeMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
-            this.resumeMenuItem.Text = "&Resume";
-            this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
-            // 
-            // terminateMenuItem
-            // 
-            this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.terminateMenuItem.Index = 2;
-            this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlDel;
-            this.terminateMenuItem.Text = "&Terminate";
-            this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
             // 
             // ThreadWindow
             // 
