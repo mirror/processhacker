@@ -341,6 +341,7 @@
       <DependentUpon>InformationBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Misc\Tokenizer.cs" />
+    <Compile Include="Symbols\Symbols.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />

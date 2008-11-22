@@ -2366,7 +2366,7 @@ namespace ProcessHacker
 
             listModules.Items.Clear();
 
-            LoadSettings(); 
+            LoadSettings();        
         }
     }
 }

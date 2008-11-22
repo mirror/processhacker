@@ -132,8 +132,13 @@ namespace ProcessHacker
 
         private void listDisasm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-                followMenuItem_Click(null, null);
+            try
+            {
+                if (e.KeyCode == Keys.Enter)
+                    followMenuItem_Click(null, null);
+            }
+            catch
+            { }
         }
 
         private void menuLine_Popup(object sender, EventArgs e)
@@ -142,9 +147,14 @@ namespace ProcessHacker
             {
                 Misc.DisableAllMenuItems(menuLine);
             }
+            else if (listDisasm.SelectedIndices.Count == 1)
+            {
+                Misc.EnableAllMenuItems(menuLine);
+            }
             else
             {
                 Misc.EnableAllMenuItems(menuLine);
+                followMenuItem.Enabled = false;
             }
         }
     }
