@@ -250,7 +250,7 @@ namespace ProcessHacker
 
             #endregion
 
-            #region
+            #region Exports
 
             if (_peFile.ExportData != null)
             {
@@ -264,6 +264,8 @@ namespace ProcessHacker
 
                     if (entry.ExportRVA != 0)
                         _exportVAs.Add(PEFile.RvaToVa(_peFile, entry.ExportRVA));
+                    else
+                        _exportVAs.Add(0);
                 }
             }
             else  
