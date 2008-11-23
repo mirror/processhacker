@@ -129,10 +129,6 @@
       <DependentUpon>ProcessList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\ProcessTree.resx">
-      <DependentUpon>ProcessTree.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Components\UtilitiesButton.resx">
       <DependentUpon>UtilitiesButton.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -224,12 +220,6 @@
     </Compile>
     <Compile Include="Components\ProcessList.Designer.cs">
       <DependentUpon>ProcessList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ProcessTree.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\ProcessTree.Designer.cs">
-      <DependentUpon>ProcessTree.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\DisassemblyWindow.cs">
       <SubType>Form</SubType>
