@@ -118,8 +118,10 @@
             this.columnHeader3,
             this.columnHeader4});
             this.listViewCallStack.FullRowSelect = true;
+            this.listViewCallStack.HideSelection = false;
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
+            this.listViewCallStack.ShowItemToolTips = true;
             this.listViewCallStack.Size = new System.Drawing.Size(363, 232);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;

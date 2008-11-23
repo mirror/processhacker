@@ -33,11 +33,13 @@ namespace ProcessHacker
     {
         private static List<KeyValuePair<int, string>> _libraryLookup;
         private static Dictionary<string, List<KeyValuePair<int, string>>> _symbols;
+        private static Dictionary<string, uint> _librarySizes;
 
         static Symbols()
         {
             _libraryLookup = new List<KeyValuePair<int, string>>();
             _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
+            _librarySizes = new Dictionary<string, uint>();
         }
 
         public static void LoadSymbolsFromLibrary(string path)
@@ -77,38 +79,44 @@ namespace ProcessHacker
 
             PEFile file = new PEFile(realPath);
             List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
+            uint size = 0;
+
+            foreach (SectionHeader sh in file.Sections)
+                size += sh.VirtualSize;
+
+            _librarySizes.Add(realPath, size);
 
             if (file.ExportData == null)
             {
                 // no symbols, but we can still display a module name in a lookup
                 _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
                 _symbols.Add(realPath, new List<KeyValuePair<int, string>>());
-
-                return;
             }
-
-            for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
+            else
             {
-                string name = file.ExportData.ExportNameTable[i];
+                for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
+                {
+                    string name = file.ExportData.ExportNameTable[i];
 
-                list.Add(new KeyValuePair<int, string>(imageBase +
-                    (int)file.ExportData.ExportAddressTable[file.ExportData.ExportOrdinalTable[i]].ExportRVA, name));
+                    list.Add(new KeyValuePair<int, string>(imageBase +
+                        (int)file.ExportData.ExportAddressTable[file.ExportData.ExportOrdinalTable[i]].ExportRVA, name));
+                }
+
+                _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
+                _symbols.Add(realPath, list);
             }
 
             // sort the list
             list.Sort(new Comparison<KeyValuePair<int, string>>(
                     delegate(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
                     {
-                        return kvp2.Key.CompareTo(kvp1.Key);
+                        return ((uint)kvp2.Key).CompareTo((uint)kvp1.Key);
                     })); 
-
-            _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
-            _symbols.Add(realPath, list);
 
             _libraryLookup.Sort(new Comparison<KeyValuePair<int, string>>(
                     delegate(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
                     {
-                        return kvp2.Key.CompareTo(kvp1.Key);
+                        return ((uint)kvp2.Key).CompareTo((uint)kvp1.Key);
                     }));
         }
 
@@ -117,7 +125,9 @@ namespace ProcessHacker
             // go through each loaded library
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
             {
-                if (address >= kvp.Key)
+                uint size = _librarySizes[kvp.Value];
+
+                if ((uint)address >= (uint)kvp.Key && (uint)address < ((uint)kvp.Key + size))
                 {
                     List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];  
                     FileInfo fi = new FileInfo(kvp.Value);
@@ -125,7 +135,7 @@ namespace ProcessHacker
                     // go through each symbol
                     foreach (KeyValuePair<int, string> kvps in symbolList)
                     {
-                        if (address >= kvps.Key)
+                        if ((uint)address >= (uint)kvps.Key)
                         {
                             // we found a function name
                             return string.Format("{0}!{1}+0x{2:x}",
