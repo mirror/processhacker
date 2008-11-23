@@ -1263,8 +1263,10 @@ namespace ProcessHacker
                         statusText.Text = "Loading symbols for " + module.ModuleName + "...";
                         Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
+                    }
                 }
             }
             catch (Exception ex)
@@ -2420,8 +2422,15 @@ namespace ProcessHacker
                             statusIcon.Icon = null;
                             statusText.Text = "Loading symbols for " + module.ModuleName + "...";
                         }));
-  
-                    Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+
+                    try
+                    {
+                        Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                    }
+                    catch (Exception ex)
+                    {
+                        QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
+                    }
                 }
 
                 this.Invoke(new MethodInvoker(delegate
