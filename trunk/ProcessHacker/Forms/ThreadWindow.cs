@@ -215,15 +215,15 @@ namespace ProcessHacker
                 {
                     listViewCallStack.Enabled = false;
                     listViewRegisters.Enabled = false;
+                    buttonWalk.Enabled = false;
                 }
 
                 return;
             }
-            
-            this.Text = Symbols.GetNameFromAddress(context.Eip); 
 
             listViewCallStack.Enabled = true;
             listViewRegisters.Enabled = true;
+            buttonWalk.Enabled = true;
 
             foreach (ListViewItem item in listViewRegisters.Items)
             {
