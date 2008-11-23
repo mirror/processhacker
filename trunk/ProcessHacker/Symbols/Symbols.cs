@@ -120,6 +120,21 @@ namespace ProcessHacker
                     }));
         }
 
+        public static void UnloadSymbols(string path)
+        {
+            foreach (KeyValuePair<int, string> kvp in _libraryLookup)
+            {
+                if (kvp.Value == path)
+                {
+                    _libraryLookup.Remove(kvp);
+                    break;
+                }
+            }
+
+            _librarySizes.Remove(path);
+            _symbols.Remove(path);
+        }
+
         public static string GetNameFromAddress(int address)
         {
             // go through each loaded library

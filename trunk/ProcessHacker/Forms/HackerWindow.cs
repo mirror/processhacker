@@ -2425,7 +2425,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                        if (!module.FileName.ToLower().EndsWith(".exe"))
+                            Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
                     }
                     catch (Exception ex)
                     {
