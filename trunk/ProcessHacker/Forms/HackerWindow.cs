@@ -1231,6 +1231,24 @@ namespace ProcessHacker
 
         private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
+            if (processSelectedPID == Process.GetCurrentProcess().Id)
+            {
+                if (MessageBox.Show(
+                    "Inspecting Process Hacker's threads will lead to instability. Are you sure you want to continue?",
+                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
+                    == DialogResult.No)
+                    return;
+            }
+
+            if (IsDangerousPID(processSelectedPID))
+            {
+                if (MessageBox.Show(
+                  "Inspecting a system process' threads will lead to instability. Are you sure you want to continue?",
+                  "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
+                  == DialogResult.No)
+                    return;
+            }
+
             ThreadWindow window;
 
             this.UseWaitCursor = true;

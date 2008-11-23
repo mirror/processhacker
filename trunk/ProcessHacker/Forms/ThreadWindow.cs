@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -53,6 +51,8 @@ namespace ProcessHacker
                 
                 listViewRegisters.Items.Add(item);
             }
+
+            listViewCallStack.ContextMenu = ListViewMenu.GetMenu(listViewCallStack);
         }
 
         public MenuItem WindowMenuItem
@@ -94,7 +94,16 @@ namespace ProcessHacker
 
             this.WalkCallStack();
 
+            this.Size = Properties.Settings.Default.ThreadWindowSize;
+            ColumnSettings.LoadSettings(Properties.Settings.Default.CallStackColumns, listViewCallStack);
+
             Program.UpdateWindows();
+        }
+
+        private void ThreadWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.ThreadWindowSize = this.Size;
+            Properties.Settings.Default.CallStackColumns = ColumnSettings.SaveSettings(listViewCallStack);
         }
 
         private void AddOrModify(ListView lv, ListViewItem item)
@@ -178,12 +187,14 @@ namespace ProcessHacker
                     if (stackFrame.AddrReturn.Offset == 0)
                         break;
 
+                    int retaddr = (int)(stackFrame.AddrReturn.Offset & 0xffffffff);
+
                     listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                        "0x" + stackFrame.AddrReturn.Offset.ToString("x8"),
-                        Symbols.GetNameFromAddress((int)stackFrame.AddrReturn.Offset)
+                        "0x" + retaddr.ToString("x8"),
+                        Symbols.GetNameFromAddress(retaddr)
                     }));
                 }
-                catch (Exception ex)
+                catch
                 {
                     break;
                 }

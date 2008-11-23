@@ -106,7 +106,7 @@
             // timerUpdate
             // 
             this.timerUpdate.Enabled = true;
-            this.timerUpdate.Interval = 500;
+            this.timerUpdate.Interval = 1000;
             this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
             // 
             // listViewCallStack
@@ -120,7 +120,7 @@
             this.listViewCallStack.FullRowSelect = true;
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
-            this.listViewCallStack.Size = new System.Drawing.Size(322, 157);
+            this.listViewCallStack.Size = new System.Drawing.Size(363, 232);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -133,7 +133,7 @@
             // columnHeader4
             // 
             this.columnHeader4.Text = "Symbol Name";
-            this.columnHeader4.Width = 150;
+            this.columnHeader4.Width = 220;
             // 
             // groupBoxCallStack
             // 
@@ -144,7 +144,7 @@
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 12);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 211);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(375, 286);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -153,7 +153,7 @@
             // 
             this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonWalk.Location = new System.Drawing.Point(253, 182);
+            this.buttonWalk.Location = new System.Drawing.Point(294, 257);
             this.buttonWalk.Name = "buttonWalk";
             this.buttonWalk.Size = new System.Drawing.Size(75, 23);
             this.buttonWalk.TabIndex = 3;
@@ -166,9 +166,9 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 229);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 304);
             this.groupRegisters.Name = "groupRegisters";
-            this.groupRegisters.Size = new System.Drawing.Size(334, 132);
+            this.groupRegisters.Size = new System.Drawing.Size(375, 132);
             this.groupRegisters.TabIndex = 2;
             this.groupRegisters.TabStop = false;
             this.groupRegisters.Text = "Registers";
@@ -184,7 +184,7 @@
             this.listViewRegisters.FullRowSelect = true;
             this.listViewRegisters.Location = new System.Drawing.Point(6, 19);
             this.listViewRegisters.Name = "listViewRegisters";
-            this.listViewRegisters.Size = new System.Drawing.Size(322, 107);
+            this.listViewRegisters.Size = new System.Drawing.Size(363, 107);
             this.listViewRegisters.TabIndex = 0;
             this.listViewRegisters.UseCompatibleStateImageBehavior = false;
             this.listViewRegisters.View = System.Windows.Forms.View.Details;
@@ -206,7 +206,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 373);
+            this.ClientSize = new System.Drawing.Size(399, 448);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -215,6 +215,7 @@
             this.Name = "ThreadWindow";
             this.Text = "Thread";
             this.Load += new System.EventHandler(this.ThreadWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThreadWindow_FormClosing);
             this.groupBoxCallStack.ResumeLayout(false);
             this.groupRegisters.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();

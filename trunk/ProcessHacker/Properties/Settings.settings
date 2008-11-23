@@ -116,5 +116,11 @@
     <Setting Name="AlwaysOnTop" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ThreadWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">415, 503</Value>
+    </Setting>
+    <Setting Name="CallStackColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

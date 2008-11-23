@@ -478,5 +478,29 @@ namespace ProcessHacker.Properties {
                 this["AlwaysOnTop"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("415, 503")]
+        public global::System.Drawing.Size ThreadWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["ThreadWindowSize"]));
+            }
+            set {
+                this["ThreadWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CallStackColumns {
+            get {
+                return ((string)(this["CallStackColumns"]));
+            }
+            set {
+                this["CallStackColumns"] = value;
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@ Process Hacker
  * Added "Go to Parent" menu item
  * Removed "Close Active Window" menu item - practically same as "Terminate Process"
  * Added disassembler
+ * Added Thread Inspector - shows call stack of threads
 
 1.1.5.0
  * Fixed memory leak with process icons
