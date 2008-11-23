@@ -1,5 +1,9 @@
 Process Hacker
 
+1.2.0.5
+ * Updated credits
+ * Fixed crash when opening two thread inspectors with the same process and thread
+
 1.2.0.0
  * Added PE Inspector (can read exe/dll/sys files and their properties)
  * Added "Search Online" menu item
