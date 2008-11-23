@@ -30,6 +30,7 @@ namespace ProcessHacker
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
+        public new event EventHandler DoubleClick;
         public event EventHandler SelectedIndexChanged;
 
         public ThreadList()
@@ -39,7 +40,14 @@ namespace ProcessHacker
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);
             listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
+            listThreads.DoubleClick += new EventHandler(listThreads_DoubleClick);
             listThreads.SelectedIndexChanged += new System.EventHandler(listThreads_SelectedIndexChanged);
+        }
+
+        private void listThreads_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.DoubleClick != null)
+                this.DoubleClick(sender, e);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)

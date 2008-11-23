@@ -110,18 +110,33 @@
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.copyMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
-            this.splitMain = new System.Windows.Forms.SplitContainer();
-            this.listProcesses = new ProcessHacker.ProcessList();
-            this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabProcess = new System.Windows.Forms.TabPage();
-            this.groupSearch = new System.Windows.Forms.GroupBox();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newResultsWindowMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.regexSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
+            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
+            this.hackerMenuItem = new System.Windows.Forms.MenuItem();
+            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
+            this.logMenuItem = new System.Windows.Forms.MenuItem();
+            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
+            this.optionsMenuItem = new System.Windows.Forms.MenuItem();
+            this.helpMenuItem = new System.Windows.Forms.MenuItem();
+            this.exitMenuItem = new System.Windows.Forms.MenuItem();
+            this.windowMenuItem = new System.Windows.Forms.MenuItem();
+            this.statusBar = new System.Windows.Forms.StatusBar();
+            this.statusIcon = new System.Windows.Forms.StatusBarPanel();
+            this.statusText = new System.Windows.Forms.StatusBarPanel();
+            this.timerMessages = new System.Windows.Forms.Timer(this.components);
+            this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.listProcesses = new ProcessHacker.ProcessList();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabProcess = new System.Windows.Forms.TabPage();
+            this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.treeMisc = new System.Windows.Forms.TreeView();
             this.tabThreads = new System.Windows.Forms.TabPage();
             this.listThreads = new ProcessHacker.ThreadList();
@@ -138,24 +153,11 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
-            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
-            this.hackerMenuItem = new System.Windows.Forms.MenuItem();
-            this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
-            this.logMenuItem = new System.Windows.Forms.MenuItem();
-            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
-            this.optionsMenuItem = new System.Windows.Forms.MenuItem();
-            this.helpMenuItem = new System.Windows.Forms.MenuItem();
-            this.exitMenuItem = new System.Windows.Forms.MenuItem();
-            this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.statusBar = new System.Windows.Forms.StatusBar();
-            this.statusIcon = new System.Windows.Forms.StatusBarPanel();
-            this.statusText = new System.Windows.Forms.StatusBarPanel();
-            this.timerMessages = new System.Windows.Forms.Timer(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
             this.splitMain.SuspendLayout();
@@ -166,8 +168,6 @@
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
             this.SuspendLayout();
             // 
             // panelProc
@@ -790,6 +790,151 @@
             this.selectAllMemoryMenuItem.Text = "Select &All";
             this.selectAllMemoryMenuItem.Click += new System.EventHandler(this.selectAllMemoryMenuItem_Click);
             // 
+            // menuSearch
+            // 
+            this.menuSearch.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.newResultsWindowMenuItem,
+            this.literalSearchMenuItem,
+            this.regexSearchMenuItem,
+            this.stringScanMenuItem,
+            this.heapScanMenuItem});
+            // 
+            // newResultsWindowMenuItem
+            // 
+            this.vistaMenu.SetImage(this.newResultsWindowMenuItem, global::ProcessHacker.Properties.Resources.table);
+            this.newResultsWindowMenuItem.Index = 0;
+            this.newResultsWindowMenuItem.Text = "&New Results Window...";
+            // 
+            // literalSearchMenuItem
+            // 
+            this.literalSearchMenuItem.Index = 1;
+            this.literalSearchMenuItem.Text = "&Literal Search...";
+            // 
+            // regexSearchMenuItem
+            // 
+            this.regexSearchMenuItem.Index = 2;
+            this.regexSearchMenuItem.Text = "&Regex Search...";
+            // 
+            // stringScanMenuItem
+            // 
+            this.stringScanMenuItem.Index = 3;
+            this.stringScanMenuItem.Text = "&String Scan...";
+            // 
+            // heapScanMenuItem
+            // 
+            this.heapScanMenuItem.Index = 4;
+            this.heapScanMenuItem.Text = "&Heap Scan...";
+            // 
+            // mainMenu
+            // 
+            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.hackerMenuItem,
+            this.windowMenuItem});
+            // 
+            // hackerMenuItem
+            // 
+            this.hackerMenuItem.Index = 0;
+            this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.selectAllHackerMenuItem,
+            this.menuItem1,
+            this.inspectPEFileMenuItem,
+            this.logMenuItem,
+            this.aboutMenuItem,
+            this.optionsMenuItem,
+            this.helpMenuItem,
+            this.exitMenuItem});
+            this.hackerMenuItem.Text = "&Hacker";
+            // 
+            // selectAllHackerMenuItem
+            // 
+            this.selectAllHackerMenuItem.Index = 0;
+            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+            this.selectAllHackerMenuItem.Text = "&Select All";
+            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 1;
+            this.menuItem1.Text = "-";
+            // 
+            // inspectPEFileMenuItem
+            // 
+            this.vistaMenu.SetImage(this.inspectPEFileMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.inspectPEFileMenuItem.Index = 2;
+            this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
+            this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
+            // 
+            // logMenuItem
+            // 
+            this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
+            this.logMenuItem.Index = 3;
+            this.logMenuItem.Text = "&Log...";
+            this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
+            // 
+            // aboutMenuItem
+            // 
+            this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
+            this.aboutMenuItem.Index = 4;
+            this.aboutMenuItem.Text = "&About...";
+            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            // 
+            // optionsMenuItem
+            // 
+            this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
+            this.optionsMenuItem.Index = 5;
+            this.optionsMenuItem.Text = "&Options...";
+            this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
+            // 
+            // helpMenuItem
+            // 
+            this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
+            this.helpMenuItem.Index = 6;
+            this.helpMenuItem.Text = "&Help...";
+            this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
+            // 
+            // exitMenuItem
+            // 
+            this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
+            this.exitMenuItem.Index = 7;
+            this.exitMenuItem.Text = "E&xit";
+            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+            // 
+            // windowMenuItem
+            // 
+            this.windowMenuItem.Index = 1;
+            this.windowMenuItem.Text = "&Window";
+            // 
+            // statusBar
+            // 
+            this.statusBar.Location = new System.Drawing.Point(0, 425);
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
+            this.statusIcon,
+            this.statusText});
+            this.statusBar.ShowPanels = true;
+            this.statusBar.Size = new System.Drawing.Size(804, 22);
+            this.statusBar.TabIndex = 5;
+            // 
+            // statusIcon
+            // 
+            this.statusIcon.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
+            this.statusIcon.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
+            this.statusIcon.MinWidth = 0;
+            this.statusIcon.Name = "statusIcon";
+            this.statusIcon.Width = 10;
+            // 
+            // statusText
+            // 
+            this.statusText.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
+            this.statusText.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
+            this.statusText.Name = "statusText";
+            this.statusText.Width = 10;
+            // 
+            // timerMessages
+            // 
+            this.timerMessages.Interval = 2000;
+            this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
+            // 
             // splitMain
             // 
             this.splitMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -806,7 +951,7 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(804, 445);
+            this.splitMain.Size = new System.Drawing.Size(804, 424);
             this.splitMain.SplitterDistance = 355;
             this.splitMain.TabIndex = 3;
             // 
@@ -817,7 +962,7 @@
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(355, 444);
+            this.listProcesses.Size = new System.Drawing.Size(355, 423);
             this.listProcesses.TabIndex = 4;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
@@ -832,7 +977,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(445, 445);
+            this.tabControl.Size = new System.Drawing.Size(445, 424);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -871,41 +1016,6 @@
             this.buttonSearch.UseVisualStyleBackColor = true;
             this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
-            // menuSearch
-            // 
-            this.menuSearch.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.newResultsWindowMenuItem,
-            this.literalSearchMenuItem,
-            this.regexSearchMenuItem,
-            this.stringScanMenuItem,
-            this.heapScanMenuItem});
-            // 
-            // newResultsWindowMenuItem
-            // 
-            this.vistaMenu.SetImage(this.newResultsWindowMenuItem, global::ProcessHacker.Properties.Resources.table);
-            this.newResultsWindowMenuItem.Index = 0;
-            this.newResultsWindowMenuItem.Text = "&New Results Window...";
-            // 
-            // literalSearchMenuItem
-            // 
-            this.literalSearchMenuItem.Index = 1;
-            this.literalSearchMenuItem.Text = "&Literal Search...";
-            // 
-            // regexSearchMenuItem
-            // 
-            this.regexSearchMenuItem.Index = 2;
-            this.regexSearchMenuItem.Text = "&Regex Search...";
-            // 
-            // stringScanMenuItem
-            // 
-            this.stringScanMenuItem.Index = 3;
-            this.stringScanMenuItem.Text = "&String Scan...";
-            // 
-            // heapScanMenuItem
-            // 
-            this.heapScanMenuItem.Index = 4;
-            this.heapScanMenuItem.Text = "&Heap Scan...";
-            // 
             // treeMisc
             // 
             this.treeMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -925,7 +1035,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(437, 419);
+            this.tabThreads.Size = new System.Drawing.Size(437, 398);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -937,7 +1047,7 @@
             this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(431, 413);
+            this.listThreads.Size = new System.Drawing.Size(431, 392);
             this.listThreads.TabIndex = 0;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
@@ -1049,125 +1159,15 @@
             this.columnHeader5.Text = "Protection";
             this.columnHeader5.Width = 80;
             // 
-            // mainMenu
-            // 
-            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.hackerMenuItem,
-            this.windowMenuItem});
-            // 
-            // hackerMenuItem
-            // 
-            this.hackerMenuItem.Index = 0;
-            this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.selectAllHackerMenuItem,
-            this.menuItem1,
-            this.inspectPEFileMenuItem,
-            this.logMenuItem,
-            this.aboutMenuItem,
-            this.optionsMenuItem,
-            this.helpMenuItem,
-            this.exitMenuItem});
-            this.hackerMenuItem.Text = "&Hacker";
-            // 
-            // selectAllHackerMenuItem
-            // 
-            this.selectAllHackerMenuItem.Index = 0;
-            this.selectAllHackerMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
-            this.selectAllHackerMenuItem.Text = "&Select All";
-            this.selectAllHackerMenuItem.Click += new System.EventHandler(this.selectAllHackerMenuItem_Click);
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 1;
-            this.menuItem1.Text = "-";
-            // 
-            // inspectPEFileMenuItem
-            // 
-            this.vistaMenu.SetImage(this.inspectPEFileMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.inspectPEFileMenuItem.Index = 2;
-            this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
-            this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
-            // 
-            // logMenuItem
-            // 
-            this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
-            this.logMenuItem.Index = 3;
-            this.logMenuItem.Text = "&Log...";
-            this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
-            // 
-            // aboutMenuItem
-            // 
-            this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 4;
-            this.aboutMenuItem.Text = "&About...";
-            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
-            // 
-            // optionsMenuItem
-            // 
-            this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
-            this.optionsMenuItem.Index = 5;
-            this.optionsMenuItem.Text = "&Options...";
-            this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
-            // 
-            // helpMenuItem
-            // 
-            this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
-            this.helpMenuItem.Index = 6;
-            this.helpMenuItem.Text = "&Help...";
-            this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
-            // 
-            // exitMenuItem
-            // 
-            this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitMenuItem.Index = 7;
-            this.exitMenuItem.Text = "E&xit";
-            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
-            // 
-            // windowMenuItem
-            // 
-            this.windowMenuItem.Index = 1;
-            this.windowMenuItem.Text = "&Window";
-            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // statusBar
-            // 
-            this.statusBar.Location = new System.Drawing.Point(0, 446);
-            this.statusBar.Name = "statusBar";
-            this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
-            this.statusIcon,
-            this.statusText});
-            this.statusBar.ShowPanels = true;
-            this.statusBar.Size = new System.Drawing.Size(804, 22);
-            this.statusBar.TabIndex = 5;
-            // 
-            // statusIcon
-            // 
-            this.statusIcon.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusIcon.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
-            this.statusIcon.MinWidth = 0;
-            this.statusIcon.Name = "statusIcon";
-            this.statusIcon.Width = 10;
-            // 
-            // statusText
-            // 
-            this.statusText.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
-            this.statusText.BorderStyle = System.Windows.Forms.StatusBarPanelBorderStyle.None;
-            this.statusText.Name = "statusText";
-            this.statusText.Width = 10;
-            // 
-            // timerMessages
-            // 
-            this.timerMessages.Interval = 2000;
-            this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
             // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 468);
+            this.ClientSize = new System.Drawing.Size(804, 447);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.splitMain);
             this.Controls.Add(this.panelVirtualProtect);
@@ -1184,6 +1184,8 @@
             this.panelProc.PerformLayout();
             this.panelVirtualProtect.ResumeLayout(false);
             this.panelVirtualProtect.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
             this.splitMain.Panel1.ResumeLayout(false);
             this.splitMain.Panel2.ResumeLayout(false);
             this.splitMain.ResumeLayout(false);
@@ -1195,8 +1197,6 @@
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
             this.ResumeLayout(false);
 
         }
