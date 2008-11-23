@@ -213,7 +213,16 @@ namespace ProcessHacker
         public static ThreadWindow GetThreadWindow(int PID, int TID, ThreadWindowInvokeAction action)
         {
             ThreadWindow tw = null;
-            string id = "";
+            string id = PID + "-" + TID;
+
+            if (ThreadWindows.ContainsKey(id))
+            {
+                tw = ThreadWindows[id];
+
+                tw.Invoke(new MethodInvoker(delegate { action(tw); }));
+
+                return tw;
+            }
 
             Thread t = new Thread(new ThreadStart(delegate
             {
