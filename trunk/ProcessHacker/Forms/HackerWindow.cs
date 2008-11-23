@@ -1099,8 +1099,6 @@ namespace ProcessHacker
             { }
 
             this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")" + parentText, pitem.Icon);
-
-            this.UpdateStatusInfo();
         }
 
         public void processP_DictionaryRemoved(object item)
@@ -1108,8 +1106,6 @@ namespace ProcessHacker
             ProcessItem pitem = (ProcessItem)item;
 
             this.QueueMessage("Terminated Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
-
-            this.UpdateStatusInfo();
         }
 
         #endregion
@@ -1470,6 +1466,7 @@ namespace ProcessHacker
         private void timerFire_Tick(object sender, EventArgs e)
         {
             UpdateMiscInfo();
+            UpdateStatusInfo();
         }
 
         private void timerMessages_Tick(object sender, EventArgs e)
@@ -1694,7 +1691,7 @@ namespace ProcessHacker
 
         private void UpdateStatusInfo()
         {
-            statusGeneral.Text = string.Format("{0} processes", listProcesses.List.Items.Count);
+            statusGeneral.Text = string.Format("{0} processes", processP.Dictionary.Count);
         }
 
         #endregion
