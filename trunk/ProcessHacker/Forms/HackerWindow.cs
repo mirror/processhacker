@@ -479,7 +479,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    m_e.Invoke(new MethodInvoker(delegate { m_e.Select(address - memoryAddress, 1); }));
+                    m_e.BeginInvoke(new MethodInvoker(delegate { m_e.Select(address - memoryAddress, 1); }));
                 }
                 catch
                 { }
@@ -2382,7 +2382,7 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            this.Invoke(new MethodInvoker(delegate
+            this.BeginInvoke(new MethodInvoker(delegate
             {
                 statusText.Text = "";
                 statusMessages.Clear();
@@ -2417,7 +2417,7 @@ namespace ProcessHacker
             {
                 foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
                 {
-                    this.Invoke(new MethodInvoker(delegate
+                    this.BeginInvoke(new MethodInvoker(delegate
                         {
                             statusIcon.Icon = null;
                             statusText.Text = "Loading symbols for " + module.ModuleName + "...";
@@ -2434,7 +2434,7 @@ namespace ProcessHacker
                     }
                 }
 
-                this.Invoke(new MethodInvoker(delegate
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
                     statusIcon.Icon = null;
                     statusText.Text = "";
