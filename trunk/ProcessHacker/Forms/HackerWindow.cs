@@ -1099,6 +1099,8 @@ namespace ProcessHacker
             { }
 
             this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")" + parentText, pitem.Icon);
+
+            this.UpdateStatusInfo();
         }
 
         public void processP_DictionaryRemoved(object item)
@@ -1106,6 +1108,8 @@ namespace ProcessHacker
             ProcessItem pitem = (ProcessItem)item;
 
             this.QueueMessage("Terminated Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
+
+            this.UpdateStatusInfo();
         }
 
         #endregion
