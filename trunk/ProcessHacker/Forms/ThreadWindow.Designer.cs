@@ -48,11 +48,11 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.groupBoxCallStack = new System.Windows.Forms.GroupBox();
+            this.buttonWalk = new System.Windows.Forms.Button();
             this.groupRegisters = new System.Windows.Forms.GroupBox();
             this.listViewRegisters = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.buttonWalk = new System.Windows.Forms.Button();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.groupBoxCallStack.SuspendLayout();
             this.groupRegisters.SuspendLayout();
@@ -149,6 +149,18 @@
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
             // 
+            // buttonWalk
+            // 
+            this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonWalk.Location = new System.Drawing.Point(253, 182);
+            this.buttonWalk.Name = "buttonWalk";
+            this.buttonWalk.Size = new System.Drawing.Size(75, 23);
+            this.buttonWalk.TabIndex = 3;
+            this.buttonWalk.Text = "&Refresh";
+            this.buttonWalk.UseVisualStyleBackColor = true;
+            this.buttonWalk.Click += new System.EventHandler(this.buttonWalk_Click);
+            // 
             // groupRegisters
             // 
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
@@ -185,18 +197,6 @@
             // 
             this.columnHeader2.Text = "Value";
             this.columnHeader2.Width = 100;
-            // 
-            // buttonWalk
-            // 
-            this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonWalk.Location = new System.Drawing.Point(253, 182);
-            this.buttonWalk.Name = "buttonWalk";
-            this.buttonWalk.Size = new System.Drawing.Size(75, 23);
-            this.buttonWalk.TabIndex = 3;
-            this.buttonWalk.Text = "Walk";
-            this.buttonWalk.UseVisualStyleBackColor = true;
-            this.buttonWalk.Click += new System.EventHandler(this.buttonWalk_Click);
             // 
             // vistaMenu
             // 

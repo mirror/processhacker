@@ -40,13 +40,14 @@ namespace ProcessHacker
             _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
         }
 
-        public static void LoadLibrary(string path)
+        public static void LoadSymbolsFromLibrary(string path)
+        {
+            LoadSymbolsFromLibrary(path, Process.GetCurrentProcess().Modules);
+        }
+
+        public static void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
         {
             string realPath = Misc.GetRealPath(path).ToLower();
-
-            int moduleHandle = Win32.LoadLibrary(realPath);
-
-            ProcessModuleCollection modules = Process.GetCurrentProcess().Modules;
             int imageBase = -1;
 
             foreach (ProcessModule module in modules)
@@ -63,6 +64,17 @@ namespace ProcessHacker
             if (imageBase == -1)
                 throw new Exception("Could not get image base of library.");
 
+            LoadSymbolsFromLibrary(path, imageBase);
+        }
+
+        public static void LoadSymbolsFromLibrary(string path, int imageBase)
+        {
+            string realPath = Misc.GetRealPath(path).ToLower();
+
+            // check if it is already loaded
+            if (_symbols.ContainsKey(realPath))
+                return;
+
             PEFile file = new PEFile(realPath);
             List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
 
@@ -74,11 +86,13 @@ namespace ProcessHacker
 
                 return;
             }
-            
+
             for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
             {
                 string name = file.ExportData.ExportNameTable[i];
-                list.Add(new KeyValuePair<int, string>(Win32.GetProcAddress(moduleHandle, name), name));
+
+                list.Add(new KeyValuePair<int, string>(imageBase +
+                    (int)file.ExportData.ExportAddressTable[file.ExportData.ExportOrdinalTable[i]].ExportRVA, name));
             }
 
             // sort the list
@@ -98,7 +112,7 @@ namespace ProcessHacker
                     }));
         }
 
-        public static string GetSymbolName(int address)
+        public static string GetNameFromAddress(int address)
         {
             // go through each loaded library
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
@@ -120,7 +134,7 @@ namespace ProcessHacker
                     }
 
                     // no function name found, but we have a library name
-                    return string.Format("{0}+0x{2:x}", fi.Name, address - kvp.Key);
+                    return string.Format("{0}+0x{1:x}", fi.Name, address - kvp.Key);
                 }
             }
 

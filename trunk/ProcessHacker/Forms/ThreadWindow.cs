@@ -92,6 +92,8 @@ namespace ProcessHacker
                 return;
             }
 
+            this.WalkCallStack();
+
             Program.UpdateWindows();
         }
 
@@ -126,6 +128,22 @@ namespace ProcessHacker
             return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3] << 0);
         }
 
+        private void WalkCallStack()
+        {
+            Win32.CONTEXT context = new Win32.CONTEXT();
+
+            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
+
+            Win32.SuspendThread(_thandle);
+
+            if (Win32.GetThreadContext(_thandle, ref context) != 0)
+            {
+                WalkCallStack(context);
+            }
+
+            Win32.ResumeThread(_thandle);
+        }
+
         private void WalkCallStack(Win32.CONTEXT context)
         {
             /*  [ebp+8]... = args   
@@ -146,7 +164,7 @@ namespace ProcessHacker
 
             listViewCallStack.Items.Add(new ListViewItem(new string[] {
                         "0x" + context.Eip.ToString("x8"),
-                        Symbols.GetSymbolName(context.Eip)
+                        Symbols.GetNameFromAddress(context.Eip)
                     }));
             
             while (true)
@@ -162,12 +180,12 @@ namespace ProcessHacker
 
                     listViewCallStack.Items.Add(new ListViewItem(new string[] {
                         "0x" + stackFrame.AddrReturn.Offset.ToString("x8"),
-                        Symbols.GetSymbolName((int)stackFrame.AddrReturn.Offset)
+                        Symbols.GetNameFromAddress((int)stackFrame.AddrReturn.Offset)
                     }));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    break;
                 }
             }
 
@@ -191,7 +209,7 @@ namespace ProcessHacker
                 return;
             }
             
-            this.Text = Symbols.GetSymbolName(context.Eip); 
+            this.Text = Symbols.GetNameFromAddress(context.Eip); 
 
             listViewCallStack.Enabled = true;
             listViewRegisters.Enabled = true;
@@ -251,18 +269,7 @@ namespace ProcessHacker
 
         private void buttonWalk_Click(object sender, EventArgs e)
         {
-            Win32.CONTEXT context = new Win32.CONTEXT();
-
-            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
-
-            Win32.SuspendThread(_thandle);
-
-            if (Win32.GetThreadContext(_thandle, ref context) != 0)
-            {
-                WalkCallStack(context);
-            }
-
-            Win32.ResumeThread(_thandle);
+            this.WalkCallStack();
         }
     }
 }

@@ -1233,15 +1233,31 @@ namespace ProcessHacker
         {
             ThreadWindow window;
 
+            this.UseWaitCursor = true;
+
             try
             {
-                Symbols.LoadLibrary(processSelected.MainModule.FileName);
+                foreach (ProcessModule module in processSelected.Modules)
+                {
+                    try
+                    {
+                        statusIcon.Icon = null;
+                        statusText.Text = "Loading symbols for " + module.ModuleName + "...";
+                        Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                    }
+                    catch
+                    { }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Could not load symbols for selected process:\n\n" + ex.Message,
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
+
+            statusIcon.Icon = null;
+            statusText.Text = "";
+            this.UseWaitCursor = false;
 
             try
             {
@@ -2387,8 +2403,14 @@ namespace ProcessHacker
                             statusText.Text = "Loading symbols for " + module.ModuleName + "...";
                         }));
   
-                    Symbols.LoadLibrary(module.FileName);
+                    Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
                 }
+
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    statusIcon.Icon = null;
+                    statusText.Text = "";
+                }));
             }));
 
             t.Priority = ThreadPriority.Lowest;
