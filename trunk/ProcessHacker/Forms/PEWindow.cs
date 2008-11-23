@@ -327,7 +327,20 @@ namespace ProcessHacker
         {
             if (_peFile != null)
             {
+                if (e.ItemIndex >= _peFile.ExportData.ExportOrdinalTable.Count)
+                {
+                    e.Item = new ListViewItem(new string[] { "", "", "", "" });
+                    return;
+                }
+
                 ushort ordinal = _peFile.ExportData.ExportOrdinalTable[e.ItemIndex];
+
+                if (ordinal >= _peFile.ExportData.ExportAddressTable.Count)
+                {
+                    e.Item = new ListViewItem(new string[] { "", "", "", "" });
+                    return;
+                } 
+
                 ExportEntry entry = _peFile.ExportData.ExportAddressTable[ordinal];
                 
                 e.Item = new ListViewItem();
@@ -344,7 +357,7 @@ namespace ProcessHacker
                     e.Item.SubItems[2].Text = "0x" + entry.ExportRVA.ToString("x8");
 
                     if (entry.ExportRVA != 0)
-                        e.Item.SubItems[3].Text = "0x" + _exportVAs[e.ItemIndex].ToString("x8");
+                        e.Item.SubItems[3].Text = "0x" + _exportVAs[ordinal].ToString("x8");
                 }
                 else if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {                             
