@@ -26,5 +26,8 @@ Process Hacker is made by wj32 and uses the following components:
    - http://sourceforge.net/projects/hexbox
  * VistaMenu by wyDay
    - http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/
+ * SplitButton by wyDay
  * Silk Icons from famfamfam.com
    - http://www.famfamfam.com/lab/icons/silk/
+ * The disassembler used in OllyDbg, by Oleh Yuschuk
+   - http://www.ollydbg.de

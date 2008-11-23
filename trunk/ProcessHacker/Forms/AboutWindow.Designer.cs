@@ -39,6 +39,7 @@
             this.linkSourceforge = new System.Windows.Forms.LinkLabel();
             this.linkEmail = new System.Windows.Forms.LinkLabel();
             this.buttonMoreInfo = new System.Windows.Forms.Button();
+            this.linkAsm = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,42 +89,41 @@
             this.labelCredits.AutoSize = true;
             this.labelCredits.Location = new System.Drawing.Point(174, 68);
             this.labelCredits.Name = "labelCredits";
-            this.labelCredits.Size = new System.Drawing.Size(151, 65);
+            this.labelCredits.Size = new System.Drawing.Size(58, 26);
             this.labelCredits.TabIndex = 4;
-            this.labelCredits.Text = "Thanks to:\r\n\r\nBernhard Elbl - HexBox control\r\nwyDay - VistaMenu\r\nfamfamfam.com - " +
-                "Silk Icons";
+            this.labelCredits.Text = "Thanks to:\r\n\r\n";
             // 
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(174, 172);
+            this.linkFamFamFam.Location = new System.Drawing.Point(174, 126);
             this.linkFamFamFam.Name = "linkFamFamFam";
-            this.linkFamFamFam.Size = new System.Drawing.Size(81, 13);
+            this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
             this.linkFamFamFam.TabStop = true;
-            this.linkFamFamFam.Text = "famfamfam.com";
+            this.linkFamFamFam.Text = "famfamfam.com - Silk Icons";
             this.linkFamFamFam.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkFamFamFam_LinkClicked);
             // 
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(174, 156);
+            this.linkVistaMenu.Location = new System.Drawing.Point(174, 110);
             this.linkVistaMenu.Name = "linkVistaMenu";
-            this.linkVistaMenu.Size = new System.Drawing.Size(57, 13);
+            this.linkVistaMenu.Size = new System.Drawing.Size(155, 13);
             this.linkVistaMenu.TabIndex = 6;
             this.linkVistaMenu.TabStop = true;
-            this.linkVistaMenu.Text = "VistaMenu";
+            this.linkVistaMenu.Text = "wyDay - VistaMenu, SplitButton";
             this.linkVistaMenu.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkVistaMenu_LinkClicked);
             // 
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(174, 140);
+            this.linkHexBox.Location = new System.Drawing.Point(174, 94);
             this.linkHexBox.Name = "linkHexBox";
-            this.linkHexBox.Size = new System.Drawing.Size(79, 13);
+            this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
             this.linkHexBox.TabStop = true;
-            this.linkHexBox.Text = "HexBox control";
+            this.linkHexBox.Text = "Bernhard Elbl - HexBox control";
             this.linkHexBox.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkHexBox_LinkClicked);
             // 
             // labelBy
@@ -170,11 +170,23 @@
             this.buttonMoreInfo.UseVisualStyleBackColor = true;
             this.buttonMoreInfo.Click += new System.EventHandler(this.buttonMoreInfo_Click);
             // 
+            // linkAsm
+            // 
+            this.linkAsm.AutoSize = true;
+            this.linkAsm.Location = new System.Drawing.Point(174, 142);
+            this.linkAsm.Name = "linkAsm";
+            this.linkAsm.Size = new System.Drawing.Size(198, 13);
+            this.linkAsm.TabIndex = 12;
+            this.linkAsm.TabStop = true;
+            this.linkAsm.Text = "Oleh Yuschuk - Disassembler/Assembler";
+            this.linkAsm.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAsm_LinkClicked);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 253);
+            this.Controls.Add(this.linkAsm);
             this.Controls.Add(this.buttonMoreInfo);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
@@ -216,6 +228,7 @@
         private System.Windows.Forms.LinkLabel linkSourceforge;
         private System.Windows.Forms.LinkLabel linkEmail;
         private System.Windows.Forms.Button buttonMoreInfo;
+        private System.Windows.Forms.LinkLabel linkAsm;
 
     }
 }

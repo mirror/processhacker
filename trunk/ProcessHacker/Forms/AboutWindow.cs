@@ -58,7 +58,7 @@ namespace ProcessHacker
 
         private void linkVistaMenu_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/");
+            TryStart("http://wyday.com");
         }
 
         private void linkFamFamFam_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -86,6 +86,11 @@ namespace ProcessHacker
             InformationBox box = new InformationBox(sb.ToString());
 
             box.ShowDialog();
+        }
+
+        private void linkAsm_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            TryStart("http://www.ollydbg.de");
         }
     }
 }
