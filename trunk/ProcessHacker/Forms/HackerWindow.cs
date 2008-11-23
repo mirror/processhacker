@@ -1235,6 +1235,16 @@ namespace ProcessHacker
 
             try
             {
+                Symbols.LoadLibrary(processSelected.MainModule.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not load symbols for selected process:\n\n" + ex.Message,
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            try
+            {
                 window = Program.GetThreadWindow(processSelectedPID,
                     Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
                     new Program.ThreadWindowInvokeAction(delegate(ThreadWindow f)

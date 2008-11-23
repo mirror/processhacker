@@ -45,7 +45,7 @@ namespace ProcessHacker
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
         public const int SID_SIZE = 1024;
-        public const int SIZE_OF_80387_REGISTERS = 80;
+        public const int SIZE_OF_80387_REGISTERS = 72;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
         public const int SW_SHOW = 5;
         public const int SYMBOL_NAME_MAXSIZE = 255;
@@ -555,6 +555,14 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.FunctionPtr)] GetModuleBaseProc64 GetModuleBaseRoutine,
             int TranslateAddress);
 
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern int StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
+            [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
+            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord, int ReadMemoryRoutine,
+            int FunctionTableAccessRoutine,
+            int GetModuleBaseRoutine,
+            int TranslateAddress);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessDEPPolicy(int ProcessHandle, ref DEPFLAGS Flags, ref int Permanent);
 
@@ -1039,8 +1047,7 @@ namespace ProcessHacker
             public ADDRESS64 AddrStack;
             public ADDRESS64 AddrBStore;
 
-            [MarshalAs(UnmanagedType.LPStruct)]
-            public FPO_DATA FuncTableEntry;
+            public int FuncTableEntry;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public long[] Params;

@@ -67,8 +67,14 @@ namespace ProcessHacker
             List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
 
             if (file.ExportData == null)
-                return;
+            {
+                // no symbols, but we can still display a module name in a lookup
+                _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
+                _symbols.Add(realPath, new List<KeyValuePair<int, string>>());
 
+                return;
+            }
+            
             for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
             {
                 string name = file.ExportData.ExportNameTable[i];
@@ -94,25 +100,31 @@ namespace ProcessHacker
 
         public static string GetSymbolName(int address)
         {
+            // go through each loaded library
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
             {
                 if (address >= kvp.Key)
                 {
-                    List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];
+                    List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];  
+                    FileInfo fi = new FileInfo(kvp.Value);
 
+                    // go through each symbol
                     foreach (KeyValuePair<int, string> kvps in symbolList)
                     {
                         if (address >= kvps.Key)
                         {
-                            FileInfo fi = new FileInfo(kvp.Value);
-
+                            // we found a function name
                             return string.Format("{0}!{1}+0x{2:x}",
                                 fi.Name, kvps.Value, address - kvps.Key);
                         }
                     }
+
+                    // no function name found, but we have a library name
+                    return string.Format("{0}+0x{2:x}", fi.Name, address - kvp.Key);
                 }
             }
 
+            // we didn't find anything
             return "0x" + address.ToString("x8");
         }
     }

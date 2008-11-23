@@ -52,6 +52,7 @@
             this.listViewRegisters = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.buttonWalk = new System.Windows.Forms.Button();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.groupBoxCallStack.SuspendLayout();
             this.groupRegisters.SuspendLayout();
@@ -119,7 +120,7 @@
             this.listViewCallStack.FullRowSelect = true;
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
-            this.listViewCallStack.Size = new System.Drawing.Size(322, 180);
+            this.listViewCallStack.Size = new System.Drawing.Size(322, 157);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -139,10 +140,11 @@
             this.groupBoxCallStack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxCallStack.Controls.Add(this.buttonWalk);
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 12);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 205);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(334, 211);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -152,7 +154,7 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 223);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 229);
             this.groupRegisters.Name = "groupRegisters";
             this.groupRegisters.Size = new System.Drawing.Size(334, 132);
             this.groupRegisters.TabIndex = 2;
@@ -184,6 +186,18 @@
             this.columnHeader2.Text = "Value";
             this.columnHeader2.Width = 100;
             // 
+            // buttonWalk
+            // 
+            this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonWalk.Location = new System.Drawing.Point(253, 182);
+            this.buttonWalk.Name = "buttonWalk";
+            this.buttonWalk.Size = new System.Drawing.Size(75, 23);
+            this.buttonWalk.TabIndex = 3;
+            this.buttonWalk.Text = "Walk";
+            this.buttonWalk.UseVisualStyleBackColor = true;
+            this.buttonWalk.Click += new System.EventHandler(this.buttonWalk_Click);
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -192,7 +206,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(358, 367);
+            this.ClientSize = new System.Drawing.Size(358, 373);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -226,5 +240,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.Button buttonWalk;
     }
 }

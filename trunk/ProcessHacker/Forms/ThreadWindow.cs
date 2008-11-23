@@ -17,7 +17,7 @@ namespace ProcessHacker
         public const string DisplayFormat = "0x{0:x8}";
 
         public string[] Registers = 
-            new string[] { "eax", "ebx", "ecx", "edx", "esi", "edi", "esp", "ebp", "cs", "ds", "es", "fs", "gs", "ss" };
+            new string[] { "eax", "ebx", "ecx", "edx", "esi", "edi", "esp", "ebp", "eip", "cs", "ds", "es", "fs", "gs", "ss" };
 
         public string Id
         {
@@ -128,25 +128,46 @@ namespace ProcessHacker
 
         private void WalkCallStack(Win32.CONTEXT context)
         {
+            /*  [ebp+8]... = args   
+             *  [ebp+4] = ret addr  
+             *  [ebp] = old ebp
+             */
             listViewCallStack.BeginUpdate();
             listViewCallStack.Items.Clear();
 
-            Win32.STACKFRAME64 stackframe = new Win32.STACKFRAME64();
+            Win32.STACKFRAME64 stackFrame = new Win32.STACKFRAME64();
 
-            stackframe.AddrPC.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
-            stackframe.AddrPC.Offset = context.Eip;
-            stackframe.AddrFrame.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
-            stackframe.AddrFrame.Offset = context.Ebp;
-            stackframe.AddrStack.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
-            stackframe.AddrStack.Offset = context.Esp;
+            stackFrame.AddrPC.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrPC.Offset = context.Eip;
+            stackFrame.AddrStack.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrStack.Offset = context.Esp;
+            stackFrame.AddrFrame.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrFrame.Offset = context.Ebp;
 
+            listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                        "0x" + context.Eip.ToString("x8"),
+                        Symbols.GetSymbolName(context.Eip)
+                    }));
+            
             while (true)
             {
-                if (Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
-                    ref stackframe, ref context, 0, new Win32.FunctionTableAccessProc64(Win32.SymFunctionTableAccess64),
-                    new Win32.GetModuleBaseProc64(Win32.SymGetModuleBase64), 0) == 0)
+                try
                 {
-                    break;
+                    if (Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
+                        ref stackFrame, ref context, 0, 0, 0, 0) == 0)
+                        break;
+
+                    if (stackFrame.AddrReturn.Offset == 0)
+                        break;
+
+                    listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                        "0x" + stackFrame.AddrReturn.Offset.ToString("x8"),
+                        Symbols.GetSymbolName((int)stackFrame.AddrReturn.Offset)
+                    }));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
                 }
             }
 
@@ -170,7 +191,7 @@ namespace ProcessHacker
                 return;
             }
             
-            this.Text = Symbols.GetSymbolName(context.Eax); 
+            this.Text = Symbols.GetSymbolName(context.Eip); 
 
             listViewCallStack.Enabled = true;
             listViewRegisters.Enabled = true;
@@ -195,8 +216,6 @@ namespace ProcessHacker
                         (int)field.GetValue(context));
                 }
             }
-
-            //WalkCallStack(context);
         }
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
@@ -228,6 +247,22 @@ namespace ProcessHacker
             {
                 this.Close();   
             }
+        }
+
+        private void buttonWalk_Click(object sender, EventArgs e)
+        {
+            Win32.CONTEXT context = new Win32.CONTEXT();
+
+            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
+
+            Win32.SuspendThread(_thandle);
+
+            if (Win32.GetThreadContext(_thandle, ref context) != 0)
+            {
+                WalkCallStack(context);
+            }
+
+            Win32.ResumeThread(_thandle);
         }
     }
 }
