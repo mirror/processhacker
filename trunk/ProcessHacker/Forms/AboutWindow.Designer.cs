@@ -38,6 +38,7 @@
             this.labelBy = new System.Windows.Forms.Label();
             this.linkSourceforge = new System.Windows.Forms.LinkLabel();
             this.linkEmail = new System.Windows.Forms.LinkLabel();
+            this.buttonMoreInfo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -157,11 +158,24 @@
             this.linkEmail.Text = "Send feedback to wj32.64@gmail.com";
             this.linkEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEmail_LinkClicked);
             // 
+            // buttonMoreInfo
+            // 
+            this.buttonMoreInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonMoreInfo.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonMoreInfo.Location = new System.Drawing.Point(252, 218);
+            this.buttonMoreInfo.Name = "buttonMoreInfo";
+            this.buttonMoreInfo.Size = new System.Drawing.Size(75, 23);
+            this.buttonMoreInfo.TabIndex = 11;
+            this.buttonMoreInfo.Text = "More...";
+            this.buttonMoreInfo.UseVisualStyleBackColor = true;
+            this.buttonMoreInfo.Click += new System.EventHandler(this.buttonMoreInfo_Click);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 253);
+            this.Controls.Add(this.buttonMoreInfo);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
@@ -201,6 +215,7 @@
         private System.Windows.Forms.Label labelBy;
         private System.Windows.Forms.LinkLabel linkSourceforge;
         private System.Windows.Forms.LinkLabel linkEmail;
+        private System.Windows.Forms.Button buttonMoreInfo;
 
     }
 }

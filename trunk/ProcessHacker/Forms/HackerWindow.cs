@@ -1688,6 +1688,11 @@ namespace ProcessHacker
             listThreads.Enabled = false;
         }
 
+        private void UpdateStatusInfo()
+        {
+            statusGeneral.Text = string.Format("{0} processes", listProcesses.List.Items.Count);
+        }
+
         #endregion
 
         #region Helper functions

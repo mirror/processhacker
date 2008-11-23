@@ -128,6 +128,7 @@
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
+            this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
             this.statusIcon = new System.Windows.Forms.StatusBarPanel();
             this.statusText = new System.Windows.Forms.StatusBarPanel();
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
@@ -156,6 +157,7 @@
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
             this.splitMain.Panel1.SuspendLayout();
@@ -909,11 +911,18 @@
             this.statusBar.Location = new System.Drawing.Point(0, 425);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
+            this.statusGeneral,
             this.statusIcon,
             this.statusText});
             this.statusBar.ShowPanels = true;
             this.statusBar.Size = new System.Drawing.Size(804, 22);
             this.statusBar.TabIndex = 5;
+            // 
+            // statusGeneral
+            // 
+            this.statusGeneral.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Contents;
+            this.statusGeneral.Name = "statusGeneral";
+            this.statusGeneral.Width = 10;
             // 
             // statusIcon
             // 
@@ -987,7 +996,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(437, 419);
+            this.tabProcess.Size = new System.Drawing.Size(437, 398);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1026,7 +1035,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(425, 354);
+            this.treeMisc.Size = new System.Drawing.Size(425, 333);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1057,7 +1066,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(437, 419);
+            this.tabModules.Size = new System.Drawing.Size(437, 398);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1076,7 +1085,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(431, 413);
+            this.listModules.Size = new System.Drawing.Size(431, 392);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1108,7 +1117,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(437, 419);
+            this.tabMemory.Size = new System.Drawing.Size(437, 398);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1128,7 +1137,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(431, 413);
+            this.listMemory.Size = new System.Drawing.Size(431, 392);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1184,6 +1193,7 @@
             this.panelProc.PerformLayout();
             this.panelVirtualProtect.ResumeLayout(false);
             this.panelVirtualProtect.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
             this.splitMain.Panel1.ResumeLayout(false);
@@ -1327,6 +1337,7 @@
         private System.Windows.Forms.StatusBarPanel statusText;
         private System.Windows.Forms.MenuItem logMenuItem;
         private System.Windows.Forms.MenuItem goToParentProcessMenuItem;
+        private System.Windows.Forms.StatusBarPanel statusGeneral;
     }
 }
 

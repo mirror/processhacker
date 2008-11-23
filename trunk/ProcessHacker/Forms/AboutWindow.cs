@@ -19,6 +19,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -73,6 +74,18 @@ namespace ProcessHacker
         private void linkEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             TryStart("mailto:wj32.64@gmail.com");
+        }
+
+        private void buttonMoreInfo_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(
+                string.Format("Loaded symbols: {0} symbols over {1} modules.", Symbols.SymbolCount, Symbols.LibraryCount));
+
+            InformationBox box = new InformationBox(sb.ToString());
+
+            box.ShowDialog();
         }
     }
 }

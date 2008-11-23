@@ -166,5 +166,23 @@ namespace ProcessHacker
             // we didn't find anything
             return "0x" + address.ToString("x8");
         }
+
+        public static int LibraryCount
+        {
+            get { return _libraryLookup.Count; }
+        }
+
+        public static int SymbolCount
+        {
+            get
+            {
+                int count = 0;
+
+                foreach (List<KeyValuePair<int, string>> list in _symbols.Values)
+                    count += list.Count;
+
+                return count;
+            }
+        }
     }
 }
