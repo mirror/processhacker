@@ -18,11 +18,11 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using ProcessHacker.PE;
 using System.IO;
+using ProcessHacker.PE;
 
 namespace ProcessHacker
 {
@@ -153,8 +153,14 @@ namespace ProcessHacker
                         if ((uint)address >= (uint)kvps.Key)
                         {
                             // we found a function name
-                            return string.Format("{0}!{1}+0x{2:x}",
-                                fi.Name, kvps.Value, address - kvps.Key);
+                            int offset = address - kvps.Key;
+
+                            // don't need to put in the +
+                            if (offset == 0)
+                                return string.Format("{0}!{1}", fi.Name, kvps.Value);
+                            else
+                                return string.Format("{0}!{1}+0x{2:x}",
+                                    fi.Name, kvps.Value, address - kvps.Key);
                         }
                     }
 
@@ -182,6 +188,18 @@ namespace ProcessHacker
                     count += list.Count;
 
                 return count;
+            }
+        }
+
+        public static string[] Keys
+        {
+            get
+            {
+                string[] strings = new string[_symbols.Keys.Count];
+
+                _symbols.Keys.CopyTo(strings, 0);
+
+                return strings;
             }
         }
     }

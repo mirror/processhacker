@@ -3,6 +3,8 @@ Process Hacker
 1.2.0.5
  * Updated credits
  * Fixed crash when opening two thread inspectors with the same process and thread
+ * Disassembler window can now display backward short jumps (>0x7fffffff)
+ * Now unloads symbols for all other EXEs before opening the thread inspector
 
 1.2.0.0
  * Added PE Inspector (can read exe/dll/sys files and their properties)

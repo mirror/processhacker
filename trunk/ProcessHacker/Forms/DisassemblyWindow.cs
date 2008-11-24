@@ -98,7 +98,12 @@ namespace ProcessHacker
             {
                 if (split[i].ToLower() == "short")
                 {
-                    arg = (int)BaseConverter.ToNumber(split[i + 1], 16);
+                    decimal number = BaseConverter.ToNumber(split[i + 1], 16);
+
+                    if (number > 0x7fffffff)
+                        arg = (int)(number - 0xfffffffe);
+                    else
+                        arg = (int)number;
                     break;
                 }
             }
