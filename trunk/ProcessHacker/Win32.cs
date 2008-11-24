@@ -198,6 +198,46 @@ namespace ProcessHacker
             SecurityDelegation
         }
 
+        public enum SERVICE_ACCEPT : int
+        {
+            NetBindChange = 0x10,
+            ParamChange = 0x8,
+            PauseContinue = 0x2,
+            PreShutdown = 0x100,
+            Shutdown = 0x4,
+            Stop = 0x1,
+            HardwareProfileChange = 0x20,
+            PowerEvent = 0x40,
+            SessionChange = 0x80
+        }
+
+        public enum SERVICE_FLAGS : int
+        {
+            None = 0,
+            RunsInSystemProcess = 0x1
+        }
+
+        public enum SERVICE_STATE : int
+        {
+            ContinuePending = 0x5,
+            PausePending = 0x6,
+            Paused = 0x7,
+            Running = 0x4,
+            StartPending = 0x2,
+            StopPending = 0x3,
+            Stopped = 0x1
+        }
+
+        [Flags]
+        public enum SERVICE_TYPE : int
+        {
+            FileSystemDriver = 0x2,
+            KernelDriver = 0x1,
+            Win32OwnProcess = 0x10,
+            Win32ShareProcess = 0x20,
+            InteractiveProcess = 0x100
+        }
+
         public enum SID_ATTRIBUTES : uint
         {
             SE_GROUP_MANDATORY = 0x00000001,
@@ -810,6 +850,32 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct ENUM_SERVICE_STATUS
+        {
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string ServiceName;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string DisplayName;
+
+            [MarshalAs(UnmanagedType.Struct)]
+            public SERVICE_STATUS ServiceStatus;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct ENUM_SERVICE_STATUS_PROCESS
+        {
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string ServiceName;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string DisplayName;
+
+            [MarshalAs(UnmanagedType.Struct)]
+            public SERVICE_STATUS_PROCESS ServiceStatusProcess;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct FLOATING_SAVE_AREA
         {
             public int ControlWord;
@@ -989,6 +1055,32 @@ namespace ProcessHacker
             int hThread;
             int dwProcessId;
             int dwThreadId;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SERVICE_STATUS
+        {
+            SERVICE_TYPE ServiceType;
+            SERVICE_STATE CurrentState;
+            SERVICE_ACCEPT ControlsAccepted;
+            int Win32ExitCode;
+            int ServiceSpecificExitCode;
+            int CheckPoint;
+            int WaitHint;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SERVICE_STATUS_PROCESS
+        {
+            SERVICE_TYPE ServiceType;
+            SERVICE_STATE CurrentState;
+            SERVICE_ACCEPT ControlsAccepted;
+            int Win32ExitCode;
+            int ServiceSpecificExitCode;
+            int CheckPoint;
+            int WaitHint;
+            int ProcessID;
+            SERVICE_FLAGS ServiceFlags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
