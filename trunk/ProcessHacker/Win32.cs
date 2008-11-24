@@ -583,6 +583,16 @@ namespace ProcessHacker
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int QueryServiceConfig(int Service,
+            int ServiceConfig,
+            int BufSize, ref int BytesNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int QueryServiceConfig(int Service,
+            IntPtr ServiceConfig,
+            int BufSize, ref int BytesNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int QueryServiceConfig(int Service,
             [MarshalAs(UnmanagedType.Struct)] ref QUERY_SERVICE_CONFIG ServiceConfig,
             int BufSize, ref int BytesNeeded);
 
@@ -1232,19 +1242,19 @@ namespace ProcessHacker
             public SERVICE_START_TYPE StartType;
             public SERVICE_ERROR_CONTROL ErrorControl;
 
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string BinaryPathName;
 
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string LoadOrderGroup;
 
             public int TagID;
             public int Dependencies; // pointer to a string array
 
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string ServiceStartName;
 
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string DisplayName;
         }
 
@@ -1503,7 +1513,8 @@ namespace ProcessHacker
             int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
 
             if (manager == 0)
-                throw new Exception("Could not open service control manager");
+                throw new Exception("Could not open service control manager: "
+                    + GetLastErrorMessage() + ".");
 
             int requiredSize = 0;
             int servicesReturned = 0;
@@ -1523,7 +1534,7 @@ namespace ProcessHacker
             {
                 CloseHandle(manager);
                 Marshal.FreeHGlobal(services);
-                throw new Exception("Error");
+                throw new Exception(GetLastErrorMessage());
             }
 
             Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> dictionary = 
@@ -1717,6 +1728,41 @@ namespace ProcessHacker
             CloseHandle(token);
 
             return GetAccountName(user.User.SID, IncludeDomain); 
+        }
+
+        public static QUERY_SERVICE_CONFIG GetServiceConfig(string ServiceName)
+        {            
+            int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
+
+            if (manager == 0)
+                throw new Exception("Could not open service control manager: "
+                    + GetLastErrorMessage() + ".");
+
+            int handle = OpenService(manager, ServiceName, SERVICE_RIGHTS.SERVICE_QUERY_CONFIG);
+
+            if (handle == 0)
+                throw new Exception("Could not open service handle: "
+                    + GetLastErrorMessage() + ".");
+                                                   
+            int requiredSize = 0;
+
+            QueryServiceConfig(handle, 0, 0, ref requiredSize);
+
+            IntPtr ptr = Marshal.AllocHGlobal(requiredSize);
+
+            if (QueryServiceConfig(handle, ptr, requiredSize, ref requiredSize) == 0)
+            {
+                Marshal.FreeHGlobal(ptr);
+                throw new Exception("Could not get service configuration: " + GetLastErrorMessage());
+            }
+
+            QUERY_SERVICE_CONFIG config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(ptr, typeof(QUERY_SERVICE_CONFIG));
+
+            Marshal.FreeHGlobal(ptr);
+            CloseHandle(handle);
+            CloseHandle(manager);
+
+            return config;
         }
 
         public static int OpenLocalPolicy()

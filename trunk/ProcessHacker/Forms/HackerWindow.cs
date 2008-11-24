@@ -2391,9 +2391,9 @@ namespace ProcessHacker
             processP.Updated += new ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
-            serviceList.List.BeginUpdate();
+            listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
-            serviceList.Provider = serviceP;
+            listServices.Provider = serviceP;
             serviceP.Updated += new ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
 
@@ -2402,7 +2402,7 @@ namespace ProcessHacker
 
         private void serviceP_Updated()
         {
-            serviceList.List.EndUpdate();
+            listServices.List.EndUpdate();
         }
 
         private void processP_Updated()

@@ -126,7 +126,7 @@ namespace ProcessHacker
 
                 if (_provider != null)
                 {
-                    foreach (Win32.ENUM_SERVICE_STATUS_PROCESS item in _provider.Dictionary.Values)
+                    foreach (ServiceItem item in _provider.Dictionary.Values)
                     {
                         provider_DictionaryAdded(item);
                     }
@@ -146,20 +146,20 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            Win32.ENUM_SERVICE_STATUS_PROCESS sitem = (Win32.ENUM_SERVICE_STATUS_PROCESS)item;
+            ServiceItem sitem = (ServiceItem)item;
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = sitem.ServiceName;
-            litem.Text = sitem.ServiceName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.DisplayName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.ServiceStatusProcess.ServiceType.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.ServiceStatusProcess.CurrentState.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.ServiceStatusProcess.ProcessID.ToString()));
+            litem.Name = sitem.Status.ServiceName;
+            litem.Text = sitem.Status.ServiceName;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.DisplayName));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ServiceType.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.CurrentState.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
 
-            if (sitem.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
-                sitem.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
+            if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
+                sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
                 litem.ImageKey = "Win32";
-            else if (sitem.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.InteractiveProcess)
+            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.InteractiveProcess)
                 litem.ImageKey = "Interactive";
             else
                 litem.ImageKey = "Driver";
@@ -171,13 +171,13 @@ namespace ProcessHacker
         {
             try
             {
-                Win32.ENUM_SERVICE_STATUS_PROCESS sitem = (Win32.ENUM_SERVICE_STATUS_PROCESS)item;
-                ListViewItem litem = listServices.Items[sitem.ServiceName];
+                ServiceItem sitem = (ServiceItem)item;
+                ListViewItem litem = listServices.Items[sitem.Status.ServiceName];
 
-                litem.SubItems[1].Text = sitem.DisplayName;
-                litem.SubItems[2].Text = sitem.ServiceStatusProcess.ServiceType.ToString();
-                litem.SubItems[3].Text = sitem.ServiceStatusProcess.CurrentState.ToString();
-                litem.SubItems[4].Text = sitem.ServiceStatusProcess.ProcessID.ToString();
+                litem.SubItems[1].Text = sitem.Status.DisplayName;
+                litem.SubItems[2].Text = sitem.Status.ServiceStatusProcess.ServiceType.ToString();
+                litem.SubItems[3].Text = sitem.Status.ServiceStatusProcess.CurrentState.ToString();
+                litem.SubItems[4].Text = sitem.Status.ServiceStatusProcess.ProcessID.ToString();
             }
             catch
             { }
@@ -187,11 +187,11 @@ namespace ProcessHacker
         {
             try
             {
-                Win32.ENUM_SERVICE_STATUS_PROCESS sitem = (Win32.ENUM_SERVICE_STATUS_PROCESS)item;
-                int index = listServices.Items[sitem.ServiceName].Index;
-                bool selected = listServices.Items[sitem.ServiceName].Selected;
+                ServiceItem sitem = (ServiceItem)item;
+                int index = listServices.Items[sitem.Status.ServiceName].Index;
+                bool selected = listServices.Items[sitem.Status.ServiceName].Selected;
                 int selectedCount = listServices.SelectedItems.Count;
-                ListViewItem litem = listServices.Items[sitem.ServiceName];
+                ListViewItem litem = listServices.Items[sitem.Status.ServiceName];
 
                 litem.Remove();
 

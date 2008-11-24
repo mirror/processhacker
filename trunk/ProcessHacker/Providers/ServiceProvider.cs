@@ -25,7 +25,13 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
-    public class ServiceProvider : Provider<string, Win32.ENUM_SERVICE_STATUS_PROCESS>
+    public struct ServiceItem
+    {
+        public Win32.ENUM_SERVICE_STATUS_PROCESS Status;
+        public Win32.QUERY_SERVICE_CONFIG Config;
+    }
+
+    public class ServiceProvider : Provider<string, ServiceItem>
     {
         public ServiceProvider()
             : base()
@@ -43,7 +49,7 @@ namespace ProcessHacker
             {
                 if (!newdictionary.ContainsKey(s))
                 {
-                    Win32.ENUM_SERVICE_STATUS_PROCESS service = Dictionary[s];
+                    ServiceItem service = Dictionary[s];
 
                     this.CallDictionaryRemoved(service);
                     Dictionary.Remove(s);
@@ -55,34 +61,60 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(s))
                 {
-                    this.CallDictionaryAdded(newdictionary[s]);
-                    Dictionary.Add(s, newdictionary[s]);
+                    ServiceItem item = new ServiceItem();
+
+                    item.Status = newdictionary[s];
+
+                    try
+                    {
+                        item.Config = Win32.GetServiceConfig(s);
+                    }
+                    catch
+                    { }
+
+                    this.CallDictionaryAdded(item);
+                    Dictionary.Add(s, item);
                 }
             }
 
             // check for modified services
-            foreach (Win32.ENUM_SERVICE_STATUS_PROCESS service in Dictionary.Values)
+            foreach (ServiceItem service in Dictionary.Values)
             {
-                Win32.ENUM_SERVICE_STATUS_PROCESS newservice = newdictionary[service.ServiceName];
+                ServiceItem newserviceitem = service;
+
+                newserviceitem.Status = newdictionary[service.Status.ServiceName];
+
+                try
+                {
+                    newserviceitem.Config = Win32.GetServiceConfig(service.Status.ServiceName);
+                }
+                catch
+                { }
+
                 bool modified = false;
 
-                if (service.DisplayName != newservice.DisplayName)
+                if (service.Status.DisplayName != newserviceitem.Status.DisplayName)
                     modified = true;
-                else if (service.ServiceStatusProcess.ControlsAccepted != newservice.ServiceStatusProcess.ControlsAccepted)
+                else if (service.Status.ServiceStatusProcess.ControlsAccepted != 
+                    newserviceitem.Status.ServiceStatusProcess.ControlsAccepted)
                     modified = true;
-                else if (service.ServiceStatusProcess.CurrentState != newservice.ServiceStatusProcess.CurrentState)
+                else if (service.Status.ServiceStatusProcess.CurrentState != 
+                    newserviceitem.Status.ServiceStatusProcess.CurrentState)
                     modified = true;
-                else if (service.ServiceStatusProcess.ProcessID != newservice.ServiceStatusProcess.ProcessID)
+                else if (service.Status.ServiceStatusProcess.ProcessID != 
+                    newserviceitem.Status.ServiceStatusProcess.ProcessID)
                     modified = true;
-                else if (service.ServiceStatusProcess.ServiceFlags != newservice.ServiceStatusProcess.ServiceFlags)
+                else if (service.Status.ServiceStatusProcess.ServiceFlags != 
+                    newserviceitem.Status.ServiceStatusProcess.ServiceFlags)
                     modified = true;
-                else if (service.ServiceStatusProcess.ServiceType != newservice.ServiceStatusProcess.ServiceType)
+                else if (service.Status.ServiceStatusProcess.ServiceType != 
+                    newserviceitem.Status.ServiceStatusProcess.ServiceType)
                     modified = true;
 
                 if (modified)
                 {
-                    Dictionary[service.ServiceName] = newservice;
-                    this.CallDictionaryModified(newservice);
+                    Dictionary[service.Status.ServiceName] = newserviceitem;
+                    this.CallDictionaryModified(newserviceitem);
                 }
             }
         }
