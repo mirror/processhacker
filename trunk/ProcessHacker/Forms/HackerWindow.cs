@@ -1253,9 +1253,9 @@ namespace ProcessHacker
 
             this.UseWaitCursor = true;
 
-            // unload EXE symbols - they usually conflict with the current process
             foreach (string s in Symbols.Keys)
             {
+                // unload EXE symbols - they usually conflict with the current process
                 if (s.ToLower().EndsWith(".exe"))
                     Symbols.UnloadSymbols(s);
             }
