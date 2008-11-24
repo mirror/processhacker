@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.1.0
+ * Can now display services
+
 1.2.0.5
  * Updated credits
  * Fixed crash when opening two thread inspectors with the same process and thread

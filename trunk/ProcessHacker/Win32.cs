@@ -18,6 +18,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -29,6 +30,39 @@ namespace ProcessHacker
 {
     public class Win32
     {
+        public unsafe class Unsafe
+        {
+            public string[] GetMultiString(int ptr)
+            {
+                List<string> list = new List<string>();
+                char* chptr = (char*)ptr;
+                StringBuilder currentString = new StringBuilder();
+
+                while (true)
+                {
+                    while (*chptr != 0)
+                    {
+                        currentString.Append(*chptr);  
+                        chptr++;
+                    }
+
+                    string str = currentString.ToString();
+
+                    if (str == "")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        list.Add(str);
+                        currentString = new StringBuilder();
+                    }
+                }
+
+                return list.ToArray();
+            }
+        }
+
         public delegate int EnumWindowsProc(int hwnd, int param);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
@@ -546,6 +580,15 @@ namespace ProcessHacker
         #endregion
 
         #region Imported Functions
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int QueryServiceConfig(int Service,
+            [MarshalAs(UnmanagedType.Struct)] ref QUERY_SERVICE_CONFIG ServiceConfig,
+            int BufSize, ref int BytesNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int OpenService(int SCManager,
+            [MarshalAs(UnmanagedType.LPStr)] string ServiceName, SERVICE_RIGHTS DesiredAccess);
 
         /// <summary>
         /// Enumerates services in the specified service control manager database. 
@@ -1455,7 +1498,7 @@ namespace ProcessHacker
 
         #endregion
 
-        public static ENUM_SERVICE_STATUS_PROCESS[] EnumServices()
+        public static Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> EnumServices()
         {
             int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
 
@@ -1483,19 +1526,22 @@ namespace ProcessHacker
                 throw new Exception("Error");
             }
 
-            ENUM_SERVICE_STATUS_PROCESS[] servicesArray = new ENUM_SERVICE_STATUS_PROCESS[servicesReturned];
+            Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> dictionary = 
+                new Dictionary<string, ENUM_SERVICE_STATUS_PROCESS>();
 
             for (int i = 0; i < servicesReturned; i++)
             {
-                servicesArray[i] = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
+                ENUM_SERVICE_STATUS_PROCESS service = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
                     new IntPtr(services.ToInt32() + i * Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS))),
                     typeof(ENUM_SERVICE_STATUS_PROCESS));
+
+                dictionary.Add(service.ServiceName, service);
             }
 
             CloseHandle(manager);
             Marshal.FreeHGlobal(services);
 
-            return servicesArray;
+            return dictionary;
         }
 
         public static string GetAccountName(int SID, bool IncludeDomain)

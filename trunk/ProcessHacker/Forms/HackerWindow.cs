@@ -42,6 +42,7 @@ namespace ProcessHacker
         HelpWindow helpForm = new HelpWindow();
 
         ProcessProvider processP = new ProcessProvider();
+        ServiceProvider serviceP = new ServiceProvider();
         ThreadProvider threadP;
 
         int processSelectedItems;
@@ -2390,7 +2391,18 @@ namespace ProcessHacker
             processP.Updated += new ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
+            serviceList.List.BeginUpdate();
+            serviceP.Interval = RefreshInterval;
+            serviceList.Provider = serviceP;
+            serviceP.Updated += new ProviderUpdateOnce(serviceP_Updated);
+            serviceP.Enabled = true;
+
             statusText.Text = "Waiting...";
+        }
+
+        private void serviceP_Updated()
+        {
+            serviceList.List.EndUpdate();
         }
 
         private void processP_Updated()

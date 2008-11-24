@@ -121,6 +121,10 @@
     <EmbeddedResource Include="Components\ColorModifier.resx">
       <DependentUpon>ColorModifier.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\ServiceList.resx">
+      <DependentUpon>ServiceList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ThreadList.resx">
       <DependentUpon>ThreadList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -208,6 +212,12 @@
     <Compile Include="Components\ColorModifier.Designer.cs">
       <DependentUpon>ColorModifier.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ServiceList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ServiceList.Designer.cs">
+      <DependentUpon>ServiceList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\HighlightedListViewItem.cs" />
     <Compile Include="Components\ThreadList.cs">
       <SubType>UserControl</SubType>
@@ -265,6 +275,7 @@
     <Compile Include="PE\ImageSubsystem.cs" />
     <Compile Include="PE\MachineType.cs" />
     <Compile Include="PE\PEFile.cs" />
+    <Compile Include="Providers\ServiceProvider.cs" />
     <Compile Include="Providers\ThreadProvider.cs" />
     <Compile Include="Providers\ProcessProvider.cs" />
     <Compile Include="Components\SplitButton.cs">
