@@ -2455,7 +2455,7 @@ namespace ProcessHacker
             }));
 
             t.Priority = ThreadPriority.Lowest;
-            t.Start();
+            t.Start(); 
         }
     }
 }

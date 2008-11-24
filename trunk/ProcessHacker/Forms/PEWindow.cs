@@ -327,17 +327,11 @@ namespace ProcessHacker
         {
             if (_peFile != null)
             {
-                if (e.ItemIndex >= _peFile.ExportData.ExportOrdinalTable.Count)
-                {
-                    e.Item = new ListViewItem(new string[] { "", "", "", "" });
-                    return;
-                }
-
                 ushort ordinal = _peFile.ExportData.ExportOrdinalTable[e.ItemIndex];
 
                 if (ordinal >= _peFile.ExportData.ExportAddressTable.Count)
                 {
-                    e.Item = new ListViewItem(new string[] { "", "", "", "" });
+                    e.Item = new ListViewItem(new string[] { ordinal.ToString(), ordinal.ToString(), "", "" });
                     return;
                 } 
 

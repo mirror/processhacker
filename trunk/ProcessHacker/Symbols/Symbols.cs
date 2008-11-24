@@ -77,29 +77,52 @@ namespace ProcessHacker
             if (_symbols.ContainsKey(realPath))
                 return;
 
-            PEFile file = new PEFile(realPath);
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
-            uint size = 0;
+            PEFile file = null;
+            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int,string>>();
 
-            foreach (SectionHeader sh in file.Sections)
-                size += sh.VirtualSize;
-
-            _librarySizes.Add(realPath, size);
-
-            if (file.ExportData == null)
+            try
             {
-                // no symbols, but we can still display a module name in a lookup
+                file = new PEFile(realPath);
+
+                uint size = 0;
+
+                foreach (SectionHeader sh in file.Sections)
+                    size += sh.VirtualSize;
+
+                _librarySizes.Add(realPath, size);
+            }
+            catch
+            { }
+
+            if (file == null || file.ExportData == null)
+            {
+                // no symbols (or error), but we can still display a module name in a lookup
                 _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
                 _symbols.Add(realPath, new List<KeyValuePair<int, string>>());
+
+                // if we didn't even get to load the PE file
+                if (!_librarySizes.ContainsKey(realPath))
+                    _librarySizes.Add(realPath, 0x7fffffff);
             }
             else
             {
-                for (int i = 0; i < file.ExportData.ExportNameTable.Count; i++)
+                for (int i = 0; i < file.ExportData.ExportOrdinalTable.Count; i++)
                 {
-                    string name = file.ExportData.ExportNameTable[i];
+                    ushort ordinal = file.ExportData.ExportOrdinalTable[i];
 
-                    list.Add(new KeyValuePair<int, string>(imageBase +
-                        (int)file.ExportData.ExportAddressTable[file.ExportData.ExportOrdinalTable[i]].ExportRVA, name));
+                    if (ordinal >= file.ExportData.ExportAddressTable.Count)
+                        continue;
+
+                    int address = (int)file.ExportData.ExportAddressTable[ordinal].ExportRVA;
+
+                    string name;
+
+                    if (i < file.ExportData.ExportNameTable.Count)
+                        name = file.ExportData.ExportNameTable[i];
+                    else
+                        name = ordinal.ToString();
+
+                    list.Add(new KeyValuePair<int, string>(imageBase + address, name));
                 }
 
                 _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));

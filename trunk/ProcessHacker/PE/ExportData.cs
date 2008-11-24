@@ -84,7 +84,6 @@ namespace ProcessHacker.PE
                 if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {
                     br.BaseStream.Seek(PEFile.RvaToVa(peFile, entry.ExportRVA), SeekOrigin.Begin);
-
                     entry.ForwardedString = Misc.ReadString(br.BaseStream);
                 }
             }
@@ -109,7 +108,6 @@ namespace ProcessHacker.PE
             for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
             {
                 br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.ExportNamePointerTable[i]), SeekOrigin.Begin);
-
                 this.ExportNameTable.Add(Misc.ReadString(br.BaseStream));
             }
         }

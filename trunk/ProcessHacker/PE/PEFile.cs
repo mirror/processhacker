@@ -58,7 +58,14 @@ namespace ProcessHacker.PE
 
             uint peSigLoc = br.ReadUInt32();
 
-            s.Seek(peSigLoc, SeekOrigin.Begin);
+            try
+            {
+                s.Seek(peSigLoc, SeekOrigin.Begin);
+            }
+            catch
+            {
+                throw new Exception("Could not seek to location 0x" + peSigLoc.ToString("x") + ".");
+            }
 
             byte[] peSig = br.ReadBytes(4);
 
