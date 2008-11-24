@@ -180,6 +180,27 @@ namespace ProcessHacker
                 STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
         }
 
+        public enum SC_ACTION_TYPE : int
+        {
+            None = 0,
+            Reboot = 2,
+            Restart = 1,
+            RunCommand = 3
+        }
+
+        public enum SC_MANAGER_RIGHTS : uint
+        {
+            SC_MANAGER_CONNECT = 0x0001,
+            SC_MANAGER_CREATE_SERVICE = 0x0002,
+            SC_MANAGER_ENUMERATE_SERVICE = 0x0004,
+            SC_MANAGER_LOCK = 0x0008,
+            SC_MANAGER_QUERY_LOCK_STATUS = 0x0010,
+            SC_MANAGER_MODIFY_BOOT_CONFIG = 0x0020,
+            SC_MANAGER_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
+                SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE | SC_MANAGER_ENUMERATE_SERVICE |
+                SC_MANAGER_LOCK | SC_MANAGER_QUERY_LOCK_STATUS | SC_MANAGER_MODIFY_BOOT_CONFIG
+        }
+
         [Flags]
         public enum SE_PRIVILEGE_ATTRIBUTES : uint
         {
@@ -211,10 +232,58 @@ namespace ProcessHacker
             SessionChange = 0x80
         }
 
+        public enum SERVICE_ERROR_CONTROL : int
+        {
+            Critical = 0x3,
+            Ignore = 0x0,
+            Normal = 0x1,
+            Severe = 0x2
+        }
+
         public enum SERVICE_FLAGS : int
         {
             None = 0,
             RunsInSystemProcess = 0x1
+        }
+
+        public enum SERVICE_QUERY_STATE : int
+        {
+            Active = 1,
+            Inactive = 2,
+            All = 3
+        }
+
+        [Flags]
+        public enum SERVICE_QUERY_TYPE : int
+        {
+            Driver = 0xb,
+            Win32 = 0x30
+        }
+
+        public enum SERVICE_RIGHTS : uint
+        {
+            SERVICE_QUERY_CONFIG = 0x0001,
+            SERVICE_CHANGE_CONFIG = 0x0002,
+            SERVICE_QUERY_STATUS = 0x0004,
+            SERVICE_ENUMERATE_DEPENDENTS = 0x0008,
+            SERVICE_START = 0x0010,
+            SERVICE_STOP = 0x0020,
+            SERVICE_PAUSE_CONTINUE = 0x0040,
+            SERVICE_INTERROGATE = 0x0080,
+            SERVICE_USER_DEFINED_CONTROL = 0x0100,
+            SERVICE_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | 
+                SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG | SERVICE_QUERY_STATUS |
+                SERVICE_ENUMERATE_DEPENDENTS | SERVICE_START | SERVICE_STOP |
+                SERVICE_PAUSE_CONTINUE | SERVICE_INTERROGATE | SERVICE_USER_DEFINED_CONTROL
+        }
+
+        public enum SERVICE_START_TYPE : int
+        {
+            AutoStart = 0x2,
+            BootStart = 0x0,
+            DemandStart = 0x3,
+            Disabled = 0x4,
+            SystemStart = 0x1
         }
 
         public enum SERVICE_STATE : int
@@ -476,7 +545,63 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Imported Functions  
+        #region Imported Functions
+
+        /// <summary>
+        /// Enumerates services in the specified service control manager database. 
+        /// The name and status of each service are provided, along with additional 
+        /// data based on the specified information level.
+        /// </summary>
+        /// <param name="SCManager">A handle to the service control manager database.</param>
+        /// <param name="InfoLevel">Set this to 0.</param>
+        /// <param name="ServiceType">The type of services to be enumerated.</param>
+        /// <param name="ServiceState">The state of the services to be enumerated.</param>
+        /// <param name="Services">A pointer to the buffer that receives the status information.</param>
+        /// <param name="BufSize">The size of the buffer pointed to by the Services parameter, in bytes.</param>
+        /// <param name="BytesNeeded">A pointer to a variable that receives the number of bytes needed to 
+        /// return the remaining service entries, if the buffer is too small.</param>
+        /// <param name="ServicesReturned">A pointer to a variable that receives the number of service 
+        /// entries returned.</param>
+        /// <param name="ResumeHandle">A pointer to a variable that, on input, specifies the 
+        /// starting point of enumeration. You must set this value to zero the first time the 
+        /// EnumServicesStatusEx function is called.</param>
+        /// <param name="GroupName">Must be 0 for this definition.</param>
+        /// <returns>A non-zero value for success, zero for failure.</returns>
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
+            SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
+            ref int Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
+            ref int ResumeHandle, int GroupName);
+
+        /// <summary>
+        /// Enumerates services in the specified service control manager database. 
+        /// The name and status of each service are provided, along with additional 
+        /// data based on the specified information level.
+        /// </summary>
+        /// <param name="SCManager">A handle to the service control manager database.</param>
+        /// <param name="InfoLevel">Set this to 0.</param>
+        /// <param name="ServiceType">The type of services to be enumerated.</param>
+        /// <param name="ServiceState">The state of the services to be enumerated.</param>
+        /// <param name="Services">A pointer to the buffer that receives the status information.</param>
+        /// <param name="BufSize">The size of the buffer pointed to by the Services parameter, in bytes.</param>
+        /// <param name="BytesNeeded">A pointer to a variable that receives the number of bytes needed to 
+        /// return the remaining service entries, if the buffer is too small.</param>
+        /// <param name="ServicesReturned">A pointer to a variable that receives the number of service 
+        /// entries returned.</param>
+        /// <param name="ResumeHandle">A pointer to a variable that, on input, specifies the 
+        /// starting point of enumeration. You must set this value to zero the first time the 
+        /// EnumServicesStatusEx function is called.</param>
+        /// <param name="GroupName">Must be 0 for this definition.</param>
+        /// <returns>A non-zero value for success, zero for failure.</returns>
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
+            SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
+            IntPtr Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
+            ref int ResumeHandle, int GroupName);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int OpenSCManager(int MachineName, int DatabaseName,
+            SC_MANAGER_RIGHTS DesiredAccess); 
      
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaAddAccountRights(int PolicyHandle, int AccountSid,
@@ -865,10 +990,10 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct ENUM_SERVICE_STATUS_PROCESS
         {
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string ServiceName;
 
-            [MarshalAs(UnmanagedType.LPTStr)]
+            [MarshalAs(UnmanagedType.LPStr)]
             public string DisplayName;
 
             [MarshalAs(UnmanagedType.Struct)]
@@ -1058,29 +1183,59 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct QUERY_SERVICE_CONFIG
+        {
+            public SERVICE_TYPE ServiceType;
+            public SERVICE_START_TYPE StartType;
+            public SERVICE_ERROR_CONTROL ErrorControl;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string BinaryPathName;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string LoadOrderGroup;
+
+            public int TagID;
+            public int Dependencies; // pointer to a string array
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string ServiceStartName;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string DisplayName;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SC_ACTION
+        {
+            public SC_ACTION_TYPE Type;
+            public int Delay;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct SERVICE_STATUS
         {
-            SERVICE_TYPE ServiceType;
-            SERVICE_STATE CurrentState;
-            SERVICE_ACCEPT ControlsAccepted;
-            int Win32ExitCode;
-            int ServiceSpecificExitCode;
-            int CheckPoint;
-            int WaitHint;
+            public SERVICE_TYPE ServiceType;
+            public SERVICE_STATE CurrentState;
+            public SERVICE_ACCEPT ControlsAccepted;
+            public int Win32ExitCode;
+            public int ServiceSpecificExitCode;
+            public int CheckPoint;
+            public int WaitHint;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SERVICE_STATUS_PROCESS
         {
-            SERVICE_TYPE ServiceType;
-            SERVICE_STATE CurrentState;
-            SERVICE_ACCEPT ControlsAccepted;
-            int Win32ExitCode;
-            int ServiceSpecificExitCode;
-            int CheckPoint;
-            int WaitHint;
-            int ProcessID;
-            SERVICE_FLAGS ServiceFlags;
+            public SERVICE_TYPE ServiceType;
+            public SERVICE_STATE CurrentState;
+            public SERVICE_ACCEPT ControlsAccepted;
+            public int Win32ExitCode;
+            public int ServiceSpecificExitCode;
+            public int CheckPoint;
+            public int WaitHint;
+            public int ProcessID;
+            public SERVICE_FLAGS ServiceFlags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1299,6 +1454,49 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        public static ENUM_SERVICE_STATUS_PROCESS[] EnumServices()
+        {
+            int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
+
+            if (manager == 0)
+                throw new Exception("Could not open service control manager");
+
+            int requiredSize = 0;
+            int servicesReturned = 0;
+            int resume = 0;
+
+            // get required size
+            EnumServicesStatusEx(manager, 0, SERVICE_QUERY_TYPE.Win32 | SERVICE_QUERY_TYPE.Driver,
+                SERVICE_QUERY_STATE.All, ref servicesReturned // hack
+                , 0, ref requiredSize, ref servicesReturned,
+                ref resume, 0);
+
+            IntPtr services = Marshal.AllocHGlobal(requiredSize);
+
+            if (EnumServicesStatusEx(manager, 0, SERVICE_QUERY_TYPE.Win32 | SERVICE_QUERY_TYPE.Driver,
+                SERVICE_QUERY_STATE.All, services, requiredSize, ref requiredSize, ref servicesReturned,
+                ref resume, 0) == 0)
+            {
+                CloseHandle(manager);
+                Marshal.FreeHGlobal(services);
+                throw new Exception("Error");
+            }
+
+            ENUM_SERVICE_STATUS_PROCESS[] servicesArray = new ENUM_SERVICE_STATUS_PROCESS[servicesReturned];
+
+            for (int i = 0; i < servicesReturned; i++)
+            {
+                servicesArray[i] = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
+                    new IntPtr(services.ToInt32() + i * Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS))),
+                    typeof(ENUM_SERVICE_STATUS_PROCESS));
+            }
+
+            CloseHandle(manager);
+            Marshal.FreeHGlobal(services);
+
+            return servicesArray;
+        }
 
         public static string GetAccountName(int SID, bool IncludeDomain)
         {
