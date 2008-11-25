@@ -156,11 +156,13 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.CurrentState.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
 
-            if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
+            if ((sitem.Status.ServiceStatusProcess.ServiceType & Win32.SERVICE_TYPE.InteractiveProcess) != 0)
+                litem.ImageKey = "Interactive";
+            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
                 sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
                 litem.ImageKey = "Win32";
-            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.InteractiveProcess)
-                litem.ImageKey = "Interactive";
+            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.FileSystemDriver)
+                litem.ImageKey = "FS";
             else
                 litem.ImageKey = "Driver";
 

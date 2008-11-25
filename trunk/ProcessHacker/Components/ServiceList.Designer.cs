@@ -33,10 +33,10 @@
             this.listServices = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
+            this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.columnType = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listServices
@@ -71,6 +71,11 @@
             this.columnDescription.Text = "Description";
             this.columnDescription.Width = 200;
             // 
+            // columnType
+            // 
+            this.columnType.Text = "Type";
+            this.columnType.Width = 130;
+            // 
             // columnStatus
             // 
             this.columnStatus.Text = "Status";
@@ -87,11 +92,7 @@
             this.imageList.Images.SetKeyName(0, "Win32");
             this.imageList.Images.SetKeyName(1, "Driver");
             this.imageList.Images.SetKeyName(2, "Interactive");
-            // 
-            // columnType
-            // 
-            this.columnType.Text = "Type";
-            this.columnType.Width = 130;
+            this.imageList.Images.SetKeyName(3, "FS");
             // 
             // ServiceList
             // 
