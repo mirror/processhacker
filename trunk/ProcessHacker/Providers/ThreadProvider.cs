@@ -111,7 +111,7 @@ namespace ProcessHacker
                         newitem.Priority != item.Priority)
                     {
                         newdictionary[t.Id] = newitem;
-                        this.CallDictionaryModified(newitem);
+                        this.CallDictionaryModified(item, newitem);
                     }
                 }
             }

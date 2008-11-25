@@ -187,8 +187,8 @@ namespace ProcessHacker
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                     Misc.GetRealPath(filename));
 
-                litem.ToolTipText = info.FileName + "\n" + 
-                    info.FileDescription + " (" + info.FileVersion + ")\n" + 
+                litem.ToolTipText = info.FileName + "\n" +
+                    info.FileDescription + " (" + info.FileVersion + ")\n" +
                     info.CompanyName;
             }
             catch
@@ -207,11 +207,11 @@ namespace ProcessHacker
             listProcesses.Items.Add(litem);
         }
 
-        private void provider_DictionaryModified(object item)
+        private void provider_DictionaryModified(object oldItem, object newItem)
         {
             try
             {
-                ProcessItem pitem = (ProcessItem)item;
+                ProcessItem pitem = (ProcessItem)newItem;
                 ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
 
                 litem.SubItems[2].Text = pitem.MemoryUsage;
@@ -293,5 +293,10 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        private void listProcesses_MouseHover(object sender, EventArgs e)
+        {
+
+        }
     }
 }

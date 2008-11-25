@@ -47,7 +47,7 @@ namespace ProcessHacker
     /// Represents a handler called when a dictionary item is modified.
     /// </summary>
     /// <param name="item">The modified item.</param>
-    public delegate void ProviderDictionaryModified(object item);
+    public delegate void ProviderDictionaryModified(object oldItem, object newItem);
 
     /// <summary>
     /// Represents a handler called when a dictionary item is removed.
@@ -65,8 +65,9 @@ namespace ProcessHacker
     /// Provides services for continuously updating a dictionary.
     /// </summary>
     public class Provider<TKey, TValue>
-    { 
+    {
         private delegate void InvokeDelegate(object item);
+        private delegate void InvokeDelegate2(object oldItem, object newItem);
                              
         /// <summary>
         /// Occurs when the provider needs to update the dictionary (after waiting the duration of the interval).
@@ -239,6 +240,22 @@ namespace ProcessHacker
             }
         }
 
+        private void CallEvent(Delegate e, object oldItem, object newItem, bool useInvoke)
+        {
+            if (useInvoke)
+            {
+                this.Invoke(new InvokeDelegate2(delegate(object oldItem_, object newItem_)
+                {
+                    CallEvent(e, oldItem_, newItem_, false);
+                }), oldItem, newItem);
+            }
+            else
+            {
+                if (e != null)
+                    e.DynamicInvoke(oldItem, newItem);
+            }
+        }
+
         protected void CallDictionaryAdded(object item)
         {
             CallDictionaryAdded(item, _useInvoke);
@@ -249,14 +266,14 @@ namespace ProcessHacker
             CallEvent(this.DictionaryAdded, item, useInvoke);
         }
 
-        protected void CallDictionaryModified(object item)
+        protected void CallDictionaryModified(object oldItem, object newItem)
         {
-            CallDictionaryModified(item, _useInvoke);
+            CallDictionaryModified(oldItem, newItem, _useInvoke);
         }
 
-        protected void CallDictionaryModified(object item, bool useInvoke)
+        protected void CallDictionaryModified(object oldItem, object newItem, bool useInvoke)
         {
-            CallEvent(this.DictionaryModified, item, useInvoke);
+            CallEvent(this.DictionaryModified, oldItem, newItem, useInvoke);
         }
 
         protected void CallDictionaryRemoved(object item)

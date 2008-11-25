@@ -107,8 +107,8 @@ namespace ProcessHacker
 
                 if (modified)
                 {
+                    this.CallDictionaryModified(service, newserviceitem);
                     Dictionary[service.Status.ServiceName] = newserviceitem;
-                    this.CallDictionaryModified(newserviceitem);
                 }         
             }
         }

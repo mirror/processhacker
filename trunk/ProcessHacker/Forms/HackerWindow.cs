@@ -45,6 +45,8 @@ namespace ProcessHacker
         ServiceProvider serviceP = new ServiceProvider();
         ThreadProvider threadP;
 
+        Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
+
         int processSelectedItems;
         int processSelectedPID;
         Process processSelected;
@@ -1112,6 +1114,145 @@ namespace ProcessHacker
             ProcessItem pitem = (ProcessItem)item;
 
             this.QueueMessage("Terminated Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")", pitem.Icon);
+
+            if (processServices.ContainsKey(pitem.PID))
+                processServices.Remove(pitem.PID);
+        }
+
+        public void UpdateListViewItemToolTipText(int pid)
+        {
+            if (pid == 0)
+                return;
+
+            ListViewItem litem = listProcesses.Items[pid.ToString()];
+
+            if (litem == null)
+                return;
+
+            if (litem.Tag == null)
+                litem.Tag = litem.ToolTipText;  
+
+            litem.ToolTipText = litem.Tag.ToString();
+
+            if (!processServices.ContainsKey(pid))
+            {
+                return;
+            }
+            else
+            {
+                string servicesText = "";
+
+                foreach (string service in processServices[pid])
+                {
+                    if (serviceP.Dictionary[service].Status.DisplayName != "")
+                        servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
+                    else
+                        servicesText += service + "\n";
+                }
+
+                litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
+            }
+        }
+
+        public void serviceP_DictionaryAdded(object item)
+        {
+            ServiceItem sitem = (ServiceItem)item;
+
+            this.QueueMessage("New Service: " + sitem.Status.ServiceName + 
+                " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
+                ((sitem.Status.DisplayName != "") ?
+                " (" + sitem.Status.DisplayName + ")" :
+                ""), null);
+
+            if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
+            {
+                if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
+                    processServices.Add(sitem.Status.ServiceStatusProcess.ProcessID, new List<string>());
+
+                processServices[sitem.Status.ServiceStatusProcess.ProcessID].Add(sitem.Status.ServiceName);
+            }
+
+            this.UpdateListViewItemToolTipText(sitem.Status.ServiceStatusProcess.ProcessID);
+        }
+
+        public void serviceP_DictionaryModified(object oldItem, object newItem)
+        {
+            ServiceItem sitem = (ServiceItem)newItem;
+            Win32.SERVICE_STATE oldState = ((ServiceItem)oldItem).Status.ServiceStatusProcess.CurrentState;
+            Win32.SERVICE_STATE newState = sitem.Status.ServiceStatusProcess.CurrentState;
+
+            if ((oldState == Win32.SERVICE_STATE.Paused || oldState == Win32.SERVICE_STATE.Stopped ||
+                oldState == Win32.SERVICE_STATE.StartPending) &&
+                newState == Win32.SERVICE_STATE.Running)
+                this.QueueMessage("Service Started: " + sitem.Status.ServiceName +
+                    " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
+                    ((sitem.Status.DisplayName != "") ?
+                    " (" + sitem.Status.DisplayName + ")" :
+                    ""), null);
+
+            if (oldState == Win32.SERVICE_STATE.Running &&
+                newState == Win32.SERVICE_STATE.Paused)
+                this.QueueMessage("Service Paused: " + sitem.Status.ServiceName +
+                    " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
+                    ((sitem.Status.DisplayName != "") ?
+                    " (" + sitem.Status.DisplayName + ")" :
+                    ""), null);
+
+            if (oldState == Win32.SERVICE_STATE.Running &&
+                newState == Win32.SERVICE_STATE.Stopped)
+                this.QueueMessage("Service Stopped: " + sitem.Status.ServiceName +
+                    " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
+                    ((sitem.Status.DisplayName != "") ?
+                    " (" + sitem.Status.DisplayName + ")" :
+                    ""), null);
+
+            if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
+            {
+                if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
+                    processServices.Add(sitem.Status.ServiceStatusProcess.ProcessID, new List<string>());
+
+                if (!processServices[sitem.Status.ServiceStatusProcess.ProcessID].Contains(
+                    sitem.Status.ServiceName))
+                    processServices[sitem.Status.ServiceStatusProcess.ProcessID].Add(sitem.Status.ServiceName);
+
+                processServices[sitem.Status.ServiceStatusProcess.ProcessID].Sort();
+                this.UpdateListViewItemToolTipText(sitem.Status.ServiceStatusProcess.ProcessID);
+            }
+            else
+            {
+                if (processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
+                {
+                    if (processServices[sitem.Status.ServiceStatusProcess.ProcessID].Contains(
+                        sitem.Status.ServiceName))
+                        processServices[sitem.Status.ServiceStatusProcess.ProcessID].Remove(sitem.Status.ServiceName);
+                }
+
+                this.UpdateListViewItemToolTipText(((ServiceItem)oldItem).Status.ServiceStatusProcess.ProcessID);
+            }
+        }
+
+        public void serviceP_DictionaryRemoved(object item)
+        {
+            ServiceItem sitem = (ServiceItem)item;
+
+            this.QueueMessage("Deleted Service: " + sitem.Status.ServiceName +
+                " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
+                ((sitem.Status.DisplayName != "") ?
+                " (" + sitem.Status.DisplayName + ")" :
+                ""), null);
+
+            if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
+            {
+                if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
+                    processServices.Add(sitem.Status.ServiceStatusProcess.ProcessID, new List<string>());
+
+                if (!processServices[sitem.Status.ServiceStatusProcess.ProcessID].Contains(
+                    sitem.Status.ServiceName))
+                    processServices[sitem.Status.ServiceStatusProcess.ProcessID].Add(sitem.Status.ServiceName);
+
+                processServices[sitem.Status.ServiceStatusProcess.ProcessID].Sort();
+                this.UpdateListViewItemToolTipText(sitem.Status.ServiceStatusProcess.ProcessID);
+            }
         }
 
         #endregion
@@ -2400,6 +2541,9 @@ namespace ProcessHacker
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
             serviceP.Updated += new ProviderUpdateOnce(serviceP_Updated);
+            serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded);
+            serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified);
+            serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
             serviceP.Enabled = true;
 
             statusText.Text = "Waiting...";

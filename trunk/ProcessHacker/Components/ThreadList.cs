@@ -165,11 +165,11 @@ namespace ProcessHacker
             listThreads.Items.Add(litem);
         }
 
-        private void provider_DictionaryModified(object item)
+        private void provider_DictionaryModified(object oldItem, object newItem)
         {
             try
             {
-                ThreadItem titem = (ThreadItem)item;
+                ThreadItem titem = (ThreadItem)newItem;
                 ListViewItem litem = listThreads.Items[titem.TID.ToString()];
 
                 litem.SubItems[1].Text = titem.State;

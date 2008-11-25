@@ -167,7 +167,7 @@ namespace ProcessHacker
                         newitem.Username != item.Username)
                     {
                         newdictionary[p.Id] = newitem;
-                        this.CallDictionaryModified(newitem);
+                        this.CallDictionaryModified(item, newitem);
                     }
                 }
             }

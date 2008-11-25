@@ -37,31 +37,31 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            listServices.KeyDown += new KeyEventHandler(ProcessList_KeyDown);
-            listServices.MouseDown += new MouseEventHandler(listProcesses_MouseDown);
-            listServices.MouseUp += new MouseEventHandler(listProcesses_MouseUp);
-            listServices.SelectedIndexChanged += new System.EventHandler(listProcesses_SelectedIndexChanged);
+            listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
+            listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
+            listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
+            listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
         }
 
-        private void listProcesses_MouseUp(object sender, MouseEventArgs e)
+        private void listServices_MouseUp(object sender, MouseEventArgs e)
         {
             if (this.MouseUp != null)
                 this.MouseUp(sender, e);
         }
 
-        private void listProcesses_MouseDown(object sender, MouseEventArgs e)
+        private void listServices_MouseDown(object sender, MouseEventArgs e)
         {
             if (this.MouseDown != null)
                 this.MouseDown(sender, e);
         }
 
-        private void listProcesses_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void listServices_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
         }
 
-        private void ProcessList_KeyDown(object sender, KeyEventArgs e)
+        private void ServiceList_KeyDown(object sender, KeyEventArgs e)
         {
             if (this.KeyDown != null)
                 this.KeyDown(sender, e);
@@ -169,11 +169,11 @@ namespace ProcessHacker
             listServices.Items.Add(litem);
         }
 
-        private void provider_DictionaryModified(object item)
+        private void provider_DictionaryModified(object oldItem, object newItem)
         {
             try
             {
-                ServiceItem sitem = (ServiceItem)item;
+                ServiceItem sitem = (ServiceItem)newItem;
                 ListViewItem litem = listServices.Items[sitem.Status.ServiceName];
 
                 litem.SubItems[1].Text = sitem.Status.DisplayName;

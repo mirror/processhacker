@@ -132,12 +132,18 @@
             this.statusIcon = new System.Windows.Forms.StatusBarPanel();
             this.statusText = new System.Windows.Forms.StatusBarPanel();
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
+            this.tabControlBig = new System.Windows.Forms.TabControl();
+            this.tabProcesses = new System.Windows.Forms.TabPage();
+            this.tabServices = new System.Windows.Forms.TabPage();
             this.splitMain = new System.Windows.Forms.SplitContainer();
+            this.listProcesses = new ProcessHacker.ProcessList();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.treeMisc = new System.Windows.Forms.TreeView();
             this.tabThreads = new System.Windows.Forms.TabPage();
+            this.listThreads = new ProcessHacker.ThreadList();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -151,12 +157,6 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
-            this.tabControlBig = new System.Windows.Forms.TabControl();
-            this.tabProcesses = new System.Windows.Forms.TabPage();
-            this.tabServices = new System.Windows.Forms.TabPage();
-            this.listProcesses = new ProcessHacker.ProcessList();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.listServices = new ProcessHacker.ServiceList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
@@ -164,6 +164,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
+            this.tabControlBig.SuspendLayout();
+            this.tabProcesses.SuspendLayout();
+            this.tabServices.SuspendLayout();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
             this.splitMain.SuspendLayout();
@@ -173,9 +176,6 @@
             this.tabThreads.SuspendLayout();
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
-            this.tabControlBig.SuspendLayout();
-            this.tabProcesses.SuspendLayout();
-            this.tabServices.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -915,7 +915,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 456);
+            this.statusBar.Location = new System.Drawing.Point(0, 435);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -951,6 +951,41 @@
             this.timerMessages.Interval = 2000;
             this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
             // 
+            // tabControlBig
+            // 
+            this.tabControlBig.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControlBig.Controls.Add(this.tabProcesses);
+            this.tabControlBig.Controls.Add(this.tabServices);
+            this.tabControlBig.Location = new System.Drawing.Point(0, 0);
+            this.tabControlBig.Name = "tabControlBig";
+            this.tabControlBig.SelectedIndex = 0;
+            this.tabControlBig.Size = new System.Drawing.Size(804, 434);
+            this.tabControlBig.TabIndex = 6;
+            // 
+            // tabProcesses
+            // 
+            this.tabProcesses.Controls.Add(this.splitMain);
+            this.tabProcesses.Location = new System.Drawing.Point(4, 22);
+            this.tabProcesses.Name = "tabProcesses";
+            this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 408);
+            this.tabProcesses.TabIndex = 0;
+            this.tabProcesses.Text = "Processes";
+            this.tabProcesses.UseVisualStyleBackColor = true;
+            // 
+            // tabServices
+            // 
+            this.tabServices.Controls.Add(this.listServices);
+            this.tabServices.Location = new System.Drawing.Point(4, 22);
+            this.tabServices.Name = "tabServices";
+            this.tabServices.Padding = new System.Windows.Forms.Padding(3);
+            this.tabServices.Size = new System.Drawing.Size(796, 408);
+            this.tabServices.TabIndex = 1;
+            this.tabServices.Text = "Services";
+            this.tabServices.UseVisualStyleBackColor = true;
+            // 
             // splitMain
             // 
             this.splitMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -965,9 +1000,21 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(790, 423);
+            this.splitMain.Size = new System.Drawing.Size(790, 402);
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
+            // 
+            // listProcesses
+            // 
+            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listProcesses.DoubleBuffered = true;
+            this.listProcesses.Location = new System.Drawing.Point(0, 0);
+            this.listProcesses.Name = "listProcesses";
+            this.listProcesses.Provider = null;
+            this.listProcesses.Size = new System.Drawing.Size(348, 401);
+            this.listProcesses.TabIndex = 4;
+            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
+            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabControl
             // 
@@ -979,7 +1026,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 423);
+            this.tabControl.Size = new System.Drawing.Size(438, 402);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -989,7 +1036,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(430, 397);
+            this.tabProcess.Size = new System.Drawing.Size(430, 376);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1006,6 +1053,18 @@
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "Search";
             // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 3;
+            this.buttonSearch.Text = "Search button";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
             // treeMisc
             // 
             this.treeMisc.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -1016,7 +1075,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(418, 332);
+            this.treeMisc.Size = new System.Drawing.Size(418, 311);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1025,10 +1084,21 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 0);
+            this.tabThreads.Size = new System.Drawing.Size(430, 397);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Location = new System.Drawing.Point(3, 3);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(424, 391);
+            this.listThreads.TabIndex = 0;
+            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
             // tabModules
             // 
@@ -1036,7 +1106,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 0);
+            this.tabModules.Size = new System.Drawing.Size(430, 397);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1055,7 +1125,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 0);
+            this.listModules.Size = new System.Drawing.Size(424, 391);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1087,7 +1157,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 0);
+            this.tabMemory.Size = new System.Drawing.Size(430, 397);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1107,7 +1177,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 0);
+            this.listMemory.Size = new System.Drawing.Size(424, 391);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1138,76 +1208,6 @@
             this.columnHeader5.Text = "Protection";
             this.columnHeader5.Width = 80;
             // 
-            // tabControlBig
-            // 
-            this.tabControlBig.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControlBig.Controls.Add(this.tabProcesses);
-            this.tabControlBig.Controls.Add(this.tabServices);
-            this.tabControlBig.Location = new System.Drawing.Point(0, 0);
-            this.tabControlBig.Name = "tabControlBig";
-            this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 455);
-            this.tabControlBig.TabIndex = 6;
-            // 
-            // tabProcesses
-            // 
-            this.tabProcesses.Controls.Add(this.splitMain);
-            this.tabProcesses.Location = new System.Drawing.Point(4, 22);
-            this.tabProcesses.Name = "tabProcesses";
-            this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 429);
-            this.tabProcesses.TabIndex = 0;
-            this.tabProcesses.Text = "Processes";
-            this.tabProcesses.UseVisualStyleBackColor = true;
-            // 
-            // tabServices
-            // 
-            this.tabServices.Controls.Add(this.listServices);
-            this.tabServices.Location = new System.Drawing.Point(4, 22);
-            this.tabServices.Name = "tabServices";
-            this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 429);
-            this.tabServices.TabIndex = 1;
-            this.tabServices.Text = "Services";
-            this.tabServices.UseVisualStyleBackColor = true;
-            // 
-            // listProcesses
-            // 
-            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listProcesses.DoubleBuffered = true;
-            this.listProcesses.Location = new System.Drawing.Point(0, 0);
-            this.listProcesses.Name = "listProcesses";
-            this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(348, 422);
-            this.listProcesses.TabIndex = 4;
-            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(102, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 3;
-            this.buttonSearch.Text = "Search button";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Location = new System.Drawing.Point(3, 3);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 0);
-            this.listThreads.TabIndex = 0;
-            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
-            // 
             // listServices
             // 
             this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1215,7 +1215,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 423);
+            this.listServices.Size = new System.Drawing.Size(790, 402);
             this.listServices.TabIndex = 0;
             // 
             // vistaMenu
@@ -1226,7 +1226,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 478);
+            this.ClientSize = new System.Drawing.Size(804, 457);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.panelVirtualProtect);
@@ -1246,6 +1246,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
+            this.tabControlBig.ResumeLayout(false);
+            this.tabProcesses.ResumeLayout(false);
+            this.tabServices.ResumeLayout(false);
             this.splitMain.Panel1.ResumeLayout(false);
             this.splitMain.Panel2.ResumeLayout(false);
             this.splitMain.ResumeLayout(false);
@@ -1256,9 +1259,6 @@
             this.tabThreads.ResumeLayout(false);
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
-            this.tabControlBig.ResumeLayout(false);
-            this.tabProcesses.ResumeLayout(false);
-            this.tabServices.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
