@@ -827,7 +827,9 @@ namespace ProcessHacker
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to terminate the selected process(es)?", "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to terminate the selected process(es)?", 
+                "Process Hacker", MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
                 foreach (ListViewItem item in listProcesses.SelectedItems)
                 {
