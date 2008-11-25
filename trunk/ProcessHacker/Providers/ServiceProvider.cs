@@ -83,13 +83,7 @@ namespace ProcessHacker
                 ServiceItem newserviceitem = service;
 
                 newserviceitem.Status = newdictionary[service.Status.ServiceName];
-
-                try
-                {
-                    newserviceitem.Config = Win32.GetServiceConfig(service.Status.ServiceName);
-                }
-                catch
-                { }
+                newserviceitem.Config = service.Config;
 
                 bool modified = false;
 
@@ -115,7 +109,7 @@ namespace ProcessHacker
                 {
                     Dictionary[service.Status.ServiceName] = newserviceitem;
                     this.CallDictionaryModified(newserviceitem);
-                }
+                }         
             }
         }
     }

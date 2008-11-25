@@ -32,10 +32,17 @@ namespace ProcessHacker
     {
         public unsafe class Unsafe
         {
-            public string[] GetMultiString(int ptr)
+            /// <summary>
+            /// Converts a multi-string into a managed string array. A multi-string 
+            /// consists of an array of null-terminated strings plus an extra null to 
+            /// terminate the array.
+            /// </summary>
+            /// <param name="ptr">The pointer to the array.</param>
+            /// <returns>A string array.</returns>
+            public string[] GetMultiString(IntPtr ptr)
             {
                 List<string> list = new List<string>();
-                char* chptr = (char*)ptr;
+                char* chptr = (char*)ptr.ToPointer();
                 StringBuilder currentString = new StringBuilder();
 
                 while (true)
@@ -264,6 +271,19 @@ namespace ProcessHacker
             HardwareProfileChange = 0x20,
             PowerEvent = 0x40,
             SessionChange = 0x80
+        }
+
+        public enum SERVICE_CONTROL : int
+        {
+            Continue = 0x3,
+            Interrogate = 0x4,
+            NetBindAdd = 0x7,
+            NetBindDisable = 0xa,
+            NetBindEnable = 0x9,
+            NetBindRemove = 0x8,
+            ParamChange = 0x6,
+            Pause = 0x2,
+            Stop = 0x1
         }
 
         public enum SERVICE_ERROR_CONTROL : int
@@ -580,6 +600,25 @@ namespace ProcessHacker
         #endregion
 
         #region Imported Functions
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int ControlService(int Service,
+            SERVICE_CONTROL Control, ref SERVICE_STATUS ServiceStatus);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int CreateService(int SCManager, 
+            [MarshalAs(UnmanagedType.LPStr)] string ServiceName,
+            [MarshalAs(UnmanagedType.LPStr)] string DisplayName,
+            SERVICE_RIGHTS DesiredAccess, SERVICE_TYPE ServiceType,
+            SERVICE_START_TYPE StartType, SERVICE_ERROR_CONTROL ErrorControl,
+            [MarshalAs(UnmanagedType.LPStr)] string BinaryPathName,
+            [MarshalAs(UnmanagedType.LPStr)] string LoadOrderGroup,
+            int TagID, int Dependencies,
+            [MarshalAs(UnmanagedType.LPStr)] string ServiceStartName,
+            [MarshalAs(UnmanagedType.LPStr)] string Password);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int DeleteService(int Service);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int QueryServiceConfig(int Service,
@@ -1526,31 +1565,33 @@ namespace ProcessHacker
                 , 0, ref requiredSize, ref servicesReturned,
                 ref resume, 0);
 
-            IntPtr services = Marshal.AllocHGlobal(requiredSize);
-
-            if (EnumServicesStatusEx(manager, 0, SERVICE_QUERY_TYPE.Win32 | SERVICE_QUERY_TYPE.Driver,
-                SERVICE_QUERY_STATE.All, services, requiredSize, ref requiredSize, ref servicesReturned,
-                ref resume, 0) == 0)
-            {
-                CloseHandle(manager);
-                Marshal.FreeHGlobal(services);
-                throw new Exception(GetLastErrorMessage());
-            }
-
-            Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> dictionary = 
+            byte[] data = new byte[requiredSize];
+            Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> dictionary =
                 new Dictionary<string, ENUM_SERVICE_STATUS_PROCESS>();
 
-            for (int i = 0; i < servicesReturned; i++)
+            try
             {
-                ENUM_SERVICE_STATUS_PROCESS service = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
-                    new IntPtr(services.ToInt32() + i * Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS))),
-                    typeof(ENUM_SERVICE_STATUS_PROCESS));
+                if (EnumServicesStatusEx(manager, 0, SERVICE_QUERY_TYPE.Win32 | SERVICE_QUERY_TYPE.Driver,
+                    SERVICE_QUERY_STATE.All, Marshal.UnsafeAddrOfPinnedArrayElement(data, 0), 
+                    requiredSize, ref requiredSize, ref servicesReturned,
+                    ref resume, 0) == 0)
+                {
+                    throw new Exception(GetLastErrorMessage());
+                }
 
-                dictionary.Add(service.ServiceName, service);
+                for (int i = 0; i < servicesReturned; i++)
+                {
+                    ENUM_SERVICE_STATUS_PROCESS service = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
+                        Marshal.UnsafeAddrOfPinnedArrayElement(data, Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS)) * i),
+                        typeof(ENUM_SERVICE_STATUS_PROCESS));
+
+                    dictionary.Add(service.ServiceName, service);
+                }
             }
-
-            CloseHandle(manager);
-            Marshal.FreeHGlobal(services);
+            finally
+            {
+                CloseHandle(manager);
+            }
 
             return dictionary;
         }
@@ -1732,7 +1773,7 @@ namespace ProcessHacker
 
         public static QUERY_SERVICE_CONFIG GetServiceConfig(string ServiceName)
         {            
-            int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
+            int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_CONNECT);
 
             if (manager == 0)
                 throw new Exception("Could not open service control manager: "
@@ -1741,26 +1782,35 @@ namespace ProcessHacker
             int handle = OpenService(manager, ServiceName, SERVICE_RIGHTS.SERVICE_QUERY_CONFIG);
 
             if (handle == 0)
+            {
+                CloseHandle(manager);
+
                 throw new Exception("Could not open service handle: "
                     + GetLastErrorMessage() + ".");
-                                                   
+            }
+                                      
             int requiredSize = 0;
 
             QueryServiceConfig(handle, 0, 0, ref requiredSize);
 
-            IntPtr ptr = Marshal.AllocHGlobal(requiredSize);
+            byte[] data = new byte[requiredSize];
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
+            QUERY_SERVICE_CONFIG config;
 
-            if (QueryServiceConfig(handle, ptr, requiredSize, ref requiredSize) == 0)
+            try
             {
-                Marshal.FreeHGlobal(ptr);
-                throw new Exception("Could not get service configuration: " + GetLastErrorMessage());
+                if (QueryServiceConfig(handle, ptr, requiredSize, ref requiredSize) == 0)
+                {
+                    throw new Exception("Could not get service configuration: " + GetLastErrorMessage());
+                }
+
+                config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(ptr, typeof(QUERY_SERVICE_CONFIG));
             }
-
-            QUERY_SERVICE_CONFIG config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(ptr, typeof(QUERY_SERVICE_CONFIG));
-
-            Marshal.FreeHGlobal(ptr);
-            CloseHandle(handle);
-            CloseHandle(manager);
+            finally
+            {
+                CloseHandle(handle);
+                CloseHandle(manager);
+            }
 
             return config;
         }

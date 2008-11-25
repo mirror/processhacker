@@ -81,6 +81,11 @@ namespace ProcessHacker
             get { return processP; }
         }
 
+        public ServiceProvider ServiceProvider
+        {
+            get { return serviceP; }
+        }
+
         public ThreadProvider ThreadProvider
         {
             get { return threadP; }

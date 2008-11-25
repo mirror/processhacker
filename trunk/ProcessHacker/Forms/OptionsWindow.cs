@@ -68,6 +68,7 @@ namespace ProcessHacker
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
 
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
             if (Program.HackerWindow.ThreadProvider != null)
                 Program.HackerWindow.ThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
