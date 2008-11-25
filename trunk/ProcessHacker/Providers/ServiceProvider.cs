@@ -39,6 +39,17 @@ namespace ProcessHacker
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
         }
 
+        public void UpdateServiceConfig(string name, Win32.QUERY_SERVICE_CONFIG config)
+        {
+            ServiceItem item = Dictionary[name];
+
+            Dictionary[name] = new ServiceItem()
+            {
+                Config = config,
+                Status = item.Status
+            };
+        }
+
         private void UpdateOnce()
         {
             Dictionary<string, Win32.ENUM_SERVICE_STATUS_PROCESS> newdictionary

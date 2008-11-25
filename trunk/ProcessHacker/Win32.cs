@@ -70,6 +70,60 @@ namespace ProcessHacker
             }
         }
 
+        public class ServiceHandle : IDisposable
+        {
+            private int _handle;
+
+            public ServiceHandle(string ServiceName, SERVICE_RIGHTS access)
+            {
+                int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_CONNECT);
+
+                if (manager == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                _handle = OpenService(manager, ServiceName, access);
+
+                CloseHandle(manager);
+
+                if (_handle == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Control(SERVICE_CONTROL control)
+            {
+                SERVICE_STATUS status = new SERVICE_STATUS();
+
+                if (ControlService(_handle, control, ref status) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Start()
+            {
+                if (StartService(_handle, 0, 0) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Delete()
+            {
+                if (DeleteService(_handle) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public int Handle
+            {
+                get { return _handle; }
+            }
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                CloseHandle(_handle);    
+            }
+
+            #endregion
+        }
+
         public delegate int EnumWindowsProc(int hwnd, int param);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
@@ -82,6 +136,7 @@ namespace ProcessHacker
         public const int ERROR_NO_MORE_ITEMS = 259;
         public const int MAXIMUM_SUPPORTED_EXTENSION = 512;
         public const int SEE_MASK_INVOKEIDLIST = 0xc;
+        public const uint SERVICE_NO_CHANGE = 0xffffffff;
         public const uint SHGFI_ICON = 0x100;
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
@@ -600,6 +655,19 @@ namespace ProcessHacker
         #endregion
 
         #region Imported Functions
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int StartService(int Service, int NumServiceArgs, int Args);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int ChangeServiceConfig(int Service,
+            SERVICE_TYPE ServiceType, SERVICE_START_TYPE StartType,
+            SERVICE_ERROR_CONTROL ErrorControl,
+            [MarshalAs(UnmanagedType.LPStr)] string BinaryPath,
+            [MarshalAs(UnmanagedType.LPStr)] string LoadOrderGroup,
+            int TagID, int Dependencies,
+            [MarshalAs(UnmanagedType.LPStr)] string StartName,
+            int Password, int DisplayName);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int ControlService(int Service,

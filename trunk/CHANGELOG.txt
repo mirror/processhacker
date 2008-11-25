@@ -2,6 +2,7 @@ Process Hacker
 
 1.2.1.0
  * Can now display services
+ * Displays services in process tooltips
 
 1.2.0.5
  * Updated credits

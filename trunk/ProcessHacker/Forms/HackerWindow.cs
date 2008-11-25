@@ -292,6 +292,11 @@ namespace ProcessHacker
             }
         }
 
+        private void listServices_DoubleClick(object sender, EventArgs e)
+        {
+            propertiesServiceMenuItem_Click(null, null);
+        }
+
         private void listThreads_DoubleClick(object sender, EventArgs e)
         {
             inspectThreadMenuItem_Click(null, null);
@@ -1252,6 +1257,169 @@ namespace ProcessHacker
 
                 processServices[sitem.Status.ServiceStatusProcess.ProcessID].Sort();
                 this.UpdateListViewItemToolTipText(sitem.Status.ServiceStatusProcess.ProcessID);
+            }
+        }
+
+        #endregion
+
+        #region Service Context Menu
+
+        private void menuService_Popup(object sender, EventArgs e)
+        {
+            if (listServices.SelectedItems.Count == 0)
+            {
+                Misc.DisableAllMenuItems(menuService);
+            }
+            else if (listServices.SelectedItems.Count == 1)
+            {
+                Misc.EnableAllMenuItems(menuService);
+
+                try
+                {
+                    ServiceItem item = serviceP.Dictionary[listServices.SelectedItems[0].Name];
+                          
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.PauseContinue)
+                        == 0)
+                    {
+                        continueServiceMenuItem.Visible = false;
+                        pauseServiceMenuItem.Visible = false;
+                    }
+                    else
+                    {
+                        continueServiceMenuItem.Visible = true;
+                        pauseServiceMenuItem.Visible = true;
+                    }
+
+                    if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Paused)
+                    {                                        
+                        startServiceMenuItem.Enabled = false;
+                        pauseServiceMenuItem.Enabled = false;
+                    }
+                    else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    {
+                        startServiceMenuItem.Enabled = false;
+                        continueServiceMenuItem.Enabled = false;
+                    }
+                    else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                    {
+                        pauseServiceMenuItem.Enabled = false;
+                        stopServiceMenuItem.Enabled = false;
+                    }
+                }
+                catch
+                {
+                    Misc.DisableAllMenuItems(menuService);
+                    propertiesServiceMenuItem.Enabled = true;
+                }
+            }
+            else
+            {
+                Misc.DisableAllMenuItems(menuService);
+                propertiesServiceMenuItem.Enabled = true;
+            }
+        }
+
+        private void propertiesServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            List<string> selected = new List<string>();
+            ServiceWindow sw;
+
+            foreach (ListViewItem item in listServices.SelectedItems)
+                selected.Add(item.Name);
+
+            if (selected.Count == 1)
+            {
+                sw = new ServiceWindow(selected[0]);
+            }
+            else
+            {
+                sw = new ServiceWindow(selected.ToArray());
+            }
+
+            sw.TopMost = this.TopMost;
+            sw.ShowDialog();
+        }
+
+        private void startServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void continueServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Control(Win32.SERVICE_CONTROL.Continue);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error continuing service:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void pauseServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Control(Win32.SERVICE_CONTROL.Pause);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error pausing service:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void stopServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Control(Win32.SERVICE_CONTROL.Stop);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void deleteServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to delete the service '" + 
+                listServices.SelectedItems[0].Name + "'?", 
+                "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            {
+                try
+                {
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                        service.Delete();
+
+                    listServices.SelectedItems[0].Remove();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error deleting service:\n\n" + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -2527,6 +2695,7 @@ namespace ProcessHacker
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
+            listServices.ContextMenu = menuService;
 
             HighlightedListViewItem.StateHighlighting = false;
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
