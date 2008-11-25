@@ -393,6 +393,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\cog.png" />
     <None Include="Resources\page_white_text.png" />
     <None Include="Resources\table_sort.png" />
     <None Include="Resources\user.png" />

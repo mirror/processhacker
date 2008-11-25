@@ -109,6 +109,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap cog {
+            get {
+                object obj = ResourceManager.GetObject("cog", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap control_equalizer {
             get {
                 object obj = ResourceManager.GetObject("control_equalizer", resourceCulture);

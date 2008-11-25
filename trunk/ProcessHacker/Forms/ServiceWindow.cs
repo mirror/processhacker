@@ -26,6 +26,9 @@ namespace ProcessHacker
 
             _provider = Program.HackerWindow.ServiceProvider;
 
+            if (services.Length == 1)
+                hideList = true;
+
             if (hideList)
             {
                 listServices.Visible = false;
@@ -68,6 +71,17 @@ namespace ProcessHacker
             if (listServices.Items.ContainsKey(sitem.Status.ServiceName))
                 listServices.Items[sitem.Status.ServiceName].SubItems[2].Text = 
                     sitem.Status.ServiceStatusProcess.CurrentState.ToString();
+
+            if (listServices.SelectedItems[0].Name == sitem.Status.ServiceName)
+            {
+                buttonStart.Enabled = true;
+                buttonStop.Enabled = true;
+
+                if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    buttonStart.Enabled = false;
+                else if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                    buttonStop.Enabled = false;
+            }
         }
 
         private void listServices_SelectedIndexChanged(object sender, EventArgs e)
@@ -93,6 +107,14 @@ namespace ProcessHacker
                 }
 
                 ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
+
+                buttonStart.Enabled = true;
+                buttonStop.Enabled = true;
+
+                if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    buttonStart.Enabled = false;
+                else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                    buttonStop.Enabled = false;
 
                 labelServiceName.Text = item.Status.ServiceName;
                 labelServiceDisplayName.Text = item.Status.DisplayName;
@@ -125,6 +147,8 @@ namespace ProcessHacker
                 listServices.Visible = false;
 
             this.UpdateInformation();
+            buttonCancel.Select();
+            buttonCancel.Focus();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
@@ -162,6 +186,36 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 MessageBox.Show("Could not change service configuration:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                    service.Control(Win32.SERVICE_CONTROL.Stop);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

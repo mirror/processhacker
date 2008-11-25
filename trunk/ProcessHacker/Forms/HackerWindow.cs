@@ -742,6 +742,22 @@ namespace ProcessHacker
                         goToParentProcessMenuItem.Enabled = false;
                     }
 
+                    try
+                    {
+                        List<string> services = processServices[processSelectedPID];
+
+                        if (services == null)
+                            throw new Exception();
+                        if (services.Count == 0)
+                            throw new Exception();
+
+                        servicesProcessMenuItem.Enabled = true;
+                    }
+                    catch
+                    {
+                        servicesProcessMenuItem.Enabled = false;
+                    }
+
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
                     searchProcessMenuItem.Enabled = true;
@@ -1043,6 +1059,19 @@ namespace ProcessHacker
             { }
         }
 
+        private void servicesProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ServiceWindow sw = new ServiceWindow(processServices[processSelectedPID].ToArray());
+
+                sw.TopMost = this.TopMost;
+                sw.ShowDialog();
+            }
+            catch
+            { }
+        }
+
         #region Priority
 
         private void realTimeMenuItem_Click(object sender, EventArgs e)
@@ -1279,6 +1308,15 @@ namespace ProcessHacker
                 try
                 {
                     ServiceItem item = serviceP.Dictionary[listServices.SelectedItems[0].Name];
+
+                    if (item.Status.ServiceStatusProcess.ProcessID != 0)
+                    {
+                        goToProcessServiceMenuItem.Enabled = true;
+                    }
+                    else
+                    {
+                        goToProcessServiceMenuItem.Enabled = false;
+                    }
                           
                     if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.PauseContinue)
                         == 0)
@@ -1321,25 +1359,21 @@ namespace ProcessHacker
             }
         }
 
-        private void propertiesServiceMenuItem_Click(object sender, EventArgs e)
+        private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
-            List<string> selected = new List<string>();
-            ServiceWindow sw;
+            DeselectAll(listProcesses.List);
 
-            foreach (ListViewItem item in listServices.SelectedItems)
-                selected.Add(item.Name);
-
-            if (selected.Count == 1)
+            try
             {
-                sw = new ServiceWindow(selected[0]);
-            }
-            else
-            {
-                sw = new ServiceWindow(selected.ToArray());
-            }
+                listProcesses.List.Items[serviceP.Dictionary[
+                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID.ToString()].Selected = true;
+                listProcesses.List.Items[serviceP.Dictionary[
+                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID.ToString()].EnsureVisible();
 
-            sw.TopMost = this.TopMost;
-            sw.ShowDialog();
+                tabControlBig.SelectedTab = tabProcesses;
+            }
+            catch
+            { }
         }
 
         private void startServiceMenuItem_Click(object sender, EventArgs e)
@@ -1423,6 +1457,27 @@ namespace ProcessHacker
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void propertiesServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            List<string> selected = new List<string>();
+            ServiceWindow sw;
+
+            foreach (ListViewItem item in listServices.SelectedItems)
+                selected.Add(item.Name);
+
+            if (selected.Count == 1)
+            {
+                sw = new ServiceWindow(selected[0]);
+            }
+            else
+            {
+                sw = new ServiceWindow(selected.ToArray());
+            }
+
+            sw.TopMost = this.TopMost;
+            sw.ShowDialog();
         }
 
         #endregion

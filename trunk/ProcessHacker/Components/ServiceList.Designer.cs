@@ -60,6 +60,7 @@
             this.listServices.TabIndex = 1;
             this.listServices.UseCompatibleStateImageBehavior = false;
             this.listServices.View = System.Windows.Forms.View.Details;
+            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
             // columnName
             // 

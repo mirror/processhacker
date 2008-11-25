@@ -31,6 +31,7 @@ namespace ProcessHacker
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
+        public new event EventHandler DoubleClick;
         public event EventHandler SelectedIndexChanged;
 
         public ServiceList()
@@ -40,8 +41,15 @@ namespace ProcessHacker
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
+            listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
             listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
         }
+
+        private void listServices_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.DoubleClick != null)
+                this.DoubleClick(sender, e);
+        }  
 
         private void listServices_MouseUp(object sender, MouseEventArgs e)
         {
