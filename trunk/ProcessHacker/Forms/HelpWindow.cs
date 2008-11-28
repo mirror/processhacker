@@ -28,6 +28,7 @@ namespace ProcessHacker
     {
         public string[][] contents = {
                                          new string[] {"Introduction", "intro"},
+                                         new string[] {"Options", "options"},
                                          new string[] {"Number Input", "numberinput"},
                                          new string[] {"Process List", "proclist"},
                                          new string[] {"Thread List", "threadlist"},

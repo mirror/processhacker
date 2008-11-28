@@ -19,6 +19,7 @@ dt {
     <h1>Contents</h1>
     <ul style="font-size: 8pt">
       <li><a href="#intro">Introduction</a></li>
+      <li><a href="#options">Options</a></li>
       <li><a href="#numberinput">Number Input</a></li>
       <li><a href="#proclist">Process List</a></li>
       <li><a href="#threadlist">Thread List</a></li>
@@ -37,7 +38,7 @@ dt {
 
     <h2>System Requirements</h2>
     <ul>
-      <li>Microsoft Windows XP or Vista, <strong>32-bit</strong> (doesn't work very well on XP though)</li>
+      <li>Microsoft Windows XP or Vista, <strong>32-bit</strong></li>
       <li>.NET Framework 2.0</li>
     </ul>
 
@@ -51,6 +52,7 @@ dt {
       <li>Bernhard Elbl - HexBox control - http://sourceforge.net/projects/hexbox</li>
       <li>wyDay - VistaMenu - http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/</li>
       <li>famfamfam.com - Silk Icons - http://www.famfamfam.com/lab/icons/silk/</li>
+      <li>Oleh Yuschuk - Disassembler/assembler - http://www.ollydbg.de</li>
     </ul>
 
     <h2>Other Process Viewers</h2>
@@ -65,6 +67,39 @@ dt {
         Process Explorer - http://technet.microsoft.com/en-us/sysinternals/bb896653.aspx
       </li>
     </ul>
+    
+    <h1 id="options">Options</h1>
+    <p>Process Hacker's options are accessible from the <strong>Options</strong> menu item 
+    in the <strong>Hacker</strong> menu.</p>
+    
+    <h2>General</h2>
+    <dl>
+      <dt>Update Interval</dt>
+      <dd>Determines the amount of time in milliseconds between each <em>update</em>; i.e, when 
+      Process Hacker looks for new, modified or removed processes and services.</dd>
+      
+      <dt>Search Engine</dt>
+      <dd>This is used by the <strong>Search Online...</strong> menu item in the process and module 
+      context menus. <code>%s</code> is replaced by the name of the selected process or module.</dd>
+      
+      <dt>Warn about potentially dangerous actions</dt>
+      <dd>When this option is enabled, Process Hacker will warn about certain actions to system processes.</dd>
+      
+      <dt>Show user/group domains</dt>
+      <dd>When this option is enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
+      would be shown as <code>machine-name\user</code>.</dd>
+      
+      <dt>Use Toolhelp-based module listings</dt>
+      <dd>When this option is enabled, Process Hacker will try to use the Toolhelp functions to display 
+      module listings. Do not use this option unless module listings are not working.</dd>
+    </dl>
+    
+    <h2>Highlighting</h2>
+    <dl>
+      <dt>Highlighting Duration</dt>
+      <dd>This specifies the amount of time for which new and removed objects (processes, threads and services) 
+      are highlighted in a different color.</dd>
+    </dl>
 
     <h1 id="numberinput">Number Input</h1>
     <p>Process Hacker supports the input of numbers in various bases (including some non-standard
