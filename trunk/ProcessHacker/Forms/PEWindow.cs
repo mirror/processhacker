@@ -354,7 +354,7 @@ namespace ProcessHacker
                         e.Item.SubItems[3].Text = "0x" + _exportVAs[ordinal].ToString("x8");
                 }
                 else if (entry.Type == ExportEntry.ExportType.Forwarder)
-                {                             
+                {
                     e.Item.ImageIndex = 0;
                     e.Item.Text += " > " + entry.ForwardedString;
                 }
@@ -364,7 +364,7 @@ namespace ProcessHacker
         private void listExports_DoubleClick(object sender, EventArgs e)
         {
             DisassemblyWindow dw = new DisassemblyWindow(new FileStream(_path, FileMode.Open, FileAccess.Read), 
-                PEFile.RvaToVa(_peFile, _peFile.ExportData.ExportAddressTable[listExports.SelectedIndices[0]].ExportRVA), -1);
+                _exportVAs[_peFile.ExportData.ExportOrdinalTable[listExports.SelectedIndices[0]]], -1);
 
             dw.Show();
         }

@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.1.5
+ * Fixed disassemblies from PE window - they disassemble the right function now
+
 1.2.1.0
  * Can now display services
  * Displays services in process tooltips
