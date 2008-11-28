@@ -2,6 +2,7 @@ Process Hacker is a tool for viewing and manipulating processes.
 It supports:
 
  * Viewing, terminating, suspending and resuming processes
+ * Viewing, controlling and deleting services
  * Viewing/enabling/disabling/removing process privileges
  * Viewing process groups
  * Inspecting PE files (exe/dll/ocx/sys files)
