@@ -38,6 +38,7 @@ namespace ProcessHacker
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
+            checkUseToolhelpModules.Checked = Properties.Settings.Default.UseToolhelpModules;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
@@ -66,6 +67,7 @@ namespace ProcessHacker
             Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
+            Properties.Settings.Default.UseToolhelpModules = checkUseToolhelpModules.Checked;
 
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;

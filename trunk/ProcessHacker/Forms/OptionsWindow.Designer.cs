@@ -38,6 +38,8 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
             this.colorSystemProcesses = new ProcessHacker.Components.ColorModifier();
             this.colorOwnProcesses = new ProcessHacker.Components.ColorModifier();
             this.label6 = new System.Windows.Forms.Label();
@@ -46,8 +48,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
+            this.checkUseToolhelpModules = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -153,6 +154,7 @@
             this.tabGeneral.Controls.Add(this.textSearchEngine);
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
+            this.tabGeneral.Controls.Add(this.checkUseToolhelpModules);
             this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
             this.tabGeneral.Controls.Add(this.checkWarnDangerous);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
@@ -182,6 +184,32 @@
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
+            // 
+            // textHighlightingDuration
+            // 
+            this.textHighlightingDuration.Increment = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
+            this.textHighlightingDuration.Location = new System.Drawing.Point(127, 6);
+            this.textHighlightingDuration.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textHighlightingDuration.Name = "textHighlightingDuration";
+            this.textHighlightingDuration.Size = new System.Drawing.Size(66, 20);
+            this.textHighlightingDuration.TabIndex = 5;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 8);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(108, 13);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "Highlighting Duration:";
             // 
             // colorSystemProcesses
             // 
@@ -251,31 +279,16 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
-            // label7
+            // checkUseToolhelpModules
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 8);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(108, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Highlighting Duration:";
-            // 
-            // textHighlightingDuration
-            // 
-            this.textHighlightingDuration.Increment = new decimal(new int[] {
-            250,
-            0,
-            0,
-            0});
-            this.textHighlightingDuration.Location = new System.Drawing.Point(127, 6);
-            this.textHighlightingDuration.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.textHighlightingDuration.Name = "textHighlightingDuration";
-            this.textHighlightingDuration.Size = new System.Drawing.Size(66, 20);
-            this.textHighlightingDuration.TabIndex = 5;
+            this.checkUseToolhelpModules.AutoSize = true;
+            this.checkUseToolhelpModules.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkUseToolhelpModules.Location = new System.Drawing.Point(6, 106);
+            this.checkUseToolhelpModules.Name = "checkUseToolhelpModules";
+            this.checkUseToolhelpModules.Size = new System.Drawing.Size(198, 18);
+            this.checkUseToolhelpModules.TabIndex = 3;
+            this.checkUseToolhelpModules.Text = "Use Toolhelp-based module listings";
+            this.checkUseToolhelpModules.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
@@ -326,5 +339,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown textHighlightingDuration;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.CheckBox checkUseToolhelpModules;
     }
 }

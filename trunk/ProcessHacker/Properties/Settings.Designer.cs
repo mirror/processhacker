@@ -502,5 +502,17 @@ namespace ProcessHacker.Properties {
                 this["CallStackColumns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseToolhelpModules {
+            get {
+                return ((bool)(this["UseToolhelpModules"]));
+            }
+            set {
+                this["UseToolhelpModules"] = value;
+            }
+        }
     }
 }

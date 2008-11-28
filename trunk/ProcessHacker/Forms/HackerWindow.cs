@@ -2591,7 +2591,7 @@ namespace ProcessHacker
         }
 
         // toolhelp based
-        private void UpdateModuleInfo2()
+        private void UpdateModuleInfoToolhelp()
         {
             int pid;
             int snapshot;
@@ -2637,11 +2637,16 @@ namespace ProcessHacker
 
                         item.SubItems.Add(new ListViewItem.ListViewSubItem());
                         item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
 
                         item.ToolTipText = module.szExePath;
                         item.SubItems[0].Text = module.szModule;
                         item.SubItems[1].Text = String.Format("0x{0:x8}", module.modBaseAddr);
                         item.SubItems[2].Text = Misc.GetNiceSizeName(module.modBaseSize);
+
+                        try { item.SubItems[3].Text = 
+                            FileVersionInfo.GetVersionInfo(Misc.GetRealPath(module.szExePath)).FileDescription; }
+                        catch { item.SubItems[3].Text = ""; }
 
                         if (module.szModule.ToLower() == listProcesses.SelectedItems[0].SubItems[0].Text.ToLower())
                         {
@@ -2677,16 +2682,10 @@ namespace ProcessHacker
                 listModules.Items.Clear();
                 listModules.Enabled = false;
             }
-            else if (Marshal.GetLastWin32Error() == 5)
-            {
-                listModules.Items.Clear();
-                listModules.Items.Add("Access is denied.");
-                listModules.Enabled = false;
-            }
             else
             {
                 listModules.Items.Clear();
-                listModules.Items.Add("Error " + Marshal.GetLastWin32Error() + ".");
+                listModules.Items.Add(Win32.GetLastErrorMessage());
                 listModules.Enabled = false;
             }
 
@@ -2720,7 +2719,11 @@ namespace ProcessHacker
             threadP.Interval = Properties.Settings.Default.RefreshInterval;
             threadP.Enabled = true;
 
-            UpdateModuleInfo();
+            if (Properties.Settings.Default.UseToolhelpModules)
+                UpdateModuleInfoToolhelp();
+            else
+                UpdateModuleInfo();
+
             UpdateMemoryInfo();
             UpdateMiscInfo();
 
