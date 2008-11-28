@@ -357,6 +357,7 @@ namespace ProcessHacker
         {
             AboutWindow about = new AboutWindow();
 
+            about.TopMost = this.TopMost;
             about.ShowDialog();
         }
 
@@ -818,6 +819,7 @@ namespace ProcessHacker
                     searchProcessMenuItem.Enabled = false;
                     privilegesMenuItem.Enabled = false;
                     groupsMenuItem.Enabled = false;
+                    servicesProcessMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
                     closeActiveWindowMenuItem.Text = "&Close Active Windows";
                     suspendMenuItem.Text = "&Suspend Processes";
@@ -2778,6 +2780,7 @@ namespace ProcessHacker
         private void serviceP_Updated()
         {
             listServices.List.EndUpdate();
+            serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
         }
 
         private void processP_Updated()

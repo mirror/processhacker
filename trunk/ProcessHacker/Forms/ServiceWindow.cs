@@ -27,7 +27,14 @@ namespace ProcessHacker
             _provider = Program.HackerWindow.ServiceProvider;
 
             if (services.Length == 1)
+            {
                 hideList = true;
+                this.Text = "Service - " + services[0];
+            }
+            else
+            {
+                this.Text = "Services";
+            }
 
             if (hideList)
             {

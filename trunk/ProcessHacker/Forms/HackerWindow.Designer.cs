@@ -54,6 +54,7 @@
             this.inspectProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.privilegesMenuItem = new System.Windows.Forms.MenuItem();
             this.groupsMenuItem = new System.Windows.Forms.MenuItem();
+            this.servicesProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.priorityMenuItem = new System.Windows.Forms.MenuItem();
             this.realTimeMenuItem = new System.Windows.Forms.MenuItem();
             this.highMenuItem = new System.Windows.Forms.MenuItem();
@@ -65,7 +66,6 @@
             this.searchProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.copyProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
-            this.servicesProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuThread = new System.Windows.Forms.ContextMenu();
             this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -410,6 +410,13 @@
             this.groupsMenuItem.Text = "&Groups...";
             this.groupsMenuItem.Click += new System.EventHandler(this.groupsMenuItem_Click);
             // 
+            // servicesProcessMenuItem
+            // 
+            this.vistaMenu.SetImage(this.servicesProcessMenuItem, global::ProcessHacker.Properties.Resources.cog);
+            this.servicesProcessMenuItem.Index = 9;
+            this.servicesProcessMenuItem.Text = "Services...";
+            this.servicesProcessMenuItem.Click += new System.EventHandler(this.servicesProcessMenuItem_Click);
+            // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
@@ -487,13 +494,6 @@
             this.selectAllMenuItem.Index = 14;
             this.selectAllMenuItem.Text = "Select &All";
             this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
-            // 
-            // servicesProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.servicesProcessMenuItem, global::ProcessHacker.Properties.Resources.cog);
-            this.servicesProcessMenuItem.Index = 9;
-            this.servicesProcessMenuItem.Text = "Services...";
-            this.servicesProcessMenuItem.Click += new System.EventHandler(this.servicesProcessMenuItem_Click);
             // 
             // menuThread
             // 
@@ -932,7 +932,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 393);
+            this.statusBar.Location = new System.Drawing.Point(0, 443);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -978,7 +978,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 392);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 442);
             this.tabControlBig.TabIndex = 6;
             // 
             // tabProcesses
@@ -987,7 +987,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 366);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 416);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -1006,7 +1006,7 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(790, 360);
+            this.splitMain.Size = new System.Drawing.Size(790, 410);
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
             // 
@@ -1020,7 +1020,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 360);
+            this.tabControl.Size = new System.Drawing.Size(438, 410);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -1030,7 +1030,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(430, 334);
+            this.tabProcess.Size = new System.Drawing.Size(430, 384);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1057,7 +1057,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(418, 269);
+            this.treeMisc.Size = new System.Drawing.Size(418, 319);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1066,7 +1066,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 355);
+            this.tabThreads.Size = new System.Drawing.Size(430, 334);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -1077,7 +1077,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 355);
+            this.tabModules.Size = new System.Drawing.Size(430, 334);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1096,7 +1096,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 349);
+            this.listModules.Size = new System.Drawing.Size(424, 328);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1128,7 +1128,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 355);
+            this.tabMemory.Size = new System.Drawing.Size(430, 334);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1148,7 +1148,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 349);
+            this.listMemory.Size = new System.Drawing.Size(424, 328);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1185,7 +1185,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 387);
+            this.tabServices.Size = new System.Drawing.Size(796, 366);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -1258,7 +1258,7 @@
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(348, 359);
+            this.listProcesses.Size = new System.Drawing.Size(348, 409);
             this.listProcesses.TabIndex = 4;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
@@ -1282,7 +1282,7 @@
             this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 349);
+            this.listThreads.Size = new System.Drawing.Size(424, 328);
             this.listThreads.TabIndex = 0;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
@@ -1293,7 +1293,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 381);
+            this.listServices.Size = new System.Drawing.Size(790, 360);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -1305,7 +1305,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 415);
+            this.ClientSize = new System.Drawing.Size(804, 465);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.panelVirtualProtect);
