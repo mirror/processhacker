@@ -30,6 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServiceWindow));
             this.panelService = new System.Windows.Forms.Panel();
+            this.buttonStart = new System.Windows.Forms.Button();
+            this.buttonStop = new System.Windows.Forms.Button();
             this.textLoadOrderGroup = new System.Windows.Forms.TextBox();
             this.comboErrorControl = new System.Windows.Forms.ComboBox();
             this.comboStartType = new System.Windows.Forms.ComboBox();
@@ -50,8 +52,6 @@
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
-            this.buttonStop = new System.Windows.Forms.Button();
-            this.buttonStart = new System.Windows.Forms.Button();
             this.panelService.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,6 +84,28 @@
             this.panelService.Size = new System.Drawing.Size(388, 210);
             this.panelService.TabIndex = 0;
             // 
+            // buttonStart
+            // 
+            this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonStart.Image = global::ProcessHacker.Properties.Resources.control_play_blue;
+            this.buttonStart.Location = new System.Drawing.Point(36, 180);
+            this.buttonStart.Name = "buttonStart";
+            this.buttonStart.Size = new System.Drawing.Size(24, 24);
+            this.buttonStart.TabIndex = 16;
+            this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            // 
+            // buttonStop
+            // 
+            this.buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonStop.Image = global::ProcessHacker.Properties.Resources.control_stop_blue;
+            this.buttonStop.Location = new System.Drawing.Point(6, 180);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(24, 24);
+            this.buttonStop.TabIndex = 16;
+            this.buttonStop.UseVisualStyleBackColor = true;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
+            // 
             // textLoadOrderGroup
             // 
             this.textLoadOrderGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -95,6 +117,7 @@
             // 
             // comboErrorControl
             // 
+            this.comboErrorControl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboErrorControl.FormattingEnabled = true;
             this.comboErrorControl.Location = new System.Drawing.Point(80, 76);
             this.comboErrorControl.Name = "comboErrorControl";
@@ -103,6 +126,7 @@
             // 
             // comboStartType
             // 
+            this.comboStartType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboStartType.FormattingEnabled = true;
             this.comboStartType.Location = new System.Drawing.Point(238, 49);
             this.comboStartType.Name = "comboStartType";
@@ -111,6 +135,7 @@
             // 
             // comboType
             // 
+            this.comboType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboType.FormattingEnabled = true;
             this.comboType.Location = new System.Drawing.Point(46, 49);
             this.comboType.Name = "comboType";
@@ -243,6 +268,7 @@
             this.listServices.FullRowSelect = true;
             this.listServices.HideSelection = false;
             this.listServices.Location = new System.Drawing.Point(12, 12);
+            this.listServices.MultiSelect = false;
             this.listServices.Name = "listServices";
             this.listServices.ShowItemToolTips = true;
             this.listServices.Size = new System.Drawing.Size(388, 133);
@@ -266,28 +292,6 @@
             // 
             this.columnStatus.Text = "Status";
             this.columnStatus.Width = 100;
-            // 
-            // buttonStop
-            // 
-            this.buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonStop.Image = global::ProcessHacker.Properties.Resources.control_stop_blue;
-            this.buttonStop.Location = new System.Drawing.Point(6, 180);
-            this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(24, 24);
-            this.buttonStop.TabIndex = 16;
-            this.buttonStop.UseVisualStyleBackColor = true;
-            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
-            // 
-            // buttonStart
-            // 
-            this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonStart.Image = global::ProcessHacker.Properties.Resources.control_play_blue;
-            this.buttonStart.Location = new System.Drawing.Point(36, 180);
-            this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(24, 24);
-            this.buttonStart.TabIndex = 16;
-            this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
             // ServiceWindow
             // 

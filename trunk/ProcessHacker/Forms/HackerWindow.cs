@@ -1168,7 +1168,7 @@ namespace ProcessHacker
                 return;
 
             if (litem.Tag == null)
-                litem.Tag = litem.ToolTipText;  
+                litem.Tag = litem.ToolTipText;
 
             litem.ToolTipText = litem.Tag.ToString();
 
@@ -1196,7 +1196,7 @@ namespace ProcessHacker
         {
             ServiceItem sitem = (ServiceItem)item;
 
-            this.QueueMessage("New Service: " + sitem.Status.ServiceName + 
+            this.QueueMessage("New Service: " + sitem.Status.ServiceName +
                 " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                 ((sitem.Status.DisplayName != "") ?
                 " (" + sitem.Status.DisplayName + ")" :
@@ -1278,7 +1278,7 @@ namespace ProcessHacker
                 ((sitem.Status.DisplayName != "") ?
                 " (" + sitem.Status.DisplayName + ")" :
                 ""), null);
-
+            
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
                 if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
@@ -1302,10 +1302,23 @@ namespace ProcessHacker
             if (listServices.SelectedItems.Count == 0)
             {
                 Misc.DisableAllMenuItems(menuService);
+                goToProcessServiceMenuItem.Visible = true;
+                startServiceMenuItem.Visible = true;
+                continueServiceMenuItem.Visible = true;
+                pauseServiceMenuItem.Visible = true;
+                stopServiceMenuItem.Visible = true;
+
+                selectAllServiceMenuItem.Enabled = true;
             }
             else if (listServices.SelectedItems.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuService);
+
+                goToProcessServiceMenuItem.Visible = true;
+                startServiceMenuItem.Visible = true;
+                continueServiceMenuItem.Visible = true;
+                pauseServiceMenuItem.Visible = true;
+                stopServiceMenuItem.Visible = true;
 
                 try
                 {
@@ -1347,18 +1360,37 @@ namespace ProcessHacker
                         pauseServiceMenuItem.Enabled = false;
                         stopServiceMenuItem.Enabled = false;
                     }
+
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.Stop) == 0 &&
+                        item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    {
+                        stopServiceMenuItem.Enabled = false;
+                    }
                 }
                 catch
                 {
                     Misc.DisableAllMenuItems(menuService);
+                    copyServiceMenuItem.Enabled = true;
                     propertiesServiceMenuItem.Enabled = true;
                 }
             }
             else
             {
                 Misc.DisableAllMenuItems(menuService);
+
+                goToProcessServiceMenuItem.Visible = false;
+                startServiceMenuItem.Visible = false;
+                continueServiceMenuItem.Visible = false;
+                pauseServiceMenuItem.Visible = false;
+                stopServiceMenuItem.Visible = false;
+
+                copyServiceMenuItem.Enabled = true;
                 propertiesServiceMenuItem.Enabled = true;
+                selectAllServiceMenuItem.Enabled = true;
             }
+
+            if (listServices.List.Items.Count == 0)
+                selectAllServiceMenuItem.Enabled = false;
         }
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
@@ -1480,6 +1512,11 @@ namespace ProcessHacker
 
             sw.TopMost = this.TopMost;
             sw.ShowDialog();
+        }
+
+        private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listServices.Items);
         }
 
         #endregion
@@ -2744,11 +2781,13 @@ namespace ProcessHacker
             listViews.Add(listThreads);
             listViews.Add(listModules);
             listViews.Add(listMemory);
+            listViews.Add(listServices);
 
             ListViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, listProcesses.List, null);
             ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
             ListViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
             ListViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
+            ListViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
 
             listProcesses.ContextMenu = menuProcess;
             listThreads.ContextMenu = menuThread;

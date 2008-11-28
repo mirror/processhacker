@@ -104,6 +104,11 @@ namespace ProcessHacker
                 {
                     buttonCancel.Enabled = false;
                     buttonApply.Enabled = false;
+                    buttonStart.Enabled = false;
+                    buttonStop.Enabled = false;
+                    comboType.Enabled = false;
+                    comboStartType.Enabled = false;
+                    comboErrorControl.Enabled = false;
 
                     throw new Exception("N/A");
                 }
@@ -111,6 +116,11 @@ namespace ProcessHacker
                 {
                     buttonCancel.Enabled = true;
                     buttonApply.Enabled = true;
+                    buttonStart.Enabled = true;
+                    buttonStop.Enabled = true;
+                    comboType.Enabled = true;
+                    comboStartType.Enabled = true;
+                    comboErrorControl.Enabled = true;
                 }
 
                 ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
@@ -121,6 +131,9 @@ namespace ProcessHacker
                 if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
                     buttonStart.Enabled = false;
                 else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                    buttonStop.Enabled = false;
+
+                if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.Stop) == 0)
                     buttonStop.Enabled = false;
 
                 labelServiceName.Text = item.Status.ServiceName;
@@ -136,9 +149,9 @@ namespace ProcessHacker
             {
                 labelServiceName.Text = ex.Message;
                 labelServiceDisplayName.Text = "N/A";
-                comboType.SelectedItem = "";
-                comboStartType.SelectedItem = "";
-                comboErrorControl.SelectedItem = "";
+                comboType.Text = "";
+                comboStartType.Text = "";
+                comboErrorControl.Text = "";
                 textServiceBinaryPath.Text = "";
                 textUserAccount.Text = "";
                 textLoadOrderGroup.Text = "";
