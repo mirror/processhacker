@@ -21,21 +21,41 @@
 #include "stdafx.h"
 
 typedef const wchar_t *(__stdcall *RGetCommandLineW)();
+typedef BOOL (__stdcall *RCreateProcessW)(
+    __in_opt    LPCWSTR lpApplicationName,
+    __inout_opt LPWSTR lpCommandLine,
+    __in_opt    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    __in_opt    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    __in        BOOL bInheritHandles,
+    __in        DWORD dwCreationFlags,
+    __in_opt    LPVOID lpEnvironment,
+    __in_opt    LPCWSTR lpCurrentDirectory,
+    __in        LPSTARTUPINFOW lpStartupInfo,
+    __out       LPPROCESS_INFORMATION lpProcessInformation
+	);
+typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
 
 struct data_struct
 {
-	DWORD last_error;
-	RGetCommandLineW GCLW;
+	DWORD last_error; // error code from thread
+	RCreateProcessW fCPW;
+	RCloseHandle fCH;
+	RGetCommandLineW fGCLW;
+	wchar_t winsta_desktop[64];
 	wchar_t str[4000];
 };
 
+wchar_t *GetWinStaDesktop();
+DWORD __stdcall Cp(data_struct *data);
 DWORD __stdcall GRcl(data_struct *data);
 BOOL EnableTokenPrivilege(LPCTSTR pszPrivilege);
 
-int _tmain(int argc, wchar_t* argv[])
+int _tmain(int argc, wchar_t *argv[])
 {
 	HANDLE handle = 0;
 	DWORD pid;
+	wchar_t *mode;
+	void *local_code = 0;
 	void *remote_code = 0;
 	data_struct *remote_data = 0;
 	data_struct local_data;
@@ -43,11 +63,20 @@ int _tmain(int argc, wchar_t* argv[])
 	HMODULE kernel32 = 0;
 	HANDLE remote_thread = 0;
 	DWORD rc = 0;
+	wchar_t *winsta_desktop = GetWinStaDesktop();
 	
 	if (!EnableTokenPrivilege(SE_DEBUG_NAME))
 		printf("Could not get debug privilege!");
 
-	pid = _wtoi(argv[1]);
+	mode = argv[1];
+	pid = _wtoi(argv[2]);
+	
+	if (argc > 3)
+		wcscpy_s(local_data.str, 4000, argv[3]);
+	else
+		local_data.str[0] = 0;
+
+	wcscpy(local_data.winsta_desktop, winsta_desktop);
 
 	if (!(handle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | 
 		PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, pid)))
@@ -71,7 +100,12 @@ int _tmain(int argc, wchar_t* argv[])
 		goto clean_up;
 	}
 
-	if (!WriteProcessMemory(handle, remote_code, &GRcl, 4096, 0))
+	if (wcscmp(mode, _T("cmdline")) == 0)
+		local_code = &GRcl;
+	else if (wcscmp(mode, _T("createprocess")) == 0)
+		local_code = &Cp;
+	
+	if (!WriteProcessMemory(handle, remote_code, local_code, 4096, 0))
 	{
 		printf("Could not write remote code!");
 		return_code = GetLastError();
@@ -86,11 +120,24 @@ int _tmain(int argc, wchar_t* argv[])
 	}
 
 	local_data.last_error = 0;
-	local_data.str[0] = 0;
 	
-	if (!(local_data.GCLW = (RGetCommandLineW)GetProcAddress(kernel32, "GetCommandLineW")))
+	if (!(local_data.fGCLW = (RGetCommandLineW)GetProcAddress(kernel32, "GetCommandLineW")))
 	{
 		printf("Could not get address of GetCommandLineW!");
+		return_code = GetLastError();
+		goto clean_up;
+	}
+	
+	if (!(local_data.fCPW = (RCreateProcessW)GetProcAddress(kernel32, "CreateProcessW")))
+	{
+		printf("Could not get address of CreateProcessW!");
+		return_code = GetLastError();
+		goto clean_up;
+	}
+	
+	if (!(local_data.fCH = (RCloseHandle)GetProcAddress(kernel32, "CloseHandle")))
+	{
+		printf("Could not get address of CloseHandle!");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -134,7 +181,7 @@ int _tmain(int argc, wchar_t* argv[])
 		if (local_data.last_error != 0)
 		{
 			printf("Error in remote thread!");
-			return_code = local_data.last_error;
+			return_code = GetLastError();
 		}
 
 		return_code = 0;
@@ -159,19 +206,66 @@ clean_up:
 	return return_code;
 }
 
+wchar_t *GetWinStaDesktop()
+{
+	HWINSTA winsta = GetProcessWindowStation();
+	HDESK desktop = GetThreadDesktop(GetCurrentThreadId());
+	wchar_t *result = 0;
+	wchar_t *winsta_name = 0;
+	wchar_t *desktop_name = 0;
+	DWORD required_size = 0;
+
+	GetUserObjectInformation(winsta, UOI_NAME, winsta_name, 0, &required_size);
+	winsta_name = (wchar_t *)malloc(required_size);
+	GetUserObjectInformation(winsta, UOI_NAME, winsta_name, required_size, 0);
+
+	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, 0, &required_size);
+	desktop_name = (wchar_t *)malloc(required_size);
+	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, required_size, 0);
+
+	result = (wchar_t *)malloc(wcslen(winsta_name) + wcslen(desktop_name) + 2);
+	wcscpy(result, winsta_name);
+	result[wcslen(winsta_name)] = '\\';
+	wcscpy(result + wcslen(winsta_name) + 1, desktop_name);
+
+	return result;
+}
+
+DWORD __stdcall Cp(data_struct *data)
+{
+	STARTUPINFOW startup_info;
+	PROCESS_INFORMATION proc_info;
+	
+	startup_info.cb = sizeof(startup_info);
+	startup_info.lpDesktop = data->winsta_desktop;
+	startup_info.dwFlags = STARTF_FORCEONFEEDBACK;
+
+	if (!data->fCPW(NULL, data->str, 0, 0, FALSE, 0, NULL, NULL, &startup_info, 
+		&proc_info))
+	{
+		data->last_error = 1;
+		return 1;
+	}
+
+	data->fCH(proc_info.hProcess);
+	data->fCH(proc_info.hThread);
+
+	return 0;
+}
+
 DWORD __stdcall GRcl(data_struct *data)
 {
 	const wchar_t *src;
 	wchar_t *tgt, *end;
 
-	src = data->GCLW();
+	src = data->fGCLW();
 	tgt = data->str;
 	end = data->str + 3999;
 
 	if (src == 0 || tgt == 0 || end == 0)
 	{
-		data->last_error = 998;
-		return 0;
+		data->last_error = 1;
+		return 1;
 	}
 
 	for (; *src != 0 && tgt < end; ++src, ++tgt)

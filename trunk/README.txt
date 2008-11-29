@@ -19,7 +19,7 @@ It supports:
  * Viewing DEP status and other additional information.
 
 Process Hacker has an embedded help file (accessible through 
-Menu... > Help).
+Hacker > Help).
 
 Process Hacker is made by wj32 and uses the following components:
 
