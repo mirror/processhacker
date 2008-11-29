@@ -5,6 +5,7 @@ Process Hacker
  * Fixed UI inconsistencies
  * Allow Toolhelp module listings
  * Updated help
+ * Fixed service start/stop buttons in service window
 
 1.2.1.0
  * Can now display services

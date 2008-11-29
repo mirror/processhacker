@@ -81,13 +81,13 @@ namespace ProcessHacker
 
             if (listServices.SelectedItems[0].Name == sitem.Status.ServiceName)
             {
-                buttonStart.Enabled = true;
-                buttonStop.Enabled = true;
+                buttonStart.Enabled = false;
+                buttonStop.Enabled = false;
 
                 if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
-                    buttonStart.Enabled = false;
+                    buttonStop.Enabled = true;
                 else if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
-                    buttonStop.Enabled = false;
+                    buttonStart.Enabled = true;
             }
         }
 
