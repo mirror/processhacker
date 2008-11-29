@@ -35,6 +35,12 @@ typedef BOOL (__stdcall *RCreateProcessW)(
 	);
 typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
 
+#define MAX_STR 4000
+#define MAX_CODE 8192
+
+#define MODE_CMDLINE 1
+#define MODE_CREATEPROCESS 2
+
 struct data_struct
 {
 	DWORD last_error; // error code from thread
@@ -42,7 +48,7 @@ struct data_struct
 	RCloseHandle fCH;
 	RGetCommandLineW fGCLW;
 	wchar_t winsta_desktop[64];
-	wchar_t str[4000];
+	wchar_t str[MAX_STR];
 };
 
 wchar_t *GetWinStaDesktop();
@@ -54,7 +60,8 @@ int _tmain(int argc, wchar_t *argv[])
 {
 	HANDLE handle = 0;
 	DWORD pid;
-	wchar_t *mode;
+	wchar_t *mode_str;
+	DWORD mode = 0;
 	void *local_code = 0;
 	void *remote_code = 0;
 	data_struct *remote_data = 0;
@@ -68,11 +75,28 @@ int _tmain(int argc, wchar_t *argv[])
 	if (!EnableTokenPrivilege(SE_DEBUG_NAME))
 		printf("Could not get debug privilege!");
 
-	mode = argv[1];
+	if (argc < 3)
+	{
+		printf("Need more arguments");
+		return ERROR_INVALID_PARAMETER;
+	}
+
+	mode_str = argv[1];
+
+	if (wcscmp(mode_str, _T("cmdline")) == 0)
+		mode = MODE_CMDLINE;
+	else if (wcscmp(mode_str, _T("createprocess")) == 0)
+		mode = MODE_CREATEPROCESS;
+	else
+	{
+		printf("Invalid mode");
+		return ERROR_INVALID_PARAMETER;
+	}
+
 	pid = _wtoi(argv[2]);
 	
 	if (argc > 3)
-		wcscpy_s(local_data.str, 4000, argv[3]);
+		wcscpy(local_data.str, argv[3]);
 	else
 		local_data.str[0] = 0;
 
@@ -85,7 +109,7 @@ int _tmain(int argc, wchar_t *argv[])
 		return GetLastError();
 	}
 	
-	if (!(remote_code = VirtualAllocEx(handle, 0, 4096, MEM_COMMIT, PAGE_EXECUTE_READWRITE)))
+	if (!(remote_code = VirtualAllocEx(handle, 0, MAX_CODE, MEM_COMMIT, PAGE_EXECUTE_READWRITE)))
 	{
 		printf("Could not allocate memory!");
 		return_code = GetLastError();
@@ -100,12 +124,12 @@ int _tmain(int argc, wchar_t *argv[])
 		goto clean_up;
 	}
 
-	if (wcscmp(mode, _T("cmdline")) == 0)
+	if (mode == MODE_CMDLINE)
 		local_code = &GRcl;
-	else if (wcscmp(mode, _T("createprocess")) == 0)
+	else if (mode == MODE_CREATEPROCESS)
 		local_code = &Cp;
 	
-	if (!WriteProcessMemory(handle, remote_code, local_code, 4096, 0))
+	if (!WriteProcessMemory(handle, remote_code, local_code, MAX_CODE, 0))
 	{
 		printf("Could not write remote code!");
 		return_code = GetLastError();
@@ -142,8 +166,6 @@ int _tmain(int argc, wchar_t *argv[])
 		goto clean_up;
 	}
 
-	FreeLibrary(kernel32);
-
 	if (!WriteProcessMemory(handle, remote_data, &local_data, sizeof(local_data), 0))
 	{
 		printf("Could not write remote data!");
@@ -151,57 +173,55 @@ int _tmain(int argc, wchar_t *argv[])
 		goto clean_up;
 	}
 
-	if (!(remote_thread = CreateRemoteThread(handle, 0, 0, (LPTHREAD_START_ROUTINE)remote_code,
+	if (!(remote_thread = CreateRemoteThread(handle, 0, 2048, (LPTHREAD_START_ROUTINE)remote_code,
 		remote_data, 0, &rc)))
 	{
 		printf("Could not create remote thread!");
 		return_code = GetLastError();
 		goto clean_up;
 	}
-
+	
 	rc = WaitForSingleObject(remote_thread, 5000);
 
-	switch (rc)
+	if (mode == MODE_CMDLINE)
 	{
-	case WAIT_TIMEOUT:
-		printf("WaitForSingleObject timed out!");
-		goto clean_up;
-	case WAIT_FAILED:
-		printf("WaitForSingleObject failed!");
-		return_code = GetLastError();
-		goto clean_up;
-	case WAIT_OBJECT_0:
-		if (!ReadProcessMemory(handle, remote_data, &local_data, sizeof(local_data), 0))
+		switch (rc)
 		{
-			printf("Could not read process memory!");
+		case WAIT_TIMEOUT:
+			printf("WaitForSingleObject timed out!");
+			goto clean_up;
+		case WAIT_FAILED:
+			printf("WaitForSingleObject failed!");
 			return_code = GetLastError();
 			goto clean_up;
+		case WAIT_OBJECT_0:
+			if (!ReadProcessMemory(handle, remote_data, &local_data, sizeof(local_data), 0))
+			{
+				printf("Could not read process memory!");
+				return_code = GetLastError();
+				goto clean_up;
+			}
+
+			if (local_data.last_error != 0)
+			{
+				printf("Error in remote thread!");
+				return_code = GetLastError();
+				goto clean_up;
+			}
+
+			return_code = 0;
+			
+			break;
 		}
 
-		if (local_data.last_error != 0)
-		{
-			printf("Error in remote thread!");
-			return_code = GetLastError();
-		}
-
-		return_code = 0;
-		
-		break;
+		wprintf(_T("%s"), local_data.str);
 	}
 
-	wprintf(_T("%s"), local_data.str);
-
 clean_up:
-	if (remote_thread != 0)
-		CloseHandle(remote_thread);
-
 	if (remote_code != 0)
 		VirtualFreeEx(handle, remote_code, 0, MEM_RELEASE);
 	if (remote_data != 0)
 		VirtualFreeEx(handle, remote_data, 0, MEM_RELEASE);
-	
-	if (handle != 0)
-		CloseHandle(handle);
 
 	return return_code;
 }
@@ -260,7 +280,7 @@ DWORD __stdcall GRcl(data_struct *data)
 
 	src = data->fGCLW();
 	tgt = data->str;
-	end = data->str + 3999;
+	end = &data->str[MAX_STR - 1];
 
 	if (src == 0 || tgt == 0 || end == 0)
 	{

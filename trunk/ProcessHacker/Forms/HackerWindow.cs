@@ -1074,6 +1074,60 @@ namespace ProcessHacker
             { }
         }
 
+        #region Injector
+
+        private void startProcessProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptBox box = new PromptBox();
+
+            box.TextBox.AutoCompleteSource = AutoCompleteSource.FileSystem;
+            box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+            if (box.ShowDialog() == DialogResult.OK)
+            {
+                ProcessStartInfo info = new ProcessStartInfo();
+
+                info.FileName = Application.StartupPath + "\\Injector.exe";
+                info.Arguments = "createprocess " + processSelectedPID.ToString() + " \"" + box.Value + "\"";
+                info.RedirectStandardOutput = true;
+                info.WindowStyle = ProcessWindowStyle.Hidden;
+                info.CreateNoWindow = true;
+                info.UseShellExecute = false;
+
+                Process p = Process.Start(info);
+
+                p.WaitForExit();
+
+                InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode + 
+                    " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
+
+                infoBox.ShowDialog();
+            }
+        }
+
+        private void getCommandLineProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+
+            info.FileName = Application.StartupPath + "\\Injector.exe";
+            info.Arguments = "cmdline " + processSelectedPID.ToString();
+            info.RedirectStandardOutput = true;
+            info.WindowStyle = ProcessWindowStyle.Hidden;
+            info.CreateNoWindow = true;
+            info.UseShellExecute = false;
+
+            Process p = Process.Start(info);
+
+            p.WaitForExit();
+
+            InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode + 
+                " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
+
+            infoBox.ShowDialog();
+        }
+
+        #endregion
+
         #region Priority
 
         private void realTimeMenuItem_Click(object sender, EventArgs e)
@@ -2750,6 +2804,9 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
+
+            if (!System.IO.File.Exists(Application.StartupPath + "\\Injector.exe"))
+                injectorMenuItem.Visible = false;
 
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;

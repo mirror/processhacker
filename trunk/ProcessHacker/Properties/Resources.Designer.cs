@@ -109,6 +109,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap asterisk_orange {
+            get {
+                object obj = ResourceManager.GetObject("asterisk_orange", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap cog {
             get {
                 object obj = ResourceManager.GetObject("cog", resourceCulture);

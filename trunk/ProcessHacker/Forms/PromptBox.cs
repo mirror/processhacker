@@ -69,6 +69,11 @@ namespace ProcessHacker
             }
         }
 
+        public TextBox TextBox
+        {
+            get { return textValue; }
+        }
+
         private void buttonOK_Click(object sender, EventArgs e)
         {
             _value = textValue.Text;
