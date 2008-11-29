@@ -27,7 +27,6 @@ dt {
       <li><a href="#memlist">Memory List</a></li>
       <li><a href="#memsearch">Searching Memory</a></li>
       <li><a href="#results">Results Window</a></li>
-      <li><a href="#miscinfo">Misc. Information</a></li>
       <li><a href="#tips">Tips</a></li>
     </ul>
 
@@ -152,9 +151,12 @@ dt {
 
       <dt>Resume Process(es)</dt>
       <dd>Resumes the process by resuming each of its threads using <code>ResumeThread()</code>.</dd>
-
-      <dt>Close Active Window(s)</dt>
-      <dd>Closes the active window of the process.</dd>
+      
+      <dt>Go to Parent</dt>
+      <dd>Selects the process' parent (the process which started the selected process).</dd>
+      
+      <dt>Inspect...</dt>
+      <dd>Inspects the process as a PE file, showing image data, sections, imports and exports.</dd>
       
       <dt>Privileges...</dt>
       <dd>Opens a window allowing you to view, enable, disable or remove any of the process'
@@ -162,16 +164,25 @@ dt {
       
       <dt>Groups...</dt>
       <dd>Opens a window allowing you to view the process' groups (including integrity levels).</dd>
+      
+      <dt>Services...</dt>
+      <dd>Opens a window showing the selected process' services.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.
       This option is not available when multiple processes are selected.</dd>
+      
+      <dt>Search Online...</dt>
+      <dd>Opens the default web browser with the search engine specified in Process Hacker's options.</dd>
 
       <dt>Select All</dt>
       <dd>Selects all items in the list.</dd>
     </dl>
 
     <h1 id="threadlist">Thread List</h1>
+    <p>The thread list displays the selected process' threads. Double-clicking a thread will display its call 
+    stack.</p>
+    
     <h2>Columns</h2>
     <dl>
       <dt>TID</dt>
@@ -191,6 +202,9 @@ dt {
 
     <h2>Context Menu</h2>
     <dl>
+      <dt>Inspect</dt>
+      <dd>Opens a window showing the thread's call stack.</dt>
+      
       <dt>Terminate Thread(s)</dt>
       <dd>Terminates the selected thread(s) using the <code>TerminateThread()</code> API function.</dd>
 
@@ -212,14 +226,12 @@ dt {
     <p>This list displays all modules loaded by the selected process. Unlike the process list or the
     thread list, this list does not refresh automatically. To refresh the list, click the name of the
     process in the process list again. To view the full file name of a module, hover the mouse over the
-    module name or use the <strong>Copy File Name</strong> context menu item. Double-clicking an item 
+    module name or use the <strong>Copy File Name</strong> menu item. Double-clicking an item 
     in the list will switch to the <strong>Memory</strong> tab and select the associated memory 
     region.</p>
     
     <p>Note that if the <em>System</em> process is selected, the module list will display a list 
-    of drivers loaded by the kernel, as reported by <code>EnumDeviceDrivers()</code>. In this case,
-    only the <strong>Copy File Name</strong> and <strong>Properties...</strong> context menu items 
-    will be available.</p>
+    of drivers loaded by the kernel, as reported by <code>EnumDeviceDrivers()</code>.</p>
 
     <h2>Columns</h2>
     <dl>
@@ -321,10 +333,9 @@ dt {
     <h1 id="memsearch">Searching Memory</h1>
     <p>Process Hacker supports searching using a literal string or regular expressions. To 
     perform a search, select the <strong>Process</strong> tab and select an option in the 
-    combo box. Then click <strong>Search...</strong>. A window will appear in which you can
-    enter the data to search for. There are also checkboxes which control the memory
-    regions to search in. When <strong>OK</strong> is clicked, a Results Window will appear
-    with the search results.</p>
+    search button. A window will appear in which you can enter the data to search for. There 
+    are also checkboxes which control the memory regions to search in. When <strong>OK</strong> 
+    is clicked, a Results Window will appear with the search results.</p>
     
     <dl>
       <dt>Literal Search</dt>
@@ -376,7 +387,7 @@ dt {
     
     <h1 id="results">Results Window</h1>
     <p>The Results Window is displayed when searching for data, scanning for strings or 
-    scanning for heaps. There are four buttons at the top of the window:</p>
+    scanning for heaps. There are five buttons at the top of the window:</p>
     
     <dl>
       <dt>Refresh</dt>
@@ -401,13 +412,10 @@ dt {
       <dd>This allows you to save the search results to a text file.</dd>
     </dl>
 
-    <h1 id="miscinfo">Misc. Information</h1>
-    <p>This tab currently displays other information not important enough to be in their own tabs.</p>
-
     <h1 id="tips">Tips</h1>
     <dl>
       <dt>Terminating Processes</dt>
-      <dd>Almost all processes (including most Antivirus programs) can be terminated by setting the
+      <dd>Almost all processes (including most Anti-virus programs) can be terminated by setting the
       page protection on their main module to PAGE_NOACCESS. This can be done by right-clicking
       on the module in bold font and selecting <strong>Change Memory Protection...</strong>.
       Type <code>0x1</code> and click <strong>Change</strong>. The process should crash within

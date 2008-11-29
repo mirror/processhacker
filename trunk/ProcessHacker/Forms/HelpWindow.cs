@@ -34,9 +34,8 @@ namespace ProcessHacker
                                          new string[] {"Thread List", "threadlist"},
                                          new string[] {"Modules List", "modlist"},
                                          new string[] {"Memory List", "memlist"},
-                                         new string[] {"Searching Memory", "memsearch"},     
-                                         new string[] {"Results Window", "results"},    
-                                         new string[] {"Misc. Information", "miscinfo"}, 
+                                         new string[] {"Searching Memory", "memsearch"},
+                                         new string[] {"Results Window", "results"},
                                          new string[] {"Tips", "tips"}
                                      };
 
