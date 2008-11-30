@@ -42,7 +42,7 @@ typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
 #define MODE_CREATEPROCESSA 2
 #define MODE_CREATEPROCESSC 3
 
-struct data_struct
+struct data_struct_s
 {
 	DWORD last_error; // error code from thread
 	RCreateProcessW fCPW;
@@ -52,10 +52,12 @@ struct data_struct
 	wchar_t str[MAX_STR];
 };
 
+typedef struct data_struct_s data_struct;
+
 wchar_t *GetWinStaDesktop();
-DWORD __stdcall CpApp(data_struct *data);
-DWORD __stdcall CpCmd(data_struct *data);
-DWORD __stdcall GRcl(data_struct *data);
+DWORD CpApp(data_struct *data);
+DWORD CpCmd(data_struct *data);
+DWORD GRcl(data_struct *data);
 BOOL EnableTokenPrivilege(LPCTSTR pszPrivilege);
 
 int _tmain(int argc, wchar_t *argv[])
@@ -266,7 +268,7 @@ wchar_t *GetWinStaDesktop()
 	return result;
 }
 
-DWORD __stdcall CpApp(data_struct *data)
+DWORD CpApp(data_struct *data)
 {
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
@@ -289,7 +291,7 @@ DWORD __stdcall CpApp(data_struct *data)
 	return 0;
 }
 
-DWORD __stdcall CpCmd(data_struct *data)
+DWORD CpCmd(data_struct *data)
 {
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
@@ -312,7 +314,7 @@ DWORD __stdcall CpCmd(data_struct *data)
 	return 0;
 }
 
-DWORD __stdcall GRcl(data_struct *data)
+DWORD GRcl(data_struct *data)
 {
 	const wchar_t *src;
 	wchar_t *tgt, *end;
@@ -336,39 +338,31 @@ DWORD __stdcall GRcl(data_struct *data)
 	return 0;
 }
 
-BOOL EnableTokenPrivilege(LPCTSTR pszPrivilege)
+BOOL EnableTokenPrivilege(LPCTSTR privilege)
 {
-    HANDLE hToken        = 0;
+    HANDLE token_handle = 0;
     TOKEN_PRIVILEGES tkp = {0}; 
 
-    // Get a token for this process.
-
-    if (!OpenProcessToken(GetCurrentProcess(),
-                          TOKEN_ADJUST_PRIVILEGES |
-                          TOKEN_QUERY, &hToken))
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token_handle))
     {
         return FALSE;
     }
 
-    // Get the LUID for the privilege. 
-
-    if(LookupPrivilegeValue(NULL, pszPrivilege,
-                            &tkp.Privileges[0].Luid)) 
+    if (LookupPrivilegeValue(NULL, privilege, &tkp.Privileges[0].Luid)) 
     {
-        tkp.PrivilegeCount = 1;  // one privilege to set	  
-															  
+        tkp.PrivilegeCount = 1;						  
         tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-        // Set the privilege for this process. 
-
-        AdjustTokenPrivileges(hToken, FALSE, &tkp, 0,
-                              (PTOKEN_PRIVILEGES)NULL, 0); 
+        AdjustTokenPrivileges(token_handle, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0); 
+		CloseHandle(token_handle);
 
         if (GetLastError() != ERROR_SUCCESS)
            return FALSE;
-															
+
         return TRUE;
     }
+
+	CloseHandle(token_handle);
 
     return FALSE;
 }

@@ -175,11 +175,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Injector.cpp"
+				RelativePath=".\Injector.c"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.cpp"
+				RelativePath=".\stdafx.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
