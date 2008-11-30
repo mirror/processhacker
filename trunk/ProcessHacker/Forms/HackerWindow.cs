@@ -807,6 +807,11 @@ namespace ProcessHacker
                     else
                         injectorMenuItem.Enabled = false;
 
+                    if (Program.WindowsVersion == "XP")
+                        startProcessProcessMenuItem.Visible = false;
+                    else
+                        startProcessProcessMenuItem.Visible = true;
+
                     Win32.CloseHandle(phandle);
 
                     priorityMenuItem.Enabled = true;
@@ -1181,6 +1186,10 @@ namespace ProcessHacker
 
         private void exitProcessProcessMenuItem_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Are you sure you want to terminate the selected process?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                return;
+
             ProcessStartInfo info = new ProcessStartInfo();
 
             info.FileName = Application.StartupPath + "\\Injector.exe";

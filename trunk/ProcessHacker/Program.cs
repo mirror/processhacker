@@ -32,6 +32,8 @@ namespace ProcessHacker
         /// </summary>
         public static HackerWindow HackerWindow;
 
+        public static string WindowsVersion = "Unknown";
+
         /// <summary>
         /// The Results Window ID Generator
         /// </summary>
@@ -72,6 +74,11 @@ namespace ProcessHacker
 
                 Application.Exit();
             }
+
+            if (Environment.OSVersion.Version.Major == 5)
+                WindowsVersion = "XP";
+            else if (Environment.OSVersion.Version.Major == 6)
+                WindowsVersion = "Vista";
 
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
