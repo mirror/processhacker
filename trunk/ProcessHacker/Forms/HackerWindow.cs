@@ -1105,15 +1105,19 @@ namespace ProcessHacker
                 info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" + box.Value + "\"";
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
+                info.CreateNoWindow = true;
 
                 Process p = Process.Start(info);
 
                 p.WaitForExit();
 
-                InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + (p.ExitCode != 0 ? "\r\nReturn code: " + p.ExitCode + 
-                    " (" + Win32.GetErrorMessage(p.ExitCode) + ")" : ""));
+                if (p.ExitCode != 0)
+                {
+                    InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + "\r\nReturn code: " + p.ExitCode +
+                        " (" + Win32.GetErrorMessage(p.ExitCode) + ")");
 
-                infoBox.ShowDialog();
+                    infoBox.ShowDialog();
+                }
             }
         }
 
@@ -1125,6 +1129,7 @@ namespace ProcessHacker
             info.Arguments = "cmdline " + processSelectedPID.ToString();
             info.RedirectStandardOutput = true;
             info.UseShellExecute = false;
+            info.CreateNoWindow = true;
 
             Process p = Process.Start(info);
 

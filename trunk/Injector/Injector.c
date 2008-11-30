@@ -18,26 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WIN32_WINNT            // Specifies that the minimum required platform is Windows Vista.
-#define _WIN32_WINNT 0x0500     // Change this to the appropriate value to target other versions of Windows.
-#endif
-
 #include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
 
 typedef const wchar_t *(__stdcall *RGetCommandLineW)();
 typedef BOOL (__stdcall *RCreateProcessW)(
-    __in_opt    LPCWSTR lpApplicationName,
-    __inout_opt LPWSTR lpCommandLine,
-    __in_opt    LPSECURITY_ATTRIBUTES lpProcessAttributes,
-    __in_opt    LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    __in        BOOL bInheritHandles,
-    __in        DWORD dwCreationFlags,
-    __in_opt    LPVOID lpEnvironment,
-    __in_opt    LPCWSTR lpCurrentDirectory,
-    __in        LPSTARTUPINFOW lpStartupInfo,
-    __out       LPPROCESS_INFORMATION lpProcessInformation
+    LPCWSTR lpApplicationName,
+    LPWSTR lpCommandLine,
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    BOOL bInheritHandles,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCWSTR lpCurrentDirectory,
+    LPSTARTUPINFOW lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInformation
 	);
 typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
 
@@ -60,6 +56,7 @@ struct data_struct_s
 
 typedef struct data_struct_s data_struct;
 
+wchar_t *GetDesktopName();
 wchar_t *GetWinStaDesktop();
 DWORD CpApp(data_struct *data);
 DWORD CpCmd(data_struct *data);
@@ -81,7 +78,7 @@ int _tmain(int argc, wchar_t *argv[])
 	HMODULE kernel32 = 0;
 	HANDLE remote_thread = 0;
 	DWORD rc = 0;
-	wchar_t *winsta_desktop = GetWinStaDesktop();
+	wchar_t *winsta_desktop = GetDesktopName();
 	
 	if (!EnableTokenPrivilege(SE_DEBUG_NAME))
 		printf("Could not get debug privilege!");
@@ -246,6 +243,19 @@ clean_up:
 	return return_code;
 }
 
+wchar_t *GetDesktopName()
+{
+	HDESK desktop = GetThreadDesktop(GetCurrentThreadId());
+	wchar_t *desktop_name = 0;
+	DWORD required_size = 0;
+
+	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, 0, &required_size);
+	desktop_name = (wchar_t *)malloc(required_size);
+	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, required_size, 0);
+
+	return desktop_name;
+}
+
 wchar_t *GetWinStaDesktop()
 {
 	HWINSTA winsta = GetProcessWindowStation();
@@ -270,6 +280,9 @@ wchar_t *GetWinStaDesktop()
 
 	free(winsta_name);
 	free(desktop_name);
+
+	CloseHandle(winsta);
+	CloseHandle(desktop);
 
 	return result;
 }
