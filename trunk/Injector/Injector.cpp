@@ -226,7 +226,7 @@ int _tmain(int argc, wchar_t *argv[])
 			break;
 		}
 
-		wprintf(_T("%s"), local_data.str);
+		wsprintfW(_T("%s"), local_data.str);
 	}
 
 clean_up:

@@ -189,11 +189,6 @@ namespace ProcessHacker
             stackFrame.AddrStack.Offset = context.Esp;
             stackFrame.AddrFrame.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
             stackFrame.AddrFrame.Offset = context.Ebp;
-
-            listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                        "0x" + context.Eip.ToString("x8"),
-                        Symbols.GetNameFromAddress(context.Eip)
-                    }));
             
             while (true)
             {
@@ -203,15 +198,24 @@ namespace ProcessHacker
                         ref stackFrame, ref context, 0, 0, 0, 0) == 0)
                         break;
 
-                    if (stackFrame.AddrReturn.Offset == 0)
+                    if (stackFrame.AddrPC.Offset == 0)
                         break;
 
-                    int retaddr = (int)(stackFrame.AddrReturn.Offset & 0xffffffff);
+                    int addr = (int)(stackFrame.AddrPC.Offset & 0xffffffff);
 
-                    listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                        "0x" + retaddr.ToString("x8"),
-                        Symbols.GetNameFromAddress(retaddr)
+                    ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                        "0x" + addr.ToString("x8"),
+                        Symbols.GetNameFromAddress(addr)
                     }));
+
+                    if (stackFrame.Params.Length > 0)
+                        newItem.ToolTipText = "Parameters: ";
+
+                    foreach (long arg in stackFrame.Params)
+                        newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
+
+                    if (newItem.ToolTipText.EndsWith(", "))
+                        newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
                 }
                 catch
                 {
