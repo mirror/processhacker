@@ -2283,7 +2283,7 @@ namespace ProcessHacker
         string[] misctoplevel = { "Process", "DEP", "Handles", "Memory" };
 
         string[][] miscinfo = {
-                                  new string[] { "Priority Boost Enabled", "Total CPU Time",
+                                  new string[] { "Session ID", "Priority Boost Enabled", "Total CPU Time",
                                   "Privileged CPU Time", "User CPU Time", "Start Time"},
                                   new string[] { "Status", "Permanent" },
                                   new string[] { "Handle Count" },
@@ -2296,6 +2296,13 @@ namespace ProcessHacker
                                   // Process
                                   new MiscInfoDelegate[]
                                   {
+                                      delegate (Process p)
+                                      {
+                                          int id = Win32.GetProcessSessionId(p.Handle.ToInt32());
+
+                                          return id == -1 ? "Unknown" : id.ToString();
+                                      },
+
                                       delegate (Process p)
                                       {                    
                                           return p.PriorityBoostEnabled ? "Yes" : "No";

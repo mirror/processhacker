@@ -207,7 +207,7 @@ int _tmain(int argc, wchar_t *argv[])
 	}
 
 	if (!(remote_thread = CreateRemoteThread(handle, 0, 0, (LPTHREAD_START_ROUTINE)remote_code,
-		remote_data, 0, &rc)))
+	    remote_data, 0, &rc)))
 	{
 		printf("Could not create remote thread!");
 		return_code = GetLastError();
@@ -303,12 +303,34 @@ wchar_t *GetWinStaDesktop()
 	return result;
 }
 
-void Ep(data_struct *data)
+void __declspec(naked) Caller()
+{
+	__asm
+	{
+		pushad // save all the registers, we try not to screw up their thread
+		mov eax, 0xaaaaaaaa // function
+		
+		push 0xbbbbbbbb // push location of data_struct *data
+		call eax // call our function
+
+		popad // get registers back
+		
+		__emit 0xe9
+		__emit 0xcc
+		__emit 0xcc
+		__emit 0xcc
+		__emit 0xcc
+	}
+}
+
+void __declspec(naked) EndOfCaller() { }
+
+static void Ep(data_struct *data)
 {
 	data->fEP(0);
 }
 
-DWORD CpApp(data_struct *data)
+static DWORD CpApp(data_struct *data)
 {
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
@@ -331,7 +353,7 @@ DWORD CpApp(data_struct *data)
 	return 0;
 }
 
-DWORD CpCmd(data_struct *data)
+static DWORD CpCmd(data_struct *data)
 {
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
@@ -354,7 +376,7 @@ DWORD CpCmd(data_struct *data)
 	return 0;
 }
 
-DWORD GRcl(data_struct *data)
+static DWORD GRcl(data_struct *data)
 {
 	const wchar_t *src;
 	wchar_t *tgt, *end;

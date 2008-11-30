@@ -804,6 +804,11 @@ namespace ProcessHacker
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_GROUPS TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
@@ -1795,6 +1800,27 @@ namespace ProcessHacker
             {
                 return null;
             }
+        }
+
+        public static int GetProcessSessionId(int ProcessHandle)
+        {
+            int token = 0;
+            int id = 0;
+            int retLen = 0;
+
+            if (Win32.OpenProcessToken(ProcessHandle, Win32.TOKEN_RIGHTS.TOKEN_QUERY,
+                ref token) == 0)
+                return -1;
+
+            if (Win32.GetTokenInformation(token, Win32.TOKEN_INFORMATION_CLASS.TokenSessionId,
+                ref id, 4, ref retLen) == 0)
+            {
+                Win32.CloseHandle(token);
+                return -1;
+            }
+
+            Win32.CloseHandle(token);
+            return id;
         }
 
         public static int GetProcessSID(int ProcessHandle)
