@@ -36,19 +36,23 @@ typedef BOOL (__stdcall *RCreateProcessW)(
     LPPROCESS_INFORMATION lpProcessInformation
 	);
 typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
+typedef BOOL (__stdcall *RExitProcess)(DWORD ExitCode);
 
 #define MAX_STR 4000
 #define MAX_CODE 8192
 
+#define STREQ(x,y) (wcscmp((x), _T(y)) == 0)
 #define MODE_CMDLINE 1
 #define MODE_CREATEPROCESSA 2
 #define MODE_CREATEPROCESSC 3
+#define MODE_EXITPROCESS 4
 
 struct data_struct_s
 {
 	DWORD last_error; // error code from thread
 	RCreateProcessW fCPW;
 	RCloseHandle fCH;
+	RExitProcess fEP;
 	RGetCommandLineW fGCLW;
 	wchar_t winsta_desktop[64];
 	wchar_t str[MAX_STR];
@@ -58,6 +62,7 @@ typedef struct data_struct_s data_struct;
 
 wchar_t *GetDesktopName();
 wchar_t *GetWinStaDesktop();
+void Ep(data_struct *data);
 DWORD CpApp(data_struct *data);
 DWORD CpCmd(data_struct *data);
 DWORD GRcl(data_struct *data);
@@ -91,14 +96,16 @@ int _tmain(int argc, wchar_t *argv[])
 
 	mode_str = argv[1];
 
-	if (wcscmp(mode_str, _T("cmdline")) == 0)
+	if (STREQ(mode_str, "cmdline"))
 		mode = MODE_CMDLINE;
-	else if (wcscmp(mode_str, _T("createprocess")) == 0)
+	else if (STREQ(mode_str, "createprocess"))
 		mode = MODE_CREATEPROCESSA;
-	else if (wcscmp(mode_str, _T("createprocessa")) == 0)
+	else if (STREQ(mode_str, "createprocessa"))
 		mode = MODE_CREATEPROCESSA;
-	else if (wcscmp(mode_str, _T("createprocessc")) == 0)
+	else if (STREQ(mode_str, "createprocessc"))
 		mode = MODE_CREATEPROCESSC;
+	else if (STREQ(mode_str, "exitprocess"))
+		mode = MODE_EXITPROCESS;
 	else
 	{
 		printf("Invalid mode");
@@ -142,6 +149,8 @@ int _tmain(int argc, wchar_t *argv[])
 		local_code = &CpApp;
 	else if (mode == MODE_CREATEPROCESSC)
 		local_code = &CpCmd;
+	else if (mode == MODE_EXITPROCESS)
+		local_code = &Ep;
 	
 	if (!WriteProcessMemory(handle, remote_code, local_code, MAX_CODE, 0))
 	{
@@ -179,6 +188,13 @@ int _tmain(int argc, wchar_t *argv[])
 	if (!(local_data.fCH = (RCloseHandle)GetProcAddress(kernel32, "CloseHandle")))
 	{
 		printf("Could not get address of CloseHandle!");
+		return_code = GetLastError();
+		goto clean_up;
+	}
+	
+	if (!(local_data.fEP = (RExitProcess)GetProcAddress(kernel32, "ExitProcess")))
+	{
+		printf("Could not get address of ExitProcess!");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -285,6 +301,11 @@ wchar_t *GetWinStaDesktop()
 	CloseHandle(desktop);
 
 	return result;
+}
+
+void Ep(data_struct *data)
+{
+	data->fEP(0);
 }
 
 DWORD CpApp(data_struct *data)

@@ -1141,6 +1141,29 @@ namespace ProcessHacker
             infoBox.ShowDialog();
         }
 
+        private void exitProcessProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo info = new ProcessStartInfo();
+
+            info.FileName = Application.StartupPath + "\\Injector.exe";
+            info.Arguments = "exitprocess " + processSelectedPID.ToString();
+            info.RedirectStandardOutput = true;
+            info.UseShellExecute = false;
+            info.CreateNoWindow = true;
+
+            Process p = Process.Start(info);
+
+            p.WaitForExit();
+
+            if (p.ExitCode != 0)
+            {
+                InformationBox infoBox = new InformationBox(p.StandardOutput.ReadToEnd() + "\r\nReturn code: " + p.ExitCode +
+                    " (" + Win32.GetErrorMessage(p.ExitCode) + ")");
+
+                infoBox.ShowDialog();
+            }
+        }
+
         #endregion
 
         #region Priority
