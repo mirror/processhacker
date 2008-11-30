@@ -1139,7 +1139,8 @@ namespace ProcessHacker
                 ProcessStartInfo info = new ProcessStartInfo();
 
                 info.FileName = Application.StartupPath + "\\Injector.exe";
-                info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" + box.Value + "\"";
+                info.Arguments = "createprocessc " + processSelectedPID.ToString() + " \"" + 
+                    box.Value.Replace("\"", "\\\"") + "\"";
                 info.RedirectStandardOutput = true;
                 info.UseShellExecute = false;
                 info.CreateNoWindow = true;

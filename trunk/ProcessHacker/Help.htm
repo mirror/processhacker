@@ -167,6 +167,17 @@ dt {
       
       <dt>Services...</dt>
       <dd>Opens a window showing the selected process' services.</dd>
+      
+      <dt>Injector</dt>
+      <dd>This menu item contains several functions for manipulating the selected process using the Injector tool 
+      (supplied with Process Hacker as <code>Injector.exe</code>). If <code>Injector.exe</code> is not present in 
+      the same directory as Process Hacker, this menu item will not be visible. Due to restrictions with 
+      the <code>CreateRemoteThread</code> API function, this menu item is disabled for processes with a different 
+      session ID than Process Hacker (usually processes running under the SYSTEM account).<br /><br />
+      <strong>Start Process...</strong> - forces the target process to start a command you specify. This can be used 
+      to start a process under the SYSTEM account - try targeting <code>winlogon.exe</code>.<br />
+      <strong>Get Command Line...</strong> - shows the target process' command line.<br />
+      <strong>Exit Process</strong> - forces the target process to terminate itself.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.

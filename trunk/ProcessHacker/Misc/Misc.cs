@@ -105,6 +105,19 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Escapes a string using C-style escaping.
+        /// </summary>
+        /// <param name="str">The string to escape.</param>
+        /// <returns>The escaped string.</returns>
+        public static string EscapeString(string str)
+        {
+            str = str.Replace("\\", "\\\\");
+            str = str.Replace("\"", "\\\"");
+
+            return str;
+        }
+
+        /// <summary>
         /// Gets the file name of the currently running kernel.
         /// </summary>
         /// <returns>The kernel file name.</returns>
