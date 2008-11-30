@@ -322,6 +322,20 @@ namespace ProcessHacker
             }
         }
 
+        private void getSNFAMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptBox box = new PromptBox();
+
+            if (box.ShowDialog() == DialogResult.OK)
+            {
+                int address = (int)BaseConverter.ToNumberParse(box.Value);
+
+                InformationBox infoBox = new InformationBox(Symbols.GetNameFromAddress(address));
+
+                infoBox.ShowDialog();
+            }
+        }
+
         private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();

@@ -39,7 +39,8 @@ typedef BOOL (__stdcall *RCloseHandle)(HANDLE handle);
 #define MAX_CODE 8192
 
 #define MODE_CMDLINE 1
-#define MODE_CREATEPROCESS 2
+#define MODE_CREATEPROCESSA 2
+#define MODE_CREATEPROCESSC 3
 
 struct data_struct
 {
@@ -52,13 +53,15 @@ struct data_struct
 };
 
 wchar_t *GetWinStaDesktop();
-DWORD __stdcall Cp(data_struct *data);
+DWORD __stdcall CpApp(data_struct *data);
+DWORD __stdcall CpCmd(data_struct *data);
 DWORD __stdcall GRcl(data_struct *data);
 BOOL EnableTokenPrivilege(LPCTSTR pszPrivilege);
 
 int _tmain(int argc, wchar_t *argv[])
 {
 	HANDLE handle = 0;
+	DWORD old_protect;
 	DWORD pid;
 	wchar_t *mode_str;
 	DWORD mode = 0;
@@ -86,7 +89,11 @@ int _tmain(int argc, wchar_t *argv[])
 	if (wcscmp(mode_str, _T("cmdline")) == 0)
 		mode = MODE_CMDLINE;
 	else if (wcscmp(mode_str, _T("createprocess")) == 0)
-		mode = MODE_CREATEPROCESS;
+		mode = MODE_CREATEPROCESSA;
+	else if (wcscmp(mode_str, _T("createprocessa")) == 0)
+		mode = MODE_CREATEPROCESSA;
+	else if (wcscmp(mode_str, _T("createprocessc")) == 0)
+		mode = MODE_CREATEPROCESSC;
 	else
 	{
 		printf("Invalid mode");
@@ -126,8 +133,10 @@ int _tmain(int argc, wchar_t *argv[])
 
 	if (mode == MODE_CMDLINE)
 		local_code = &GRcl;
-	else if (mode == MODE_CREATEPROCESS)
-		local_code = &Cp;
+	else if (mode == MODE_CREATEPROCESSA)
+		local_code = &CpApp;
+	else if (mode == MODE_CREATEPROCESSC)
+		local_code = &CpCmd;
 	
 	if (!WriteProcessMemory(handle, remote_code, local_code, MAX_CODE, 0))
 	{
@@ -135,6 +144,9 @@ int _tmain(int argc, wchar_t *argv[])
 		return_code = GetLastError();
 		goto clean_up;
 	}
+
+	if (!VirtualProtectEx(handle, remote_code, MAX_CODE, PAGE_EXECUTE, &old_protect))
+		printf("Warning: could not set page protection on code to PAGE_EXECUTE\n");
 
 	if (!(kernel32 = LoadLibrary(L"kernel32.dll")))
 	{
@@ -251,11 +263,63 @@ wchar_t *GetWinStaDesktop()
 	return result;
 }
 
-DWORD __stdcall Cp(data_struct *data)
+DWORD __stdcall CpApp(data_struct *data)
 {
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
 	
+	startup_info.cbReserved2 = 0;
+	startup_info.dwFillAttribute = 0;
+	startup_info.dwX = 0;
+	startup_info.dwXCountChars = 0;
+	startup_info.dwXSize = 0;
+	startup_info.dwY = 0;
+	startup_info.dwYCountChars = 0;
+	startup_info.dwYSize = 0;
+	startup_info.hStdError = 0;
+	startup_info.hStdInput = 0;
+	startup_info.hStdOutput = 0;
+	startup_info.lpReserved = 0;
+	startup_info.lpReserved2 = 0;
+	startup_info.lpTitle = 0;
+	startup_info.wShowWindow = 0;
+	startup_info.cb = sizeof(startup_info);
+	startup_info.lpDesktop = data->winsta_desktop;
+	startup_info.dwFlags = STARTF_FORCEONFEEDBACK;
+
+	if (!data->fCPW(data->str, NULL, 0, 0, FALSE, 0, NULL, NULL, &startup_info, 
+		&proc_info))
+	{
+		data->last_error = 1;
+		return 1;
+	}
+
+	data->fCH(proc_info.hProcess);
+	data->fCH(proc_info.hThread);
+
+	return 0;
+}
+
+DWORD __stdcall CpCmd(data_struct *data)
+{
+	STARTUPINFOW startup_info;
+	PROCESS_INFORMATION proc_info;
+	
+	startup_info.cbReserved2 = 0;
+	startup_info.dwFillAttribute = 0;
+	startup_info.dwX = 0;
+	startup_info.dwXCountChars = 0;
+	startup_info.dwXSize = 0;
+	startup_info.dwY = 0;
+	startup_info.dwYCountChars = 0;
+	startup_info.dwYSize = 0;
+	startup_info.hStdError = 0;
+	startup_info.hStdInput = 0;
+	startup_info.hStdOutput = 0;
+	startup_info.lpReserved = 0;
+	startup_info.lpReserved2 = 0;
+	startup_info.lpTitle = 0;
+	startup_info.wShowWindow = 0;
 	startup_info.cb = sizeof(startup_info);
 	startup_info.lpDesktop = data->winsta_desktop;
 	startup_info.dwFlags = STARTF_FORCEONFEEDBACK;
