@@ -77,6 +77,7 @@ namespace ProcessHacker
             this.FillComboBox(comboErrorControl, typeof(Win32.SERVICE_ERROR_CONTROL));
             this.FillComboBox(comboStartType, typeof(Win32.SERVICE_START_TYPE));
             this.FillComboBox(comboType, typeof(Win32.SERVICE_TYPE));
+            comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
         }
 
         private void FillComboBox(ComboBox box, Type t)
@@ -158,6 +159,10 @@ namespace ProcessHacker
                 labelServiceName.Text = item.Status.ServiceName;
                 labelServiceDisplayName.Text = item.Status.DisplayName;
                 comboType.SelectedItem = item.Config.ServiceType.ToString();
+
+                if (item.Config.ServiceType == (Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess))
+                    comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
+
                 comboStartType.SelectedItem = item.Config.StartType.ToString();
                 comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
                 textServiceBinaryPath.Text = item.Config.BinaryPathName;
@@ -204,8 +209,15 @@ namespace ProcessHacker
                 using (Win32.ServiceHandle service = new Win32.ServiceHandle(serviceName,
                     Win32.SERVICE_RIGHTS.SERVICE_CHANGE_CONFIG))
                 {
+                    Win32.SERVICE_TYPE type;
+
+                    if (comboType.SelectedItem.ToString() == "Win32OwnProcess, InteractiveProcess")
+                        type = Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                    else
+                        type = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), comboType.SelectedItem.ToString());
+
                     if (Win32.ChangeServiceConfig(service.Handle,
-                        (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), comboType.SelectedItem.ToString()),
+                        type,
                         (Win32.SERVICE_START_TYPE)
                         Enum.Parse(typeof(Win32.SERVICE_START_TYPE), comboStartType.SelectedItem.ToString()),
                         (Win32.SERVICE_ERROR_CONTROL)Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL),
