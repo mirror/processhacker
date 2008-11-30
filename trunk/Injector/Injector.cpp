@@ -99,7 +99,7 @@ int _tmain(int argc, wchar_t *argv[])
 		printf("Invalid mode");
 		return ERROR_INVALID_PARAMETER;
 	}
-
+	
 	pid = _wtoi(argv[2]);
 	
 	if (argc > 3)
@@ -185,7 +185,7 @@ int _tmain(int argc, wchar_t *argv[])
 		goto clean_up;
 	}
 
-	if (!(remote_thread = CreateRemoteThread(handle, 0, 2048, (LPTHREAD_START_ROUTINE)remote_code,
+	if (!(remote_thread = CreateRemoteThread(handle, 0, 0, (LPTHREAD_START_ROUTINE)remote_code,
 		remote_data, 0, &rc)))
 	{
 		printf("Could not create remote thread!");
@@ -226,7 +226,7 @@ int _tmain(int argc, wchar_t *argv[])
 			break;
 		}
 
-		wsprintfW(_T("%s"), local_data.str);
+		wprintf(_T("%s"), local_data.str);
 	}
 
 clean_up:
@@ -258,7 +258,10 @@ wchar_t *GetWinStaDesktop()
 	result = (wchar_t *)malloc(wcslen(winsta_name) + wcslen(desktop_name) + 2);
 	wcscpy(result, winsta_name);
 	result[wcslen(winsta_name)] = '\\';
-	wcscpy(result + wcslen(winsta_name) + 1, desktop_name);
+	wcscpy(&result[wcslen(winsta_name) + 1], desktop_name);
+
+	free(winsta_name);
+	free(desktop_name);
 
 	return result;
 }
@@ -268,23 +271,9 @@ DWORD __stdcall CpApp(data_struct *data)
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
 	
-	startup_info.cbReserved2 = 0;
-	startup_info.dwFillAttribute = 0;
-	startup_info.dwX = 0;
-	startup_info.dwXCountChars = 0;
-	startup_info.dwXSize = 0;
-	startup_info.dwY = 0;
-	startup_info.dwYCountChars = 0;
-	startup_info.dwYSize = 0;
-	startup_info.hStdError = 0;
-	startup_info.hStdInput = 0;
-	startup_info.hStdOutput = 0;
-	startup_info.lpReserved = 0;
-	startup_info.lpReserved2 = 0;
-	startup_info.lpTitle = 0;
-	startup_info.wShowWindow = 0;
 	startup_info.cb = sizeof(startup_info);
 	startup_info.lpDesktop = data->winsta_desktop;
+	startup_info.lpTitle = NULL;
 	startup_info.dwFlags = STARTF_FORCEONFEEDBACK;
 
 	if (!data->fCPW(data->str, NULL, 0, 0, FALSE, 0, NULL, NULL, &startup_info, 
@@ -305,23 +294,9 @@ DWORD __stdcall CpCmd(data_struct *data)
 	STARTUPINFOW startup_info;
 	PROCESS_INFORMATION proc_info;
 	
-	startup_info.cbReserved2 = 0;
-	startup_info.dwFillAttribute = 0;
-	startup_info.dwX = 0;
-	startup_info.dwXCountChars = 0;
-	startup_info.dwXSize = 0;
-	startup_info.dwY = 0;
-	startup_info.dwYCountChars = 0;
-	startup_info.dwYSize = 0;
-	startup_info.hStdError = 0;
-	startup_info.hStdInput = 0;
-	startup_info.hStdOutput = 0;
-	startup_info.lpReserved = 0;
-	startup_info.lpReserved2 = 0;
-	startup_info.lpTitle = 0;
-	startup_info.wShowWindow = 0;
 	startup_info.cb = sizeof(startup_info);
 	startup_info.lpDesktop = data->winsta_desktop;
+	startup_info.lpTitle = NULL;
 	startup_info.dwFlags = STARTF_FORCEONFEEDBACK;
 
 	if (!data->fCPW(NULL, data->str, 0, 0, FALSE, 0, NULL, NULL, &startup_info, 
