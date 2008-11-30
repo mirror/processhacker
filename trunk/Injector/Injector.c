@@ -18,7 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stdafx.h"
+#ifndef _WIN32_WINNT            // Specifies that the minimum required platform is Windows Vista.
+#define _WIN32_WINNT 0x0500     // Change this to the appropriate value to target other versions of Windows.
+#endif
+
+#include <stdio.h>
+#include <tchar.h>
+#include <windows.h>
 
 typedef const wchar_t *(__stdcall *RGetCommandLineW)();
 typedef BOOL (__stdcall *RCreateProcessW)(
