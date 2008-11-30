@@ -162,7 +162,8 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.DisplayName));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ServiceType.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.CurrentState.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                sitem.Status.ServiceStatusProcess.ProcessID == 0 ? "" : sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
 
             if ((sitem.Status.ServiceStatusProcess.ServiceType & Win32.SERVICE_TYPE.InteractiveProcess) != 0)
                 litem.ImageKey = "Interactive";
@@ -187,7 +188,8 @@ namespace ProcessHacker
                 litem.SubItems[1].Text = sitem.Status.DisplayName;
                 litem.SubItems[2].Text = sitem.Status.ServiceStatusProcess.ServiceType.ToString();
                 litem.SubItems[3].Text = sitem.Status.ServiceStatusProcess.CurrentState.ToString();
-                litem.SubItems[4].Text = sitem.Status.ServiceStatusProcess.ProcessID.ToString();
+                litem.SubItems[4].Text = sitem.Status.ServiceStatusProcess.ProcessID == 0 ? "" : 
+                    sitem.Status.ServiceStatusProcess.ProcessID.ToString();
             }
             catch
             { }

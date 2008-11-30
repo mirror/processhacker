@@ -65,6 +65,7 @@
             this.injectorMenuItem = new System.Windows.Forms.MenuItem();
             this.startProcessProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.getCommandLineProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.exitProcessProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.searchProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.copyProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -130,6 +131,9 @@
             this.optionsMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem10 = new System.Windows.Forms.MenuItem();
+            this.getSNFAMenuItem = new System.Windows.Forms.MenuItem();
+            this.FSPWSSIDMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
@@ -169,10 +173,6 @@
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.copyServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllServiceMenuItem = new System.Windows.Forms.MenuItem();
-            this.getSNFAMenuItem = new System.Windows.Forms.MenuItem();
-            this.exitProcessProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem10 = new System.Windows.Forms.MenuItem();
-            this.FSPWSSIDMenuItem = new System.Windows.Forms.MenuItem();
             this.listProcesses = new ProcessHacker.ProcessList();
             this.buttonSearch = new wyDay.Controls.SplitButton();
             this.listThreads = new ProcessHacker.ThreadList();
@@ -504,6 +504,12 @@
             this.getCommandLineProcessMenuItem.Index = 1;
             this.getCommandLineProcessMenuItem.Text = "Get Command Line";
             this.getCommandLineProcessMenuItem.Click += new System.EventHandler(this.getCommandLineProcessMenuItem_Click);
+            // 
+            // exitProcessProcessMenuItem
+            // 
+            this.exitProcessProcessMenuItem.Index = 2;
+            this.exitProcessProcessMenuItem.Text = "Exit Process";
+            this.exitProcessProcessMenuItem.Click += new System.EventHandler(this.exitProcessProcessMenuItem_Click);
             // 
             // menuItem7
             // 
@@ -959,6 +965,26 @@
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
+            // menuItem10
+            // 
+            this.menuItem10.Index = 1;
+            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.getSNFAMenuItem,
+            this.FSPWSSIDMenuItem});
+            this.menuItem10.Text = "Tools";
+            // 
+            // getSNFAMenuItem
+            // 
+            this.getSNFAMenuItem.Index = 0;
+            this.getSNFAMenuItem.Text = "Get Symbol Name From Address...";
+            this.getSNFAMenuItem.Click += new System.EventHandler(this.getSNFAMenuItem_Click);
+            // 
+            // FSPWSSIDMenuItem
+            // 
+            this.FSPWSSIDMenuItem.Index = 1;
+            this.FSPWSSIDMenuItem.Text = "Find SYSTEM processes with same Session ID";
+            this.FSPWSSIDMenuItem.Click += new System.EventHandler(this.FSPWSSIDMenuItem_Click);
+            // 
             // windowMenuItem
             // 
             this.windowMenuItem.Index = 2;
@@ -966,7 +992,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 415);
+            this.statusBar.Location = new System.Drawing.Point(0, 352);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -1010,7 +1036,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 415);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 352);
             this.tabControlBig.TabIndex = 6;
             // 
             // tabProcesses
@@ -1019,7 +1045,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 389);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 326);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -1038,7 +1064,7 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(790, 383);
+            this.splitMain.Size = new System.Drawing.Size(790, 320);
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
             // 
@@ -1052,7 +1078,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 383);
+            this.tabControl.Size = new System.Drawing.Size(438, 320);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -1062,7 +1088,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(430, 357);
+            this.tabProcess.Size = new System.Drawing.Size(430, 294);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1089,7 +1115,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(418, 292);
+            this.treeMisc.Size = new System.Drawing.Size(418, 229);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1098,7 +1124,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 378);
+            this.tabThreads.Size = new System.Drawing.Size(430, 315);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -1109,7 +1135,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 378);
+            this.tabModules.Size = new System.Drawing.Size(430, 315);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1128,7 +1154,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 372);
+            this.listModules.Size = new System.Drawing.Size(424, 309);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1160,7 +1186,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 378);
+            this.tabMemory.Size = new System.Drawing.Size(430, 315);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1180,7 +1206,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 372);
+            this.listMemory.Size = new System.Drawing.Size(424, 309);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1217,7 +1243,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 410);
+            this.tabServices.Size = new System.Drawing.Size(796, 347);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -1303,32 +1329,6 @@
             this.selectAllServiceMenuItem.Text = "Select &All";
             this.selectAllServiceMenuItem.Click += new System.EventHandler(this.selectAllServiceMenuItem_Click);
             // 
-            // getSNFAMenuItem
-            // 
-            this.getSNFAMenuItem.Index = 0;
-            this.getSNFAMenuItem.Text = "Get Symbol Name From Address...";
-            this.getSNFAMenuItem.Click += new System.EventHandler(this.getSNFAMenuItem_Click);
-            // 
-            // exitProcessProcessMenuItem
-            // 
-            this.exitProcessProcessMenuItem.Index = 2;
-            this.exitProcessProcessMenuItem.Text = "Exit Process";
-            this.exitProcessProcessMenuItem.Click += new System.EventHandler(this.exitProcessProcessMenuItem_Click);
-            // 
-            // menuItem10
-            // 
-            this.menuItem10.Index = 1;
-            this.menuItem10.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.getSNFAMenuItem,
-            this.FSPWSSIDMenuItem});
-            this.menuItem10.Text = "Tools";
-            // 
-            // FSPWSSIDMenuItem
-            // 
-            this.FSPWSSIDMenuItem.Index = 1;
-            this.FSPWSSIDMenuItem.Text = "Find SYSTEM processes with same Session ID";
-            this.FSPWSSIDMenuItem.Click += new System.EventHandler(this.FSPWSSIDMenuItem_Click);
-            // 
             // listProcesses
             // 
             this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1336,7 +1336,7 @@
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(348, 382);
+            this.listProcesses.Size = new System.Drawing.Size(348, 319);
             this.listProcesses.TabIndex = 4;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
@@ -1360,7 +1360,7 @@
             this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 372);
+            this.listThreads.Size = new System.Drawing.Size(424, 309);
             this.listThreads.TabIndex = 0;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
@@ -1371,7 +1371,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 404);
+            this.listServices.Size = new System.Drawing.Size(790, 341);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -1383,7 +1383,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 437);
+            this.ClientSize = new System.Drawing.Size(804, 374);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.panelVirtualProtect);

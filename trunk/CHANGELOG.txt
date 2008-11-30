@@ -4,6 +4,7 @@ Process Hacker
  * Now shows function parameters in call stack
  * Added Injector
  * Added "Get Symbol Name From Address..." and "Find SYSTEM processes with same Session ID"
+ * Services list now displays a blank space when there is no PID
 
 1.2.1.5
  * Fixed disassemblies from PE window - they disassemble the right function now
