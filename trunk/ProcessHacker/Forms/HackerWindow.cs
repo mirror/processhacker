@@ -1289,37 +1289,42 @@ namespace ProcessHacker
 
         public void UpdateListViewItemToolTipText(int pid)
         {
-            if (pid == 0)
-                return;
-
-            ListViewItem litem = listProcesses.Items[pid.ToString()];
-
-            if (litem == null)
-                return;
-
-            if (litem.Tag == null)
-                litem.Tag = litem.ToolTipText;
-
-            litem.ToolTipText = litem.Tag.ToString();
-
-            if (!processServices.ContainsKey(pid))
+            try
             {
-                return;
-            }
-            else
-            {
-                string servicesText = "";
+                if (pid == 0)
+                    return;
 
-                foreach (string service in processServices[pid])
+                ListViewItem litem = listProcesses.Items[pid.ToString()];
+
+                if (litem == null)
+                    return;
+
+                if (litem.Tag == null)
+                    litem.Tag = litem.ToolTipText;
+
+                litem.ToolTipText = litem.Tag.ToString();
+
+                if (!processServices.ContainsKey(pid))
                 {
-                    if (serviceP.Dictionary[service].Status.DisplayName != "")
-                        servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
-                    else
-                        servicesText += service + "\n";
+                    return;
                 }
+                else
+                {
+                    string servicesText = "";
 
-                litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
+                    foreach (string service in processServices[pid])
+                    {
+                        if (serviceP.Dictionary[service].Status.DisplayName != "")
+                            servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
+                        else
+                            servicesText += service + "\n";
+                    }
+
+                    litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
+                }
             }
+            catch
+            { }
         }
 
         public void serviceP_DictionaryAdded(object item)
