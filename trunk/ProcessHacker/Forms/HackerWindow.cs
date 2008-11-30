@@ -336,6 +336,32 @@ namespace ProcessHacker
             }
         }
 
+        private void FSPWSSIDMenuItem_Click(object sender, EventArgs e)
+        {
+            Process[] processes = Process.GetProcesses();
+            int myId = Win32.GetProcessSessionId(Process.GetCurrentProcess().Handle.ToInt32());
+
+            DeselectAll(listProcesses.List);
+
+            foreach (Process p in processes)
+            {
+                try
+                {
+                    if (Win32.GetProcessUsername(p.Handle.ToInt32(), true) == "NT AUTHORITY\\SYSTEM" &&
+                        Win32.GetProcessSessionId(p.Handle.ToInt32()) == myId)
+                    {
+                        listProcesses.List.Items[p.Id.ToString()].Selected = true;
+                        listProcesses.List.Items[p.Id.ToString()].EnsureVisible();
+                    }
+                }
+                catch
+                { }
+            }
+
+            tabControlBig.SelectedTab = tabProcesses;
+            listProcesses.List.Select();
+        }
+
         private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -773,6 +799,16 @@ namespace ProcessHacker
                         servicesProcessMenuItem.Enabled = false;
                     }
 
+                    int phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, processSelectedPID);
+
+                    if (Win32.GetProcessSessionId(phandle) ==
+                        Win32.GetProcessSessionId(Process.GetCurrentProcess().Handle.ToInt32()))
+                        injectorMenuItem.Enabled = true;
+                    else
+                        injectorMenuItem.Enabled = false;
+
+                    Win32.CloseHandle(phandle);
+
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
                     searchProcessMenuItem.Enabled = true;
@@ -834,6 +870,7 @@ namespace ProcessHacker
                     privilegesMenuItem.Enabled = false;
                     groupsMenuItem.Enabled = false;
                     servicesProcessMenuItem.Enabled = false;
+                    injectorMenuItem.Enabled = false;
                     terminateMenuItem.Text = "&Terminate Processes";
                     closeActiveWindowMenuItem.Text = "&Close Active Windows";
                     suspendMenuItem.Text = "&Suspend Processes";

@@ -303,28 +303,6 @@ wchar_t *GetWinStaDesktop()
 	return result;
 }
 
-void __declspec(naked) Caller()
-{
-	__asm
-	{
-		pushad // save all the registers, we try not to screw up their thread
-		mov eax, 0xaaaaaaaa // function
-		
-		push 0xbbbbbbbb // push location of data_struct *data
-		call eax // call our function
-
-		popad // get registers back
-		
-		__emit 0xe9
-		__emit 0xcc
-		__emit 0xcc
-		__emit 0xcc
-		__emit 0xcc
-	}
-}
-
-void __declspec(naked) EndOfCaller() { }
-
 static void Ep(data_struct *data)
 {
 	data->fEP(0);
