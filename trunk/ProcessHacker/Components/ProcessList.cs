@@ -137,7 +137,7 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.Invoke = new ProviderInvokeMethod(this.Invoke);
                     _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);
@@ -162,60 +162,57 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            lock (listProcesses)
+            ProcessItem pitem = (ProcessItem)item;
+            HighlightedListViewItem litem = new HighlightedListViewItem();
+
+            litem.Name = pitem.PID.ToString();
+
+            try
             {
-                ProcessItem pitem = (ProcessItem)item;
-                HighlightedListViewItem litem = new HighlightedListViewItem();
+                litem.NormalColor = this.GetProcessColor(pitem);
+            }
+            catch
+            { }
 
-                litem.Name = pitem.PID.ToString();
+            litem.Text = pitem.Name;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
 
-                try
+            try
+            {
+                string filename = "";
+
+                if (pitem.PID == 4)
                 {
-                    litem.NormalColor = this.GetProcessColor(pitem);
-                }
-                catch
-                { }
-
-                litem.Text = pitem.Name;
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
-
-                try
-                {
-                    string filename = "";
-
-                    if (pitem.PID == 4)
-                    {
-                        filename = Misc.GetKernelFileName();
-                    }
-                    else
-                    {
-                        filename = pitem.Process.MainModule.FileName;
-                    }
-
-                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(
-                        Misc.GetRealPath(filename));
-
-                    litem.ToolTipText = info.FileName + "\n" +
-                        info.FileDescription + " (" + info.FileVersion + ")\n" +
-                        info.CompanyName;
-                }
-                catch
-                { }
-
-                if (pitem.Icon == null)
-                {
-                    litem.ImageIndex = 0;
+                    filename = Misc.GetKernelFileName();
                 }
                 else
                 {
-                    imageList.Images.Add(pitem.Icon);
-                    litem.ImageIndex = _id++;
+                    filename = pitem.Process.MainModule.FileName;
                 }
 
-                listProcesses.Items.Add(litem);
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(
+                    Misc.GetRealPath(filename));
+
+                litem.ToolTipText = info.FileName + "\n" +
+                    info.FileDescription + " (" + info.FileVersion + ")\n" +
+                    info.CompanyName;
             }
+            catch
+            { }
+
+            if (pitem.Icon == null)
+            {
+                litem.ImageIndex = 0;
+            }
+            else
+            {
+                imageList.Images.Add(pitem.Icon);
+                litem.ImageIndex = _id++;
+            }
+
+            listProcesses.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)
@@ -242,30 +239,27 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(object item)
         {
-            lock (listProcesses)
+            ProcessItem pitem = (ProcessItem)item;
+            int index = listProcesses.Items[pitem.PID.ToString()].Index;
+            bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
+            int selectedCount = listProcesses.SelectedItems.Count;
+            ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+            int imageIndex = litem.ImageIndex;
+
+            litem.Remove();
+            imageList.Images[imageIndex].Dispose();
+
+            if (selected && selectedCount == 1)
             {
-                ProcessItem pitem = (ProcessItem)item;
-                int index = listProcesses.Items[pitem.PID.ToString()].Index;
-                bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
-                int selectedCount = listProcesses.SelectedItems.Count;
-                ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
-                int imageIndex = litem.ImageIndex;
-
-                litem.Remove();
-                imageList.Images[imageIndex].Dispose();
-
-                if (selected && selectedCount == 1)
+                if (listProcesses.Items.Count == 0)
+                { }
+                else if (index > (listProcesses.Items.Count - 1))
                 {
-                    if (listProcesses.Items.Count == 0)
-                    { }
-                    else if (index > (listProcesses.Items.Count - 1))
-                    {
-                        listProcesses.Items[listProcesses.Items.Count - 1].Selected = true;
-                    }
-                    else
-                    {
-                        listProcesses.Items[index].Selected = true;
-                    }
+                    listProcesses.Items[listProcesses.Items.Count - 1].Selected = true;
+                }
+                else
+                {
+                    listProcesses.Items[index].Selected = true;
                 }
             }
         }

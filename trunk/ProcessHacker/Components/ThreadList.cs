@@ -139,7 +139,7 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.Invoke = new ProviderInvokeMethod(this.Invoke);
                     _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);
@@ -153,19 +153,16 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            lock (listThreads)
-            {
-                ThreadItem titem = (ThreadItem)item;
-                HighlightedListViewItem litem = new HighlightedListViewItem();
+            ThreadItem titem = (ThreadItem)item;
+            HighlightedListViewItem litem = new HighlightedListViewItem();
 
-                litem.Name = titem.TID.ToString();
-                litem.Text = titem.TID.ToString();
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
-                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
+            litem.Name = titem.TID.ToString();
+            litem.Text = titem.TID.ToString();
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
 
-                listThreads.Items.Add(litem);
-            }
+            listThreads.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)
@@ -186,27 +183,24 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(object item)
         {
-            lock (listThreads)
+            ThreadItem titem = (ThreadItem)item;
+            int index = listThreads.Items[titem.TID.ToString()].Index;
+            bool selected = listThreads.Items[titem.TID.ToString()].Selected;
+            int selectedCount = listThreads.SelectedItems.Count;
+
+            listThreads.Items[titem.TID.ToString()].Remove();
+
+            if (selected && selectedCount == 1)
             {
-                ThreadItem titem = (ThreadItem)item;
-                int index = listThreads.Items[titem.TID.ToString()].Index;
-                bool selected = listThreads.Items[titem.TID.ToString()].Selected;
-                int selectedCount = listThreads.SelectedItems.Count;
-
-                listThreads.Items[titem.TID.ToString()].Remove();
-
-                if (selected && selectedCount == 1)
+                if (listThreads.Items.Count == 0)
+                { }
+                else if (index > (listThreads.Items.Count - 1))
                 {
-                    if (listThreads.Items.Count == 0)
-                    { }
-                    else if (index > (listThreads.Items.Count - 1))
-                    {
-                        listThreads.Items[listThreads.Items.Count - 1].Selected = true;
-                    }
-                    else
-                    {
-                        listThreads.Items[index].Selected = true;
-                    }
+                    listThreads.Items[listThreads.Items.Count - 1].Selected = true;
+                }
+                else
+                {
+                    listThreads.Items[index].Selected = true;
                 }
             }
         }
