@@ -153,21 +153,24 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            ThreadItem titem = (ThreadItem)item;
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            lock (listThreads)
+            {
+                ThreadItem titem = (ThreadItem)item;
+                HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = titem.TID.ToString();
-            litem.Text = titem.TID.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
+                litem.Name = titem.TID.ToString();
+                litem.Text = titem.TID.ToString();
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
 
-            listThreads.Items.Add(litem);
+                listThreads.Items.Add(litem);
+            }
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)
         {
-            try
+            lock (listThreads)
             {
                 ThreadItem titem = (ThreadItem)newItem;
                 ListViewItem litem = listThreads.Items[titem.TID.ToString()];
@@ -176,30 +179,31 @@ namespace ProcessHacker
                 litem.SubItems[2].Text = titem.CPUTime;
                 litem.SubItems[3].Text = titem.Priority;
             }
-            catch
-            { }
         }
 
         private void provider_DictionaryRemoved(object item)
         {
-            ThreadItem titem = (ThreadItem)item;
-            int index = listThreads.Items[titem.TID.ToString()].Index;
-            bool selected = listThreads.Items[titem.TID.ToString()].Selected;
-            int selectedCount = listThreads.SelectedItems.Count;
-
-            listThreads.Items[titem.TID.ToString()].Remove();
-
-            if (selected && selectedCount == 1)
+            lock (listThreads)
             {
-                if (listThreads.Items.Count == 0)
-                { }
-                else if (index > (listThreads.Items.Count - 1))
+                ThreadItem titem = (ThreadItem)item;
+                int index = listThreads.Items[titem.TID.ToString()].Index;
+                bool selected = listThreads.Items[titem.TID.ToString()].Selected;
+                int selectedCount = listThreads.SelectedItems.Count;
+
+                listThreads.Items[titem.TID.ToString()].Remove();
+
+                if (selected && selectedCount == 1)
                 {
-                    listThreads.Items[listThreads.Items.Count - 1].Selected = true;
-                }
-                else 
-                {
-                    listThreads.Items[index].Selected = true;
+                    if (listThreads.Items.Count == 0)
+                    { }
+                    else if (index > (listThreads.Items.Count - 1))
+                    {
+                        listThreads.Items[listThreads.Items.Count - 1].Selected = true;
+                    }
+                    else
+                    {
+                        listThreads.Items[index].Selected = true;
+                    }
                 }
             }
         }
