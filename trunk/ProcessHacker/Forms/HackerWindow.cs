@@ -339,7 +339,7 @@ namespace ProcessHacker
         private void FSPWSSIDMenuItem_Click(object sender, EventArgs e)
         {
             Process[] processes = Process.GetProcesses();
-            int myId = Win32.GetProcessSessionId(Process.GetCurrentProcess().Handle.ToInt32());
+            int myId = Win32.GetProcessSessionId(Process.GetCurrentProcess().Id);
 
             DeselectAll(listProcesses.List);
 
@@ -347,7 +347,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    if (Win32.GetProcessUsername(p.Handle.ToInt32(), true) == "NT AUTHORITY\\SYSTEM" &&
+                    if (Win32.TSGetProcessUsername(p.Id, true) == "NT AUTHORITY\\SYSTEM" &&
                         Win32.GetProcessSessionId(p.Id) == myId)
                     {
                         listProcesses.List.Items[p.Id.ToString()].Selected = true;
@@ -799,20 +799,23 @@ namespace ProcessHacker
                         servicesProcessMenuItem.Enabled = false;
                     }
 
-                    int phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, processSelectedPID);
-
-                    if (Win32.GetProcessSessionId(phandle) ==
-                        Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
-                        injectorMenuItem.Enabled = true;
-                    else
+                    try
+                    {
+                        if (Win32.GetProcessSessionId(processSelectedPID) ==
+                            Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
+                            injectorMenuItem.Enabled = true;
+                        else
+                            injectorMenuItem.Enabled = false;
+                    }
+                    catch
+                    {
                         injectorMenuItem.Enabled = false;
+                    }
 
                     if (Program.WindowsVersion == "XP")
                         startProcessProcessMenuItem.Visible = false;
                     else
                         startProcessProcessMenuItem.Visible = true;
-
-                    Win32.CloseHandle(phandle);
 
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;

@@ -39,6 +39,8 @@ namespace ProcessHacker
 
     public class ProcessProvider : Provider<int, ProcessItem>
     {
+        private Dictionary<int, Win32.WTS_PROCESS_INFO> _tsProcesses;
+
         public ProcessProvider()
             : base()
         {      
@@ -54,6 +56,8 @@ namespace ProcessHacker
 
             foreach (Win32.WTS_PROCESS_INFO process in Win32.TSEnumProcesses())
                 tsProcesses.Add(process.ProcessID, process);
+
+            _tsProcesses = tsProcesses;
 
             foreach (int key in Dictionary.Keys)
                 newdictionary.Add(key, Dictionary[key]);
@@ -182,6 +186,11 @@ namespace ProcessHacker
             }
 
             Dictionary = newdictionary;
+        }
+
+        public Dictionary<int, Win32.WTS_PROCESS_INFO> TSProcesses
+        {
+            get { return _tsProcesses; }
         }
     }
 }

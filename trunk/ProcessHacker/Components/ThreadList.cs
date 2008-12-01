@@ -175,6 +175,9 @@ namespace ProcessHacker
                 ThreadItem titem = (ThreadItem)newItem;
                 ListViewItem litem = listThreads.Items[titem.TID.ToString()];
 
+                if (litem == null)
+                    return;
+
                 litem.SubItems[1].Text = titem.State;
                 litem.SubItems[2].Text = titem.CPUTime;
                 litem.SubItems[3].Text = titem.Priority;

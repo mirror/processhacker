@@ -188,6 +188,9 @@ namespace ProcessHacker
                 ServiceItem sitem = (ServiceItem)newItem;
                 ListViewItem litem = listServices.Items[sitem.Status.ServiceName];
 
+                if (litem == null)
+                    return;
+
                 litem.SubItems[1].Text = sitem.Status.DisplayName;
                 litem.SubItems[2].Text = sitem.Status.ServiceStatusProcess.ServiceType.ToString();
                 litem.SubItems[3].Text = sitem.Status.ServiceStatusProcess.CurrentState.ToString();

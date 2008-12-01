@@ -699,6 +699,33 @@ namespace ProcessHacker
             WTSInit
         }
 
+        public enum WTS_INFO_CLASS : int
+        {
+            WTSInitialProgram,
+            WTSApplicationName,
+            WTSWorkingDirectory,
+            WTSOEMId,
+            WTSSessionId,
+            WTSUserName,
+            WTSWinStationName,
+            WTSDomainName,
+            WTSConnectState,
+            WTSClientBuildNumber,
+            WTSClientName,
+            WTSClientDirectory,
+            WTSClientProductId,
+            WTSClientHardwareId,
+            WTSClientAddress,
+            WTSClientDisplay,
+            WTSClientProtocolType,
+            WTSIdleTime,
+            WTSLogonTime,
+            WTSIncomingBytes,
+            WTSOutgoingBytes,
+            WTSIncomingFrames,
+            WTSOutgoingFrames
+        }
+
         #endregion
 
         #region Imported Functions
@@ -707,6 +734,39 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int ProcessIdToSessionId(int ProcessId, ref int SessionId);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+            WTS_INFO_CLASS InfoClass,
+            [MarshalAs(UnmanagedType.LPTStr)] ref string Buffer,
+            ref int BytesReturned);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+            WTS_INFO_CLASS InfoClass,
+            ref int Buffer,
+            ref int BytesReturned);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+            WTS_INFO_CLASS InfoClass,
+            ref ushort Buffer,
+            ref int BytesReturned);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+            WTS_INFO_CLASS InfoClass,
+            ref WTS_CLIENT_DISPLAY[] Buffer,
+            ref int BytesReturned);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSLogoffSession(int ServerHandle, int SessionID, int Wait);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSDisconnectSession(int ServerHandle, int SessionID, int Wait);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSTerminateProcess(int ServerHandle, int ProcessID, int ExitCode);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int WTSEnumerateSessions(int ServerHandle, int Reserved,
@@ -1696,6 +1756,14 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct WTS_CLIENT_DISPLAY
+        {
+            public int HorizontalResolution;
+            public int VerticalResolution;
+            public int ColorDepth;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct WTS_PROCESS_INFO
         {
             public int SessionID;
@@ -1985,21 +2053,26 @@ namespace ProcessHacker
                 int token = 0;
                 int retLen = 0;
 
-                if ((handle = OpenProcess(PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, ProcessId)) == 0)
-                    return -1;
+                try
+                {
+                    if ((handle = OpenProcess(PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, ProcessId)) == 0)
+                        throw new Exception(GetLastErrorMessage());
 
-                if (OpenProcessToken(handle, TOKEN_RIGHTS.TOKEN_QUERY,
-                    ref token) == 0)
-                    return -1;
+                    if (OpenProcessToken(handle, TOKEN_RIGHTS.TOKEN_QUERY,
+                        ref token) == 0)
+                        throw new Exception(GetLastErrorMessage());
 
-                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenSessionId,
-                    ref sessionId, 4, ref retLen) == 0)
+                    if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenSessionId,
+                        ref sessionId, 4, ref retLen) == 0)
+                    {
+                        throw new Exception(GetLastErrorMessage());
+                    }
+                }
+                finally
                 {
                     CloseHandle(token);
-                    return -1;
+                    CloseHandle(handle);
                 }
-
-                CloseHandle(token);
 
                 return sessionId;
             }

@@ -153,7 +153,8 @@ namespace ProcessHacker
         {
             if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
-            else if (p.UsernameWithDomain == Win32.GetProcessUsername(Process.GetCurrentProcess().Handle.ToInt32(), true))
+            else if (p.UsernameWithDomain == 
+                Win32.GetAccountName(_provider.TSProcesses[Process.GetCurrentProcess().Id], true))
                 return Properties.Settings.Default.ColorOwnProcesses;
             else
                 return SystemColors.Window;
@@ -223,6 +224,16 @@ namespace ProcessHacker
             {
                 ProcessItem pitem = (ProcessItem)newItem;
                 ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+
+                if (litem == null)
+                    return;
+
+                try
+                {
+                    (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(pitem);
+                }
+                catch
+                { }
 
                 litem.SubItems[2].Text = pitem.MemoryUsage;
                 litem.SubItems[3].Text = pitem.Username;
