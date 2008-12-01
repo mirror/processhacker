@@ -2924,6 +2924,30 @@ namespace ProcessHacker
             InitMiscInfo();
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
+        }
+
+        private void serviceP_Updated()
+        {
+            listServices.List.EndUpdate();
+            serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
+        }
+
+        private void processP_Updated()
+        {
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                statusText.Text = "";
+                statusMessages.Clear();
+                log.Clear();
+                timerMessages.Enabled = true;
+                HighlightedListViewItem.StateHighlighting = true;
+                processP.Updated -= new ProviderUpdateOnce(processP_Updated);
+            }));
+        }
+
+        private void HackerWindow_Load(object sender, EventArgs e)
+        {
+            Program.UpdateWindows();
 
             timerFire.Interval = RefreshInterval;
             timerFire.Enabled = true;
@@ -2974,30 +2998,6 @@ namespace ProcessHacker
             serviceP.Enabled = true;
 
             statusText.Text = "Waiting...";
-        }
-
-        private void serviceP_Updated()
-        {
-            listServices.List.EndUpdate();
-            serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
-        }
-
-        private void processP_Updated()
-        {
-            this.BeginInvoke(new MethodInvoker(delegate
-            {
-                statusText.Text = "";
-                statusMessages.Clear();
-                log.Clear();
-                timerMessages.Enabled = true;
-                HighlightedListViewItem.StateHighlighting = true;
-                processP.Updated -= new ProviderUpdateOnce(processP_Updated);
-            }));
-        }
-
-        private void HackerWindow_Load(object sender, EventArgs e)
-        {
-            Program.UpdateWindows();
 
             // huge hack
             listModules.Items.Add(new ListViewItem("b"));

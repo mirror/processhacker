@@ -120,6 +120,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ColorModifier.resx">
       <DependentUpon>ColorModifier.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ServiceList.resx">
       <DependentUpon>ServiceList.cs</DependentUpon>
@@ -147,6 +148,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\HelpWindow.resx">
       <DependentUpon>HelpWindow.cs</DependentUpon>
