@@ -39,7 +39,7 @@ namespace ProcessHacker
 
         public int RefreshInterval = 1000;
 
-        HelpWindow helpForm = new HelpWindow();
+        public HelpWindow HelpForm = new HelpWindow();
 
         ProcessProvider processP = new ProcessProvider();
         ServiceProvider serviceP = new ServiceProvider();
@@ -413,8 +413,8 @@ namespace ProcessHacker
 
         private void helpMenuItem_Click(object sender, EventArgs e)
         {
-            helpForm.Show();
-            helpForm.Activate();
+            HelpForm.Show();
+            HelpForm.Activate();
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)

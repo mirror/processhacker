@@ -92,5 +92,11 @@ namespace ProcessHacker
         {
             TryStart("http://www.ollydbg.de");
         }
+
+        private void buttonLicenses_Click(object sender, EventArgs e)
+        {
+            Program.HackerWindow.HelpForm.Show();
+            Program.HackerWindow.HelpForm.SelectById("copyright");
+        }
     }
 }

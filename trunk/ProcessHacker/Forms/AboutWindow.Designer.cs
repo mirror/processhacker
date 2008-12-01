@@ -40,6 +40,7 @@
             this.linkEmail = new System.Windows.Forms.LinkLabel();
             this.buttonMoreInfo = new System.Windows.Forms.Button();
             this.linkAsm = new System.Windows.Forms.LinkLabel();
+            this.buttonLicenses = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -109,10 +110,10 @@
             this.linkVistaMenu.AutoSize = true;
             this.linkVistaMenu.Location = new System.Drawing.Point(174, 110);
             this.linkVistaMenu.Name = "linkVistaMenu";
-            this.linkVistaMenu.Size = new System.Drawing.Size(155, 13);
+            this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
             this.linkVistaMenu.TabStop = true;
-            this.linkVistaMenu.Text = "wyDay - VistaMenu, SplitButton";
+            this.linkVistaMenu.Text = "Wyatt O\'Day - VistaMenu, SplitButton";
             this.linkVistaMenu.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkVistaMenu_LinkClicked);
             // 
             // linkHexBox
@@ -181,11 +182,24 @@
             this.linkAsm.Text = "Oleh Yuschuk - Disassembler/Assembler";
             this.linkAsm.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAsm_LinkClicked);
             // 
+            // buttonLicenses
+            // 
+            this.buttonLicenses.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLicenses.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonLicenses.Location = new System.Drawing.Point(252, 189);
+            this.buttonLicenses.Name = "buttonLicenses";
+            this.buttonLicenses.Size = new System.Drawing.Size(75, 23);
+            this.buttonLicenses.TabIndex = 13;
+            this.buttonLicenses.Text = "Licenses...";
+            this.buttonLicenses.UseVisualStyleBackColor = true;
+            this.buttonLicenses.Click += new System.EventHandler(this.buttonLicenses_Click);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 253);
+            this.Controls.Add(this.buttonLicenses);
             this.Controls.Add(this.linkAsm);
             this.Controls.Add(this.buttonMoreInfo);
             this.Controls.Add(this.linkEmail);
@@ -229,6 +243,7 @@
         private System.Windows.Forms.LinkLabel linkEmail;
         private System.Windows.Forms.Button buttonMoreInfo;
         private System.Windows.Forms.LinkLabel linkAsm;
+        private System.Windows.Forms.Button buttonLicenses;
 
     }
 }

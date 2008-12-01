@@ -6,6 +6,8 @@ Process Hacker
  * Added "Get Symbol Name From Address..." and "Find SYSTEM processes with same Session ID"
  * Services list now displays a blank space when there is no PID
  * Fixed services with own process and interactive type
+ * Fixed random crashes with the process list and services list
+ * Added copyright information (to comply with VistaMenu and SplitButton licensing)
 
 1.2.1.5
  * Fixed disassemblies from PE window - they disassemble the right function now

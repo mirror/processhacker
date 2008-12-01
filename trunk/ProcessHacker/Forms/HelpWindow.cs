@@ -36,7 +36,8 @@ namespace ProcessHacker
                                          new string[] {"Memory List", "memlist"},
                                          new string[] {"Searching Memory", "memsearch"},
                                          new string[] {"Results Window", "results"},
-                                         new string[] {"Tips", "tips"}
+                                         new string[] {"Tips", "tips"},
+                                         new string[] {"Copyright Information", "copyright"}
                                      };
 
         public HelpWindow()
@@ -64,6 +65,11 @@ namespace ProcessHacker
                     break;
                 }
             }
+        }
+
+        public void SelectById(string id)
+        {
+            webBrowser.Document.GetElementById(id).ScrollIntoView(true);
         }
 
         private void HelpWindow_FormClosing(object sender, FormClosingEventArgs e)
