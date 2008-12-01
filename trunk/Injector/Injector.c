@@ -86,11 +86,11 @@ int _tmain(int argc, wchar_t *argv[])
 	wchar_t *winsta_desktop = GetDesktopName();
 	
 	if (!EnableTokenPrivilege(SE_DEBUG_NAME))
-		printf("Could not get debug privilege!");
+		printf("Could not get debug privilege!\n");
 
 	if (argc < 3)
 	{
-		printf("Need more arguments");
+		printf("Need more arguments.\n");
 		return ERROR_INVALID_PARAMETER;
 	}
 
@@ -108,7 +108,7 @@ int _tmain(int argc, wchar_t *argv[])
 		mode = MODE_EXITPROCESS;
 	else
 	{
-		printf("Invalid mode");
+		printf("Invalid mode.\n");
 		return ERROR_INVALID_PARAMETER;
 	}
 	
@@ -124,13 +124,13 @@ int _tmain(int argc, wchar_t *argv[])
 	if (!(handle = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | 
 		PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, pid)))
 	{
-		printf("Could not open process!");
+		printf("Could not open process!\n");
 		return GetLastError();
 	}
 	
 	if (!(remote_code = VirtualAllocEx(handle, 0, MAX_CODE, MEM_COMMIT, PAGE_EXECUTE_READWRITE)))
 	{
-		printf("Could not allocate memory!");
+		printf("Could not allocate memory!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -138,7 +138,7 @@ int _tmain(int argc, wchar_t *argv[])
 	if (!(remote_data = (data_struct *)VirtualAllocEx(handle, 0, 
 		sizeof(local_data), MEM_COMMIT, PAGE_READWRITE)))
 	{
-		printf("Could not allocate memory!");
+		printf("Could not allocate memory!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -154,7 +154,7 @@ int _tmain(int argc, wchar_t *argv[])
 	
 	if (!WriteProcessMemory(handle, remote_code, local_code, MAX_CODE, 0))
 	{
-		printf("Could not write remote code!");
+		printf("Could not write remote code!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -164,7 +164,7 @@ int _tmain(int argc, wchar_t *argv[])
 
 	if (!(kernel32 = LoadLibrary(L"kernel32.dll")))
 	{
-		printf("Could not load kernel32.dll!");
+		printf("Could not load kernel32.dll!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -173,35 +173,35 @@ int _tmain(int argc, wchar_t *argv[])
 	
 	if (!(local_data.fGCLW = (RGetCommandLineW)GetProcAddress(kernel32, "GetCommandLineW")))
 	{
-		printf("Could not get address of GetCommandLineW!");
+		printf("Could not get address of GetCommandLineW!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
 	
 	if (!(local_data.fCPW = (RCreateProcessW)GetProcAddress(kernel32, "CreateProcessW")))
 	{
-		printf("Could not get address of CreateProcessW!");
+		printf("Could not get address of CreateProcessW!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
 	
 	if (!(local_data.fCH = (RCloseHandle)GetProcAddress(kernel32, "CloseHandle")))
 	{
-		printf("Could not get address of CloseHandle!");
+		printf("Could not get address of CloseHandle!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
 	
 	if (!(local_data.fEP = (RExitProcess)GetProcAddress(kernel32, "ExitProcess")))
 	{
-		printf("Could not get address of ExitProcess!");
+		printf("Could not get address of ExitProcess!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
 
 	if (!WriteProcessMemory(handle, remote_data, &local_data, sizeof(local_data), 0))
 	{
-		printf("Could not write remote data!");
+		printf("Could not write remote data!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -209,7 +209,7 @@ int _tmain(int argc, wchar_t *argv[])
 	if (!(remote_thread = CreateRemoteThread(handle, 0, 0, (LPTHREAD_START_ROUTINE)remote_code,
 	    remote_data, 0, &rc)))
 	{
-		printf("Could not create remote thread!");
+		printf("Could not create remote thread!\n");
 		return_code = GetLastError();
 		goto clean_up;
 	}
@@ -221,23 +221,23 @@ int _tmain(int argc, wchar_t *argv[])
 		switch (rc)
 		{
 		case WAIT_TIMEOUT:
-			printf("WaitForSingleObject timed out!");
+			printf("WaitForSingleObject timed out!\n");
 			goto clean_up;
 		case WAIT_FAILED:
-			printf("WaitForSingleObject failed!");
+			printf("WaitForSingleObject failed!\n");
 			return_code = GetLastError();
 			goto clean_up;
 		case WAIT_OBJECT_0:
 			if (!ReadProcessMemory(handle, remote_data, &local_data, sizeof(local_data), 0))
 			{
-				printf("Could not read process memory!");
+				printf("Could not read process memory!\n");
 				return_code = GetLastError();
 				goto clean_up;
 			}
 
 			if (local_data.last_error != 0)
 			{
-				printf("Error in remote thread!");
+				printf("Error in remote thread!\n");
 				return_code = GetLastError();
 				goto clean_up;
 			}
@@ -270,37 +270,6 @@ wchar_t *GetDesktopName()
 	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, required_size, 0);
 
 	return desktop_name;
-}
-
-wchar_t *GetWinStaDesktop()
-{
-	HWINSTA winsta = GetProcessWindowStation();
-	HDESK desktop = GetThreadDesktop(GetCurrentThreadId());
-	wchar_t *result = 0;
-	wchar_t *winsta_name = 0;
-	wchar_t *desktop_name = 0;
-	DWORD required_size = 0;
-
-	GetUserObjectInformation(winsta, UOI_NAME, winsta_name, 0, &required_size);
-	winsta_name = (wchar_t *)malloc(required_size);
-	GetUserObjectInformation(winsta, UOI_NAME, winsta_name, required_size, 0);
-
-	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, 0, &required_size);
-	desktop_name = (wchar_t *)malloc(required_size);
-	GetUserObjectInformation(desktop, UOI_NAME, desktop_name, required_size, 0);
-
-	result = (wchar_t *)malloc(wcslen(winsta_name) + wcslen(desktop_name) + 2);
-	wcscpy(result, winsta_name);
-	result[wcslen(winsta_name)] = '\\';
-	wcscpy(&result[wcslen(winsta_name) + 1], desktop_name);
-
-	free(winsta_name);
-	free(desktop_name);
-
-	CloseHandle(winsta);
-	CloseHandle(desktop);
-
-	return result;
 }
 
 static void Ep(data_struct *data)
