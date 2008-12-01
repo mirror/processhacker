@@ -70,6 +70,39 @@ namespace ProcessHacker
             }
         }
 
+        public class ProcessHandle : IDisposable
+        {
+            private int _handle;
+
+            public ProcessHandle(int PID, PROCESS_RIGHTS access)
+            {
+                _handle = OpenProcess(access, 0, PID);
+
+                if (_handle == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Terminate()
+            {
+                this.Terminate(0);
+            }
+
+            public void Terminate(int ExitCode)
+            {
+                if (TerminateProcess(_handle, ExitCode) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                CloseHandle(_handle);
+            }
+
+            #endregion
+        }
+
         public class ServiceHandle : IDisposable
         {
             private int _handle;
@@ -652,60 +685,94 @@ namespace ProcessHacker
             TokenImpersonation
         }
 
+        public enum WTS_CONNECTSTATE_CLASS : int
+        {
+            WTSActive,
+            WTSConnected,
+            WTSConnectQuery,
+            WTSShadow,
+            WTSDisconnected,
+            WTSIdle,
+            WTSListen,
+            WTSReset,
+            WTSDown,
+            WTSInit
+        }
+
         #endregion
 
         #region Imported Functions
 
+        #region Terminal Server
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int ProcessIdToSessionId(int ProcessId, ref int SessionId);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSEnumerateSessions(int ServerHandle, int Reserved,
+            int Version, ref WTS_SESSION_INFO[] SessionInfo, ref int Count);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSEnumerateProcesses(int ServerHandle, int Reserved,
+            int Version, ref WTS_PROCESS_INFO[] ProcessInfo, ref int Count);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSFreeMemory(WTS_SESSION_INFO[] Memory);
+
+        #endregion
+
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int StartService(int Service, int NumServiceArgs, int Args);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int ChangeServiceConfig(int Service,
             SERVICE_TYPE ServiceType, SERVICE_START_TYPE StartType,
             SERVICE_ERROR_CONTROL ErrorControl,
-            [MarshalAs(UnmanagedType.LPStr)] string BinaryPath,
-            [MarshalAs(UnmanagedType.LPStr)] string LoadOrderGroup,
+            [MarshalAs(UnmanagedType.LPTStr)] string BinaryPath,
+            [MarshalAs(UnmanagedType.LPTStr)] string LoadOrderGroup,
             int TagID, int Dependencies,
-            [MarshalAs(UnmanagedType.LPStr)] string StartName,
+            [MarshalAs(UnmanagedType.LPTStr)] string StartName,
             int Password, int DisplayName);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int ControlService(int Service,
             SERVICE_CONTROL Control, ref SERVICE_STATUS ServiceStatus);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int CreateService(int SCManager, 
-            [MarshalAs(UnmanagedType.LPStr)] string ServiceName,
-            [MarshalAs(UnmanagedType.LPStr)] string DisplayName,
+            [MarshalAs(UnmanagedType.LPTStr)] string ServiceName,
+            [MarshalAs(UnmanagedType.LPTStr)] string DisplayName,
             SERVICE_RIGHTS DesiredAccess, SERVICE_TYPE ServiceType,
             SERVICE_START_TYPE StartType, SERVICE_ERROR_CONTROL ErrorControl,
-            [MarshalAs(UnmanagedType.LPStr)] string BinaryPathName,
-            [MarshalAs(UnmanagedType.LPStr)] string LoadOrderGroup,
+            [MarshalAs(UnmanagedType.LPTStr)] string BinaryPathName,
+            [MarshalAs(UnmanagedType.LPTStr)] string LoadOrderGroup,
             int TagID, int Dependencies,
-            [MarshalAs(UnmanagedType.LPStr)] string ServiceStartName,
-            [MarshalAs(UnmanagedType.LPStr)] string Password);
+            [MarshalAs(UnmanagedType.LPTStr)] string ServiceStartName,
+            [MarshalAs(UnmanagedType.LPTStr)] string Password);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int DeleteService(int Service);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryServiceConfig(int Service,
             int ServiceConfig,
             int BufSize, ref int BytesNeeded);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryServiceConfig(int Service,
             IntPtr ServiceConfig,
             int BufSize, ref int BytesNeeded);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryServiceConfig(int Service,
             [MarshalAs(UnmanagedType.Struct)] ref QUERY_SERVICE_CONFIG ServiceConfig,
             int BufSize, ref int BytesNeeded);
 
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int OpenService(int SCManager,
-            [MarshalAs(UnmanagedType.LPStr)] string ServiceName, SERVICE_RIGHTS DesiredAccess);
+            [MarshalAs(UnmanagedType.LPTStr)] string ServiceName, SERVICE_RIGHTS DesiredAccess);
 
         /// <summary>
         /// Enumerates services in the specified service control manager database. 
@@ -727,7 +794,7 @@ namespace ProcessHacker
         /// EnumServicesStatusEx function is called.</param>
         /// <param name="GroupName">Must be 0 for this definition.</param>
         /// <returns>A non-zero value for success, zero for failure.</returns>
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
             SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
             ref int Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
@@ -753,7 +820,7 @@ namespace ProcessHacker
         /// EnumServicesStatusEx function is called.</param>
         /// <param name="GroupName">Must be 0 for this definition.</param>
         /// <returns>A non-zero value for success, zero for failure.</returns>
-        [DllImport("advapi32.dll", SetLastError = true)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
             SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
             IntPtr Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
@@ -1155,10 +1222,10 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct ENUM_SERVICE_STATUS_PROCESS
         {
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string ServiceName;
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string DisplayName;
 
             [MarshalAs(UnmanagedType.Struct)]
@@ -1354,19 +1421,19 @@ namespace ProcessHacker
             public SERVICE_START_TYPE StartType;
             public SERVICE_ERROR_CONTROL ErrorControl;
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string BinaryPathName;
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string LoadOrderGroup;
 
             public int TagID;
             public int Dependencies; // pointer to a string array
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string ServiceStartName;
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPTStr)]
             public string DisplayName;
         }
 
@@ -1618,6 +1685,29 @@ namespace ProcessHacker
             public string Buffer;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WTS_PROCESS_INFO
+        {
+            public int SessionID;
+            public int ProcessID;
+            
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string ProcessName;
+
+            public int SID;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WTS_SESSION_INFO
+        {
+            public int SessionID;
+
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string WinStationName;
+
+            WTS_CONNECTSTATE_CLASS State;
+        }
+
         #endregion
 
         public static Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> EnumServices()
@@ -1678,7 +1768,13 @@ namespace ProcessHacker
             SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
 
             if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
-                return "";
+            {
+                name.EnsureCapacity(namelen);
+                domain.EnsureCapacity(domainlen);
+
+                if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
+                    throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+            }
 
             if (IncludeDomain)
             {
@@ -1802,25 +1898,41 @@ namespace ProcessHacker
             }
         }
 
-        public static int GetProcessSessionId(int ProcessHandle)
+        public static int GetProcessSessionId(int ProcessId)
         {
-            int token = 0;
-            int id = 0;
-            int retLen = 0;
+            int sessionId = -1;
 
-            if (Win32.OpenProcessToken(ProcessHandle, Win32.TOKEN_RIGHTS.TOKEN_QUERY,
-                ref token) == 0)
-                return -1;
-
-            if (Win32.GetTokenInformation(token, Win32.TOKEN_INFORMATION_CLASS.TokenSessionId,
-                ref id, 4, ref retLen) == 0)
+            try
             {
-                Win32.CloseHandle(token);
-                return -1;
+                if (ProcessIdToSessionId(ProcessId, ref sessionId) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+            catch
+            {
+                int handle = 0;
+                int token = 0;
+                int retLen = 0;
+
+                if ((handle = OpenProcess(PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, ProcessId)) == 0)
+                    return -1;
+
+                if (OpenProcessToken(handle, TOKEN_RIGHTS.TOKEN_QUERY,
+                    ref token) == 0)
+                    return -1;
+
+                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenSessionId,
+                    ref sessionId, 4, ref retLen) == 0)
+                {
+                    CloseHandle(token);
+                    return -1;
+                }
+
+                CloseHandle(token);
+
+                return sessionId;
             }
 
-            Win32.CloseHandle(token);
-            return id;
+            return sessionId;
         }
 
         public static int GetProcessSID(int ProcessHandle)

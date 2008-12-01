@@ -254,16 +254,19 @@ namespace ProcessHacker
 
         public void RefreshColors()
         {
-            foreach (ListViewItem litem in listProcesses.Items)
+            lock (listProcesses)
             {
-                try
+                foreach (ListViewItem litem in listProcesses.Items)
                 {
-                    ProcessItem item = _provider.Dictionary[int.Parse(litem.Name)];
+                    try
+                    {
+                        ProcessItem item = _provider.Dictionary[int.Parse(litem.Name)];
 
-                    (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(item);
+                        (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(item);
+                    }
+                    catch
+                    { }
                 }
-                catch
-                { }
             }
         }
 

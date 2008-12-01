@@ -348,7 +348,7 @@ namespace ProcessHacker
                 try
                 {
                     if (Win32.GetProcessUsername(p.Handle.ToInt32(), true) == "NT AUTHORITY\\SYSTEM" &&
-                        Win32.GetProcessSessionId(p.Handle.ToInt32()) == myId)
+                        Win32.GetProcessSessionId(p.Id) == myId)
                     {
                         listProcesses.List.Items[p.Id.ToString()].Selected = true;
                         listProcesses.List.Items[p.Id.ToString()].EnsureVisible();
@@ -802,7 +802,7 @@ namespace ProcessHacker
                     int phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, processSelectedPID);
 
                     if (Win32.GetProcessSessionId(phandle) ==
-                        Win32.GetProcessSessionId(Process.GetCurrentProcess().Handle.ToInt32()))
+                        Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
                         injectorMenuItem.Enabled = true;
                     else
                         injectorMenuItem.Enabled = false;
@@ -2350,7 +2350,7 @@ namespace ProcessHacker
                                   {
                                       delegate (Process p)
                                       {
-                                          int id = Win32.GetProcessSessionId(p.Handle.ToInt32());
+                                          int id = Win32.GetProcessSessionId(p.Id);
 
                                           return id == -1 ? "Unknown" : id.ToString();
                                       },
