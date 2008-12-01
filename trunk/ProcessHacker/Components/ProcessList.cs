@@ -209,7 +209,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryModified(object oldItem, object newItem)
         {
-            try
+            lock (_provider.Dictionary)
             {
                 ProcessItem pitem = (ProcessItem)newItem;
                 ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
@@ -217,8 +217,6 @@ namespace ProcessHacker
                 litem.SubItems[2].Text = pitem.MemoryUsage;
                 litem.SubItems[3].Text = pitem.Username;
             }
-            catch
-            { }
         }
 
         private void provider_DictionaryRemoved(object item)

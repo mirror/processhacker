@@ -115,19 +115,18 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    // doesn't work on different thread for some reason.
-                    Program.HackerWindow.Invoke(new MethodInvoker(delegate
+                    try
                     {
-                        try
-                        {
-                            item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                Properties.Settings.Default.ShowAccountDomains);
-                            item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                true);
-                        }
-                        catch
-                        { }
-                    }));
+                        item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            Properties.Settings.Default.ShowAccountDomains);
+                        item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            true);
+                    }
+                    catch
+                    {
+                        item.Username = "(" + Win32.GetLastErrorMessage() + ")";
+                        item.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
+                    }
 
                     newdictionary.Add(p.Id, item);
                     this.CallDictionaryAdded(item);
@@ -150,18 +149,18 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    Program.HackerWindow.Invoke(new MethodInvoker(delegate
+                    try
                     {
-                        try
-                        {
-                            newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                Properties.Settings.Default.ShowAccountDomains);
-                            newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                                true);
-                        }
-                        catch
-                        { }
-                    }));
+                        newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            Properties.Settings.Default.ShowAccountDomains);
+                        newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            true);
+                    }
+                    catch
+                    {
+                        newitem.Username = "(" + Win32.GetLastErrorMessage() + ")";
+                        newitem.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
+                    }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.Username != item.Username)

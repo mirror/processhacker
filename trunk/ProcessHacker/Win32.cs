@@ -1851,16 +1851,20 @@ namespace ProcessHacker
             int retlen = 0;
 
             if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
-                return "";
+                throw new Exception("Could not open process handle with TOKEN_QUERY: " + Win32.GetLastErrorMessage());
 
-            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
-                Marshal.SizeOf(user), ref retlen) == 0)
+            try
+            {
+                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
+                    Marshal.SizeOf(user), ref retlen) == 0)
+                {
+                    throw new Exception("Could not get token information: " + Win32.GetLastErrorMessage());
+                }
+            }
+            finally
             {
                 CloseHandle(token);
-                return "";
             }
-
-            CloseHandle(token);
 
             return GetAccountName(user.User.SID, IncludeDomain); 
         }

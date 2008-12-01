@@ -1298,42 +1298,37 @@ namespace ProcessHacker
 
         public void UpdateListViewItemToolTipText(int pid)
         {
-            try
+            if (pid == 0)
+                return;
+
+            ListViewItem litem = listProcesses.Items[pid.ToString()];
+
+            if (litem == null)
+                return;
+
+            if (litem.Tag == null)
+                litem.Tag = litem.ToolTipText;
+
+            litem.ToolTipText = litem.Tag.ToString();
+
+            if (!processServices.ContainsKey(pid))
             {
-                if (pid == 0)
-                    return;
-
-                ListViewItem litem = listProcesses.Items[pid.ToString()];
-
-                if (litem == null)
-                    return;
-
-                if (litem.Tag == null)
-                    litem.Tag = litem.ToolTipText;
-
-                litem.ToolTipText = litem.Tag.ToString();
-
-                if (!processServices.ContainsKey(pid))
-                {
-                    return;
-                }
-                else
-                {
-                    string servicesText = "";
-
-                    foreach (string service in processServices[pid])
-                    {
-                        if (serviceP.Dictionary[service].Status.DisplayName != "")
-                            servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
-                        else
-                            servicesText += service + "\n";
-                    }
-
-                    litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
-                }
+                return;
             }
-            catch
-            { }
+            else
+            {
+                string servicesText = "";
+
+                foreach (string service in processServices[pid])
+                {
+                    if (serviceP.Dictionary[service].Status.DisplayName != "")
+                        servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
+                    else
+                        servicesText += service + "\n";
+                }
+
+                litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
+            }
         }
 
         public void serviceP_DictionaryAdded(object item)
@@ -2164,7 +2159,12 @@ namespace ProcessHacker
             PerformSearch(((MenuItem)sender).Text);
         }
 
-        private void QueueMessage(string message, Icon icon)
+        public void QueueMessage(string message)
+        {
+            this.QueueMessage(message, null);
+        }
+
+        public void QueueMessage(string message, Icon icon)
         {
             log.Add(DateTime.Now.ToString() + ": " + message);
             statusMessages.Enqueue(new KeyValuePair<string,Icon>(message, icon));
