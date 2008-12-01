@@ -154,33 +154,36 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            ServiceItem sitem = (ServiceItem)item;
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            lock (listServices)
+            {
+                ServiceItem sitem = (ServiceItem)item;
+                HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = sitem.Status.ServiceName;
-            litem.Text = sitem.Status.ServiceName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.DisplayName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ServiceType.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.CurrentState.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                sitem.Status.ServiceStatusProcess.ProcessID == 0 ? "" : sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
+                litem.Name = sitem.Status.ServiceName;
+                litem.Text = sitem.Status.ServiceName;
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.DisplayName));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.ServiceType.ToString()));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, sitem.Status.ServiceStatusProcess.CurrentState.ToString()));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                    sitem.Status.ServiceStatusProcess.ProcessID == 0 ? "" : sitem.Status.ServiceStatusProcess.ProcessID.ToString()));
 
-            if ((sitem.Status.ServiceStatusProcess.ServiceType & Win32.SERVICE_TYPE.InteractiveProcess) != 0)
-                litem.ImageKey = "Interactive";
-            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
-                sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
-                litem.ImageKey = "Win32";
-            else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.FileSystemDriver)
-                litem.ImageKey = "FS";
-            else
-                litem.ImageKey = "Driver";
+                if ((sitem.Status.ServiceStatusProcess.ServiceType & Win32.SERVICE_TYPE.InteractiveProcess) != 0)
+                    litem.ImageKey = "Interactive";
+                else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
+                    sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
+                    litem.ImageKey = "Win32";
+                else if (sitem.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.FileSystemDriver)
+                    litem.ImageKey = "FS";
+                else
+                    litem.ImageKey = "Driver";
 
-            listServices.Items.Add(litem);
+                listServices.Items.Add(litem);
+            }
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)
         {
-            try
+            lock (listServices)
             {
                 ServiceItem sitem = (ServiceItem)newItem;
                 ListViewItem litem = listServices.Items[sitem.Status.ServiceName];
@@ -191,13 +194,11 @@ namespace ProcessHacker
                 litem.SubItems[4].Text = sitem.Status.ServiceStatusProcess.ProcessID == 0 ? "" : 
                     sitem.Status.ServiceStatusProcess.ProcessID.ToString();
             }
-            catch
-            { }
         }
 
         private void provider_DictionaryRemoved(object item)
         {
-            try
+            lock (listServices)
             {
                 ServiceItem sitem = (ServiceItem)item;
                 int index = listServices.Items[sitem.Status.ServiceName].Index;
@@ -221,8 +222,6 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch
-            { }
         }
 
         #endregion

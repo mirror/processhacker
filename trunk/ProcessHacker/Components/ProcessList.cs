@@ -161,55 +161,58 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(object item)
         {
-            ProcessItem pitem = (ProcessItem)item;
-            HighlightedListViewItem litem = new HighlightedListViewItem();
-
-            litem.Name = pitem.PID.ToString();
-            litem.NormalColor = this.GetProcessColor(pitem);
-            litem.Text = pitem.Name;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
-
-            try
+            lock (listProcesses)
             {
-                string filename = "";
+                ProcessItem pitem = (ProcessItem)item;
+                HighlightedListViewItem litem = new HighlightedListViewItem();
 
-                if (pitem.PID == 4)
+                litem.Name = pitem.PID.ToString();
+                litem.NormalColor = this.GetProcessColor(pitem);
+                litem.Text = pitem.Name;
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
+
+                try
                 {
-                    filename = Misc.GetKernelFileName();
+                    string filename = "";
+
+                    if (pitem.PID == 4)
+                    {
+                        filename = Misc.GetKernelFileName();
+                    }
+                    else
+                    {
+                        filename = pitem.Process.MainModule.FileName;
+                    }
+
+                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(
+                        Misc.GetRealPath(filename));
+
+                    litem.ToolTipText = info.FileName + "\n" +
+                        info.FileDescription + " (" + info.FileVersion + ")\n" +
+                        info.CompanyName;
+                }
+                catch
+                { }
+
+                if (pitem.Icon == null)
+                {
+                    litem.ImageIndex = 0;
                 }
                 else
                 {
-                    filename = pitem.Process.MainModule.FileName;
+                    imageList.Images.Add(pitem.Icon);
+                    litem.ImageIndex = _id++;
                 }
 
-                FileVersionInfo info = FileVersionInfo.GetVersionInfo(
-                    Misc.GetRealPath(filename));
-
-                litem.ToolTipText = info.FileName + "\n" +
-                    info.FileDescription + " (" + info.FileVersion + ")\n" +
-                    info.CompanyName;
+                listProcesses.Items.Add(litem);
             }
-            catch
-            { }
-
-            if (pitem.Icon == null)
-            {
-                litem.ImageIndex = 0;
-            }
-            else
-            {
-                imageList.Images.Add(pitem.Icon);
-                litem.ImageIndex = _id++;
-            }
-
-            listProcesses.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)
         {
-            lock (_provider.Dictionary)
+            lock (listProcesses)
             {
                 ProcessItem pitem = (ProcessItem)newItem;
                 ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
@@ -221,7 +224,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(object item)
         {
-            try
+            lock (listProcesses)
             {
                 ProcessItem pitem = (ProcessItem)item;
                 int index = listProcesses.Items[pitem.PID.ToString()].Index;
@@ -247,8 +250,6 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch
-            { }
         }
 
         public void RefreshColors()
