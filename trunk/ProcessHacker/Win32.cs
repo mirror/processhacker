@@ -39,7 +39,7 @@ namespace ProcessHacker
             /// </summary>
             /// <param name="ptr">The pointer to the array.</param>
             /// <returns>A string array.</returns>
-            public string[] GetMultiString(IntPtr ptr)
+            public static string[] GetMultiString(IntPtr ptr)
             {
                 List<string> list = new List<string>();
                 char* chptr = (char*)ptr.ToPointer();
@@ -713,9 +713,19 @@ namespace ProcessHacker
             int Version, ref WTS_SESSION_INFO[] SessionInfo, ref int Count);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSEnumerateSessions(int ServerHandle, int Reserved,
+            int Version, ref int SessionInfo, ref int Count);
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int WTSEnumerateProcesses(int ServerHandle, int Reserved,
             int Version, ref WTS_PROCESS_INFO[] ProcessInfo, ref int Count);
 
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int WTSEnumerateProcesses(int ServerHandle, int Reserved,
+            int Version, ref int ProcessInfo, ref int Count);
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSFreeMemory(int Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
         public static extern int WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
@@ -1710,6 +1720,63 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Terminal Server
+
+        public static WTS_SESSION_INFO[] TSEnumSessions()
+        {
+            int sessions = 0;
+            int count = 0;
+            WTS_SESSION_INFO[] returnSessions;
+
+            WTSEnumerateSessions(0, 0, 1, ref sessions, ref count);
+            returnSessions = new WTS_SESSION_INFO[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                returnSessions[i] = (WTS_SESSION_INFO)Marshal.PtrToStructure(
+                    new IntPtr(sessions + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i), typeof(WTS_SESSION_INFO));
+            }
+
+            WTSFreeMemory(sessions);
+
+            return returnSessions;
+        }
+
+        public static WTS_PROCESS_INFO[] TSEnumProcesses()
+        {
+            int processes = 0;
+            int count = 0;
+            WTS_PROCESS_INFO[] returnProcesses;
+
+            WTSEnumerateProcesses(0, 0, 1, ref processes, ref count);
+            returnProcesses = new WTS_PROCESS_INFO[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                returnProcesses[i] = (WTS_PROCESS_INFO)Marshal.PtrToStructure(
+                    new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i), typeof(WTS_PROCESS_INFO));
+            }
+
+            WTSFreeMemory(processes);
+
+            return returnProcesses;
+        }
+
+        public static string TSGetProcessUsername(int PID, bool IncludeDomain)
+        {
+            WTS_PROCESS_INFO[] processes = TSEnumProcesses();
+
+            foreach (WTS_PROCESS_INFO process in processes)
+            {
+                if (process.ProcessID == PID)
+                    return GetAccountName(process.SID, IncludeDomain); 
+            }
+
+            throw new Exception("Process does not exist.");
+        }
+
+        #endregion
+
         public static Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> EnumServices()
         {
             int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_ENUMERATE_SERVICE);
@@ -1757,6 +1824,11 @@ namespace ProcessHacker
             }
 
             return dictionary;
+        }
+
+        public static string GetAccountName(WTS_PROCESS_INFO info, bool IncludeDomain)
+        {
+            return GetAccountName(info.SID, IncludeDomain);
         }
 
         public static string GetAccountName(int SID, bool IncludeDomain)

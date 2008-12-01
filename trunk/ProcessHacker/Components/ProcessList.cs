@@ -167,7 +167,14 @@ namespace ProcessHacker
                 HighlightedListViewItem litem = new HighlightedListViewItem();
 
                 litem.Name = pitem.PID.ToString();
-                litem.NormalColor = this.GetProcessColor(pitem);
+
+                try
+                {
+                    litem.NormalColor = this.GetProcessColor(pitem);
+                }
+                catch
+                { }
+
                 litem.Text = pitem.Name;
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));

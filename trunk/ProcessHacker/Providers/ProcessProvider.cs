@@ -48,8 +48,12 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             Process[] processes = Process.GetProcesses();
+            Dictionary<int, Win32.WTS_PROCESS_INFO> tsProcesses = new Dictionary<int, Win32.WTS_PROCESS_INFO>();
             List<int> pids = new List<int>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
+
+            foreach (Win32.WTS_PROCESS_INFO process in Win32.TSEnumProcesses())
+                tsProcesses.Add(process.ProcessID, process);
 
             foreach (int key in Dictionary.Keys)
                 newdictionary.Add(key, Dictionary[key]);
@@ -117,10 +121,13 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //    Properties.Settings.Default.ShowAccountDomains);
+                        //item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //    true);
+                        item.Username = Win32.GetAccountName(tsProcesses[p.Id],
                             Properties.Settings.Default.ShowAccountDomains);
-                        item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            true);
+                        item.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
                     }
                     catch
                     {
@@ -151,10 +158,13 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //    Properties.Settings.Default.ShowAccountDomains);
+                        //newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                        //    true);
+                        newitem.Username = Win32.GetAccountName(tsProcesses[p.Id],
                             Properties.Settings.Default.ShowAccountDomains);
-                        newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            true);
+                        newitem.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
                     }
                     catch
                     {
