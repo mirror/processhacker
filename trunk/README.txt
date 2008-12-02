@@ -20,8 +20,9 @@ It supports:
 
 Additionally, Process Hacker includes a separate tool called Injector 
 which has the following capabilities:
- * Getting the command line of a process (by injecting a remote thread)
- * Forcing a process to start another process (by injecting a remote thread)
+ * Getting the command line of a process
+ * Forcing a process to start another process
+ * Forcing a process to terminate itself
 
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).
