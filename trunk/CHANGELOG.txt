@@ -10,6 +10,7 @@ Process Hacker
  * Added copyright information (to comply with VistaMenu and SplitButton licensing)
  * Now displays user names of most processes using the Terminal Server APIs
  * Fixed incorrect messages about "new services"
+ * Added tray icon
 
 1.2.1.5
  * Fixed disassemblies from PE window - they disassemble the right function now

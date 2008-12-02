@@ -73,6 +73,11 @@ namespace ProcessHacker
             get { return windowMenuItem; }
         }
 
+        public NotifyIcon NotifyIcon
+        {
+            get { return notifyIcon; }
+        }
+
         public wyDay.Controls.VistaMenu VistaMenu
         {
             get { return vistaMenu; }
@@ -755,6 +760,25 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Notification Icon & Menu
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            showHideMenuItem_Click(null, null);
+        }
+
+        private void showHideMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Visible = !this.Visible;
+        }
+
+        private void exitTrayMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
+
         #region Process Context Menu
 
         private void menuProcess_Popup(object sender, EventArgs e)
@@ -1287,6 +1311,10 @@ namespace ProcessHacker
             { }
 
             this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")" + parentText, pitem.Icon);
+
+            if (processP.RunCount > 1 && NPMenuItem.Checked)
+                notifyIcon.ShowBalloonTip(2000, "New Process",
+                    "The process " + pitem.Name + " (" + pitem.PID.ToString() + ") was started.", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(object item)
@@ -1297,6 +1325,10 @@ namespace ProcessHacker
 
             if (processServices.ContainsKey(pitem.PID))
                 processServices.Remove(pitem.PID);
+
+            if (processP.RunCount > 1 && TPMenuItem.Checked)
+                notifyIcon.ShowBalloonTip(2000, "Terminated Process",
+                    "The process " + pitem.Name + " (" + pitem.PID.ToString() + ") was terminated.", ToolTipIcon.Info);
         }
 
         public void UpdateListViewItemToolTipText(int pid)
@@ -1344,6 +1376,11 @@ namespace ProcessHacker
                 " (" + sitem.Status.DisplayName + ")" :
                 ""), null);
 
+            if (serviceP.RunCount > 1 && NSMenuItem.Checked)
+                notifyIcon.ShowBalloonTip(2000, "New Service",
+                    "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been created.",
+                    ToolTipIcon.Info);
+
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
                 if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
@@ -1364,11 +1401,18 @@ namespace ProcessHacker
             if ((oldState == Win32.SERVICE_STATE.Paused || oldState == Win32.SERVICE_STATE.Stopped ||
                 oldState == Win32.SERVICE_STATE.StartPending) &&
                 newState == Win32.SERVICE_STATE.Running)
+            {
                 this.QueueMessage("Service Started: " + sitem.Status.ServiceName +
                     " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((sitem.Status.DisplayName != "") ?
                     " (" + sitem.Status.DisplayName + ")" :
                     ""), null);
+
+                if (serviceP.RunCount > 1 && startedSMenuItem.Checked)
+                    notifyIcon.ShowBalloonTip(2000, "Service Started",
+                        "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been started.",
+                        ToolTipIcon.Info);
+            }
 
             if (oldState == Win32.SERVICE_STATE.Running &&
                 newState == Win32.SERVICE_STATE.Paused)
@@ -1380,11 +1424,18 @@ namespace ProcessHacker
 
             if (oldState == Win32.SERVICE_STATE.Running &&
                 newState == Win32.SERVICE_STATE.Stopped)
+            {
                 this.QueueMessage("Service Stopped: " + sitem.Status.ServiceName +
                     " (" + sitem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((sitem.Status.DisplayName != "") ?
                     " (" + sitem.Status.DisplayName + ")" :
                     ""), null);
+
+                if (serviceP.RunCount > 1 && stoppedSMenuItem.Checked)
+                    notifyIcon.ShowBalloonTip(2000, "Service Stopped",
+                        "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been stopped.",
+                        ToolTipIcon.Info);
+            }
 
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -1420,6 +1471,11 @@ namespace ProcessHacker
                 ((sitem.Status.DisplayName != "") ?
                 " (" + sitem.Status.DisplayName + ")" :
                 ""), null);
+
+            if (serviceP.RunCount > 1 && DSMenuItem.Checked)
+                notifyIcon.ShowBalloonTip(2000, "Service Deleted",
+                    "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been deleted.",
+                    ToolTipIcon.Info);
             
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -2233,6 +2289,13 @@ namespace ProcessHacker
             Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
             Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
             Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
+
+            Properties.Settings.Default.NewProcesses = NPMenuItem.Checked;
+            Properties.Settings.Default.TerminatedProcesses = TPMenuItem.Checked;
+            Properties.Settings.Default.NewServices = NSMenuItem.Checked;
+            Properties.Settings.Default.StartedServices = startedSMenuItem.Checked;
+            Properties.Settings.Default.StoppedServices = stoppedSMenuItem.Checked;
+            Properties.Settings.Default.DeletedServices = DSMenuItem.Checked;
             
             try
             {
@@ -2894,10 +2957,13 @@ namespace ProcessHacker
                 threadP.Kill();
 
             processP.Kill();
+            serviceP.Kill();
+
+            notifyIcon.Visible = false;
 
             SaveSettings();
 
-            // kill, just in case we are forming an operation we don't want random .net errors about disposed objects.
+            // kill, just in case we are performing an operation we don't want random .net errors about disposed objects.
             Process.GetCurrentProcess().Kill();
         }
 
@@ -2924,6 +2990,27 @@ namespace ProcessHacker
             InitMiscInfo();
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+            notifyIcon.ContextMenu = menuIcon;
+            notifyIcon.Visible = Properties.Settings.Default.ShowIcon;
+            NPMenuItem.Checked = Properties.Settings.Default.NewProcesses;
+            TPMenuItem.Checked = Properties.Settings.Default.TerminatedProcesses;
+            NSMenuItem.Checked = Properties.Settings.Default.NewServices;
+            startedSMenuItem.Checked = Properties.Settings.Default.StartedServices;
+            stoppedSMenuItem.Checked = Properties.Settings.Default.StoppedServices;
+            DSMenuItem.Checked = Properties.Settings.Default.DeletedServices;
+
+            NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            NSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+        }
+
+        private void CheckedMenuItem_Click(object sender, EventArgs e)
+        {
+            ((MenuItem)sender).Checked = !((MenuItem)sender).Checked;
         }
 
         private void serviceP_Updated()

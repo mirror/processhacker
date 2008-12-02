@@ -315,7 +315,8 @@ namespace ProcessHacker
 
                 return;
             }
-            
+
+            f.Visible = true; // just in case it's hidden right now
             f.Activate();
         }
 

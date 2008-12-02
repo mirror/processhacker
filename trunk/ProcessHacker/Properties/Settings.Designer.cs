@@ -514,5 +514,89 @@ namespace ProcessHacker.Properties {
                 this["UseToolhelpModules"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NewProcesses {
+            get {
+                return ((bool)(this["NewProcesses"]));
+            }
+            set {
+                this["NewProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TerminatedProcesses {
+            get {
+                return ((bool)(this["TerminatedProcesses"]));
+            }
+            set {
+                this["TerminatedProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NewServices {
+            get {
+                return ((bool)(this["NewServices"]));
+            }
+            set {
+                this["NewServices"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StartedServices {
+            get {
+                return ((bool)(this["StartedServices"]));
+            }
+            set {
+                this["StartedServices"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StoppedServices {
+            get {
+                return ((bool)(this["StoppedServices"]));
+            }
+            set {
+                this["StoppedServices"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DeletedServices {
+            get {
+                return ((bool)(this["DeletedServices"]));
+            }
+            set {
+                this["DeletedServices"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowIcon {
+            get {
+                return ((bool)(this["ShowIcon"]));
+            }
+            set {
+                this["ShowIcon"] = value;
+            }
+        }
     }
 }
