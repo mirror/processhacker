@@ -1913,7 +1913,10 @@ namespace ProcessHacker
                 domain.EnsureCapacity(domainlen);
 
                 if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
-                    throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                {
+                    if (name.ToString() == "" && domain.ToString() == "")
+                        throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                }
             }
 
             if (IncludeDomain)
