@@ -2929,6 +2929,16 @@ namespace ProcessHacker
         private void serviceP_Updated()
         {
             listServices.List.EndUpdate();
+
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                statusText.Text = "";
+                statusMessages.Clear();
+                log.Clear();
+                timerMessages.Enabled = true;
+                HighlightedListViewItem.StateHighlighting = true;
+            }));
+
             serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
         }
 
@@ -2941,8 +2951,9 @@ namespace ProcessHacker
                 log.Clear();
                 timerMessages.Enabled = true;
                 HighlightedListViewItem.StateHighlighting = true;
-                processP.Updated -= new ProviderUpdateOnce(processP_Updated);
             }));
+
+            processP.Updated -= new ProviderUpdateOnce(processP_Updated);
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
