@@ -125,18 +125,28 @@ namespace ProcessHacker
 
                     try
                     {
-                        //item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                        //    Properties.Settings.Default.ShowAccountDomains);
-                        //item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                        //    true);
-                        item.Username = Win32.GetAccountName(tsProcesses[p.Id],
+                        item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
                             Properties.Settings.Default.ShowAccountDomains);
-                        item.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                        item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            true);
+                        
                     }
                     catch
                     {
-                        item.Username = "(" + Win32.GetLastErrorMessage() + ")";
-                        item.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
+                        try
+                        {
+                            item.Username = Win32.GetAccountName(tsProcesses[p.Id],
+                            Properties.Settings.Default.ShowAccountDomains);
+                            item.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                        }
+                        catch
+                        {
+                            if (System.Runtime.InteropServices.Marshal.GetLastWin32Error() == 5)
+                            {
+                                item.Username = "(" + Win32.GetLastErrorMessage() + ")";
+                                item.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
+                            }
+                        }
                     }
 
                     newdictionary.Add(p.Id, item);
@@ -162,18 +172,25 @@ namespace ProcessHacker
 
                     try
                     {
-                        //newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                        //    Properties.Settings.Default.ShowAccountDomains);
-                        //newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                        //    true);
-                        newitem.Username = Win32.GetAccountName(tsProcesses[p.Id],
+                        newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
                             Properties.Settings.Default.ShowAccountDomains);
-                        newitem.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                        newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
+                            true);
+
                     }
                     catch
                     {
-                        newitem.Username = "(" + Win32.GetLastErrorMessage() + ")";
-                        newitem.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
+                        try
+                        {
+                            newitem.Username = Win32.GetAccountName(tsProcesses[p.Id],
+                                Properties.Settings.Default.ShowAccountDomains);
+                            newitem.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                        }
+                        catch
+                        {
+                            newitem.Username = item.Username;
+                            newitem.UsernameWithDomain = item.UsernameWithDomain;
+                        }
                     }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||

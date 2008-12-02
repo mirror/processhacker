@@ -153,8 +153,7 @@ namespace ProcessHacker
         {
             if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
-            else if (p.UsernameWithDomain == 
-                Win32.GetAccountName(_provider.TSProcesses[Process.GetCurrentProcess().Id], true))
+            else if (p.UsernameWithDomain == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
                 return Properties.Settings.Default.ColorOwnProcesses;
             else
                 return SystemColors.Window;
