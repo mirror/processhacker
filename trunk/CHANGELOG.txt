@@ -4,6 +4,7 @@ Process Hacker
  * Fixed incorrect messages about "new services" (actually fixed this time)
  * Fixed Injector - now uses MinGW instead of Visual C++
  * "Create Process..." feature of Injector works on XP now
+ * Added StartType column in services list
 
 1.2.2.5
  * Now shows function parameters in call stack

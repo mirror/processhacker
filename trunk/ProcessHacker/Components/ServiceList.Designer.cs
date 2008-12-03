@@ -37,6 +37,7 @@
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.columnStartType = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listServices
@@ -47,6 +48,7 @@
             this.columnDescription,
             this.columnType,
             this.columnStatus,
+            this.columnStartType,
             this.columnPID});
             this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listServices.FullRowSelect = true;
@@ -74,12 +76,12 @@
             // columnType
             // 
             this.columnType.Text = "Type";
-            this.columnType.Width = 130;
+            this.columnType.Width = 100;
             // 
             // columnStatus
             // 
             this.columnStatus.Text = "Status";
-            this.columnStatus.Width = 100;
+            this.columnStatus.Width = 80;
             // 
             // columnPID
             // 
@@ -93,6 +95,11 @@
             this.imageList.Images.SetKeyName(1, "Driver");
             this.imageList.Images.SetKeyName(2, "Interactive");
             this.imageList.Images.SetKeyName(3, "FS");
+            // 
+            // columnStartType
+            // 
+            this.columnStartType.Text = "Start Type";
+            this.columnStartType.Width = 80;
             // 
             // ServiceList
             // 
@@ -115,5 +122,6 @@
         private System.Windows.Forms.ColumnHeader columnStatus;
         private System.Windows.Forms.ColumnHeader columnPID;
         private System.Windows.Forms.ColumnHeader columnType;
+        private System.Windows.Forms.ColumnHeader columnStartType;
     }
 }

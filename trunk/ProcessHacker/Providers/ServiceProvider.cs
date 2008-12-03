@@ -48,6 +48,8 @@ namespace ProcessHacker
                 Config = config,
                 Status = item.Status
             };
+
+            this.CallDictionaryModified(item, Dictionary[name]);
         }
 
         private void UpdateOnce()
@@ -100,20 +102,23 @@ namespace ProcessHacker
 
                 if (service.Status.DisplayName != newserviceitem.Status.DisplayName)
                     modified = true;
-                else if (service.Status.ServiceStatusProcess.ControlsAccepted != 
+                else if (service.Status.ServiceStatusProcess.ControlsAccepted !=
                     newserviceitem.Status.ServiceStatusProcess.ControlsAccepted)
                     modified = true;
-                else if (service.Status.ServiceStatusProcess.CurrentState != 
+                else if (service.Status.ServiceStatusProcess.CurrentState !=
                     newserviceitem.Status.ServiceStatusProcess.CurrentState)
                     modified = true;
-                else if (service.Status.ServiceStatusProcess.ProcessID != 
+                else if (service.Status.ServiceStatusProcess.ProcessID !=
                     newserviceitem.Status.ServiceStatusProcess.ProcessID)
                     modified = true;
-                else if (service.Status.ServiceStatusProcess.ServiceFlags != 
+                else if (service.Status.ServiceStatusProcess.ServiceFlags !=
                     newserviceitem.Status.ServiceStatusProcess.ServiceFlags)
                     modified = true;
-                else if (service.Status.ServiceStatusProcess.ServiceType != 
+                else if (service.Status.ServiceStatusProcess.ServiceType !=
                     newserviceitem.Status.ServiceStatusProcess.ServiceType)
+                    modified = true;
+                else if (service.Config.StartType !=
+                    newserviceitem.Config.StartType)
                     modified = true;
 
                 if (modified)
