@@ -3020,7 +3020,6 @@ namespace ProcessHacker
         {
             listServices.List.EndUpdate();
 
-            timerMessages.Enabled = true;
             serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded);
             serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified);
             serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
@@ -3031,7 +3030,6 @@ namespace ProcessHacker
         {
             HighlightedListViewItem.StateHighlighting = true;
 
-            timerMessages.Enabled = true;
             processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new ProviderUpdateOnce(processP_Updated);
@@ -3131,7 +3129,16 @@ namespace ProcessHacker
             }));
 
             t.Priority = ThreadPriority.Lowest;
-            t.Start(); 
+            t.Start();
+
+            System.Windows.Forms.Timer enableMessages = new System.Windows.Forms.Timer();
+
+            enableMessages.Tick += new EventHandler(delegate(object sender2, EventArgs e2)
+            {
+                timerMessages.Enabled = true;
+            });
+            enableMessages.Interval = 4000;
+            enableMessages.Start();
         }
     }
 }
