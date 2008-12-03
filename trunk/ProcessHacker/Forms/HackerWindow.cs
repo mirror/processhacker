@@ -1361,6 +1361,10 @@ namespace ProcessHacker
                         else
                             servicesText += service + "\n";
                     }
+                    else
+                    {
+                        servicesText += service + "\n";
+                    }
                 }
 
                 litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
@@ -1381,6 +1385,13 @@ namespace ProcessHacker
                 notifyIcon.ShowBalloonTip(2000, "New Service",
                     "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been created.",
                     ToolTipIcon.Info);
+
+
+        }
+
+        public void serviceP_DictionaryAdded_ToolTips(object item)
+        {
+            ServiceItem sitem = (ServiceItem)item;
 
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -1437,6 +1448,11 @@ namespace ProcessHacker
                         "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been stopped.",
                         ToolTipIcon.Info);
             }
+        }
+
+        public void serviceP_DictionaryModified_ToolTips(object oldItem, object newItem)
+        {
+            ServiceItem sitem = (ServiceItem)newItem;
 
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -1477,7 +1493,12 @@ namespace ProcessHacker
                 notifyIcon.ShowBalloonTip(2000, "Service Deleted",
                     "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been deleted.",
                     ToolTipIcon.Info);
-            
+        }
+
+        public void serviceP_DictionaryRemoved_ToolTips(object item)
+        {
+            ServiceItem sitem = (ServiceItem)item;
+
             if (sitem.Status.ServiceStatusProcess.ProcessID != 0)
             {
                 if (!processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
@@ -3018,25 +3039,25 @@ namespace ProcessHacker
         {
             listServices.List.EndUpdate();
 
-            if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
-
             serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded);
             serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified);
             serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
             serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
+
+            if (processP.RunCount >= 1)
+                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
         }
 
         private void processP_Updated()
         {
             HighlightedListViewItem.StateHighlighting = true;
 
-            if (serviceP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
-
             processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new ProviderUpdateOnce(processP_Updated);
+
+            if (processP.RunCount >= 1)
+                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -3083,6 +3104,9 @@ namespace ProcessHacker
             listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
+            serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded_ToolTips);
+            serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified_ToolTips);
+            serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved_ToolTips);
             serviceP.Updated += new ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
 
