@@ -155,8 +155,8 @@ namespace ProcessHacker
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
             litem.Name = hitem.Handle.Handle.ToString();
-            litem.Text = Win32.Unsafe.ReadString(hitem.ObjectInfo.Type.Name);
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Win32.Unsafe.ReadString(hitem.ObjectInfo.Name.Name)));
+            litem.Text = hitem.ObjectInfo.Type.Name.Buffer;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, hitem.ObjectInfo.Name.Name.Buffer));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + hitem.Handle.Handle.ToString("x")));
 
             listHandles.Items.Add(litem);

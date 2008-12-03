@@ -30,17 +30,6 @@ namespace ProcessHacker
 {
     public class Win32
     {
-        public static OBJECT_ALL_TYPES_INFORMATION AllTypesInformation;
-
-        static Win32()
-        {
-            int retLen = 0;
-
-            AllTypesInformation = new OBJECT_ALL_TYPES_INFORMATION();
-            ZwQueryObject(0, OBJECT_INFORMATION_CLASS.ObjectAllTypesInformation, ref AllTypesInformation, 
-                Marshal.SizeOf(AllTypesInformation), ref retLen);
-        }
-
         public unsafe class Unsafe
         {
             /// <summary>
@@ -78,28 +67,6 @@ namespace ProcessHacker
                 }
 
                 return list.ToArray();
-            }
-
-            public static string ReadString(UNICODE_STRING str)
-            {
-                StringBuilder sb = new StringBuilder();
-                char* c = (char*)str.Buffer;
-
-                for (int i = 0; i < (str.Length / 2) && *c != 0; i++)
-                    sb.Append(*c++);
-
-                return sb.ToString();
-            }
-
-            public static string ReadString(int str)
-            {
-                StringBuilder sb = new StringBuilder();
-                char* c = (char*)str;
-
-                while (*c != 0)
-                    sb.Append(*c++);
-
-                return sb.ToString();
             }
         }
 
@@ -1518,7 +1485,7 @@ namespace ProcessHacker
         {
             public uint NumberOfTypes;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
             public OBJECT_TYPE_INFORMATION[] TypeInformation;
         }
 
@@ -1546,7 +1513,7 @@ namespace ProcessHacker
         {
             public UNICODE_STRING Name;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x200)]
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x400)]
             public byte[] Data;
         }
 
@@ -1577,8 +1544,8 @@ namespace ProcessHacker
             public uint PagedPoolUsage;
             public uint NonPagedPoolUsage;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public uint[] Reserved3; // this whole struct should be 108 bytes long, but without this it's only 96 bytes.
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public uint[] Reserved3;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1891,7 +1858,8 @@ namespace ProcessHacker
             public ushort Length;
             public ushort MaximumLength;
 
-            public int Buffer;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Buffer;
         }
 
         [StructLayout(LayoutKind.Sequential)]

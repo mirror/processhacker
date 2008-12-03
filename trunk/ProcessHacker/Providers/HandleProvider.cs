@@ -85,7 +85,7 @@ namespace ProcessHacker
                         continue;
                     }
 
-                    Dictionary.Add(h, item);
+                    newdictionary.Add(h, item);
                     this.CallDictionaryAdded(item);
                 }
             }
