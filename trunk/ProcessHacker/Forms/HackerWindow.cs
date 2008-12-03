@@ -836,11 +836,6 @@ namespace ProcessHacker
                         injectorMenuItem.Enabled = false;
                     }
 
-                    if (Program.WindowsVersion == "XP")
-                        startProcessProcessMenuItem.Visible = false;
-                    else
-                        startProcessProcessMenuItem.Visible = true;
-
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
                     searchProcessMenuItem.Enabled = true;
