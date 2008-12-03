@@ -1,6 +1,35 @@
 Note to SVN users:
 If you use SVN code you may encounter weird bugs. Please use releases instead.
 
-Process Hacker is developed using Visual C# 2008 Express Edition, 
-but should work under 2005 as well, since it is targeted for .NET 2.0 and 
-uses C# 2.0 only.
+Process Hacker is developed using Visual C# 2008 Express Edition, and 
+will only work with C# compilers which support C# 3.0.
+
+GUIDE TO DIRECTORY ORGANIZATION
+* Injector - this is a small program which uses remote thread injection to 
+  perform certain tasks like getting the command line of processes and 
+  forcing other processes to start programs of your choosing.
+  * The build script (build.cmd) assumes that you have MinGW installed and 
+    have added it to the PATH environment variable.
+* ProcessHacker - contains all of Process Hacker's source code.
+  * Asm - this contains the assembler and disassembler, converted to unsafe 
+    C# code from Oleh Yuschuk's Free Disassembler and Assembler.
+  * Components - contains various "user controls" like the (possibly 
+    reusable) ProcessList, ThreadList and ServiceList. It also contains 
+    third-party user controls like HexBox and VistaMenu.
+  * Forms - contains all of the forms (windows) in Process Hacker.
+  * Icons - contains *.ico files.
+  * Misc - contains useful code too small to be in other directories.
+  * PE - contains the PE reader for reading imports and exports from 
+    PE files (exe, dll, ocx, sys, etc.)
+  * Properties - whatever Visual C# put in there.
+  * Providers - contains the "providers" (classes which have threads updating 
+    some sort of list or dictionary in the background) for processes, threads 
+    and services.
+  * Resources - contains PNG silk icons (from famfamfam.com).
+  * Searchers - contains the "searchers" (classes which search process memory 
+    in the background and add items to a results list) - heap searcher, 
+    literal bytes searcher, regex searcher and string searcher/scanner.
+  * Symbols - contains the symbol "server". This is dependent on the PE reader 
+    because:
+      1. The P/Invoked APIs for dbghelp.dll didn't work when I tried them, and
+      2. The Win32 API sucks (and dbghelp.dll isn't thread-safe).

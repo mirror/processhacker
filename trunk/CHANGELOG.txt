@@ -2,6 +2,7 @@ Process Hacker
 
 1.2.3.0
  * Fixed incorrect messages about "new services" (actually fixed this time)
+ * Fixed Injector - now uses MinGW instead of Visual C++
 
 1.2.2.5
  * Now shows function parameters in call stack
