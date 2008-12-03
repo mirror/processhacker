@@ -268,15 +268,30 @@ clean_up:
 
 wchar_t *GetDesktopName()
 {
+    HWINSTA winsta = GetProcessWindowStation();
     HDESK desktop = GetThreadDesktop(GetCurrentThreadId());
+    wchar_t *winsta_name = 0;
     wchar_t *desktop_name = 0;
+    wchar_t *result = 0;
     DWORD required_size = 0;
-
+    short zero = 0;
+    
+    GetUserObjectInformation(winsta, UOI_NAME, winsta_name, 0, &required_size);
+    winsta_name = (wchar_t *)malloc(required_size);
+    GetUserObjectInformation(winsta, UOI_NAME, winsta_name, required_size, 0);
+    
     GetUserObjectInformation(desktop, UOI_NAME, desktop_name, 0, &required_size);
     desktop_name = (wchar_t *)malloc(required_size);
     GetUserObjectInformation(desktop, UOI_NAME, desktop_name, required_size, 0);
+    
+    result = (wchar_t *)malloc(wcslen(winsta_name) + wcslen(desktop_name) + 2 + 2);
+    wcscpy(result, winsta_name);
+    wcscpy(result + wcslen(winsta_name), L"\\");
+    wcscpy(result + wcslen(winsta_name) + 1, desktop_name);
+    free(winsta_name);
+    free(desktop_name);
 
-    return desktop_name;
+    return result;
 }
 
 void Ep(data_struct *data)
