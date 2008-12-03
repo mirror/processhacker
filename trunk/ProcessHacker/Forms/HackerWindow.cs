@@ -1354,10 +1354,13 @@ namespace ProcessHacker
 
                 foreach (string service in processServices[pid])
                 {
-                    if (serviceP.Dictionary[service].Status.DisplayName != "")
-                        servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
-                    else
-                        servicesText += service + "\n";
+                    if (serviceP.Dictionary.ContainsKey(service))
+                    {
+                        if (serviceP.Dictionary[service].Status.DisplayName != "")
+                            servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
+                        else
+                            servicesText += service + "\n";
+                    }
                 }
 
                 litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
