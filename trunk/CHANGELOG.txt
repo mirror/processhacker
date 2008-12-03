@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.3.0
+ * Fixed incorrect messages about "new services" (actually fixed this time)
+
 1.2.2.5
  * Now shows function parameters in call stack
  * Added Injector

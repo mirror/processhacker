@@ -1299,11 +1299,12 @@ namespace ProcessHacker
         public void processP_DictionaryAdded(object item)
         {
             ProcessItem pitem = (ProcessItem)item;
+            ProcessItem parent = new ProcessItem();
             string parentText = "";
 
             try
             {
-                ProcessItem parent = processP.Dictionary[Win32.GetProcessParent(pitem.PID)];
+                parent = processP.Dictionary[Win32.GetProcessParent(pitem.PID)];
 
                 parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
             }
@@ -1312,9 +1313,11 @@ namespace ProcessHacker
 
             this.QueueMessage("New Process: " + pitem.Name + " (PID " + pitem.PID.ToString() + ")" + parentText, pitem.Icon);
 
-            if (processP.RunCount > 1 && NPMenuItem.Checked)
+            if (NPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "New Process",
-                    "The process " + pitem.Name + " (" + pitem.PID.ToString() + ") was started.", ToolTipIcon.Info);
+                    "The process " + pitem.Name + " (" + pitem.PID.ToString() + 
+                    ") was started" + ((parentText != "") ? " by " + 
+                    parent.Name + " (PID " + parent.PID.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(object item)
@@ -1326,7 +1329,7 @@ namespace ProcessHacker
             if (processServices.ContainsKey(pitem.PID))
                 processServices.Remove(pitem.PID);
 
-            if (processP.RunCount > 1 && TPMenuItem.Checked)
+            if (TPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "Terminated Process",
                     "The process " + pitem.Name + " (" + pitem.PID.ToString() + ") was terminated.", ToolTipIcon.Info);
         }
@@ -1376,7 +1379,7 @@ namespace ProcessHacker
                 " (" + sitem.Status.DisplayName + ")" :
                 ""), null);
 
-            if (serviceP.RunCount > 1 && NSMenuItem.Checked)
+            if (NSMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "New Service",
                     "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been created.",
                     ToolTipIcon.Info);
@@ -1408,7 +1411,7 @@ namespace ProcessHacker
                     " (" + sitem.Status.DisplayName + ")" :
                     ""), null);
 
-                if (serviceP.RunCount > 1 && startedSMenuItem.Checked)
+                if (startedSMenuItem.Checked)
                     notifyIcon.ShowBalloonTip(2000, "Service Started",
                         "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been started.",
                         ToolTipIcon.Info);
@@ -1431,7 +1434,7 @@ namespace ProcessHacker
                     " (" + sitem.Status.DisplayName + ")" :
                     ""), null);
 
-                if (serviceP.RunCount > 1 && stoppedSMenuItem.Checked)
+                if (stoppedSMenuItem.Checked)
                     notifyIcon.ShowBalloonTip(2000, "Service Stopped",
                         "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been stopped.",
                         ToolTipIcon.Info);
@@ -1472,7 +1475,7 @@ namespace ProcessHacker
                 " (" + sitem.Status.DisplayName + ")" :
                 ""), null);
 
-            if (serviceP.RunCount > 1 && DSMenuItem.Checked)
+            if (DSMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "Service Deleted",
                     "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been deleted.",
                     ToolTipIcon.Info);
@@ -3017,29 +3020,18 @@ namespace ProcessHacker
         {
             listServices.List.EndUpdate();
 
-            this.BeginInvoke(new MethodInvoker(delegate
-            {
-                statusText.Text = "";
-                statusMessages.Clear();
-                log.Clear();
-                timerMessages.Enabled = true;
-                HighlightedListViewItem.StateHighlighting = true;
-            }));
-
+            serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded);
+            serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified);
+            serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
             serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
         }
 
         private void processP_Updated()
         {
-            this.BeginInvoke(new MethodInvoker(delegate
-            {
-                statusText.Text = "";
-                statusMessages.Clear();
-                log.Clear();
-                timerMessages.Enabled = true;
-                HighlightedListViewItem.StateHighlighting = true;
-            }));
+            HighlightedListViewItem.StateHighlighting = true;
 
+            processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
+            processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new ProviderUpdateOnce(processP_Updated);
         }
 
@@ -3081,8 +3073,6 @@ namespace ProcessHacker
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             processP.Interval = RefreshInterval;
             listProcesses.Provider = processP;
-            processP.DictionaryAdded += new ProviderDictionaryAdded(processP_DictionaryAdded);
-            processP.DictionaryRemoved += new ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated += new ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
@@ -3090,9 +3080,6 @@ namespace ProcessHacker
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
             serviceP.Updated += new ProviderUpdateOnce(serviceP_Updated);
-            serviceP.DictionaryAdded += new ProviderDictionaryAdded(serviceP_DictionaryAdded);
-            serviceP.DictionaryModified += new ProviderDictionaryModified(serviceP_DictionaryModified);
-            serviceP.DictionaryRemoved += new ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
             serviceP.Enabled = true;
 
             statusText.Text = "Waiting...";
