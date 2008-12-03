@@ -30,6 +30,17 @@ namespace ProcessHacker
 {
     public class Win32
     {
+        public static OBJECT_ALL_TYPES_INFORMATION AllTypesInformation;
+
+        static Win32()
+        {
+            int retLen = 0;
+
+            AllTypesInformation = new OBJECT_ALL_TYPES_INFORMATION();
+            ZwQueryObject(0, OBJECT_INFORMATION_CLASS.ObjectAllTypesInformation, ref AllTypesInformation, 
+                Marshal.SizeOf(AllTypesInformation), ref retLen);
+        }
+
         public unsafe class Unsafe
         {
             /// <summary>
@@ -68,6 +79,28 @@ namespace ProcessHacker
 
                 return list.ToArray();
             }
+
+            public static string ReadString(UNICODE_STRING str)
+            {
+                StringBuilder sb = new StringBuilder();
+                char* c = (char*)str.Buffer;
+
+                for (int i = 0; i < (str.Length / 2) && *c != 0; i++)
+                    sb.Append(*c++);
+
+                return sb.ToString();
+            }
+
+            public static string ReadString(int str)
+            {
+                StringBuilder sb = new StringBuilder();
+                char* c = (char*)str;
+
+                while (*c != 0)
+                    sb.Append(*c++);
+
+                return sb.ToString();
+            }
         }
 
         public class ProcessHandle : IDisposable
@@ -80,6 +113,11 @@ namespace ProcessHacker
 
                 if (_handle == 0)
                     throw new Exception(GetLastErrorMessage());
+            }
+
+            public int Handle
+            {
+                get { return _handle; }
             }
 
             public void Terminate()
@@ -268,7 +306,10 @@ namespace ProcessHacker
         public enum OBJECT_INFORMATION_CLASS : int
         {
             ObjectBasicInformation,
-            ObjectTypeInformation
+            ObjectNameInformation,
+            ObjectTypeInformation,
+            ObjectAllTypesInformation, 
+            ObjectHandleInformation
         }
 
         [Flags]
@@ -287,6 +328,17 @@ namespace ProcessHacker
             POLICY_SERVER_ADMIN = 0x00000400,
             POLICY_LOOKUP_NAMES = 0x00000800,
             POLICY_NOTIFICATION = 0x00001000
+        }
+
+        public enum POOL_TYPE : uint
+        {
+            NonPagedPool,
+            PagedPool,
+            NonPagedPoolMustSucceed,
+            DontUseThisType,
+            NonPagedPoolCacheAligned,
+            PagedPoolCacheAligned,
+            NonPagedPoolCacheAlignedMustS
         }
 
         [Flags]
@@ -536,6 +588,7 @@ namespace ProcessHacker
             SYMFLAG_VIRTUAL = 0x00001000
         }
 
+        [Flags]
         public enum SYSTEM_HANDLE_FLAGS : byte
         {
             PROTECT_FROM_CLOSE = 0x1,
@@ -793,6 +846,42 @@ namespace ProcessHacker
 
         #endregion
 
+        #region NT-specific functions
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+            int TargetProcessHandle, ref int TargetHandle, int DesiredAccess, int Attributes, int Options);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            int SystemInformation, int SystemInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            SYSTEM_HANDLE_INFORMATION[] SystemInformation, int SystemInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            uint[] SystemInformation, int SystemInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            ref OBJECT_BASIC_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            ref OBJECT_TYPE_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            ref OBJECT_NAME_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            ref OBJECT_ALL_TYPES_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
+        #endregion
+
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int StartService(int Service, int NumServiceArgs, int Args);
 
@@ -1031,6 +1120,9 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetCurrentProcess();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessDEPPolicy(int ProcessHandle, ref DEPFLAGS Flags, ref int Permanent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1169,31 +1261,7 @@ namespace ProcessHacker
         public static extern int SearchPath(
             int Zero0, [MarshalAs(UnmanagedType.LPTStr)] string FileName,
             int Zero1, int BufferLength,
-            [Out] System.Text.StringBuilder Buffer, int Zero2); 
-
-        [DllImport("ntdll.dll")]
-        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, ref int TargetHandle, int DesiredAccess, int Attributes, int Options);
-
-        [DllImport("ntdll.dll")]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            SYSTEM_PROCESS_INFORMATION SystemInformation, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll")]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            SYSTEM_HANDLE_INFORMATION SystemInformation, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll")]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ulong[] dummy, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll")]
-        public static extern uint NtQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_BASIC_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll")]
-        public static extern uint NtQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_TYPE_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+            [Out] System.Text.StringBuilder Buffer, int Zero2);
 
         [DllImport("psapi.dll", SetLastError = true)]
         public static extern int EnumDeviceDrivers(int[] ImageBases, int Size, ref int Needed);
@@ -1332,6 +1400,15 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct GENERIC_MAPPING
+        {
+            public STANDARD_RIGHTS GenericRead;
+            public STANDARD_RIGHTS GenericWrite;
+            public STANDARD_RIGHTS GenericExecute;
+            public STANDARD_RIGHTS GenericAll;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct HEAPENTRY32
         {
             public int dwSize;
@@ -1437,25 +1514,71 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct OBJECT_ALL_TYPES_INFORMATION
+        {
+            public uint NumberOfTypes;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+            public OBJECT_TYPE_INFORMATION[] TypeInformation;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct OBJECT_BASIC_INFORMATION
         {
-            public int Attributes;
-            public int GrantedAccess;
-            public int HandleCount;
-            public int PointerCount;
+            public uint Attributes;
+            public STANDARD_RIGHTS GrantedAccess;
+            public uint HandleCount;
+            public uint PointerCount;
+            public uint PagedPoolUsage;
+            public uint NonPagedPoolUsage;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-            public int[] Reserved;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+            public uint[] Reserved;
+
+            public uint NameInformationLength;
+            public uint TypeInformationLength;
+            public uint SecurityDescriptorLength;
+            public ulong CreateTime;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OBJECT_NAME_INFORMATION
+        {
+            public UNICODE_STRING Name;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x200)]
+            public byte[] Data;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct OBJECT_TYPE_INFORMATION
         {
-            [MarshalAs(UnmanagedType.Struct)]
-            public UNICODE_STRING TypeName;
+            public UNICODE_STRING Name;
+            public uint ObjectCount;
+            public uint HandleCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 22)]
-            public int[] Reserved;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] Reserved1;
+
+            public uint PeakObjectCount;
+            public uint PeakHandleCount;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+            public uint[] Reserved2;
+
+            public uint InvalidAttributes;
+            public GENERIC_MAPPING GenericMapping;
+            public uint ValidAccess;
+            public byte SecurityRequired;
+            public byte MaintainHandleCount;
+            public ushort MaintainTypeList;
+
+            public POOL_TYPE PoolType;
+            public uint PagedPoolUsage;
+            public uint NonPagedPoolUsage;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
+            public uint[] Reserved3; // this whole struct should be 108 bytes long, but without this it's only 96 bytes.
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1661,12 +1784,29 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_HANDLE_INFORMATION
         {
-            int ProcessId;
-            byte ObjectTypeNumber;
-            SYSTEM_HANDLE_FLAGS Flags;
-            short Handle;
-            int Object;
-            int GrantedAccess;
+            public int ProcessId;
+            public byte ObjectTypeNumber;
+            public SYSTEM_HANDLE_FLAGS Flags;
+            public short Handle;
+            public int Object;
+            public STANDARD_RIGHTS GrantedAccess;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_OBJECT_TYPE_INFORMATION
+        {
+            public uint NextEntryOffset;
+            public uint ObjectCount;
+            public uint HandleCount;
+            public uint TypeNumber;
+            public uint InvalidAttributes;
+            public GENERIC_MAPPING GenericMapping;
+            public STANDARD_RIGHTS ValidAccessMask;
+            public POOL_TYPE PoolType;
+            public byte Unknown;
+
+            [MarshalAs(UnmanagedType.Struct)]
+            public UNICODE_STRING Name;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1751,8 +1891,7 @@ namespace ProcessHacker
             public ushort Length;
             public ushort MaximumLength;
 
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string Buffer;
+            public int Buffer;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1841,6 +1980,92 @@ namespace ProcessHacker
             }
 
             throw new Exception("Process does not exist.");
+        }
+
+        #endregion
+
+        #region NT-specific
+
+        public struct ObjectInformation
+        {
+            public OBJECT_BASIC_INFORMATION Basic;
+            public OBJECT_TYPE_INFORMATION Type;
+            public OBJECT_NAME_INFORMATION Name;
+        }
+
+        public static SYSTEM_HANDLE_INFORMATION[] EnumHandles()
+        {
+            int length = 0x1000;
+            int retLength = 0;
+            int handles = 0;
+            IntPtr data = Marshal.AllocHGlobal(length);
+            SYSTEM_HANDLE_INFORMATION[] returnHandles;
+
+            while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.ToInt32(),
+                length, ref retLength) == STATUS_INFO_LENGTH_MISMATCH)
+            {
+                length *= 2;
+                Marshal.FreeHGlobal(data);
+                data = Marshal.AllocHGlobal(length);
+            }
+
+            handles = Marshal.ReadInt32(data);
+            returnHandles = new SYSTEM_HANDLE_INFORMATION[handles];
+
+            for (int i = 0; i < handles; i++) 
+            {
+                returnHandles[i] = (SYSTEM_HANDLE_INFORMATION)Marshal.PtrToStructure(
+                    new IntPtr(4 + data.ToInt32() + i * Marshal.SizeOf(typeof(SYSTEM_HANDLE_INFORMATION))),
+                    typeof(SYSTEM_HANDLE_INFORMATION));
+            }
+
+            Marshal.FreeHGlobal(data);
+
+            return returnHandles;
+        }
+
+        public static ObjectInformation GetHandleInfo(SYSTEM_HANDLE_INFORMATION handle)
+        {
+            using (ProcessHandle process = new ProcessHandle(handle.ProcessId, PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+            {
+                return GetHandleInfo(process, handle);
+            }
+        }
+
+        public static ObjectInformation GetHandleInfo(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
+        {
+            int object_handle = 0;
+            int retLength = 0;
+
+            if (ZwDuplicateObject(process.Handle, handle.Handle, 
+                Process.GetCurrentProcess().Handle.ToInt32(), ref object_handle, 0, 0,
+                0x4 // DUPLICATE_SAME_ATTRIBUTES
+                ) != 0)
+                throw new Exception("Could not duplicate object!");
+
+            ObjectInformation info = new ObjectInformation();
+
+            OBJECT_BASIC_INFORMATION obi = new OBJECT_BASIC_INFORMATION();
+
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                ref obi, Marshal.SizeOf(obi), ref retLength);
+            info.Basic = obi;
+
+            OBJECT_TYPE_INFORMATION oti = new OBJECT_TYPE_INFORMATION();
+
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                ref oti, Marshal.SizeOf(oti), ref retLength);
+            info.Type = oti;
+
+            OBJECT_NAME_INFORMATION oni = new OBJECT_NAME_INFORMATION();
+
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                ref oni, Marshal.SizeOf(oni), ref retLength);
+            info.Name = oni;
+
+            CloseHandle(object_handle);
+
+            return info;
         }
 
         #endregion

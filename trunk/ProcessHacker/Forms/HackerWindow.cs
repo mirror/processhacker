@@ -44,6 +44,7 @@ namespace ProcessHacker
         ProcessProvider processP = new ProcessProvider();
         ServiceProvider serviceP = new ServiceProvider();
         ThreadProvider threadP;
+        HandleProvider handleP;
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
@@ -2937,11 +2938,17 @@ namespace ProcessHacker
             listMemory.Items.Clear();
                                   
             listThreads.Provider = null;
+            listHandles.Provider = null;
 
             if (threadP != null)
                 threadP.Kill();
 
             threadP = null;
+
+            if (handleP != null)
+                handleP.Kill();
+
+            handleP = null;
 
             GC.Collect();
 
@@ -2957,6 +2964,11 @@ namespace ProcessHacker
             listThreads.Provider = threadP;
             threadP.Interval = Properties.Settings.Default.RefreshInterval;
             threadP.Enabled = true;
+
+            handleP = new HandleProvider(processSelectedPID);
+            listHandles.Provider = handleP;
+            handleP.Interval = Properties.Settings.Default.RefreshInterval;
+            handleP.Enabled = true;
 
             if (Properties.Settings.Default.UseToolhelpModules)
                 UpdateModuleInfoToolhelp();
@@ -2977,6 +2989,8 @@ namespace ProcessHacker
 
             if (threadP != null)
                 threadP.Kill();
+            if (handleP != null)
+                handleP.Kill();
 
             processP.Kill();
             serviceP.Kill();

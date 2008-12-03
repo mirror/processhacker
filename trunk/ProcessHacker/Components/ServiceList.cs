@@ -150,7 +150,7 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Core Process List
+        #region Core Service List
 
         private void provider_DictionaryAdded(object item)
         {
