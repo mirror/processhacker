@@ -2463,23 +2463,23 @@ namespace ProcessHacker
 
             QueryServiceConfig(handle, 0, 0, ref requiredSize);
 
-            byte[] data = new byte[requiredSize];
-            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
+            IntPtr data = Marshal.AllocHGlobal(requiredSize);
             QUERY_SERVICE_CONFIG config;
 
             try
             {
-                if (QueryServiceConfig(handle, ptr, requiredSize, ref requiredSize) == 0)
+                if (QueryServiceConfig(handle, data, requiredSize, ref requiredSize) == 0)
                 {
                     throw new Exception("Could not get service configuration: " + GetLastErrorMessage());
                 }
 
-                config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(ptr, typeof(QUERY_SERVICE_CONFIG));
+                config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(data, typeof(QUERY_SERVICE_CONFIG));
             }
             finally
             {
                 CloseHandle(handle);
                 CloseHandle(manager);
+                Marshal.FreeHGlobal(data);
             }
 
             return config;
