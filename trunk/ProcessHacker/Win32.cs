@@ -2084,21 +2084,6 @@ namespace ProcessHacker
 
                         break;
 
-                    case "Process":
-                        int pid = GetProcessId(object_handle);
-
-                        if (pid == 0)
-                            throw new Exception(GetLastErrorMessage());
-
-                        info.BestName = Process.GetProcessById(pid).MainModule.ModuleName +
-                            " (" + pid.ToString() + ")";
-
-                        break;
-
-                    case "Token":
-                        info.BestName = GetTokenUsername(object_handle, true);
-                        break;
-
                     default:
                         if (info.Name.Name.Buffer != null &&
                             info.Name.Name.Buffer != "")
@@ -2129,6 +2114,31 @@ namespace ProcessHacker
             CloseHandle(object_handle);
 
             return info;
+        }
+
+        public static OBJECT_NAME_INFORMATION GetHandleName(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
+        {
+            int object_handle = 0;
+            int retLength = 0;
+
+            if (ZwDuplicateObject(process.Handle, handle.Handle,
+                Process.GetCurrentProcess().Handle.ToInt32(), ref object_handle, 0, 0,
+                0x4 // DUPLICATE_SAME_ATTRIBUTES
+                ) != 0)
+                throw new Exception("Could not duplicate object!");
+
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                0, 0, ref retLength);
+            IntPtr oniMem = Marshal.AllocHGlobal(retLength);
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                oniMem, retLength, ref retLength);
+            OBJECT_NAME_INFORMATION oni =
+                (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+            Marshal.FreeHGlobal(oniMem);
+
+            CloseHandle(object_handle);
+
+            return oni;
         }
 
         #endregion

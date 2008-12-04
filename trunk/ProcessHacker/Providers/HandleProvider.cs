@@ -59,16 +59,23 @@ namespace ProcessHacker
             {
                 if (handle.ProcessId == _pid)
                 {
+                    Win32.OBJECT_NAME_INFORMATION oni;
                     Win32.ObjectInformation info;
 
                     try
                     {
+                        oni = Win32.GetHandleName(processHandle, handle);
+
+                        if ((oni.Name.Buffer == null ||
+                            oni.Name.Buffer == ""))
+                            continue;
+
                         info = Win32.GetHandleInfo(processHandle, handle);
 
-                        if ((info.BestName == null ||
-                            info.BestName == "") &&
-                            Properties.Settings.Default.HideHandlesNoName)
-                            continue;
+                        //if ((info.BestName == null ||
+                        //    info.BestName == "") &&
+                        //    Properties.Settings.Default.HideHandlesNoName)
+                        //    continue;
                     }
                     catch
                     {
