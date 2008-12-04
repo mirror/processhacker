@@ -79,6 +79,8 @@ namespace ProcessHacker
 
             if (Program.HackerWindow.ThreadProvider != null)
                 Program.HackerWindow.ThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            if (Program.HackerWindow.HandleProvider != null)
+                Program.HackerWindow.HandleProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
             Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
             Properties.Settings.Default.ColorNewProcesses = colorNewProcesses.Color;

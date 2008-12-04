@@ -125,6 +125,7 @@
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.findHandlesMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
             this.logMenuItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
@@ -190,10 +191,10 @@
             this.stoppedSMenuItem = new System.Windows.Forms.MenuItem();
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.menuHandle = new System.Windows.Forms.ContextMenu();
             this.copyHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.closeHandleMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuHandle = new System.Windows.Forms.ContextMenu();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
@@ -920,6 +921,7 @@
             this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.selectAllHackerMenuItem,
             this.menuItem1,
+            this.findHandlesMenuItem,
             this.inspectPEFileMenuItem,
             this.logMenuItem,
             this.aboutMenuItem,
@@ -940,45 +942,52 @@
             this.menuItem1.Index = 1;
             this.menuItem1.Text = "-";
             // 
+            // findHandlesMenuItem
+            // 
+            this.vistaMenu.SetImage(this.findHandlesMenuItem, global::ProcessHacker.Properties.Resources.find);
+            this.findHandlesMenuItem.Index = 2;
+            this.findHandlesMenuItem.Text = "&Find Handles...";
+            this.findHandlesMenuItem.Click += new System.EventHandler(this.findHandlesMenuItem_Click);
+            // 
             // inspectPEFileMenuItem
             // 
             this.vistaMenu.SetImage(this.inspectPEFileMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.inspectPEFileMenuItem.Index = 2;
+            this.inspectPEFileMenuItem.Index = 3;
             this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
             this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
             // 
             // logMenuItem
             // 
             this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
-            this.logMenuItem.Index = 3;
+            this.logMenuItem.Index = 4;
             this.logMenuItem.Text = "&Log...";
             this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
             // 
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 4;
+            this.aboutMenuItem.Index = 5;
             this.aboutMenuItem.Text = "&About...";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // optionsMenuItem
             // 
             this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
-            this.optionsMenuItem.Index = 5;
+            this.optionsMenuItem.Index = 6;
             this.optionsMenuItem.Text = "&Options...";
             this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
             // 
             // helpMenuItem
             // 
             this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
-            this.helpMenuItem.Index = 6;
+            this.helpMenuItem.Index = 7;
             this.helpMenuItem.Text = "&Help...";
             this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
             // 
             // exitMenuItem
             // 
             this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitMenuItem.Index = 7;
+            this.exitMenuItem.Index = 8;
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -1009,7 +1018,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 415);
+            this.statusBar.Location = new System.Drawing.Point(0, 382);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -1053,7 +1062,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 415);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 382);
             this.tabControlBig.TabIndex = 6;
             // 
             // tabProcesses
@@ -1062,7 +1071,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 389);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 356);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -1081,7 +1090,7 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(790, 383);
+            this.splitMain.Size = new System.Drawing.Size(790, 350);
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
             // 
@@ -1092,7 +1101,7 @@
             this.listProcesses.Location = new System.Drawing.Point(0, 0);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(348, 382);
+            this.listProcesses.Size = new System.Drawing.Size(348, 349);
             this.listProcesses.TabIndex = 4;
             this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
             this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
@@ -1108,7 +1117,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 383);
+            this.tabControl.Size = new System.Drawing.Size(438, 350);
             this.tabControl.TabIndex = 5;
             // 
             // tabProcess
@@ -1118,7 +1127,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(430, 357);
+            this.tabProcess.Size = new System.Drawing.Size(430, 324);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1157,7 +1166,7 @@
             this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(418, 292);
+            this.treeMisc.Size = new System.Drawing.Size(418, 259);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1166,7 +1175,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 357);
+            this.tabThreads.Size = new System.Drawing.Size(430, 324);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -1178,7 +1187,7 @@
             this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 351);
+            this.listThreads.Size = new System.Drawing.Size(424, 318);
             this.listThreads.TabIndex = 0;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
@@ -1188,7 +1197,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 357);
+            this.tabModules.Size = new System.Drawing.Size(430, 324);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1207,7 +1216,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 351);
+            this.listModules.Size = new System.Drawing.Size(424, 318);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1239,7 +1248,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 357);
+            this.tabMemory.Size = new System.Drawing.Size(430, 324);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1259,7 +1268,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 351);
+            this.listMemory.Size = new System.Drawing.Size(424, 318);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1295,7 +1304,8 @@
             this.tabHandles.Controls.Add(this.listHandles);
             this.tabHandles.Location = new System.Drawing.Point(4, 22);
             this.tabHandles.Name = "tabHandles";
-            this.tabHandles.Size = new System.Drawing.Size(430, 357);
+            this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
+            this.tabHandles.Size = new System.Drawing.Size(430, 324);
             this.tabHandles.TabIndex = 7;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -1304,10 +1314,10 @@
             // 
             this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listHandles.DoubleBuffered = true;
-            this.listHandles.Location = new System.Drawing.Point(0, 0);
+            this.listHandles.Location = new System.Drawing.Point(3, 3);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(430, 357);
+            this.listHandles.Size = new System.Drawing.Size(424, 318);
             this.listHandles.TabIndex = 0;
             // 
             // tabServices
@@ -1316,7 +1326,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 389);
+            this.tabServices.Size = new System.Drawing.Size(796, 356);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -1328,7 +1338,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 383);
+            this.listServices.Size = new System.Drawing.Size(790, 350);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -1482,17 +1492,6 @@
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
-            // 
-            // menuHandle
-            // 
-            this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.closeHandleMenuItem,
-            this.copyHandleMenuItem});
-            this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
-            // 
             // copyHandleMenuItem
             // 
             this.vistaMenu.SetImage(this.copyHandleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
@@ -1506,11 +1505,22 @@
             this.closeHandleMenuItem.Text = "Close";
             this.closeHandleMenuItem.Click += new System.EventHandler(this.closeHandleMenuItem_Click);
             // 
+            // menuHandle
+            // 
+            this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.closeHandleMenuItem,
+            this.copyHandleMenuItem});
+            this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 437);
+            this.ClientSize = new System.Drawing.Size(804, 404);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.panelVirtualProtect);
@@ -1715,6 +1725,7 @@
         private System.Windows.Forms.ContextMenu menuHandle;
         private System.Windows.Forms.MenuItem closeHandleMenuItem;
         private System.Windows.Forms.MenuItem copyHandleMenuItem;
+        private System.Windows.Forms.MenuItem findHandlesMenuItem;
     }
 }
 

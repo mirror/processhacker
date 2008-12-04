@@ -174,6 +174,65 @@ For example, input 0x01 to protect the area from any access.</value>
   <metadata name="vistaMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>836, 17</value>
   </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>113</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAMAEBAQAAEABAAoAQAANgAAABAQAAABAAgAaAUAAF4BAAAQEAAAAQAgAGgEAADGBgAAKAAAABAA
+        AAAgAAAAAQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICA
+        AACAgIAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAAwMDAAP///wAAAAAAAAAAAAAAAA7+7gAAAAAA7u7u
+        4AAAAADu7ufgAA7n4A7nd+4A7ud3fndyd+Du7nd1AFAn4O7nIAAicnfg7u5SIFInJ+Du7nIlInJ34Afu
+        cCIHcnfgDv9wcldycuAAAHAiJ3d34AAA4ld37vAAAAAAAAAAAAAAAAAAAAAAAP//AAD+DwAA/AcAAPwH
+        AACGAwAAAAEAAAABAAAAAQAAAAEAAAABAACAAQAAgAEAAPABAADwBwAA//8AAP//AAAoAAAAEAAAACAA
+        AAABAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoqGgAeLx4AGTMZABo2GgAfMB8AIDIgACA0
+        IAAnNicAKTopACs9KwAtPy0AMDowABdRFQAXVxYAHF4bAB9aHgAfaR4AKksqACFfIAAwQjAAMkcyADRG
+        MgAwSTAAMk4yADpUOgAkZCMAJmUlACRvIwAoaygAL38tADZ1NQBARkAAQVJBAEpXSQBSU1IAWltbAEZw
+        RQBUZVQAU3FTAFlzWQBddV0AX2djAGFsYQBqbGwAYXRhAGR2ZABheGEAZXxlAGp1agBoemgAa3luAHZ2
+        cABxdnUAcH5wAHZ4egB9fXwALootADObMQA9kDwAQIM/AECpPgBIhUcAQ5RBAFiTVwBlj2QAeYR7AHyA
+        gACFhYYAhoaIAIaOiQCHkIsAkZKSAJCSlACWlpYAl5iZAJubmwCZm50AnJycAJ2eoACQu6MAoKCgAKCi
+        pACkpKQAo6WoAKmpqQCtqqoAra2tALOurwCur7AAsbGxALayswCyurUAt7i5ALa9uAC6uroAvbm6ALu9
+        vQC9vb0Avr/AAL7AwQDBwsIAwsTEAMbGxgDGyMgAxc/KAMnKygDLzc0Az8/PANDOzwDPz9AA0dHSANTS
+        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
+</value>
+  </data>
+  <metadata name="mainMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>944, 17</value>
+  </metadata>
   <metadata name="menuThread.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>463, 17</value>
   </metadata>
@@ -186,9 +245,6 @@ For example, input 0x01 to protect the area from any access.</value>
   <metadata name="menuSearch.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>344, 17</value>
   </metadata>
-  <metadata name="mainMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>944, 17</value>
-  </metadata>
   <metadata name="timerMessages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 56</value>
   </metadata>
@@ -198,7 +254,6 @@ For example, input 0x01 to protect the area from any access.</value>
   <metadata name="notifyIcon.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>271, 56</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="notifyIcon.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAwAMDAQAAEABABoBgAAxgAAACAgEAABAAQA6AIAAC4HAAAYGBAAAQAEAOgBAAAWCgAAEBAQAAEA
@@ -705,64 +760,6 @@ For example, input 0x01 to protect the area from any access.</value>
   <metadata name="menuIcon.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>377, 56</value>
   </metadata>
-  <metadata name="vistaMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>836, 17</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>113</value>
-  </metadata>
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAMAEBAQAAEABAAoAQAANgAAABAQAAABAAgAaAUAAF4BAAAQEAAAAQAgAGgEAADGBgAAKAAAABAA
-        AAAgAAAAAQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICA
-        AACAgIAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAAwMDAAP///wAAAAAAAAAAAAAAAA7+7gAAAAAA7u7u
-        4AAAAADu7ufgAA7n4A7nd+4A7ud3fndyd+Du7nd1AFAn4O7nIAAicnfg7u5SIFInJ+Du7nIlInJ34Afu
-        cCIHcnfgDv9wcldycuAAAHAiJ3d34AAA4ld37vAAAAAAAAAAAAAAAAAAAAAAAP//AAD+DwAA/AcAAPwH
-        AACGAwAAAAEAAAABAAAAAQAAAAEAAAABAACAAQAAgAEAAPABAADwBwAA//8AAP//AAAoAAAAEAAAACAA
-        AAABAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABoqGgAeLx4AGTMZABo2GgAfMB8AIDIgACA0
-        IAAnNicAKTopACs9KwAtPy0AMDowABdRFQAXVxYAHF4bAB9aHgAfaR4AKksqACFfIAAwQjAAMkcyADRG
-        MgAwSTAAMk4yADpUOgAkZCMAJmUlACRvIwAoaygAL38tADZ1NQBARkAAQVJBAEpXSQBSU1IAWltbAEZw
-        RQBUZVQAU3FTAFlzWQBddV0AX2djAGFsYQBqbGwAYXRhAGR2ZABheGEAZXxlAGp1agBoemgAa3luAHZ2
-        cABxdnUAcH5wAHZ4egB9fXwALootADObMQA9kDwAQIM/AECpPgBIhUcAQ5RBAFiTVwBlj2QAeYR7AHyA
-        gACFhYYAhoaIAIaOiQCHkIsAkZKSAJCSlACWlpYAl5iZAJubmwCZm50AnJycAJ2eoACQu6MAoKCgAKCi
-        pACkpKQAo6WoAKmpqQCtqqoAra2tALOurwCur7AAsbGxALayswCyurUAt7i5ALa9uAC6uroAvbm6ALu9
-        vQC9vb0Avr/AAL7AwQDBwsIAwsTEAMbGxgDGyMgAxc/KAMnKygDLzc0Az8/PANDOzwDPz9AA0dHSANTS
-        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
-</value>
-  </data>
   <metadata name="menuHandle.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>483, 56</value>
   </metadata>

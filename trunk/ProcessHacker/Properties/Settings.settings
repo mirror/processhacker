@@ -149,5 +149,17 @@
     <Setting Name="HideHandlesNoName" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ServiceListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="HandleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FilterHandleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FilterHandleWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">554, 463</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

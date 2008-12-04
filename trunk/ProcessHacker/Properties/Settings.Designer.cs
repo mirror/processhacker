@@ -610,5 +610,53 @@ namespace ProcessHacker.Properties {
                 this["HideHandlesNoName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ServiceListViewColumns {
+            get {
+                return ((string)(this["ServiceListViewColumns"]));
+            }
+            set {
+                this["ServiceListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string HandleListViewColumns {
+            get {
+                return ((string)(this["HandleListViewColumns"]));
+            }
+            set {
+                this["HandleListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FilterHandleListViewColumns {
+            get {
+                return ((string)(this["FilterHandleListViewColumns"]));
+            }
+            set {
+                this["FilterHandleListViewColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("554, 463")]
+        public global::System.Drawing.Size FilterHandleWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["FilterHandleWindowSize"]));
+            }
+            set {
+                this["FilterHandleWindowSize"] = value;
+            }
+        }
     }
 }

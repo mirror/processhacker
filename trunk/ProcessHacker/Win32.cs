@@ -1523,9 +1523,6 @@ namespace ProcessHacker
         public struct OBJECT_NAME_INFORMATION
         {
             public UNICODE_STRING Name;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x400)]
-            public byte[] Data;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1554,9 +1551,6 @@ namespace ProcessHacker
             public POOL_TYPE PoolType;
             public uint PagedPoolUsage;
             public uint NonPagedPoolUsage;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-            public uint[] Reserved3;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1869,8 +1863,7 @@ namespace ProcessHacker
             public ushort Length;
             public ushort MaximumLength;
 
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string Buffer;
+            public int Buffer;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1970,7 +1963,9 @@ namespace ProcessHacker
             public OBJECT_BASIC_INFORMATION Basic;
             public OBJECT_TYPE_INFORMATION Type;
             public OBJECT_NAME_INFORMATION Name;
+            public string OrigName;
             public string BestName;
+            public string TypeName;
         }
 
         public static SYSTEM_HANDLE_INFORMATION[] EnumHandles()
@@ -2027,38 +2022,53 @@ namespace ProcessHacker
 
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
                 0, 0, ref retLength);
-            IntPtr obiMem = Marshal.AllocHGlobal(retLength);
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                obiMem, retLength, ref retLength);
-            OBJECT_BASIC_INFORMATION obi = 
-                (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
-            Marshal.FreeHGlobal(obiMem);
-            info.Basic = obi;
+
+            if (retLength > 0)
+            {
+                IntPtr obiMem = Marshal.AllocHGlobal(retLength);
+                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                    obiMem, retLength, ref retLength);
+                OBJECT_BASIC_INFORMATION obi =
+                    (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
+                Marshal.FreeHGlobal(obiMem);
+                info.Basic = obi;
+            }
 
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
                 0, 0, ref retLength);
-            IntPtr otiMem = Marshal.AllocHGlobal(retLength);
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                otiMem, retLength, ref retLength);
-            OBJECT_TYPE_INFORMATION oti = 
-                (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
-            Marshal.FreeHGlobal(otiMem);
-            info.Type = oti;
+
+            if (retLength > 0)
+            {
+                IntPtr otiMem = Marshal.AllocHGlobal(retLength);
+                if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                    otiMem, retLength, ref retLength) != 0)
+                    throw new Exception("ZwQueryObject failed");
+                OBJECT_TYPE_INFORMATION oti =
+                    (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+                info.TypeName = ReadUnicodeString(oti.Name);
+                Marshal.FreeHGlobal(otiMem);
+                info.Type = oti;
+            }
 
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                 0, 0, ref retLength);
-            IntPtr oniMem = Marshal.AllocHGlobal(retLength);
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                oniMem, retLength, ref retLength);
-            OBJECT_NAME_INFORMATION oni =
-                (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
-            Marshal.FreeHGlobal(oniMem);
-            info.Name = oni;
 
-            
+            if (retLength > 0)
+            {
+                IntPtr oniMem = Marshal.AllocHGlobal(retLength);
+                if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                    oniMem, retLength, ref retLength) != 0)
+                    throw new Exception("ZwQueryObject failed");
+                OBJECT_NAME_INFORMATION oni =
+                    (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+                info.OrigName = ReadUnicodeString(oni.Name);
+                Marshal.FreeHGlobal(oniMem);
+                info.Name = oni;
+            }
+
             try
             {
-                switch (info.Type.Name.Buffer)
+                switch (info.TypeName)
                 {
                     case "Key":
                         string hklmString = "\\registry\\machine";
@@ -2069,26 +2079,26 @@ namespace ProcessHacker
                             System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
                         string hkuString = "\\registry\\user";
 
-                        if (info.Name.Name.Buffer.ToLower().StartsWith(hklmString))
-                            info.BestName = "HKLM" + info.Name.Name.Buffer.Substring(hklmString.Length);
-                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcucrString))
-                            info.BestName = "HKCU\\Software\\Classes" + info.Name.Name.Buffer.Substring(hkcucrString.Length);
-                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcuString))
-                            info.BestName = "HKCU" + info.Name.Name.Buffer.Substring(hkcuString.Length);
-                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcrString))
-                            info.BestName = "HKCR" + info.Name.Name.Buffer.Substring(hkcrString.Length);
-                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkuString))
-                            info.BestName = "HKU" + info.Name.Name.Buffer.Substring(hkuString.Length);
+                        if (info.OrigName.ToLower().StartsWith(hklmString))
+                            info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
+                        else if (info.OrigName.ToLower().StartsWith(hkcucrString))
+                            info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
+                        else if (info.OrigName.ToLower().StartsWith(hkcuString))
+                            info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
+                        else if (info.OrigName.ToLower().StartsWith(hkcrString))
+                            info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
+                        else if (info.OrigName.ToLower().StartsWith(hkuString))
+                            info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
                         else
-                            info.BestName = info.Name.Name.Buffer;
+                            info.BestName = info.OrigName;
 
                         break;
 
                     default:
-                        if (info.Name.Name.Buffer != null &&
-                            info.Name.Name.Buffer != "")
+                        if (info.OrigName != null &&
+                            info.OrigName != "")
                         {
-                            info.BestName = info.Name.Name.Buffer;
+                            info.BestName = info.OrigName;
                         }
                         else
                         {
@@ -2100,10 +2110,10 @@ namespace ProcessHacker
             }
             catch
             {
-                if (info.Name.Name.Buffer != null &&
-                            info.Name.Name.Buffer != "")
+                if (info.OrigName != null &&
+                            info.OrigName != "")
                 {
-                    info.BestName = info.Name.Name.Buffer;
+                    info.BestName = info.OrigName;
                 }
                 else
                 {
@@ -2116,7 +2126,7 @@ namespace ProcessHacker
             return info;
         }
 
-        public static OBJECT_NAME_INFORMATION GetHandleName(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
+        public static bool IsHandleNameEmpty(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
         {
             int object_handle = 0;
             int retLength = 0;
@@ -2136,9 +2146,12 @@ namespace ProcessHacker
                 (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
             Marshal.FreeHGlobal(oniMem);
 
+            if (oni.Name.Length == 0)
+                return true;
+
             CloseHandle(object_handle);
 
-            return oni;
+            return false;
         }
 
         #endregion
@@ -2161,14 +2174,14 @@ namespace ProcessHacker
                 , 0, ref requiredSize, ref servicesReturned,
                 ref resume, 0);
 
-            byte[] data = new byte[requiredSize];
+            IntPtr data = Marshal.AllocHGlobal(requiredSize);
             Dictionary<string, ENUM_SERVICE_STATUS_PROCESS> dictionary =
                 new Dictionary<string, ENUM_SERVICE_STATUS_PROCESS>();
 
             try
             {
                 if (EnumServicesStatusEx(manager, 0, SERVICE_QUERY_TYPE.Win32 | SERVICE_QUERY_TYPE.Driver,
-                    SERVICE_QUERY_STATE.All, Marshal.UnsafeAddrOfPinnedArrayElement(data, 0), 
+                    SERVICE_QUERY_STATE.All, data, 
                     requiredSize, ref requiredSize, ref servicesReturned,
                     ref resume, 0) == 0)
                 {
@@ -2178,7 +2191,7 @@ namespace ProcessHacker
                 for (int i = 0; i < servicesReturned; i++)
                 {
                     ENUM_SERVICE_STATUS_PROCESS service = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
-                        Marshal.UnsafeAddrOfPinnedArrayElement(data, Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS)) * i),
+                        new IntPtr(data.ToInt32() + Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS)) * i),
                         typeof(ENUM_SERVICE_STATUS_PROCESS));
 
                     dictionary.Add(service.ServiceName, service);
@@ -2187,6 +2200,7 @@ namespace ProcessHacker
             finally
             {
                 CloseHandle(manager);
+                Marshal.FreeHGlobal(data);
             }
 
             return dictionary;
@@ -2536,6 +2550,19 @@ namespace ProcessHacker
             CloseHandle(token);
 
             return tkp;
+        }
+
+        public static string ReadUnicodeString(UNICODE_STRING str)
+        {
+            if (str.Length == 0)
+                return null;
+
+            byte[] buf = new byte[str.Length];
+            int bytesRead = 0;
+
+            ReadProcessMemory(GetCurrentProcess(), str.Buffer, buf, str.Length, ref bytesRead);
+
+            return UnicodeEncoding.Unicode.GetString(buf);
         }
 
         public static int WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)

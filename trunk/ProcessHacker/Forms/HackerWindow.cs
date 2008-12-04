@@ -40,6 +40,7 @@ namespace ProcessHacker
         public int RefreshInterval = 1000;
 
         public HelpWindow HelpForm = new HelpWindow();
+        public HandleFilterWindow HandleFilterForm = new HandleFilterWindow();
 
         ProcessProvider processP = new ProcessProvider();
         ServiceProvider serviceP = new ServiceProvider();
@@ -97,6 +98,11 @@ namespace ProcessHacker
         public ThreadProvider ThreadProvider
         {
             get { return threadP; }
+        }
+
+        public HandleProvider HandleProvider
+        {
+            get { return handleP; }
         }
 
         public ProcessList ProcessList
@@ -435,6 +441,11 @@ namespace ProcessHacker
 
             tabControlBig.SelectedTab = tabProcesses;
             listProcesses.List.Select();
+        }
+
+        private void findHandlesMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleFilterForm.Show();
         }
 
         private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
@@ -2243,6 +2254,8 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.HandleListViewColumns, listHandles.List);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
         }
 
         private void PerformSearch(string text)
@@ -2373,6 +2386,8 @@ namespace ProcessHacker
             Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
             Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
             Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
+            Properties.Settings.Default.HandleListViewColumns = ColumnSettings.SaveSettings(listHandles.List);
+            Properties.Settings.Default.ServiceListViewColumns = ColumnSettings.SaveSettings(listServices.List);
 
             Properties.Settings.Default.NewProcesses = NPMenuItem.Checked;
             Properties.Settings.Default.TerminatedProcesses = TPMenuItem.Checked;
