@@ -29,6 +29,7 @@ pre {
       <li><a href="#threadlist">Thread List</a></li>
       <li><a href="#modlist">Module List</a></li>
       <li><a href="#memlist">Memory List</a></li>
+      <li><a href="#hlist">Handle List</a></li>
       <li><a href="#memsearch">Searching Memory</a></li>
       <li><a href="#results">Results Window</a></li>
       <li><a href="#tips">Tips</a></li>
@@ -37,7 +38,7 @@ pre {
 
     <h1 id="intro">Introduction</h1>
     <p>Process Hacker is a tool to view and manipulate processes. It can display a process' threads,
-    modules, memory regions and heaps. It can also search through a process' memory and read/write
+    modules, memory regions and handles. It can also search through a process' memory and read/write
     process memory.</p>
 
     <h2>System Requirements</h2>
@@ -346,6 +347,12 @@ pre {
         <code>0x00000578</code>.
       </dd>
     </dl>
+
+    <h1 id="hlist">Handle List</h1>
+    <p>This list displays the handles opened by the process (files, registry keys, various NT objects). If 
+    the target process has the same session ID as Process Hacker (programs with an user interface 
+    you can use), you can close handles as well. This is useful for "unlocking" files which you cannot 
+    delete because they are in use (although this is useless against rootkits).</p>
 
     <h1 id="memsearch">Searching Memory</h1>
     <p>Process Hacker supports searching using a literal string or regular expressions. To 
