@@ -16,6 +16,8 @@ namespace ProcessHacker
 
             ListViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
+
+            Misc.SetDoubleBuffered(listHandles, typeof(ListView), true);
         }
 
         private void HandleFilterWindow_Load(object sender, EventArgs e)
@@ -93,6 +95,9 @@ namespace ProcessHacker
 
                 try
                 {
+                    if (handle.ProcessId == 4)
+                        continue;
+
                     if (!processHandles.ContainsKey(handle.ProcessId))
                         processHandles.Add(handle.ProcessId, 
                             new Win32.ProcessHandle(handle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));

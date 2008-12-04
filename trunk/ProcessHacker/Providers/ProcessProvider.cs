@@ -32,6 +32,7 @@ namespace ProcessHacker
 
         public Icon Icon;
         public string Name;
+        public string CmdLine;
         public string MemoryUsage;
         public string Username;
         public string UsernameWithDomain;
@@ -115,6 +116,14 @@ namespace ProcessHacker
                             }
                         }
                     }
+
+                    //try
+                    //{
+                    //    item.CmdLine = Win32.GetProcessCmdLine(
+                    //        new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
+                    //}
+                    //catch
+                    //{ }
 
                     try
                     {

@@ -183,6 +183,9 @@ namespace ProcessHacker
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
         public const int SW_SHOW = 5;
         public const int SYMBOL_NAME_MAXSIZE = 255;
+        public const int WAIT_ABANDONED = 0x80;
+        public const int WAIT_OBJECT_0 = 0x0;
+        public const int WAIT_TIMEOUT = 0x102;
 
         #endregion    
 
@@ -326,6 +329,14 @@ namespace ProcessHacker
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
             PROCESS_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | 
                 STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
+        }
+
+        public enum PROCESSINFOCLASS : int
+        {
+            ProcessBasicInformation = 0,
+            ProcessDebugPort = 7,
+            ProcessWow64Information = 26,
+            ProcessImageFileName = 27
         }
 
         public enum SC_ACTION_TYPE : int
@@ -816,8 +827,24 @@ namespace ProcessHacker
         #region NT-specific functions
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
+            IntPtr ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
+            int ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
+            ref UNICODE_STRING ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
+            ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, ref int TargetHandle, int DesiredAccess, int Attributes, int Options);
+            int TargetProcessHandle, ref int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
@@ -1093,6 +1120,9 @@ namespace ProcessHacker
             int FunctionTableAccessRoutine,
             int GetModuleBaseRoutine,
             int TranslateAddress);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int WaitForSingleObject(int Object, int Timeout);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessId(int ProcessHandle);
@@ -1551,6 +1581,17 @@ namespace ProcessHacker
             public POOL_TYPE PoolType;
             public uint PagedPoolUsage;
             public uint NonPagedPoolUsage;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESS_BASIC_INFORMATION
+        {
+            public int Reserved1;
+            public int PebBaseAddress;
+            public int Reserved2_1;
+            public int Reserved2_2;
+            public int UniqueProcessId;
+            public int Reserved3;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2018,112 +2059,124 @@ namespace ProcessHacker
                 ) != 0)
                 throw new Exception("Could not duplicate object!");
 
-            ObjectInformation info = new ObjectInformation();
-
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                0, 0, ref retLength);
-
-            if (retLength > 0)
-            {
-                IntPtr obiMem = Marshal.AllocHGlobal(retLength);
-                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                    obiMem, retLength, ref retLength);
-                OBJECT_BASIC_INFORMATION obi =
-                    (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
-                Marshal.FreeHGlobal(obiMem);
-                info.Basic = obi;
-            }
-
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                0, 0, ref retLength);
-
-            if (retLength > 0)
-            {
-                IntPtr otiMem = Marshal.AllocHGlobal(retLength);
-                if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                    otiMem, retLength, ref retLength) != 0)
-                    throw new Exception("ZwQueryObject failed");
-                OBJECT_TYPE_INFORMATION oti =
-                    (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
-                info.TypeName = ReadUnicodeString(oti.Name);
-                Marshal.FreeHGlobal(otiMem);
-                info.Type = oti;
-            }
-
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                0, 0, ref retLength);
-
-            if (retLength > 0)
-            {
-                IntPtr oniMem = Marshal.AllocHGlobal(retLength);
-                if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    oniMem, retLength, ref retLength) != 0)
-                    throw new Exception("ZwQueryObject failed");
-                OBJECT_NAME_INFORMATION oni =
-                    (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
-                info.OrigName = ReadUnicodeString(oni.Name);
-                Marshal.FreeHGlobal(oniMem);
-                info.Name = oni;
-            }
-
             try
             {
-                switch (info.TypeName)
+                ObjectInformation info = new ObjectInformation();
+
+                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                    0, 0, ref retLength);
+
+                if (retLength > 0)
                 {
-                    case "Key":
-                        string hklmString = "\\registry\\machine";
-                        string hkcrString = "\\registry\\machine\\software\\classes";
-                        string hkcuString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
-                        string hkcucrString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-                        string hkuString = "\\registry\\user";
-
-                        if (info.OrigName.ToLower().StartsWith(hklmString))
-                            info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcucrString))
-                            info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcuString))
-                            info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcrString))
-                            info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkuString))
-                            info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
-                        else
-                            info.BestName = info.OrigName;
-
-                        break;
-
-                    default:
-                        if (info.OrigName != null &&
-                            info.OrigName != "")
-                        {
-                            info.BestName = info.OrigName;
-                        }
-                        else
-                        {
-                            info.BestName = null;
-                        }
-
-                        break;
+                    IntPtr obiMem = Marshal.AllocHGlobal(retLength);
+                    ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                        obiMem, retLength, ref retLength);
+                    OBJECT_BASIC_INFORMATION obi =
+                        (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
+                    Marshal.FreeHGlobal(obiMem);
+                    info.Basic = obi;
                 }
+
+                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                    0, 0, ref retLength);
+
+                if (retLength > 0)
+                {
+                    IntPtr otiMem = Marshal.AllocHGlobal(retLength);
+                    if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                        otiMem, retLength, ref retLength) != 0)
+                        throw new Exception("ZwQueryObject failed");
+                    OBJECT_TYPE_INFORMATION oti =
+                        (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+                    info.TypeName = ReadUnicodeString(oti.Name);
+                    Marshal.FreeHGlobal(otiMem);
+                    info.Type = oti;
+                }
+
+                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                    0, 0, ref retLength);
+
+                if (retLength > 0)
+                {
+                    IntPtr oniMem = Marshal.AllocHGlobal(retLength);
+                    if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                        oniMem, retLength, ref retLength) != 0)
+                        throw new Exception("ZwQueryObject failed");
+                    OBJECT_NAME_INFORMATION oni =
+                        (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+                    info.OrigName = ReadUnicodeString(oni.Name);
+                    Marshal.FreeHGlobal(oniMem);
+                    info.Name = oni;
+                }
+
+                try
+                {
+                    switch (info.TypeName)
+                    {
+                        case "Key":
+                            string hklmString = "\\registry\\machine";
+                            string hkcrString = "\\registry\\machine\\software\\classes";
+                            string hkcuString = "\\registry\\user\\" +
+                                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
+                            string hkcucrString = "\\registry\\user\\" +
+                                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
+                            string hkuString = "\\registry\\user";
+
+                            if (info.OrigName.ToLower().StartsWith(hklmString))
+                                info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkcucrString))
+                                info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkcuString))
+                                info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkcrString))
+                                info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkuString))
+                                info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
+                            else
+                                info.BestName = info.OrigName;
+
+                            break;
+
+                        case "Process":
+                            info.BestName = GetProcessId(object_handle).ToString();
+
+                            break;
+
+                        default:
+                            if (info.OrigName != null &&
+                                info.OrigName != "")
+                            {
+                                info.BestName = info.OrigName;
+                            }
+                            else
+                            {
+                                info.BestName = null;
+                            }
+
+                            break;
+                    }
+                }
+                catch
+                {
+                    if (info.OrigName != null &&
+                                info.OrigName != "")
+                    {
+                        info.BestName = info.OrigName;
+                    }
+                    else
+                    {
+                        info.BestName = null;
+                    }
+                }
+
+                return info;
             }
-            catch
+            finally
             {
-                if (info.OrigName != null &&
-                            info.OrigName != "")
-                {
-                    info.BestName = info.OrigName;
-                }
-                else
-                {
-                    info.BestName = null;
-                }
+                CloseHandle(object_handle);
             }
 
-            CloseHandle(object_handle);
-
-            return info;
+            throw new Exception("Failed");
         }
 
         public static bool IsHandleNameEmpty(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
@@ -2304,6 +2357,50 @@ namespace ProcessHacker
             LookupPrivilegeName(0, ref Luid, sb, ref size);
 
             return sb.ToString();
+        }
+
+        public static string GetProcessCmdLine(ProcessHandle process)
+        {
+            int retLen = 0;
+
+            ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation, 0, 0, ref retLen);
+            IntPtr data = Marshal.AllocHGlobal(retLen);
+
+            if (ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation, data, retLen, ref retLen) != 0)
+            {
+                PROCESS_BASIC_INFORMATION info =
+                    (PROCESS_BASIC_INFORMATION)Marshal.PtrToStructure(data, typeof(PROCESS_BASIC_INFORMATION));
+
+                Marshal.FreeHGlobal(data);
+
+                byte[] data2 = new byte[4];
+
+                if (ReadProcessMemory(process.Handle, info.PebBaseAddress + 16, data2, 4, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+                if (ReadProcessMemory(process.Handle, paramInfoAddrI + 16 * 4, data2, 2, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
+                byte[] stringData = new byte[strLength];
+
+                if (ReadProcessMemory(process.Handle, paramInfoAddrI + 17 * 4, data2, 4, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+                if (ReadProcessMemory(process.Handle, strAddr, stringData, strLength, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                return UnicodeEncoding.Unicode.GetString(stringData);
+            }
+            else
+            {
+                Marshal.FreeHGlobal(data);
+                throw new Exception("ZwQueryInformationProcess failed!");
+            }
         }
 
         public static int GetProcessParent(int pid)
