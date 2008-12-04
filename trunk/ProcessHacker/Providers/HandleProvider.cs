@@ -65,8 +65,8 @@ namespace ProcessHacker
                     {
                         info = Win32.GetHandleInfo(processHandle, handle);
 
-                        if ((info.Name.Name.Buffer == null ||
-                            info.Name.Name.Buffer == "") &&
+                        if ((info.BestName == null ||
+                            info.BestName == "") &&
                             Properties.Settings.Default.HideHandlesNoName)
                             continue;
                     }

@@ -156,7 +156,7 @@ namespace ProcessHacker
 
             litem.Name = hitem.Handle.Handle.ToString();
             litem.Text = hitem.ObjectInfo.Type.Name.Buffer;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, hitem.ObjectInfo.Name.Name.Buffer));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, hitem.ObjectInfo.BestName));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + hitem.Handle.Handle.ToString("x")));
 
             listHandles.Items.Add(litem);

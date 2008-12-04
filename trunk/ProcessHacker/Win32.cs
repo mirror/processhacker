@@ -1095,6 +1095,9 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessId(int ProcessHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetCurrentProcess();
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1967,6 +1970,7 @@ namespace ProcessHacker
             public OBJECT_BASIC_INFORMATION Basic;
             public OBJECT_TYPE_INFORMATION Type;
             public OBJECT_NAME_INFORMATION Name;
+            public string BestName;
         }
 
         public static SYSTEM_HANDLE_INFORMATION[] EnumHandles()
@@ -2050,6 +2054,77 @@ namespace ProcessHacker
                 (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
             Marshal.FreeHGlobal(oniMem);
             info.Name = oni;
+
+            
+            try
+            {
+                switch (info.Type.Name.Buffer)
+                {
+                    case "Key":
+                        string hklmString = "\\registry\\machine";
+                        string hkcrString = "\\registry\\machine\\software\\classes";
+                        string hkcuString = "\\registry\\user\\" +
+                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
+                        string hkcucrString = "\\registry\\user\\" +
+                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
+                        string hkuString = "\\registry\\user";
+
+                        if (info.Name.Name.Buffer.ToLower().StartsWith(hklmString))
+                            info.BestName = "HKLM" + info.Name.Name.Buffer.Substring(hklmString.Length);
+                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcucrString))
+                            info.BestName = "HKCU\\Software\\Classes" + info.Name.Name.Buffer.Substring(hkcucrString.Length);
+                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcuString))
+                            info.BestName = "HKCU" + info.Name.Name.Buffer.Substring(hkcuString.Length);
+                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkcrString))
+                            info.BestName = "HKCR" + info.Name.Name.Buffer.Substring(hkcrString.Length);
+                        else if (info.Name.Name.Buffer.ToLower().StartsWith(hkuString))
+                            info.BestName = "HKU" + info.Name.Name.Buffer.Substring(hkuString.Length);
+                        else
+                            info.BestName = info.Name.Name.Buffer;
+
+                        break;
+
+                    case "Process":
+                        int pid = GetProcessId(object_handle);
+
+                        if (pid == 0)
+                            throw new Exception(GetLastErrorMessage());
+
+                        info.BestName = Process.GetProcessById(pid).MainModule.ModuleName +
+                            " (" + pid.ToString() + ")";
+
+                        break;
+
+                    case "Token":
+                        info.BestName = GetTokenUsername(object_handle, true);
+                        break;
+
+                    default:
+                        if (info.Name.Name.Buffer != null &&
+                            info.Name.Name.Buffer != "")
+                        {
+                            info.BestName = info.Name.Name.Buffer;
+                        }
+                        else
+                        {
+                            info.BestName = null;
+                        }
+
+                        break;
+                }
+            }
+            catch
+            {
+                if (info.Name.Name.Buffer != null &&
+                            info.Name.Name.Buffer != "")
+                {
+                    info.BestName = info.Name.Name.Buffer;
+                }
+                else
+                {
+                    info.BestName = null;
+                }
+            }
 
             CloseHandle(object_handle);
 
@@ -2384,6 +2459,20 @@ namespace ProcessHacker
             }
 
             return config;
+        }
+
+        public static string GetTokenUsername(int Token, bool IncludeDomain)
+        {           
+            TOKEN_USER user = new TOKEN_USER();     
+            int retlen = 0;
+
+            if (GetTokenInformation(Token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
+                Marshal.SizeOf(user), ref retlen) == 0)
+            {
+                throw new Exception("Could not get token information: " + Win32.GetLastErrorMessage());
+            }
+
+            return GetAccountName(user.User.SID, IncludeDomain);
         }
 
         public static int OpenLocalPolicy()
