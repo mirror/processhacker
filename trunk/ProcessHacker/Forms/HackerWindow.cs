@@ -222,6 +222,75 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Handle Context Menu
+
+        private void menuHandle_Popup(object sender, EventArgs e)
+        {
+            if (listHandles.SelectedItems.Count == 0)
+            {
+                Misc.DisableAllMenuItems(menuHandle);
+            }
+            else if (listHandles.SelectedItems.Count == 1)
+            {
+                Misc.EnableAllMenuItems(menuHandle);
+
+                if (IsDifferentSessionId(processSelectedPID))
+                    closeHandleMenuItem.Enabled = false;
+                else
+                    closeHandleMenuItem.Enabled = true;
+            }
+            else
+            {
+                Misc.EnableAllMenuItems(menuHandle);
+                closeHandleMenuItem.Enabled = false;
+            }
+        }
+
+        private void closeHandleMenuItem_Click(object sender, EventArgs e)
+        {
+            int module = Win32.GetModuleHandle("ntdll.dll");
+
+            if (module == 0)
+            {
+                MessageBox.Show("Could not get module handle of ntdll.dll:\n\n" + Win32.GetLastErrorMessage(),
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            int proc = Win32.GetProcAddress(module, "ZwClose");
+
+            if (proc == 0)
+            {
+                MessageBox.Show("Could not get procedure address of ZwClose:\n\n" + Win32.GetLastErrorMessage(),
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            try
+            {
+                using (Win32.ProcessHandle handle =
+                    new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+                {
+                    int threadId = 0;
+
+                    if (Win32.CreateRemoteThread(handle.Handle, 0, 0, proc,
+                        (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[2].Text), 0, ref threadId) == 0)
+                        throw new Exception(Win32.GetLastErrorMessage());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not create remote thread:\n\n" + ex.Message,
+                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+        }
+
+        #endregion
+
         #region Lists
 
         private void listMemory_DoubleClick(object sender, EventArgs e)
@@ -824,18 +893,10 @@ namespace ProcessHacker
                         servicesProcessMenuItem.Enabled = false;
                     }
 
-                    try
-                    {
-                        if (Win32.GetProcessSessionId(processSelectedPID) ==
-                            Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
-                            injectorMenuItem.Enabled = true;
-                        else
-                            injectorMenuItem.Enabled = false;
-                    }
-                    catch
-                    {
+                    if (IsDifferentSessionId(processSelectedPID))
                         injectorMenuItem.Enabled = false;
-                    }
+                    else
+                        injectorMenuItem.Enabled = true;
 
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
@@ -2371,6 +2432,22 @@ namespace ProcessHacker
             return false;
         }
 
+        private bool IsDifferentSessionId(int pid)
+        {
+            try
+            {
+                if (Win32.GetProcessSessionId(pid) ==
+                    Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
+                    return false;
+                else
+                    return true;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private void SetProcessPriority(ProcessPriorityClass priority)
         {
             try
@@ -3094,18 +3171,21 @@ namespace ProcessHacker
             listViews.Add(listThreads);
             listViews.Add(listModules);
             listViews.Add(listMemory);
+            listViews.Add(listHandles);
             listViews.Add(listServices);
 
             ListViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, listProcesses.List, null);
             ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
             ListViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
             ListViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
+            ListViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles.List, null);
             ListViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
 
             listProcesses.ContextMenu = menuProcess;
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
+            listHandles.ContextMenu = menuHandle;
             listServices.ContextMenu = menuService;
 
             HighlightedListViewItem.StateHighlighting = false;

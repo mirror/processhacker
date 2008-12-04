@@ -164,6 +164,8 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.tabHandles = new System.Windows.Forms.TabPage();
+            this.listHandles = new ProcessHacker.HandleList();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.listServices = new ProcessHacker.ServiceList();
             this.menuService = new System.Windows.Forms.ContextMenu();
@@ -189,8 +191,9 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.tabHandles = new System.Windows.Forms.TabPage();
-            this.listHandles = new ProcessHacker.HandleList();
+            this.menuHandle = new System.Windows.Forms.ContextMenu();
+            this.copyHandleMenuItem = new System.Windows.Forms.MenuItem();
+            this.closeHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
@@ -207,9 +210,9 @@
             this.tabThreads.SuspendLayout();
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
+            this.tabHandles.SuspendLayout();
             this.tabServices.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
-            this.tabHandles.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelProc
@@ -1287,13 +1290,33 @@
             this.columnHeader5.Text = "Protection";
             this.columnHeader5.Width = 80;
             // 
+            // tabHandles
+            // 
+            this.tabHandles.Controls.Add(this.listHandles);
+            this.tabHandles.Location = new System.Drawing.Point(4, 22);
+            this.tabHandles.Name = "tabHandles";
+            this.tabHandles.Size = new System.Drawing.Size(430, 357);
+            this.tabHandles.TabIndex = 7;
+            this.tabHandles.Text = "Handles";
+            this.tabHandles.UseVisualStyleBackColor = true;
+            // 
+            // listHandles
+            // 
+            this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listHandles.DoubleBuffered = true;
+            this.listHandles.Location = new System.Drawing.Point(0, 0);
+            this.listHandles.Name = "listHandles";
+            this.listHandles.Provider = null;
+            this.listHandles.Size = new System.Drawing.Size(430, 357);
+            this.listHandles.TabIndex = 0;
+            // 
             // tabServices
             // 
             this.tabServices.Controls.Add(this.listServices);
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 369);
+            this.tabServices.Size = new System.Drawing.Size(796, 389);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -1305,7 +1328,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 363);
+            this.listServices.Size = new System.Drawing.Size(790, 383);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -1463,25 +1486,25 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // tabHandles
+            // menuHandle
             // 
-            this.tabHandles.Controls.Add(this.listHandles);
-            this.tabHandles.Location = new System.Drawing.Point(4, 22);
-            this.tabHandles.Name = "tabHandles";
-            this.tabHandles.Size = new System.Drawing.Size(430, 357);
-            this.tabHandles.TabIndex = 7;
-            this.tabHandles.Text = "Handles";
-            this.tabHandles.UseVisualStyleBackColor = true;
+            this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.closeHandleMenuItem,
+            this.copyHandleMenuItem});
+            this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
             // 
-            // listHandles
+            // copyHandleMenuItem
             // 
-            this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listHandles.DoubleBuffered = true;
-            this.listHandles.Location = new System.Drawing.Point(0, 0);
-            this.listHandles.Name = "listHandles";
-            this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(430, 357);
-            this.listHandles.TabIndex = 0;
+            this.vistaMenu.SetImage(this.copyHandleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyHandleMenuItem.Index = 1;
+            this.copyHandleMenuItem.Text = "&Copy";
+            // 
+            // closeHandleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.closeHandleMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.closeHandleMenuItem.Index = 0;
+            this.closeHandleMenuItem.Text = "Close";
+            this.closeHandleMenuItem.Click += new System.EventHandler(this.closeHandleMenuItem_Click);
             // 
             // HackerWindow
             // 
@@ -1519,9 +1542,9 @@
             this.tabThreads.ResumeLayout(false);
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
+            this.tabHandles.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
-            this.tabHandles.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1689,6 +1712,9 @@
         private System.Windows.Forms.MenuItem DSMenuItem;
         private System.Windows.Forms.TabPage tabHandles;
         private HandleList listHandles;
+        private System.Windows.Forms.ContextMenu menuHandle;
+        private System.Windows.Forms.MenuItem closeHandleMenuItem;
+        private System.Windows.Forms.MenuItem copyHandleMenuItem;
     }
 }
 
