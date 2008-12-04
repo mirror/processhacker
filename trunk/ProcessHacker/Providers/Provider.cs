@@ -121,8 +121,9 @@ namespace ProcessHacker
             _dictionary = new Dictionary<TKey, TValue>();
 
             _thread = new Thread(new ThreadStart(Update));
-            _thread.Priority = ThreadPriority.Lowest;
             _thread.Start();
+            System.Diagnostics.Process.GetCurrentProcess().Threads[_thread.ManagedThreadId].PriorityLevel = 
+                System.Diagnostics.ThreadPriorityLevel.Idle;
         }
 
         /// <summary>
