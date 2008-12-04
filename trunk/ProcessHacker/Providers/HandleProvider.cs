@@ -48,14 +48,37 @@ namespace ProcessHacker
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = Win32.EnumHandles();
             Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION> processHandles = 
                 new Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION>();
+            Dictionary<short, Win32.ObjectInformation> processHandlesInfo =
+                new Dictionary<short, Win32.ObjectInformation>();
             Dictionary<short, HandleItem> newdictionary = new Dictionary<short, HandleItem>();
 
             foreach (short key in Dictionary.Keys)
                 newdictionary.Add(key, Dictionary[key]);
 
             foreach (Win32.SYSTEM_HANDLE_INFORMATION handle in handles)
+            {
                 if (handle.ProcessId == _pid)
+                {
+                    Win32.ObjectInformation info;
+
+                    try
+                    {
+                        info = Win32.GetHandleInfo(processHandle, handle);
+
+                        if ((info.Name.Name.Buffer == null ||
+                            info.Name.Name.Buffer == "") &&
+                            Properties.Settings.Default.HideHandlesNoName)
+                            continue;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
                     processHandles.Add(handle.Handle, handle);
+                    processHandlesInfo.Add(handle.Handle, info);
+                }
+            }
 
             // look for closed handles
             foreach (short h in Dictionary.Keys)
@@ -75,15 +98,7 @@ namespace ProcessHacker
                     HandleItem item = new HandleItem();
 
                     item.Handle = processHandles[h];
-
-                    try
-                    {
-                        item.ObjectInfo = Win32.GetHandleInfo(processHandle, item.Handle);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    item.ObjectInfo = processHandlesInfo[h];
 
                     newdictionary.Add(h, item);
                     this.CallDictionaryAdded(item);

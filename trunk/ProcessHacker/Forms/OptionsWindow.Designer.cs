@@ -37,6 +37,8 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
+            this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.checkUseToolhelpModules = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
@@ -49,7 +51,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
-            this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -151,6 +152,7 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkHideHandlesNoName);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label1);
             this.tabGeneral.Controls.Add(this.textSearchEngine);
@@ -166,6 +168,28 @@
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // checkHideHandlesNoName
+            // 
+            this.checkHideHandlesNoName.AutoSize = true;
+            this.checkHideHandlesNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 130);
+            this.checkHideHandlesNoName.Name = "checkHideHandlesNoName";
+            this.checkHideHandlesNoName.Size = new System.Drawing.Size(160, 18);
+            this.checkHideHandlesNoName.TabIndex = 8;
+            this.checkHideHandlesNoName.Text = "Hide handles with no name";
+            this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
+            // 
+            // checkShowTrayIcon
+            // 
+            this.checkShowTrayIcon.AutoSize = true;
+            this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 153);
+            this.checkShowTrayIcon.Name = "checkShowTrayIcon";
+            this.checkShowTrayIcon.Size = new System.Drawing.Size(102, 18);
+            this.checkShowTrayIcon.TabIndex = 7;
+            this.checkShowTrayIcon.Text = "Show tray icon";
+            this.checkShowTrayIcon.UseVisualStyleBackColor = true;
             // 
             // checkUseToolhelpModules
             // 
@@ -292,17 +316,6 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
-            // checkShowTrayIcon
-            // 
-            this.checkShowTrayIcon.AutoSize = true;
-            this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 130);
-            this.checkShowTrayIcon.Name = "checkShowTrayIcon";
-            this.checkShowTrayIcon.Size = new System.Drawing.Size(107, 18);
-            this.checkShowTrayIcon.TabIndex = 7;
-            this.checkShowTrayIcon.Text = "Show Tray Icon";
-            this.checkShowTrayIcon.UseVisualStyleBackColor = true;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
@@ -354,5 +367,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox checkUseToolhelpModules;
         private System.Windows.Forms.CheckBox checkShowTrayIcon;
+        private System.Windows.Forms.CheckBox checkHideHandlesNoName;
     }
 }

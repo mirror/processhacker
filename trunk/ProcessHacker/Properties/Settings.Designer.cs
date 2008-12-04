@@ -598,5 +598,17 @@ namespace ProcessHacker.Properties {
                 this["ShowIcon"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HideHandlesNoName {
+            get {
+                return ((bool)(this["HideHandlesNoName"]));
+            }
+            set {
+                this["HideHandlesNoName"] = value;
+            }
+        }
     }
 }

@@ -46,6 +46,7 @@
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(0, 0);
             this.listHandles.Name = "listHandles";
+            this.listHandles.ShowItemToolTips = true;
             this.listHandles.Size = new System.Drawing.Size(450, 472);
             this.listHandles.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listHandles.TabIndex = 3;

@@ -847,6 +847,14 @@ namespace ProcessHacker
         public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
             ref OBJECT_ALL_TYPES_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
 
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            IntPtr ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            int ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+
         #endregion
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -2013,22 +2021,34 @@ namespace ProcessHacker
 
             ObjectInformation info = new ObjectInformation();
 
-            OBJECT_BASIC_INFORMATION obi = new OBJECT_BASIC_INFORMATION();
-
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                ref obi, Marshal.SizeOf(obi), ref retLength);
+                0, 0, ref retLength);
+            IntPtr obiMem = Marshal.AllocHGlobal(retLength);
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                obiMem, retLength, ref retLength);
+            OBJECT_BASIC_INFORMATION obi = 
+                (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
+            Marshal.FreeHGlobal(obiMem);
             info.Basic = obi;
 
-            OBJECT_TYPE_INFORMATION oti = new OBJECT_TYPE_INFORMATION();
-
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                ref oti, Marshal.SizeOf(oti), ref retLength);
+                0, 0, ref retLength);
+            IntPtr otiMem = Marshal.AllocHGlobal(retLength);
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                otiMem, retLength, ref retLength);
+            OBJECT_TYPE_INFORMATION oti = 
+                (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+            Marshal.FreeHGlobal(otiMem);
             info.Type = oti;
 
-            OBJECT_NAME_INFORMATION oni = new OBJECT_NAME_INFORMATION();
-
             ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                ref oni, Marshal.SizeOf(oni), ref retLength);
+                0, 0, ref retLength);
+            IntPtr oniMem = Marshal.AllocHGlobal(retLength);
+            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                oniMem, retLength, ref retLength);
+            OBJECT_NAME_INFORMATION oni =
+                (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+            Marshal.FreeHGlobal(oniMem);
             info.Name = oni;
 
             CloseHandle(object_handle);
