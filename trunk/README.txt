@@ -7,6 +7,7 @@ It supports:
  * Viewing process groups
  * Inspecting PE files (exe/dll/ocx/sys files)
  * Viewing, terminating, suspending and resuming threads
+ * Viewing and closing process handles
  * Viewing modules, finding the address of an exported function, 
    changing page protection, reading memory and viewing file 
    properties

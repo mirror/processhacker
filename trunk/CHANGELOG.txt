@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.3.5
+ * Added handle viewing/closing support
+
 1.2.3.0
  * Fixed incorrect messages about "new services" (actually fixed this time)
  * Fixed Injector - now uses MinGW instead of Visual C++
