@@ -2,8 +2,8 @@ Process Hacker
 
 1.2.3.5
  * Added handle viewing/closing support
- * Added handle finder
  * Fixed random crashes
+ * Doesn't update threads/handles unless viewing them
 
 1.2.3.0
  * Fixed incorrect messages about "new services" (actually fixed this time)

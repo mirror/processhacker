@@ -3055,12 +3055,16 @@ namespace ProcessHacker
             threadP = new ThreadProvider(processSelectedPID);
             listThreads.Provider = threadP;
             threadP.Interval = Properties.Settings.Default.RefreshInterval;
-            threadP.Enabled = true;
+
+            if (tabControl.SelectedTab == tabThreads)
+                threadP.Enabled = true;
 
             handleP = new HandleProvider(processSelectedPID);
             listHandles.Provider = handleP;
             handleP.Interval = Properties.Settings.Default.RefreshInterval;
-            handleP.Enabled = true;
+
+            if (tabControl.SelectedTab == tabHandles)
+                handleP.Enabled = true;
 
             if (Properties.Settings.Default.UseToolhelpModules)
                 UpdateModuleInfoToolhelp();
@@ -3267,6 +3271,26 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (threadP != null)
+                threadP.Enabled = false;
+
+            if (handleP != null)
+                handleP.Enabled = false;
+
+            if (tabControl.SelectedTab == tabThreads)
+            {
+                if (threadP != null)
+                    threadP.Enabled = true;
+            }
+            else if (tabControl.SelectedTab == tabHandles)
+            {
+                if (handleP != null)
+                    handleP.Enabled = true;
+            }
         }
     }
 }
