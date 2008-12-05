@@ -105,8 +105,10 @@ namespace ProcessHacker
         public event ProviderError Error;
                                                            
         Thread _thread;
+        List<Thread> _asyncThreads = new List<Thread>();
         Dictionary<TKey, TValue> _dictionary;
 
+        object _busyLock = new object();
         bool _busy = false;
         bool _enabled = false;
         bool _useInvoke = false;
@@ -121,9 +123,9 @@ namespace ProcessHacker
             _dictionary = new Dictionary<TKey, TValue>();
 
             _thread = new Thread(new ThreadStart(Update));
+            _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();
-            System.Diagnostics.Process.GetCurrentProcess().Threads[_thread.ManagedThreadId].PriorityLevel = 
-                System.Diagnostics.ThreadPriorityLevel.Idle;
+            _thread.Priority = ThreadPriority.Lowest;
         }
 
         /// <summary>
@@ -184,30 +186,47 @@ namespace ProcessHacker
             {
                 if (_enabled)
                 {
-                    _busy = true;
-
-                    if (ProviderUpdate != null)
-                    {
-                        try
-                        {
-                            ProviderUpdate();
-                            _runCount++;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (Error != null)
-                                Error(ex);
-                        }
-
-                        if (Updated != null)
-                            Updated();
-                    }
-
-                    _busy = false;
+                    this.RunOnce();
                 }
 
                 Thread.Sleep(_interval);
             }
+        }
+
+        public void RunOnce()
+        {
+            lock (_busyLock)
+            {
+                _busy = true;
+
+                if (ProviderUpdate != null)
+                {
+                    try
+                    {
+                        ProviderUpdate();
+                        _runCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Error != null)
+                            Error(ex);
+                    }
+
+                    if (Updated != null)
+                        Updated();
+                }
+
+                _busy = false;
+            }
+        }
+
+        public void RunOnceAsync()
+        {
+            Thread t = new Thread(new ThreadStart(this.RunOnce));
+
+            t.SetApartmentState(ApartmentState.STA);
+            _asyncThreads.Add(t);
+            t.Start();
         }
 
         /// <summary>
@@ -223,6 +242,9 @@ namespace ProcessHacker
         public void Kill()
         {
             _thread.Abort();
+
+            foreach (Thread t in _asyncThreads)
+                t.Abort();
         }
 
         private void CallEvent(Delegate e, object item, bool useInvoke)

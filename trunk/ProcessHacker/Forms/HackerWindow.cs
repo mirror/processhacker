@@ -3059,12 +3059,16 @@ namespace ProcessHacker
             if (tabControl.SelectedTab == tabThreads)
                 threadP.Enabled = true;
 
+            threadP.RunOnceAsync();
+
             handleP = new HandleProvider(processSelectedPID);
             listHandles.Provider = handleP;
             handleP.Interval = Properties.Settings.Default.RefreshInterval;
 
             if (tabControl.SelectedTab == tabHandles)
                 handleP.Enabled = true;
+
+            handleP.RunOnceAsync();
 
             if (Properties.Settings.Default.UseToolhelpModules)
                 UpdateModuleInfoToolhelp();

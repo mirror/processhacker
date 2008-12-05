@@ -63,11 +63,11 @@ namespace ProcessHacker
 
                     try
                     {
-                        if (Win32.IsHandleNameEmpty(processHandle, handle) && 
+                        info = Win32.GetHandleInfo(processHandle, handle);
+                        
+                        if ((info.BestName == null || info.BestName == "") &&
                             Properties.Settings.Default.HideHandlesNoName)
                             continue;
-
-                        info = Win32.GetHandleInfo(processHandle, handle);
                     }
                     catch
                     {

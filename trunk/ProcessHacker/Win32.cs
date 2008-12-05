@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.ComponentModel;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -221,6 +222,39 @@ namespace ProcessHacker
             PROCESS_DEP_DISABLE = 0x00000000,
             PROCESS_DEP_ENABLE = 0x00000001,
             PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 0x00000002
+        }
+
+        [Flags]
+        public enum FILE_OBJECT_FLAGS : int
+        {
+            FO_FILE_OPEN = 0x00000001,
+            FO_SYNCHRONOUS_IO = 0x00000002,
+            FO_ALERTABLE_IO = 0x00000004,
+            FO_NO_INTERMEDIATE_BUFFERING = 0x00000008,
+            FO_WRITE_THROUGH = 0x00000010,
+            FO_SEQUENTIAL_ONLY = 0x00000020,
+            FO_CACHE_SUPPORTED = 0x00000040,
+            FO_NAMED_PIPE = 0x00000080,
+            FO_STREAM_FILE = 0x00000100,
+            FO_MAILSLOT = 0x00000200,
+            FO_GENERATE_AUDIT_ON_CLOSE = 0x00000400,
+            FO_QUEUE_IRP_TO_THREAD = FO_GENERATE_AUDIT_ON_CLOSE,
+            FO_DIRECT_DEVICE_OPEN = 0x00000800,
+            FO_FILE_MODIFIED = 0x00001000,
+            FO_FILE_SIZE_CHANGED = 0x00002000,
+            FO_CLEANUP_COMPLETE = 0x00004000,
+            FO_TEMPORARY_FILE = 0x00008000,
+            FO_DELETE_ON_CLOSE = 0x00010000,
+            FO_OPENED_CASE_SENSITIVE = 0x00020000,
+            FO_HANDLE_CREATED = 0x00040000,
+            FO_FILE_FAST_IO_READ = 0x00080000,
+            FO_RANDOM_ACCESS = 0x00100000,
+            FO_FILE_OPEN_CANCELLED = 0x00200000,
+            FO_VOLUME_OPEN = 0x00400000,
+            FO_REMOTE_ORIGIN = 0x01000000,
+            FO_SKIP_COMPLETION_PORT = 0x02000000,
+            FO_SKIP_SET_EVENT = 0x04000000,
+            FO_SKIP_SET_FAST_IO = 0x08000000
         }
 
         [Flags]
@@ -1122,6 +1156,11 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int CreateThread(int ThreadAttributes, int StackSize,
+            [MarshalAs(UnmanagedType.FunctionPtr)] System.Threading.ThreadStart StartAddress,
+            int Parameter, int CreationFlags, ref int ThreadId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int WaitForSingleObject(int Object, int Timeout);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -2002,8 +2041,8 @@ namespace ProcessHacker
         public struct ObjectInformation
         {
             public OBJECT_BASIC_INFORMATION Basic;
-            public OBJECT_TYPE_INFORMATION Type;
             public OBJECT_NAME_INFORMATION Name;
+            public OBJECT_TYPE_INFORMATION Type;
             public string OrigName;
             public string BestName;
             public string TypeName;
@@ -2083,30 +2122,47 @@ namespace ProcessHacker
                 if (retLength > 0)
                 {
                     IntPtr otiMem = Marshal.AllocHGlobal(retLength);
-                    if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                        otiMem, retLength, ref retLength) != 0)
-                        throw new Exception("ZwQueryObject failed");
-                    OBJECT_TYPE_INFORMATION oti =
-                        (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
-                    info.TypeName = ReadUnicodeString(oti.Name);
-                    Marshal.FreeHGlobal(otiMem);
-                    info.Type = oti;
+
+                    try
+                    {
+                        if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                            otiMem, retLength, ref retLength) != 0)
+                            throw new Exception("ZwQueryObject failed");
+                        OBJECT_TYPE_INFORMATION oti =
+                            (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+                        info.TypeName = ReadUnicodeString(oti.Name);
+                        info.Type = oti;
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(otiMem);
+                    }
                 }
 
-                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    0, 0, ref retLength);
+                if (handle.Flags != 0)
+                    throw new Exception();
 
+                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                  0, 0, ref retLength);
+                
                 if (retLength > 0)
                 {
                     IntPtr oniMem = Marshal.AllocHGlobal(retLength);
-                    if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                        oniMem, retLength, ref retLength) != 0)
-                        throw new Exception("ZwQueryObject failed");
-                    OBJECT_NAME_INFORMATION oni =
-                        (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
-                    info.OrigName = ReadUnicodeString(oni.Name);
-                    Marshal.FreeHGlobal(oniMem);
-                    info.Name = oni;
+
+                    try
+                    {
+                        if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                            oniMem, retLength, ref retLength) != 0)
+                            throw new Exception("ZwQueryObject failed");
+                        OBJECT_NAME_INFORMATION oni =
+                            (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+                        info.OrigName = ReadUnicodeString(oni.Name);
+                        info.Name = oni;
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(oniMem);
+                    }
                 }
 
                 try
@@ -2134,11 +2190,6 @@ namespace ProcessHacker
                                 info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
                             else
                                 info.BestName = info.OrigName;
-
-                            break;
-
-                        case "Process":
-                            info.BestName = GetProcessId(object_handle).ToString();
 
                             break;
 
@@ -2177,34 +2228,6 @@ namespace ProcessHacker
             }
 
             throw new Exception("Failed");
-        }
-
-        public static bool IsHandleNameEmpty(ProcessHandle process, SYSTEM_HANDLE_INFORMATION handle)
-        {
-            int object_handle = 0;
-            int retLength = 0;
-
-            if (ZwDuplicateObject(process.Handle, handle.Handle,
-                Process.GetCurrentProcess().Handle.ToInt32(), ref object_handle, 0, 0,
-                0x4 // DUPLICATE_SAME_ATTRIBUTES
-                ) != 0)
-                throw new Exception("Could not duplicate object!");
-
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                0, 0, ref retLength);
-            IntPtr oniMem = Marshal.AllocHGlobal(retLength);
-            ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                oniMem, retLength, ref retLength);
-            OBJECT_NAME_INFORMATION oni =
-                (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
-            Marshal.FreeHGlobal(oniMem);
-
-            if (oni.Name.Length == 0)
-                return true;
-
-            CloseHandle(object_handle);
-
-            return false;
         }
 
         #endregion
