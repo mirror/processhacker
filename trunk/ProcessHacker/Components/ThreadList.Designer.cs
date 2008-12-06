@@ -33,6 +33,7 @@
             this.columnThreadState = new System.Windows.Forms.ColumnHeader();
             this.columnCPUTime = new System.Windows.Forms.ColumnHeader();
             this.columnPriority = new System.Windows.Forms.ColumnHeader();
+            this.columnWaitReason = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listThreads
@@ -42,7 +43,8 @@
             this.columnThreadID,
             this.columnThreadState,
             this.columnCPUTime,
-            this.columnPriority});
+            this.columnPriority,
+            this.columnWaitReason});
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -74,6 +76,11 @@
             this.columnPriority.Text = "Priority";
             this.columnPriority.Width = 80;
             // 
+            // columnWaitReason
+            // 
+            this.columnWaitReason.Text = "Wait Reason";
+            this.columnWaitReason.Width = 100;
+            // 
             // ThreadList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -93,5 +100,6 @@
         private System.Windows.Forms.ColumnHeader columnThreadState;
         private System.Windows.Forms.ColumnHeader columnCPUTime;
         private System.Windows.Forms.ColumnHeader columnPriority;
+        private System.Windows.Forms.ColumnHeader columnWaitReason;
     }
 }

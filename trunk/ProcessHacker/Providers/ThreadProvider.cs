@@ -33,6 +33,7 @@ namespace ProcessHacker
         public string CPUTime;
         public string Priority;
         public string State;
+        public string WaitReason;
     }
 
     public class ThreadProvider : Provider<int, ThreadItem>
@@ -86,6 +87,8 @@ namespace ProcessHacker
                     catch { }
                     try { item.Priority = t.PriorityLevel.ToString(); }
                     catch { }
+                    try { item.WaitReason = t.WaitReason.ToString(); }
+                    catch { }
 
                     newdictionary.Add(t.Id, item);
                     this.CallDictionaryAdded(item);
@@ -105,10 +108,13 @@ namespace ProcessHacker
                     catch { }
                     try { newitem.Priority = t.PriorityLevel.ToString(); }
                     catch { }
+                    try { newitem.WaitReason = t.WaitReason.ToString(); }
+                    catch { }
 
                     if (newitem.State != item.State ||
                         newitem.CPUTime != item.CPUTime ||
-                        newitem.Priority != item.Priority)
+                        newitem.Priority != item.Priority || 
+                        newitem.WaitReason != item.WaitReason)
                     {
                         newdictionary[t.Id] = newitem;
                         this.CallDictionaryModified(item, newitem);

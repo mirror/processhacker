@@ -930,6 +930,10 @@ namespace ProcessHacker
         #region NT-specific functions
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySymbolicLinkObject(int LinkHandle, ref UNICODE_STRING LinkTarget,
+            ref int ReturnedLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
             IntPtr ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
 
@@ -2248,7 +2252,16 @@ namespace ProcessHacker
                             throw new Exception("ZwQueryObject failed");
                         OBJECT_NAME_INFORMATION oni =
                             (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
-                        info.OrigName = ReadUnicodeString(oni.Name);
+
+                        try
+                        {
+                            info.OrigName = GetSymbolicLinkTarget(object_handle);
+                        }
+                        catch
+                        {
+                            info.OrigName = ReadUnicodeString(oni.Name);
+                        }
+
                         info.Name = oni;
                     }
                     finally
@@ -2410,6 +2423,36 @@ namespace ProcessHacker
             }
 
             throw new Exception("Failed");
+        }
+
+        public static string GetSymbolicLinkTarget(int Object)
+        {
+            UNICODE_STRING str = new UNICODE_STRING();
+            int neededLength = 0;
+
+            str.MaximumLength = 0;
+            str.Length = 0;
+            str.Buffer = 0;
+
+            if (ZwQuerySymbolicLinkObject(Object, ref str, ref neededLength) != 0)
+                throw new Exception(GetLastErrorMessage());
+
+            str.MaximumLength = (ushort)neededLength;
+            str.Length = 0;
+            str.Buffer = Marshal.AllocHGlobal(neededLength).ToInt32();
+
+            try
+            {
+                if (ZwQuerySymbolicLinkObject(Object, ref str, ref neededLength) != 0)
+                    throw new Exception(GetLastErrorMessage());
+
+
+                return ReadUnicodeString(str);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(new IntPtr(str.Buffer));
+            }
         }
 
         #endregion

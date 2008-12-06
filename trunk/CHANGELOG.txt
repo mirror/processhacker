@@ -6,6 +6,8 @@ Process Hacker
  * Doesn't update threads/handles unless viewing them
  * Fixed most handle leaks
  * Fixed randomly changing process usernames
+ * Added WaitReason column in thread list
+ * Highlights suspended threads in thread list
 
 1.2.3.0
  * Fixed incorrect messages about "new services" (actually fixed this time)
