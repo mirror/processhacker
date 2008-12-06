@@ -138,7 +138,6 @@ namespace ProcessHacker
                             Properties.Settings.Default.ShowAccountDomains);
                         item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
                             true);
-                        
                     }
                     catch
                     {
@@ -149,13 +148,7 @@ namespace ProcessHacker
                             item.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
                         }
                         catch
-                        {
-                            if (System.Runtime.InteropServices.Marshal.GetLastWin32Error() == 5)
-                            {
-                                item.Username = "(" + Win32.GetLastErrorMessage() + ")";
-                                item.UsernameWithDomain = "(" + Win32.GetLastErrorMessage() + ")";
-                            }
-                        }
+                        { }
                     }
 
                     newdictionary.Add(p.Id, item);
@@ -196,10 +189,7 @@ namespace ProcessHacker
                             newitem.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
                         }
                         catch
-                        {
-                            newitem.Username = item.Username;
-                            newitem.UsernameWithDomain = item.UsernameWithDomain;
-                        }
+                        { }
                     }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||

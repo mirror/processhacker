@@ -2096,8 +2096,25 @@ namespace ProcessHacker
                 returnProcesses[i].Info = (WTS_PROCESS_INFO)Marshal.PtrToStructure(
                     new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i), typeof(WTS_PROCESS_INFO));
 
-                returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, false);
-                returnProcesses[i].UsernameWithDomain = GetAccountName(returnProcesses[i].Info.SID, true);
+                try
+                {
+                    if (returnProcesses[i].Info.SID == 0)
+                        throw new Exception("Null SID pointer");
+
+                    returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, false);
+                }
+                catch
+                { }
+
+                try
+                {
+                    if (returnProcesses[i].Info.SID == 0)
+                        throw new Exception("Null SID pointer");
+
+                    returnProcesses[i].UsernameWithDomain = GetAccountName(returnProcesses[i].Info.SID, true);
+                }
+                catch
+                { }
             }
 
             WTSFreeMemory(processes);

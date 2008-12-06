@@ -1,6 +1,7 @@
 Process Hacker
 
 1.2.4.0
+ * Fixed wrong usernames when Process Hacker is running as a non-admin user
 
 1.2.3.5
  * Added handle viewing/closing support
