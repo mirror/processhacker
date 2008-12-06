@@ -5,6 +5,7 @@ Process Hacker
  * Gets command line of processes without using Injector
  * Added highlighting for debugged processes
  * Added viewing/setting of process affinity
+ * Fixed all handle leaks
 
 1.2.3.5
  * Added handle viewing/closing support

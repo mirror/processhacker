@@ -32,7 +32,6 @@ namespace ProcessHacker
 
         public Icon Icon;
         public string CmdLine;
-        public string ImageFileName;
         public string MemoryUsage;
         public string Name;
         public string Username;
@@ -122,33 +121,6 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.CmdLine = Win32.GetProcessCmdLine(
-                            new Win32.ProcessHandle(p.Id, 
-                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
-                    }
-                    catch
-                    { }
-
-                    try
-                    {
-                        item.ImageFileName = Win32.GetProcessImageFileName(
-                            new Win32.ProcessHandle(p.Id,
-                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
-                    }
-                    catch
-                    { }
-
-                    try
-                    {
-                        item.IsBeingDebugged = Win32.IsBeingDebugged(
-                            new Win32.ProcessHandle(p.Id,
-                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ).Handle);
-                    }
-                    catch
-                    { }
-
-                    try
-                    {
                         item.MemoryUsage = Misc.GetNiceSizeName(p.PrivateMemorySize64);
                     }
                     catch
@@ -156,22 +128,51 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            Properties.Settings.Default.ShowAccountDomains);
-                        item.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            true);
+                        using (Win32.ProcessHandle phandle =
+                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        {
+                            try
+                            {
+                                item.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
+                            }
+                            catch
+                            { }
+
+                            try
+                            {
+                                item.Username = Win32.GetProcessUsername(phandle.Handle,
+                                    Properties.Settings.Default.ShowAccountDomains);
+                                item.UsernameWithDomain = Win32.GetProcessUsername(phandle.Handle,
+                                    true);
+                            }
+                            catch
+                            { }
+                        }
                     }
                     catch
                     {
-                        try
+                        if (item.Username == null)
                         {
-                            item.Username = Properties.Settings.Default.ShowAccountDomains ? 
-                                tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
-                            item.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
+                            try
+                            {
+                                item.Username = Properties.Settings.Default.ShowAccountDomains ?
+                                    tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
+                                item.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
+                            }
+                            catch
+                            { }
                         }
-                        catch
-                        { }
                     }
+
+                    try
+                    {
+                        using (Win32.ProcessHandle phandle =
+                            new Win32.ProcessHandle(p.Id,
+                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                            item.CmdLine = Win32.GetProcessCmdLine(phandle);
+                    }
+                    catch
+                    { }
 
                     newdictionary.Add(p.Id, item);
                     this.CallDictionaryAdded(item);
@@ -196,32 +197,41 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.Username = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            Properties.Settings.Default.ShowAccountDomains);
-                        newitem.UsernameWithDomain = Win32.GetProcessUsername(p.Handle.ToInt32(),
-                            true);
-
-                    }
-                    catch
-                    {
-                        try
+                        using (Win32.ProcessHandle phandle =
+                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                         {
-                            newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
-                                tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
-                            newitem.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
-                        }
-                        catch
-                        { }
-                    }
+                            try
+                            {
+                                 newitem.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
+                            }
+                            catch
+                            { }
 
-                    try
-                    {
-                        newitem.IsBeingDebugged = Win32.IsBeingDebugged(
-                            new Win32.ProcessHandle(p.Id,
-                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ).Handle);
+                            try
+                            {
+                                newitem.Username = Win32.GetProcessUsername(phandle.Handle,
+                                    Properties.Settings.Default.ShowAccountDomains);
+                                newitem.UsernameWithDomain = Win32.GetProcessUsername(phandle.Handle,
+                                    true);
+                            }
+                            catch
+                            { }
+                        }
                     }
                     catch
-                    { }
+                    {
+                        if (newitem.Username == null)
+                        {
+                            try
+                            {
+                                newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
+                                    tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
+                                newitem.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
+                            }
+                            catch
+                            { }
+                        }
+                    }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.Username != item.Username || 
