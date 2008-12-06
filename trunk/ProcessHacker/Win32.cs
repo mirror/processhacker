@@ -1229,6 +1229,9 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessIoCounters(int ProcessHandle, ref IO_COUNTERS IoCounters);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1569,6 +1572,17 @@ namespace ProcessHacker
             public int th32ProcessID;
             public int th32HeapID;
             public int dwFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct IO_COUNTERS
+        {
+            public ulong ReadOperationCount;
+            public ulong WriteOperationCount;
+            public ulong OtherOperationCount;
+            public ulong ReadTransferCount;
+            public ulong WriteTransferCount;
+            public ulong OtherTransferCount;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2666,6 +2680,16 @@ namespace ProcessHacker
         public static string GetProcessImageFileName(ProcessHandle process)
         {
             return GetProcessPEBString(process, 58);
+        }
+
+        public static IO_COUNTERS GetProcessIoCounters(ProcessHandle process)
+        {
+            IO_COUNTERS counters = new IO_COUNTERS();
+
+            if (GetProcessIoCounters(process.Handle, ref counters) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            return counters;
         }
 
         public static int GetProcessParent(int pid)

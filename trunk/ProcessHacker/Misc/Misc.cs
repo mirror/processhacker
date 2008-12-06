@@ -188,7 +188,27 @@ namespace ProcessHacker
         {
             string[] names = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
             int i = 0;
-            double s = (double)size;
+            decimal s = (decimal)size;
+
+            while (s > 1024 && i < names.Length)
+            {
+                s /= 1024;
+                i++;
+            }
+
+            return String.Format("{0:f2}", s) + " " + names[i];
+        }
+
+        /// <summary>
+        /// Formats a size into a string representation, postfixing it with the correct unit.
+        /// </summary>
+        /// <param name="size">The size to format.</param>
+        /// <returns></returns>
+        public static string GetNiceSizeName(ulong size)
+        {
+            string[] names = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
+            int i = 0;
+            decimal s = (decimal)size;
 
             while (s > 1024 && i < names.Length)
             {

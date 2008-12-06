@@ -2475,13 +2475,14 @@ namespace ProcessHacker
 
         delegate string MiscInfoDelegate(Process p);
 
-        string[] misctoplevel = { "Process", "DEP", "Handles", "Memory" };
+        string[] misctoplevel = { "Process", "DEP", "Handles", "I/O", "Memory" };
 
         string[][] miscinfo = {
                                   new string[] { "Command Line", "Is Being Debugged", "Session ID", "Priority Boost Enabled", 
                                       "Total CPU Time", "Privileged CPU Time", "User CPU Time", "Start Time"},
                                   new string[] { "Status", "Permanent" },
                                   new string[] { "Handle Count" },
+                                  new string[] { "Read", "Write", "Other" },
                                   new string[] { "Non-paged System Memory Size", "Paged Memory Size", 
                                       "Paged System Memory Size", "Peak Paged Memory Size", "Peak Virtual Memory Size", 
                                       "Peak Working Set", "Private Memory Size", "Virtual Memory Size", "Working Set"}
@@ -2567,6 +2568,46 @@ namespace ProcessHacker
                                   new MiscInfoDelegate[]
                                   {
                                       delegate (Process p) { return p.HandleCount.ToString(); }   
+                                  },
+
+                                  // I/O
+                                  new MiscInfoDelegate[]
+                                  {
+                                      delegate (Process p)
+                                      {
+                                          using (Win32.ProcessHandle phandle = 
+                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                          {
+                                              Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
+
+                                              return counters.ReadOperationCount + " (" + 
+                                                  Misc.GetNiceSizeName(counters.ReadTransferCount) + ")";
+                                          }
+                                      },
+
+                                      delegate (Process p)
+                                      {
+                                          using (Win32.ProcessHandle phandle = 
+                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                          {
+                                              Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
+
+                                              return counters.WriteOperationCount + " (" + 
+                                                  Misc.GetNiceSizeName(counters.WriteTransferCount) + ")";
+                                          }
+                                      },
+
+                                      delegate (Process p)
+                                      {
+                                          using (Win32.ProcessHandle phandle = 
+                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                          {
+                                              Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
+
+                                              return counters.OtherOperationCount + " (" + 
+                                                  Misc.GetNiceSizeName(counters.OtherTransferCount) + ")";
+                                          }
+                                      }
                                   },
 
                                   // Memory
