@@ -88,6 +88,11 @@ namespace ProcessHacker
                 get { return _handle; }
             }
 
+            public int Wait(int Timeout)
+            {
+                return WaitForSingleObject(_handle, Timeout);
+            }
+
             public void Suspend()
             {
                 if (SuspendThread(_handle) == -1)
@@ -136,6 +141,11 @@ namespace ProcessHacker
             public int Handle
             {
                 get { return _handle; }
+            }
+
+            public int Wait(int Timeout)
+            {
+                return WaitForSingleObject(_handle, Timeout);
             }
 
             public void Terminate()
@@ -364,6 +374,13 @@ namespace ProcessHacker
             ObjectTypeInformation,
             ObjectAllTypesInformation, 
             ObjectHandleInformation
+        }
+
+        [Flags]
+        public enum PIPE_STATE : int
+        {
+            PIPE_NOWAIT = 0x1,
+            PIPE_READMODE_MESSAGE = 0x2
         }
 
         [Flags]
@@ -605,27 +622,27 @@ namespace ProcessHacker
         [Flags]
         public enum STANDARD_RIGHTS : uint
         {
-            DELETE                           =0x00010000,
-            READ_CONTROL                     =0x00020000,
-            WRITE_DAC                        =0x00040000,
-            WRITE_OWNER                      =0x00080000,
-            SYNCHRONIZE                      =0x00100000,
+            DELETE = 0x00010000,
+            READ_CONTROL = 0x00020000,
+            WRITE_DAC = 0x00040000,
+            WRITE_OWNER = 0x00080000,
+            SYNCHRONIZE = 0x00100000,
 
-            STANDARD_RIGHTS_REQUIRED         =0x000f0000,
+            STANDARD_RIGHTS_REQUIRED = 0x000f0000,
 
-            STANDARD_RIGHTS_READ             =READ_CONTROL,
-            STANDARD_RIGHTS_WRITE            =READ_CONTROL,
-            STANDARD_RIGHTS_EXECUTE          =READ_CONTROL,
+            STANDARD_RIGHTS_READ = READ_CONTROL,
+            STANDARD_RIGHTS_WRITE = READ_CONTROL,
+            STANDARD_RIGHTS_EXECUTE = READ_CONTROL,
 
-            STANDARD_RIGHTS_ALL              =0x001f0000,
+            STANDARD_RIGHTS_ALL = 0x001f0000,
 
-            SPECIFIC_RIGHTS_ALL              =0x0000ffff,
+            SPECIFIC_RIGHTS_ALL = 0x0000ffff,
             ACCESS_SYSTEM_SECURITY = 0x01000000,
             MAXIMUM_ALLOWED = 0x02000000,
-            GENERIC_READ                     =0x80000000,
-            GENERIC_WRITE                    =0x40000000,
-            GENERIC_EXECUTE                  =0x20000000,
-            GENERIC_ALL                      =0x10000000
+            GENERIC_READ = 0x80000000,
+            GENERIC_WRITE = 0x40000000,
+            GENERIC_EXECUTE = 0x20000000,
+            GENERIC_ALL = 0x10000000
         }
 
         [Flags]
@@ -928,6 +945,10 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+            int TargetProcessHandle, int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
             int TargetProcessHandle, ref int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -1204,6 +1225,10 @@ namespace ProcessHacker
             int FunctionTableAccessRoutine,
             int GetModuleBaseRoutine,
             int TranslateAddress);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetNamedPipeHandleState(int NamedPipeHandle, ref PIPE_STATE State,
+            int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int CreateThread(int ThreadAttributes, int StackSize,
@@ -2191,6 +2216,35 @@ namespace ProcessHacker
 
                 if (handle.Flags != 0)
                     throw new Exception();
+
+                bool isBadPipe = true;
+                PIPE_STATE pipeState = 0;
+
+                if (info.TypeName != "File")
+                {
+                    isBadPipe = false;
+                }
+                else
+                {
+                    int pipe_handle = 0;
+
+                    if (ZwDuplicateObject(process.Handle, handle.Handle,
+                        Program.CurrentProcess.Handle, ref object_handle, 0, 0,
+                        0x2 // DUPLICATE_SAME_ATTRIBUTES
+                        ) != 0)
+                        isBadPipe = true;
+                    else if (pipe_handle == 0)
+                        isBadPipe = true;
+                    else if (GetNamedPipeHandleState(pipe_handle, ref pipeState, 0, 0, 0, 0, 0) == 0)
+                        isBadPipe = false;
+                    else if ((pipeState & PIPE_STATE.PIPE_NOWAIT) != 0)
+                        isBadPipe = false;
+
+                    CloseHandle(pipe_handle);
+                }
+
+                if (isBadPipe)
+                    throw new Exception("Object is a blocking named pipe");
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                   0, 0, ref retLength);

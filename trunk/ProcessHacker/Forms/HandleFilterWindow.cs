@@ -69,7 +69,7 @@ namespace ProcessHacker
             this.UseWaitCursor = true;
             progress.Visible = true;
             Application.DoEvents();
-            listHandles.BeginUpdate();
+            //listHandles.BeginUpdate();
                                        
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
 
@@ -102,38 +102,6 @@ namespace ProcessHacker
                         processHandles.Add(handle.ProcessId, 
                             new Win32.ProcessHandle(handle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
 
-                    int object_handle = 0;
-                    int retLength = 0;
-
-                    if (Win32.ZwDuplicateObject(processHandles[handle.ProcessId].Handle, handle.Handle,
-                        Program.CurrentProcess.Handle, ref object_handle, 0, 0,
-                        0x4 // DUPLICATE_SAME_ATTRIBUTES
-                        ) != 0)
-                        continue;
-
-                    int threadId = 0;
-
-                    Win32.CreateThread(0, 0, new System.Threading.ThreadStart(delegate
-                    {
-                        Win32.ZwQueryObject(object_handle, Win32.OBJECT_INFORMATION_CLASS.ObjectNameInformation, 0, 0, ref retLength);
-                    }), 0, 0, ref threadId);
-
-                    int threadHandle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_ALL_ACCESS, 0, threadId);
-
-                    if (threadHandle != 0)
-                    {
-                        if (Win32.WaitForSingleObject(threadHandle, 100) != Win32.WAIT_OBJECT_0)
-                        {
-                            Win32.TerminateThread(threadHandle, 0);
-                            Win32.CloseHandle(threadHandle);
-                            Win32.CloseHandle(object_handle);
-                            continue;
-                        }
-                    }
-
-                    Win32.CloseHandle(threadHandle);
-                    Win32.CloseHandle(object_handle);
-
                     Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[handle.ProcessId], handle);
 
                     if (!info.BestName.ToLower().Contains(textFilter.Text.ToLower()))
@@ -150,6 +118,7 @@ namespace ProcessHacker
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
 
                     listHandles.Items.Add(item);
+                    Application.DoEvents();
                 }
                 catch
                 {

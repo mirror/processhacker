@@ -239,11 +239,6 @@ namespace ProcessHacker
             else if (listHandles.SelectedItems.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuHandle);
-
-                if (IsDifferentSessionId(processSelectedPID))
-                    closeHandleMenuItem.Enabled = false;
-                else
-                    closeHandleMenuItem.Enabled = true;
             }
             else
             {
@@ -254,36 +249,16 @@ namespace ProcessHacker
 
         private void closeHandleMenuItem_Click(object sender, EventArgs e)
         {
-            int module = Win32.GetModuleHandle("ntdll.dll");
-
-            if (module == 0)
-            {
-                MessageBox.Show("Could not get module handle of ntdll.dll:\n\n" + Win32.GetLastErrorMessage(),
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            int proc = Win32.GetProcAddress(module, "ZwClose");
-
-            if (proc == 0)
-            {
-                MessageBox.Show("Could not get procedure address of ZwClose:\n\n" + Win32.GetLastErrorMessage(),
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
             try
             {
-                using (Win32.ProcessHandle handle =
-                    new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
-                {
-                    int threadId = 0;
+                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[2].Text);
 
-                    if (Win32.CreateRemoteThread(handle.Handle, 0, 0, proc,
-                        (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[2].Text), 0, ref threadId) == 0)
-                        throw new Exception(Win32.GetLastErrorMessage());
+                using (Win32.ProcessHandle process =
+                       new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                {
+                    Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                        0x1 // DUPLICATE_CLOSE_SOURCE
+                        );
                 }
             }
             catch (Exception ex)
