@@ -241,7 +241,7 @@ namespace ProcessHacker
         public const uint SHGFI_ICON = 0x100;
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
-        public const int SID_SIZE = 1024;
+        public const int SID_SIZE = 0x1000;
         public const int SIZE_OF_80387_REGISTERS = 72;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
         public const int SW_SHOW = 5;
@@ -2787,12 +2787,12 @@ namespace ProcessHacker
             return config;
         }
 
-        public static string GetTokenUsername(int Token, bool IncludeDomain)
+        public static string GetTokenUsername(int TokenHandle, bool IncludeDomain)
         {           
             TOKEN_USER user = new TOKEN_USER();     
             int retlen = 0;
 
-            if (GetTokenInformation(Token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
+            if (GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
                 Marshal.SizeOf(user), ref retlen) == 0)
             {
                 throw new Exception("Could not get token information: " + Win32.GetLastErrorMessage());
