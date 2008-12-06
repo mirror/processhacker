@@ -36,6 +36,7 @@
             this.columnPvtMemory = new System.Windows.Forms.ColumnHeader();
             this.columnUsername = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.columnCPU = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listProcesses
@@ -45,6 +46,7 @@
             this.columnName,
             this.columnPID,
             this.columnPvtMemory,
+            this.columnCPU,
             this.columnUsername});
             this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listProcesses.FullRowSelect = true;
@@ -84,6 +86,11 @@
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList.Images.SetKeyName(0, "Generic");
             // 
+            // columnCPU
+            // 
+            this.columnCPU.Text = "CPU";
+            this.columnCPU.Width = 50;
+            // 
             // ProcessList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -104,5 +111,6 @@
         private System.Windows.Forms.ColumnHeader columnPvtMemory;
         private System.Windows.Forms.ColumnHeader columnUsername;
         private System.Windows.Forms.ImageList imageList;
+        private System.Windows.Forms.ColumnHeader columnCPU;
     }
 }

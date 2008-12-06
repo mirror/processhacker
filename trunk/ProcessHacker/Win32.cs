@@ -1229,6 +1229,14 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetSystemTimes(ref ulong CreationTime, ref ulong ExitTime,
+            ref ulong KernelTime, ref ulong UserTime);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessTimes(int ProcessHandle, ref ulong CreationTime, ref ulong ExitTime,
+            ref ulong KernelTime, ref ulong UserTime);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessIoCounters(int ProcessHandle, ref IO_COUNTERS IoCounters);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -2817,6 +2825,16 @@ namespace ProcessHacker
             return user.User.SID;
         }
 
+        public static ulong[] GetProcessTimes(ProcessHandle process)
+        {
+            ulong[] times = new ulong[4];
+
+            if (GetProcessTimes(process.Handle, ref times[0], ref times[1], ref times[2], ref times[3]) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            return times;
+        }
+
         public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
         {
             int token = 0;
@@ -2884,6 +2902,16 @@ namespace ProcessHacker
             }
 
             return config;
+        }
+
+        public static ulong[] GetSystemTimes()
+        {
+            ulong[] times = new ulong[4];
+
+            if (GetSystemTimes(ref times[0], ref times[1], ref times[2], ref times[3]) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            return times; 
         }
 
         public static string GetTokenUsername(int TokenHandle, bool IncludeDomain)

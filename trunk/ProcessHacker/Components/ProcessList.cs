@@ -178,6 +178,7 @@ namespace ProcessHacker
             litem.Text = pitem.Name;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0.00"));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
 
             try
@@ -234,7 +235,8 @@ namespace ProcessHacker
                 { }
 
                 litem.SubItems[2].Text = pitem.MemoryUsage;
-                litem.SubItems[3].Text = pitem.Username;
+                litem.SubItems[3].Text = pitem.CPUUsage;
+                litem.SubItems[4].Text = pitem.Username;
             }
         }
 

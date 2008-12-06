@@ -38,6 +38,8 @@ namespace ProcessHacker
         public string UsernameWithDomain;
 
         public bool IsBeingDebugged;
+        public ulong LastTime;
+        public string CPUUsage;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -47,7 +49,7 @@ namespace ProcessHacker
         public ProcessProvider()
             : base()
         {      
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
+            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
         }
 
         private void UpdateOnce()
@@ -56,6 +58,8 @@ namespace ProcessHacker
             Dictionary<int, Win32.WtsProcess> tsProcesses = new Dictionary<int, Win32.WtsProcess>();
             List<int> pids = new List<int>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
+            ulong[] systemTimes = Win32.GetSystemTimes();
+            ulong totalTime = systemTimes[2] / 10000 + systemTimes[3] / 10000;
 
             foreach (Win32.WtsProcess process in Win32.TSEnumProcesses())
                 tsProcesses.Add(process.Info.ProcessID, process);
@@ -133,6 +137,15 @@ namespace ProcessHacker
                         {
                             try
                             {
+                                ulong[] times = Win32.GetProcessTimes(phandle);
+
+                                item.LastTime = times[2] / 10000 + times[3] / 10000;
+                            }
+                            catch
+                            { }
+
+                            try
+                            {
                                 item.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
                             }
                             catch
@@ -202,6 +215,16 @@ namespace ProcessHacker
                         {
                             try
                             {
+                                ulong[] times = Win32.GetProcessTimes(phandle);
+
+                                newitem.LastTime = times[2] / 10000 + times[3] / 10000;
+                                newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) / totalTime).ToString("F2");
+                            }
+                            catch
+                            { }
+
+                            try
+                            {
                                  newitem.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
                             }
                             catch
@@ -234,6 +257,7 @@ namespace ProcessHacker
                     }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
+                        newitem.CPUUsage != item.CPUUsage || 
                         newitem.Username != item.Username || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged)
                     {

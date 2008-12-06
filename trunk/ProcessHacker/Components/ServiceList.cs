@@ -176,7 +176,8 @@ namespace ProcessHacker
             else
                 litem.ImageKey = "Driver";
 
-            listServices.Items.Add(litem);
+            try { listServices.Items.Add(litem); }
+            catch { }
         }
 
         private void provider_DictionaryModified(object oldItem, object newItem)

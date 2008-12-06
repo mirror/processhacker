@@ -7,6 +7,7 @@ Process Hacker
  * Added viewing/setting of process affinity
  * Fixed all handle leaks
  * Added I/O counters to misc. info
+ * Added CPU usage column
 
 1.2.3.5
  * Added handle viewing/closing support
