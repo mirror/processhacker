@@ -2161,7 +2161,7 @@ namespace ProcessHacker
             int object_handle = 0;
             int retLength = 0;
 
-            if (ZwDuplicateObject(process.Handle, handle.Handle, 
+            if (ZwDuplicateObject(process.Handle, handle.Handle,
                 Program.CurrentProcess.Handle, ref object_handle, 0, 0,
                 0x4 // DUPLICATE_SAME_ATTRIBUTES
                 ) != 0)
@@ -2282,11 +2282,21 @@ namespace ProcessHacker
                                     ) != 0)
                                     throw new Exception("Could not duplicate process handle!");
 
-                                if ((processId = GetProcessId(process_handle)) == 0)
-                                    throw new Exception(GetLastErrorMessage());
+                                try
+                                {
+                                    if ((processId = GetProcessId(process_handle)) == 0)
+                                        throw new Exception(GetLastErrorMessage());
 
-                                info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
-                                    " (" + processId.ToString() + ")";
+                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                            " (" + processId.ToString() + ")";
+                                    else
+                                        info.BestName = "Non-existent process (" + processId.ToString() + ")";
+                                }
+                                finally
+                                {
+                                    CloseHandle(process_handle);
+                                }
                             }
 
                             break;
@@ -2304,15 +2314,48 @@ namespace ProcessHacker
                                     ) != 0)
                                     throw new Exception("Could not duplicate thread handle!");
 
-                                if ((threadId = GetThreadId(thread_handle)) == 0)
-                                    throw new Exception(GetLastErrorMessage());
+                                try
+                                {
+                                    if ((threadId = GetThreadId(thread_handle)) == 0)
+                                        throw new Exception(GetLastErrorMessage());
 
-                                if ((processId = GetProcessIdOfThread(thread_handle)) == 0)
-                                    throw new Exception(GetLastErrorMessage());
+                                    if ((processId = GetProcessIdOfThread(thread_handle)) == 0)
+                                        throw new Exception(GetLastErrorMessage());
 
-                                info.BestName = threadId.ToString() + ": " + 
-                                    Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
-                                    " (" + processId.ToString() + ")";
+                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                            " (" + processId.ToString() + "): " + threadId.ToString();
+                                    else
+                                        info.BestName = "Non-existent process (" + processId.ToString() + "): " +
+                                            threadId.ToString();
+                                }
+                                finally
+                                {
+                                    CloseHandle(thread_handle);
+                                }
+                            }
+
+                            break;
+
+                        case "Token":
+                            {
+                                int token_handle = 0;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess.Handle, ref token_handle,
+                                    (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0,
+                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
+                                    ) != 0)
+                                    throw new Exception("Could not duplicate token handle!");
+
+                                try
+                                {
+                                    info.BestName = GetTokenUsername(token_handle, true);
+                                }
+                                finally
+                                {
+                                    CloseHandle(token_handle);
+                                }
                             }
 
                             break;
