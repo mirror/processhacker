@@ -34,7 +34,7 @@ namespace ProcessHacker
 
         public static string WindowsVersion = "Unknown";
 
-        public static Win32.ProcessHandle CurrentProcess;
+        public static int CurrentProcess;
 
         /// <summary>
         /// The Results Window ID Generator
@@ -89,8 +89,13 @@ namespace ProcessHacker
                     " This will result in reduced functionality.", "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-            CurrentProcess =
-                new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS);
+            CurrentProcess = Win32.OpenProcess(
+                Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS, 0, 
+                System.Diagnostics.Process.GetCurrentProcess().Id);
+
+            if (CurrentProcess == 0)
+                CurrentProcess = 
+                    System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32();
 
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

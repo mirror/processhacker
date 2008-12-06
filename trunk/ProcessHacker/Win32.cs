@@ -2162,7 +2162,7 @@ namespace ProcessHacker
             int retLength = 0;
 
             if (ZwDuplicateObject(process.Handle, handle.Handle,
-                Program.CurrentProcess.Handle, ref object_handle, 0, 0,
+                Program.CurrentProcess, ref object_handle, 0, 0,
                 0x4 // DUPLICATE_SAME_ATTRIBUTES
                 ) != 0)
                 throw new Exception("Could not duplicate object!");
@@ -2276,7 +2276,7 @@ namespace ProcessHacker
                                 int processId = 0;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                    Program.CurrentProcess.Handle, ref process_handle,
+                                    Program.CurrentProcess, ref process_handle,
                                     (STANDARD_RIGHTS)PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0,
                                     0x4 // DUPLICATE_SAME_ATTRIBUTES
                                     ) != 0)
@@ -2308,7 +2308,7 @@ namespace ProcessHacker
                                 int threadId = 0;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                    Program.CurrentProcess.Handle, ref thread_handle,
+                                    Program.CurrentProcess, ref thread_handle,
                                     (STANDARD_RIGHTS)THREAD_RIGHTS.THREAD_QUERY_INFORMATION, 0,
                                     0x4 // DUPLICATE_SAME_ATTRIBUTES
                                     ) != 0)
@@ -2342,7 +2342,7 @@ namespace ProcessHacker
                                 int token_handle = 0;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                    Program.CurrentProcess.Handle, ref token_handle,
+                                    Program.CurrentProcess, ref token_handle,
                                     (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0,
                                     0x4 // DUPLICATE_SAME_ATTRIBUTES
                                     ) != 0)
@@ -2854,7 +2854,7 @@ namespace ProcessHacker
 
         public static int WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
-            return WriteTokenPrivilege(Program.CurrentProcess.Handle, PrivilegeName, Attributes);
+            return WriteTokenPrivilege(Program.CurrentProcess, PrivilegeName, Attributes);
         }
 
         public static int WriteTokenPrivilege(int ProcessHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
