@@ -3042,11 +3042,6 @@ namespace ProcessHacker
             Misc.SetDoubleBuffered(listModules, typeof(ListView), true);
             Misc.SetDoubleBuffered(treeMisc, typeof(TreeView), true);
 
-            if (Win32.WriteTokenPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
-                MessageBox.Show("Debug privilege could not be acquired!" +
-                    " This will result in reduced functionality.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
             InitMiscInfo();
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;

@@ -65,9 +65,6 @@ namespace ProcessHacker
         [STAThread]
         public static void Main()
         {
-            CurrentProcess = 
-                new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS);
-
             Asm.LockedBus = 1;
             Asm.Lowercase = true;
             Asm.ExtraSpace = true;
@@ -84,6 +81,16 @@ namespace ProcessHacker
                 WindowsVersion = "XP";
             else if (Environment.OSVersion.Version.Major == 6)
                 WindowsVersion = "Vista";
+
+            if (Win32.WriteTokenPrivilege(
+                System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(), 
+                "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
+                MessageBox.Show("Debug privilege could not be acquired!" +
+                    " This will result in reduced functionality.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            CurrentProcess =
+                new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS);
 
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
