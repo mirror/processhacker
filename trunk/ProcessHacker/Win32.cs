@@ -1229,8 +1229,7 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetSystemTimes(ref ulong CreationTime, ref ulong ExitTime,
-            ref ulong KernelTime, ref ulong UserTime);
+        public static extern int GetSystemTimes(ref ulong IdleTime, ref ulong KernelTime, ref ulong UserTime);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessTimes(int ProcessHandle, ref ulong CreationTime, ref ulong ExitTime,
@@ -2906,9 +2905,9 @@ namespace ProcessHacker
 
         public static ulong[] GetSystemTimes()
         {
-            ulong[] times = new ulong[4];
+            ulong[] times = new ulong[3];
 
-            if (GetSystemTimes(ref times[0], ref times[1], ref times[2], ref times[3]) == 0)
+            if (GetSystemTimes(ref times[0], ref times[1], ref times[2]) == 0)
                 throw new Exception(GetLastErrorMessage());
 
             return times; 

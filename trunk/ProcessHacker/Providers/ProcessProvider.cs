@@ -45,11 +45,16 @@ namespace ProcessHacker
     public class ProcessProvider : Provider<int, ProcessItem>
     {
         private Dictionary<int, Win32.WtsProcess> _tsProcesses;
+        private ulong _lastSysTime;
 
         public ProcessProvider()
             : base()
         {      
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+
+            ulong[] systemTimes = Win32.GetSystemTimes();
+
+            _lastSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
         }
 
         private void UpdateOnce()
@@ -58,8 +63,12 @@ namespace ProcessHacker
             Dictionary<int, Win32.WtsProcess> tsProcesses = new Dictionary<int, Win32.WtsProcess>();
             List<int> pids = new List<int>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
+
             ulong[] systemTimes = Win32.GetSystemTimes();
-            ulong totalTime = systemTimes[2] / 10000 + systemTimes[3] / 10000;
+            ulong thisSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
+            ulong sysTime = thisSysTime - _lastSysTime;
+
+            _lastSysTime = thisSysTime;
 
             foreach (Win32.WtsProcess process in Win32.TSEnumProcesses())
                 tsProcesses.Add(process.Info.ProcessID, process);
@@ -177,6 +186,9 @@ namespace ProcessHacker
                         }
                     }
 
+                    if (p.Id == 0)
+                        item.LastTime = systemTimes[0] / 10000;
+
                     try
                     {
                         using (Win32.ProcessHandle phandle =
@@ -218,7 +230,7 @@ namespace ProcessHacker
                                 ulong[] times = Win32.GetProcessTimes(phandle);
 
                                 newitem.LastTime = times[2] / 10000 + times[3] / 10000;
-                                newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) / totalTime).ToString("F2");
+                                newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) * 100 / sysTime).ToString("F2");
                             }
                             catch
                             { }
@@ -254,6 +266,12 @@ namespace ProcessHacker
                             catch
                             { }
                         }
+                    }
+
+                    if (p.Id == 0)
+                    {
+                        newitem.LastTime = systemTimes[0] / 10000;
+                        newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) * 100 / sysTime).ToString("F2");
                     }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
