@@ -385,11 +385,18 @@ namespace ProcessHacker
 
             if (box.ShowDialog() == DialogResult.OK)
             {
-                int address = (int)BaseConverter.ToNumberParse(box.Value);
+                try
+                {
+                    int address = (int)BaseConverter.ToNumberParse(box.Value);
 
-                InformationBox infoBox = new InformationBox(Symbols.GetNameFromAddress(address));
+                    InformationBox infoBox = new InformationBox(Symbols.GetNameFromAddress(address));
 
-                infoBox.ShowDialog();
+                    infoBox.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
