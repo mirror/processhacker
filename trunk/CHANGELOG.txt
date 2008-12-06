@@ -8,6 +8,7 @@ Process Hacker
  * Fixed randomly changing process usernames
  * Added WaitReason column in thread list
  * Highlights suspended threads in thread list
+ * Only require highestAvailable elevation for UAC
 
 1.2.3.0
  * Fixed incorrect messages about "new services" (actually fixed this time)
