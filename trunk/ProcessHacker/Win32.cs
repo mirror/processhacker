@@ -228,6 +228,8 @@ namespace ProcessHacker
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
+        public static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
+
         #region Imported Consts
 
         public const int ANYSIZE_ARRAY = 1;
@@ -977,10 +979,6 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_ALL_TYPES_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
             IntPtr ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -1237,6 +1235,12 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int WaitForSingleObject(int Object, int Timeout);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessIdOfThread(int ThreadHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetThreadId(int ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessId(int ProcessHandle);
@@ -1636,15 +1640,6 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct OBJECT_ALL_TYPES_INFORMATION
-        {
-            public uint NumberOfTypes;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
-            public OBJECT_TYPE_INFORMATION[] TypeInformation;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
         public struct OBJECT_BASIC_INFORMATION
         {
             public uint Attributes;
@@ -1685,9 +1680,9 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
             public uint[] Reserved2;
 
-            public uint InvalidAttributes;
+            public STANDARD_RIGHTS InvalidAttributes;
             public GENERIC_MAPPING GenericMapping;
-            public uint ValidAccess;
+            public STANDARD_RIGHTS ValidAccess;
             public byte SecurityRequired;
             public byte MaintainHandleCount;
             public ushort MaintainTypeList;
@@ -2117,7 +2112,6 @@ namespace ProcessHacker
         {
             public OBJECT_BASIC_INFORMATION Basic;
             public OBJECT_NAME_INFORMATION Name;
-            public OBJECT_TYPE_INFORMATION Type;
             public string OrigName;
             public string BestName;
             public string TypeName;
@@ -2191,60 +2185,39 @@ namespace ProcessHacker
                     info.Basic = obi;
                 }
 
-                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                    0, 0, ref retLength);
-
-                if (retLength > 0)
+                if (ObjectTypes.ContainsKey(handle.ObjectTypeNumber))
                 {
-                    IntPtr otiMem = Marshal.AllocHGlobal(retLength);
-
-                    try
-                    {
-                        if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                            otiMem, retLength, ref retLength) != 0)
-                            throw new Exception("ZwQueryObject failed");
-                        OBJECT_TYPE_INFORMATION oti =
-                            (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
-                        info.TypeName = ReadUnicodeString(oti.Name);
-                        info.Type = oti;
-                    }
-                    finally
-                    {
-                        Marshal.FreeHGlobal(otiMem);
-                    }
-                }
-
-                if (handle.Flags != 0)
-                    throw new Exception();
-
-                bool isBadPipe = true;
-                PIPE_STATE pipeState = 0;
-
-                if (info.TypeName != "File")
-                {
-                    isBadPipe = false;
+                    info.TypeName = ObjectTypes[handle.ObjectTypeNumber];
                 }
                 else
                 {
-                    int pipe_handle = 0;
+                    ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                        0, 0, ref retLength);
 
-                    if (ZwDuplicateObject(process.Handle, handle.Handle,
-                        Program.CurrentProcess.Handle, ref object_handle, 0, 0,
-                        0x2 // DUPLICATE_SAME_ATTRIBUTES
-                        ) != 0)
-                        isBadPipe = true;
-                    else if (pipe_handle == 0)
-                        isBadPipe = true;
-                    else if (GetNamedPipeHandleState(pipe_handle, ref pipeState, 0, 0, 0, 0, 0) == 0)
-                        isBadPipe = false;
-                    else if ((pipeState & PIPE_STATE.PIPE_NOWAIT) != 0)
-                        isBadPipe = false;
+                    if (retLength > 0)
+                    {
+                        IntPtr otiMem = Marshal.AllocHGlobal(retLength);
 
-                    CloseHandle(pipe_handle);
+                        try
+                        {
+                            if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                                otiMem, retLength, ref retLength) != 0)
+                                throw new Exception("ZwQueryObject failed");
+                            OBJECT_TYPE_INFORMATION oti =
+                                (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+                            info.TypeName = ReadUnicodeString(oti.Name);
+                            ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
+                        }
+                        finally
+                        {
+                            Marshal.FreeHGlobal(otiMem);
+                        }
+                    }
                 }
 
-                if (isBadPipe)
-                    throw new Exception("Object is a blocking named pipe");
+                if (info.TypeName == "File")
+                    if (((int)handle.GrantedAccess & 0x30) != 0)
+                        throw new Exception("0x30 access is banned");
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                   0, 0, ref retLength);
@@ -2294,6 +2267,53 @@ namespace ProcessHacker
                                 info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
                             else
                                 info.BestName = info.OrigName;
+
+                            break;
+
+                        case "Process":
+                            {
+                                int process_handle = 0;
+                                int processId = 0;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess.Handle, ref process_handle,
+                                    (STANDARD_RIGHTS)PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0,
+                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
+                                    ) != 0)
+                                    throw new Exception("Could not duplicate process handle!");
+
+                                if ((processId = GetProcessId(process_handle)) == 0)
+                                    throw new Exception(GetLastErrorMessage());
+
+                                info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                    " (" + processId.ToString() + ")";
+                            }
+
+                            break;
+
+                        case "Thread":
+                            {
+                                int thread_handle = 0;
+                                int processId = 0;
+                                int threadId = 0;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess.Handle, ref thread_handle,
+                                    (STANDARD_RIGHTS)THREAD_RIGHTS.THREAD_QUERY_INFORMATION, 0,
+                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
+                                    ) != 0)
+                                    throw new Exception("Could not duplicate thread handle!");
+
+                                if ((threadId = GetThreadId(thread_handle)) == 0)
+                                    throw new Exception(GetLastErrorMessage());
+
+                                if ((processId = GetProcessIdOfThread(thread_handle)) == 0)
+                                    throw new Exception(GetLastErrorMessage());
+
+                                info.BestName = threadId.ToString() + ": " + 
+                                    Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                    " (" + processId.ToString() + ")";
+                            }
 
                             break;
 

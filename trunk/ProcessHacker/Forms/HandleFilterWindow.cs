@@ -69,7 +69,7 @@ namespace ProcessHacker
             this.UseWaitCursor = true;
             progress.Visible = true;
             Application.DoEvents();
-            //listHandles.BeginUpdate();
+            listHandles.BeginUpdate();
                                        
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
 

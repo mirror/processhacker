@@ -2989,6 +2989,8 @@ namespace ProcessHacker
             if (tabControl.SelectedTab == tabHandles)
                 handleP.Enabled = true;
 
+            handleP.RunOnceAsync();
+
             if (Properties.Settings.Default.UseToolhelpModules)
                 UpdateModuleInfoToolhelp();
             else
