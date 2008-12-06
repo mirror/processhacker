@@ -161,5 +161,8 @@
     <Setting Name="FilterHandleWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">554, 463</Value>
     </Setting>
+    <Setting Name="ColorBeingDebugged" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">204, 187, 255</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

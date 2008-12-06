@@ -658,5 +658,17 @@ namespace ProcessHacker.Properties {
                 this["FilterHandleWindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("204, 187, 255")]
+        public global::System.Drawing.Color ColorBeingDebugged {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorBeingDebugged"]));
+            }
+            set {
+                this["ColorBeingDebugged"] = value;
+            }
+        }
     }
 }

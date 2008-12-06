@@ -474,6 +474,7 @@ namespace ProcessHacker
         {
             OptionsWindow options = new OptionsWindow();
 
+            options.TopMost = this.TopMost;
             options.ShowDialog();
 
             RefreshInterval = Properties.Settings.Default.RefreshInterval;
@@ -612,6 +613,23 @@ namespace ProcessHacker
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(listMemory.Items);
+        }
+
+        #endregion
+
+        #region Misc. Context Menu
+
+        private void menuMisc_Popup(object sender, EventArgs e)
+        {
+            if (treeMisc.SelectedNode == null)
+                copyMiscMenuItem.Enabled = false;
+            else
+                copyMiscMenuItem.Enabled = true;
+        }
+
+        private void copyMiscMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(treeMisc.SelectedNode.Text);
         }
 
         #endregion
@@ -895,6 +913,7 @@ namespace ProcessHacker
                     priorityMenuItem.Enabled = true;
                     inspectProcessMenuItem.Enabled = true;
                     searchProcessMenuItem.Enabled = true;
+                    affinityProcessMenuItem.Enabled = true;
                     privilegesMenuItem.Enabled = true;
                     groupsMenuItem.Enabled = true;
                     terminateMenuItem.Text = "&Terminate Process";
@@ -950,6 +969,7 @@ namespace ProcessHacker
                     priorityMenuItem.Enabled = false;
                     inspectProcessMenuItem.Enabled = false;
                     searchProcessMenuItem.Enabled = false;
+                    affinityProcessMenuItem.Enabled = false;
                     privilegesMenuItem.Enabled = false;
                     groupsMenuItem.Enabled = false;
                     servicesProcessMenuItem.Enabled = false;
@@ -1149,18 +1169,18 @@ namespace ProcessHacker
             }
         }
 
-        private void privilegesMenuItem_Click(object sender, EventArgs e)
+        private void affinityProcessMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessPrivileges privForm = new ProcessPrivileges(processSelectedPID);
+            ProcessAffinity affForm = new ProcessAffinity(processSelectedPID);
 
             try
             {
-                privForm.TopMost = this.TopMost;
-                privForm.ShowDialog();
+                affForm.TopMost = this.TopMost;
+                affForm.ShowDialog();
             }
             catch
             { }
-        }
+        }   
 
         private void groupsMenuItem_Click(object sender, EventArgs e)
         {
@@ -1170,6 +1190,19 @@ namespace ProcessHacker
             {
                 grpForm.TopMost = this.TopMost;
                 grpForm.ShowDialog();
+            }
+            catch
+            { }
+        }
+
+        private void privilegesMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessPrivileges privForm = new ProcessPrivileges(processSelectedPID);
+
+            try
+            {
+                privForm.TopMost = this.TopMost;
+                privForm.ShowDialog();
             }
             catch
             { }
@@ -2445,8 +2478,8 @@ namespace ProcessHacker
         string[] misctoplevel = { "Process", "DEP", "Handles", "Memory" };
 
         string[][] miscinfo = {
-                                  new string[] { "Session ID", "Priority Boost Enabled", "Total CPU Time",
-                                  "Privileged CPU Time", "User CPU Time", "Start Time"},
+                                  new string[] { "Command Line", "Is Being Debugged", "Session ID", "Priority Boost Enabled", 
+                                      "Total CPU Time", "Privileged CPU Time", "User CPU Time", "Start Time"},
                                   new string[] { "Status", "Permanent" },
                                   new string[] { "Handle Count" },
                                   new string[] { "Non-paged System Memory Size", "Paged Memory Size", 
@@ -2458,6 +2491,16 @@ namespace ProcessHacker
                                   // Process
                                   new MiscInfoDelegate[]
                                   {
+                                      delegate (Process p)
+                                      {
+                                          return Program.HackerWindow.processP.Dictionary[p.Id].CmdLine;
+                                      },
+
+                                      delegate (Process p)
+                                      {
+                                          return Program.HackerWindow.processP.Dictionary[p.Id].IsBeingDebugged.ToString();
+                                      },
+
                                       delegate (Process p)
                                       {
                                           int id = Win32.GetProcessSessionId(p.Id);
@@ -3137,6 +3180,7 @@ namespace ProcessHacker
             listMemory.ContextMenu = menuMemory;
             listHandles.ContextMenu = menuHandle;
             listServices.ContextMenu = menuService;
+            treeMisc.ContextMenu = menuMisc;
 
             HighlightedListViewItem.StateHighlighting = false;
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;

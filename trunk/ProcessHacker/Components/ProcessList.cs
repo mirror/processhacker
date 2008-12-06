@@ -151,7 +151,9 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
-            if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
+            if (p.IsBeingDebugged)
+                return Properties.Settings.Default.ColorBeingDebugged;
+            else if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
             else if (p.UsernameWithDomain == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
                 return Properties.Settings.Default.ColorOwnProcesses;
@@ -194,7 +196,7 @@ namespace ProcessHacker
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                     Misc.GetRealPath(filename));
 
-                litem.ToolTipText = info.FileName + "\n" +
+                litem.ToolTipText = (pitem.CmdLine != null ? (pitem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
                     info.FileDescription + " (" + info.FileVersion + ")\n" +
                     info.CompanyName;
             }

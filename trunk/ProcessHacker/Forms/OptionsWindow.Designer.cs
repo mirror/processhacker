@@ -51,6 +51,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.colorBeingDebugged = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -204,8 +206,10 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.label8);
             this.tabHighlighting.Controls.Add(this.textHighlightingDuration);
             this.tabHighlighting.Controls.Add(this.label7);
+            this.tabHighlighting.Controls.Add(this.colorBeingDebugged);
             this.tabHighlighting.Controls.Add(this.colorSystemProcesses);
             this.tabHighlighting.Controls.Add(this.colorOwnProcesses);
             this.tabHighlighting.Controls.Add(this.label6);
@@ -316,6 +320,23 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 139);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(112, 13);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "Debugged Processes:";
+            // 
+            // colorBeingDebugged
+            // 
+            this.colorBeingDebugged.Color = System.Drawing.Color.Transparent;
+            this.colorBeingDebugged.Location = new System.Drawing.Point(127, 137);
+            this.colorBeingDebugged.Name = "colorBeingDebugged";
+            this.colorBeingDebugged.Size = new System.Drawing.Size(40, 20);
+            this.colorBeingDebugged.TabIndex = 3;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
@@ -368,5 +389,7 @@
         private System.Windows.Forms.CheckBox checkUseToolhelpModules;
         private System.Windows.Forms.CheckBox checkShowTrayIcon;
         private System.Windows.Forms.CheckBox checkHideHandlesNoName;
+        private System.Windows.Forms.Label label8;
+        private ProcessHacker.Components.ColorModifier colorBeingDebugged;
     }
 }

@@ -763,4 +763,7 @@ For example, input 0x01 to protect the area from any access.</value>
   <metadata name="menuHandle.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>483, 56</value>
   </metadata>
+  <metadata name="menuMisc.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>604, 56</value>
+  </metadata>
 </root>

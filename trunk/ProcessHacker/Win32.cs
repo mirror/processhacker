@@ -1229,6 +1229,16 @@ namespace ProcessHacker
             int TranslateAddress);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessAffinityMask(int ProcessHandle, ref uint ProcessAffinityMask,
+            ref uint SystemAffinityMask);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int CheckRemoteDebuggerPresent(int ProcessHandle, ref int DebuggerPresent);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetNamedPipeHandleState(int NamedPipeHandle, ref PIPE_STATE State,
             int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
@@ -2626,46 +2636,36 @@ namespace ProcessHacker
 
         public static string GetProcessCmdLine(ProcessHandle process)
         {
-            int retLen = 0;
+            return GetProcessPEBString(process, 66);
+        }
 
-            ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation, 0, 0, ref retLen);
-            IntPtr data = Marshal.AllocHGlobal(retLen);
+        public static Icon GetProcessIcon(Process p)
+        {
+            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
 
-            if (ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation, data, retLen, ref retLen) != 0)
+            try
             {
-                PROCESS_BASIC_INFORMATION info =
-                    (PROCESS_BASIC_INFORMATION)Marshal.PtrToStructure(data, typeof(PROCESS_BASIC_INFORMATION));
-
-                Marshal.FreeHGlobal(data);
-
-                byte[] data2 = new byte[4];
-
-                if (ReadProcessMemory(process.Handle, info.PebBaseAddress + 16, data2, 4, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-                if (ReadProcessMemory(process.Handle, paramInfoAddrI + 16 * 4, data2, 2, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
-                byte[] stringData = new byte[strLength];
-
-                if (ReadProcessMemory(process.Handle, paramInfoAddrI + 17 * 4, data2, 4, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-                if (ReadProcessMemory(process.Handle, strAddr, stringData, strLength, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                return UnicodeEncoding.Unicode.GetString(stringData);
+                if (Win32.SHGetFileInfo(Misc.GetRealPath(p.MainModule.FileName), 0, ref shinfo,
+                      (uint)Marshal.SizeOf(shinfo),
+                       Win32.SHGFI_ICON |
+                       Win32.SHGFI_SMALLICON) == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Icon.FromHandle(shinfo.hIcon);
+                }
             }
-            else
+            catch
             {
-                Marshal.FreeHGlobal(data);
-                throw new Exception("ZwQueryInformationProcess failed!");
+                return null;
             }
+        }
+
+        public static string GetProcessImageFileName(ProcessHandle process)
+        {
+            return GetProcessPEBString(process, 58);
         }
 
         public static int GetProcessParent(int pid)
@@ -2691,28 +2691,43 @@ namespace ProcessHacker
             return -1;
         }
 
-        public static Icon GetProcessIcon(Process p)
+        public static string GetProcessPEBString(ProcessHandle process, int offset)
         {
-            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
+            PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
+            int retLen = 0;
+            int pebBaseAddress = 0x7ffd7000;
 
-            try
-            {
-                if (Win32.SHGetFileInfo(Misc.GetRealPath(p.MainModule.FileName), 0, ref shinfo,
-                      (uint)Marshal.SizeOf(shinfo),
-                       Win32.SHGFI_ICON |
-                       Win32.SHGFI_SMALLICON) == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return Icon.FromHandle(shinfo.hIcon);
-                }
-            }
-            catch
-            {
-                return null;
-            }
+            if (ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation,
+                ref basicInfo, Marshal.SizeOf(basicInfo), ref retLen) != 0)
+                pebBaseAddress = basicInfo.PebBaseAddress;
+
+            byte[] data2 = new byte[4];
+
+            // read address of parameter information block
+            if (ReadProcessMemory(process.Handle, basicInfo.PebBaseAddress + 16, data2, 4, ref retLen) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+            // read length of string
+            if (ReadProcessMemory(process.Handle, paramInfoAddrI + offset, data2, 2, ref retLen) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
+            byte[] stringData = new byte[strLength];
+
+            // read address of string
+            if (ReadProcessMemory(process.Handle, paramInfoAddrI + offset + 2, data2, 4, ref retLen) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+            // read string
+            if (ReadProcessMemory(process.Handle, strAddr, stringData, strLength, ref retLen) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            // return decoded unicode string
+            return UnicodeEncoding.Unicode.GetString(stringData).TrimEnd('\0');
         }
 
         public static int GetProcessSessionId(int ProcessId)
@@ -2859,6 +2874,16 @@ namespace ProcessHacker
             }
 
             return GetAccountName(user.User.SID, IncludeDomain);
+        }
+
+        public static bool IsBeingDebugged(int ProcessHandle)
+        {
+            int debugged = 0;
+
+            if (Win32.CheckRemoteDebuggerPresent(ProcessHandle, ref debugged) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            return debugged == 1;
         }
 
         public static int OpenLocalPolicy()

@@ -31,11 +31,14 @@ namespace ProcessHacker
         public Process Process;
 
         public Icon Icon;
-        public string Name;
         public string CmdLine;
+        public string ImageFileName;
         public string MemoryUsage;
+        public string Name;
         public string Username;
         public string UsernameWithDomain;
+
+        public bool IsBeingDebugged;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -117,13 +120,32 @@ namespace ProcessHacker
                         }
                     }
 
-                    //try
-                    //{
-                    //    item.CmdLine = Win32.GetProcessCmdLine(
-                    //        new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
-                    //}
-                    //catch
-                    //{ }
+                    try
+                    {
+                        item.CmdLine = Win32.GetProcessCmdLine(
+                            new Win32.ProcessHandle(p.Id, 
+                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        item.ImageFileName = Win32.GetProcessImageFileName(
+                            new Win32.ProcessHandle(p.Id,
+                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ));
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        item.IsBeingDebugged = Win32.IsBeingDebugged(
+                            new Win32.ProcessHandle(p.Id,
+                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ).Handle);
+                    }
+                    catch
+                    { }
 
                     try
                     {
@@ -192,8 +214,18 @@ namespace ProcessHacker
                         { }
                     }
 
+                    try
+                    {
+                        newitem.IsBeingDebugged = Win32.IsBeingDebugged(
+                            new Win32.ProcessHandle(p.Id,
+                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ).Handle);
+                    }
+                    catch
+                    { }
+
                     if (newitem.MemoryUsage != item.MemoryUsage ||
-                        newitem.Username != item.Username)
+                        newitem.Username != item.Username || 
+                        newitem.IsBeingDebugged != item.IsBeingDebugged)
                     {
                         newdictionary[p.Id] = newitem;
                         this.CallDictionaryModified(item, newitem);
