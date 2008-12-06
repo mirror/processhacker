@@ -256,14 +256,15 @@ namespace ProcessHacker
                 using (Win32.ProcessHandle process =
                        new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
                 {
-                    Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                    if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
                         0x1 // DUPLICATE_CLOSE_SOURCE
-                        );
+                        ) != 0)
+                        throw new Exception(Win32.GetLastErrorMessage());
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Could not create remote thread:\n\n" + ex.Message,
+                MessageBox.Show("Could not close handle:\n\n" + ex.Message,
                      "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
@@ -2153,7 +2154,7 @@ namespace ProcessHacker
             listThreads.Enabled = true;
         }
 
-        private void DeselectAll(ListView list)
+        public void DeselectAll(ListView list)
         {
             foreach (ListViewItem item in list.SelectedItems)
                 item.Selected = false;

@@ -53,14 +53,30 @@ namespace ProcessHacker
             }
         }
 
-        private void goToProcessMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void closeMenuItem_Click(object sender, EventArgs e)
         {
+            try
+            {
+                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text);
 
+                using (Win32.ProcessHandle process =
+                       new Win32.ProcessHandle((int)listHandles.SelectedItems[0].Tag, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                {
+                    if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                        0x1 // DUPLICATE_CLOSE_SOURCE
+                        ) != 0)
+                        throw new Exception(Win32.GetLastErrorMessage());
+
+                    listHandles.SelectedItems[0].Remove();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not close handle:\n\n" + ex.Message,
+                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
         }
 
         private void buttonFind_Click(object sender, EventArgs e)

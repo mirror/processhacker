@@ -39,7 +39,6 @@
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
-            this.goToProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
@@ -79,7 +78,7 @@
             // 
             // listHandles
             // 
-            this.listHandles.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listHandles.AllowColumnReorder = true;
             this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -88,6 +87,7 @@
             this.columnType,
             this.columnName,
             this.columnHandle});
+            this.listHandles.FullRowSelect = true;
             this.listHandles.HideSelection = false;
             this.listHandles.Location = new System.Drawing.Point(12, 41);
             this.listHandles.Name = "listHandles";
@@ -119,29 +119,21 @@
             // menuHandle
             // 
             this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.goToProcessMenuItem,
             this.closeMenuItem,
             this.copyMenuItem});
             this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
             // 
-            // goToProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.goToProcessMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
-            this.goToProcessMenuItem.Index = 0;
-            this.goToProcessMenuItem.Text = "&Go to Process";
-            this.goToProcessMenuItem.Click += new System.EventHandler(this.goToProcessMenuItem_Click);
-            // 
             // closeMenuItem
             // 
             this.vistaMenu.SetImage(this.closeMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.closeMenuItem.Index = 1;
+            this.closeMenuItem.Index = 0;
             this.closeMenuItem.Text = "Close";
             this.closeMenuItem.Click += new System.EventHandler(this.closeMenuItem_Click);
             // 
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 2;
+            this.copyMenuItem.Index = 1;
             this.copyMenuItem.Text = "&Copy";
             // 
             // vistaMenu
@@ -197,7 +189,6 @@
         private System.Windows.Forms.MenuItem closeMenuItem;
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
-        private System.Windows.Forms.MenuItem goToProcessMenuItem;
         private System.Windows.Forms.ProgressBar progress;
     }
 }
