@@ -1004,7 +1004,9 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        Process.GetProcessById(Int32.Parse(item.SubItems[1].Text)).Kill();
+                        using (Win32.ProcessHandle handle = new Win32.ProcessHandle(Int32.Parse(item.SubItems[1].Text),
+                            Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                            handle.Terminate();
                     }
                     catch (Exception ex)
                     {
@@ -1047,20 +1049,9 @@ namespace ProcessHacker
                 {
                     foreach (ProcessThread thread in process.Threads)
                     {
-                        int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, thread.Id);
-
-                        if (handle == 0)
-                        {
-                            throw new Exception("Could not open thread handle:\n\n" + Win32.GetLastErrorMessage());
-                        }
-
-                        if (Win32.SuspendThread(handle) == -1)
-                        {
-                            Win32.CloseHandle(handle);
-                            throw new Exception("Could not suspend thread:\n\n" + Win32.GetLastErrorMessage());
-                        }
-
-                        Win32.CloseHandle(handle);
+                        using (Win32.ThreadHandle handle = new Win32.ThreadHandle(thread.Id,
+                            Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                            handle.Suspend();
                     }
                 }
                 catch (Exception ex)
@@ -1090,20 +1081,9 @@ namespace ProcessHacker
                 {
                     foreach (ProcessThread thread in process.Threads)
                     {
-                        int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, thread.Id);
-
-                        if (handle == 0)
-                        {
-                            throw new Exception("Could not open thread handle:\n\n" + Win32.GetLastErrorMessage());
-                        }
-
-                        if (Win32.ResumeThread(handle) == -1)
-                        {
-                            Win32.CloseHandle(handle);
-                            throw new Exception("Could not resume thread:\n\n" + Win32.GetLastErrorMessage());
-                        }
-
-                        Win32.CloseHandle(handle);
+                        using (Win32.ThreadHandle handle = new Win32.ThreadHandle(thread.Id,
+                           Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                            handle.Resume();
                     }
                 }
                 catch (Exception ex)
@@ -2025,21 +2005,9 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_TERMINATE, 0, Int32.Parse(item.SubItems[0].Text));
-
-                    if (handle == 0)
-                    {
-                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    if (Win32.TerminateThread(handle, 0) == 0)
-                    {
-                        Win32.CloseHandle(handle);
-                        throw new Exception("Could not terminate thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    Win32.CloseHandle(handle);
-
+                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text), 
+                        Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                        handle.Terminate();
                 }
                 catch (Exception ex)
                 {
@@ -2068,20 +2036,9 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
-
-                    if (handle == 0)
-                    {
-                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    if (Win32.SuspendThread(handle) == -1)
-                    {
-                        Win32.CloseHandle(handle);
-                        throw new Exception("Could not suspend thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    Win32.CloseHandle(handle);
+                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                     Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        handle.Suspend();
                 }
                 catch (Exception ex)
                 {
@@ -2100,20 +2057,9 @@ namespace ProcessHacker
             {
                 try
                 {
-                    int handle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, Int32.Parse(item.SubItems[0].Text));
-
-                    if (handle == 0)
-                    {
-                        throw new Exception("Could not open thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    if (Win32.ResumeThread(handle) == -1)
-                    {
-                        Win32.CloseHandle(handle);
-                        throw new Exception("Could not resume thread:\n\n" + Win32.GetLastErrorMessage());
-                    }
-
-                    Win32.CloseHandle(handle);
+                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                    Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        handle.Resume();
                 }
                 catch (Exception ex)
                 {
@@ -3067,8 +3013,6 @@ namespace ProcessHacker
 
             if (tabControl.SelectedTab == tabHandles)
                 handleP.Enabled = true;
-
-            handleP.RunOnceAsync();
 
             if (Properties.Settings.Default.UseToolhelpModules)
                 UpdateModuleInfoToolhelp();

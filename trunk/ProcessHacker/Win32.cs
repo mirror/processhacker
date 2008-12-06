@@ -71,6 +71,56 @@ namespace ProcessHacker
             }
         }
 
+        public class ThreadHandle : IDisposable
+        {
+            private int _handle;
+
+            public ThreadHandle(int TID, THREAD_RIGHTS access)
+            {
+                _handle = OpenThread(access, 0, TID);
+
+                if (_handle == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public int Handle
+            {
+                get { return _handle; }
+            }
+
+            public void Suspend()
+            {
+                if (SuspendThread(_handle) == -1)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Resume()
+            {
+                if (ResumeThread(_handle) == -1)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Terminate()
+            {
+                this.Terminate(0);
+            }
+
+            public void Terminate(int ExitCode)
+            {
+                if (TerminateThread(_handle, ExitCode) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                CloseHandle(_handle);
+            }
+
+            #endregion
+        }
+
         public class ProcessHandle : IDisposable
         {
             private int _handle;
@@ -2093,7 +2143,7 @@ namespace ProcessHacker
             int retLength = 0;
 
             if (ZwDuplicateObject(process.Handle, handle.Handle, 
-                Process.GetCurrentProcess().Handle.ToInt32(), ref object_handle, 0, 0,
+                Program.CurrentProcess.Handle, ref object_handle, 0, 0,
                 0x4 // DUPLICATE_SAME_ATTRIBUTES
                 ) != 0)
                 throw new Exception("Could not duplicate object!");
@@ -2687,7 +2737,7 @@ namespace ProcessHacker
 
         public static int WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
-            return WriteTokenPrivilege(Process.GetCurrentProcess().Handle.ToInt32(), PrivilegeName, Attributes);
+            return WriteTokenPrivilege(Program.CurrentProcess.Handle, PrivilegeName, Attributes);
         }
 
         public static int WriteTokenPrivilege(int ProcessHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)

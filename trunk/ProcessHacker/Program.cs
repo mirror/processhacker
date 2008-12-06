@@ -34,6 +34,8 @@ namespace ProcessHacker
 
         public static string WindowsVersion = "Unknown";
 
+        public static Win32.ProcessHandle CurrentProcess;
+
         /// <summary>
         /// The Results Window ID Generator
         /// </summary>
@@ -63,6 +65,9 @@ namespace ProcessHacker
         [STAThread]
         public static void Main()
         {
+            CurrentProcess = 
+                new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id, Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS);
+
             Asm.LockedBus = 1;
             Asm.Lowercase = true;
             Asm.ExtraSpace = true;
