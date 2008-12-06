@@ -40,7 +40,7 @@ namespace ProcessHacker
 
     public class ProcessProvider : Provider<int, ProcessItem>
     {
-        private Dictionary<int, Win32.WTS_PROCESS_INFO> _tsProcesses;
+        private Dictionary<int, Win32.WtsProcess> _tsProcesses;
 
         public ProcessProvider()
             : base()
@@ -51,12 +51,12 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             Process[] processes = Process.GetProcesses();
-            Dictionary<int, Win32.WTS_PROCESS_INFO> tsProcesses = new Dictionary<int, Win32.WTS_PROCESS_INFO>();
+            Dictionary<int, Win32.WtsProcess> tsProcesses = new Dictionary<int, Win32.WtsProcess>();
             List<int> pids = new List<int>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
 
-            foreach (Win32.WTS_PROCESS_INFO process in Win32.TSEnumProcesses())
-                tsProcesses.Add(process.ProcessID, process);
+            foreach (Win32.WtsProcess process in Win32.TSEnumProcesses())
+                tsProcesses.Add(process.Info.ProcessID, process);
 
             _tsProcesses = tsProcesses;
 
@@ -144,9 +144,9 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.Username = Win32.GetAccountName(tsProcesses[p.Id],
-                            Properties.Settings.Default.ShowAccountDomains);
-                            item.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                            item.Username = Properties.Settings.Default.ShowAccountDomains ? 
+                                tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
+                            item.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
                         }
                         catch
                         {
@@ -191,9 +191,9 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            newitem.Username = Win32.GetAccountName(tsProcesses[p.Id],
-                                Properties.Settings.Default.ShowAccountDomains);
-                            newitem.UsernameWithDomain = Win32.GetAccountName(tsProcesses[p.Id], true);
+                            newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
+                                tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
+                            newitem.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
                         }
                         catch
                         {
@@ -214,7 +214,7 @@ namespace ProcessHacker
             Dictionary = newdictionary;
         }
 
-        public Dictionary<int, Win32.WTS_PROCESS_INFO> TSProcesses
+        public Dictionary<int, Win32.WtsProcess> TSProcesses
         {
             get { return _tsProcesses; }
         }

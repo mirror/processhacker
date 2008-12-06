@@ -2051,6 +2051,13 @@ namespace ProcessHacker
 
         #region Terminal Server
 
+        public struct WtsProcess
+        {
+            public WTS_PROCESS_INFO Info;
+            public string Username;
+            public string UsernameWithDomain;
+        }
+
         public static WTS_SESSION_INFO[] TSEnumSessions()
         {
             int sessions = 0;
@@ -2071,19 +2078,22 @@ namespace ProcessHacker
             return returnSessions;
         }
 
-        public static WTS_PROCESS_INFO[] TSEnumProcesses()
+        public static WtsProcess[] TSEnumProcesses()
         {
             int processes = 0;
             int count = 0;
-            WTS_PROCESS_INFO[] returnProcesses;
+            WtsProcess[] returnProcesses;
 
             WTSEnumerateProcesses(0, 0, 1, ref processes, ref count);
-            returnProcesses = new WTS_PROCESS_INFO[count];
+            returnProcesses = new WtsProcess[count];
 
             for (int i = 0; i < count; i++)
             {
-                returnProcesses[i] = (WTS_PROCESS_INFO)Marshal.PtrToStructure(
+                returnProcesses[i].Info = (WTS_PROCESS_INFO)Marshal.PtrToStructure(
                     new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i), typeof(WTS_PROCESS_INFO));
+
+                returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, false);
+                returnProcesses[i].UsernameWithDomain = GetAccountName(returnProcesses[i].Info.SID, true);
             }
 
             WTSFreeMemory(processes);
@@ -2093,12 +2103,17 @@ namespace ProcessHacker
 
         public static string TSGetProcessUsername(int PID, bool IncludeDomain)
         {
-            WTS_PROCESS_INFO[] processes = TSEnumProcesses();
+            WtsProcess[] processes = TSEnumProcesses();
 
-            foreach (WTS_PROCESS_INFO process in processes)
+            foreach (WtsProcess process in processes)
             {
-                if (process.ProcessID == PID)
-                    return GetAccountName(process.SID, IncludeDomain); 
+                if (process.Info.ProcessID == PID)
+                {
+                    if (IncludeDomain)
+                        return process.UsernameWithDomain;
+                    else
+                        return process.Username;
+                }
             }
 
             throw new Exception("Process does not exist.");
