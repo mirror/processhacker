@@ -2231,8 +2231,8 @@ namespace ProcessHacker
                 }
 
                 if (info.TypeName == "File")
-                    if (((int)handle.GrantedAccess & 0x30) != 0)
-                        throw new Exception("0x30 access is banned");
+                    if ((int)handle.GrantedAccess == 0x0012019f)
+                        throw new Exception("0x0012019f access is banned");
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                   0, 0, ref retLength);
