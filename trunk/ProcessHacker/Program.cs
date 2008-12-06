@@ -65,6 +65,8 @@ namespace ProcessHacker
         [STAThread]
         public static void Main()
         {
+            Application.EnableVisualStyles();
+
             Asm.LockedBus = 1;
             Asm.Lowercase = true;
             Asm.ExtraSpace = true;
@@ -100,7 +102,6 @@ namespace ProcessHacker
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow());
         }

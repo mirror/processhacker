@@ -28,6 +28,9 @@ which has the following capabilities:
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).
 
+KNOWN ISSUES
+ * Process Hacker does not display File handles on Windows XP
+
 Process Hacker is made by wj32 and uses the following components:
 
  * HexBox control by Bernhard Elbl
