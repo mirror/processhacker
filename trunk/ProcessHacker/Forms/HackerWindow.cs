@@ -861,6 +861,7 @@ namespace ProcessHacker
         private void showHideMenuItem_Click(object sender, EventArgs e)
         {
             this.Visible = !this.Visible;
+            this.Activate();
         }
 
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
