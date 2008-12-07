@@ -93,6 +93,7 @@
             this.listHandles.Name = "listHandles";
             this.listHandles.ShowItemToolTips = true;
             this.listHandles.Size = new System.Drawing.Size(514, 374);
+            this.listHandles.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listHandles.TabIndex = 3;
             this.listHandles.UseCompatibleStateImageBehavior = false;
             this.listHandles.View = System.Windows.Forms.View.Details;

@@ -105,6 +105,7 @@ namespace ProcessHacker
             progress.Visible = true;
             Application.DoEvents();
             listHandles.BeginUpdate();
+            listHandles.Items.Clear();
                                        
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
 
@@ -130,8 +131,15 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (handle.ProcessId == 4)
+                    try
+                    {
+                        if (Win32.GetProcessSessionId(handle.ProcessId) != Program.CurrentSessionId)
+                            continue;
+                    }
+                    catch
+                    {
                         continue;
+                    }
 
                     if (!processHandles.ContainsKey(handle.ProcessId))
                         processHandles.Add(handle.ProcessId, 
