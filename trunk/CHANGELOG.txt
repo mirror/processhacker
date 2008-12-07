@@ -15,6 +15,7 @@ Process Hacker
    avoids hangs)
  * Fixed window activation when showing Process Hacker from the tray icon
  * Fixed highlighting
+ * Fixed various memory corruption issues
 
 1.2.3.5
  * Added handle viewing/closing support
