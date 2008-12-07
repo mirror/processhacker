@@ -2478,7 +2478,7 @@ namespace ProcessHacker
         string[] misctoplevel = { "Process", "DEP", "Handles", "I/O", "Memory" };
 
         string[][] miscinfo = {
-                                  new string[] { "Is Being Debugged", "Session ID", "Priority Boost Enabled", 
+                                  new string[] { "Command Line", "Is Being Debugged", "Session ID", "Priority Boost Enabled", 
                                       "Total CPU Time", "Privileged CPU Time", "User CPU Time", "Start Time"},
                                   new string[] { "Status", "Permanent" },
                                   new string[] { "Handle Count" },
@@ -2492,6 +2492,11 @@ namespace ProcessHacker
                                   // Process
                                   new MiscInfoDelegate[]
                                   {
+                                      delegate (Process p)
+                                      {
+                                          return Program.HackerWindow.processP.Dictionary[p.Id].CmdLine;
+                                      },
+
                                       delegate (Process p)
                                       {
                                           return Program.HackerWindow.processP.Dictionary[p.Id].IsBeingDebugged.ToString();

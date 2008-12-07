@@ -208,6 +208,7 @@ namespace ProcessHacker
                     ProcessItem item = Dictionary[p.Id];
                     ProcessItem newitem = new ProcessItem();
 
+                    newitem.CmdLine = item.CmdLine;
                     newitem.Icon = item.Icon;
                     newitem.Name = item.Name;
                     newitem.PID = item.PID;
