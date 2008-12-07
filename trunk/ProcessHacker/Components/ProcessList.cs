@@ -202,7 +202,7 @@ namespace ProcessHacker
 
                 litem.ToolTipText = ((pitem.CmdLine != null ? (pitem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
                     info.FileDescription + " (" + info.FileVersion + ")\n" +
-                    info.CompanyName).Trim();
+                    info.CompanyName).Trim('\n');
             }
             catch
             { }
