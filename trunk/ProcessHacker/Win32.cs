@@ -1879,13 +1879,6 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SID
-        {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SID_SIZE)]
-            public byte[] SIDContents;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
         public struct SID_AND_ATTRIBUTES
         {
             public int SID; // ptr to a SID object
