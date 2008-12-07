@@ -201,13 +201,17 @@ namespace ProcessHacker
                     return;
                 }
 
-                if (Win32.VirtualProtectEx(virtualProtectProcess.Handle.ToInt32(), virtualProtectAddress,
-                    virtualProtectSize, newprotect, ref old) == 0)
+                using (Win32.ProcessHandle phandle = 
+                    new Win32.ProcessHandle(virtualProtectProcess.Id, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
                 {
-                    MessageBox.Show("There was an error setting memory protection:\n\n" + 
-                        Win32.GetLastErrorMessage(), "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    if (Win32.VirtualProtectEx(phandle.Handle, virtualProtectAddress,
+                        virtualProtectSize, newprotect, ref old) == 0)
+                    {
+                        MessageBox.Show("There was an error setting memory protection:\n\n" +
+                            Win32.GetLastErrorMessage(), "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
 
                 CloseVirtualProtect();
@@ -2543,14 +2547,18 @@ namespace ProcessHacker
                                           Win32.DEPFLAGS flags = 0;
                                           int perm = 0;
 
-                                          Win32.GetProcessDEPPolicy(p.Handle.ToInt32(), ref flags, ref perm);
+                                          using (Win32.ProcessHandle phandle = 
+                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                          {
+                                              Win32.GetProcessDEPPolicy(phandle.Handle, ref flags, ref perm);
 
-                                          return flags == Win32.DEPFLAGS.PROCESS_DEP_DISABLE ? "Disabled" :
-                                              (flags == Win32.DEPFLAGS.PROCESS_DEP_ENABLE ? "Enabled" :
-                                              (flags == (Win32.DEPFLAGS.PROCESS_DEP_ENABLE |
-                                              Win32.DEPFLAGS.PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION)) ? 
-                                              "Enabled, DEP-ATL thunk emulation disabled" : "Unknown"
-                                              );
+                                              return flags == Win32.DEPFLAGS.PROCESS_DEP_DISABLE ? "Disabled" :
+                                                  (flags == Win32.DEPFLAGS.PROCESS_DEP_ENABLE ? "Enabled" :
+                                                  (flags == (Win32.DEPFLAGS.PROCESS_DEP_ENABLE |
+                                                  Win32.DEPFLAGS.PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION)) ? 
+                                                  "Enabled, DEP-ATL thunk emulation disabled" : "Unknown"
+                                                  );
+                                          }
                                       },
 
                                       delegate (Process p) 
@@ -2558,9 +2566,13 @@ namespace ProcessHacker
                                           Win32.DEPFLAGS flags = 0;
                                           int perm = 0;
 
-                                          Win32.GetProcessDEPPolicy(p.Handle.ToInt32(), ref flags, ref perm);
+                                          using (Win32.ProcessHandle phandle = 
+                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                          {
+                                              Win32.GetProcessDEPPolicy(phandle.Handle, ref flags, ref perm);
 
-                                          return perm == 0 ? "No" : "Yes";
+                                              return perm == 0 ? "No" : "Yes";
+                                          }
                                       }
                                   },
 
@@ -2802,33 +2814,37 @@ namespace ProcessHacker
             int address = 0;
 
             listMemory.BeginUpdate();
+
             try
             {
-                while (true)
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                 {
-                    if (Win32.VirtualQueryEx(p.Handle.ToInt32(), address, ref info,
-                        Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
+                    while (true)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        ListViewItem item = new ListViewItem();
+                        if (Win32.VirtualQueryEx(phandle.Handle, address, ref info,
+                            Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            ListViewItem item = new ListViewItem();
 
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem());
 
-                        item.SubItems[0].Text = String.Format("0x{0:x8}", info.BaseAddress);
-                        item.SubItems[1].Text = String.Format("0x{0:x8}", info.RegionSize);
-                        item.SubItems[2].Text = info.State.ToString().Replace("MEM_", "").Replace("0", "");
-                        item.SubItems[3].Text = info.Type.ToString().Replace("MEM_", "").Replace("0", "");
-                        item.SubItems[4].Text = info.Protect.ToString().Replace("PAGE_", "");
+                            item.SubItems[0].Text = String.Format("0x{0:x8}", info.BaseAddress);
+                            item.SubItems[1].Text = String.Format("0x{0:x8}", info.RegionSize);
+                            item.SubItems[2].Text = info.State.ToString().Replace("MEM_", "").Replace("0", "");
+                            item.SubItems[3].Text = info.Type.ToString().Replace("MEM_", "").Replace("0", "");
+                            item.SubItems[4].Text = info.Protect.ToString().Replace("PAGE_", "");
 
-                        listMemory.Items.Add(item);
+                            listMemory.Items.Add(item);
 
-                        address += info.RegionSize;
+                            address += info.RegionSize;
+                        }
                     }
                 }
 
@@ -2838,6 +2854,7 @@ namespace ProcessHacker
             {
                 tabMemory.Enabled = false;
             }
+
             listMemory.EndUpdate();
         }
 
