@@ -71,6 +71,8 @@ namespace ProcessHacker
                 MessageBox.Show(ex.Message,
                    "Process Hacker", MessageBoxButtons.OK,
                    MessageBoxIcon.Error);
+
+                this.Close();
             }
         }
 
