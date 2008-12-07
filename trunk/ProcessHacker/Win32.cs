@@ -1154,6 +1154,16 @@ namespace ProcessHacker
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, int TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, IntPtr TokenInformation,
+            int TokenInformationLength, ref int ReturnLength);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
@@ -2051,10 +2061,6 @@ namespace ProcessHacker
         public struct TOKEN_USER
         {
             public SID_AND_ATTRIBUTES User;
-
-            // space for random crap
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SID_SIZE)]
-            public byte[] SIDContents;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2119,8 +2125,8 @@ namespace ProcessHacker
 
             for (int i = 0; i < count; i++)
             {
-                returnSessions[i] = (WTS_SESSION_INFO)Marshal.PtrToStructure(
-                    new IntPtr(sessions + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i), typeof(WTS_SESSION_INFO));
+                returnSessions[i] = PtrToStructure<WTS_SESSION_INFO>(
+                    new IntPtr(sessions + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i));
             }
 
             WTSFreeMemory(sessions);
@@ -2139,8 +2145,8 @@ namespace ProcessHacker
 
             for (int i = 0; i < count; i++)
             {
-                returnProcesses[i].Info = (WTS_PROCESS_INFO)Marshal.PtrToStructure(
-                    new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i), typeof(WTS_PROCESS_INFO));
+                returnProcesses[i].Info = PtrToStructure<WTS_PROCESS_INFO>(
+                    new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i));
 
                 try
                 {
@@ -2220,9 +2226,8 @@ namespace ProcessHacker
 
             for (int i = 0; i < handles; i++) 
             {
-                returnHandles[i] = (SYSTEM_HANDLE_INFORMATION)Marshal.PtrToStructure(
-                    new IntPtr(4 + data.ToInt32() + i * Marshal.SizeOf(typeof(SYSTEM_HANDLE_INFORMATION))),
-                    typeof(SYSTEM_HANDLE_INFORMATION));
+                returnHandles[i] = PtrToStructure<SYSTEM_HANDLE_INFORMATION>(
+                    new IntPtr(4 + data.ToInt32() + i * Marshal.SizeOf(typeof(SYSTEM_HANDLE_INFORMATION))));
             }
 
             Marshal.FreeHGlobal(data);
@@ -2259,8 +2264,7 @@ namespace ProcessHacker
                     IntPtr obiMem = Marshal.AllocHGlobal(retLength);
                     ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
                         obiMem, retLength, ref retLength);
-                    OBJECT_BASIC_INFORMATION obi =
-                        (OBJECT_BASIC_INFORMATION)Marshal.PtrToStructure(obiMem, typeof(OBJECT_BASIC_INFORMATION));
+                    OBJECT_BASIC_INFORMATION obi = PtrToStructure<OBJECT_BASIC_INFORMATION>(obiMem);
                     Marshal.FreeHGlobal(obiMem);
                     info.Basic = obi;
                 }
@@ -2283,8 +2287,7 @@ namespace ProcessHacker
                             if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
                                 otiMem, retLength, ref retLength) != 0)
                                 throw new Exception("ZwQueryObject failed");
-                            OBJECT_TYPE_INFORMATION oti =
-                                (OBJECT_TYPE_INFORMATION)Marshal.PtrToStructure(otiMem, typeof(OBJECT_TYPE_INFORMATION));
+                            OBJECT_TYPE_INFORMATION oti = PtrToStructure<OBJECT_TYPE_INFORMATION>(otiMem);
                             info.TypeName = ReadUnicodeString(oti.Name);
                             ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
                         }
@@ -2311,8 +2314,7 @@ namespace ProcessHacker
                         if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                             oniMem, retLength, ref retLength) != 0)
                             throw new Exception("ZwQueryObject failed");
-                        OBJECT_NAME_INFORMATION oni =
-                            (OBJECT_NAME_INFORMATION)Marshal.PtrToStructure(oniMem, typeof(OBJECT_NAME_INFORMATION));
+                        OBJECT_NAME_INFORMATION oni = PtrToStructure<OBJECT_NAME_INFORMATION>(oniMem);
 
                         try
                         {
@@ -2546,9 +2548,8 @@ namespace ProcessHacker
 
                 for (int i = 0; i < servicesReturned; i++)
                 {
-                    ENUM_SERVICE_STATUS_PROCESS service = (ENUM_SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(
-                        new IntPtr(data.ToInt32() + Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS)) * i),
-                        typeof(ENUM_SERVICE_STATUS_PROCESS));
+                    ENUM_SERVICE_STATUS_PROCESS service = PtrToStructure<ENUM_SERVICE_STATUS_PROCESS>(
+                        new IntPtr(data.ToInt32() + Marshal.SizeOf(typeof(ENUM_SERVICE_STATUS_PROCESS)) * i));
 
                     dictionary.Add(service.ServiceName, service);
                 }
@@ -2810,27 +2811,6 @@ namespace ProcessHacker
             return sessionId;
         }
 
-        public static int GetProcessSID(int ProcessHandle)
-        {
-            int token = 0;
-            TOKEN_USER user = new TOKEN_USER();
-            int retlen = 0;
-
-            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
-                return 0;
-
-            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
-                Marshal.SizeOf(user), ref retlen) == 0)
-            {
-                CloseHandle(token);
-                return 0;
-            }
-
-            CloseHandle(token);
-
-            return user.User.SID;
-        }
-
         public static ulong[] GetProcessTimes(ProcessHandle process)
         {
             ulong[] times = new ulong[4];
@@ -2844,26 +2824,18 @@ namespace ProcessHacker
         public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
         {
             int token = 0;
-            TOKEN_USER user = new TOKEN_USER();
-            int retlen = 0;
 
             if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
                 throw new Exception("Could not open process handle with TOKEN_QUERY: " + Win32.GetLastErrorMessage());
 
             try
             {
-                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
-                    Marshal.SizeOf(user), ref retlen) == 0)
-                {
-                    throw new Exception("Could not get token information: " + Win32.GetLastErrorMessage());
-                }
+                return GetTokenUsername(token, IncludeDomain);
             }
             finally
             {
                 CloseHandle(token);
-            }
-
-            return GetAccountName(user.User.SID, IncludeDomain); 
+            } 
         }
 
         public static QUERY_SERVICE_CONFIG GetServiceConfig(string ServiceName)
@@ -2898,7 +2870,7 @@ namespace ProcessHacker
                     throw new Exception("Could not get service configuration: " + GetLastErrorMessage());
                 }
 
-                config = (QUERY_SERVICE_CONFIG)Marshal.PtrToStructure(data, typeof(QUERY_SERVICE_CONFIG));
+                config = PtrToStructure<QUERY_SERVICE_CONFIG>(data);
             }
             finally
             {
@@ -2921,17 +2893,29 @@ namespace ProcessHacker
         }
 
         public static string GetTokenUsername(int TokenHandle, bool IncludeDomain)
-        {           
-            TOKEN_USER user = new TOKEN_USER();     
-            int retlen = 0;
+        {
+            int retLen = 0;
 
-            if (GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, ref user,
-                Marshal.SizeOf(user), ref retlen) == 0)
+            GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, 0, 0, ref retLen);
+
+            IntPtr data = Marshal.AllocHGlobal(retLen);
+
+            try
             {
-                throw new Exception("Could not get token information: " + Win32.GetLastErrorMessage());
-            }
+                if (GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, data,
+                    retLen, ref retLen) == 0)
+                {
+                    throw new Exception(Win32.GetLastErrorMessage());
+                }
 
-            return GetAccountName(user.User.SID, IncludeDomain);
+                TOKEN_USER user = PtrToStructure<TOKEN_USER>(data);
+
+                return GetAccountName(user.User.SID, IncludeDomain);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(data);
+            }
         }
 
         public static bool IsBeingDebugged(int ProcessHandle)
@@ -2953,6 +2937,11 @@ namespace ProcessHacker
                 return 0;
 
             return handle;
+        }
+
+        public static T PtrToStructure<T>(IntPtr data)
+        {
+            return (T)Marshal.PtrToStructure(data, typeof(T));
         }
 
         public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle)
