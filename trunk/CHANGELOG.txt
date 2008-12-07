@@ -8,6 +8,8 @@ Process Hacker
  * Fixed all handle leaks
  * Added I/O counters to misc. info
  * Added CPU usage column
+ * Fixed services in tooltips
+ * Added highlighting for processes with services
 
 1.2.3.5
  * Added handle viewing/closing support

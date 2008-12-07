@@ -151,7 +151,10 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
-            if (p.IsBeingDebugged)
+            if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
+                Program.HackerWindow.ProcessServices[p.PID].Count > 0)
+                return Properties.Settings.Default.ColorServiceProcesses;
+            else if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
             else if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;

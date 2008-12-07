@@ -110,6 +110,11 @@ namespace ProcessHacker
             get { return listProcesses; }
         }
 
+        public Dictionary<int, List<string>> ProcessServices
+        {
+            get { return processServices; }
+        }
+
         #endregion
 
         #region Events
@@ -1458,8 +1463,6 @@ namespace ProcessHacker
                 notifyIcon.ShowBalloonTip(2000, "New Service",
                     "The service " + sitem.Status.ServiceName + " (" + sitem.Status.DisplayName + ") has been created.",
                     ToolTipIcon.Info);
-
-
         }
 
         public void serviceP_DictionaryAdded_ToolTips(object item)
@@ -3187,7 +3190,11 @@ namespace ProcessHacker
             serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    timerMessages.Enabled = true;
+                    foreach (int pid in processP.Dictionary.Keys) this.UpdateListViewItemToolTipText(pid);
+                }));
         }
 
         private void processP_Updated()
@@ -3199,7 +3206,11 @@ namespace ProcessHacker
             processP.Updated -= new ProviderUpdateOnce(processP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate { timerMessages.Enabled = true; }));
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    timerMessages.Enabled = true;
+                    foreach (int pid in processP.Dictionary.Keys) this.UpdateListViewItemToolTipText(pid);
+                }));
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

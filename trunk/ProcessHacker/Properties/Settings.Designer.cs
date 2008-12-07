@@ -670,5 +670,17 @@ namespace ProcessHacker.Properties {
                 this["ColorBeingDebugged"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("204, 255, 255")]
+        public global::System.Drawing.Color ColorServiceProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorServiceProcesses"]));
+            }
+            set {
+                this["ColorServiceProcesses"] = value;
+            }
+        }
     }
 }
