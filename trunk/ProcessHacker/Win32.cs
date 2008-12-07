@@ -3027,16 +3027,23 @@ namespace ProcessHacker
                 ref token) == 0)
                 return 0;
 
-            if (LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid) == 0)
-                return 0;
+            try
+            {
+                if (LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid) == 0)
+                    return 0;
 
-            tkp.PrivilegeCount = 1;
-            tkp.Privileges[0].Attributes = Attributes;  
+                tkp.PrivilegeCount = 1;
+                tkp.Privileges[0].Attributes = Attributes;
 
-            AdjustTokenPrivileges(token, 0, ref tkp, 0, 0, 0);
+                AdjustTokenPrivileges(token, 0, ref tkp, 0, 0, 0);
 
-            if (Marshal.GetLastWin32Error() != 0)
-                return 0;
+                if (Marshal.GetLastWin32Error() != 0)
+                    return 0;
+            }
+            finally
+            {
+                CloseHandle(token);
+            }
 
             return 1;
         }
