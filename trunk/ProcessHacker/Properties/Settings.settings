@@ -3,13 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="RefreshInterval" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">500</Value>
-    </Setting>
-    <Setting Name="textMinSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">10</Value>
-    </Setting>
-    <Setting Name="heapMinSize" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1024</Value>
+      <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">820, 549</Value>
@@ -166,9 +160,6 @@
     </Setting>
     <Setting Name="ColorServiceProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">204, 255, 255</Value>
-    </Setting>
-    <Setting Name="HideOtherUsersProcesses" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

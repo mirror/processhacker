@@ -92,8 +92,6 @@ namespace ProcessHacker
                 //MessageBox.Show("Debug privilege could not be acquired!" +
                 //    " This will result in reduced functionality.", "Process Hacker",
                 //    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                Properties.Settings.Default.HideOtherUsersProcesses = true;
             }
 
             CurrentProcess = Win32.OpenProcess(

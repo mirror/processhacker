@@ -25,37 +25,13 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
         public int RefreshInterval {
             get {
                 return ((int)(this["RefreshInterval"]));
             }
             set {
                 this["RefreshInterval"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public string textMinSize {
-            get {
-                return ((string)(this["textMinSize"]));
-            }
-            set {
-                this["textMinSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
-        public string heapMinSize {
-            get {
-                return ((string)(this["heapMinSize"]));
-            }
-            set {
-                this["heapMinSize"] = value;
             }
         }
         
@@ -680,18 +656,6 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["ColorServiceProcesses"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool HideOtherUsersProcesses {
-            get {
-                return ((bool)(this["HideOtherUsersProcesses"]));
-            }
-            set {
-                this["HideOtherUsersProcesses"] = value;
             }
         }
     }

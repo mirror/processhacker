@@ -11,7 +11,6 @@ Process Hacker
  * Fixed services in tooltips
  * Added highlighting for processes with services
  * System and System Idle Processes now have usernames (hardcoded in)
- * Added ability to hide other users' processes (based on Session ID)
  * Handle finder now only searches in processes with same session ID (faster, 
    avoids hangs)
 

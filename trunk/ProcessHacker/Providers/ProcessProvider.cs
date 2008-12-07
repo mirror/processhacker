@@ -80,21 +80,7 @@ namespace ProcessHacker
                 newdictionary.Add(key, Dictionary[key]);
 
             foreach (Process p in processes)
-            {
-                try
-                {
-                    if ((Win32.GetProcessSessionId(p.Id) != Program.CurrentSessionId) && 
-                        Properties.Settings.Default.HideOtherUsersProcesses)
-                        continue;
-                }
-                catch
-                {
-                    if (Properties.Settings.Default.HideOtherUsersProcesses)
-                        continue;
-                }
-
                 procs.Add(p.Id, p);
-            }
 
             // look for dead processes
             foreach (int pid in Dictionary.Keys)

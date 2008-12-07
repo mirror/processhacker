@@ -55,7 +55,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
-            this.checkHideOtherUsersProcesses = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -157,7 +156,6 @@
             // 
             // tabGeneral
             // 
-            this.tabGeneral.Controls.Add(this.checkHideOtherUsersProcesses);
             this.tabGeneral.Controls.Add(this.checkHideHandlesNoName);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label1);
@@ -227,7 +225,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 199);
+            this.tabHighlighting.Size = new System.Drawing.Size(339, 204);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -360,17 +358,6 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
-            // checkHideOtherUsersProcesses
-            // 
-            this.checkHideOtherUsersProcesses.AutoSize = true;
-            this.checkHideOtherUsersProcesses.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideOtherUsersProcesses.Location = new System.Drawing.Point(6, 178);
-            this.checkHideOtherUsersProcesses.Name = "checkHideOtherUsersProcesses";
-            this.checkHideOtherUsersProcesses.Size = new System.Drawing.Size(162, 18);
-            this.checkHideOtherUsersProcesses.TabIndex = 9;
-            this.checkHideOtherUsersProcesses.Text = "Hide other users\' processes";
-            this.checkHideOtherUsersProcesses.UseVisualStyleBackColor = true;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
@@ -427,6 +414,5 @@
         private ProcessHacker.Components.ColorModifier colorBeingDebugged;
         private System.Windows.Forms.Label label9;
         private ProcessHacker.Components.ColorModifier colorServiceProcesses;
-        private System.Windows.Forms.CheckBox checkHideOtherUsersProcesses;
     }
 }
