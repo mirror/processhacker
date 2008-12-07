@@ -10,6 +10,8 @@ Process Hacker
  * Added CPU usage column
  * Fixed services in tooltips
  * Added highlighting for processes with services
+ * System and System Idle Processes now have usernames (hardcoded in)
+ * Added ability to hide other users' processes (based on Session ID)
 
 1.2.3.5
  * Added handle viewing/closing support

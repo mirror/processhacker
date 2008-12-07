@@ -682,5 +682,17 @@ namespace ProcessHacker.Properties {
                 this["ColorServiceProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideOtherUsersProcesses {
+            get {
+                return ((bool)(this["HideOtherUsersProcesses"]));
+            }
+            set {
+                this["HideOtherUsersProcesses"] = value;
+            }
+        }
     }
 }

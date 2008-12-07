@@ -2444,8 +2444,7 @@ namespace ProcessHacker
         {
             try
             {
-                if (Win32.GetProcessSessionId(pid) ==
-                    Win32.GetProcessSessionId(Process.GetCurrentProcess().Id))
+                if (Win32.GetProcessSessionId(pid) == Program.CurrentSessionId)
                     return false;
                 else
                     return true;

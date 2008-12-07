@@ -41,9 +41,11 @@
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.checkUseToolhelpModules = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
+            this.colorServiceProcesses = new ProcessHacker.Components.ColorModifier();
             this.colorBeingDebugged = new ProcessHacker.Components.ColorModifier();
             this.colorSystemProcesses = new ProcessHacker.Components.ColorModifier();
             this.colorOwnProcesses = new ProcessHacker.Components.ColorModifier();
@@ -53,8 +55,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.colorServiceProcesses = new ProcessHacker.Components.ColorModifier();
+            this.checkHideOtherUsersProcesses = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -93,7 +94,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 243);
+            this.buttonClose.Location = new System.Drawing.Point(284, 248);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -105,7 +106,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 82);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 130);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -116,7 +117,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 58);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 82);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -151,11 +152,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 225);
+            this.tabControl.Size = new System.Drawing.Size(347, 230);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkHideOtherUsersProcesses);
             this.tabGeneral.Controls.Add(this.checkHideHandlesNoName);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label1);
@@ -168,7 +170,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(339, 184);
+            this.tabGeneral.Size = new System.Drawing.Size(339, 204);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -177,7 +179,7 @@
             // 
             this.checkHideHandlesNoName.AutoSize = true;
             this.checkHideHandlesNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 130);
+            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 154);
             this.checkHideHandlesNoName.Name = "checkHideHandlesNoName";
             this.checkHideHandlesNoName.Size = new System.Drawing.Size(160, 18);
             this.checkHideHandlesNoName.TabIndex = 8;
@@ -188,7 +190,7 @@
             // 
             this.checkShowTrayIcon.AutoSize = true;
             this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 153);
+            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 58);
             this.checkShowTrayIcon.Name = "checkShowTrayIcon";
             this.checkShowTrayIcon.Size = new System.Drawing.Size(102, 18);
             this.checkShowTrayIcon.TabIndex = 7;
@@ -230,6 +232,15 @@
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 166);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(98, 13);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "Service Processes:";
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -264,6 +275,14 @@
             this.label7.Size = new System.Drawing.Size(108, 13);
             this.label7.TabIndex = 4;
             this.label7.Text = "Highlighting Duration:";
+            // 
+            // colorServiceProcesses
+            // 
+            this.colorServiceProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorServiceProcesses.Location = new System.Drawing.Point(127, 163);
+            this.colorServiceProcesses.Name = "colorServiceProcesses";
+            this.colorServiceProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorServiceProcesses.TabIndex = 3;
             // 
             // colorBeingDebugged
             // 
@@ -341,29 +360,23 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
-            // label9
+            // checkHideOtherUsersProcesses
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 166);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(98, 13);
-            this.label9.TabIndex = 7;
-            this.label9.Text = "Service Processes:";
-            // 
-            // colorServiceProcesses
-            // 
-            this.colorServiceProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorServiceProcesses.Location = new System.Drawing.Point(127, 163);
-            this.colorServiceProcesses.Name = "colorServiceProcesses";
-            this.colorServiceProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorServiceProcesses.TabIndex = 3;
+            this.checkHideOtherUsersProcesses.AutoSize = true;
+            this.checkHideOtherUsersProcesses.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideOtherUsersProcesses.Location = new System.Drawing.Point(6, 178);
+            this.checkHideOtherUsersProcesses.Name = "checkHideOtherUsersProcesses";
+            this.checkHideOtherUsersProcesses.Size = new System.Drawing.Size(162, 18);
+            this.checkHideOtherUsersProcesses.TabIndex = 9;
+            this.checkHideOtherUsersProcesses.Text = "Hide other users\' processes";
+            this.checkHideOtherUsersProcesses.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 278);
+            this.ClientSize = new System.Drawing.Size(371, 283);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -414,5 +427,6 @@
         private ProcessHacker.Components.ColorModifier colorBeingDebugged;
         private System.Windows.Forms.Label label9;
         private ProcessHacker.Components.ColorModifier colorServiceProcesses;
+        private System.Windows.Forms.CheckBox checkHideOtherUsersProcesses;
     }
 }

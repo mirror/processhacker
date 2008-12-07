@@ -32,6 +32,7 @@ namespace ProcessHacker
 
         public Icon Icon;
         public string CmdLine;
+        public string CPUUsage;
         public string MemoryUsage;
         public string Name;
         public string Username;
@@ -39,7 +40,7 @@ namespace ProcessHacker
 
         public bool IsBeingDebugged;
         public ulong LastTime;
-        public string CPUUsage;
+        public int SessionId;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -61,7 +62,7 @@ namespace ProcessHacker
         {
             Process[] processes = Process.GetProcesses();
             Dictionary<int, Win32.WtsProcess> tsProcesses = new Dictionary<int, Win32.WtsProcess>();
-            List<int> pids = new List<int>();
+            Dictionary<int, Process> procs = new Dictionary<int, Process>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
 
             ulong[] systemTimes = Win32.GetSystemTimes();
@@ -79,12 +80,26 @@ namespace ProcessHacker
                 newdictionary.Add(key, Dictionary[key]);
 
             foreach (Process p in processes)
-                pids.Add(p.Id);
+            {
+                try
+                {
+                    if ((Win32.GetProcessSessionId(p.Id) != Program.CurrentSessionId) && 
+                        Properties.Settings.Default.HideOtherUsersProcesses)
+                        continue;
+                }
+                catch
+                {
+                    if (Properties.Settings.Default.HideOtherUsersProcesses)
+                        continue;
+                }
+
+                procs.Add(p.Id, p);
+            }
 
             // look for dead processes
             foreach (int pid in Dictionary.Keys)
             {
-                if (!pids.Contains(pid))
+                if (!procs.ContainsKey(pid))
                 {                 
                     this.CallDictionaryRemoved(this.Dictionary[pid]);
                     newdictionary.Remove(pid);
@@ -92,14 +107,23 @@ namespace ProcessHacker
             }
 
             // look for new processes
-            foreach (Process p in processes)
+            foreach (int pid in procs.Keys)
             {
+                Process p = procs[pid];
+
                 if (!Dictionary.ContainsKey(p.Id))
-                {
+                { 
                     ProcessItem item = new ProcessItem();
 
                     item.PID = p.Id;
                     item.Process = p;
+
+                    try
+                    {
+                        item.SessionId = Win32.GetProcessSessionId(p.Id);
+                    }
+                    catch
+                    { }
 
                     try
                     {
@@ -138,6 +162,13 @@ namespace ProcessHacker
                     }
                     catch
                     { }
+
+                    if (p.Id == 0 || p.Id == 4)
+                    {
+                        item.Username = Properties.Settings.Default.ShowAccountDomains ?
+                            "NT AUTHORITY\\SYSTEM" : "SYSTEM";
+                        item.UsernameWithDomain = "NT AUTHORITY\\SYSTEM";
+                    }
 
                     try
                     {
@@ -213,6 +244,7 @@ namespace ProcessHacker
                     newitem.Name = item.Name;
                     newitem.PID = item.PID;
                     newitem.Process = item.Process;
+                    newitem.SessionId = item.SessionId;
 
                     try
                     {
@@ -220,6 +252,13 @@ namespace ProcessHacker
                     }
                     catch
                     { }
+
+                    if (p.Id == 0 || p.Id == 4)
+                    {
+                        newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
+                            "NT AUTHORITY\\SYSTEM" : "SYSTEM";
+                        newitem.UsernameWithDomain = "NT AUTHORITY\\SYSTEM";
+                    }
 
                     try
                     {

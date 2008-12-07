@@ -200,9 +200,9 @@ namespace ProcessHacker
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                     Misc.GetRealPath(filename));
 
-                litem.ToolTipText = ((pitem.CmdLine != null ? (pitem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
+                litem.ToolTipText = (pitem.CmdLine != null ? (pitem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
                     info.FileDescription + " (" + info.FileVersion + ")\n" +
-                    info.CompanyName).Trim('\n');
+                    info.CompanyName;
             }
             catch
             { }

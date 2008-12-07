@@ -35,6 +35,7 @@ namespace ProcessHacker
         public static string WindowsVersion = "Unknown";
 
         public static int CurrentProcess;
+        public static int CurrentSessionId;
 
         /// <summary>
         /// The Results Window ID Generator
@@ -85,11 +86,15 @@ namespace ProcessHacker
                 WindowsVersion = "Vista";
 
             if (Win32.WriteTokenPrivilege(
-                System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(), 
+                System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(),
                 "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
-                MessageBox.Show("Debug privilege could not be acquired!" +
-                    " This will result in reduced functionality.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            {
+                //MessageBox.Show("Debug privilege could not be acquired!" +
+                //    " This will result in reduced functionality.", "Process Hacker",
+                //    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                Properties.Settings.Default.HideOtherUsersProcesses = true;
+            }
 
             CurrentProcess = Win32.OpenProcess(
                 Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS, 0, 
@@ -98,6 +103,13 @@ namespace ProcessHacker
             if (CurrentProcess == 0)
                 CurrentProcess = 
                     System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32();
+
+            try
+            {
+                CurrentSessionId = Win32.GetProcessSessionId(System.Diagnostics.Process.GetCurrentProcess().Id);
+            }
+            catch
+            { }
 
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

@@ -167,5 +167,8 @@
     <Setting Name="ColorServiceProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">204, 255, 255</Value>
     </Setting>
+    <Setting Name="HideOtherUsersProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
