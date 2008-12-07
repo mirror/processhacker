@@ -59,23 +59,7 @@ namespace ProcessHacker
             {
                 if (handle.ProcessId == _pid)
                 {
-                    Win32.ObjectInformation info;
-
-                    try
-                    {
-                        info = Win32.GetHandleInfo(processHandle, handle);
-                        
-                        if ((info.BestName == null || info.BestName == "") &&
-                            Properties.Settings.Default.HideHandlesNoName)
-                            continue;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-
                     processHandles.Add(handle.Handle, handle);
-                    processHandlesInfo.Add(handle.Handle, info);
                 }
             }
 
@@ -94,10 +78,25 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(h))
                 {
+                    Win32.ObjectInformation info;
                     HandleItem item = new HandleItem();
 
+                    try
+                    {
+                        info = Win32.GetHandleInfo(processHandle, processHandles[h]);
+
+                        if ((info.BestName == null || info.BestName == "") &&
+                            Properties.Settings.Default.HideHandlesNoName)
+                            continue;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+
                     item.Handle = processHandles[h];
-                    item.ObjectInfo = processHandlesInfo[h];
+                    item.ObjectInfo = info;
 
                     newdictionary.Add(h, item);
                     this.CallDictionaryAdded(item);

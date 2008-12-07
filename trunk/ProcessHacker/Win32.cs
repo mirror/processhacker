@@ -83,6 +83,11 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            ~ThreadHandle()
+            {
+                this.Dispose();
+            }
+
             public int Handle
             {
                 get { return _handle; }
@@ -138,6 +143,11 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            ~ProcessHandle()
+            {
+                this.Dispose();
+            }
+
             public int Handle
             {
                 get { return _handle; }
@@ -186,6 +196,11 @@ namespace ProcessHacker
 
                 if (_handle == 0)
                     throw new Exception(GetLastErrorMessage());
+            }
+
+            ~ServiceHandle()
+            {
+                this.Dispose();
             }
 
             public void Control(SERVICE_CONTROL control)
@@ -2229,9 +2244,7 @@ namespace ProcessHacker
             int retLength = 0;
 
             if (ZwDuplicateObject(process.Handle, handle.Handle,
-                Program.CurrentProcess, ref object_handle, 0, 0,
-                0x4 // DUPLICATE_SAME_ATTRIBUTES
-                ) != 0)
+                Program.CurrentProcess, ref object_handle, 0, 0, 0) != 0)
                 throw new Exception("Could not duplicate object!");
 
             try
@@ -2353,9 +2366,7 @@ namespace ProcessHacker
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, ref process_handle,
-                                    (STANDARD_RIGHTS)PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0,
-                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
-                                    ) != 0)
+                                    (STANDARD_RIGHTS)PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, 0) != 0)
                                     throw new Exception("Could not duplicate process handle!");
 
                                 try
@@ -2385,9 +2396,7 @@ namespace ProcessHacker
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, ref thread_handle,
-                                    (STANDARD_RIGHTS)THREAD_RIGHTS.THREAD_QUERY_INFORMATION, 0,
-                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
-                                    ) != 0)
+                                    (STANDARD_RIGHTS)THREAD_RIGHTS.THREAD_QUERY_INFORMATION, 0, 0) != 0)
                                     throw new Exception("Could not duplicate thread handle!");
 
                                 try
@@ -2419,9 +2428,7 @@ namespace ProcessHacker
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, ref token_handle,
-                                    (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0,
-                                    0x4 // DUPLICATE_SAME_ATTRIBUTES
-                                    ) != 0)
+                                    (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0, 0) != 0)
                                     throw new Exception("Could not duplicate token handle!");
 
                                 try
