@@ -33,33 +33,29 @@ namespace ProcessHacker
                 return;
             }
 
-            Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_phandle);
-
-            if (groups.GroupCount == 0)
+            try
             {
-                Win32.CloseHandle(_phandle);
+                Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_phandle, Properties.Settings.Default.ShowAccountDomains);
 
-                MessageBox.Show("Could not read process groups:\n\n" + Win32.GetLastErrorMessage(),
-                "Process Hacker", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                for (int i = 0; i < groups.GroupCount; i++)
+                {
+                    string name = groups.Names[i];
 
-                this.Close();
-                return;
+                    if (name == "")
+                        continue;
+
+                    ListViewItem item = listGroups.Items.Add(name.ToLower(), name, 0);
+
+                    item.BackColor = GetAttributeColor(groups.Groups[i].Attributes);
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
+                        GetAttributeString(groups.Groups[i].Attributes)));
+                }
             }
-
-            for (int i = 0; i < groups.GroupCount; i++)
+            catch (Exception ex)
             {
-                string name = Win32.GetAccountName(groups.Groups[i].SID,
-                    Properties.Settings.Default.ShowAccountDomains);
-
-                if (name == "")
-                    continue;
-
-                ListViewItem item = listGroups.Items.Add(name.ToLower(), name, 0);
-
-                item.BackColor = GetAttributeColor(groups.Groups[i].Attributes);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
-                    GetAttributeString(groups.Groups[i].Attributes)));
+                MessageBox.Show(ex.Message,
+                  "Process Hacker", MessageBoxButtons.OK,
+                  MessageBoxIcon.Error);
             }
         }
 

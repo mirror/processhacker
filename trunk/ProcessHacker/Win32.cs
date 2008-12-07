@@ -2034,8 +2034,10 @@ namespace ProcessHacker
         {
             public uint GroupCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+            [MarshalAs(UnmanagedType.ByValArray)]
             public SID_AND_ATTRIBUTES[] Groups;
+
+            public string[] Names;
         }  
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2043,11 +2045,8 @@ namespace ProcessHacker
         {
             public uint PrivilegeCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = ANYSIZE_ARRAY)]
+            [MarshalAs(UnmanagedType.ByValArray)]
             public LUID_AND_ATTRIBUTES[] Privileges;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
-            public LUID_AND_ATTRIBUTES[] Privileges2;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2937,46 +2936,90 @@ namespace ProcessHacker
             return (T)Marshal.PtrToStructure(data, typeof(T));
         }
 
-        public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle)
+        public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle, bool IncludeDomains)
         {
             int token = 0;
-            int retlen = 0;
-            TOKEN_GROUPS tkg = new TOKEN_GROUPS();
 
             if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
-                return new TOKEN_GROUPS() { GroupCount = 0 };
+                throw new Exception(GetLastErrorMessage());
 
-            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, ref tkg,
-                Marshal.SizeOf(tkg), ref retlen) == 0)
+            try
+            {
+                int retLen = 0;
+
+                GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, 0, 0, ref retLen);
+
+                IntPtr data = Marshal.AllocHGlobal(retLen);
+
+                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, data,
+                    retLen, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                uint number = (uint)Marshal.ReadInt32(data);
+                TOKEN_GROUPS groups = new TOKEN_GROUPS();
+
+                groups.GroupCount = number;
+                groups.Groups = new SID_AND_ATTRIBUTES[number];
+                groups.Names = new string[number];
+
+                for (int i = 0; i < number; i++)
+                {
+                    groups.Groups[i] = PtrToStructure<SID_AND_ATTRIBUTES>(
+                        new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(SID_AND_ATTRIBUTES))));
+
+                    try
+                    {
+                        groups.Names[i] = GetAccountName(groups.Groups[i].SID, IncludeDomains);
+                    }
+                    catch
+                    { }
+                }
+
+                return groups;
+            }
+            finally
             {
                 CloseHandle(token);
-                return new TOKEN_GROUPS() { GroupCount = 0 };
             }
-
-            CloseHandle(token);
-
-            return tkg;
         }
 
         public static TOKEN_PRIVILEGES ReadTokenPrivileges(int ProcessHandle)
         {
             int token = 0;
-            int retlen = 0;
-            TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
 
             if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
-                return new TOKEN_PRIVILEGES() { PrivilegeCount = 0 };
-                                              
-            if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, ref tkp,
-                Marshal.SizeOf(tkp), ref retlen) == 0)
+                throw new Exception(GetLastErrorMessage());
+
+            try
+            {
+                int retLen = 0;
+
+                GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, 0, 0, ref retLen);
+
+                IntPtr data = Marshal.AllocHGlobal(retLen);
+
+                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, data,
+                    retLen, ref retLen) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                uint number = (uint)Marshal.ReadInt32(data);
+                TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
+
+                privileges.PrivilegeCount = number;
+                privileges.Privileges = new LUID_AND_ATTRIBUTES[number];
+
+                for (int i = 0; i < number; i++)
+                {
+                    privileges.Privileges[i] = PtrToStructure<LUID_AND_ATTRIBUTES>(
+                        new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(LUID_AND_ATTRIBUTES))));
+                }
+
+                return privileges;
+            }
+            finally
             {
                 CloseHandle(token);
-                return new TOKEN_PRIVILEGES() { PrivilegeCount = 0 };
             }
-
-            CloseHandle(token);
-
-            return tkp;
         }
 
         public static string ReadUnicodeString(UNICODE_STRING str)

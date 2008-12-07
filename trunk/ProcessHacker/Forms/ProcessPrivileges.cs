@@ -51,40 +51,26 @@ namespace ProcessHacker
             typeof(ListView).GetProperty("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listPrivileges, true, null);
 
-            Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(_phandle);
-
-            if (privileges.PrivilegeCount == 0)
+            try
             {
-                Win32.CloseHandle(_phandle);
+                Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(_phandle);
 
-                MessageBox.Show("Could not read process privileges:\n\n" + Win32.GetLastErrorMessage(),
-                "Process Hacker", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
+                for (int i = 0; i < privileges.PrivilegeCount; i++)
+                {
+                    string name = Win32.GetPrivilegeName(privileges.Privileges[i].Luid);
+                    ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
 
-                this.Close();
-                return;
+                    item.BackColor = GetAttributeColor(privileges.Privileges[i].Attributes);
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
+                        GetAttributeString(privileges.Privileges[i].Attributes)));
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
+                }
             }
-
-            if (privileges.PrivilegeCount > 0)
+            catch (Exception ex)
             {
-                string name = Win32.GetPrivilegeName(privileges.Privileges[0].Luid);
-                ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
-
-                item.BackColor = GetAttributeColor(privileges.Privileges[0].Attributes);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
-                    GetAttributeString(privileges.Privileges[0].Attributes)));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
-            }
-
-            for (int i = 0; i < privileges.PrivilegeCount - 1; i++)
-            {
-                string name = Win32.GetPrivilegeName(privileges.Privileges2[i].Luid);
-                ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
-                                                                                      
-                item.BackColor = GetAttributeColor(privileges.Privileges2[i].Attributes);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
-                    GetAttributeString(privileges.Privileges2[i].Attributes)));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
+                MessageBox.Show(ex.Message,
+                   "Process Hacker", MessageBoxButtons.OK,
+                   MessageBoxIcon.Error);
             }
         }
 
