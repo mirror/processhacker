@@ -1817,6 +1817,30 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Tab Controls
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (threadP != null)
+                threadP.Enabled = false;
+
+            if (handleP != null)
+                handleP.Enabled = false;
+
+            if (tabControl.SelectedTab == tabThreads)
+            {
+                if (threadP != null)
+                    threadP.Enabled = true;
+            }
+            else if (tabControl.SelectedTab == tabHandles)
+            {
+                if (handleP != null)
+                    handleP.Enabled = true;
+            }
+        }
+
+        #endregion
+
         #region Thread Context Menu
 
         private void menuThread_Popup(object sender, EventArgs e)
@@ -3315,26 +3339,6 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
-        }
-
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (threadP != null)
-                threadP.Enabled = false;
-
-            if (handleP != null)
-                handleP.Enabled = false;
-
-            if (tabControl.SelectedTab == tabThreads)
-            {
-                if (threadP != null)
-                    threadP.Enabled = true;
-            }
-            else if (tabControl.SelectedTab == tabHandles)
-            {
-                if (handleP != null)
-                    handleP.Enabled = true;
-            }
         }
     }
 }
