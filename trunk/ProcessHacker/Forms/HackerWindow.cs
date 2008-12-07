@@ -3214,11 +3214,7 @@ namespace ProcessHacker
             serviceP.Updated -= new ProviderUpdateOnce(serviceP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    timerMessages.Enabled = true;
-                    foreach (int pid in processP.Dictionary.Keys) this.UpdateListViewItemToolTipText(pid);
-                }));
+                this.Invoke(new MethodInvoker(UpdateCommon));
         }
 
         private void processP_Updated()
@@ -3230,11 +3226,17 @@ namespace ProcessHacker
             processP.Updated -= new ProviderUpdateOnce(processP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    timerMessages.Enabled = true;
-                    foreach (int pid in processP.Dictionary.Keys) this.UpdateListViewItemToolTipText(pid);
-                }));
+                this.Invoke(new MethodInvoker(UpdateCommon));
+        }
+
+        private void UpdateCommon()
+        {
+            timerMessages.Enabled = true;
+
+            foreach (int pid in processP.Dictionary.Keys)
+                this.UpdateListViewItemToolTipText(pid);
+
+            listProcesses.RefreshColors();
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
