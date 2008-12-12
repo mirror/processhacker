@@ -143,11 +143,6 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
-            ~ProcessHandle()
-            {
-                this.Dispose();
-            }
-
             public int Handle
             {
                 get { return _handle; }

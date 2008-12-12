@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.5.1
+ * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()
+
 1.2.5.0
  * Fixed wrong usernames when Process Hacker is running as a non-admin user
  * Gets command line of processes without using Injector
