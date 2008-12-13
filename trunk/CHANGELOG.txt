@@ -1,5 +1,8 @@
 Process Hacker
 
+1.2.5.5
+ * Fixed the fix for the huge regression
+
 1.2.5.1
  * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()
 

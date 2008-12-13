@@ -73,6 +73,7 @@ namespace ProcessHacker
 
         public class ThreadHandle : IDisposable
         {
+            private bool _closed = false;
             private int _handle;
 
             public ThreadHandle(int TID, THREAD_RIGHTS access)
@@ -125,7 +126,11 @@ namespace ProcessHacker
 
             public void Dispose()
             {
-                CloseHandle(_handle);
+                if (!_closed)
+                {                          
+                    _closed = true;
+                    CloseHandle(_handle);
+                }
             }
 
             #endregion
@@ -133,6 +138,7 @@ namespace ProcessHacker
 
         public class ProcessHandle : IDisposable
         {
+            private bool _closed = false;
             private int _handle;
 
             public ProcessHandle(int PID, PROCESS_RIGHTS access)
@@ -141,6 +147,11 @@ namespace ProcessHacker
 
                 if (_handle == 0)
                     throw new Exception(GetLastErrorMessage());
+            }
+
+            ~ProcessHandle()
+            {
+                this.Dispose();
             }
 
             public int Handle
@@ -168,7 +179,11 @@ namespace ProcessHacker
 
             public void Dispose()
             {
-                CloseHandle(_handle);
+                if (!_closed)
+                {                     
+                    _closed = true;
+                    CloseHandle(_handle);
+                }
             }
 
             #endregion
@@ -176,6 +191,7 @@ namespace ProcessHacker
 
         public class ServiceHandle : IDisposable
         {
+            private bool _closed = false;
             private int _handle;
 
             public ServiceHandle(string ServiceName, SERVICE_RIGHTS access)
@@ -227,7 +243,11 @@ namespace ProcessHacker
 
             public void Dispose()
             {
-                CloseHandle(_handle);    
+                if (!_closed)
+                {
+                    _closed = true;
+                    CloseHandle(_handle);
+                }   
             }
 
             #endregion
