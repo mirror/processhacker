@@ -1,4 +1,23 @@
-﻿using System;
+﻿/*
+ * Process Hacker
+ * 
+ * Copyright (C) 2008 wj32
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -49,6 +68,9 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+            Application.DoEvents();
+
             try
             {
                 System.Diagnostics.Process.Start("\"" + Application.StartupPath + "\\Assistant.exe\" -w");
@@ -75,7 +97,7 @@ namespace ProcessHacker
                 if (username.Contains("\\"))
                     username = username.Split('\\')[1] + "@" + username.Split('\\')[0];
 
-                if ((service = Win32.CreateService(manager, serviceName, "Process Hacker Assistant", 
+                if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
                     "\"" + Application.StartupPath + "\\Assistant.exe\" -u \"" + username + "\" -p \"" +
@@ -96,6 +118,8 @@ namespace ProcessHacker
                 Win32.CloseHandle(manager);
                 Win32.CloseHandle(service);
             }
+
+            this.Cursor = Cursors.Default;
         }
 
         private bool isServiceUser()
