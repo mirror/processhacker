@@ -109,7 +109,7 @@
     <Compile Include="Components\VistaMenu\VistaMenu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Win32.cs">
+    <Compile Include="Win32\Win32.cs">
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -386,6 +386,9 @@
     </Compile>
     <Compile Include="Misc\Tokenizer.cs" />
     <Compile Include="Symbols\Symbols.cs" />
+    <Compile Include="Win32\Enums.cs" />
+    <Compile Include="Win32\Structs.cs" />
+    <Compile Include="Win32\Functions.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />

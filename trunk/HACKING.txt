@@ -33,3 +33,5 @@ GUIDE TO DIRECTORY ORGANIZATION
     because:
       1. The P/Invoked APIs for dbghelp.dll didn't work when I tried them, and
       2. The Win32 API sucks (and dbghelp.dll isn't thread-safe).
+  * Win32 - contains imported functions, various structs and enums, and wrapper 
+    code (handles memory issues)
