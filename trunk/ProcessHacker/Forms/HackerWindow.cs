@@ -435,6 +435,14 @@ namespace ProcessHacker
             listProcesses.List.Select();
         }
 
+        private void runAsMenuItem_Click(object sender, EventArgs e)
+        {
+             RunWindow run = new RunWindow();
+
+            run.TopMost = this.TopMost;
+            run.ShowDialog();
+        }
+
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
             HandleFilterForm.Show();

@@ -198,6 +198,10 @@
       <DependentUpon>ResultsWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RunWindow.resx">
+      <DependentUpon>RunWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchWindow.resx">
       <DependentUpon>SearchWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -296,6 +300,12 @@
     </Compile>
     <Compile Include="Forms\ProcessPrivileges.Designer.cs">
       <DependentUpon>ProcessPrivileges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RunWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RunWindow.Designer.cs">
+      <DependentUpon>RunWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ServiceWindow.cs">
       <SubType>Form</SubType>

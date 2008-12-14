@@ -620,39 +620,27 @@ namespace Assistant
                 }
             }
 
-            //int dupTok;
-
-            //if (!DuplicateToken(token, 2, out dupTok))
-            //{
-            //    Console.Write("Error: Could not duplicate token: " + GetLastErrorMessage());
-            //    return;
-            //}
-
-            StartupInfo info = new StartupInfo();
-            ProcessInformation pinfo = new ProcessInformation();
-
-            info.Size = Marshal.SizeOf(info);
-            info.Desktop = "WinSta0\\Default";
-
-            if (!CreateProcessAsUser(token,
-                args.ContainsKey("-f") ? args["-f"] : null,
-                args.ContainsKey("-c") ? args["-c"] : null,
-                0, 0, false, 0, 0,
-                args.ContainsKey("-d") ? args["-d"] : null,
-                ref info, ref pinfo))
-            //if (!CreateProcess(
-            //    args.ContainsKey("-f") ? args["-f"] : null,
-            //    args.ContainsKey("-c") ? args["-c"] : null,
-            //    0, 0, false, 0, 0,
-            //    args.ContainsKey("-d") ? args["-d"] : null,
-            //    ref info, ref pinfo))
+            if (args.ContainsKey("-c") || args.ContainsKey("-f"))
             {
-                Console.Write("Error: Could not create process: " + GetLastErrorMessage());
-                return;
-            }
+                StartupInfo info = new StartupInfo();
+                ProcessInformation pinfo = new ProcessInformation();
 
-            CloseHandle(token);
-            //CloseHandle(dupTok);
+                info.Size = Marshal.SizeOf(info);
+                info.Desktop = "WinSta0\\Default";
+
+                if (!CreateProcessAsUser(token,
+                    args.ContainsKey("-f") ? args["-f"] : null,
+                    args.ContainsKey("-c") ? args["-c"] : null,
+                    0, 0, false, 0, 0,
+                    args.ContainsKey("-d") ? args["-d"] : null,
+                    ref info, ref pinfo))
+                {
+                    Console.Write("Error: Could not create process: " + GetLastErrorMessage());
+                    return;
+                }
+
+                CloseHandle(token);
+            }
         }
     }
 }
