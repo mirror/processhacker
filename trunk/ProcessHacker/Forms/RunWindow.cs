@@ -100,12 +100,15 @@ namespace ProcessHacker
                 for (int i = 0; i < 8; i++)
                     serviceName += (char)('A' + r.Next(25));
 
+                bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP"; 
+
                 if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
-                    "\"" + Application.StartupPath + "\\Assistant.exe\" -u \"" + comboUsername.Text + "\" -p \"" +
-                    Misc.EscapeString(textPassword.Text) + "\" -t " +
-                    (isServiceUser() ? "service" : "interactive") + " -s " + textSessionID.Text + " -c \"" +
+                    "\"" + Application.StartupPath + "\\Assistant.exe\" " + 
+                    (omitUserAndType ? "" : ("-u \"" + comboUsername.Text + "\" -t " +
+                    (isServiceUser() ? "service" : "interactive") + " ")) + "-p \"" +
+                    Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
                     throw new Exception("Could not create service: " + Win32.GetLastErrorMessage());
 
@@ -127,8 +130,9 @@ namespace ProcessHacker
 
         private bool isServiceUser()
         {
-            if (comboUsername.Text == "NT AUTHORITY\\SYSTEM" || comboUsername.Text == "NT AUTHORITY\\LOCAL SERVICE" ||
-                comboUsername.Text == "NT AUTHORITY\\NETWORK SERVICE")
+            if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" || 
+                comboUsername.Text.ToUpper() == "NT AUTHORITY\\LOCAL SERVICE" ||
+                comboUsername.Text.ToUpper() == "NT AUTHORITY\\NETWORK SERVICE")
                 return true;
             else
                 return false;

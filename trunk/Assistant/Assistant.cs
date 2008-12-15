@@ -507,7 +507,8 @@ namespace Assistant
                 "use this program as a Windows service.\n" + 
                 "-k\t\tDebugging purposes: specifies that this program should sleep after completion.\n" + 
                 "-u username\tSpecifies the user under which the program should be run. The username can be specified " + 
-                "as username, domain\\username, or username@domain.\n" +
+                "as username, domain\\username, or username@domain. On Windows XP, specifying NT AUTHORITY\\SYSTEM does " +
+                "not work. Instead, omit the -u and -t options and the program will be started under the SYSTEM account.\n" +
                 "-p password\tSpecifies the password for the user.\n" +
                 "-t logontype\tSpecifies the logon type. For logons to normal users, specify \"interactive\". For logons " + 
                 "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\".\n" + 
@@ -519,7 +520,7 @@ namespace Assistant
                 "SeAssignPrimaryTokenPrivilege and SeTcbPrivilege, both of which are required for the useful " + 
                 "functioning of this program. You must create a Windows service for this program:\n" + 
                 "\tsc.exe create PHAssistant binPath= \"\\\"[path to this program]\\\" -u \\\"SYSTEM@NT AUTHORITY\\\" " + 
-                "-t service -s [your session Id, normally 1] -c calc.exe\"\n" + 
+                "-t service -s [your session Id, normally 0 on XP and 1 on Vista] -c calc.exe\"\n" + 
                 "then start it:\n\tsc.exe start PHAssistant\n" + 
                 "and finally delete it:\n\tsc.exe delete PHAssistant\n");
         }
