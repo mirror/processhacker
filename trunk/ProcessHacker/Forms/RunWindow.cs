@@ -73,7 +73,13 @@ namespace ProcessHacker
 
             try
             {
-                System.Diagnostics.Process.Start("\"" + Application.StartupPath + "\\Assistant.exe\" -w");
+                System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
+
+                info.CreateNoWindow = true;
+                info.FileName = Application.StartupPath + "\\Assistant.exe";
+                info.Arguments = "-w";
+                
+                System.Diagnostics.Process.Start(info);
             }
             catch
             { }
