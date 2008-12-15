@@ -1,6 +1,8 @@
 Process Hacker is a tool for viewing and manipulating processes. 
 It supports:
 
+ * Running a program as almost any user, including SYSTEM, LOCAL 
+   SERVICE and NETWORK SERVICE.
  * Viewing, terminating, suspending and resuming processes
  * Viewing, controlling and deleting services
  * Viewing/enabling/disabling/removing process privileges
@@ -18,12 +20,6 @@ It supports:
  * Scanning for strings inside process memory
  * Getting heap information
  * Viewing DEP status and other additional information.
-
-Additionally, Process Hacker includes a separate tool called Injector 
-which has the following capabilities:
- * Getting the command line of a process
- * Forcing a process to start another process
- * Forcing a process to terminate itself
 
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).

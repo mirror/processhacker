@@ -3177,8 +3177,10 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            if (!System.IO.File.Exists(Application.StartupPath + "\\Injector.exe"))
+            //if (!System.IO.File.Exists(Application.StartupPath + "\\Injector.exe"))
                 injectorMenuItem.Visible = false;
+            if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
+                runAsMenuItem.Enabled = false;
 
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
@@ -3319,9 +3321,6 @@ namespace ProcessHacker
             listModules.Items.Clear();
 
             LoadSettings();
-
-            if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
-                runAsMenuItem.Enabled = false;
 
             // load symbols on a separate thread
             Thread t = new Thread(new ThreadStart(delegate
