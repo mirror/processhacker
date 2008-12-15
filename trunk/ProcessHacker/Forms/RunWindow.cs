@@ -29,6 +29,8 @@ namespace ProcessHacker
 {
     public partial class RunWindow : Form
     {
+        private int _pid = -1;
+
         public RunWindow()
         {
             InitializeComponent();
@@ -36,12 +38,33 @@ namespace ProcessHacker
             textSessionID.Text = Program.CurrentSessionId.ToString();
         }
 
+        public void UsePID(int PID)
+        {
+            _pid = PID;
+
+            try
+            {
+                comboUsername.Text = Program.HackerWindow.ProcessProvider.Dictionary[PID].UsernameWithDomain;
+            }
+            catch
+            {
+                _pid = -1;
+                return;
+            }
+
+            comboUsername.Enabled = false;
+            textPassword.Enabled = false;
+        }
+
         private void RunWindow_Load(object sender, EventArgs e)
         {
-            comboUsername.Text = Properties.Settings.Default.RunAsUsername;
-            textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
-            textCmdLine.Focus();
-            textCmdLine.Select();
+            if (_pid == -1)
+            {
+                comboUsername.Text = Properties.Settings.Default.RunAsUsername;
+                textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
+                textCmdLine.Focus();
+                textCmdLine.Select();
+            }
         }
 
         private void RunWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -100,13 +123,19 @@ namespace ProcessHacker
                 for (int i = 0; i < 8; i++)
                     serviceName += (char)('A' + r.Next(25));
 
-                bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP"; 
+                bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP";
+
+                if (_pid != -1)
+                {
+                    omitUserAndType = true;
+                }
 
                 if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
                     "\"" + Application.StartupPath + "\\Assistant.exe\" " + 
-                    (omitUserAndType ? "" : ("-u \"" + comboUsername.Text + "\" -t " +
+                    (omitUserAndType ? (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") : 
+                    ("-u \"" + comboUsername.Text + "\" -t " +
                     (isServiceUser() ? "service" : "interactive") + " ")) + "-p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
@@ -140,10 +169,13 @@ namespace ProcessHacker
 
         private void comboUsername_TextChanged(object sender, EventArgs e)
         {
-            if (isServiceUser())
-                textPassword.Enabled = false;
-            else
-                textPassword.Enabled = true;
+            if (_pid == -1)
+            {
+                if (isServiceUser())
+                    textPassword.Enabled = false;
+                else
+                    textPassword.Enabled = true;
+            }
         }
     }
 }

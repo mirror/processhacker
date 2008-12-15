@@ -312,6 +312,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap report_user {
+            get {
+                object obj = ResourceManager.GetObject("report_user", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap table {
             get {
                 object obj = ResourceManager.GetObject("table", resourceCulture);

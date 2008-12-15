@@ -65,4 +65,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)\ProcessHacker\bin\Release\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

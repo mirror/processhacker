@@ -887,116 +887,101 @@ namespace ProcessHacker
             {
                 Misc.DisableAllMenuItems(menuProcess);
             }
+            else if (listProcesses.SelectedItems.Count == 1)
+            {
+                Misc.EnableAllMenuItems(menuProcess);
+
+                priorityMenuItem.Text = "&Priority";
+                terminateMenuItem.Text = "&Terminate Process";
+                closeActiveWindowMenuItem.Text = "&Close Active Window";
+                suspendMenuItem.Text = "&Suspend Process";
+                resumeMenuItem.Text = "&Resume Process";
+
+                try
+                {
+                    int parent = Win32.GetProcessParent(processSelectedPID);
+                    ListViewItem item = listProcesses.List.Items[parent.ToString()];
+
+                    goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
+                    goToParentProcessMenuItem.Enabled = true;
+                }
+                catch
+                {
+                    goToParentProcessMenuItem.Text = "Go to Parent";
+                    goToParentProcessMenuItem.Enabled = false;
+                }
+
+                try
+                {
+                    List<string> services = processServices[processSelectedPID];
+
+                    if (services == null)
+                        throw new Exception();
+                    if (services.Count == 0)
+                        throw new Exception();
+
+                    servicesProcessMenuItem.Enabled = true;
+                }
+                catch
+                {
+                    servicesProcessMenuItem.Enabled = false;
+                }
+
+                if (IsDifferentSessionId(processSelectedPID))
+                    injectorMenuItem.Enabled = false;
+                else
+                    injectorMenuItem.Enabled = true;
+
+                realTimeMenuItem.Checked = false;
+                highMenuItem.Checked = false;
+                aboveNormalMenuItem.Checked = false;
+                normalMenuItem.Checked = false;
+                belowNormalMenuItem.Checked = false;
+                idleMenuItem.Checked = false;
+
+                try
+                {
+                    switch (Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text)).PriorityClass)
+                    {
+                        case ProcessPriorityClass.RealTime:
+                            realTimeMenuItem.Checked = true;
+                            break;
+
+                        case ProcessPriorityClass.High:
+                            highMenuItem.Checked = true;
+                            break;
+
+                        case ProcessPriorityClass.AboveNormal:
+                            aboveNormalMenuItem.Checked = true;
+                            break;
+
+                        case ProcessPriorityClass.Normal:
+                            normalMenuItem.Checked = true;
+                            break;
+
+                        case ProcessPriorityClass.BelowNormal:
+                            belowNormalMenuItem.Checked = true;
+                            break;
+
+                        case ProcessPriorityClass.Idle:
+                            idleMenuItem.Checked = true;
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    priorityMenuItem.Text = "(" + ex.Message + ")";
+                    priorityMenuItem.Enabled = false;
+                }
+            }
             else
             {
-                priorityMenuItem.Text = "&Priority";
+                Misc.DisableAllMenuItems(menuProcess);
 
-                if (listProcesses.SelectedItems.Count == 1)
-                {
-                    try
-                    {
-                        int parent = Win32.GetProcessParent(processSelectedPID);
-                        ListViewItem item = listProcesses.List.Items[parent.ToString()];
-
-                        goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
-                        goToParentProcessMenuItem.Enabled = true;
-                    }
-                    catch
-                    {
-                        goToParentProcessMenuItem.Text = "Go to Parent";
-                        goToParentProcessMenuItem.Enabled = false;
-                    }
-
-                    try
-                    {
-                        List<string> services = processServices[processSelectedPID];
-
-                        if (services == null)
-                            throw new Exception();
-                        if (services.Count == 0)
-                            throw new Exception();
-
-                        servicesProcessMenuItem.Enabled = true;
-                    }
-                    catch
-                    {
-                        servicesProcessMenuItem.Enabled = false;
-                    }
-
-                    if (IsDifferentSessionId(processSelectedPID))
-                        injectorMenuItem.Enabled = false;
-                    else
-                        injectorMenuItem.Enabled = true;
-
-                    priorityMenuItem.Enabled = true;
-                    inspectProcessMenuItem.Enabled = true;
-                    searchProcessMenuItem.Enabled = true;
-                    affinityProcessMenuItem.Enabled = true;
-                    privilegesMenuItem.Enabled = true;
-                    groupsMenuItem.Enabled = true;
-                    terminateMenuItem.Text = "&Terminate Process";
-                    closeActiveWindowMenuItem.Text = "&Close Active Window";
-                    suspendMenuItem.Text = "&Suspend Process";
-                    resumeMenuItem.Text = "&Resume Process";
-
-                    realTimeMenuItem.Checked = false;
-                    highMenuItem.Checked = false;
-                    aboveNormalMenuItem.Checked = false;
-                    normalMenuItem.Checked = false;
-                    belowNormalMenuItem.Checked = false;
-                    idleMenuItem.Checked = false;
-
-                    try
-                    {
-                        switch (Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text)).PriorityClass)
-                        {
-                            case ProcessPriorityClass.RealTime:
-                                realTimeMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.High:
-                                highMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.AboveNormal:
-                                aboveNormalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.Normal:
-                                normalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.BelowNormal:
-                                belowNormalMenuItem.Checked = true;
-                                break;
-
-                            case ProcessPriorityClass.Idle:
-                                idleMenuItem.Checked = true;
-                                break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        priorityMenuItem.Text = "(" + ex.Message + ")";
-                        priorityMenuItem.Enabled = false;
-                    }
-                }
-                else
-                {
-                    goToParentProcessMenuItem.Enabled = false;
-                    priorityMenuItem.Enabled = false;
-                    inspectProcessMenuItem.Enabled = false;
-                    searchProcessMenuItem.Enabled = false;
-                    affinityProcessMenuItem.Enabled = false;
-                    privilegesMenuItem.Enabled = false;
-                    groupsMenuItem.Enabled = false;
-                    servicesProcessMenuItem.Enabled = false;
-                    injectorMenuItem.Enabled = false;
-                    terminateMenuItem.Text = "&Terminate Processes";
-                    closeActiveWindowMenuItem.Text = "&Close Active Windows";
-                    suspendMenuItem.Text = "&Suspend Processes";
-                    resumeMenuItem.Text = "&Resume Processes";
-                }
+                terminateMenuItem.Text = "&Terminate Processes";
+                closeActiveWindowMenuItem.Text = "&Close Active Windows";
+                suspendMenuItem.Text = "&Suspend Processes";
+                resumeMenuItem.Text = "&Resume Processes";
 
                 terminateMenuItem.Enabled = true;
                 closeActiveWindowMenuItem.Enabled = true;
@@ -1238,6 +1223,39 @@ namespace ProcessHacker
             catch
             { }
         }
+
+        #region Run As
+
+        private void launchAsUserProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Properties.Settings.Default.RunAsCommand = Misc.GetRealPath(processSelected.MainModule.FileName);
+
+                RunWindow run = new RunWindow();
+
+                run.TopMost = this.TopMost;
+                run.ShowDialog();
+            }
+            catch
+            { }
+        }
+
+        private void launchWithThisUserProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                RunWindow run = new RunWindow();
+
+                run.TopMost = this.TopMost;
+                run.UsePID(processSelectedPID);
+                run.ShowDialog();
+            }
+            catch
+            { }
+        }
+
+        #endregion
 
         #region Injector
 

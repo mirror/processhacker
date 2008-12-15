@@ -439,6 +439,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\report_user.png" />
     <None Include="Resources\asterisk_orange.png" />
     <None Include="Resources\cog.png" />
     <None Include="Resources\page_white_text.png" />

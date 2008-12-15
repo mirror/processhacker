@@ -184,6 +184,20 @@ namespace Assistant
             MaxTokenInfoClass  // MaxTokenInfoClass should always be the last enum
         }
 
+        enum ImpersonationLevel
+        {
+            SecurityAnonymous = 0,
+            SecurityIdentification,
+            SecurityImpersonation,
+            SecurityDelegation
+        }
+
+        enum TokenType
+        {
+            TokenPrimary = 1,
+            TokenImpersonation
+        }
+
         [Flags]
         public enum STANDARD_RIGHTS : uint
         {
@@ -292,6 +306,15 @@ namespace Assistant
         static extern bool DuplicateToken(
             int TokenHandle,
             int Level,
+            out int DuplicatedToken);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool DuplicateTokenEx(
+            int TokenHandle,
+            TokenRights DesiredAccess,
+            int TokenAttributes,
+            ImpersonationLevel ImpersonationLevel,
+            TokenType TokenType,
             out int DuplicatedToken);
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -501,11 +524,13 @@ namespace Assistant
         static void PrintUsage()
         {
             Console.Write("Process Hacker Assistant\nCopyright (c) 2008 wj32. Licensed under the GNU GPL v3.\n\nUsage:\n" +
-                "\tassistant [-w] [-k] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] [-c cmdline] [-f filename]\n\n" +
+                "\tassistant [-w] [-k] [-P pid] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] " + 
+                "[-c cmdline] [-f filename]\n\n" +
                 "-w\t\tSpecifies that the permissions of WinSta0 and WinSta0\\Default should be " +
                 "modified with all access. You should use this option as a normal user (\"assistant -w\") before attempting to " +
                 "use this program as a Windows service.\n" + 
-                "-k\t\tDebugging purposes: specifies that this program should sleep after completion.\n" + 
+                "-k\t\tDebugging purposes: specifies that this program should sleep after completion.\n" +
+                "-P pid\t\tSpecifies that the token of the specified process should be used to start the specified program.\n" + 
                 "-u username\tSpecifies the user under which the program should be run. The username can be specified " + 
                 "as username, domain\\username, or username@domain. On Windows XP, specifying NT AUTHORITY\\SYSTEM does " +
                 "not work. Instead, omit the -u and -t options and the program will be started under the SYSTEM account.\n" +
@@ -619,18 +644,53 @@ namespace Assistant
                 if (!LogonUser(username, domain, args.ContainsKey("-p") ? args["-p"] : "", type,
                     LogonProvider.Default, out token))
                 {
-                    Console.Write("Error: Could not logon as user: " + GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not logon as user: " + GetLastErrorMessage());
                     Exit(Marshal.GetLastWin32Error());
                 }
             }
             else
             {
-                if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(),
+                int pid = System.Diagnostics.Process.GetCurrentProcess().Id;
+
+                try
+                {
+                    if (args.ContainsKey("-P"))
+                        pid = int.Parse(args["-P"]);
+                }
+                catch
+                {
+                    Console.WriteLine("Error: Invalid PID.");
+                }
+
+                int handle = 0;
+
+                try
+                {
+                    handle = System.Diagnostics.Process.GetProcessById(pid).Handle.ToInt32();
+                }
+                catch
+                {
+                    Console.WriteLine("Error: Could not open process.");
+                }
+
+                if (!OpenProcessToken(handle,
                     TokenRights.TOKEN_ALL_ACCESS, out token))
                 {
-                    Console.Write("Error: Could not open own process token: " + GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not open own process token: " + GetLastErrorMessage());
                     Exit(Marshal.GetLastWin32Error());
                 }
+
+                int dupToken;
+
+                if (!DuplicateTokenEx(token, TokenRights.TOKEN_ALL_ACCESS, 0, ImpersonationLevel.SecurityImpersonation,
+                    TokenType.TokenPrimary, out dupToken))
+                {
+                    Console.WriteLine("Error: Could not duplicate own token: " + GetLastErrorMessage());
+                    Exit(Marshal.GetLastWin32Error());
+                }
+
+                CloseHandle(token);
+                token = dupToken;
             }
 
             if (args.ContainsKey("-s"))
@@ -639,7 +699,7 @@ namespace Assistant
 
                 if (!SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref sessionId, 4))
                 {
-                    Console.Write("Error: Could not set token session Id: " + GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not set token session Id: " + GetLastErrorMessage());
                 }
             }
 
@@ -658,7 +718,7 @@ namespace Assistant
                     args.ContainsKey("-d") ? args["-d"] : null,
                     ref info, ref pinfo))
                 {
-                    Console.Write("Error: Could not create process: " + GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not create process: " + GetLastErrorMessage());
                     Exit(Marshal.GetLastWin32Error());
                 }
 

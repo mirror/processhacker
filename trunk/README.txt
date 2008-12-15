@@ -21,6 +21,9 @@ It supports:
  * Getting heap information
  * Viewing DEP status and other additional information.
 
+Process Hacker comes with an "Assistant" application which is used 
+when launching programs as other users.
+
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).
 
