@@ -38,14 +38,16 @@ namespace ProcessHacker
 
         private void RunWindow_Load(object sender, EventArgs e)
         {
-            textCmdLine.Text = PromptBox.LastValue;
+            comboUsername.Text = Properties.Settings.Default.RunAsUsername;
+            textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
             textCmdLine.Focus();
             textCmdLine.Select();
         }
 
         private void RunWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            PromptBox.LastValue = textCmdLine.Text;
+            Properties.Settings.Default.RunAsCommand = textCmdLine.Text;
+            Properties.Settings.Default.RunAsUsername = comboUsername.Text;
         }
 
         private void buttonBrowse_Click(object sender, EventArgs e)
@@ -75,7 +77,7 @@ namespace ProcessHacker
             {
                 System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo();
 
-                info.CreateNoWindow = true;
+                info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 info.FileName = Application.StartupPath + "\\Assistant.exe";
                 info.Arguments = "-w";
                 

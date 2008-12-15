@@ -39,12 +39,13 @@
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonBrowse = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(12, 49);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
             this.label1.TabIndex = 0;
@@ -56,7 +57,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textCmdLine.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.textCmdLine.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.AllSystemSources;
-            this.textCmdLine.Location = new System.Drawing.Point(79, 12);
+            this.textCmdLine.Location = new System.Drawing.Point(79, 46);
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.Size = new System.Drawing.Size(230, 20);
             this.textCmdLine.TabIndex = 1;
@@ -64,7 +65,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 41);
+            this.label2.Location = new System.Drawing.Point(12, 75);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(58, 13);
             this.label2.TabIndex = 2;
@@ -77,7 +78,7 @@
             "NT AUTHORITY\\SYSTEM",
             "NT AUTHORITY\\LOCAL SERVICE",
             "NT AUTHORITY\\NETWORK SERVICE"});
-            this.comboUsername.Location = new System.Drawing.Point(79, 38);
+            this.comboUsername.Location = new System.Drawing.Point(79, 72);
             this.comboUsername.Name = "comboUsername";
             this.comboUsername.Size = new System.Drawing.Size(154, 21);
             this.comboUsername.TabIndex = 2;
@@ -86,7 +87,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 94);
+            this.label3.Location = new System.Drawing.Point(12, 128);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 13);
             this.label3.TabIndex = 4;
@@ -94,7 +95,7 @@
             // 
             // textSessionID
             // 
-            this.textSessionID.Location = new System.Drawing.Point(79, 91);
+            this.textSessionID.Location = new System.Drawing.Point(79, 125);
             this.textSessionID.Name = "textSessionID";
             this.textSessionID.Size = new System.Drawing.Size(100, 20);
             this.textSessionID.TabIndex = 4;
@@ -102,7 +103,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 68);
+            this.label4.Location = new System.Drawing.Point(12, 102);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -110,7 +111,7 @@
             // 
             // textPassword
             // 
-            this.textPassword.Location = new System.Drawing.Point(79, 65);
+            this.textPassword.Location = new System.Drawing.Point(79, 99);
             this.textPassword.Name = "textPassword";
             this.textPassword.Size = new System.Drawing.Size(154, 20);
             this.textPassword.TabIndex = 3;
@@ -119,7 +120,8 @@
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(234, 128);
+            this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonOK.Location = new System.Drawing.Point(234, 155);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 5;
@@ -130,7 +132,8 @@
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.Location = new System.Drawing.Point(315, 128);
+            this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonCancel.Location = new System.Drawing.Point(315, 155);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 7;
@@ -141,7 +144,8 @@
             // buttonBrowse
             // 
             this.buttonBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonBrowse.Location = new System.Drawing.Point(315, 10);
+            this.buttonBrowse.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonBrowse.Location = new System.Drawing.Point(315, 44);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
             this.buttonBrowse.TabIndex = 6;
@@ -149,12 +153,24 @@
             this.buttonBrowse.UseVisualStyleBackColor = true;
             this.buttonBrowse.Click += new System.EventHandler(this.buttonBrowse_Click);
             // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.Location = new System.Drawing.Point(12, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(378, 30);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Enter the command to start as the specified user. Note that the program may take " +
+                "a while to start as Windows loads the user\'s profile.";
+            // 
             // RunWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(402, 163);
+            this.ClientSize = new System.Drawing.Size(402, 190);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.buttonBrowse);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
@@ -192,5 +208,6 @@
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonBrowse;
+        private System.Windows.Forms.Label label5;
     }
 }

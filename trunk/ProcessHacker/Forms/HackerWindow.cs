@@ -2248,6 +2248,7 @@ namespace ProcessHacker
             this.WindowState = Properties.Settings.Default.WindowState;
             splitMain.SplitterDistance = Properties.Settings.Default.SplitterDistance;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
+            PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
 
             if (tabControl.TabPages[Properties.Settings.Default.SelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.SelectedTab];
@@ -2381,6 +2382,7 @@ namespace ProcessHacker
             Properties.Settings.Default.SplitterDistance = splitMain.SplitterDistance;
 
             Properties.Settings.Default.SearchType = buttonSearch.Text;
+            Properties.Settings.Default.PromptBoxText = PromptBox.LastValue;
 
             Properties.Settings.Default.SelectedTab = tabControl.SelectedTab.Name;
 

@@ -658,5 +658,41 @@ namespace ProcessHacker.Properties {
                 this["ColorServiceProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PromptBoxText {
+            get {
+                return ((string)(this["PromptBoxText"]));
+            }
+            set {
+                this["PromptBoxText"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RunAsUsername {
+            get {
+                return ((string)(this["RunAsUsername"]));
+            }
+            set {
+                this["RunAsUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RunAsCommand {
+            get {
+                return ((string)(this["RunAsCommand"]));
+            }
+            set {
+                this["RunAsCommand"] = value;
+            }
+        }
     }
 }
