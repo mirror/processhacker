@@ -501,9 +501,11 @@ namespace Assistant
         static void PrintUsage()
         {
             Console.Write("Process Hacker Assistant\nCopyright (c) 2008 wj32. Licensed under the GNU GPL v3.\n\nUsage:\n" +
-                "\tassistant [-w] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] [-c cmdline] [-f filename]\n\n" +
+                "\tassistant [-w] [-k] [-u username] [-p password] [-t logontype] [-s sessionid] [-d dir] [-c cmdline] [-f filename]\n\n" +
                 "-w\t\tSpecifies that the permissions of WinSta0 and WinSta0\\Default should be " +
-                "modified with all access.\n" +
+                "modified with all access. You should use this option as a normal user (\"assistant -w\") before attempting to " +
+                "use this program as a Windows service.\n" + 
+                "-k\t\tDebugging purposes: specifies that this program should sleep after completion.\n" + 
                 "-u username\tSpecifies the user under which the program should be run. The username can be specified " + 
                 "as username, domain\\username, or username@domain.\n" +
                 "-p password\tSpecifies the password for the user.\n" +
@@ -511,14 +513,34 @@ namespace Assistant
                 "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\".\n" + 
                 "-s sessionid\tSpecifies the session ID under which the program should be run.\n" +
                 "-d dir\t\tSpecifies the current directory for the program.\n" +
-                "-c cmdline\tSpecifies the command line for the program.\n" +
-                "-f filename\tSpecifies the full path to the program.\n");
+                "-c cmdline\tSpecifies the command line for the program. You must not use the -f option if you use this.\n" +
+                "-f filename\tSpecifies the full path to the program.\n\n" + 
+                "This application is not useful by itself; even Administrators do not normally have " + 
+                "SeAssignPrimaryTokenPrivilege and SeTcbPrivilege, both of which are required for the useful " + 
+                "functioning of this program. You must create a Windows service for this program:\n" + 
+                "\tsc.exe create PHAssistant binPath= \"\\\"[path to this program]\\\" -u \\\"SYSTEM@NT AUTHORITY\\\" " + 
+                "-t service -s [your session Id, normally 1] -c calc.exe\"\n" + 
+                "then start it:\n\tsc.exe start PHAssistant\n" + 
+                "and finally delete it:\n\tsc.exe delete PHAssistant\n");
         }
-        
-        static int Main()
-        {
-            Dictionary<string, string> args;
 
+        static void Exit(int exitCode)
+        {
+            if (args.ContainsKey("-k"))
+                System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
+
+            Environment.Exit(exitCode);
+        }
+
+        static void Exit()
+        {
+            Exit(0);
+        }
+
+        static Dictionary<string, string> args;
+
+        static void Main()
+        {
             try
             {
                 args = ParseArgs(Environment.GetCommandLineArgs());
@@ -534,13 +556,13 @@ namespace Assistant
                 if (bad)
                 {
                     PrintUsage();
-                    return 0;
+                    Exit();
                 }
             }
             catch
             {
                 PrintUsage();
-                return 0;
+                Exit();
             }
 
             if (args.ContainsKey("-w"))
@@ -589,7 +611,7 @@ namespace Assistant
                     catch
                     {
                         Console.WriteLine("Error: Invalid logon type.");
-                        return 0;
+                        Exit(-1);
                     }
                 }
 
@@ -597,7 +619,7 @@ namespace Assistant
                     LogonProvider.Default, out token))
                 {
                     Console.Write("Error: Could not logon as user: " + GetLastErrorMessage());
-                    return Marshal.GetLastWin32Error();
+                    Exit(Marshal.GetLastWin32Error());
                 }
             }
             else
@@ -606,7 +628,7 @@ namespace Assistant
                     TokenRights.TOKEN_ALL_ACCESS, out token))
                 {
                     Console.Write("Error: Could not open own process token: " + GetLastErrorMessage());
-                    return Marshal.GetLastWin32Error();
+                    Exit(Marshal.GetLastWin32Error());
                 }
             }
 
@@ -636,13 +658,13 @@ namespace Assistant
                     ref info, ref pinfo))
                 {
                     Console.Write("Error: Could not create process: " + GetLastErrorMessage());
-                    return Marshal.GetLastWin32Error();
+                    Exit(Marshal.GetLastWin32Error());
                 }
 
                 CloseHandle(token);
             }
 
-            return 0;
+            Exit();
         }
     }
 }

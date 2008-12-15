@@ -100,15 +100,10 @@ namespace ProcessHacker
                 for (int i = 0; i < 8; i++)
                     serviceName += (char)('A' + r.Next(25));
 
-                string username = comboUsername.Text;
-
-                if (username.Contains("\\"))
-                    username = username.Split('\\')[1] + "@" + username.Split('\\')[0];
-
                 if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
-                    "\"" + Application.StartupPath + "\\Assistant.exe\" -u \"" + username + "\" -p \"" +
+                    "\"" + Application.StartupPath + "\\Assistant.exe\" -u \"" + comboUsername.Text + "\" -p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -t " +
                     (isServiceUser() ? "service" : "interactive") + " -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)

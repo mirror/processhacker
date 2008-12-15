@@ -3320,6 +3320,9 @@ namespace ProcessHacker
 
             LoadSettings();
 
+            if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
+                runAsMenuItem.Enabled = false;
+
             // load symbols on a separate thread
             Thread t = new Thread(new ThreadStart(delegate
             {
