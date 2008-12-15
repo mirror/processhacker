@@ -518,6 +518,8 @@ namespace ProcessHacker
         public static extern int WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
         public static extern int WTSFreeMemory(WTS_SESSION_INFO[] Memory);
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSFreeMemory(string Memory);
 
         #endregion
 

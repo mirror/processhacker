@@ -185,10 +185,22 @@ namespace ProcessHacker
             foreach (Win32.WTS_SESSION_INFO session in Win32.TSEnumSessions())
             {
                 MenuItem item = new MenuItem();
+                string user = null;
+                string domain = null;
+                int retLen = 0;
+                                                                                                                                   
+                Win32.WTSQuerySessionInformation(0, session.SessionID, Win32.WTS_INFO_CLASS.WTSUserName, ref user, ref retLen);
+                Win32.WTSQuerySessionInformation(0, session.SessionID, Win32.WTS_INFO_CLASS.WTSDomainName, ref domain, ref retLen);
 
-                item.Text = session.SessionID.ToString() + ": " + session.WinStationName;
+                string username = domain + "\\" + user;
+
+                item.Text = session.SessionID.ToString() + ": " + session.WinStationName + 
+                    (username != "\\" ? (" (" + username + ")") : "");
                 item.Tag = session.SessionID;
                 item.Click += new EventHandler(item_Click);
+
+                Win32.WTSFreeMemory(user);
+                Win32.WTSFreeMemory(domain);
 
                 menu.MenuItems.Add(item);
             }
