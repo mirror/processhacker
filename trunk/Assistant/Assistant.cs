@@ -515,7 +515,7 @@ namespace Assistant
                 "-f filename\tSpecifies the full path to the program.\n");
         }
         
-        static void Main()
+        static int Main()
         {
             Dictionary<string, string> args;
 
@@ -534,13 +534,13 @@ namespace Assistant
                 if (bad)
                 {
                     PrintUsage();
-                    return;
+                    return 0;
                 }
             }
             catch
             {
                 PrintUsage();
-                return;
+                return 0;
             }
 
             if (args.ContainsKey("-w"))
@@ -589,7 +589,7 @@ namespace Assistant
                     catch
                     {
                         Console.WriteLine("Error: Invalid logon type.");
-                        return;
+                        return 0;
                     }
                 }
 
@@ -597,7 +597,7 @@ namespace Assistant
                     LogonProvider.Default, out token))
                 {
                     Console.Write("Error: Could not logon as user: " + GetLastErrorMessage());
-                    return;
+                    return Marshal.GetLastWin32Error();
                 }
             }
             else
@@ -606,7 +606,7 @@ namespace Assistant
                     TokenRights.TOKEN_ALL_ACCESS, out token))
                 {
                     Console.Write("Error: Could not open own process token: " + GetLastErrorMessage());
-                    return;
+                    return Marshal.GetLastWin32Error();
                 }
             }
 
@@ -636,11 +636,13 @@ namespace Assistant
                     ref info, ref pinfo))
                 {
                     Console.Write("Error: Could not create process: " + GetLastErrorMessage());
-                    return;
+                    return Marshal.GetLastWin32Error();
                 }
 
                 CloseHandle(token);
             }
+
+            return 0;
         }
     }
 }

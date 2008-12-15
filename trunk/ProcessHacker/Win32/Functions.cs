@@ -289,6 +289,13 @@ namespace ProcessHacker
         public static extern int DeleteService(int Service);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int QueryServiceStatus(int Service, ref SERVICE_STATUS ServiceStatus);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int QueryServiceStatusEx(int Service, int InfoLevel,
+            ref SERVICE_STATUS_PROCESS ServiceStatus, int BufSize, out int BytesNeeded);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryServiceConfig(int Service,
             int ServiceConfig,
             int BufSize, ref int BytesNeeded);
