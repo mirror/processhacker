@@ -683,10 +683,9 @@ namespace Assistant
                     Console.WriteLine("Error: Could not open process.");
                 }
 
-                if (!OpenProcessToken(handle,
-                    TokenRights.TOKEN_ALL_ACCESS, out token))
+                if (!OpenProcessToken(handle, TokenRights.TOKEN_ALL_ACCESS, out token))
                 {
-                    Console.WriteLine("Error: Could not open own process token: " + GetLastErrorMessage());
+                    Console.WriteLine("Error: Could not open process token: " + GetLastErrorMessage());
                     Exit(Marshal.GetLastWin32Error());
                 }
 
