@@ -1241,7 +1241,7 @@ namespace ProcessHacker
             { }
         }
 
-        private void launchWithThisUserProcessMenuItem_Click(object sender, EventArgs e)
+        private void launchAsThisUserProcessMenuItem_Click(object sender, EventArgs e)
         {
             try
             {

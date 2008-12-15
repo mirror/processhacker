@@ -40,6 +40,7 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.buttonSessions = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -164,12 +165,23 @@
             this.label5.Text = "Enter the command to start as the specified user. Note that the program may take " +
                 "a while to start as Windows loads the user\'s profile.";
             // 
+            // buttonSessions
+            // 
+            this.buttonSessions.Location = new System.Drawing.Point(185, 122);
+            this.buttonSessions.Name = "buttonSessions";
+            this.buttonSessions.Size = new System.Drawing.Size(24, 24);
+            this.buttonSessions.TabIndex = 9;
+            this.buttonSessions.Text = "...";
+            this.buttonSessions.UseVisualStyleBackColor = true;
+            this.buttonSessions.Click += new System.EventHandler(this.buttonSessions_Click);
+            // 
             // RunWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(402, 190);
+            this.Controls.Add(this.buttonSessions);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.buttonBrowse);
             this.Controls.Add(this.buttonCancel);
@@ -209,5 +221,6 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonBrowse;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button buttonSessions;
     }
 }

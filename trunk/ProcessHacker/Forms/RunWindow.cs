@@ -177,5 +177,28 @@ namespace ProcessHacker
                     textPassword.Enabled = true;
             }
         }
+
+        private void buttonSessions_Click(object sender, EventArgs e)
+        {
+            ContextMenu menu = new ContextMenu();
+
+            foreach (Win32.WTS_SESSION_INFO session in Win32.TSEnumSessions())
+            {
+                MenuItem item = new MenuItem();
+
+                item.Text = session.SessionID.ToString() + ": " + session.WinStationName;
+                item.Tag = session.SessionID;
+                item.Click += new EventHandler(item_Click);
+
+                menu.MenuItems.Add(item);
+            }
+
+            menu.Show(buttonSessions, new Point(buttonSessions.Width, 0));
+        }
+
+        private void item_Click(object sender, EventArgs e)
+        {
+            textSessionID.Text = ((MenuItem)sender).Tag.ToString();
+        }
     }
 }
