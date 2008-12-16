@@ -1051,6 +1051,7 @@
             // 
             this.FSPWSSIDMenuItem.Index = 1;
             this.FSPWSSIDMenuItem.Text = "Find SYSTEM processes with same Session ID";
+            this.FSPWSSIDMenuItem.Visible = false;
             this.FSPWSSIDMenuItem.Click += new System.EventHandler(this.FSPWSSIDMenuItem_Click);
             // 
             // windowMenuItem
