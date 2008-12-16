@@ -534,10 +534,11 @@ namespace Assistant
                 "the -u and -p options with this option.\n" + 
                 "-u username\tSpecifies the user under which the program should be run. The username can be specified " + 
                 "as username, domain\\username, or username@domain. On Windows XP, specifying NT AUTHORITY\\SYSTEM does " +
-                "not work. Instead, omit the -u option and specify \"-t newcredentials\".\n" +
+                "not work by itself. You must specify \"-t newcredentials\" as well.\n" +
                 "-p password\tSpecifies the password for the user.\n" +
                 "-t logontype\tSpecifies the logon type. For logons to normal users, specify \"interactive\". For logons " + 
-                "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\".\n" + 
+                "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\" (see above for using SYSTEM on " +
+                "Windows XP.\n" + 
                 "-s sessionid\tSpecifies the session ID under which the program should be run.\n" +
                 "-d dir\t\tSpecifies the current directory for the program.\n" +
                 "-c cmdline\tSpecifies the command line for the program. You must not use the -f option if you use this.\n" +
