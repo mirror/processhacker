@@ -5,9 +5,14 @@ Process Hacker is developed using Visual C# 2008 Express Edition, and
 will only work with C# compilers which support C# 3.0.
 
 GUIDE TO DIRECTORY ORGANIZATION
-* Injector - this is a small program which uses remote thread injection to 
-  perform certain tasks like getting the command line of processes and 
-  forcing other processes to start programs of your choosing.
+* Assistant - this a small program which is intended to be installed as a 
+  system service. It can start a program as any user, including SYSTEM, 
+  LOCAL SERVICE and NETWORK SERVICE. It also changes the session ID and 
+  winstation/desktop names of the new process to be able to interact with 
+  the user even though it is running as SYSTEM (just like PsExec).
+* Injector - (deprecated) this is a small program which uses remote thread 
+  injection to perform certain tasks like getting the command line of processes 
+  and forcing other processes to start programs of your choosing.
   * The build script (build.cmd) assumes that you have MinGW installed and 
     have added it to the PATH environment variable.
 * ProcessHacker - contains all of Process Hacker's source code.
