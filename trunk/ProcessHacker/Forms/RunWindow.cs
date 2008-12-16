@@ -125,6 +125,9 @@ namespace ProcessHacker
 
                 bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP";
 
+                if (_pid != -1)
+                    omitUserAndType = true;
+
                 if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
