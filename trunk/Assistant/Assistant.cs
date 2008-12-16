@@ -574,17 +574,20 @@ namespace Assistant
 
                 bool bad = false;
 
-                if (!args.ContainsKey("-w") && !args.ContainsKey("-c") && !args.ContainsKey("-f"))
-                    bad = true;
+                if (!args.ContainsKey("-w"))
+                {
+                    if (!args.ContainsKey("-c") && !args.ContainsKey("-f"))
+                        bad = true;
 
-                if (!args.ContainsKey("-u") && !args.ContainsKey("-P"))
-                    bad = true;
+                    if (args.ContainsKey("-c") && args.ContainsKey("-f"))
+                        bad = true;
 
-                if (args.ContainsKey("-u") && args.ContainsKey("-P"))
-                    bad = true;
+                    if (!args.ContainsKey("-u") && !args.ContainsKey("-P"))
+                        bad = true;
 
-                if (args.ContainsKey("-c") && args.ContainsKey("-f"))
-                    bad = true;
+                    if (args.ContainsKey("-u") && args.ContainsKey("-P"))
+                        bad = true;
+                }
 
                 if (args.ContainsKey("-v") || args.ContainsKey("-h"))
                     bad = true;
