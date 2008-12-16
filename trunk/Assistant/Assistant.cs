@@ -538,7 +538,7 @@ namespace Assistant
                 "-p password\tSpecifies the password for the user.\n" +
                 "-t logontype\tSpecifies the logon type. For logons to normal users, specify \"interactive\". For logons " + 
                 "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\" (see above for using SYSTEM on " +
-                "Windows XP.\n" + 
+                "Windows XP).\n" + 
                 "-s sessionid\tSpecifies the session ID under which the program should be run.\n" +
                 "-d dir\t\tSpecifies the current directory for the program.\n" +
                 "-c cmdline\tSpecifies the command line for the program. You must not use the -f option if you use this.\n" +
