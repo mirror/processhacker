@@ -1805,8 +1805,6 @@ namespace ProcessHacker
                     using (Win32.ServiceHandle service = new Win32.ServiceHandle(
                         listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
                         service.Delete();
-
-                    listServices.SelectedItems[0].Remove();
                 }
                 catch (Exception ex)
                 {
