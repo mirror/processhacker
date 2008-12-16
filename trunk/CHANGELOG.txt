@@ -1,6 +1,6 @@
 Process Hacker
 
-1.2.5.5
+1.2.6.0
  * Fixed the fix for the huge regression
  * Added Assistant - can start processes as any user, including SYSTEM, 
    LOCAL SERVICE and NETWORK SERVICE. Injector's create process item is 
