@@ -36,6 +36,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             textSessionID.Text = Program.CurrentSessionId.ToString();
+            comboType.SelectedItem = "Interactive";
         }
 
         public void UsePID(int PID)
@@ -53,6 +54,7 @@ namespace ProcessHacker
             }
 
             comboUsername.Enabled = false;
+            comboType.Enabled = false;
             textPassword.Enabled = false;
         }
 
@@ -61,10 +63,11 @@ namespace ProcessHacker
             if (_pid == -1)
             {
                 comboUsername.Text = Properties.Settings.Default.RunAsUsername;
-                textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
-                textCmdLine.Focus();
-                textCmdLine.Select();
             }
+
+            textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
+            textCmdLine.Focus();
+            textCmdLine.Select();
         }
 
         private void RunWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -123,7 +126,7 @@ namespace ProcessHacker
                 for (int i = 0; i < 8; i++)
                     serviceName += (char)('A' + r.Next(25));
 
-                bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP";
+                bool omitUserAndType = false;
 
                 if (_pid != -1)
                     omitUserAndType = true;
@@ -133,8 +136,7 @@ namespace ProcessHacker
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
                     "\"" + Application.StartupPath + "\\Assistant.exe\" " + 
                     (omitUserAndType ? "" : 
-                    ("-u \"" + comboUsername.Text + "\" -t " +
-                    (isServiceUser() ? "service" : "interactive") + " ")) + 
+                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) + 
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
@@ -171,9 +173,18 @@ namespace ProcessHacker
             if (_pid == -1)
             {
                 if (isServiceUser())
+                {
                     textPassword.Enabled = false;
+                    comboType.SelectedItem = "Service";
+
+                    if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP")
+                        comboType.SelectedItem = "NewCredentials";
+                }
                 else
+                {
                     textPassword.Enabled = true;
+                    comboType.SelectedItem = "Interactive";
+                }
             }
         }
 

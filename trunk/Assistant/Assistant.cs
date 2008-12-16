@@ -653,7 +653,7 @@ namespace Assistant
                         Exit(-1);
                     }
                 }
-
+                
                 if (!LogonUser(username, domain, args.ContainsKey("-p") ? args["-p"] : "", type,
                     LogonProvider.Default, out token))
                 {
@@ -692,17 +692,20 @@ namespace Assistant
                     Exit(Marshal.GetLastWin32Error());
                 }
 
-                int dupToken;
-
-                if (!DuplicateTokenEx(token, TokenRights.TOKEN_ALL_ACCESS, 0, ImpersonationLevel.SecurityImpersonation,
-                    TokenType.TokenPrimary, out dupToken))
+                if (Environment.OSVersion.Version.Major != 5)
                 {
-                    Console.WriteLine("Error: Could not duplicate own token: " + GetLastErrorMessage());
-                    Exit(Marshal.GetLastWin32Error());
-                }
+                    int dupToken;
 
-                CloseHandle(token);
-                token = dupToken;
+                    if (!DuplicateTokenEx(token, TokenRights.TOKEN_ALL_ACCESS, 0, ImpersonationLevel.SecurityImpersonation,
+                        TokenType.TokenPrimary, out dupToken))
+                    {
+                        Console.WriteLine("Error: Could not duplicate own token: " + GetLastErrorMessage());
+                        Exit(Marshal.GetLastWin32Error());
+                    }
+
+                    CloseHandle(token);
+                    token = dupToken;
+                }
             }
 
             if (args.ContainsKey("-s"))

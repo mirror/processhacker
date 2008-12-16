@@ -41,6 +41,8 @@
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.buttonSessions = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboType = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -74,6 +76,7 @@
             // 
             // comboUsername
             // 
+            this.comboUsername.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.comboUsername.FormattingEnabled = true;
             this.comboUsername.Items.AddRange(new object[] {
             "NT AUTHORITY\\SYSTEM",
@@ -175,12 +178,41 @@
             this.buttonSessions.UseVisualStyleBackColor = true;
             this.buttonSessions.Click += new System.EventHandler(this.buttonSessions_Click);
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(239, 75);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(34, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Type:";
+            // 
+            // comboType
+            // 
+            this.comboType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboType.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboType.FormattingEnabled = true;
+            this.comboType.Items.AddRange(new object[] {
+            "Batch",
+            "Interactive",
+            "Network",
+            "NetworkCleartext",
+            "NewCredentials",
+            "Service",
+            "Unlock"});
+            this.comboType.Location = new System.Drawing.Point(279, 72);
+            this.comboType.Name = "comboType";
+            this.comboType.Size = new System.Drawing.Size(111, 21);
+            this.comboType.TabIndex = 11;
+            // 
             // RunWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(402, 190);
+            this.Controls.Add(this.comboType);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.buttonSessions);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.buttonBrowse);
@@ -222,5 +254,7 @@
         private System.Windows.Forms.Button buttonBrowse;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonSessions;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox comboType;
     }
 }
