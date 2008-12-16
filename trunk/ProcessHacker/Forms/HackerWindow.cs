@@ -3198,9 +3198,13 @@ namespace ProcessHacker
             InitializeComponent();
 
             //if (!System.IO.File.Exists(Application.StartupPath + "\\Injector.exe"))
-                injectorMenuItem.Visible = false;
+            injectorMenuItem.Visible = false;
+
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
+            {
                 runAsMenuItem.Enabled = false;
+                runAsProcessMenuItem.Visible = false;
+            }
 
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
