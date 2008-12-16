@@ -36,6 +36,39 @@ namespace ProcessHacker
             
             textSessionID.Text = Program.CurrentSessionId.ToString();
             comboType.SelectedItem = "Interactive";
+
+            int policy = 0;
+            List<string> users = new List<string>();
+
+            users.Add("NT AUTHORITY\\SYSTEM");
+            users.Add("NT AUTHORITY\\LOCAL SERVICE");
+            users.Add("NT AUTHORITY\\NETWORK SERVICE");
+
+            if ((policy = Win32.OpenLocalPolicy(
+                Win32.POLICY_RIGHTS.POLICY_LOOKUP_NAMES | Win32.POLICY_RIGHTS.POLICY_VIEW_LOCAL_INFORMATION)) != 0)
+            {
+                IntPtr sids;
+                int length;
+
+                if (Win32.LsaEnumerateAccountsWithUserRight(policy, 0, out sids, out length) == 0)
+                {
+                    for (int i = 0; i < length; i++)
+                    {
+                        int sid = System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4);
+                        Win32.SID_NAME_USE type = Win32.GetAccountType(sid);
+
+                        if (type == Win32.SID_NAME_USE.SidTypeUser)
+                            users.Add(Win32.GetAccountName(sid, true));
+                    }
+                }
+
+                Win32.LsaFreeMemory(sids);
+                Win32.LsaClose(policy);
+            }
+
+            users.Sort();
+
+            comboUsername.Items.AddRange(users.ToArray());
         }
 
         public void UsePID(int PID)
@@ -202,9 +235,17 @@ namespace ProcessHacker
                 Win32.WTSQuerySessionInformation(0, session.SessionID, Win32.WTS_INFO_CLASS.WTSDomainName, ref domain, ref retLen);
 
                 string username = domain + "\\" + user;
+                string displayName = "";
 
-                item.Text = session.SessionID.ToString() + ": " + session.WinStationName + 
+                displayName = session.SessionID.ToString();
+
+                if (session.WinStationName != "")
+                    displayName += ": " + session.WinStationName +
                     (username != "\\" ? (" (" + username + ")") : "");
+                else if (username != "\\")
+                    displayName += ": " + username;
+
+                item.Text = displayName;
                 item.Tag = session.SessionID;
                 item.Click += new EventHandler(item_Click);
 

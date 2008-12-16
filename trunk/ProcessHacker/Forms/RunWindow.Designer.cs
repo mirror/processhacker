@@ -78,10 +78,6 @@
             // 
             this.comboUsername.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.comboUsername.FormattingEnabled = true;
-            this.comboUsername.Items.AddRange(new object[] {
-            "NT AUTHORITY\\SYSTEM",
-            "NT AUTHORITY\\LOCAL SERVICE",
-            "NT AUTHORITY\\NETWORK SERVICE"});
             this.comboUsername.Location = new System.Drawing.Point(79, 72);
             this.comboUsername.Name = "comboUsername";
             this.comboUsername.Size = new System.Drawing.Size(154, 21);
@@ -170,6 +166,7 @@
             // 
             // buttonSessions
             // 
+            this.buttonSessions.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonSessions.Location = new System.Drawing.Point(185, 122);
             this.buttonSessions.Name = "buttonSessions";
             this.buttonSessions.Size = new System.Drawing.Size(24, 24);

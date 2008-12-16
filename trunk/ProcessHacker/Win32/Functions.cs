@@ -155,11 +155,18 @@ namespace ProcessHacker
         #region Security
 
         [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int LsaFreeMemory(IntPtr Memory);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int LsaEnumerateAccountsWithUserRight(
+            int PolicyHandle, int UserRights, out IntPtr SIDs, out int CountReturned);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaAddAccountRights(int PolicyHandle, int AccountSid,
             LSA_UNICODE_STRING[] UserRights, uint CountOfRights);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaOpenPolicy(int SystemName, LSA_OBJECT_ATTRIBUTES ObjectAttributes,
+        public static extern int LsaOpenPolicy(int SystemName, ref LSA_OBJECT_ATTRIBUTES ObjectAttributes,
             POLICY_RIGHTS DesiredAccess, ref int PolicyHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]

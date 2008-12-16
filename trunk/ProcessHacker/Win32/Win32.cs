@@ -834,6 +834,29 @@ namespace ProcessHacker
             }
         }
 
+        public static SID_NAME_USE GetAccountType(int SID)
+        {
+            StringBuilder name = new StringBuilder(255);
+            StringBuilder domain = new StringBuilder(255);
+            int namelen = 255;
+            int domainlen = 255;
+            SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
+
+            if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
+            {
+                name.EnsureCapacity(namelen);
+                domain.EnsureCapacity(domainlen);
+
+                if (LookupAccountSid(0, SID, name, ref namelen, domain, ref domainlen, ref use) == 0)
+                {
+                    if (name.ToString() == "" && domain.ToString() == "")
+                        throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                }
+            }
+
+            return use;
+        }
+
         public static string GetPrivilegeDisplayName(string PrivilegeName)
         {
             StringBuilder sb = null;
@@ -885,12 +908,12 @@ namespace ProcessHacker
             }
         }
 
-        public static int OpenLocalPolicy()
+        public static int OpenLocalPolicy(POLICY_RIGHTS DesiredAccess)
         {
             LSA_OBJECT_ATTRIBUTES attributes = new LSA_OBJECT_ATTRIBUTES();
             int handle = 0;
 
-            if (LsaOpenPolicy(0, attributes, POLICY_RIGHTS.POLICY_CREATE_PRIVILEGE, ref handle) == 0)
+            if (LsaOpenPolicy(0, ref attributes, DesiredAccess, ref handle) != 0)
                 return 0;
 
             return handle;
