@@ -1,12 +1,14 @@
 Process Hacker
 
 1.2.6.0
- * Fixed the fix for the huge regression
+ * Fixed the fix for the huge regression - the cause was a double "free" of the same handle
  * Added Assistant - can start processes as any user, including SYSTEM, 
    LOCAL SERVICE and NETWORK SERVICE. Injector's create process item is 
    now deprecated.
  * Fixed service handle leaks which caused service deletions to be 
    undetected.
+ * Fixed service list in process tooltips when new own-process services are started and when 
+   shared-process services are stopped.
 
 1.2.5.1
  * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()

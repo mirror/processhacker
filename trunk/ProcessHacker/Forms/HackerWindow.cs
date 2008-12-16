@@ -1418,6 +1418,8 @@ namespace ProcessHacker
                     "The process " + pitem.Name + " (" + pitem.PID.ToString() + 
                     ") was started" + ((parentText != "") ? " by " + 
                     parent.Name + " (PID " + parent.PID.ToString() + ")" : "") + ".", ToolTipIcon.Info);
+
+            this.UpdateListViewItemToolTipText(pitem.PID);
         }
 
         public void processP_DictionaryRemoved(object item)
@@ -1571,14 +1573,16 @@ namespace ProcessHacker
             }
             else
             {
-                if (processServices.ContainsKey(sitem.Status.ServiceStatusProcess.ProcessID))
+                int oldId = ((ServiceItem)oldItem).Status.ServiceStatusProcess.ProcessID;
+
+                if (processServices.ContainsKey(oldId))
                 {
-                    if (processServices[sitem.Status.ServiceStatusProcess.ProcessID].Contains(
+                    if (processServices[oldId].Contains(
                         sitem.Status.ServiceName))
-                        processServices[sitem.Status.ServiceStatusProcess.ProcessID].Remove(sitem.Status.ServiceName);
+                        processServices[oldId].Remove(sitem.Status.ServiceName);
                 }
 
-                this.UpdateListViewItemToolTipText(((ServiceItem)oldItem).Status.ServiceStatusProcess.ProcessID);
+                this.UpdateListViewItemToolTipText(oldId);
             }
         }
 
