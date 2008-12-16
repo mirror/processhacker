@@ -534,7 +534,7 @@ namespace Assistant
                 "the -u and -p options with this option.\n" + 
                 "-u username\tSpecifies the user under which the program should be run. The username can be specified " + 
                 "as username, domain\\username, or username@domain. On Windows XP, specifying NT AUTHORITY\\SYSTEM does " +
-                "not work. Instead, omit the -u and -t options and the program will be started under the SYSTEM account.\n" +
+                "not work. Instead, omit the -u option and specify \"-t newcredentials\".\n" +
                 "-p password\tSpecifies the password for the user.\n" +
                 "-t logontype\tSpecifies the logon type. For logons to normal users, specify \"interactive\". For logons " + 
                 "to NT AUTHORITY\\SYSTEM, LOCAL SERVICE or NETWORK SERVICE, specify \"service\".\n" + 
