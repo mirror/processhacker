@@ -125,18 +125,14 @@ namespace ProcessHacker
 
                 bool omitUserAndType = comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP";
 
-                if (_pid != -1)
-                {
-                    omitUserAndType = true;
-                }
-
                 if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
                     "\"" + Application.StartupPath + "\\Assistant.exe\" " + 
-                    (omitUserAndType ? (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") : 
+                    (omitUserAndType ? "" : 
                     ("-u \"" + comboUsername.Text + "\" -t " +
-                    (isServiceUser() ? "service" : "interactive") + " ")) + "-p \"" +
+                    (isServiceUser() ? "service" : "interactive") + " ")) + 
+                    (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
                     throw new Exception("Could not create service: " + Win32.GetLastErrorMessage());
