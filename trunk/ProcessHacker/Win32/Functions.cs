@@ -264,6 +264,9 @@ namespace ProcessHacker
         #region Services
 
         [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int CloseServiceHandle(int ServiceHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int StartService(int Service, int NumServiceArgs, int Args);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]

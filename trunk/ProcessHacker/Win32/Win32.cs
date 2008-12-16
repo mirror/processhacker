@@ -201,7 +201,7 @@ namespace ProcessHacker
 
                 _handle = OpenService(manager, ServiceName, access);
 
-                CloseHandle(manager);
+                CloseServiceHandle(manager);
 
                 if (_handle == 0)
                     throw new Exception(GetLastErrorMessage());
@@ -244,7 +244,7 @@ namespace ProcessHacker
                 if (!_closed)
                 {
                     _closed = true;
-                    CloseHandle(_handle);
+                    CloseServiceHandle(_handle);
                 }   
             }
 
@@ -1089,7 +1089,7 @@ namespace ProcessHacker
             }
             finally
             {
-                CloseHandle(manager);
+                CloseServiceHandle(manager);
                 Marshal.FreeHGlobal(data);
             }
 
@@ -1108,7 +1108,7 @@ namespace ProcessHacker
 
             if (handle == 0)
             {
-                CloseHandle(manager);
+                CloseServiceHandle(manager);
 
                 throw new Exception("Could not open service handle: "
                     + GetLastErrorMessage() + ".");
@@ -1132,8 +1132,8 @@ namespace ProcessHacker
             }
             finally
             {
-                CloseHandle(handle);
-                CloseHandle(manager);
+                CloseServiceHandle(handle);
+                CloseServiceHandle(manager);
                 Marshal.FreeHGlobal(data);
             }
 

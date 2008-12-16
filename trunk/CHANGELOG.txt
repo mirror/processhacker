@@ -5,6 +5,8 @@ Process Hacker
  * Added Assistant - can start processes as any user, including SYSTEM, 
    LOCAL SERVICE and NETWORK SERVICE. Injector's create process item is 
    now deprecated.
+ * Fixed service handle leaks which caused service deletions to be 
+   undetected.
 
 1.2.5.1
  * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()

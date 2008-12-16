@@ -19,9 +19,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -163,12 +161,12 @@ namespace ProcessHacker
                 if (_pid != -1)
                     omitUserAndType = true;
 
-                if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)", 
+                if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)",
                     Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
-                    "\"" + Application.StartupPath + "\\Assistant.exe\" " + 
-                    (omitUserAndType ? "" : 
-                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) + 
+                    "\"" + Application.StartupPath + "\\Assistant.exe\" " +
+                    (omitUserAndType ? "" :
+                    ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
                     Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
@@ -182,9 +180,11 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Win32.CloseHandle(manager);
-                Win32.CloseHandle(service);
+            }
+            finally
+            {
+                Win32.CloseServiceHandle(manager);
+                Win32.CloseServiceHandle(service);
             }
 
             this.Cursor = Cursors.Default;
