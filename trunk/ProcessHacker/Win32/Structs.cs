@@ -611,6 +611,15 @@ namespace ProcessHacker
             public LUID_AND_ATTRIBUTES[] Privileges;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct TOKEN_SOURCE
+        {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
+            public string SourceName;
+
+            LUID SourceIdentifier;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct TOKEN_USER
         {

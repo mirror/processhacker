@@ -209,52 +209,63 @@ namespace ProcessHacker
             TOKEN_INFORMATION_CLASS TokenInformationClass, int TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, IntPtr TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_GROUPS TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_USER TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_PRIVILEGES TokenInformation,
             int TokenInformationLength, ref int ReturnLength);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int LookupAccountName(
+            string SystemName,
+            string AccountName,
+            IntPtr SID,
+            out int SIDSize,
+            int ReferencedDomainName,
+            int ReferencedDomainNameSize,
+            out SID_NAME_USE Use
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int LookupAccountSid(string SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
             [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
             ref SID_NAME_USE Use);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int LookupAccountSid(int SystemName,
             int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
             [Out] StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
             ref SID_NAME_USE Use);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int LookupPrivilegeDisplayName(int SystemName, string Name,
             [Out] StringBuilder DisplayName, ref int DisplayNameSize, ref int LanguageId);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int LookupPrivilegeName(int SystemName, ref LUID Luid,
             [Out] StringBuilder Name, ref int RequiredSize);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int LookupPrivilegeValue(string SystemName, string PrivilegeName,
             [MarshalAs(UnmanagedType.Struct)] ref LUID Luid);
 
