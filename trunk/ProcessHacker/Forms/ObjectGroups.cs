@@ -8,11 +8,11 @@ using System.Reflection;
 
 namespace ProcessHacker
 {
-    public partial class ProcessGroups : Form
+    public partial class ObjectGroups : Form
     {
-        private int _phandle;
+        private Win32.IWithToken _object;
 
-        public ProcessGroups(int PID)
+        public ObjectGroups(Win32.IWithToken obj)
         {
             InitializeComponent();
 
@@ -20,21 +20,12 @@ namespace ProcessHacker
 
             listGroups.ContextMenu = ListViewMenu.GetMenu(listGroups);
 
-            _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
-
-            if (_phandle == 0)
-            {
-                MessageBox.Show("Could not open process handle:\n\n" + Win32.GetLastErrorMessage(),
-                    "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                this.Close();
-                return;
-            }
+            _object = obj;
 
             try
             {
-                Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_phandle, Properties.Settings.Default.ShowAccountDomains);
+                Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY), 
+                    Properties.Settings.Default.ShowAccountDomains);
 
                 for (int i = 0; i < groups.GroupCount; i++)
                 {
@@ -70,8 +61,6 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.GroupWindowSize = this.Size;
             Properties.Settings.Default.GroupListColumns = ColumnSettings.SaveSettings(listGroups);
-
-            Win32.CloseHandle(_phandle);
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
