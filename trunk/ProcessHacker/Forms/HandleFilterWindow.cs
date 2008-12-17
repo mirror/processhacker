@@ -1,6 +1,7 @@
 ﻿/*
  * Process Hacker
- * 
+ *
+ * Copyright (C) 2008 Dean
  * Copyright (C) 2008 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,11 +24,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.FormHelper;
+using System.Collections;
 
 namespace ProcessHacker
 {
     public partial class HandleFilterWindow : Form
     {
+        private HandleFilter currWorker;
         public HandleFilterWindow()
         {
             InitializeComponent();
@@ -97,84 +101,142 @@ namespace ProcessHacker
             }
         }
 
+        #region  buttonFind_ClickOld
+        //private void buttonFind_Click(object sender, EventArgs e)
+        //{
+        //    buttonFind.Enabled = false;
+        //    this.UseWaitCursor = true;
+        //    progress.Visible = true;
+        //    Application.DoEvents();
+        //    listHandles.BeginUpdate();
+        //    listHandles.Items.Clear();
+                                       
+        //    Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
+
+        //    try
+        //    {
+        //        handles = Win32.EnumHandles();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+
+        //    Dictionary<int, Win32.ProcessHandle> processHandles = new Dictionary<int, Win32.ProcessHandle>();
+
+            
+
+        //    for (int i = 0; i < handles.Length; i++)
+        //    {
+        //        Win32.SYSTEM_HANDLE_INFORMATION handle = handles[i];
+
+        //        progress.Value = i;
+
+        //        try
+        //        {
+        //            try
+        //            {
+        //                if (Win32.GetProcessSessionId(handle.ProcessId) != Program.CurrentSessionId)
+        //                    continue;
+        //            }
+        //            catch
+        //            {
+        //                continue;
+        //            }
+
+        //            if (!processHandles.ContainsKey(handle.ProcessId))
+        //                processHandles.Add(handle.ProcessId, 
+        //                    new Win32.ProcessHandle(handle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
+
+        //            Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[handle.ProcessId], handle);
+
+        //            if (!info.BestName.ToLower().Contains(textFilter.Text.ToLower()))
+        //                continue;
+
+        //            ListViewItem item = new ListViewItem();
+
+        //            item.Name = handle.Handle.ToString();
+        //            item.Text = Program.HackerWindow.ProcessList.Items[handle.ProcessId.ToString()].Text +
+        //                " (" + handle.ProcessId.ToString() + ")";
+        //            item.Tag = handle.ProcessId;
+        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
+        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
+        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
+
+        //            listHandles.Items.Add(item);
+        //            Application.DoEvents();
+        //        }
+        //        catch
+        //        {
+        //            continue;
+        //        }
+        //    }
+
+        //    foreach (Win32.ProcessHandle phandle in processHandles.Values)
+        //        phandle.Dispose();
+
+        //    listHandles.EndUpdate();
+        //    progress.Visible = false;
+        //    this.UseWaitCursor = false;
+        //    buttonFind.Enabled = true;
+        //}
+        #endregion 
         private void buttonFind_Click(object sender, EventArgs e)
         {
-            buttonFind.Enabled = false;
-            this.UseWaitCursor = true;
-            progress.Visible = true;
-            Application.DoEvents();
-            listHandles.BeginUpdate();
-            listHandles.Items.Clear();
-                                       
-            Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
-
-            try
+            if (currWorker == null)
             {
-                handles = Win32.EnumHandles();
+                progress.Visible = true;
+                progress.Minimum = 0;
+                listHandles.Items.Clear();
+                currWorker = new HandleFilter(this, textFilter.Text);
+                currWorker.Completed += new EventHandler(Filter_Finished);
+                currWorker.Cancelled += new EventHandler(Filter_Cancelled);
+                currWorker.MatchListView += new HandleFilter.MatchListViewEvent(ListView_Result);
+                currWorker.MatchProgress += new HandleFilter.MatchProgressEvent(Progress_Result);                
+                currWorker.Failed += new System.Threading.ThreadExceptionEventHandler(Filter_Failed);
+                buttonFind.Text = "&Cancel";
+                Cursor = Cursors.AppStarting;
+                currWorker.Start();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                progress.Visible = false;
+                Cursor = Cursors.WaitCursor;
+                currWorker.CancelAndWait();
+                Cursor = Cursors.Default;
             }
-
-            Dictionary<int, Win32.ProcessHandle> processHandles = new Dictionary<int, Win32.ProcessHandle>();
-
-            progress.Minimum = 0;
-            progress.Maximum = handles.Length;
-
-            for (int i = 0; i < handles.Length; i++)
-            {
-                Win32.SYSTEM_HANDLE_INFORMATION handle = handles[i];
-
-                progress.Value = i;
-
-                try
-                {
-                    try
-                    {
-                        if (Win32.GetProcessSessionId(handle.ProcessId) != Program.CurrentSessionId)
-                            continue;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-
-                    if (!processHandles.ContainsKey(handle.ProcessId))
-                        processHandles.Add(handle.ProcessId, 
-                            new Win32.ProcessHandle(handle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
-
-                    Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[handle.ProcessId], handle);
-
-                    if (!info.BestName.ToLower().Contains(textFilter.Text.ToLower()))
-                        continue;
-
-                    ListViewItem item = new ListViewItem();
-
-                    item.Name = handle.Handle.ToString();
-                    item.Text = Program.HackerWindow.ProcessList.Items[handle.ProcessId.ToString()].Text +
-                        " (" + handle.ProcessId.ToString() + ")";
-                    item.Tag = handle.ProcessId;
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
-
-                    listHandles.Items.Add(item);
-                    Application.DoEvents();
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-
-            foreach (Win32.ProcessHandle phandle in processHandles.Values)
-                phandle.Dispose();
-
-            listHandles.EndUpdate();
-            progress.Visible = false;
-            this.UseWaitCursor = false;
-            buttonFind.Enabled = true;
         }
+
+        private void Filter_Finished(object sender, EventArgs e)
+        {
+            progress.Visible = false;
+            ResetCtls();            
+        }
+        private void Filter_Cancelled(object sender, EventArgs e)
+        {
+            ResetCtls();
+        }
+        private void Filter_Failed(object sender, System.Threading.ThreadExceptionEventArgs e)
+        {
+            progress.Visible = false;
+            ResetCtls();
+            //log
+        }
+        private void ResetCtls()
+        {
+            buttonFind.Text = "&Find";
+            currWorker = null;
+            Cursor = Cursors.Default;
+        }
+        private void ListView_Result(ArrayList items)
+        {
+            listHandles.Items.AddRange((ListViewItem[])items.ToArray(typeof(ListViewItem)));
+        }
+        private void Progress_Result(int currentValue, int count)
+        {
+            progress.Value = currentValue;
+            progress.Maximum = count;
+        }
+       
     }
 }
