@@ -88,7 +88,7 @@
             // labelCredits
             // 
             this.labelCredits.AutoSize = true;
-            this.labelCredits.Location = new System.Drawing.Point(174, 68);
+            this.labelCredits.Location = new System.Drawing.Point(174, 85);
             this.labelCredits.Name = "labelCredits";
             this.labelCredits.Size = new System.Drawing.Size(58, 26);
             this.labelCredits.TabIndex = 4;
@@ -97,7 +97,7 @@
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(174, 126);
+            this.linkFamFamFam.Location = new System.Drawing.Point(174, 143);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -108,7 +108,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(174, 110);
+            this.linkVistaMenu.Location = new System.Drawing.Point(174, 127);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -119,7 +119,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(174, 94);
+            this.linkHexBox.Location = new System.Drawing.Point(174, 111);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -129,12 +129,11 @@
             // 
             // labelBy
             // 
-            this.labelBy.AutoSize = true;
             this.labelBy.Location = new System.Drawing.Point(174, 50);
             this.labelBy.Name = "labelBy";
-            this.labelBy.Size = new System.Drawing.Size(212, 13);
+            this.labelBy.Size = new System.Drawing.Size(234, 35);
             this.labelBy.TabIndex = 8;
-            this.labelBy.Text = "by wj32. Licensed under the GNU GPL, v3.";
+            this.labelBy.Text = "by wj32 and Wei Zhu. Licensed under the GNU GPL, v3.";
             // 
             // linkSourceforge
             // 
@@ -174,7 +173,7 @@
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
-            this.linkAsm.Location = new System.Drawing.Point(174, 142);
+            this.linkAsm.Location = new System.Drawing.Point(174, 159);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;

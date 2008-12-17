@@ -203,7 +203,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        if (MessageBox.Show("Could not remove " + item.Text + ":\n\n" + Win32.GetLastErrorMessage(), "Process Hacker",
+                        if (MessageBox.Show("Could not remove " + item.Text + ":\n\n" + ex.Message, "Process Hacker",
                              MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
                             return;
                     }
