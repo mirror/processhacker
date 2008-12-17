@@ -83,14 +83,15 @@ namespace ProcessHacker
             else if (Environment.OSVersion.Version.Major == 6)
                 WindowsVersion = "Vista";
 
-            if (Win32.WriteTokenPrivilege(
-                System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(),
-                "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) == 0)
+            try
             {
-                //MessageBox.Show("Debug privilege could not be acquired!" +
-                //    " This will result in reduced functionality.", "Process Hacker",
-                //    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Win32.WriteTokenPrivilege(
+                    (new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION)).GetToken(),
+                        "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
             }
+            catch
+            { }
 
             CurrentProcess = Win32.OpenProcess(
                 Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS, 0, 

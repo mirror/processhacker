@@ -1187,28 +1187,40 @@ namespace ProcessHacker
 
         private void groupsMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessGroups grpForm = new ProcessGroups(processSelectedPID);
-
             try
             {
-                grpForm.TopMost = this.TopMost;
-                grpForm.ShowDialog();
+                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    ObjectGroups grpForm = new ObjectGroups(process);
+
+                    grpForm.TopMost = this.TopMost;
+                    grpForm.ShowDialog();
+                }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void privilegesMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessPrivileges privForm = new ProcessPrivileges(processSelectedPID);
-
             try
             {
-                privForm.TopMost = this.TopMost;
-                privForm.ShowDialog();
+                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    ObjectPrivileges privForm = new ObjectPrivileges(process);
+
+                    privForm.TopMost = this.TopMost;
+                    privForm.ShowDialog();
+                }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void servicesProcessMenuItem_Click(object sender, EventArgs e)

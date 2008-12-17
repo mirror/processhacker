@@ -20,7 +20,7 @@ namespace ProcessHacker
                 components.Dispose();
             }
 
-            Win32.CloseHandle(_phandle);
+            _phandle.Dispose();
 
             _data = null;
             hexBoxMemory.ByteProvider = null;

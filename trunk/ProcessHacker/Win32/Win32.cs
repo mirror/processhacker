@@ -69,97 +69,84 @@ namespace ProcessHacker
             }
         }
 
-        public class ThreadHandle : IDisposable
+        public class Win32Handle : IDisposable
         {
+            private bool _owned = true;
             private bool _closed = false;
             private int _handle;
 
-            public ThreadHandle(int TID, THREAD_RIGHTS access)
-            {
-                _handle = OpenThread(access, 0, TID);
+            public Win32Handle()
+            { }
 
-                if (_handle == 0)
-                    throw new Exception(GetLastErrorMessage());
+            public Win32Handle(int Handle)
+            {
+                _handle = Handle;
             }
 
-            ~ThreadHandle()
+            public Win32Handle(int Handle, bool Owned)
             {
-                this.Dispose();
+                _handle = Handle;
+                _owned = Owned;
             }
 
             public int Handle
             {
                 get { return _handle; }
+                protected set { _handle = value; }
             }
 
-            public int Wait(int Timeout)
+            protected virtual void Close()
             {
-                return WaitForSingleObject(_handle, Timeout);
+                CloseHandle(_handle);
             }
 
-            public void Suspend()
+            ~Win32Handle()
             {
-                if (SuspendThread(_handle) == -1)
-                    throw new Exception(GetLastErrorMessage());
+                this.Dispose();
             }
-
-            public void Resume()
-            {
-                if (ResumeThread(_handle) == -1)
-                    throw new Exception(GetLastErrorMessage());
-            }
-
-            public void Terminate()
-            {
-                this.Terminate(0);
-            }
-
-            public void Terminate(int ExitCode)
-            {
-                if (TerminateThread(_handle, ExitCode) == 0)
-                    throw new Exception(GetLastErrorMessage());
-            }
-
-            #region IDisposable Members
 
             public void Dispose()
             {
-                if (!_closed)
-                {                          
+                if (!_closed && _owned)
+                {
                     _closed = true;
-                    CloseHandle(_handle);
+                    Close();
                 }
             }
-
-            #endregion
         }
 
-        public class ProcessHandle : IDisposable
+        public interface IWithToken
         {
-            private bool _closed = false;
-            private int _handle;
+            TokenHandle GetToken();
+            TokenHandle GetToken(TOKEN_RIGHTS access);
+        }
+
+        public class ProcessHandle : Win32Handle, IWithToken
+        {
+            public static ProcessHandle FromHandle(int Handle)
+            {
+                return new ProcessHandle(Handle, false);
+            }
+
+            private ProcessHandle(int Handle, bool Owned)
+                : base(Handle, Owned)
+            { }
+
+            public ProcessHandle(int PID)
+                : this(PID, PROCESS_RIGHTS.PROCESS_ALL_ACCESS)
+            { }
 
             public ProcessHandle(int PID, PROCESS_RIGHTS access)
             {
-                _handle = OpenProcess(access, 0, PID);
+                this.Handle = OpenProcess(access, 0, PID);
 
-                if (_handle == 0)
+                if (this.Handle == 0)
                     throw new Exception(GetLastErrorMessage());
-            }
-
-            ~ProcessHandle()
-            {
-                this.Dispose();
-            }
-
-            public int Handle
-            {
-                get { return _handle; }
             }
 
             public int Wait(int Timeout)
             {
-                return WaitForSingleObject(_handle, Timeout);
+                return WaitForSingleObject(this.Handle, Timeout);
             }
 
             public void Terminate()
@@ -169,28 +156,31 @@ namespace ProcessHacker
 
             public void Terminate(int ExitCode)
             {
-                if (TerminateProcess(_handle, ExitCode) == 0)
+                if (TerminateProcess(this.Handle, ExitCode) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
-            #region IDisposable Members
-
-            public void Dispose()
+            public TokenHandle GetToken()
             {
-                if (!_closed)
-                {                     
-                    _closed = true;
-                    CloseHandle(_handle);
-                }
+                return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);
             }
 
-            #endregion
+            public TokenHandle GetToken(TOKEN_RIGHTS access)
+            {
+                return new TokenHandle(this, access);
+            }
         }
 
-        public class ServiceHandle : IDisposable
-        {
-            private bool _closed = false;
-            private int _handle;
+        public class ServiceHandle : Win32Handle
+        {          
+            public static ServiceHandle FromHandle(int Handle)
+            {
+                return new ServiceHandle(Handle, false);
+            }
+
+            private ServiceHandle(int Handle, bool Owned)
+                : base(Handle, Owned)
+            { }
 
             public ServiceHandle(string ServiceName, SERVICE_RIGHTS access)
             {
@@ -199,56 +189,154 @@ namespace ProcessHacker
                 if (manager == 0)
                     throw new Exception(GetLastErrorMessage());
 
-                _handle = OpenService(manager, ServiceName, access);
+                this.Handle = OpenService(manager, ServiceName, access);
 
                 CloseServiceHandle(manager);
 
-                if (_handle == 0)
+                if (this.Handle == 0)
                     throw new Exception(GetLastErrorMessage());
-            }
-
-            ~ServiceHandle()
-            {
-                this.Dispose();
             }
 
             public void Control(SERVICE_CONTROL control)
             {
                 SERVICE_STATUS status = new SERVICE_STATUS();
 
-                if (ControlService(_handle, control, ref status) == 0)
+                if (ControlService(this.Handle, control, ref status) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
             public void Start()
             {
-                if (StartService(_handle, 0, 0) == 0)
+                if (StartService(this.Handle, 0, 0) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
             public void Delete()
             {
-                if (DeleteService(_handle) == 0)
+                if (DeleteService(this.Handle) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
-            public int Handle
+            protected override void Close()
             {
-                get { return _handle; }
+                CloseServiceHandle(this.Handle);
+            }
+        }
+
+        public class ThreadHandle : Win32Handle, IWithToken
+        {        
+            public static ThreadHandle FromHandle(int Handle)
+            {
+                return new ThreadHandle(Handle, false);
             }
 
-            #region IDisposable Members
+            private ThreadHandle(int Handle, bool Owned)
+                : base(Handle, Owned)
+            { }
 
-            public void Dispose()
+            public ThreadHandle(int TID, THREAD_RIGHTS access)
             {
-                if (!_closed)
+                this.Handle = OpenThread(access, 0, TID);
+
+                if (this.Handle == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public int Wait(int Timeout)
+            {
+                return WaitForSingleObject(this.Handle, Timeout);
+            }
+
+            public void Suspend()
+            {
+                if (SuspendThread(this.Handle) == -1)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Resume()
+            {
+                if (ResumeThread(this.Handle) == -1)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public void Terminate()
+            {
+                this.Terminate(0);
+            }
+
+            public void Terminate(int ExitCode)
+            {
+                if (TerminateThread(this.Handle, ExitCode) == 0)
+                    throw new Exception(GetLastErrorMessage());
+            }
+
+            public TokenHandle GetToken()
+            {
+                return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);
+            }
+
+            public TokenHandle GetToken(TOKEN_RIGHTS access)
+            {
+                return new TokenHandle(this, access);
+            }
+        }
+
+        public class TokenHandle : Win32Handle
+        {         
+            public static TokenHandle FromHandle(int Handle)
+            {
+                return new TokenHandle(Handle, false);
+            }
+
+            private TokenHandle(int Handle, bool Owned)
+                : base(Handle, Owned)
+            { }
+
+            public TokenHandle(ProcessHandle handle, TOKEN_RIGHTS access)
+            {
+                int h;
+
+                if (OpenProcessToken(handle.Handle, access, out h) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                this.Handle = h;
+            }
+
+            public TokenHandle(ThreadHandle handle, TOKEN_RIGHTS access)
+            {
+                int h;
+
+                if (OpenThreadToken(handle.Handle, access, false, out h) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                this.Handle = h;
+            }
+
+            public string GetUsername(bool IncludeDomain)
+            {
+                int retLen = 0;
+
+                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, 0, 0, ref retLen);
+
+                IntPtr data = Marshal.AllocHGlobal(retLen);
+
+                try
                 {
-                    _closed = true;
-                    CloseServiceHandle(_handle);
-                }   
-            }
+                    if (GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data,
+                        retLen, ref retLen) == 0)
+                    {
+                        throw new Exception(Win32.GetLastErrorMessage());
+                    }
 
-            #endregion
+                    TOKEN_USER user = PtrToStructure<TOKEN_USER>(data);
+
+                    return GetAccountName(user.User.SID, IncludeDomain);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
         }
 
         public delegate int EnumWindowsProc(int hwnd, int param);
@@ -534,7 +622,7 @@ namespace ProcessHacker
 
                                 try
                                 {
-                                    info.BestName = GetTokenUsername(token_handle, true);
+                                    info.BestName = TokenHandle.FromHandle(token_handle).GetUsername(true);
                                 }
                                 finally
                                 {
@@ -747,7 +835,7 @@ namespace ProcessHacker
                         throw new Exception(GetLastErrorMessage());
 
                     if (OpenProcessToken(handle, TOKEN_RIGHTS.TOKEN_QUERY,
-                        ref token) == 0)
+                        out token) == 0)
                         throw new Exception(GetLastErrorMessage());
 
                     if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenSessionId,
@@ -768,21 +856,10 @@ namespace ProcessHacker
             return sessionId;
         }
 
-        public static string GetProcessUsername(int ProcessHandle, bool IncludeDomain)
+        public static string GetProcessUsername(int handle, bool IncludeDomain)
         {
-            int token = 0;
-
-            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
-                throw new Exception("Could not open process handle with TOKEN_QUERY: " + Win32.GetLastErrorMessage());
-
-            try
-            {
-                return GetTokenUsername(token, IncludeDomain);
-            }
-            finally
-            {
-                CloseHandle(token);
-            }
+            using (TokenHandle token = new TokenHandle(ProcessHandle.FromHandle(handle), TOKEN_RIGHTS.TOKEN_QUERY))
+                return token.GetUsername(IncludeDomain);
         }
 
         public static bool IsBeingDebugged(int ProcessHandle)
@@ -882,32 +959,6 @@ namespace ProcessHacker
             return sb.ToString();
         }
 
-        public static string GetTokenUsername(int TokenHandle, bool IncludeDomain)
-        {
-            int retLen = 0;
-
-            GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, 0, 0, ref retLen);
-
-            IntPtr data = Marshal.AllocHGlobal(retLen);
-
-            try
-            {
-                if (GetTokenInformation(TokenHandle, TOKEN_INFORMATION_CLASS.TokenUser, data,
-                    retLen, ref retLen) == 0)
-                {
-                    throw new Exception(Win32.GetLastErrorMessage());
-                }
-
-                TOKEN_USER user = PtrToStructure<TOKEN_USER>(data);
-
-                return GetAccountName(user.User.SID, IncludeDomain);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(data);
-            }
-        }
-
         public static int OpenLocalPolicy(POLICY_RIGHTS DesiredAccess)
         {
             LSA_OBJECT_ATTRIBUTES attributes = new LSA_OBJECT_ATTRIBUTES();
@@ -919,128 +970,90 @@ namespace ProcessHacker
             return handle;
         }
 
-        public static TOKEN_GROUPS ReadTokenGroups(int ProcessHandle, bool IncludeDomains)
+        public static TOKEN_GROUPS ReadTokenGroups(TokenHandle TokenHandle, bool IncludeDomains)
         {
-            int token = 0;
+            int retLen = 0;
 
-            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenGroups, 0, 0, ref retLen);
+
+            IntPtr data = Marshal.AllocHGlobal(retLen);
+
+            if (GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenGroups, data,
+                retLen, ref retLen) == 0)
                 throw new Exception(GetLastErrorMessage());
 
-            try
+            uint number = (uint)Marshal.ReadInt32(data);
+            TOKEN_GROUPS groups = new TOKEN_GROUPS();
+
+            groups.GroupCount = number;
+            groups.Groups = new SID_AND_ATTRIBUTES[number];
+            groups.Names = new string[number];
+
+            for (int i = 0; i < number; i++)
             {
-                int retLen = 0;
+                groups.Groups[i] = PtrToStructure<SID_AND_ATTRIBUTES>(
+                    new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(SID_AND_ATTRIBUTES))));
 
-                GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, 0, 0, ref retLen);
-
-                IntPtr data = Marshal.AllocHGlobal(retLen);
-
-                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenGroups, data,
-                    retLen, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                uint number = (uint)Marshal.ReadInt32(data);
-                TOKEN_GROUPS groups = new TOKEN_GROUPS();
-
-                groups.GroupCount = number;
-                groups.Groups = new SID_AND_ATTRIBUTES[number];
-                groups.Names = new string[number];
-
-                for (int i = 0; i < number; i++)
+                try
                 {
-                    groups.Groups[i] = PtrToStructure<SID_AND_ATTRIBUTES>(
-                        new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(SID_AND_ATTRIBUTES))));
-
-                    try
-                    {
-                        groups.Names[i] = GetAccountName(groups.Groups[i].SID, IncludeDomains);
-                    }
-                    catch
-                    { }
+                    groups.Names[i] = GetAccountName(groups.Groups[i].SID, IncludeDomains);
                 }
+                catch
+                { }
+            }
 
-                return groups;
-            }
-            finally
-            {
-                CloseHandle(token);
-            }
+            return groups;
         }
 
-        public static TOKEN_PRIVILEGES ReadTokenPrivileges(int ProcessHandle)
+        public static TOKEN_PRIVILEGES ReadTokenPrivileges(TokenHandle TokenHandle)
         {
-            int token = 0;
+            int retLen = 0;
 
-            if (OpenProcessToken(ProcessHandle, TOKEN_RIGHTS.TOKEN_QUERY, ref token) == 0)
+            GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenPrivileges, 0, 0, ref retLen);
+
+            IntPtr data = Marshal.AllocHGlobal(retLen);
+
+            if (GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenPrivileges, data,
+                retLen, ref retLen) == 0)
                 throw new Exception(GetLastErrorMessage());
 
-            try
+            uint number = (uint)Marshal.ReadInt32(data);
+            TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
+
+            privileges.PrivilegeCount = number;
+            privileges.Privileges = new LUID_AND_ATTRIBUTES[number];
+
+            for (int i = 0; i < number; i++)
             {
-                int retLen = 0;
-
-                GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, 0, 0, ref retLen);
-
-                IntPtr data = Marshal.AllocHGlobal(retLen);
-
-                if (GetTokenInformation(token, TOKEN_INFORMATION_CLASS.TokenPrivileges, data,
-                    retLen, ref retLen) == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                uint number = (uint)Marshal.ReadInt32(data);
-                TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
-
-                privileges.PrivilegeCount = number;
-                privileges.Privileges = new LUID_AND_ATTRIBUTES[number];
-
-                for (int i = 0; i < number; i++)
-                {
-                    privileges.Privileges[i] = PtrToStructure<LUID_AND_ATTRIBUTES>(
-                        new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(LUID_AND_ATTRIBUTES))));
-                }
-
-                return privileges;
+                privileges.Privileges[i] = PtrToStructure<LUID_AND_ATTRIBUTES>(
+                    new IntPtr(data.ToInt32() + 4 + i * Marshal.SizeOf(typeof(LUID_AND_ATTRIBUTES))));
             }
-            finally
-            {
-                CloseHandle(token);
-            }
+
+            return privileges;
         }
 
-        public static int WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
+        public static void WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
-            return WriteTokenPrivilege(Program.CurrentProcess, PrivilegeName, Attributes);
+            WriteTokenPrivilege(
+                ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(), PrivilegeName, Attributes);
         }
 
-        public static int WriteTokenPrivilege(int ProcessHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
+        public static void WriteTokenPrivilege(TokenHandle TokenHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
         {
-            int token = 0;
             TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
 
             tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
 
-            if (OpenProcessToken(ProcessHandle,
-                TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES | TOKEN_RIGHTS.TOKEN_QUERY,
-                ref token) == 0)
-                return 0;
+            if (LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid) == 0)
+                throw new Exception("Invalid privilege name '" + PrivilegeName + "'.");
 
-            try
-            {
-                if (LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid) == 0)
-                    return 0;
+            tkp.PrivilegeCount = 1;
+            tkp.Privileges[0].Attributes = Attributes;
 
-                tkp.PrivilegeCount = 1;
-                tkp.Privileges[0].Attributes = Attributes;
+            AdjustTokenPrivileges(TokenHandle.Handle, 0, ref tkp, 0, 0, 0);
 
-                AdjustTokenPrivileges(token, 0, ref tkp, 0, 0, 0);
-
-                if (Marshal.GetLastWin32Error() != 0)
-                    return 0;
-            }
-            finally
-            {
-                CloseHandle(token);
-            }
-
-            return 1;
+            if (Marshal.GetLastWin32Error() != 0)
+                throw new Exception(GetLastErrorMessage());
         }
 
         #endregion

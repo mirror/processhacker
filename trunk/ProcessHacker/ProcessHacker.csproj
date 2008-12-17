@@ -181,12 +181,12 @@
       <DependentUpon>PEWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProcessGroups.resx">
-      <DependentUpon>ProcessGroups.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ObjectGroups.resx">
+      <DependentUpon>ObjectGroups.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProcessPrivileges.resx">
-      <DependentUpon>ProcessPrivileges.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ObjectPrivileges.resx">
+      <DependentUpon>ObjectPrivileges.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PromptBox.resx">
@@ -288,17 +288,17 @@
     <Compile Include="Forms\PEWindow.Designer.cs">
       <DependentUpon>PEWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ProcessGroups.cs">
+    <Compile Include="Forms\ObjectGroups.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ProcessGroups.Designer.cs">
-      <DependentUpon>ProcessGroups.cs</DependentUpon>
+    <Compile Include="Forms\ObjectGroups.Designer.cs">
+      <DependentUpon>ObjectGroups.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ProcessPrivileges.cs">
+    <Compile Include="Forms\ObjectPrivileges.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ProcessPrivileges.Designer.cs">
-      <DependentUpon>ProcessPrivileges.cs</DependentUpon>
+    <Compile Include="Forms\ObjectPrivileges.Designer.cs">
+      <DependentUpon>ObjectPrivileges.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RunWindow.cs">
       <SubType>Form</SubType>

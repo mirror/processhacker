@@ -72,6 +72,35 @@ namespace ProcessHacker
             }
 
             listViewCallStack.ContextMenu = ListViewMenu.GetMenu(listViewCallStack);
+
+            try
+            {
+                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(TID, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                {
+                    try
+                    {
+                        using (Win32.TokenHandle token = thandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                        {
+                            labelThreadUser.Text = "Username: " + token.GetUsername(true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message.StartsWith("An attempt was made"))
+                        {
+                            labelThreadUser.Text = "Username: (Not Impersonating)"; 
+                            groupsMenuItem.Enabled = false;
+                            privilegesMenuItem.Enabled = false;
+                        }
+                        else
+                        {
+                            labelThreadUser.Text = "Username: (" + ex.Message + ")";
+                        }
+                    }
+                }
+            }
+            catch
+            { }
         }
 
         public MenuItem WindowMenuItem
@@ -304,6 +333,44 @@ namespace ProcessHacker
         private void buttonWalk_Click(object sender, EventArgs e)
         {
             this.WalkCallStack();
+        }
+
+        private void groupsMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                {
+                    ObjectGroups grpForm = new ObjectGroups(thread);
+
+                    grpForm.TopMost = this.TopMost;
+                    grpForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.StartsWith("Cannot access a disposed object"))
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void privilegesMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                {
+                    ObjectPrivileges privForm = new ObjectPrivileges(thread);
+
+                    privForm.TopMost = this.TopMost;
+                    privForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.StartsWith("Cannot access a disposed object"))
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

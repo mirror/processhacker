@@ -174,7 +174,11 @@ namespace ProcessHacker
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int OpenProcessToken(int ProcessHandle, TOKEN_RIGHTS DesiredAccess,
-            ref int TokenHandle);
+            out int TokenHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int OpenThreadToken(int ThreadHandle, TOKEN_RIGHTS DesiredAccess,
+            bool OpenAsSelf, out int TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int ConvertSidToStringSid(

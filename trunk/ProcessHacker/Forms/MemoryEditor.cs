@@ -30,7 +30,7 @@ namespace ProcessHacker
     public partial class MemoryEditor : Form
     {
         private int _pid, _address, _length;
-        private int _phandle;
+        private Win32.ProcessHandle _phandle;
         private byte[] _data;
 
         public string Id
@@ -48,14 +48,17 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(Id, this);
 
-            _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ |
-                Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | 
-                Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION, 0, _pid);
-
-            if (_phandle == 0)
+            try
+            {
+                _phandle = new Win32.ProcessHandle(_pid,
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION);
+            }
+            catch (Exception ex)
             {
                 this.Visible = false;
-                MessageBox.Show("Could not open process:\n\n" + Win32.GetLastErrorMessage(), 
+                MessageBox.Show("Could not open process:\n\n" + ex.Message,
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
                 return;
@@ -140,7 +143,7 @@ namespace ProcessHacker
 
             _data = new byte[_length];
 
-            if (Win32.ReadProcessMemory(_phandle, _address,
+            if (Win32.ReadProcessMemory(_phandle.Handle, _address,
                 _data, _length, ref readmemory) == 0)
             {
                 throw new Exception();
@@ -163,7 +166,7 @@ namespace ProcessHacker
                 _data[i] = hexBoxMemory.ByteProvider.ReadByte(i);
             }
 
-            if (Win32.WriteProcessMemory(_phandle, _address,
+            if (Win32.WriteProcessMemory(_phandle.Handle, _address,
                 _data, _length, ref wrotememory) == 0)
             {
                 MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
