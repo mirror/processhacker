@@ -24,8 +24,17 @@ namespace ProcessHacker
 {
     public partial class Win32
     {
+        /// <summary>
+        /// Represents a handle to a Windows service.
+        /// </summary>
         public class ServiceHandle : Win32Handle
         {
+            /// <summary>
+            /// Creates a service handle using an existing handle. 
+            /// The handle will not be closed automatically.
+            /// </summary>
+            /// <param name="Handle">The handle value.</param>
+            /// <returns>The service handle.</returns>
             public static ServiceHandle FromHandle(int Handle)
             {
                 return new ServiceHandle(Handle, false);
@@ -35,6 +44,19 @@ namespace ProcessHacker
                 : base(Handle, Owned)
             { }
 
+            /// <summary>
+            /// Creates a new service handle.
+            /// </summary>
+            /// <param name="ServiceName">The name of the service to open.</param>
+            public ServiceHandle(string ServiceName)
+                : this(ServiceName, SERVICE_RIGHTS.SERVICE_ALL_ACCESS)
+            { }
+
+            /// <summary>
+            /// Creates a new service handle.
+            /// </summary>
+            /// <param name="ServiceName">The name of the service to open.</param>
+            /// <param name="access">The desired access to the service.</param>
             public ServiceHandle(string ServiceName, SERVICE_RIGHTS access)
             {
                 int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_CONNECT);
@@ -50,6 +72,10 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Sends a control message to the service.
+            /// </summary>
+            /// <param name="control">The message.</param>
             public void Control(SERVICE_CONTROL control)
             {
                 SERVICE_STATUS status = new SERVICE_STATUS();
@@ -58,12 +84,18 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Starts the service.
+            /// </summary>
             public void Start()
             {
                 if (StartService(this.Handle, 0, 0) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Deletes the service.
+            /// </summary>
             public void Delete()
             {
                 if (DeleteService(this.Handle) == 0)

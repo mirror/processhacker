@@ -24,8 +24,17 @@ namespace ProcessHacker
 {
     public partial class Win32
     {
+        /// <summary>
+        /// Represents a handle to a Windows thread.
+        /// </summary>
         public class ThreadHandle : Win32Handle, IWithToken
         {
+            /// <summary>
+            /// Creates a thread handle using an existing handle. 
+            /// The handle will not be closed automatically.
+            /// </summary>
+            /// <param name="Handle">The handle value.</param>
+            /// <returns>The thread handle.</returns>
             public static ThreadHandle FromHandle(int Handle)
             {
                 return new ThreadHandle(Handle, false);
@@ -35,6 +44,19 @@ namespace ProcessHacker
                 : base(Handle, Owned)
             { }
 
+            /// <summary>
+            /// Creates a new thread handle.
+            /// </summary>
+            /// <param name="TID">The ID of the thread to open.</param>
+            public ThreadHandle(int TID)
+                : this(TID, THREAD_RIGHTS.THREAD_ALL_ACCESS)
+            { }
+
+            /// <summary>
+            /// Creates a new thread handle.
+            /// </summary>
+            /// <param name="TID">The ID of the thread to open.</param>
+            /// <param name="access">The desired access to the thread.</param>
             public ThreadHandle(int TID, THREAD_RIGHTS access)
             {
                 this.Handle = OpenThread(access, 0, TID);
@@ -43,39 +65,66 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Waits for the thread.
+            /// </summary>
+            /// <param name="Timeout">The timeout of the wait.</param>
+            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
             public int Wait(int Timeout)
             {
                 return WaitForSingleObject(this.Handle, Timeout);
             }
 
+            /// <summary>
+            /// Suspends the thread.
+            /// </summary>
             public void Suspend()
             {
                 if (SuspendThread(this.Handle) == -1)
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Resumes the thread.
+            /// </summary>
             public void Resume()
             {
                 if (ResumeThread(this.Handle) == -1)
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Terminates the thread.
+            /// </summary>
             public void Terminate()
             {
                 this.Terminate(0);
             }
 
+            /// <summary>
+            /// Terminates the thread, specifying an exit code.
+            /// </summary>
+            /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
             {
                 if (TerminateThread(this.Handle, ExitCode) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Opens and returns a handle to the thread's token.
+            /// </summary>
+            /// <returns>A handle to the thread's token.</returns>
             public TokenHandle GetToken()
             {
                 return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);
             }
 
+            /// <summary>
+            /// Opens and returns a handle to the thread's token.
+            /// </summary>
+            /// <param name="access">The desired access to the token.</param>
+            /// <returns>A handle to the thread's token.</returns>
             public TokenHandle GetToken(TOKEN_RIGHTS access)
             {
                 return new TokenHandle(this, access);

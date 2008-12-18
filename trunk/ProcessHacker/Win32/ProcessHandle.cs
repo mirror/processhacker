@@ -34,7 +34,7 @@ namespace ProcessHacker
             /// The handle will not be closed automatically.
             /// </summary>
             /// <param name="Handle">The handle value.</param>
-            /// <returns></returns>
+            /// <returns>The process handle.</returns>
             public static ProcessHandle FromHandle(int Handle)
             {
                 return new ProcessHandle(Handle, false);

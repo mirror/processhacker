@@ -24,8 +24,17 @@ namespace ProcessHacker
 {
     public partial class Win32
     {
+        /// <summary>
+        /// Represents a handle to a Windows token.
+        /// </summary>
         public class TokenHandle : Win32Handle
         {
+            /// <summary>
+            /// Creates a token handle using an existing handle. 
+            /// The handle will not be closed automatically.
+            /// </summary>
+            /// <param name="Handle">The handle value.</param>
+            /// <returns>The token handle.</returns>
             public static TokenHandle FromHandle(int Handle)
             {
                 return new TokenHandle(Handle, false);
@@ -35,6 +44,11 @@ namespace ProcessHacker
                 : base(Handle, Owned)
             { }
 
+            /// <summary>
+            /// Creates a new token handle from a process.
+            /// </summary>
+            /// <param name="handle">The process handle.</param>
+            /// <param name="access">The desired access to the token.</param>
             public TokenHandle(ProcessHandle handle, TOKEN_RIGHTS access)
             {
                 int h;
@@ -45,6 +59,11 @@ namespace ProcessHacker
                 this.Handle = h;
             }
 
+            /// <summary>
+            /// Creates a new token handle from a thread.
+            /// </summary>
+            /// <param name="handle">The thread handle.</param>
+            /// <param name="access">The desired access to the token.</param>
             public TokenHandle(ThreadHandle handle, TOKEN_RIGHTS access)
             {
                 int h;
@@ -55,6 +74,11 @@ namespace ProcessHacker
                 this.Handle = h;
             }
 
+            /// <summary>
+            /// Gets the token's username.
+            /// </summary>
+            /// <param name="IncludeDomain">Specifies whether to include the domain of the user.</param>
+            /// <returns>The token's username.</returns>
             public string GetUsername(bool IncludeDomain)
             {
                 int retLen = 0;
