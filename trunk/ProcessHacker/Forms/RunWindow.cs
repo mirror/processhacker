@@ -110,7 +110,13 @@ namespace ProcessHacker
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
-            ofd.FileName = textCmdLine.Text;
+            try
+            {
+                ofd.FileName = textCmdLine.Text;
+            }
+            catch
+            { }
+
             ofd.CheckFileExists = true;
             ofd.CheckPathExists = true;
             ofd.Multiselect = false;
