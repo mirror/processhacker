@@ -446,6 +446,7 @@ namespace ProcessHacker
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
             HandleFilterForm.Show();
+            HandleFilterForm.Activate();
         }
 
         private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
