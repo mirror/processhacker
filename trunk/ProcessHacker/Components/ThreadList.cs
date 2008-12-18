@@ -151,6 +151,14 @@ namespace ProcessHacker
 
         #region Core Thread List
 
+        private System.Drawing.Color GetThreadColor(ThreadItem titem)
+        {
+            if (titem.WaitReason == "Suspended")
+                return System.Drawing.Color.LightGray;
+
+            return System.Drawing.SystemColors.Window;
+        }
+
         private void provider_DictionaryAdded(object item)
         {
             ThreadItem titem = (ThreadItem)item;
@@ -162,8 +170,7 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
 
-            if (titem.WaitReason == "Suspended")
-                litem.NormalColor = System.Drawing.Color.LightGray;
+            litem.NormalColor = GetThreadColor(titem);
 
             listThreads.Items.Add(litem);
         }
@@ -182,10 +189,7 @@ namespace ProcessHacker
                 litem.SubItems[2].Text = titem.CPUTime;
                 litem.SubItems[3].Text = titem.Priority;
 
-                if (titem.WaitReason == "Suspended")
-                    (litem as HighlightedListViewItem).NormalColor = System.Drawing.Color.LightGray;
-                else
-                    (litem as HighlightedListViewItem).NormalColor = System.Drawing.SystemColors.Window;
+                (litem as HighlightedListViewItem).NormalColor = GetThreadColor(titem);
             }
         }
 

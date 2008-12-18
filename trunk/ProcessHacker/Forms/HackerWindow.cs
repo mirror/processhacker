@@ -1887,45 +1887,16 @@ namespace ProcessHacker
 
         private void menuThread_Popup(object sender, EventArgs e)
         {
-            inspectThreadMenuItem.Enabled = false;
-
-            if (listThreads.Items.Count == 0)
-            {
-                selectAllThreadMenuItem.Enabled = false;
-            }
-            else
-            {
-                selectAllThreadMenuItem.Enabled = true;
-            }
-
             if (listProcesses.SelectedItems.Count == 0 || listThreads.SelectedItems.Count == 0)
             {
-                terminateThreadMenuItem.Enabled = false;
-                suspendThreadMenuItem.Enabled = false;
-                resumeThreadMenuItem.Enabled = false;
-                priorityThreadMenuItem.Enabled = false;
-                copyThreadMenuItem.Enabled = false;
+                Misc.DisableAllMenuItems(menuThread);
 
                 return;
             }
-            else if (listThreads.SelectedItems.Count > 0)
+            else if (listThreads.SelectedItems.Count == 1)
             {
-                if (listThreads.SelectedItems.Count == 1)
-                {
-                    inspectThreadMenuItem.Enabled = true;
-                }
+                Misc.EnableAllMenuItems(menuThread);
 
-                terminateThreadMenuItem.Enabled = true;
-                suspendThreadMenuItem.Enabled = true;
-                resumeThreadMenuItem.Enabled = true;
-                priorityThreadMenuItem.Enabled = true;
-                copyThreadMenuItem.Enabled = true;
-            }
-
-            priorityThreadMenuItem.Text = "&Priority";
-
-            if (listThreads.SelectedItems.Count == 1)
-            {
                 timeCriticalThreadMenuItem.Checked = false;
                 highestThreadMenuItem.Checked = false;
                 aboveNormalThreadMenuItem.Checked = false;
@@ -1936,6 +1907,7 @@ namespace ProcessHacker
                 terminateThreadMenuItem.Text = "&Terminate Thread";
                 suspendThreadMenuItem.Text = "&Suspend Thread";
                 resumeThreadMenuItem.Text = "&Resume Thread";
+                priorityThreadMenuItem.Text = "&Priority";
 
                 try
                 {
@@ -1995,10 +1967,24 @@ namespace ProcessHacker
             }
             else
             {
+                Misc.DisableAllMenuItems(menuThread);
+
+                terminateThreadMenuItem.Enabled = true;
+                suspendThreadMenuItem.Enabled = true;
+                resumeThreadMenuItem.Enabled = true;
                 terminateThreadMenuItem.Text = "&Terminate Threads";
                 suspendThreadMenuItem.Text = "&Suspend Threads";
                 resumeThreadMenuItem.Text = "&Resume Threads";
-                priorityThreadMenuItem.Enabled = false;
+                copyThreadMenuItem.Enabled = true;
+            }
+
+            if (listThreads.Items.Count == 0)
+            {
+                selectAllThreadMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllThreadMenuItem.Enabled = true;
             }
         }
 

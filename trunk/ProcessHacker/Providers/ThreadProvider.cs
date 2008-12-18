@@ -35,7 +35,6 @@ namespace ProcessHacker
         public string Priority;
         public int StartAddressI;
         public string StartAddress;
-        public string State;
         public string WaitReason;
     }
 
@@ -112,10 +111,9 @@ namespace ProcessHacker
                     item.TID = t.Id;
                     item.Thread = t;
 
-                    //try { item.State = t.ThreadState.ToString(); }
-                    //catch { }
                     try { item.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
                     catch { }
+
                     try { item.Priority = t.PriorityLevel.ToString(); }
                     catch { }
 
@@ -136,8 +134,8 @@ namespace ProcessHacker
                     }
                     catch { }
 
-                    //try { item.WaitReason = t.WaitReason.ToString(); }
-                    //catch { }
+                    try { item.WaitReason = t.WaitReason.ToString(); }
+                    catch { }
 
                     newdictionary.Add(t.Id, item);
                     this.CallDictionaryAdded(item);
@@ -150,28 +148,25 @@ namespace ProcessHacker
 
                     newitem.TID = item.TID;
                     newitem.Thread = item.Thread;
-                    newitem.StartAddress = item.StartAddress;
                     newitem.StartAddressI = item.StartAddressI;
 
-                    //try { newitem.State = t.ThreadState.ToString(); }
-                    //catch { }
                     try { newitem.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
                     catch { }
+
                     try { newitem.Priority = t.PriorityLevel.ToString(); }
                     catch { }
 
                     try { newitem.StartAddress = Symbols.GetNameFromAddress(newitem.StartAddressI); }
                     catch { }
 
-                    //try { newitem.WaitReason = t.WaitReason.ToString(); }
-                    //catch { }
+                    try { newitem.WaitReason = t.WaitReason.ToString(); }
+                    catch { }
 
                     if (
-                        //newitem.State != item.State ||
                         newitem.CPUTime != item.CPUTime ||
                         newitem.Priority != item.Priority || 
-                        newitem.StartAddress != item.StartAddress
-                        //newitem.WaitReason != item.WaitReason
+                        newitem.StartAddress != item.StartAddress ||
+                        newitem.WaitReason != item.WaitReason
                         )
                     {
                         newdictionary[t.Id] = newitem;
