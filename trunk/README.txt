@@ -30,7 +30,7 @@ Hacker > Help).
 KNOWN ISSUES
  * Process Hacker does not display File handles on Windows XP
 
-Process Hacker is made by wj32 and Wei Zhu and uses the following components:
+Process Hacker is made by wj32 and Dean and uses the following components:
 
  * HexBox control by Bernhard Elbl
    - http://sourceforge.net/projects/hexbox
