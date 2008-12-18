@@ -133,7 +133,7 @@
             this.labelBy.Name = "labelBy";
             this.labelBy.Size = new System.Drawing.Size(234, 35);
             this.labelBy.TabIndex = 8;
-            this.labelBy.Text = "by wj32 and Wei Zhu. Licensed under the GNU GPL, v3.";
+            this.labelBy.Text = "by wj32 and Dean. Licensed under the GNU GPL, v3.";
             // 
             // linkSourceforge
             // 
