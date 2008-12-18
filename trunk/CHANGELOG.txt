@@ -6,6 +6,8 @@ Process Hacker
  * Can view thread usernames, groups and privileges
  * The handle filter window is now faster
  * Added thread start addresses in thread list
+ * The process list now has less CPU usage
+ * Fixed some processes not having icons
 
 1.2.6.0
  * Fixed the fix for the huge regression - the cause was a double "free" of the same handle

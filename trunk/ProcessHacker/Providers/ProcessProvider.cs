@@ -40,6 +40,7 @@ namespace ProcessHacker
         public bool IsBeingDebugged;
         public ulong LastTime;
         public int SessionId;
+        public int IconAttempts;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -220,6 +221,7 @@ namespace ProcessHacker
 
                     newitem.CmdLine = item.CmdLine;
                     newitem.Icon = item.Icon;
+                    newitem.IconAttempts = item.IconAttempts;
                     newitem.Name = item.Name;
                     newitem.PID = item.PID;
                     newitem.Process = item.Process;
@@ -232,6 +234,18 @@ namespace ProcessHacker
                     }
                     catch
                     { }
+
+                    if (newitem.Icon == null && newitem.IconAttempts < 5)
+                    {
+                        try
+                        {
+                            newitem.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
+                        }
+                        catch
+                        { }
+
+                        newitem.IconAttempts++;
+                    }
 
                     try
                     {

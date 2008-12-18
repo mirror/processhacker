@@ -255,6 +255,12 @@ namespace ProcessHacker
 
                 litem.SubItems[2].Text = pitem.MemoryUsage;
                 litem.SubItems[3].Text = pitem.CPUUsage;
+
+                if (pitem.Icon != null && pitem.IconAttempts > 0)
+                {
+                    imageList.Images.Add(pitem.Icon);
+                    litem.ImageIndex = _id++;
+                }
             }
         }
 
