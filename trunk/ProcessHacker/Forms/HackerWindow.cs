@@ -248,6 +248,11 @@ namespace ProcessHacker
             else if (listHandles.SelectedItems.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuHandle);
+
+                propertiesHandleMenuItem.Enabled = false;
+
+                if (listHandles.SelectedItems[0].SubItems[0].Text == "Token")
+                    propertiesHandleMenuItem.Enabled = true;
             }
             else
             {
@@ -277,6 +282,30 @@ namespace ProcessHacker
                      "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
+            }
+        }
+
+        private void propertiesHandleMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
+                    processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                {
+                    TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle,
+                        short.Parse(listHandles.SelectedItems[0].Name)));
+
+                    tokForm.TopMost = this.TopMost;
+                    tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
+                        short.Parse(listHandles.SelectedItems[0].Name), 
+                        processP.Dictionary[processSelectedPID].Name,
+                        processSelectedPID);
+                    tokForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1184,44 +1213,6 @@ namespace ProcessHacker
             }
             catch
             { }
-        }   
-
-        private void groupsMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
-                {
-                    ObjectGroups grpForm = new ObjectGroups(process);
-
-                    grpForm.TopMost = this.TopMost;
-                    grpForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void privilegesMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
-                {
-                    ObjectPrivileges privForm = new ObjectPrivileges(process);
-
-                    privForm.TopMost = this.TopMost;
-                    privForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void servicesProcessMenuItem_Click(object sender, EventArgs e)
@@ -1235,6 +1226,27 @@ namespace ProcessHacker
             }
             catch
             { }
+        }
+
+        private void tokenMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    TokenWindow tokForm = new TokenWindow(process);
+
+                    tokForm.TopMost = this.TopMost;
+                    tokForm.Text = "Token - " + processP.Dictionary[processSelectedPID].Name +
+                        " (PID " + processSelectedPID.ToString() + ")";
+                    tokForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         #region Run As

@@ -89,8 +89,7 @@ namespace ProcessHacker
                         if (ex.Message.StartsWith("An attempt was made"))
                         {
                             labelThreadUser.Text = "Username: (Not Impersonating)"; 
-                            groupsMenuItem.Enabled = false;
-                            privilegesMenuItem.Enabled = false;
+                            tokenMenuItem.Enabled = false;
                         }
                         else
                         {
@@ -335,35 +334,17 @@ namespace ProcessHacker
             this.WalkCallStack();
         }
 
-        private void groupsMenuItem_Click(object sender, EventArgs e)
+        private void tokenMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
                 using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
                 {
-                    ObjectGroups grpForm = new ObjectGroups(thread);
+                    TokenWindow tokForm = new TokenWindow(thread);
 
-                    grpForm.TopMost = this.TopMost;
-                    grpForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!ex.Message.StartsWith("Cannot access a disposed object"))
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void privilegesMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
-                {
-                    ObjectPrivileges privForm = new ObjectPrivileges(thread);
-
-                    privForm.TopMost = this.TopMost;
-                    privForm.ShowDialog();
+                    tokForm.TopMost = this.TopMost;
+                    tokForm.Text = "Token - " + this.Text;
+                    tokForm.ShowDialog();
                 }
             }
             catch (Exception ex)

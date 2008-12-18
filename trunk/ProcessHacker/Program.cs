@@ -118,6 +118,9 @@ namespace ProcessHacker
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            if (e.ExceptionObject is OutOfMemoryException)
+                return;
+
             ErrorDialog ed = new ErrorDialog(e.ExceptionObject as Exception);
 
             ed.ShowDialog();
@@ -125,6 +128,9 @@ namespace ProcessHacker
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
+            if (e.Exception is OutOfMemoryException)
+                return;
+
             ErrorDialog ed = new ErrorDialog(e.Exception);
 
             ed.ShowDialog();

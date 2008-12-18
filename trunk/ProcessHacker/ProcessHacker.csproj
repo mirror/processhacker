@@ -146,6 +146,10 @@
       <DependentUpon>AboutWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TokenWindow.resx">
+      <DependentUpon>TokenWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProcessAffinity.resx">
       <DependentUpon>ProcessAffinity.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -180,14 +184,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PEWindow.resx">
       <DependentUpon>PEWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ObjectGroups.resx">
-      <DependentUpon>ObjectGroups.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ObjectPrivileges.resx">
-      <DependentUpon>ObjectPrivileges.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\PromptBox.resx">
@@ -265,6 +261,12 @@
     <Compile Include="FormHelper\HandleFilter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\TokenWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TokenWindow.Designer.cs">
+      <DependentUpon>TokenWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProcessAffinity.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -294,18 +296,6 @@
     </Compile>
     <Compile Include="Forms\PEWindow.Designer.cs">
       <DependentUpon>PEWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ObjectGroups.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ObjectGroups.Designer.cs">
-      <DependentUpon>ObjectGroups.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ObjectPrivileges.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ObjectPrivileges.Designer.cs">
-      <DependentUpon>ObjectPrivileges.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RunWindow.cs">
       <SubType>Form</SubType>
@@ -405,6 +395,7 @@
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
+    <Compile Include="Win32\RemoteTokenHandle.cs" />
     <Compile Include="Win32\TokenHandle.cs" />
     <Compile Include="Win32\ServiceHandle.cs" />
     <Compile Include="Win32\IWithToken.cs" />

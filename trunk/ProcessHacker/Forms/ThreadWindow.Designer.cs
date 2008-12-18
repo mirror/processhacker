@@ -39,7 +39,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThreadWindow));
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.threadMenuItem = new System.Windows.Forms.MenuItem();
-            this.privilegesMenuItem = new System.Windows.Forms.MenuItem();
+            this.tokenMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
@@ -56,8 +57,6 @@
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.labelThreadUser = new System.Windows.Forms.Label();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.groupsMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.groupBoxCallStack.SuspendLayout();
             this.groupRegisters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -73,25 +72,29 @@
             // 
             this.threadMenuItem.Index = 0;
             this.threadMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.groupsMenuItem,
-            this.privilegesMenuItem,
+            this.tokenMenuItem,
             this.menuItem2,
             this.suspendMenuItem,
             this.resumeMenuItem,
             this.terminateMenuItem});
             this.threadMenuItem.Text = "&Thread";
             // 
-            // privilegesMenuItem
+            // tokenMenuItem
             // 
-            this.vistaMenu.SetImage(this.privilegesMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.privilegesMenuItem.Index = 1;
-            this.privilegesMenuItem.Text = "&Privileges...";
-            this.privilegesMenuItem.Click += new System.EventHandler(this.privilegesMenuItem_Click);
+            this.vistaMenu.SetImage(this.tokenMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
+            this.tokenMenuItem.Index = 0;
+            this.tokenMenuItem.Text = "To&ken...";
+            this.tokenMenuItem.Click += new System.EventHandler(this.tokenMenuItem_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 1;
+            this.menuItem2.Text = "-";
             // 
             // suspendMenuItem
             // 
             this.vistaMenu.SetImage(this.suspendMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendMenuItem.Index = 3;
+            this.suspendMenuItem.Index = 2;
             this.suspendMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
             this.suspendMenuItem.Text = "&Suspend";
             this.suspendMenuItem.Click += new System.EventHandler(this.suspendMenuItem_Click);
@@ -99,7 +102,7 @@
             // resumeMenuItem
             // 
             this.vistaMenu.SetImage(this.resumeMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeMenuItem.Index = 4;
+            this.resumeMenuItem.Index = 3;
             this.resumeMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
             this.resumeMenuItem.Text = "&Resume";
             this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
@@ -107,7 +110,7 @@
             // terminateMenuItem
             // 
             this.vistaMenu.SetImage(this.terminateMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.terminateMenuItem.Index = 5;
+            this.terminateMenuItem.Index = 4;
             this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlDel;
             this.terminateMenuItem.Text = "&Terminate";
             this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
@@ -227,18 +230,6 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // groupsMenuItem
-            // 
-            this.vistaMenu.SetImage(this.groupsMenuItem, global::ProcessHacker.Properties.Resources.group);
-            this.groupsMenuItem.Index = 0;
-            this.groupsMenuItem.Text = "&Groups...";
-            this.groupsMenuItem.Click += new System.EventHandler(this.groupsMenuItem_Click);
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 2;
-            this.menuItem2.Text = "-";
-            // 
             // ThreadWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,9 +272,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.Button buttonWalk;
-        private System.Windows.Forms.MenuItem privilegesMenuItem;
+        private System.Windows.Forms.MenuItem tokenMenuItem;
         private System.Windows.Forms.Label labelThreadUser;
-        private System.Windows.Forms.MenuItem groupsMenuItem;
         private System.Windows.Forms.MenuItem menuItem2;
     }
 }

@@ -40,7 +40,7 @@ namespace ProcessHacker
                 return new TokenHandle(Handle, false);
             }
 
-            private TokenHandle(int Handle, bool Owned)
+            internal TokenHandle(int Handle, bool Owned)
                 : base(Handle, Owned)
             { }
 

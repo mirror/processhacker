@@ -241,18 +241,6 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("464, 473")]
-        public global::System.Drawing.Size PrivilegeWindowSize {
-            get {
-                return ((global::System.Drawing.Size)(this["PrivilegeWindowSize"]));
-            }
-            set {
-                this["PrivilegeWindowSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string GroupListColumns {
             get {
@@ -265,13 +253,13 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("477, 468")]
-        public global::System.Drawing.Size GroupWindowSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("481, 468")]
+        public global::System.Drawing.Size TokenWindowSize {
             get {
-                return ((global::System.Drawing.Size)(this["GroupWindowSize"]));
+                return ((global::System.Drawing.Size)(this["TokenWindowSize"]));
             }
             set {
-                this["GroupWindowSize"] = value;
+                this["TokenWindowSize"] = value;
             }
         }
         
@@ -692,6 +680,18 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["RunAsCommand"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("tabPrivileges")]
+        public string TokenWindowTab {
+            get {
+                return ((string)(this["TokenWindowTab"]));
+            }
+            set {
+                this["TokenWindowTab"] = value;
             }
         }
     }
