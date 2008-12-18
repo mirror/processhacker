@@ -32,6 +32,7 @@ namespace ProcessHacker
     public partial class HandleFilterWindow : Form
     {
         private HandleFilter currWorker;
+
         public HandleFilterWindow()
         {
             InitializeComponent();
@@ -212,26 +213,31 @@ namespace ProcessHacker
             progress.Visible = false;
             ResetCtls();            
         }
+
         private void Filter_Cancelled(object sender, EventArgs e)
         {
             ResetCtls();
         }
+
         private void Filter_Failed(object sender, System.Threading.ThreadExceptionEventArgs e)
         {
             progress.Visible = false;
             ResetCtls();
             //log
         }
+
         private void ResetCtls()
         {
             buttonFind.Text = "&Find";
             currWorker = null;
             Cursor = Cursors.Default;
         }
-        private void ListView_Result(ArrayList items)
+
+        private void ListView_Result(List<ListViewItem> items)
         {
-            listHandles.Items.AddRange((ListViewItem[])items.ToArray(typeof(ListViewItem)));
+            listHandles.Items.AddRange(items.ToArray());
         }
+
         private void Progress_Result(int currentValue, int count)
         {
             progress.Value = currentValue;

@@ -30,16 +30,19 @@ namespace ProcessHacker.FormHelper
 
     public sealed class HandleFilter : AsyncOperation
     {
-        public delegate void MatchListViewEvent(ArrayList item);
+        public delegate void MatchListViewEvent(List<ListViewItem> item);
         public delegate void MatchProgressEvent(int currentValue,int count);
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
         private string strFilter;
+        private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(100);
+
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
             : base(isi)
         { 
             this.strFilter=strFilter;  
         }       
+
         protected override void DoWork()
         {
             DoFilter(strFilter);
@@ -53,19 +56,18 @@ namespace ProcessHacker.FormHelper
         {
             // Stop if cancel
             if (!CancelRequested)
-            {                
-
+            {
                 Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
                 handles = Win32.EnumHandles();
                 Dictionary<int, Win32.ProcessHandle> processHandles = new Dictionary<int, Win32.ProcessHandle>();
-                
+
                 for (int i = 0; i < handles.Length; i++)
                 {
                     // Check for cancellation here too,
                     // otherwise the user might have to wait for much time                    
                     if (CancelRequested) return;
 
-                    if(i%20==0)
+                    if (i % 20 == 0)
                         OnMatchProgress(i, handles.Length);
 
                     Win32.SYSTEM_HANDLE_INFORMATION handle = handles[i];
@@ -77,9 +79,9 @@ namespace ProcessHacker.FormHelper
                 OnMatchListView(null);
                 foreach (Win32.ProcessHandle phandle in processHandles.Values)
                     phandle.Dispose();
-            }  
-            
+            }
         }
+
         private void CompareHandlerBestNameWithFilterString(Dictionary<int, Win32.ProcessHandle> processHandles, Win32.SYSTEM_HANDLE_INFORMATION currhandle, string strFilter)
         {
             try
@@ -130,22 +132,23 @@ namespace ProcessHacker.FormHelper
             {
                 if (item == null)
                 {
-                    if (ListViewItemContainer.Count>0)
-                        FireAsync(MatchListView, ListViewItemContainer);
+                    if (listViewItemContainer.Count > 0)
+                        FireAsync(MatchListView, listViewItemContainer);
                     return;
                 }
                                 
-                ListViewItemContainer.Add(item);
+                listViewItemContainer.Add(item);
 
-                if (ListViewItemContainer.Count > 99)
+                if (listViewItemContainer.Count > 99)
                 {
-                    ArrayList items = ListViewItemContainer;
+                    List<ListViewItem> items = listViewItemContainer;
                     // has error?
                     FireAsync(MatchListView, items);
-                    ListViewItemContainer.Clear();
+                    listViewItemContainer.Clear();
                 }
             }
         }
+
         private void OnMatchProgress(int currentValue, int allValue)
         {
             lock (this)
@@ -153,8 +156,6 @@ namespace ProcessHacker.FormHelper
                 FireAsync(MatchProgress, currentValue, allValue);
             }
         }
-        ArrayList ListViewItemContainer = new ArrayList(100);
-
     }
 
 }
