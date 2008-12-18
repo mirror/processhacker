@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Process Hacker Assistant")]
 [assembly: AssemblyDescription("Process Hacker Assistant")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("wj32 & Wei Zhu")]
+[assembly: AssemblyCompany("wj32 & Dean")]
 [assembly: AssemblyProduct("Process Hacker")]
 [assembly: AssemblyCopyright("Licensed under the GNU GPL.")]
 [assembly: AssemblyTrademark("")]
