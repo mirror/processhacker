@@ -156,12 +156,27 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorServiceProcesses;
             else if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
-            else if (p.UsernameWithDomain == "NT AUTHORITY\\SYSTEM")
+            else if (p.Username == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
-            else if (p.UsernameWithDomain == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
+            else if (p.Username == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
                 return Properties.Settings.Default.ColorOwnProcesses;
             else
                 return SystemColors.Window;
+        }
+
+        private string GetBestUsername(string username, bool includeDomain)
+        {
+            if (!username.Contains("\\"))
+                return username;
+
+            string[] split = username.Split(new char[] { '\\' }, 2);
+            string domain = split[0];
+            string user = split[1];
+
+            if (includeDomain)
+                return domain + "\\" + user;
+            else
+                return user;
         }
 
         private void provider_DictionaryAdded(object item)
@@ -182,7 +197,8 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0.00"));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.Username));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, this.GetBestUsername(pitem.Username,
+                Properties.Settings.Default.ShowAccountDomains)));
 
             try
             {
@@ -239,7 +255,6 @@ namespace ProcessHacker
 
                 litem.SubItems[2].Text = pitem.MemoryUsage;
                 litem.SubItems[3].Text = pitem.CPUUsage;
-                litem.SubItems[4].Text = pitem.Username;
             }
         }
 
@@ -270,7 +285,7 @@ namespace ProcessHacker
             }
         }
 
-        public void RefreshColors()
+        public void RefreshItems()
         {
             lock (listProcesses)
             {
@@ -281,6 +296,8 @@ namespace ProcessHacker
                         ProcessItem item = _provider.Dictionary[int.Parse(litem.Name)];
 
                         (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(item);
+                        litem.SubItems[4].Text = this.GetBestUsername(item.Username, 
+                            Properties.Settings.Default.ShowAccountDomains);
                     }
                     catch
                     { }
@@ -313,10 +330,5 @@ namespace ProcessHacker
         }
 
         #endregion
-
-        private void listProcesses_MouseHover(object sender, EventArgs e)
-        {
-
-        }
     }
 }

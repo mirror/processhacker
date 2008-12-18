@@ -36,7 +36,6 @@ namespace ProcessHacker
         public string MemoryUsage;
         public string Name;
         public string Username;
-        public string UsernameWithDomain;
 
         public bool IsBeingDebugged;
         public ulong LastTime;
@@ -149,13 +148,6 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (p.Id == 0 || p.Id == 4)
-                    {
-                        item.Username = Properties.Settings.Default.ShowAccountDomains ?
-                            "NT AUTHORITY\\SYSTEM" : "SYSTEM";
-                        item.UsernameWithDomain = "NT AUTHORITY\\SYSTEM";
-                    }
-
                     try
                     {
                         using (Win32.ProcessHandle phandle =
@@ -180,8 +172,6 @@ namespace ProcessHacker
                             try
                             {
                                 item.Username = Win32.GetProcessUsername(phandle.Handle,
-                                    Properties.Settings.Default.ShowAccountDomains);
-                                item.UsernameWithDomain = Win32.GetProcessUsername(phandle.Handle,
                                     true);
                             }
                             catch
@@ -194,13 +184,16 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                item.Username = Properties.Settings.Default.ShowAccountDomains ?
-                                    tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
-                                item.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
+                                item.Username = tsProcesses[p.Id].UsernameWithDomain;
                             }
                             catch
                             { }
                         }
+                    }
+
+                    if (p.Id == 0 || p.Id == 4)
+                    {
+                        item.Username = "NT AUTHORITY\\SYSTEM";
                     }
 
                     if (p.Id == 0)
@@ -231,6 +224,7 @@ namespace ProcessHacker
                     newitem.PID = item.PID;
                     newitem.Process = item.Process;
                     newitem.SessionId = item.SessionId;
+                    newitem.Username = item.Username;
 
                     try
                     {
@@ -238,13 +232,6 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-
-                    if (p.Id == 0 || p.Id == 4)
-                    {
-                        newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
-                            "NT AUTHORITY\\SYSTEM" : "SYSTEM";
-                        newitem.UsernameWithDomain = "NT AUTHORITY\\SYSTEM";
-                    }
 
                     try
                     {
@@ -267,32 +254,10 @@ namespace ProcessHacker
                             }
                             catch
                             { }
-
-                            try
-                            {
-                                newitem.Username = Win32.GetProcessUsername(phandle.Handle,
-                                    Properties.Settings.Default.ShowAccountDomains);
-                                newitem.UsernameWithDomain = Win32.GetProcessUsername(phandle.Handle,
-                                    true);
-                            }
-                            catch
-                            { }
                         }
                     }
                     catch
-                    {
-                        if (newitem.Username == null)
-                        {
-                            try
-                            {
-                                newitem.Username = Properties.Settings.Default.ShowAccountDomains ?
-                                    tsProcesses[p.Id].UsernameWithDomain : tsProcesses[p.Id].Username;
-                                newitem.UsernameWithDomain = tsProcesses[p.Id].UsernameWithDomain;
-                            }
-                            catch
-                            { }
-                        }
-                    }
+                    { }
 
                     if (p.Id == 0)
                     {
@@ -302,7 +267,6 @@ namespace ProcessHacker
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
-                        newitem.Username != item.Username || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged)
                     {
                         newdictionary[p.Id] = newitem;

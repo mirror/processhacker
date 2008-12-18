@@ -75,7 +75,7 @@ namespace ProcessHacker
 
             try
             {
-                comboUsername.Text = Program.HackerWindow.ProcessProvider.Dictionary[PID].UsernameWithDomain;
+                comboUsername.Text = Program.HackerWindow.ProcessProvider.Dictionary[PID].Username;
             }
             catch
             {

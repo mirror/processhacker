@@ -3271,7 +3271,7 @@ namespace ProcessHacker
             foreach (int pid in processP.Dictionary.Keys)
                 this.UpdateListViewItemToolTipText(pid);
 
-            listProcesses.RefreshColors();
+            listProcesses.RefreshItems();
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
