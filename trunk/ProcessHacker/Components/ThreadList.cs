@@ -158,10 +158,9 @@ namespace ProcessHacker
 
             litem.Name = titem.TID.ToString();
             litem.Text = titem.TID.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.State));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.WaitReason));
 
             if (titem.WaitReason == "Suspended")
                 litem.NormalColor = System.Drawing.Color.LightGray;
@@ -179,10 +178,9 @@ namespace ProcessHacker
                 if (litem == null)
                     return;
 
-                litem.SubItems[1].Text = titem.State;
+                litem.SubItems[1].Text = titem.StartAddress;
                 litem.SubItems[2].Text = titem.CPUTime;
                 litem.SubItems[3].Text = titem.Priority;
-                litem.SubItems[4].Text = titem.WaitReason;
 
                 if (titem.WaitReason == "Suspended")
                     (litem as HighlightedListViewItem).NormalColor = System.Drawing.Color.LightGray;

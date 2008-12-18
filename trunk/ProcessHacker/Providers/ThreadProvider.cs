@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ProcessHacker
@@ -32,6 +33,8 @@ namespace ProcessHacker
 
         public string CPUTime;
         public string Priority;
+        public int StartAddressI;
+        public string StartAddress;
         public string State;
         public string WaitReason;
     }
@@ -45,7 +48,35 @@ namespace ProcessHacker
         {
             _pid = PID;
 
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
+            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+            
+            foreach (string s in Symbols.Keys)
+            {
+                if (s.ToLower().EndsWith(".exe"))
+                    Symbols.UnloadSymbols(s);
+            }
+
+            // start loading symbols
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                try
+                {
+                    foreach (ProcessModule module in Process.GetProcessById(_pid).Modules)
+                    {
+                        try
+                        {
+                            Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                        }
+                        catch
+                        { }
+                    }
+                }
+                catch
+                { }
+            }));
+
+            t.Priority = ThreadPriority.Lowest;
+            t.Start();
         }
 
         private void UpdateOnce()
@@ -81,14 +112,32 @@ namespace ProcessHacker
                     item.TID = t.Id;
                     item.Thread = t;
 
-                    try { item.State = t.ThreadState.ToString(); }
-                    catch { }
+                    //try { item.State = t.ThreadState.ToString(); }
+                    //catch { }
                     try { item.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
                     catch { }
                     try { item.Priority = t.PriorityLevel.ToString(); }
                     catch { }
-                    try { item.WaitReason = t.WaitReason.ToString(); }
+
+                    try
+                    {
+                        using (Win32.ThreadHandle handle =
+                            new Win32.ThreadHandle(t.Id, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                        {
+                            int retLen;
+
+                            if (Win32.ZwQueryInformationThread(handle.Handle,
+                                Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
+                                out item.StartAddressI, 4, out retLen) != 0)
+                                throw new Exception();
+                        }
+
+                        item.StartAddress = Symbols.GetNameFromAddress(item.StartAddressI);
+                    }
                     catch { }
+
+                    //try { item.WaitReason = t.WaitReason.ToString(); }
+                    //catch { }
 
                     newdictionary.Add(t.Id, item);
                     this.CallDictionaryAdded(item);
@@ -101,20 +150,29 @@ namespace ProcessHacker
 
                     newitem.TID = item.TID;
                     newitem.Thread = item.Thread;
+                    newitem.StartAddress = item.StartAddress;
+                    newitem.StartAddressI = item.StartAddressI;
 
-                    try { newitem.State = t.ThreadState.ToString(); }
-                    catch { }
+                    //try { newitem.State = t.ThreadState.ToString(); }
+                    //catch { }
                     try { newitem.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
                     catch { }
                     try { newitem.Priority = t.PriorityLevel.ToString(); }
                     catch { }
-                    try { newitem.WaitReason = t.WaitReason.ToString(); }
+
+                    try { newitem.StartAddress = Symbols.GetNameFromAddress(newitem.StartAddressI); }
                     catch { }
 
-                    if (newitem.State != item.State ||
+                    //try { newitem.WaitReason = t.WaitReason.ToString(); }
+                    //catch { }
+
+                    if (
+                        //newitem.State != item.State ||
                         newitem.CPUTime != item.CPUTime ||
                         newitem.Priority != item.Priority || 
-                        newitem.WaitReason != item.WaitReason)
+                        newitem.StartAddress != item.StartAddress
+                        //newitem.WaitReason != item.WaitReason
+                        )
                     {
                         newdictionary[t.Id] = newitem;
                         this.CallDictionaryModified(item, newitem);

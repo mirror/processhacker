@@ -511,11 +511,11 @@ namespace ProcessHacker
         public static string GetProcessPEBString(ProcessHandle process, int offset)
         {
             PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
-            int retLen = 0;
+            int retLen;
             int pebBaseAddress = 0x7ffd7000;
 
-            if (ZwQueryInformationProcess(process.Handle, PROCESSINFOCLASS.ProcessBasicInformation,
-                ref basicInfo, Marshal.SizeOf(basicInfo), ref retLen) != 0)
+            if (ZwQueryInformationProcess(process.Handle, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
+                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
                 pebBaseAddress = basicInfo.PebBaseAddress;
 
             byte[] data2 = new byte[4];

@@ -30,10 +30,9 @@
         {
             this.listThreads = new System.Windows.Forms.ListView();
             this.columnThreadID = new System.Windows.Forms.ColumnHeader();
-            this.columnThreadState = new System.Windows.Forms.ColumnHeader();
             this.columnCPUTime = new System.Windows.Forms.ColumnHeader();
             this.columnPriority = new System.Windows.Forms.ColumnHeader();
-            this.columnWaitReason = new System.Windows.Forms.ColumnHeader();
+            this.columnStartAddress = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listThreads
@@ -41,10 +40,9 @@
             this.listThreads.AllowColumnReorder = true;
             this.listThreads.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnThreadID,
-            this.columnThreadState,
+            this.columnStartAddress,
             this.columnCPUTime,
-            this.columnPriority,
-            this.columnWaitReason});
+            this.columnPriority});
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -60,11 +58,7 @@
             // columnThreadID
             // 
             this.columnThreadID.Text = "TID";
-            // 
-            // columnThreadState
-            // 
-            this.columnThreadState.Text = "State";
-            this.columnThreadState.Width = 100;
+            this.columnThreadID.Width = 50;
             // 
             // columnCPUTime
             // 
@@ -76,10 +70,10 @@
             this.columnPriority.Text = "Priority";
             this.columnPriority.Width = 80;
             // 
-            // columnWaitReason
+            // columnStartAddress
             // 
-            this.columnWaitReason.Text = "Wait Reason";
-            this.columnWaitReason.Width = 100;
+            this.columnStartAddress.Text = "Start Address";
+            this.columnStartAddress.Width = 160;
             // 
             // ThreadList
             // 
@@ -97,9 +91,8 @@
 
         private System.Windows.Forms.ListView listThreads;
         private System.Windows.Forms.ColumnHeader columnThreadID;
-        private System.Windows.Forms.ColumnHeader columnThreadState;
         private System.Windows.Forms.ColumnHeader columnCPUTime;
         private System.Windows.Forms.ColumnHeader columnPriority;
-        private System.Windows.Forms.ColumnHeader columnWaitReason;
+        private System.Windows.Forms.ColumnHeader columnStartAddress;
     }
 }

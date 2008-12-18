@@ -631,24 +631,32 @@ namespace ProcessHacker
         #region Undocumented
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQuerySymbolicLinkObject(int LinkHandle, ref UNICODE_STRING LinkTarget,
-            ref int ReturnedLength);
+        public static extern int ZwQuerySymbolicLinkObject(int LinkHandle, out UNICODE_STRING LinkTarget,
+            out int ReturnedLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
-            IntPtr ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+        public static extern int ZwSetInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            int ThreadInformation, int ThreadInformationLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
-            int ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
-            ref UNICODE_STRING ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            IntPtr ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESSINFOCLASS ProcessInformationClass,
-            ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, ref int ReturnLength);
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            int ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref UNICODE_STRING ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,

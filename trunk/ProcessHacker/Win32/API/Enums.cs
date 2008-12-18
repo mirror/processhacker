@@ -189,6 +189,34 @@ namespace ProcessHacker
             NonPagedPoolCacheAlignedMustS
         }
 
+        public enum PROCESS_INFORMATION_CLASS : int
+        {
+            ProcessBasicInformation,
+            ProcessQuotaLimits,
+            ProcessIoCounters,
+            ProcessVmCounters,
+            ProcessTimes,
+            ProcessBasePriority,
+            ProcessRaisePriority,
+            ProcessDebugPort,
+            ProcessExceptionPort,
+            ProcessAccessToken,
+            ProcessLdtInformation,
+            ProcessLdtSize,
+            ProcessDefaultHardErrorMode,
+            ProcessIoPortHandlers,
+            ProcessPooledUsageAndLimits,
+            ProcessWorkingSetWatch,
+            ProcessUserModeIOPL,
+            ProcessEnableAlignmentFaultFixup,
+            ProcessPriorityClass,
+            ProcessWx86Information,
+            ProcessHandleCount,
+            ProcessAffinityMask,
+            ProcessPriorityBoost,
+            MaxProcessInfoClass
+        }
+
         [Flags]
         public enum PROCESS_RIGHTS : uint
         {
@@ -207,14 +235,6 @@ namespace ProcessHacker
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
             PROCESS_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED |
                 STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
-        }
-
-        public enum PROCESSINFOCLASS : int
-        {
-            ProcessBasicInformation = 0,
-            ProcessDebugPort = 7,
-            ProcessWow64Information = 26,
-            ProcessImageFileName = 27
         }
 
         public enum SC_ACTION_TYPE : int
@@ -507,6 +527,28 @@ namespace ProcessHacker
             SystemVerifierInformation,
             SystemAddVerifier,
             SystemSessionProcessesInformation
+        }
+
+        public enum THREAD_INFORMATION_CLASS
+        {
+            ThreadBasicInformation,
+            ThreadTimes,
+            ThreadPriority,
+            ThreadBasePriority,
+            ThreadAffinityMask,
+            ThreadImpersonationToken,
+            ThreadDescriptorTableEntry,
+            ThreadEnableAlignmentFaultFixup,
+            ThreadEventPair,
+            ThreadQuerySetWin32StartAddress,
+            ThreadZeroTlsCell,
+            ThreadPerformanceCount,
+            ThreadAmILastThread,
+            ThreadIdealProcessor,
+            ThreadPriorityBoost,
+            ThreadSetTlsArrayAddress,
+            ThreadIsIoPending,
+            ThreadHideFromDebugger
         }
 
         [Flags]
