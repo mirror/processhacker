@@ -160,6 +160,9 @@ namespace ProcessHacker
 
         public static string GetNameFromAddress(int address)
         {
+            if (address == 0)
+                return "(invalid)";
+
             // go through each loaded library
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
             {
