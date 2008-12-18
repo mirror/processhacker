@@ -55,6 +55,14 @@ namespace ProcessHacker
                     Symbols.UnloadSymbols(s);
             }
 
+            try
+            {
+                ProcessModule module = Process.GetProcessById(_pid).MainModule;
+                Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+            }
+            catch
+            { }
+
             // start loading symbols
             Thread t = new Thread(new ThreadStart(delegate
             {
