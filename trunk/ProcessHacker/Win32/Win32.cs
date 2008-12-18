@@ -27,6 +27,9 @@ using System.ComponentModel;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides interfacing to the Win32 and Native APIs.
+    /// </summary>
     public partial class Win32
     {
         public unsafe class Unsafe
@@ -69,32 +72,78 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Represents a generic Windows handle.
+        /// </summary>
         public class Win32Handle : IDisposable
         {
             private bool _owned = true;
             private bool _closed = false;
             private int _handle;
 
-            public Win32Handle()
+            public static implicit operator int(Win32Handle handle)
+            {
+                return handle.Handle;
+            }
+
+            /// <summary>
+            /// Creates a new, invalid handle. You must set the handle using the Handle property.
+            /// </summary>
+            protected Win32Handle()
             { }
 
-            public Win32Handle(int Handle)
+            /// <summary>
+            /// Creates a new handle using the specified value. The handle will be closed when 
+            /// this object is disposed or garbage-collected.
+            /// </summary>
+            /// <param name="handle">The handle value.</param>
+            public Win32Handle(int handle)
             {
-                _handle = Handle;
+                _handle = handle;
             }
 
-            public Win32Handle(int Handle, bool Owned)
+            /// <summary>
+            /// Creates a new handle using the specified value. If owned is set to false, the 
+            /// handle will not be closed automatically.
+            /// </summary>
+            /// <param name="handle">The handle value.</param>
+            /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
+            public Win32Handle(int handle, bool owned)
             {
-                _handle = Handle;
-                _owned = Owned;
+                _handle = handle;
+                _owned = owned;
             }
 
+            /// <summary>
+            /// Gets whether this handle is closed.
+            /// </summary>
+            public bool Closed
+            {
+                get { return _closed; }
+            }
+
+            /// <summary>
+            /// Gets whether the handle will be automatically closed.
+            /// </summary>
+            public bool Owned
+            {
+                get { return _owned; }
+            }
+
+            /// <summary>
+            /// Gets the handle value.
+            /// </summary>
             public int Handle
             {
                 get { return _handle; }
                 protected set { _handle = value; }
             }
 
+            /// <summary>
+            /// Closes the handle. This method must not be called directly; instead, 
+            /// override this method in a derived class if your handle must be closed 
+            /// with a method other than CloseHandle.
+            /// </summary>
             protected virtual void Close()
             {
                 CloseHandle(_handle);
@@ -105,6 +154,9 @@ namespace ProcessHacker
                 this.Dispose();
             }
 
+            /// <summary>
+            /// Closes the handle.
+            /// </summary>
             public void Dispose()
             {
                 if (!_closed && _owned)
@@ -115,14 +167,36 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Represents a Windows object that contains a token.
+        /// </summary>
         public interface IWithToken
         {
+            /// <summary>
+            /// Opens and returns the object's token.
+            /// </summary>
+            /// <returns>A handle to the token.</returns>
             TokenHandle GetToken();
+
+            /// <summary>
+            /// Opens and returns the object's token.
+            /// </summary>
+            /// <param name="access">Specifies the desired access to the token.</param>
+            /// <returns>A handle to the token.</returns>
             TokenHandle GetToken(TOKEN_RIGHTS access);
         }
 
+        /// <summary>
+        /// Represents a handle to a Windows process.
+        /// </summary>
         public class ProcessHandle : Win32Handle, IWithToken
         {
+            /// <summary>
+            /// Creates a process handle using an existing handle. 
+            /// The handle will not be closed automatically.
+            /// </summary>
+            /// <param name="Handle">The handle value.</param>
+            /// <returns></returns>
             public static ProcessHandle FromHandle(int Handle)
             {
                 return new ProcessHandle(Handle, false);
@@ -132,10 +206,19 @@ namespace ProcessHacker
                 : base(Handle, Owned)
             { }
 
+            /// <summary>
+            /// Creates a new process handle.
+            /// </summary>
+            /// <param name="PID">The ID of the process to open.</param>
             public ProcessHandle(int PID)
                 : this(PID, PROCESS_RIGHTS.PROCESS_ALL_ACCESS)
             { }
 
+            /// <summary>
+            /// Creates a new process handle.
+            /// </summary>
+            /// <param name="PID">The ID of the process to open.</param>
+            /// <param name="access">The desired access to the process.</param>
             public ProcessHandle(int PID, PROCESS_RIGHTS access)
             {
                 this.Handle = OpenProcess(access, 0, PID);
@@ -144,27 +227,48 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Waits for the process.
+            /// </summary>
+            /// <param name="Timeout">The timeout of the wait.</param>
+            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
             public int Wait(int Timeout)
             {
                 return WaitForSingleObject(this.Handle, Timeout);
             }
 
+            /// <summary>
+            /// Terminates the process.
+            /// </summary>
             public void Terminate()
             {
                 this.Terminate(0);
             }
 
+            /// <summary>
+            /// Terminates the process, specifying the exit code.
+            /// </summary>
+            /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
             {
                 if (TerminateProcess(this.Handle, ExitCode) == 0)
                     throw new Exception(GetLastErrorMessage());
             }
 
+            /// <summary>
+            /// Opens and returns a handle to the process' token.
+            /// </summary>
+            /// <returns>A handle to the process' token.</returns>
             public TokenHandle GetToken()
             {
                 return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);
             }
 
+            /// <summary>
+            /// Opens and returns a handle to the process' token.
+            /// </summary>
+            /// <param name="access">The desired access to the token.</param>
+            /// <returns>A handle to the process' token.</returns>
             public TokenHandle GetToken(TOKEN_RIGHTS access)
             {
                 return new TokenHandle(this, access);
