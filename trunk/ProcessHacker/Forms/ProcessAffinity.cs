@@ -41,10 +41,8 @@ namespace ProcessHacker
                     uint systemMask = 0;
                     uint processMask = 0;
 
-                    if (Win32.GetProcessAffinityMask(phandle.Handle, ref processMask, ref systemMask) == 0)
-                    {
+                    if (!Win32.GetProcessAffinityMask(phandle.Handle, out processMask, out systemMask))
                         throw new Exception(Win32.GetLastErrorMessage());
-                    }
 
                     for (int i = 0; (systemMask & (1 << i)) != 0; i++)
                     {
@@ -90,10 +88,8 @@ namespace ProcessHacker
             {
                 using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_SET_INFORMATION))
                 {
-                    if (Win32.SetProcessAffinityMask(phandle.Handle, newMask) == 0)
-                    {
+                    if (!Win32.SetProcessAffinityMask(phandle.Handle, newMask))
                         throw new Exception(Win32.GetLastErrorMessage());
-                    }
                 }
 
                 this.Close();

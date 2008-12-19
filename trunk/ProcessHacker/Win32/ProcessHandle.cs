@@ -89,7 +89,7 @@ namespace ProcessHacker
             /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
             {
-                if (TerminateProcess(this.Handle, ExitCode) == 0)
+                if (!TerminateProcess(this, ExitCode))
                     throw new Exception(GetLastErrorMessage());
             }
 

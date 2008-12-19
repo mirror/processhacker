@@ -48,6 +48,7 @@ namespace ProcessHacker
                 using (Win32.TokenHandle token = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
                 {
                     textUser.Text = token.GetUsername(true);
+                    textSessionID.Text = token.GetSessionId().ToString();
                 }
             }
             catch (Exception ex)
@@ -64,7 +65,7 @@ namespace ProcessHacker
                 {
                     string name = groups.Names[i];
 
-                    if (name == "")
+                    if (name == "" || name == null)
                         continue;
 
                     ListViewItem item = listGroups.Items.Add(name.ToLower(), name, 0);

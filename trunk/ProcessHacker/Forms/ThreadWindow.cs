@@ -192,7 +192,7 @@ namespace ProcessHacker
 
             Win32.SuspendThread(_thandle);
 
-            if (Win32.GetThreadContext(_thandle, ref context) != 0)
+            if (Win32.GetThreadContext(_thandle, ref context))
             {
                 WalkCallStack(context);
             }
@@ -222,8 +222,8 @@ namespace ProcessHacker
             {
                 try
                 {
-                    if (Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
-                        ref stackFrame, ref context, 0, 0, 0, 0) == 0)
+                    if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
+                        ref stackFrame, ref context, 0, null, null, 0))
                         break;
 
                     if (stackFrame.AddrPC.Offset == 0)
@@ -260,7 +260,7 @@ namespace ProcessHacker
 
             context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
 
-            if (Win32.GetThreadContext(_thandle, ref context) == 0)
+            if (!Win32.GetThreadContext(_thandle, ref context))
             {
                 if (listViewCallStack.Enabled)
                 {
@@ -318,7 +318,7 @@ namespace ProcessHacker
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
         {
-            if (Win32.TerminateThread(_thandle, 0) == 0)
+            if (!Win32.TerminateThread(_thandle, 0))
             {
                 MessageBox.Show("Error terminating thread!", "Process Hacker", MessageBoxButtons.OK,
                   MessageBoxIcon.Error);

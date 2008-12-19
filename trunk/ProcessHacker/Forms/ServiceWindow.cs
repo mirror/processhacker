@@ -215,14 +215,14 @@ namespace ProcessHacker
                     else
                         type = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), comboType.SelectedItem.ToString());
 
-                    if (Win32.ChangeServiceConfig(service.Handle,
+                    if (!Win32.ChangeServiceConfig(service.Handle,
                         type,
                         (Win32.SERVICE_START_TYPE)
                         Enum.Parse(typeof(Win32.SERVICE_START_TYPE), comboStartType.SelectedItem.ToString()),
                         (Win32.SERVICE_ERROR_CONTROL)Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL),
                         comboErrorControl.SelectedItem.ToString()),
                         textServiceBinaryPath.Text, textLoadOrderGroup.Text,
-                        0, 0, textUserAccount.Text, 0, 0) == 0)
+                        0, 0, textUserAccount.Text, null, null))
                     {
                         throw new Exception(Win32.GetLastErrorMessage());
                     }

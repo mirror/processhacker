@@ -43,14 +43,16 @@
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabToken = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textUser = new System.Windows.Forms.TextBox();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.listGroups = new System.Windows.Forms.ListView();
             this.columnGroupName = new System.Windows.Forms.ColumnHeader();
             this.columnFlags = new System.Windows.Forms.ColumnHeader();
             this.tabPrivileges = new System.Windows.Forms.TabPage();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.textUser = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textSessionID = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabToken.SuspendLayout();
             this.tabGroups.SuspendLayout();
@@ -168,6 +170,8 @@
             // 
             // tabToken
             // 
+            this.tabToken.Controls.Add(this.textSessionID);
+            this.tabToken.Controls.Add(this.label2);
             this.tabToken.Controls.Add(this.label1);
             this.tabToken.Controls.Add(this.textUser);
             this.tabToken.Location = new System.Drawing.Point(4, 22);
@@ -177,6 +181,25 @@
             this.tabToken.TabIndex = 2;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "User:";
+            // 
+            // textUser
+            // 
+            this.textUser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textUser.Location = new System.Drawing.Point(44, 8);
+            this.textUser.Name = "textUser";
+            this.textUser.ReadOnly = true;
+            this.textUser.Size = new System.Drawing.Size(383, 20);
+            this.textUser.TabIndex = 1;
             // 
             // tabGroups
             // 
@@ -231,24 +254,22 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // textUser
+            // label2
             // 
-            this.textUser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUser.Location = new System.Drawing.Point(44, 8);
-            this.textUser.Name = "textUser";
-            this.textUser.ReadOnly = true;
-            this.textUser.Size = new System.Drawing.Size(383, 20);
-            this.textUser.TabIndex = 1;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 37);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(61, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Session ID:";
             // 
-            // label1
+            // textSessionID
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "User:";
+            this.textSessionID.Location = new System.Drawing.Point(73, 34);
+            this.textSessionID.Name = "textSessionID";
+            this.textSessionID.ReadOnly = true;
+            this.textSessionID.Size = new System.Drawing.Size(109, 20);
+            this.textSessionID.TabIndex = 4;
             // 
             // TokenWindow
             // 
@@ -300,5 +321,7 @@
         private System.Windows.Forms.ColumnHeader columnFlags;
         private System.Windows.Forms.TextBox textUser;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textSessionID;
+        private System.Windows.Forms.Label label2;
     }
 }

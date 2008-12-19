@@ -126,9 +126,9 @@ namespace ProcessHacker
             int RequiredSize = 0;
             int[] ImageBases;
 
-            Win32.EnumDeviceDrivers(null, 0, ref RequiredSize);
+            Win32.EnumDeviceDrivers(null, 0, out RequiredSize);
             ImageBases = new int[RequiredSize];
-            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), ref RequiredSize);
+            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), out RequiredSize);
 
             for (int i = 0; i < RequiredSize; i++)
             {

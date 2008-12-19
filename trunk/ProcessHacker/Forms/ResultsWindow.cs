@@ -306,8 +306,8 @@ namespace ProcessHacker
 
                 while (true)
                 {
-                    if (Win32.VirtualQueryEx(handle, address, ref info,
-                        Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
+                    if (!Win32.VirtualQueryEx(handle, address, ref info,
+                        Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                     {
                         break;
                     }

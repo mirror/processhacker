@@ -75,8 +75,8 @@ namespace ProcessHacker
 
             while (true)
             {
-                if (Win32.VirtualQueryEx(handle, address, ref info,
-                    Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
+                if (!Win32.VirtualQueryEx(handle, address, ref info,
+                    Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                 {
                     break;
                 }
@@ -107,7 +107,7 @@ namespace ProcessHacker
                     CallSearchProgressChanged(
                         String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress, count));
 
-                    Win32.ReadProcessMemory(handle, info.BaseAddress, data, info.RegionSize, ref bytesRead);
+                    Win32.ReadProcessMemory(handle, info.BaseAddress, data, info.RegionSize, out bytesRead);
 
                     if (bytesRead == 0)
                         continue;

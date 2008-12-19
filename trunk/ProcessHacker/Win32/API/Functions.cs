@@ -34,30 +34,28 @@ namespace ProcessHacker
         #region Kernel
 
         [DllImport("psapi.dll", SetLastError = true)]
-        public static extern int EnumDeviceDrivers(int[] ImageBases, int Size, ref int Needed);
+        public static extern bool EnumDeviceDrivers(int[] ImageBases, int Size, out int Needed);
 
-        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int GetDeviceDriverBaseName(int ImageBase,
-            [Out] System.Text.StringBuilder FileName, int Size);
+        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool GetDeviceDriverBaseName(int ImageBase, StringBuilder FileName, int Size);
 
-        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int GetDeviceDriverFileName(int ImageBase,
-            [Out] System.Text.StringBuilder FileName, int Size);
+        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool GetDeviceDriverFileName(int ImageBase, StringBuilder FileName, int Size);
 
         #endregion
 
         #region Libraries
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int LoadLibrary(string FileName);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern int LoadLibraryEx(string FileName, int File, int Flags);
 
         [DllImport("kernel32.dll")]
-        public static extern int FreeLibrary(int Handle);
+        public static extern bool FreeLibrary(int Handle);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetModuleHandle(string ModuleName);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
@@ -71,26 +69,26 @@ namespace ProcessHacker
         #region Memory
 
         [DllImport("kernel32.dll")]
-        public static extern int VirtualQueryEx(int Process, int Address,
+        public static extern bool VirtualQueryEx(int Process, int Address,
             [MarshalAs(UnmanagedType.Struct)] ref MEMORY_BASIC_INFORMATION Buffer, int Size);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int VirtualProtect(int Address, int Size, int NewProtect, ref int OldProtect);
+        public static extern bool VirtualProtect(int Address, int Size, int NewProtect, out int OldProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int VirtualProtectEx(int Process, int Address, int Size, int NewProtect, ref int OldProtect);
+        public static extern bool VirtualProtectEx(int Process, int Address, int Size, int NewProtect, out int OldProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int VirtualAllocEx(int Process, int Address, int Size, MEMORY_STATE Type, MEMORY_PROTECTION Protect);
+        public static extern bool VirtualAllocEx(int Process, int Address, int Size, MEMORY_STATE Type, MEMORY_PROTECTION Protect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int ReadProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, ref int BytesRead);
+        public static extern bool ReadProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesRead);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int ReadProcessMemory(int Process, int BaseAddress, int Buffer, int Size, ref int BytesRead);
+        public static extern bool ReadProcessMemory(int Process, int BaseAddress, int Buffer, int Size, out int BytesRead);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int WriteProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, ref int BytesWritten);
+        public static extern bool WriteProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesWritten);
 
         #endregion
 
@@ -101,14 +99,14 @@ namespace ProcessHacker
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
+        public static extern bool SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessAffinityMask(int ProcessHandle, ref uint ProcessAffinityMask,
-            ref uint SystemAffinityMask);
+        public static extern bool GetProcessAffinityMask(int ProcessHandle, out uint ProcessAffinityMask,
+            out uint SystemAffinityMask);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CheckRemoteDebuggerPresent(int ProcessHandle, ref int DebuggerPresent);
+        public static extern bool CheckRemoteDebuggerPresent(int ProcessHandle, out bool DebuggerPresent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessId(int ProcessHandle);
@@ -117,34 +115,34 @@ namespace ProcessHacker
         public static extern int GetCurrentProcess();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessDEPPolicy(int ProcessHandle, ref DEPFLAGS Flags, ref int Permanent);
+        public static extern bool GetProcessDEPPolicy(int ProcessHandle, out DEPFLAGS Flags, out int Permanent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int TerminateProcess(int ProcessHandle, int ExitCode);
+        public static extern bool TerminateProcess(int ProcessHandle, int ExitCode);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int OpenProcess(PROCESS_RIGHTS DesiredAccess, int InheritHandle, int ProcessId);
 
         [DllImport("kernel32.dll")]
-        public static extern int DebugActiveProcess(int PID);
+        public static extern bool DebugActiveProcess(int PID);
 
         [DllImport("kernel32.dll")]
-        public static extern int DebugActiveProcessStop(int PID);
+        public static extern bool DebugActiveProcessStop(int PID);
 
         #endregion
 
         #region Resources/Handles
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CloseHandle(int Handle);
+        public static extern bool CloseHandle(int Handle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int DuplicateHandle(int hSourceProcessHandle,
-           int hSourceHandle, int hTargetProcessHandle, ref int lpTargetHandle,
-           uint dwDesiredAccess, int bInheritHandle, uint dwOptions);
+        public static extern bool DuplicateHandle(int SourceProcessHandle,
+           int SourceHandle, int TargetProcessHandle, out int TargetHandle,
+           STANDARD_RIGHTS DesiredAccess, int InheritHandle, uint Options);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetNamedPipeHandleState(int NamedPipeHandle, ref PIPE_STATE State,
+        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, ref PIPE_STATE State,
             int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -153,6 +151,8 @@ namespace ProcessHacker
         #endregion
 
         #region Security
+
+        #region LSA
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaFreeMemory(IntPtr Memory);
@@ -167,75 +167,53 @@ namespace ProcessHacker
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaOpenPolicy(int SystemName, ref LSA_OBJECT_ATTRIBUTES ObjectAttributes,
-            POLICY_RIGHTS DesiredAccess, ref int PolicyHandle);
+            POLICY_RIGHTS DesiredAccess, out int PolicyHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaClose(int Handle);
 
+        #endregion
+
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int OpenProcessToken(int ProcessHandle, TOKEN_RIGHTS DesiredAccess,
+        public static extern bool OpenProcessToken(int ProcessHandle, TOKEN_RIGHTS DesiredAccess,
             out int TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int OpenThreadToken(int ThreadHandle, TOKEN_RIGHTS DesiredAccess,
+        public static extern bool OpenThreadToken(int ThreadHandle, TOKEN_RIGHTS DesiredAccess,
             bool OpenAsSelf, out int TokenHandle);
 
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int ConvertSidToStringSid(
-            int pSID,
-            [In, Out, MarshalAs(UnmanagedType.LPTStr)] ref string pStringSid
-        );
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int ConvertStringSidToSid(
-            [In, MarshalAs(UnmanagedType.LPTStr)] string pStringSid,
-            ref IntPtr pSID
-        );
-
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int CreateProcessWithTokenW(int Token, int LogonFlags,
-            [MarshalAs(UnmanagedType.LPWStr)] string ApplicationName,
-            [MarshalAs(UnmanagedType.LPWStr)] string CommandLine, int CreationFlags,
-            int Environment, int CurrentDirectory, STARTUPINFO StartupInfo,
-            PROCESS_INFORMATION ProcessInfo);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int DuplicateTokenEx(int ExistingToken, TOKEN_RIGHTS DesiredAccess,
+        public static extern bool DuplicateTokenEx(int ExistingToken, TOKEN_RIGHTS DesiredAccess,
             int TokenAttributes, SECURITY_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType,
-            ref int NewToken);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int GetTokenInformation(int TokenHandle,
-            TOKEN_INFORMATION_CLASS TokenInformationClass, int TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+            out int NewToken);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetTokenInformation(int TokenHandle,
+        public static extern bool GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, IntPtr TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+            int TokenInformationLength, out int ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetTokenInformation(int TokenHandle,
-            TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+        public static extern bool GetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, out int TokenInformation,
+            int TokenInformationLength, out int ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetTokenInformation(int TokenHandle,
+        public static extern bool GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_GROUPS TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+            int TokenInformationLength, out int ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetTokenInformation(int TokenHandle,
+        public static extern bool GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_USER TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+            int TokenInformationLength, out int ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetTokenInformation(int TokenHandle,
+        public static extern bool GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_PRIVILEGES TokenInformation,
-            int TokenInformationLength, ref int ReturnLength);
+            int TokenInformationLength, out int ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupAccountName(
+        public static extern bool LookupAccountName(
             string SystemName,
             string AccountName,
             IntPtr SID,
@@ -246,32 +224,25 @@ namespace ProcessHacker
             );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupAccountSid(string SystemName,
-            int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
-            [Out] System.Text.StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
-            ref SID_NAME_USE Use);
+        public static extern bool LookupAccountSid(string SystemName,
+            int SID, StringBuilder Name, out int NameSize,
+            StringBuilder ReferencedDomainName, out int ReferencedDomainNameSize,
+            out SID_NAME_USE Use);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupAccountSid(int SystemName,
-            int SID, [Out] System.Text.StringBuilder Name, ref int NameSize,
-            [Out] StringBuilder ReferencedDomainName, ref int ReferencedDomainNameSize,
-            ref SID_NAME_USE Use);
+        public static extern bool LookupPrivilegeDisplayName(int SystemName, string Name,
+            StringBuilder DisplayName, out int DisplayNameSize, out int LanguageId);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupPrivilegeDisplayName(int SystemName, string Name,
-            [Out] StringBuilder DisplayName, ref int DisplayNameSize, ref int LanguageId);
+        public static extern bool LookupPrivilegeName(int SystemName, ref LUID Luid,
+            StringBuilder Name, out int RequiredSize);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupPrivilegeName(int SystemName, ref LUID Luid,
-            [Out] StringBuilder Name, ref int RequiredSize);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int LookupPrivilegeValue(string SystemName, string PrivilegeName,
-            [MarshalAs(UnmanagedType.Struct)] ref LUID Luid);
+        public static extern bool LookupPrivilegeValue(string SystemName, string PrivilegeName, ref LUID Luid);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int AdjustTokenPrivileges(int TokenHandle, int DisableAllPrivileges,
-            [MarshalAs(UnmanagedType.Struct)] ref TOKEN_PRIVILEGES NewState, int BufferLength,
+        public static extern bool AdjustTokenPrivileges(int TokenHandle, int DisableAllPrivileges,
+            ref TOKEN_PRIVILEGES NewState, int BufferLength,
             int PreviousState, int ReturnLength);
 
         #endregion      
@@ -279,65 +250,70 @@ namespace ProcessHacker
         #region Services
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int CloseServiceHandle(int ServiceHandle);
+        public static extern bool CloseServiceHandle(int ServiceHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int StartService(int Service, int NumServiceArgs, int Args);
+        public static extern bool StartService(int Service, int NumServiceArgs, int Args);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int ChangeServiceConfig(int Service,
-            SERVICE_TYPE ServiceType, SERVICE_START_TYPE StartType,
-            SERVICE_ERROR_CONTROL ErrorControl,
-            [MarshalAs(UnmanagedType.LPTStr)] string BinaryPath,
-            [MarshalAs(UnmanagedType.LPTStr)] string LoadOrderGroup,
-            int TagID, int Dependencies,
-            [MarshalAs(UnmanagedType.LPTStr)] string StartName,
-            int Password, int DisplayName);
+        public static extern bool ChangeServiceConfig(
+            int Service,
+            SERVICE_TYPE ServiceType, 
+            SERVICE_START_TYPE StartType,
+            SERVICE_ERROR_CONTROL ErrorControl, 
+            string BinaryPath, 
+            string LoadOrderGroup,
+            int TagID, 
+            int Dependencies,
+            string StartName,
+            string Password,
+            string DisplayName
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int ControlService(int Service,
-            SERVICE_CONTROL Control, ref SERVICE_STATUS ServiceStatus);
+        public static extern bool ControlService(
+            int Service,
+            SERVICE_CONTROL Control, 
+            ref SERVICE_STATUS ServiceStatus
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int CreateService(int SCManager,
-            [MarshalAs(UnmanagedType.LPTStr)] string ServiceName,
-            [MarshalAs(UnmanagedType.LPTStr)] string DisplayName,
-            SERVICE_RIGHTS DesiredAccess, SERVICE_TYPE ServiceType,
-            SERVICE_START_TYPE StartType, SERVICE_ERROR_CONTROL ErrorControl,
-            [MarshalAs(UnmanagedType.LPTStr)] string BinaryPathName,
-            [MarshalAs(UnmanagedType.LPTStr)] string LoadOrderGroup,
-            int TagID, int Dependencies,
-            [MarshalAs(UnmanagedType.LPTStr)] string ServiceStartName,
-            [MarshalAs(UnmanagedType.LPTStr)] string Password);
+            string ServiceName,
+            string DisplayName,
+            SERVICE_RIGHTS DesiredAccess, 
+            SERVICE_TYPE ServiceType,
+            SERVICE_START_TYPE StartType,
+            SERVICE_ERROR_CONTROL ErrorControl,
+            string BinaryPathName,
+            string LoadOrderGroup,
+            int TagID, 
+            int Dependencies,
+            string ServiceStartName,
+            string Password
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int DeleteService(int Service);
+        public static extern bool DeleteService(int Service);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryServiceStatus(int Service, ref SERVICE_STATUS ServiceStatus);
+        public static extern bool QueryServiceStatus(
+            int Service, 
+            ref SERVICE_STATUS ServiceStatus
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryServiceStatusEx(int Service, int InfoLevel,
+        public static extern bool QueryServiceStatusEx(int Service, int InfoLevel,
             ref SERVICE_STATUS_PROCESS ServiceStatus, int BufSize, out int BytesNeeded);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryServiceConfig(int Service,
-            int ServiceConfig,
-            int BufSize, ref int BytesNeeded);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryServiceConfig(int Service,
+        public static extern bool QueryServiceConfig(int Service,
             IntPtr ServiceConfig,
             int BufSize, ref int BytesNeeded);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryServiceConfig(int Service,
-            [MarshalAs(UnmanagedType.Struct)] ref QUERY_SERVICE_CONFIG ServiceConfig,
-            int BufSize, ref int BytesNeeded);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int OpenService(int SCManager,
-            [MarshalAs(UnmanagedType.LPTStr)] string ServiceName, SERVICE_RIGHTS DesiredAccess);
+            string ServiceName, SERVICE_RIGHTS DesiredAccess);
 
         /// <summary>
         /// Enumerates services in the specified service control manager database. 
@@ -360,36 +336,10 @@ namespace ProcessHacker
         /// <param name="GroupName">Must be 0 for this definition.</param>
         /// <returns>A non-zero value for success, zero for failure.</returns>
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
+        public static extern bool EnumServicesStatusEx(int SCManager, int InfoLevel,
             SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
-            ref int Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
-            ref int ResumeHandle, int GroupName);
-
-        /// <summary>
-        /// Enumerates services in the specified service control manager database. 
-        /// The name and status of each service are provided, along with additional 
-        /// data based on the specified information level.
-        /// </summary>
-        /// <param name="SCManager">A handle to the service control manager database.</param>
-        /// <param name="InfoLevel">Set this to 0.</param>
-        /// <param name="ServiceType">The type of services to be enumerated.</param>
-        /// <param name="ServiceState">The state of the services to be enumerated.</param>
-        /// <param name="Services">A pointer to the buffer that receives the status information.</param>
-        /// <param name="BufSize">The size of the buffer pointed to by the Services parameter, in bytes.</param>
-        /// <param name="BytesNeeded">A pointer to a variable that receives the number of bytes needed to 
-        /// return the remaining service entries, if the buffer is too small.</param>
-        /// <param name="ServicesReturned">A pointer to a variable that receives the number of service 
-        /// entries returned.</param>
-        /// <param name="ResumeHandle">A pointer to a variable that, on input, specifies the 
-        /// starting point of enumeration. You must set this value to zero the first time the 
-        /// EnumServicesStatusEx function is called.</param>
-        /// <param name="GroupName">Must be 0 for this definition.</param>
-        /// <returns>A non-zero value for success, zero for failure.</returns>
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int EnumServicesStatusEx(int SCManager, int InfoLevel,
-            SERVICE_QUERY_TYPE ServiceType, SERVICE_QUERY_STATE ServiceState,
-            IntPtr Services, int BufSize, ref int BytesNeeded, ref int ServicesReturned,
-            ref int ResumeHandle, int GroupName);
+            IntPtr Services, int BufSize, out int BytesNeeded, out int ServicesReturned,
+            out int ResumeHandle, int GroupName);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int OpenSCManager(int MachineName, int DatabaseName,
@@ -422,14 +372,14 @@ namespace ProcessHacker
         #region Statistics
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessTimes(int ProcessHandle, ref ulong CreationTime, ref ulong ExitTime,
-            ref ulong KernelTime, ref ulong UserTime);
+        public static extern bool GetProcessTimes(int ProcessHandle, out ulong CreationTime, out ulong ExitTime,
+            out ulong KernelTime, out ulong UserTime);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessIoCounters(int ProcessHandle, ref IO_COUNTERS IoCounters);
+        public static extern bool GetProcessIoCounters(int ProcessHandle, out IO_COUNTERS IoCounters);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetSystemTimes(ref ulong IdleTime, ref ulong KernelTime, ref ulong UserTime);
+        public static extern bool GetSystemTimes(out ulong IdleTime, out ulong KernelTime, out ulong UserTime);
 
         [DllImport("kernel32.dll")]
         public static extern bool GetThreadTimes(int hThread, out long lpCreationTime,
@@ -466,19 +416,11 @@ namespace ProcessHacker
         public static extern int SymInitialize(int ProcessHandle, int UserSearchPath, int InvadeProcess);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
+        public static extern bool StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
             [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
             [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord, int ReadMemoryRoutine,
             [MarshalAs(UnmanagedType.FunctionPtr)] FunctionTableAccessProc64 FunctionTableAccessRoutine,
             [MarshalAs(UnmanagedType.FunctionPtr)] GetModuleBaseProc64 GetModuleBaseRoutine,
-            int TranslateAddress);
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
-            [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
-            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord, int ReadMemoryRoutine,
-            int FunctionTableAccessRoutine,
-            int GetModuleBaseRoutine,
             int TranslateAddress);
 
         #endregion
@@ -486,65 +428,57 @@ namespace ProcessHacker
         #region Terminal Server
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int ProcessIdToSessionId(int ProcessId, ref int SessionId);
+        public static extern bool ProcessIdToSessionId(int ProcessId, out int SessionId);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
             WTS_INFO_CLASS InfoClass,
-            [MarshalAs(UnmanagedType.LPTStr)] ref string Buffer,
-            ref int BytesReturned);
+            out string Buffer,
+            out int BytesReturned);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
             WTS_INFO_CLASS InfoClass,
-            ref int Buffer,
-            ref int BytesReturned);
+            out int Buffer,
+            out int BytesReturned);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
             WTS_INFO_CLASS InfoClass,
-            ref ushort Buffer,
-            ref int BytesReturned);
+            out ushort Buffer,
+            out int BytesReturned);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSQuerySessionInformation(int ServerHandle, int SessionID,
+        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
             WTS_INFO_CLASS InfoClass,
-            ref WTS_CLIENT_DISPLAY[] Buffer,
-            ref int BytesReturned);
+            out WTS_CLIENT_DISPLAY[] Buffer,
+            out int BytesReturned);
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSLogoffSession(int ServerHandle, int SessionID, int Wait);
+        public static extern bool WTSLogoffSession(int ServerHandle, int SessionID, int Wait);
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSDisconnectSession(int ServerHandle, int SessionID, int Wait);
+        public static extern bool WTSDisconnectSession(int ServerHandle, int SessionID, int Wait);
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSTerminateProcess(int ServerHandle, int ProcessID, int ExitCode);
+        public static extern bool WTSTerminateProcess(int ServerHandle, int ProcessID, int ExitCode);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSEnumerateSessions(int ServerHandle, int Reserved,
-            int Version, ref WTS_SESSION_INFO[] SessionInfo, ref int Count);
+        public static extern bool WTSEnumerateSessions(int ServerHandle, int Reserved,
+            int Version, out int SessionInfo, out int Count);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSEnumerateSessions(int ServerHandle, int Reserved,
-            int Version, ref int SessionInfo, ref int Count);
-
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSEnumerateProcesses(int ServerHandle, int Reserved,
-            int Version, ref WTS_PROCESS_INFO[] ProcessInfo, ref int Count);
-
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int WTSEnumerateProcesses(int ServerHandle, int Reserved,
-            int Version, ref int ProcessInfo, ref int Count);
+        public static extern bool WTSEnumerateProcesses(int ServerHandle, int Reserved,
+            int Version, out int ProcessInfo, out int Count);
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSFreeMemory(int Memory);
+        public static extern bool WTSFreeMemory(int Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
+        public static extern bool WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSFreeMemory(WTS_SESSION_INFO[] Memory);
+        public static extern bool WTSFreeMemory(WTS_SESSION_INFO[] Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern int WTSFreeMemory(string Memory);
+        public static extern bool WTSFreeMemory(string Memory);
 
         #endregion
 
@@ -553,7 +487,7 @@ namespace ProcessHacker
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int CreateThread(int ThreadAttributes, int StackSize,
             [MarshalAs(UnmanagedType.FunctionPtr)] System.Threading.ThreadStart StartAddress,
-            int Parameter, int CreationFlags, ref int ThreadId);
+            int Parameter, int CreationFlags, out int ThreadId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessIdOfThread(int ThreadHandle);
@@ -565,7 +499,7 @@ namespace ProcessHacker
         public static extern int OpenThread(THREAD_RIGHTS DesiredAccess, int InheritHandle, int ThreadId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int TerminateThread(int ThreadHandle, int ExitCode);
+        public static extern bool TerminateThread(int ThreadHandle, int ExitCode);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int SuspendThread(int ThreadHandle);
@@ -574,11 +508,11 @@ namespace ProcessHacker
         public static extern int ResumeThread(int ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetThreadContext(int ThreadHandle, ref CONTEXT Context);
+        public static extern bool GetThreadContext(int ThreadHandle, ref CONTEXT Context);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CreateRemoteThread(int ProcessHandle, int ThreadAttributes,
-            int StackSize, int StartAddress, int Parameter, int CreationFlags, ref int ThreadId);
+        public static extern bool CreateRemoteThread(int ProcessHandle, int ThreadAttributes,
+            int StackSize, int StartAddress, int Parameter, int CreationFlags, out int ThreadId);
 
         #endregion
 
@@ -631,24 +565,12 @@ namespace ProcessHacker
         #region Undocumented
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQuerySymbolicLinkObject(int LinkHandle, out UNICODE_STRING LinkTarget,
-            out int ReturnedLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwSetInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
             ref int ThreadInformation, int ThreadInformationLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
             out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            IntPtr ProcessInformation, int ProcessInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            int ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
@@ -664,39 +586,15 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, ref int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+            int TargetProcessHandle, out int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            int SystemInformation, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            SYSTEM_HANDLE_INFORMATION[] SystemInformation, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            uint[] SystemInformation, int SystemInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_BASIC_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_TYPE_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            ref OBJECT_NAME_INFORMATION ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+            IntPtr SystemInformation, int SystemInformationLength, ref int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
             IntPtr ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            int ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
 
         #endregion
 

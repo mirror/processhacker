@@ -53,7 +53,7 @@ namespace ProcessHacker
             {
                 int h;
 
-                if (OpenProcessToken(handle.Handle, access, out h) == 0)
+                if (!OpenProcessToken(handle.Handle, access, out h))
                     throw new Exception(GetLastErrorMessage());
 
                 this.Handle = h;
@@ -68,7 +68,7 @@ namespace ProcessHacker
             {
                 int h;
 
-                if (OpenThreadToken(handle.Handle, access, false, out h) == 0)
+                if (!OpenThreadToken(handle.Handle, access, false, out h))
                     throw new Exception(GetLastErrorMessage());
 
                 this.Handle = h;
@@ -83,26 +83,36 @@ namespace ProcessHacker
             {
                 int retLen = 0;
 
-                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, 0, 0, ref retLen);
+                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, 0, out retLen);
 
-                IntPtr data = Marshal.AllocHGlobal(retLen);
-
-                try
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
-                    if (GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data,
-                        retLen, ref retLen) == 0)
+                    if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data.Memory,
+                        data.Size, out retLen))
                     {
                         throw new Exception(Win32.GetLastErrorMessage());
                     }
 
-                    TOKEN_USER user = PtrToStructure<TOKEN_USER>(data);
+                    TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
 
                     return GetAccountName(user.User.SID, IncludeDomain);
                 }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+            }
+
+            /// <summary>
+            /// Gets the token's session ID.
+            /// </summary>
+            /// <returns>The session ID.</returns>
+            public int GetSessionId()
+            {
+                int sessionId;
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenSessionId,
+                    out sessionId, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return sessionId;
             }
         }
     }

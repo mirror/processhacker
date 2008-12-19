@@ -143,8 +143,8 @@ namespace ProcessHacker
 
             _data = new byte[_length];
 
-            if (Win32.ReadProcessMemory(_phandle.Handle, _address,
-                _data, _length, ref readmemory) == 0)
+            if (!Win32.ReadProcessMemory(_phandle.Handle, _address,
+                _data, _length, out readmemory))
             {
                 throw new Exception();
             }
@@ -166,8 +166,8 @@ namespace ProcessHacker
                 _data[i] = hexBoxMemory.ByteProvider.ReadByte(i);
             }
 
-            if (Win32.WriteProcessMemory(_phandle.Handle, _address,
-                _data, _length, ref wrotememory) == 0)
+            if (!Win32.WriteProcessMemory(_phandle, _address,
+                _data, _length, out wrotememory))
             {
                 MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);

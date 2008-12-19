@@ -27,7 +27,7 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a handle to a Windows service.
         /// </summary>
-        public class ServiceHandle : Win32Handle
+        public class ServiceHandle : ServiceBaseHandle
         {
             /// <summary>
             /// Creates a service handle using an existing handle. 
@@ -59,17 +59,14 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the service.</param>
             public ServiceHandle(string ServiceName, SERVICE_RIGHTS access)
             {
-                int manager = OpenSCManager(0, 0, SC_MANAGER_RIGHTS.SC_MANAGER_CONNECT);
+                using (ServiceManagerHandle manager =
+                    new ServiceManagerHandle(SC_MANAGER_RIGHTS.SC_MANAGER_CONNECT))
+                {
+                    this.Handle = OpenService(manager, ServiceName, access);
 
-                if (manager == 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                this.Handle = OpenService(manager, ServiceName, access);
-
-                CloseServiceHandle(manager);
-
-                if (this.Handle == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    if (this.Handle == 0)
+                        throw new Exception(GetLastErrorMessage());
+                }
             }
 
             /// <summary>
@@ -80,7 +77,7 @@ namespace ProcessHacker
             {
                 SERVICE_STATUS status = new SERVICE_STATUS();
 
-                if (ControlService(this.Handle, control, ref status) == 0)
+                if (!ControlService(this.Handle, control, ref status))
                     throw new Exception(GetLastErrorMessage());
             }
 
@@ -89,7 +86,7 @@ namespace ProcessHacker
             /// </summary>
             public void Start()
             {
-                if (StartService(this.Handle, 0, 0) == 0)
+                if (!StartService(this.Handle, 0, 0))
                     throw new Exception(GetLastErrorMessage());
             }
 
@@ -98,13 +95,8 @@ namespace ProcessHacker
             /// </summary>
             public void Delete()
             {
-                if (DeleteService(this.Handle) == 0)
+                if (!DeleteService(this.Handle))
                     throw new Exception(GetLastErrorMessage());
-            }
-
-            protected override void Close()
-            {
-                CloseServiceHandle(this.Handle);
             }
         }
     }

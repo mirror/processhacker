@@ -396,6 +396,10 @@
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
     <Compile Include="MemoryAlloc.cs" />
+    <Compile Include="Win32\LSAPolicyHandle.cs" />
+    <Compile Include="Win32\LSAHandle.cs" />
+    <Compile Include="Win32\ServiceManagerHandle.cs" />
+    <Compile Include="Win32\ServiceBaseHandle.cs" />
     <Compile Include="Win32\RemoteTokenHandle.cs" />
     <Compile Include="Win32\TokenHandle.cs" />
     <Compile Include="Win32\ServiceHandle.cs" />

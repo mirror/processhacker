@@ -209,8 +209,8 @@ namespace ProcessHacker
                 using (Win32.ProcessHandle phandle = 
                     new Win32.ProcessHandle(virtualProtectProcess.Id, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
                 {
-                    if (Win32.VirtualProtectEx(phandle.Handle, virtualProtectAddress,
-                        virtualProtectSize, newprotect, ref old) == 0)
+                    if (!Win32.VirtualProtectEx(phandle, virtualProtectAddress,
+                        virtualProtectSize, newprotect, out old))
                     {
                         MessageBox.Show("There was an error setting memory protection:\n\n" +
                             Win32.GetLastErrorMessage(), "Process Hacker",
@@ -2555,7 +2555,7 @@ namespace ProcessHacker
         string[] misctoplevel = { "Process", "DEP", "Handles", "I/O", "Memory" };
 
         string[][] miscinfo = {
-                                  new string[] { "Command Line", "Is Being Debugged", "Session ID", "Priority Boost Enabled", 
+                                  new string[] { "Command Line", "Is Being Debugged", "Priority Boost Enabled", 
                                       "Total CPU Time", "Privileged CPU Time", "User CPU Time", "Start Time"},
                                   new string[] { "Status", "Permanent" },
                                   new string[] { "Handle Count" },
@@ -2577,13 +2577,6 @@ namespace ProcessHacker
                                       delegate (Process p)
                                       {
                                           return Program.HackerWindow.processP.Dictionary[p.Id].IsBeingDebugged.ToString();
-                                      },
-
-                                      delegate (Process p)
-                                      {
-                                          int id = Win32.GetProcessSessionId(p.Id);
-
-                                          return id == -1 ? "Unknown" : id.ToString();
                                       },
 
                                       delegate (Process p)
@@ -2623,7 +2616,7 @@ namespace ProcessHacker
                                           using (Win32.ProcessHandle phandle = 
                                               new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                                           {
-                                              Win32.GetProcessDEPPolicy(phandle.Handle, ref flags, ref perm);
+                                              Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm);
 
                                               return flags == Win32.DEPFLAGS.PROCESS_DEP_DISABLE ? "Disabled" :
                                                   (flags == Win32.DEPFLAGS.PROCESS_DEP_ENABLE ? "Enabled" :
@@ -2642,7 +2635,7 @@ namespace ProcessHacker
                                           using (Win32.ProcessHandle phandle = 
                                               new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                                           {
-                                              Win32.GetProcessDEPPolicy(phandle.Handle, ref flags, ref perm);
+                                              Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm);
 
                                               return perm == 0 ? "No" : "Yes";
                                           }
@@ -2780,11 +2773,11 @@ namespace ProcessHacker
             List<int> done = new List<int>();
             ListViewItem primary = null;
 
-            Win32.EnumDeviceDrivers(null, 0, ref RequiredSize);
+            Win32.EnumDeviceDrivers(null, 0, out RequiredSize);
 
             ImageBases = new int[RequiredSize];
 
-            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), ref RequiredSize);
+            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), out RequiredSize);
 
             listModules.BeginUpdate();
 
@@ -2894,8 +2887,8 @@ namespace ProcessHacker
                 {
                     while (true)
                     {
-                        if (Win32.VirtualQueryEx(phandle.Handle, address, ref info,
-                            Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))) == 0)
+                        if (!Win32.VirtualQueryEx(phandle.Handle, address, ref info,
+                            Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                         {
                             break;
                         }
