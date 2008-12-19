@@ -111,10 +111,13 @@ namespace ProcessHacker
             /// </summary>
             public void Dispose()
             {
-                if (!_closed && _owned)
+                lock (this)
                 {
-                    _closed = true;
-                    Close();
+                    if (!_closed && _owned)
+                    {
+                        _closed = true;
+                        Close();
+                    }
                 }
             }
         }
