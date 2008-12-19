@@ -1,6 +1,6 @@
 Process Hacker
 
-1.2.6.5
+1.2.7.0
  * A new member of the project - Dean
  * Win32 code cleanup
  * Can view thread usernames, groups and privileges
@@ -11,6 +11,7 @@ Process Hacker
  * Groups and privileges are now shown in one window
  * Shows groups and privileges for token handles owned by 
    other processes
+ * Major refactoring of Win32 code
 
 1.2.6.0
  * Fixed the fix for the huge regression - the cause was a double "free" of the same handle
