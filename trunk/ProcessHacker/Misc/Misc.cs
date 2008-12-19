@@ -318,19 +318,19 @@ namespace ProcessHacker
         /// <returns>The read string.</returns>
         public static string ReadString(Stream s)
         {
-            string temp = "";
+            StringBuilder str = new StringBuilder();
 
             while (true)
             {
                 int b = s.ReadByte();
 
-                if (b == 0)
+                if (b == 0 || b == -1)
                     break;
 
-                temp += (char)(byte)b;
+                str.Append((char)(byte)b);
             }
 
-            return temp;
+            return str.ToString();
         }
 
         /// <summary>

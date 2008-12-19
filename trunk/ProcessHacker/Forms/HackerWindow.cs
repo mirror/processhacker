@@ -287,20 +287,25 @@ namespace ProcessHacker
 
         private void propertiesHandleMenuItem_Click(object sender, EventArgs e)
         {
+            string type = listHandles.SelectedItems[0].Text;
+            
             try
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
-                    processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                if (type == "Token")
                 {
-                    TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle,
-                        short.Parse(listHandles.SelectedItems[0].Name)));
+                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
+                        processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                    {
+                        TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle,
+                            short.Parse(listHandles.SelectedItems[0].Name)));
 
-                    tokForm.TopMost = this.TopMost;
-                    tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
-                        short.Parse(listHandles.SelectedItems[0].Name), 
-                        processP.Dictionary[processSelectedPID].Name,
-                        processSelectedPID);
-                    tokForm.ShowDialog();
+                        tokForm.TopMost = this.TopMost;
+                        tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
+                            short.Parse(listHandles.SelectedItems[0].Name),
+                            processP.Dictionary[processSelectedPID].Name,
+                            processSelectedPID);
+                        tokForm.ShowDialog();
+                    }
                 }
             }
             catch (Exception ex)
