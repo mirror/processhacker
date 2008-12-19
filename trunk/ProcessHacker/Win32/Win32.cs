@@ -799,7 +799,7 @@ namespace ProcessHacker
                     if (returnProcesses[i].Info.SID == 0)
                         throw new Exception("Null SID pointer");
 
-                    returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, false);
+                    returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, true);
                 }
                 catch
                 { }
