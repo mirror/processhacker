@@ -116,9 +116,9 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new Provider<int, ProcessItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new Provider<int, ProcessItem>.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new Provider<int, ProcessItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -137,10 +137,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new Provider<int, ProcessItem>.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new Provider<int, ProcessItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new Provider<int, ProcessItem>.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new Provider<int, ProcessItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }
@@ -179,98 +179,95 @@ namespace ProcessHacker
                 return user;
         }
 
-        private void provider_DictionaryAdded(object item)
+        private void provider_DictionaryAdded(ProcessItem item)
         {
-            ProcessItem pitem = (ProcessItem)item;
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = pitem.PID.ToString();
+            litem.Name = item.PID.ToString();
 
             try
             {
-                litem.NormalColor = this.GetProcessColor(pitem);
+                litem.NormalColor = this.GetProcessColor(item);
             }
             catch
             { }
 
-            litem.Text = pitem.Name;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.PID.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, pitem.MemoryUsage));
+            litem.Text = item.Name;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.PID.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.MemoryUsage));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0.00"));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, this.GetBestUsername(pitem.Username,
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, this.GetBestUsername(item.Username,
                 Properties.Settings.Default.ShowAccountDomains)));
 
             try
             {
                 string filename = "";
 
-                if (pitem.PID == 4)
+                if (item.PID == 4)
                 {
                     filename = Misc.GetKernelFileName();
                 }
                 else
                 {
-                    filename = pitem.Process.MainModule.FileName;
+                    filename = item.Process.MainModule.FileName;
                 }
 
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                     Misc.GetRealPath(filename));
 
-                litem.ToolTipText = (pitem.CmdLine != null ? (pitem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
+                litem.ToolTipText = (item.CmdLine != null ? (item.CmdLine + "\n\n") : "") + info.FileName + "\n" +
                     info.FileDescription + " (" + info.FileVersion + ")\n" +
                     info.CompanyName;
             }
             catch
             { }
 
-            if (pitem.Icon == null)
+            if (item.Icon == null)
             {
                 litem.ImageIndex = 0;
             }
             else
             {
-                imageList.Images.Add(pitem.Icon);
+                imageList.Images.Add(item.Icon);
                 litem.ImageIndex = _id++;
             }
 
             listProcesses.Items.Add(litem);
         }
 
-        private void provider_DictionaryModified(object oldItem, object newItem)
+        private void provider_DictionaryModified(ProcessItem oldItem, ProcessItem newItem)
         {
             lock (listProcesses)
             {
-                ProcessItem pitem = (ProcessItem)newItem;
-                ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+                ListViewItem litem = listProcesses.Items[newItem.PID.ToString()];
 
                 if (litem == null)
                     return;
 
                 try
                 {
-                    (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(pitem);
+                    (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(newItem);
                 }
                 catch
                 { }
 
-                litem.SubItems[2].Text = pitem.MemoryUsage;
-                litem.SubItems[3].Text = pitem.CPUUsage;
+                litem.SubItems[2].Text = newItem.MemoryUsage;
+                litem.SubItems[3].Text = newItem.CPUUsage;
 
-                if (pitem.Icon != null && pitem.IconAttempts > 0)
+                if (newItem.Icon != null && newItem.IconAttempts > 0)
                 {
-                    imageList.Images.Add(pitem.Icon);
+                    imageList.Images.Add(newItem.Icon);
                     litem.ImageIndex = _id++;
                 }
             }
         }
 
-        private void provider_DictionaryRemoved(object item)
+        private void provider_DictionaryRemoved(ProcessItem item)
         {
-            ProcessItem pitem = (ProcessItem)item;
-            int index = listProcesses.Items[pitem.PID.ToString()].Index;
-            bool selected = listProcesses.Items[pitem.PID.ToString()].Selected;
+            int index = listProcesses.Items[item.PID.ToString()].Index;
+            bool selected = listProcesses.Items[item.PID.ToString()].Selected;
             int selectedCount = listProcesses.SelectedItems.Count;
-            ListViewItem litem = listProcesses.Items[pitem.PID.ToString()];
+            ListViewItem litem = listProcesses.Items[item.PID.ToString()];
             int imageIndex = litem.ImageIndex;
 
             litem.Remove();

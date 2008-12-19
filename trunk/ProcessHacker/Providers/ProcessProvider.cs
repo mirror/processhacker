@@ -40,6 +40,7 @@ namespace ProcessHacker
         public bool IsBeingDebugged;
         public ulong LastTime;
         public int SessionId;
+        public int ParentPID;
         public int IconAttempts;
     }
 
@@ -176,6 +177,13 @@ namespace ProcessHacker
                             }
                             catch
                             { }
+
+                            try
+                            {
+                                item.ParentPID = phandle.GetParentPID();
+                            }
+                            catch
+                            { }
                         }
                     }
                     catch
@@ -222,6 +230,7 @@ namespace ProcessHacker
                     newitem.Icon = item.Icon;
                     newitem.IconAttempts = item.IconAttempts;
                     newitem.Name = item.Name;
+                    newitem.ParentPID = item.ParentPID;
                     newitem.PID = item.PID;
                     newitem.Process = item.Process;
                     newitem.SessionId = item.SessionId;

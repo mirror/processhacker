@@ -71,7 +71,7 @@ namespace ProcessHacker
                     _provider.Dictionary[s].Status.ServiceStatusProcess.CurrentState.ToString() })).Name = s;
             }
 
-            _provider.DictionaryModified += new ProviderDictionaryModified(_provider_DictionaryModified);
+            _provider.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(_provider_DictionaryModified);
 
             this.FillComboBox(comboErrorControl, typeof(Win32.SERVICE_ERROR_CONTROL));
             this.FillComboBox(comboStartType, typeof(Win32.SERVICE_START_TYPE));
@@ -87,10 +87,10 @@ namespace ProcessHacker
 
         private void ServiceWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _provider.DictionaryModified -= new ProviderDictionaryModified(_provider_DictionaryModified);
+            _provider.DictionaryModified -= new Provider<string, ServiceItem>.ProviderDictionaryModified(_provider_DictionaryModified);
         }
 
-        private void _provider_DictionaryModified(object oldItem, object newItem)
+        private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
             ServiceItem sitem = (ServiceItem)newItem;
 

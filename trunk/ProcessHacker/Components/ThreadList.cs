@@ -122,9 +122,9 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new Provider<int, ThreadItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new Provider<int, ThreadItem>.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new Provider<int, ThreadItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -139,10 +139,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new Provider<int, ThreadItem>.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new Provider<int, ThreadItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new Provider<int, ThreadItem>.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new Provider<int, ThreadItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }
@@ -159,48 +159,45 @@ namespace ProcessHacker
             return System.Drawing.SystemColors.Window;
         }
 
-        private void provider_DictionaryAdded(object item)
+        private void provider_DictionaryAdded(ThreadItem item)
         {
-            ThreadItem titem = (ThreadItem)item;
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = titem.TID.ToString();
-            litem.Text = titem.TID.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.StartAddress));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.CPUTime));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, titem.Priority));
+            litem.Name = item.TID.ToString();
+            litem.Text = item.TID.ToString();
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.CPUTime));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
 
-            litem.NormalColor = GetThreadColor(titem);
+            litem.NormalColor = GetThreadColor(item);
 
             listThreads.Items.Add(litem);
         }
 
-        private void provider_DictionaryModified(object oldItem, object newItem)
+        private void provider_DictionaryModified(ThreadItem oldItem, ThreadItem newItem)
         {
             lock (listThreads)
             {
-                ThreadItem titem = (ThreadItem)newItem;
-                ListViewItem litem = listThreads.Items[titem.TID.ToString()];
+                ListViewItem litem = listThreads.Items[newItem.TID.ToString()];
 
                 if (litem == null)
                     return;
 
-                litem.SubItems[1].Text = titem.StartAddress;
-                litem.SubItems[2].Text = titem.CPUTime;
-                litem.SubItems[3].Text = titem.Priority;
+                litem.SubItems[1].Text = newItem.StartAddress;
+                litem.SubItems[2].Text = newItem.CPUTime;
+                litem.SubItems[3].Text = newItem.Priority;
 
-                (litem as HighlightedListViewItem).NormalColor = GetThreadColor(titem);
+                (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
             }
         }
 
-        private void provider_DictionaryRemoved(object item)
+        private void provider_DictionaryRemoved(ThreadItem item)
         {
-            ThreadItem titem = (ThreadItem)item;
-            int index = listThreads.Items[titem.TID.ToString()].Index;
-            bool selected = listThreads.Items[titem.TID.ToString()].Selected;
+            int index = listThreads.Items[item.TID.ToString()].Index;
+            bool selected = listThreads.Items[item.TID.ToString()].Selected;
             int selectedCount = listThreads.SelectedItems.Count;
 
-            listThreads.Items[titem.TID.ToString()].Remove();
+            listThreads.Items[item.TID.ToString()].Remove();
 
             if (selected && selectedCount == 1)
             {

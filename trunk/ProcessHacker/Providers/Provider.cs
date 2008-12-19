@@ -23,52 +23,52 @@ using System.Text;
 using System.Threading;
 
 namespace ProcessHacker
-{
-    /// <summary>
-    /// A generic delegate which is used when updating the dictionary.
-    /// </summary>
-    public delegate void ProviderUpdateOnce();
-
-    /// <summary>
-    /// Represents an invoke method (either Invoke() or BeginInvoke() on a form).
-    /// </summary>
-    /// <param name="method">The method to invoke.</param>
-    /// <param name="args">The arguments to pass to the method.</param>
-    /// <returns></returns>
-    public delegate object ProviderInvokeMethod(Delegate method, params object[] args);
-
-    /// <summary>
-    /// Represents a handler called when a dictionary item is added.
-    /// </summary>
-    /// <param name="item">The added item.</param>
-    public delegate void ProviderDictionaryAdded(object item);
-
-    /// <summary>
-    /// Represents a handler called when a dictionary item is modified.
-    /// </summary>
-    /// <param name="item">The modified item.</param>
-    public delegate void ProviderDictionaryModified(object oldItem, object newItem);
-
-    /// <summary>
-    /// Represents a handler called when a dictionary item is removed.
-    /// </summary>
-    /// <param name="item">The removed item.</param>
-    public delegate void ProviderDictionaryRemoved(object item);
-
-    /// <summary>
-    /// Represents a handler called when an error occurs while updating.
-    /// </summary>
-    /// <param name="ex">The raised exception.</param>
-    public delegate void ProviderError(Exception ex);
-                                                          
+{                                                 
     /// <summary>
     /// Provides services for continuously updating a dictionary.
     /// </summary>
     public class Provider<TKey, TValue>
     {
-        private delegate void InvokeDelegate(object item);
-        private delegate void InvokeDelegate2(object oldItem, object newItem);
-                             
+        /// <summary>
+        /// A generic delegate which is used when updating the dictionary.
+        /// </summary>
+        public delegate void ProviderUpdateOnce();
+
+        /// <summary>
+        /// Represents an invoke method (either Invoke() or BeginInvoke() on a form).
+        /// </summary>
+        /// <param name="method">The method to invoke.</param>
+        /// <param name="args">The arguments to pass to the method.</param>
+        /// <returns></returns>
+        public delegate object ProviderInvokeMethod(Delegate method, params object[] args);
+
+        /// <summary>
+        /// Represents a handler called when a dictionary item is added.
+        /// </summary>
+        /// <param name="item">The added item.</param>
+        public delegate void ProviderDictionaryAdded(TValue item);
+
+        /// <summary>
+        /// Represents a handler called when a dictionary item is modified.
+        /// </summary>
+        /// <param name="item">The modified item.</param>
+        public delegate void ProviderDictionaryModified(TValue oldItem, TValue newItem);
+
+        /// <summary>
+        /// Represents a handler called when a dictionary item is removed.
+        /// </summary>
+        /// <param name="item">The removed item.</param>
+        public delegate void ProviderDictionaryRemoved(TValue item);
+
+        /// <summary>
+        /// Represents a handler called when an error occurs while updating.
+        /// </summary>
+        /// <param name="ex">The raised exception.</param>
+        public delegate void ProviderError(Exception ex);
+
+        private delegate void InvokeDelegate(TValue item);
+        private delegate void InvokeDelegate2(TValue oldItem, TValue newItem);
+
         /// <summary>
         /// Occurs when the provider needs to update the dictionary (after waiting the duration of the interval).
         /// </summary>
@@ -103,7 +103,7 @@ namespace ProcessHacker
         /// Occurs when an exception is raised while updating.
         /// </summary>
         public event ProviderError Error;
-                                                           
+
         Thread _thread;
         List<Thread> _asyncThreads = new List<Thread>();
         Dictionary<TKey, TValue> _dictionary;
@@ -119,7 +119,7 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class.
         /// </summary>
         public Provider()
-        {          
+        {
             _dictionary = new Dictionary<TKey, TValue>();
 
             _thread = new Thread(new ThreadStart(Update));
@@ -135,7 +135,7 @@ namespace ProcessHacker
         {
             get { return _busy; }
         }
-          
+
         /// <summary>
         /// Determines whether the provider should update.
         /// </summary>
@@ -247,11 +247,11 @@ namespace ProcessHacker
                 t.Abort();
         }
 
-        private void CallEvent(Delegate e, object item, bool useInvoke)
+        private void CallEvent(Delegate e, TValue item, bool useInvoke)
         {
             if (useInvoke)
             {
-                this.Invoke(new InvokeDelegate(delegate(object item_)
+                this.Invoke(new InvokeDelegate(delegate(TValue item_)
                 {
                     CallEvent(e, item_, false);
                 }), item);
@@ -263,11 +263,11 @@ namespace ProcessHacker
             }
         }
 
-        private void CallEvent(Delegate e, object oldItem, object newItem, bool useInvoke)
+        private void CallEvent(Delegate e, TValue oldItem, TValue newItem, bool useInvoke)
         {
             if (useInvoke)
             {
-                this.Invoke(new InvokeDelegate2(delegate(object oldItem_, object newItem_)
+                this.Invoke(new InvokeDelegate2(delegate(TValue oldItem_, TValue newItem_)
                 {
                     CallEvent(e, oldItem_, newItem_, false);
                 }), oldItem, newItem);
@@ -279,32 +279,32 @@ namespace ProcessHacker
             }
         }
 
-        protected void CallDictionaryAdded(object item)
+        protected void CallDictionaryAdded(TValue item)
         {
             CallDictionaryAdded(item, _useInvoke);
         }
 
-        protected void CallDictionaryAdded(object item, bool useInvoke)
+        protected void CallDictionaryAdded(TValue item, bool useInvoke)
         {
             CallEvent(this.DictionaryAdded, item, useInvoke);
         }
 
-        protected void CallDictionaryModified(object oldItem, object newItem)
+        protected void CallDictionaryModified(TValue oldItem, TValue newItem)
         {
             CallDictionaryModified(oldItem, newItem, _useInvoke);
         }
 
-        protected void CallDictionaryModified(object oldItem, object newItem, bool useInvoke)
+        protected void CallDictionaryModified(TValue oldItem, TValue newItem, bool useInvoke)
         {
             CallEvent(this.DictionaryModified, oldItem, newItem, useInvoke);
         }
 
-        protected void CallDictionaryRemoved(object item)
+        protected void CallDictionaryRemoved(TValue item)
         {
             CallDictionaryRemoved(item, _useInvoke);
         }
 
-        protected void CallDictionaryRemoved(object item, bool useInvoke)
+        protected void CallDictionaryRemoved(TValue item, bool useInvoke)
         {
             CallEvent(this.DictionaryRemoved, item, useInvoke);
         }

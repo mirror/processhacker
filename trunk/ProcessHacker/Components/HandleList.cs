@@ -122,8 +122,8 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved -= new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new Provider<short, HandleItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryRemoved -= new Provider<short, HandleItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -138,9 +138,9 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved += new ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new Provider<short, HandleItem>.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new Provider<short, HandleItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryRemoved += new Provider<short, HandleItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }
@@ -149,27 +149,25 @@ namespace ProcessHacker
 
         #region Core Handle List
 
-        private void provider_DictionaryAdded(object item)
+        private void provider_DictionaryAdded(HandleItem item)
         {
-            HandleItem hitem = (HandleItem)item;
             HighlightedListViewItem litem = new HighlightedListViewItem();
 
-            litem.Name = hitem.Handle.Handle.ToString();
-            litem.Text = hitem.ObjectInfo.TypeName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, hitem.ObjectInfo.BestName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + hitem.Handle.Handle.ToString("x")));
+            litem.Name = item.Handle.Handle.ToString();
+            litem.Text = item.ObjectInfo.TypeName;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
 
             listHandles.Items.Add(litem);
         }
 
-        private void provider_DictionaryRemoved(object item)
+        private void provider_DictionaryRemoved(HandleItem item)
         {
-            HandleItem hitem = (HandleItem)item;
-            int index = listHandles.Items[hitem.Handle.Handle.ToString()].Index;
-            bool selected = listHandles.Items[hitem.Handle.Handle.ToString()].Selected;
+            int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
+            bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
             int selectedCount = listHandles.SelectedItems.Count;
 
-            listHandles.Items[hitem.Handle.Handle.ToString()].Remove();
+            listHandles.Items[item.Handle.Handle.ToString()].Remove();
 
             if (selected && selectedCount == 1)
             {
