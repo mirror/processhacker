@@ -252,7 +252,7 @@ namespace ProcessHacker
                 { }
 
                 litem.SubItems[2].Text = newItem.MemoryUsage;
-                litem.SubItems[3].Text = newItem.CPUUsage;
+                litem.SubItems[3].Text = newItem.CPUUsage.ToString("F2");
 
                 if (newItem.Icon != null && newItem.IconAttempts > 0)
                 {

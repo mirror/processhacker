@@ -32,7 +32,7 @@ namespace ProcessHacker
 
         public Icon Icon;
         public string CmdLine;
-        public string CPUUsage;
+        public float CPUUsage;
         public string MemoryUsage;
         public string Name;
         public string Username;
@@ -265,7 +265,7 @@ namespace ProcessHacker
                                 ulong[] times = Win32.GetProcessTimes(phandle);
 
                                 newitem.LastTime = times[2] / 10000 + times[3] / 10000;
-                                newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) * 100 / sysTime).ToString("F2");
+                                newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
                             }
                             catch
                             { }
@@ -284,7 +284,7 @@ namespace ProcessHacker
                     if (p.Id == 0)
                     {
                         newitem.LastTime = systemTimes[0] / 10000;
-                        newitem.CPUUsage = ((double)(newitem.LastTime - item.LastTime) * 100 / sysTime).ToString("F2");
+                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
                     }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
