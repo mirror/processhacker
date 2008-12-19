@@ -934,11 +934,15 @@ namespace ProcessHacker
 
                 try
                 {
-                    int parent = Win32.GetProcessParent(processSelectedPID);
-                    ListViewItem item = listProcesses.List.Items[parent.ToString()];
+                    using (Win32.ProcessHandle phandle = 
+                        new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                    {
+                        int parent = phandle.GetParentPID();
+                        ListViewItem item = listProcesses.List.Items[parent.ToString()];
 
-                    goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
-                    goToParentProcessMenuItem.Enabled = true;
+                        goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
+                        goToParentProcessMenuItem.Enabled = true;
+                    }
                 }
                 catch
                 {
@@ -1162,12 +1166,16 @@ namespace ProcessHacker
         {
             try
             {
-                int parent = Win32.GetProcessParent(processSelectedPID);
-                ListViewItem item = listProcesses.List.Items[parent.ToString()];
+                using (Win32.ProcessHandle phandle = 
+                    new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    int parent = phandle.GetParentPID();
+                    ListViewItem item = listProcesses.List.Items[parent.ToString()];
 
-                DeselectAll(listProcesses.List);
-                item.Selected = true;
-                item.EnsureVisible();
+                    DeselectAll(listProcesses.List);
+                    item.Selected = true;
+                    item.EnsureVisible();
+                }
             }
             catch
             { }
@@ -1434,9 +1442,13 @@ namespace ProcessHacker
 
             try
             {
-                parent = processP.Dictionary[Win32.GetProcessParent(pitem.PID)];
+                using (Win32.ProcessHandle phandle = 
+                    new Win32.ProcessHandle(pitem.PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    parent = processP.Dictionary[phandle.GetParentPID()];
 
-                parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
+                    parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
+                }
             }
             catch
             { }

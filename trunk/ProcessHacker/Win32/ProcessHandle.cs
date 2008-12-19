@@ -66,6 +66,32 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the process' basic information through the undocumented Native API function 
+            /// ZwQueryInformationProcess.
+            /// </summary>
+            /// <returns>A PROCESS_BASIC_INFORMATION structure.</returns>
+            public PROCESS_BASIC_INFORMATION GetBasicInformation()
+            {
+                PROCESS_BASIC_INFORMATION pbi = new PROCESS_BASIC_INFORMATION();
+                int retLen;
+
+                if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
+                    ref pbi, Marshal.SizeOf(pbi), out retLen) != 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                return pbi;
+            }
+
+            /// <summary>
+            /// Gets the process' parent's process ID.
+            /// </summary>
+            /// <returns>The process ID.</returns>
+            public int GetParentPID()
+            {
+                return this.GetBasicInformation().InheritedFromUniqueProcessId;
+            }
+
+            /// <summary>
             /// Waits for the process.
             /// </summary>
             /// <param name="Timeout">The timeout of the wait.</param>

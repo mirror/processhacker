@@ -314,12 +314,12 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct PROCESS_BASIC_INFORMATION
         {
-            public int Reserved1;
+            public int ExitStatus;
             public int PebBaseAddress;
-            public int Reserved2_1;
-            public int Reserved2_2;
+            public int AffinityMask;
+            public int BasePriority;
             public int UniqueProcessId;
-            public int Reserved3;
+            public int InheritedFromUniqueProcessId;
         }
 
         [StructLayout(LayoutKind.Sequential)]

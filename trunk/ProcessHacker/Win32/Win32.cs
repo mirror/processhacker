@@ -472,29 +472,6 @@ namespace ProcessHacker
             return GetProcessPEBString(process, 58);
         }
 
-        public static int GetProcessParent(int pid)
-        {
-            PROCESSENTRY32 proc = new PROCESSENTRY32();
-            int snapshot = 0;
-
-            snapshot = CreateToolhelp32Snapshot(SnapshotFlags.Process, pid);
-
-            if (snapshot == 0)
-                return -1;
-
-            proc.dwSize = Marshal.SizeOf(typeof(PROCESSENTRY32));
-
-            Process32First(snapshot, ref proc);
-
-            do
-            {
-                if (proc.th32ProcessID == pid)
-                    return proc.th32ParentProcessID;
-            } while (Process32Next(snapshot, ref proc) != 0);
-
-            return -1;
-        }
-
         public static string GetProcessPEBString(ProcessHandle process, int offset)
         {
             PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
