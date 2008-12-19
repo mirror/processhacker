@@ -83,12 +83,83 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the command line used to start the process.
+            /// </summary>
+            /// <returns>A string.</returns>
+            public string GetCommandLine()
+            {
+                return this.GetPEBString(66);
+            }
+
+            /// <summary>
+            /// Gets the file name of the process' image.
+            /// </summary>
+            /// <returns>A file name, in kernel file name format.</returns>
+            public string GetImageFileName()
+            {
+                return this.GetPEBString(58);
+            }
+
+            /// <summary>
             /// Gets the process' parent's process ID.
             /// </summary>
             /// <returns>The process ID.</returns>
             public int GetParentPID()
             {
                 return this.GetBasicInformation().InheritedFromUniqueProcessId;
+            }
+
+            private string GetPEBString(int offset)
+            {
+                PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
+                int retLen;
+                int pebBaseAddress = 0x7ffd7000;
+
+                if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
+                    ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
+                    pebBaseAddress = basicInfo.PebBaseAddress;
+
+                byte[] data2 = new byte[4];
+
+                // read address of parameter information block
+                if (!ReadProcessMemory(this, basicInfo.PebBaseAddress + 16, data2, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+                // read length of string
+                if (!ReadProcessMemory(this, paramInfoAddrI + offset, data2, 2, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
+                byte[] stringData = new byte[strLength];
+
+                // read address of string
+                if (!ReadProcessMemory(this, paramInfoAddrI + offset + 2, data2, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
+
+                // read string
+                if (!ReadProcessMemory(this, strAddr, stringData, strLength, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                // return decoded unicode string
+                return System.Text.UnicodeEncoding.Unicode.GetString(stringData).TrimEnd('\0');
+            }
+
+            /// <summary>
+            /// Gets whether the process is currently being debugged.
+            /// </summary>
+            /// <returns>A boolean value.</returns>
+            public bool IsBeingDebugged()
+            {
+                bool debugged;
+
+                if (!Win32.CheckRemoteDebuggerPresent(this, out debugged))
+                    throw new Exception(GetLastErrorMessage());
+
+                return debugged;
             }
 
             /// <summary>

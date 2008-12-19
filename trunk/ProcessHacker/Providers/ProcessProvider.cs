@@ -165,15 +165,14 @@ namespace ProcessHacker
 
                             try
                             {
-                                item.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
+                                item.IsBeingDebugged = phandle.IsBeingDebugged();
                             }
                             catch
                             { }
 
                             try
                             {
-                                item.Username = Win32.GetProcessUsername(phandle.Handle,
-                                    true);
+                                item.Username = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUsername(true);
                             }
                             catch
                             { }
@@ -185,7 +184,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                item.Username = tsProcesses[p.Id].UsernameWithDomain;
+                                item.Username = tsProcesses[p.Id].Username;
                             }
                             catch
                             { }
@@ -205,7 +204,7 @@ namespace ProcessHacker
                         using (Win32.ProcessHandle phandle =
                             new Win32.ProcessHandle(p.Id,
                                 Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
-                            item.CmdLine = Win32.GetProcessCmdLine(phandle);
+                            item.CmdLine = phandle.GetCommandLine();
                     }
                     catch
                     { }
@@ -264,7 +263,7 @@ namespace ProcessHacker
 
                             try
                             {
-                                 newitem.IsBeingDebugged = Win32.IsBeingDebugged(phandle.Handle);
+                                 newitem.IsBeingDebugged = phandle.IsBeingDebugged();
                             }
                             catch
                             { }

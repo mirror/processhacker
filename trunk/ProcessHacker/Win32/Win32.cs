@@ -438,11 +438,6 @@ namespace ProcessHacker
             return "(unknown)";
         }
 
-        public static string GetProcessCmdLine(ProcessHandle process)
-        {
-            return GetProcessPEBString(process, 66);
-        }
-
         public static Icon GetProcessIcon(Process p)
         {
             Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
@@ -467,50 +462,6 @@ namespace ProcessHacker
             }
         }
 
-        public static string GetProcessImageFileName(ProcessHandle process)
-        {
-            return GetProcessPEBString(process, 58);
-        }
-
-        public static string GetProcessPEBString(ProcessHandle process, int offset)
-        {
-            PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
-            int retLen;
-            int pebBaseAddress = 0x7ffd7000;
-
-            if (ZwQueryInformationProcess(process.Handle, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
-                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
-                pebBaseAddress = basicInfo.PebBaseAddress;
-
-            byte[] data2 = new byte[4];
-
-            // read address of parameter information block
-            if (!ReadProcessMemory(process.Handle, basicInfo.PebBaseAddress + 16, data2, 4, out retLen))
-                throw new Exception(GetLastErrorMessage());
-
-            int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-            // read length of string
-            if (!ReadProcessMemory(process.Handle, paramInfoAddrI + offset, data2, 2, out retLen))
-                throw new Exception(GetLastErrorMessage());
-
-            ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
-            byte[] stringData = new byte[strLength];
-
-            // read address of string
-            if (!ReadProcessMemory(process.Handle, paramInfoAddrI + offset + 2, data2, 4, out retLen))
-                throw new Exception(GetLastErrorMessage());
-
-            int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-            // read string
-            if (!ReadProcessMemory(process.Handle, strAddr, stringData, strLength, out retLen))
-                throw new Exception(GetLastErrorMessage());
-
-            // return decoded unicode string
-            return UnicodeEncoding.Unicode.GetString(stringData).TrimEnd('\0');
-        }
-
         public static int GetProcessSessionId(int ProcessId)
         {
             int sessionId = -1;
@@ -524,27 +475,11 @@ namespace ProcessHacker
             {
                 using (ProcessHandle phandle = new ProcessHandle(ProcessId, PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                 {
-                    return phandle.GetToken().GetSessionId();
+                    return phandle.GetToken(TOKEN_RIGHTS.TOKEN_QUERY).GetSessionId();
                 }
             }
 
             return sessionId;
-        }
-
-        public static string GetProcessUsername(int handle, bool IncludeDomain)
-        {
-            using (TokenHandle token = new TokenHandle(ProcessHandle.FromHandle(handle), TOKEN_RIGHTS.TOKEN_QUERY))
-                return token.GetUsername(IncludeDomain);
-        }
-
-        public static bool IsBeingDebugged(int ProcessHandle)
-        {
-            bool debugged;
-
-            if (!Win32.CheckRemoteDebuggerPresent(ProcessHandle, out debugged))
-                throw new Exception(GetLastErrorMessage());
-
-            return debugged;
         }
 
         #endregion
@@ -823,7 +758,6 @@ namespace ProcessHacker
         {
             public WTS_PROCESS_INFO Info;
             public string Username;
-            public string UsernameWithDomain;
         }
 
         public static WTS_SESSION_INFO[] TSEnumSessions()
@@ -869,16 +803,6 @@ namespace ProcessHacker
                 }
                 catch
                 { }
-
-                try
-                {
-                    if (returnProcesses[i].Info.SID == 0)
-                        throw new Exception("Null SID pointer");
-
-                    returnProcesses[i].UsernameWithDomain = GetAccountName(returnProcesses[i].Info.SID, true);
-                }
-                catch
-                { }
             }
 
             WTSFreeMemory(processes);
@@ -895,7 +819,7 @@ namespace ProcessHacker
                 if (process.Info.ProcessID == PID)
                 {
                     if (IncludeDomain)
-                        return process.UsernameWithDomain;
+                        return process.Username;
                     else
                         return process.Username;
                 }
