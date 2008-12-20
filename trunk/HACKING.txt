@@ -40,3 +40,7 @@ GUIDE TO DIRECTORY ORGANIZATION
       2. The Win32 API sucks (and dbghelp.dll isn't thread-safe).
   * Win32 - contains imported functions, various structs and enums, and wrapper 
     code (handles memory issues)
+
+TODO:
+ * Clean up state highlighting - have one master class with ONE timer controlling 
+   multiple providers

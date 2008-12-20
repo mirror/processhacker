@@ -16,6 +16,13 @@ namespace Aga.Controls.Tree
 	[Serializable]
 	public sealed class TreeNodeAdv : ISerializable
 	{
+        static TreeNodeAdv()
+        {
+            StateColors.Add(NodeState.Normal, SystemColors.Window);
+            StateColors.Add(NodeState.New, Color.Green);
+            StateColors.Add(NodeState.Removed, Color.Red);
+        }
+
 		#region NodeCollection
 		private class NodeCollection : Collection<TreeNodeAdv>
 		{
@@ -93,10 +100,31 @@ namespace Aga.Controls.Tree
 			}
         }
 
+        public enum NodeState
+        {
+            Normal, New, Removed
+        }
+
+        public static Dictionary<NodeState, Color> StateColors = new Dictionary<NodeState, Color>();
+
+        private NodeState _state = NodeState.Normal;
+
+        public NodeState State
+        {
+            get { return _state; }
+            set { _state = value; }
+        }
+
         private Color _backColor = SystemColors.Window;
         public Color BackColor
         {
-            get { return _backColor; }
+            get
+            {
+                if (_state != NodeState.Normal)
+                    return StateColors[_state];
+                else
+                    return _backColor;
+            }
             set { _backColor = value; }
         }
 

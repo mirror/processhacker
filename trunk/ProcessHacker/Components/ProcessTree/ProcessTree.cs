@@ -158,6 +158,20 @@ namespace ProcessHacker
 
         #region Core Process List
 
+        private void PerformDelayed(int delay, MethodInvoker action)
+        {
+            Timer t = new Timer();
+
+            t.Tick += new EventHandler(delegate(object o, EventArgs args)
+            {
+                t.Enabled = false;
+                action();
+            });
+
+            t.Interval = delay;
+            t.Enabled = true;
+        }
+
         private Color GetProcessColor(ProcessItem p)
         {
             if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
@@ -181,6 +195,13 @@ namespace ProcessHacker
 
             if (node != null)
             {
+                if (_provider.RunCount > 1)
+                {
+                    node.State = TreeNodeAdv.NodeState.New;
+                    this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                        new MethodInvoker(delegate { node.State = TreeNodeAdv.NodeState.Normal; }));
+                }
+
                 node.BackColor = GetProcessColor(item);
                 node.ExpandAll();
             }
@@ -203,7 +224,11 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(ProcessItem item)
         {
-            _treeModel.Remove(item);
+            TreeNodeAdv node = this.FindTreeNode(item.PID);
+
+            node.State = TreeNodeAdv.NodeState.Removed;
+            this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                new MethodInvoker(delegate { _treeModel.Remove(item); }));
         }
 
         public void RefreshItems()

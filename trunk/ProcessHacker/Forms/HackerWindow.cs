@@ -3093,6 +3093,8 @@ namespace ProcessHacker
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
             Misc.SetDoubleBuffered(listMemory, typeof(ListView), true);
             Misc.SetDoubleBuffered(listModules, typeof(ListView), true);
@@ -3127,6 +3129,7 @@ namespace ProcessHacker
         private void serviceP_Updated()
         {
             listServices.List.EndUpdate();
+            HighlightedListViewItem.StateHighlighting = true;
 
             serviceP.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(serviceP_DictionaryAdded);
             serviceP.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(serviceP_DictionaryModified);
@@ -3139,8 +3142,6 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            HighlightedListViewItem.StateHighlighting = true;
-
             processP.DictionaryAdded += new Provider<int, ProcessItem>.ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new Provider<int, ProcessItem>.ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_Updated);
@@ -3192,13 +3193,13 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             treeMisc.ContextMenu = menuMisc;
 
-            HighlightedListViewItem.StateHighlighting = false;
-            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
             processP.Updated += new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
+            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightedListViewItem.StateHighlighting = false;
             listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
