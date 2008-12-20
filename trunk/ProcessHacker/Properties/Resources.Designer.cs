@@ -305,6 +305,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Icon Process_small {
+            get {
+                object obj = ResourceManager.GetObject("Process_small", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap ProcessHacker {
             get {
                 object obj = ResourceManager.GetObject("ProcessHacker", resourceCulture);

@@ -247,7 +247,7 @@ namespace Aga.Controls.Tree
 			DrawContent(gr, bounds, font);
 		}
 
-        private void DrawContent(Graphics gr, Rectangle bounds, Font font)
+        internal void DrawContent(Graphics gr, Rectangle bounds, Font font)
         {
             Rectangle innerBounds = new Rectangle(bounds.X + HeaderLeftMargin, bounds.Y,
                                    bounds.Width - HeaderLeftMargin - HeaderRightMargin,

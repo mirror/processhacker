@@ -26,7 +26,7 @@ namespace Aga.Controls.Tree.NodeControls
 			set { _allowNegativeSign = value; }
 		}
 
-		protected NodeDecimalTextBox()
+		public NodeDecimalTextBox()
 		{
 		}
 

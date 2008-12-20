@@ -166,8 +166,15 @@ namespace Aga.Controls.Tree
 						Rectangle rect = new Rectangle(x, 0, c.Width, ColumnHeaderHeight - 1);
 						gr.SetClip(rect);
 						bool pressed = ((Input is ClickColumnState || reorder != null) && ((Input as ColumnState).Column == c));
-						c.Draw(gr, rect, Font, pressed, _hotColumn == c);
+                        TreeColumn.DrawBackground(gr, rect, pressed, _hotColumn == c);
 						gr.ResetClip();
+
+                        x -= OffsetX;
+                        Rectangle rect2 = new Rectangle(x, 0, c.Width, ColumnHeaderHeight - 1);
+                        gr.SetClip(rect2);
+                        c.DrawContent(gr, rect2, Font);
+                        gr.ResetClip();
+                        x += OffsetX;
 
 						if (reorder != null && reorder.DropColumn == c)
 							TreeColumn.DrawDropMark(gr, rect);

@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Aga.Controls.Tree;
 
 namespace ProcessHacker
 {
@@ -105,9 +106,9 @@ namespace ProcessHacker
             get { return handleP; }
         }
 
-        public ProcessList ProcessList
+        public ProcessTree ProcessList
         {
-            get { return listProcesses; }
+            get { return treeProcesses; }
         }
 
         public Dictionary<int, List<string>> ProcessServices
@@ -126,7 +127,7 @@ namespace ProcessHacker
             panelProc.Visible = false;
             this.AcceptButton = null;
 
-            listProcesses.Enabled = true;
+            treeProcesses.Enabled = true;
             listThreads.Enabled = true;
             tabControl.Enabled = true;
         }
@@ -336,13 +337,13 @@ namespace ProcessHacker
             }
         }
 
-        private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
+        private void listProcesses_SelectionChanged(object sender, EventArgs e)
         {
-            processSelectedItems = listProcesses.SelectedItems.Count;
+            processSelectedItems = treeProcesses.SelectedNodes.Count;
 
             if (processSelectedItems == 1)
             {
-                processSelectedPID = Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text);
+                processSelectedPID = treeProcesses.SelectedNodes[0].PID;
 
                 treeMisc.Enabled = true;
                 buttonSearch.Enabled = true;
@@ -414,7 +415,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        Misc.SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
+                        Misc.SelectAll((IEnumerable<ListViewItem>)c.GetType().GetProperty("Items").GetValue(c, null));
                     }
                     catch
                     { }
@@ -448,7 +449,7 @@ namespace ProcessHacker
             Process[] processes = Process.GetProcesses();
             int myId = Win32.GetProcessSessionId(Process.GetCurrentProcess().Id);
 
-            DeselectAll(listProcesses.List);
+            DeselectAll(treeProcesses.Tree);
 
             foreach (Process p in processes)
             {
@@ -457,8 +458,7 @@ namespace ProcessHacker
                     if (Win32.TSGetProcessUsername(p.Id, true) == "NT AUTHORITY\\SYSTEM" &&
                         Win32.GetProcessSessionId(p.Id) == myId)
                     {
-                        listProcesses.List.Items[p.Id.ToString()].Selected = true;
-                        listProcesses.List.Items[p.Id.ToString()].EnsureVisible();
+                        treeProcesses.FindTreeNode(p.Id).IsSelected = true;
                     }
                 }
                 catch
@@ -466,7 +466,7 @@ namespace ProcessHacker
             }
 
             tabControlBig.SelectedTab = tabProcesses;
-            listProcesses.List.Select();
+            treeProcesses.Tree.Select();
         }
 
         private void runAsMenuItem_Click(object sender, EventArgs e)
@@ -550,7 +550,7 @@ namespace ProcessHacker
 
         private void menuMemory_Popup(object sender, EventArgs e)
         {
-            if (listMemory.SelectedItems.Count == 1 && listProcesses.SelectedItems.Count == 1)
+            if (listMemory.SelectedItems.Count == 1 && treeProcesses.SelectedTreeNodes.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuMemory);
             }
@@ -558,7 +558,7 @@ namespace ProcessHacker
             {
                 Misc.DisableAllMenuItems(menuMemory);
 
-                if (listProcesses.SelectedItems.Count == 1)
+                if (treeProcesses.SelectedTreeNodes.Count == 1)
                     readWriteAddressMemoryMenuItem.Enabled = true;
 
                 if (listMemory.SelectedItems.Count > 1)
@@ -579,7 +579,7 @@ namespace ProcessHacker
 
         private void changeMemoryProtectionMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            virtualProtectProcess = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+            virtualProtectProcess = Process.GetProcessById(processSelectedPID);
 
             virtualProtectAddress = Int32.Parse(listMemory.SelectedItems[0].SubItems[0].Text.Replace("0x", ""),
                 System.Globalization.NumberStyles.HexNumber);
@@ -591,7 +591,7 @@ namespace ProcessHacker
 
         private void readWriteMemoryMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            memoryProcess = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+            memoryProcess = Process.GetProcessById(processSelectedPID);
             memoryAddress = Int32.Parse(listMemory.SelectedItems[0].SubItems[0].Text.Replace("0x", ""),
                 System.Globalization.NumberStyles.HexNumber);
             memorySize = Int32.Parse(listMemory.SelectedItems[0].SubItems[1].Text.Replace("0x", ""),
@@ -624,7 +624,7 @@ namespace ProcessHacker
                 if (address < 0)
                     return;
 
-                memoryProcess = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                memoryProcess = Process.GetProcessById(processSelectedPID);
 
                 foreach (ListViewItem item in listMemory.Items)
                 {
@@ -664,7 +664,7 @@ namespace ProcessHacker
 
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listMemory.Items);
+            Misc.SelectAll((IEnumerable<ListViewItem>)listMemory.Items);
         }
 
         #endregion
@@ -690,9 +690,9 @@ namespace ProcessHacker
 
         private void menuModule_Popup(object sender, EventArgs e)
         {
-            if (listModules.SelectedItems.Count == 1 && listProcesses.SelectedItems.Count == 1)
+            if (listModules.SelectedItems.Count == 1 && treeProcesses.SelectedTreeNodes.Count == 1)
             {
-                if (Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text) == 4)
+                if (processSelectedPID == 4)
                 {
                     Misc.DisableAllMenuItems(menuModule);
 
@@ -828,7 +828,7 @@ namespace ProcessHacker
 
         private void getFuncAddressMenuItem_Click(object sender, EventArgs e)
         {
-            listProcesses.Enabled = false;
+            treeProcesses.Enabled = false;
             listThreads.Enabled = false;
             tabControl.Enabled = false;
 
@@ -842,7 +842,7 @@ namespace ProcessHacker
 
         private void changeMemoryProtectionModuleMenuItem_Click(object sender, EventArgs e)
         {
-            virtualProtectProcess = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+            virtualProtectProcess = Process.GetProcessById(processSelectedPID);
             ProcessModule module = null;
 
             foreach (ProcessModule m in virtualProtectProcess.Modules)
@@ -865,7 +865,7 @@ namespace ProcessHacker
 
         private void readMemoryModuleMenuItem_Click(object sender, EventArgs e)
         {
-            Process p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+            Process p = Process.GetProcessById(processSelectedPID);
             ProcessModule module = null;
 
             foreach (ProcessModule m in p.Modules)
@@ -889,7 +889,7 @@ namespace ProcessHacker
 
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listModules.Items);
+            Misc.SelectAll((IEnumerable<ListViewItem>)listModules.Items);
         }
 
         #endregion
@@ -918,37 +918,18 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
-            if (listProcesses.SelectedItems.Count == 0)
+            if (treeProcesses.SelectedTreeNodes.Count == 0)
             {
                 Misc.DisableAllMenuItems(menuProcess);
             }
-            else if (listProcesses.SelectedItems.Count == 1)
+            else if (treeProcesses.SelectedTreeNodes.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuProcess);
 
                 priorityMenuItem.Text = "&Priority";
                 terminateMenuItem.Text = "&Terminate Process";
-                closeActiveWindowMenuItem.Text = "&Close Active Window";
                 suspendMenuItem.Text = "&Suspend Process";
                 resumeMenuItem.Text = "&Resume Process";
-
-                try
-                {
-                    using (Win32.ProcessHandle phandle = 
-                        new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
-                    {
-                        int parent = phandle.GetParentPID();
-                        ListViewItem item = listProcesses.List.Items[parent.ToString()];
-
-                        goToParentProcessMenuItem.Text = "Go to Parent (" + item.Text + ")";
-                        goToParentProcessMenuItem.Enabled = true;
-                    }
-                }
-                catch
-                {
-                    goToParentProcessMenuItem.Text = "Go to Parent";
-                    goToParentProcessMenuItem.Enabled = false;
-                }
 
                 try
                 {
@@ -980,7 +961,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    switch (Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text)).PriorityClass)
+                    switch (Process.GetProcessById(processSelectedPID).PriorityClass)
                     {
                         case ProcessPriorityClass.RealTime:
                             realTimeMenuItem.Checked = true;
@@ -1018,18 +999,16 @@ namespace ProcessHacker
                 Misc.DisableAllMenuItems(menuProcess);
 
                 terminateMenuItem.Text = "&Terminate Processes";
-                closeActiveWindowMenuItem.Text = "&Close Active Windows";
                 suspendMenuItem.Text = "&Suspend Processes";
                 resumeMenuItem.Text = "&Resume Processes";
 
                 terminateMenuItem.Enabled = true;
-                closeActiveWindowMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
                 copyProcessMenuItem.Enabled = true;
             }
 
-            if (listProcesses.Items.Count == 0)
+            if (treeProcesses.Nodes.Count == 0)
             {
                 selectAllMenuItem.Enabled = false;
             }
@@ -1045,18 +1024,18 @@ namespace ProcessHacker
                 "Process Hacker", MessageBoxButtons.YesNo, 
                 MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
-                foreach (ListViewItem item in listProcesses.SelectedItems)
+                foreach (ProcessNode node in treeProcesses.SelectedNodes)
                 {
                     try
                     {
-                        using (Win32.ProcessHandle handle = new Win32.ProcessHandle(Int32.Parse(item.SubItems[1].Text),
+                        using (Win32.ProcessHandle handle = new Win32.ProcessHandle(node.PID,
                             Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
                             handle.Terminate();
                     }
                     catch (Exception ex)
                     {
-                        DialogResult result = MessageBox.Show("Could not terminate process \"" + item.SubItems[0].Text +
-                            "\" with PID " + item.SubItems[1].Text + ":\n\n" +
+                        DialogResult result = MessageBox.Show("Could not terminate process \"" + node.Name +
+                            "\" with PID " + node.PID.ToString() + ":\n\n" +
                                 ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                         if (result == DialogResult.Cancel)
@@ -1068,13 +1047,13 @@ namespace ProcessHacker
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listProcesses.SelectedItems)
+            foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
                 Process process;
 
                 try
                 {
-                    process = Process.GetProcessById(Int32.Parse(item.SubItems[1].Text));
+                    process = Process.GetProcessById(node.PID);
                 }
                 catch { return; }
 
@@ -1101,7 +1080,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not suspend process with PID " + item.SubItems[1].Text +
+                    DialogResult result = MessageBox.Show("Could not suspend process with PID " + node.PID +
                         ".\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
@@ -1112,13 +1091,13 @@ namespace ProcessHacker
 
         private void resumeMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listProcesses.SelectedItems)
+            foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
                 Process process;
 
                 try
                 {
-                    process = Process.GetProcessById(Int32.Parse(item.SubItems[1].Text));
+                    process = Process.GetProcessById(node.PID);
                 }
                 catch { return; }
 
@@ -1133,52 +1112,13 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not resume process with PID " + item.SubItems[1].Text +
+                    DialogResult result = MessageBox.Show("Could not resume process with PID " + node.PID.ToString() +
                         ".\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
                         return;
                 }
             }
-        }
-
-        private void closeActiveWindowMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ListViewItem item in listProcesses.SelectedItems)
-            {
-                try
-                {
-                    Process.GetProcessById(Int32.Parse(item.SubItems[1].Text)).Kill();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not close active window of process \"" + item.SubItems[0].Text +
-                        "\" with PID " + item.SubItems[1].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
-        }
-
-        private void goToParentProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (Win32.ProcessHandle phandle = 
-                    new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
-                {
-                    int parent = phandle.GetParentPID();
-                    ListViewItem item = listProcesses.List.Items[parent.ToString()];
-
-                    DeselectAll(listProcesses.List);
-                    item.Selected = true;
-                    item.EnsureVisible();
-                }
-            }
-            catch
-            { }
         }
 
         private void inspectProcessMenuItem_Click(object sender, EventArgs e)
@@ -1417,7 +1357,7 @@ namespace ProcessHacker
             try
             {
                 Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
-                    listProcesses.SelectedItems[0].Text));
+                    treeProcesses.SelectedNodes[0].Name));
             }
             catch (Exception ex)
             {
@@ -1427,7 +1367,7 @@ namespace ProcessHacker
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listProcesses.Items);
+            Misc.SelectAll(treeProcesses.Tree.AllNodes);
         }
 
         #endregion
@@ -1459,8 +1399,6 @@ namespace ProcessHacker
                     "The process " + item.Name + " (" + item.PID.ToString() + 
                     ") was started" + ((parentText != "") ? " by " + 
                     parent.Name + " (PID " + parent.PID.ToString() + ")" : "") + ".", ToolTipIcon.Info);
-
-            this.UpdateListViewItemToolTipText(item.PID);
         }
 
         public void processP_DictionaryRemoved(ProcessItem item)
@@ -1473,48 +1411,6 @@ namespace ProcessHacker
             if (TPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "Terminated Process",
                     "The process " + item.Name + " (" + item.PID.ToString() + ") was terminated.", ToolTipIcon.Info);
-        }
-
-        public void UpdateListViewItemToolTipText(int pid)
-        {
-            if (pid == 0)
-                return;
-
-            ListViewItem litem = listProcesses.Items[pid.ToString()];
-
-            if (litem == null)
-                return;
-
-            if (litem.Tag == null)
-                litem.Tag = litem.ToolTipText;
-
-            litem.ToolTipText = litem.Tag.ToString();
-
-            if (!processServices.ContainsKey(pid))
-            {
-                return;
-            }
-            else
-            {
-                string servicesText = "";
-
-                foreach (string service in processServices[pid])
-                {
-                    if (serviceP.Dictionary.ContainsKey(service))
-                    {
-                        if (serviceP.Dictionary[service].Status.DisplayName != "")
-                            servicesText += service + " (" + serviceP.Dictionary[service].Status.DisplayName + ")\n";
-                        else
-                            servicesText += service + "\n";
-                    }
-                    else
-                    {
-                        servicesText += service + "\n";
-                    }
-                }
-
-                litem.ToolTipText += "\n\nServices:\n" + servicesText.TrimEnd('\n');
-            }
         }
 
         public void serviceP_DictionaryAdded(ServiceItem item)
@@ -1531,7 +1427,7 @@ namespace ProcessHacker
                     ToolTipIcon.Info);
         }
 
-        public void serviceP_DictionaryAdded_ToolTips(ServiceItem item)
+        public void serviceP_DictionaryAdded_Process(ServiceItem item)
         {
             if (item.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -1540,8 +1436,6 @@ namespace ProcessHacker
 
                 processServices[item.Status.ServiceStatusProcess.ProcessID].Add(item.Status.ServiceName);
             }
-
-            this.UpdateListViewItemToolTipText(item.Status.ServiceStatusProcess.ProcessID);
         }
 
         public void serviceP_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
@@ -1589,7 +1483,7 @@ namespace ProcessHacker
             }
         }
 
-        public void serviceP_DictionaryModified_ToolTips(ServiceItem oldItem, ServiceItem newItem)
+        public void serviceP_DictionaryModified_Process(ServiceItem oldItem, ServiceItem newItem)
         {
             ServiceItem sitem = (ServiceItem)newItem;
 
@@ -1603,7 +1497,6 @@ namespace ProcessHacker
                     processServices[sitem.Status.ServiceStatusProcess.ProcessID].Add(sitem.Status.ServiceName);
 
                 processServices[sitem.Status.ServiceStatusProcess.ProcessID].Sort();
-                this.UpdateListViewItemToolTipText(sitem.Status.ServiceStatusProcess.ProcessID);
             }
             else
             {
@@ -1615,8 +1508,6 @@ namespace ProcessHacker
                         sitem.Status.ServiceName))
                         processServices[oldId].Remove(sitem.Status.ServiceName);
                 }
-
-                this.UpdateListViewItemToolTipText(oldId);
             }
         }
 
@@ -1634,7 +1525,7 @@ namespace ProcessHacker
                     ToolTipIcon.Info);
         }
 
-        public void serviceP_DictionaryRemoved_ToolTips(ServiceItem item)
+        public void serviceP_DictionaryRemoved_Process(ServiceItem item)
         {
             if (item.Status.ServiceStatusProcess.ProcessID != 0)
             {
@@ -1646,7 +1537,6 @@ namespace ProcessHacker
                     processServices[item.Status.ServiceStatusProcess.ProcessID].Add(item.Status.ServiceName);
 
                 processServices[item.Status.ServiceStatusProcess.ProcessID].Sort();
-                this.UpdateListViewItemToolTipText(item.Status.ServiceStatusProcess.ProcessID);
             }
         }
 
@@ -1752,14 +1642,12 @@ namespace ProcessHacker
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
-            DeselectAll(listProcesses.List);
+            DeselectAll(treeProcesses.Tree);
 
             try
             {
-                listProcesses.List.Items[serviceP.Dictionary[
-                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID.ToString()].Selected = true;
-                listProcesses.List.Items[serviceP.Dictionary[
-                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID.ToString()].EnsureVisible();
+                treeProcesses.FindTreeNode(serviceP.Dictionary[
+                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID).IsSelected = true;
 
                 tabControlBig.SelectedTab = tabProcesses;
             }
@@ -1871,7 +1759,7 @@ namespace ProcessHacker
 
         private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listServices.Items);
+            Misc.SelectAll((IEnumerable<ListViewItem>)listServices.Items);
         }
 
         #endregion
@@ -1904,7 +1792,7 @@ namespace ProcessHacker
 
         private void menuThread_Popup(object sender, EventArgs e)
         {
-            if (listProcesses.SelectedItems.Count == 0 || listThreads.SelectedItems.Count == 0)
+            if (treeProcesses.SelectedTreeNodes.Count == 0 || listThreads.SelectedItems.Count == 0)
             {
                 Misc.DisableAllMenuItems(menuThread);
 
@@ -1928,7 +1816,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    Process p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                    Process p = Process.GetProcessById(processSelectedPID);
                     ProcessThread thread = null;
 
                     foreach (ProcessThread t in p.Threads)
@@ -2205,7 +2093,7 @@ namespace ProcessHacker
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listThreads.Items);
+            Misc.SelectAll((IEnumerable<ListViewItem>)listThreads.Items);
         }
 
         #endregion
@@ -2265,7 +2153,7 @@ namespace ProcessHacker
             this.AcceptButton = null;
             virtualProtectProcess = null;
             panelVirtualProtect.Visible = false;
-            listProcesses.Enabled = true;
+            treeProcesses.Enabled = true;
             tabControl.Enabled = true;
             listThreads.Enabled = true;
         }
@@ -2274,6 +2162,12 @@ namespace ProcessHacker
         {
             foreach (ListViewItem item in list.SelectedItems)
                 item.Selected = false;
+        }
+
+        public void DeselectAll(TreeViewAdv tree)
+        {
+            foreach (TreeNodeAdv node in tree.AllNodes)
+                node.IsSelected = false;
         }
 
         private void LoadSettings()
@@ -2289,7 +2183,6 @@ namespace ProcessHacker
             if (tabControl.TabPages[Properties.Settings.Default.SelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.SelectedTab];
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessListViewColumns, listProcesses.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
@@ -2422,7 +2315,6 @@ namespace ProcessHacker
 
             Properties.Settings.Default.SelectedTab = tabControl.SelectedTab.Name;
 
-            Properties.Settings.Default.ProcessListViewColumns = ColumnSettings.SaveSettings(listProcesses.List);
             Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
             Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
             Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
@@ -2451,7 +2343,7 @@ namespace ProcessHacker
             textNewProtection.SelectAll();
             textNewProtection.Focus();
             this.AcceptButton = buttonVirtualProtect;
-            listProcesses.Enabled = false;
+            treeProcesses.Enabled = false;
             tabControl.Enabled = false;
             listThreads.Enabled = false;
         }
@@ -2506,7 +2398,7 @@ namespace ProcessHacker
         {
             try
             {
-                Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text)).PriorityClass = priority;
+                Process.GetProcessById(processSelectedPID).PriorityClass = priority;
             }
             catch (Exception ex)
             {
@@ -2518,7 +2410,7 @@ namespace ProcessHacker
         {
             try
             {
-                Process p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                Process p = Process.GetProcessById(processSelectedPID);
                 ProcessThread thread = null;
 
                 foreach (ProcessThread t in p.Threads)
@@ -2732,7 +2624,7 @@ namespace ProcessHacker
 
             try
             {
-                p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                p = Process.GetProcessById(processSelectedPID);
             }
             catch
             {
@@ -2869,7 +2761,7 @@ namespace ProcessHacker
 
             try
             {
-                p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                p = Process.GetProcessById(processSelectedPID);
             }
             catch
             {
@@ -2932,7 +2824,7 @@ namespace ProcessHacker
 
             try
             {
-                p = Process.GetProcessById(Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text));
+                p = Process.GetProcessById(processSelectedPID);
             }
             catch
             {
@@ -2983,7 +2875,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        if (m.ModuleName.ToLower() == listProcesses.SelectedItems[0].SubItems[0].Text.ToLower())
+                        if (m.ModuleName.ToLower() == treeProcesses.SelectedNodes[0].Name.ToLower())
                         {
                             primary = item;
                         }
@@ -3021,33 +2913,23 @@ namespace ProcessHacker
         // toolhelp based
         private void UpdateModuleInfoToolhelp()
         {
-            int pid;
             int snapshot;
             Win32.MODULEENTRY32 module = new Win32.MODULEENTRY32();
             ListViewItem primary = null;
 
-            try
-            {
-                pid = Int32.Parse(listProcesses.SelectedItems[0].SubItems[1].Text);
-            }
-            catch
-            {
-                return;
-            }
-
             // Get drivers instead
-            if (pid == 4)
+            if (processSelectedPID == 4)
             {
                 UpdateDriversInfo();
 
                 return;
             }
 
-            snapshot = Win32.CreateToolhelp32Snapshot(Win32.SnapshotFlags.Module, pid);
+            snapshot = Win32.CreateToolhelp32Snapshot(Win32.SnapshotFlags.Module, processSelectedPID);
 
             module.dwSize = Marshal.SizeOf(typeof(Win32.MODULEENTRY32));
 
-            if (snapshot != 0 && Marshal.GetLastWin32Error() == 0 && pid != 0)
+            if (snapshot != 0 && Marshal.GetLastWin32Error() == 0 && processSelectedPID != 0)
             {
                 listModules.BeginUpdate();
 
@@ -3076,7 +2958,7 @@ namespace ProcessHacker
                             FileVersionInfo.GetVersionInfo(Misc.GetRealPath(module.szExePath)).FileDescription; }
                         catch { item.SubItems[3].Text = ""; }
 
-                        if (module.szModule.ToLower() == listProcesses.SelectedItems[0].SubItems[0].Text.ToLower())
+                        if (module.szModule.ToLower() == treeProcesses.SelectedNodes[0].Name.ToLower())
                         {
                             primary = item;
                         }
@@ -3105,7 +2987,7 @@ namespace ProcessHacker
                     listModules.Enabled = false;
                 }
             }
-            else if (pid == 0)
+            else if (processSelectedPID == 0)
             {
                 listModules.Items.Clear();
                 listModules.Enabled = false;
@@ -3140,7 +3022,7 @@ namespace ProcessHacker
 
             GC.Collect();
 
-            if (listProcesses.SelectedItems.Count != 1)
+            if (treeProcesses.SelectedTreeNodes.Count != 1)
                 return;
             if (processSelectedPID == 0)
                 return;
@@ -3277,11 +3159,7 @@ namespace ProcessHacker
         private void UpdateCommon()
         {
             timerMessages.Enabled = true;
-
-            foreach (int pid in processP.Dictionary.Keys)
-                this.UpdateListViewItemToolTipText(pid);
-
-            listProcesses.RefreshItems();
+            treeProcesses.RefreshItems();
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -3292,7 +3170,7 @@ namespace ProcessHacker
             timerFire.Enabled = true;
             timerFire_Tick(null, null);
 
-            listProcesses_SelectedIndexChanged(null, null);
+            listProcesses_SelectionChanged(null, null);
 
             newResultsWindowMenuItem.Click += new EventHandler(PerformSearch);
             literalSearchMenuItem.Click += new EventHandler(PerformSearch);
@@ -3300,21 +3178,20 @@ namespace ProcessHacker
             stringScanMenuItem.Click += new EventHandler(PerformSearch);
             heapScanMenuItem.Click += new EventHandler(PerformSearch);
 
-            listViews.Add(listProcesses);
+            listViews.Add(treeProcesses);
             listViews.Add(listThreads);
             listViews.Add(listModules);
             listViews.Add(listMemory);
             listViews.Add(listHandles);
             listViews.Add(listServices);
 
-            ListViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, listProcesses.List, null);
             ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
             ListViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
             ListViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
             ListViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles.List, null);
             ListViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
 
-            listProcesses.ContextMenu = menuProcess;
+            treeProcesses.ContextMenu = menuProcess;
             listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
@@ -3325,16 +3202,16 @@ namespace ProcessHacker
             HighlightedListViewItem.StateHighlighting = false;
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             processP.Interval = RefreshInterval;
-            listProcesses.Provider = processP;
+            treeProcesses.Provider = processP;
             processP.Updated += new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
             listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
-            serviceP.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(serviceP_DictionaryAdded_ToolTips);
-            serviceP.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(serviceP_DictionaryModified_ToolTips);
-            serviceP.DictionaryRemoved += new Provider<string, ServiceItem>.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_ToolTips);
+            serviceP.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
+            serviceP.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
+            serviceP.DictionaryRemoved += new Provider<string, ServiceItem>.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
             serviceP.Updated += new Provider<string, ServiceItem>.ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
 

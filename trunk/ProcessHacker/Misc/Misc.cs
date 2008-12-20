@@ -23,6 +23,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using Aga.Controls.Tree;
+using System.Collections.Generic;
 
 namespace ProcessHacker
 {
@@ -337,10 +339,20 @@ namespace ProcessHacker
         /// Selects all of the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        public static void SelectAll(ListView.ListViewItemCollection items)
+        public static void SelectAll(IEnumerable<ListViewItem> items)
         {
             foreach (ListViewItem item in items)
                 item.Selected = true;
+        }
+
+        /// <summary>
+        /// Selects all of the specified nodes.
+        /// </summary>
+        /// <param name="items">The nodes.</param>
+        public static void SelectAll(IEnumerable<TreeNodeAdv> nodes)
+        {
+            foreach (TreeNodeAdv node in nodes)
+                node.IsSelected = true;
         }
 
         /// <summary>

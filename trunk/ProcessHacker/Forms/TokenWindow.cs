@@ -18,9 +18,10 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace ProcessHacker
 {
@@ -304,7 +305,7 @@ namespace ProcessHacker
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listPrivileges.Items);
+            Misc.SelectAll((IEnumerable<ListViewItem>)listPrivileges.Items);
         }
     }
 }

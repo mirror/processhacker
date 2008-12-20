@@ -48,9 +48,7 @@
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
-            this.closeActiveWindowMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
-            this.goToParentProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.servicesProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -148,7 +146,7 @@
             this.tabControlBig = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
             this.splitMain = new System.Windows.Forms.SplitContainer();
-            this.listProcesses = new ProcessHacker.ProcessList();
+            this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
@@ -369,9 +367,7 @@
             this.terminateMenuItem,
             this.suspendMenuItem,
             this.resumeMenuItem,
-            this.closeActiveWindowMenuItem,
             this.menuItem5,
-            this.goToParentProcessMenuItem,
             this.inspectProcessMenuItem,
             this.affinityProcessMenuItem,
             this.servicesProcessMenuItem,
@@ -407,57 +403,42 @@
             this.resumeMenuItem.Text = "&Resume";
             this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
             // 
-            // closeActiveWindowMenuItem
-            // 
-            this.vistaMenu.SetImage(this.closeActiveWindowMenuItem, global::ProcessHacker.Properties.Resources.application_delete);
-            this.closeActiveWindowMenuItem.Index = 3;
-            this.closeActiveWindowMenuItem.Text = "&Close Active Window";
-            this.closeActiveWindowMenuItem.Visible = false;
-            this.closeActiveWindowMenuItem.Click += new System.EventHandler(this.closeActiveWindowMenuItem_Click);
-            // 
             // menuItem5
             // 
-            this.menuItem5.Index = 4;
+            this.menuItem5.Index = 3;
             this.menuItem5.Text = "-";
-            // 
-            // goToParentProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.goToParentProcessMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
-            this.goToParentProcessMenuItem.Index = 5;
-            this.goToParentProcessMenuItem.Text = "Go to Parent";
-            this.goToParentProcessMenuItem.Click += new System.EventHandler(this.goToParentProcessMenuItem_Click);
             // 
             // inspectProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.inspectProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.inspectProcessMenuItem.Index = 6;
+            this.inspectProcessMenuItem.Index = 4;
             this.inspectProcessMenuItem.Text = "&Inspect...";
             this.inspectProcessMenuItem.Click += new System.EventHandler(this.inspectProcessMenuItem_Click);
             // 
             // affinityProcessMenuItem
             // 
-            this.affinityProcessMenuItem.Index = 7;
+            this.affinityProcessMenuItem.Index = 5;
             this.affinityProcessMenuItem.Text = "Affinity...";
             this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
             // 
             // servicesProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.servicesProcessMenuItem, global::ProcessHacker.Properties.Resources.cog);
-            this.servicesProcessMenuItem.Index = 8;
+            this.servicesProcessMenuItem.Index = 6;
             this.servicesProcessMenuItem.Text = "Services...";
             this.servicesProcessMenuItem.Click += new System.EventHandler(this.servicesProcessMenuItem_Click);
             // 
             // tokenMenuItem
             // 
             this.vistaMenu.SetImage(this.tokenMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.tokenMenuItem.Index = 9;
+            this.tokenMenuItem.Index = 7;
             this.tokenMenuItem.Text = "To&ken...";
             this.tokenMenuItem.Click += new System.EventHandler(this.tokenMenuItem_Click);
             // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 10;
+            this.priorityMenuItem.Index = 8;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -511,7 +492,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 11;
+            this.runAsProcessMenuItem.Index = 9;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -532,7 +513,7 @@
             // injectorMenuItem
             // 
             this.vistaMenu.SetImage(this.injectorMenuItem, global::ProcessHacker.Properties.Resources.asterisk_orange);
-            this.injectorMenuItem.Index = 12;
+            this.injectorMenuItem.Index = 10;
             this.injectorMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.startProcessProcessMenuItem,
             this.getCommandLineProcessMenuItem,
@@ -559,24 +540,24 @@
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 13;
+            this.menuItem7.Index = 11;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 14;
+            this.searchProcessMenuItem.Index = 12;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 15;
+            this.copyProcessMenuItem.Index = 13;
             this.copyProcessMenuItem.Text = "C&opy";
             // 
             // selectAllMenuItem
             // 
-            this.selectAllMenuItem.Index = 16;
+            this.selectAllMenuItem.Index = 14;
             this.selectAllMenuItem.Text = "Select &All";
             this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
             // 
@@ -1120,7 +1101,7 @@
             // 
             // splitMain.Panel1
             // 
-            this.splitMain.Panel1.Controls.Add(this.listProcesses);
+            this.splitMain.Panel1.Controls.Add(this.treeProcesses);
             this.splitMain.Panel1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 1);
             // 
             // splitMain.Panel2
@@ -1130,17 +1111,16 @@
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
             // 
-            // listProcesses
+            // treeProcesses
             // 
-            this.listProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listProcesses.DoubleBuffered = true;
-            this.listProcesses.Location = new System.Drawing.Point(0, 0);
-            this.listProcesses.Name = "listProcesses";
-            this.listProcesses.Provider = null;
-            this.listProcesses.Size = new System.Drawing.Size(348, 376);
-            this.listProcesses.TabIndex = 4;
-            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
-            this.listProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
+            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.Location = new System.Drawing.Point(0, 0);
+            this.treeProcesses.Name = "treeProcesses";
+            this.treeProcesses.Provider = null;
+            this.treeProcesses.Size = new System.Drawing.Size(348, 376);
+            this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabControl
             // 
@@ -1655,7 +1635,6 @@
         private System.Windows.Forms.MenuItem terminateMenuItem;
         private System.Windows.Forms.MenuItem suspendMenuItem;
         private System.Windows.Forms.MenuItem resumeMenuItem;
-        private System.Windows.Forms.MenuItem closeActiveWindowMenuItem;
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.MenuItem priorityMenuItem;
         private System.Windows.Forms.MenuItem menuItem7;
@@ -1725,7 +1704,7 @@
         private System.Windows.Forms.MenuItem newResultsWindowMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;
-        private ProcessHacker.ProcessList listProcesses;
+        private ProcessHacker.ProcessTree treeProcesses;
         private ThreadList listThreads;
         private System.Windows.Forms.MenuItem copyProcessMenuItem;
         private System.Windows.Forms.MenuItem copyThreadMenuItem;
@@ -1746,7 +1725,6 @@
         private System.Windows.Forms.StatusBarPanel statusIcon;
         private System.Windows.Forms.StatusBarPanel statusText;
         private System.Windows.Forms.MenuItem logMenuItem;
-        private System.Windows.Forms.MenuItem goToParentProcessMenuItem;
         private System.Windows.Forms.StatusBarPanel statusGeneral;
         private System.Windows.Forms.TabControl tabControlBig;
         private System.Windows.Forms.TabPage tabProcesses;

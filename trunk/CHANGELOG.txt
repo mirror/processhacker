@@ -2,7 +2,7 @@ Process Hacker
 
 1.2.7.0
  * A new member of the project - Dean
- * Win32 code cleanup
+ * The process list is now a process tree
  * Can view thread usernames, groups and privileges
  * The handle filter window is now faster
  * Added thread start addresses in thread list

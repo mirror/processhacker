@@ -117,7 +117,7 @@ namespace ProcessHacker.FormHelper
         {
             ListViewItem item = new ListViewItem();
             item.Name = handle.Handle.ToString();
-            item.Text = Program.HackerWindow.ProcessList.Items[handle.ProcessId.ToString()].Text +
+            item.Text = Program.HackerWindow.ProcessProvider.Dictionary[handle.ProcessId].Name +
                 " (" + handle.ProcessId.ToString() + ")";
             item.Tag = handle.ProcessId;
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));

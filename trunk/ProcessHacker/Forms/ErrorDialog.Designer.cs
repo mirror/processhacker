@@ -113,7 +113,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "ErrorDialog";
+            this.Text = "Error";
             this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
