@@ -42,7 +42,7 @@ namespace ProcessHacker
             treeProcesses.MouseDown += new MouseEventHandler(treeProcesses_MouseDown);
             treeProcesses.MouseUp += new MouseEventHandler(treeProcesses_MouseUp);
 
-            nodeName.ToolTipProvider = new ProcessTooltips(this);
+            nodeName.ToolTipProvider = new ProcessToolTipProvider(this);
         }
 
         private void treeProcesses_SelectionChanged(object sender, EventArgs e)

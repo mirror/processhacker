@@ -237,7 +237,7 @@
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\ProcessTree\ProcessTooltips.cs" />
+    <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />
     <Compile Include="Components\ProcessTree\ProcessTreeModel.cs" />
     <Compile Include="Components\ServiceList.cs">
