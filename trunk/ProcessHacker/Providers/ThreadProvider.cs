@@ -128,7 +128,7 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ThreadHandle handle =
-                            new Win32.ThreadHandle(t.Id, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                            new Win32.ThreadHandle(t.Id, Program.MinThreadQueryRights))
                         {
                             int retLen;
 

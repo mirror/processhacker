@@ -12,6 +12,8 @@ Process Hacker
  * Shows groups and privileges for token handles owned by 
    other processes
  * Major refactoring of Win32 code
+ * Now shows more information about processes (e.g. audiodg.exe) - uses 
+   PROCESS_QUERY_LIMITED_INFORMATION on Vista
 
 1.2.6.0
  * Fixed the fix for the huge regression - the cause was a double "free" of the same handle

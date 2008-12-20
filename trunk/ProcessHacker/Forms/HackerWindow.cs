@@ -1186,7 +1186,7 @@ namespace ProcessHacker
             try
             {
                 using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        Program.MinProcessQueryRights))
                 {
                     TokenWindow tokForm = new TokenWindow(process);
 
@@ -1379,18 +1379,17 @@ namespace ProcessHacker
             ProcessItem parent = new ProcessItem();
             string parentText = "";
 
-            try
+            if (item.ParentPID != -1)
             {
-                using (Win32.ProcessHandle phandle = 
-                    new Win32.ProcessHandle(item.PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                try
                 {
-                    parent = processP.Dictionary[phandle.GetParentPID()];
+                    parent = processP.Dictionary[item.ParentPID];
 
                     parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
                 }
+                catch
+                { }
             }
-            catch
-            { }
 
             this.QueueMessage("New Process: " + item.Name + " (PID " + item.PID.ToString() + ")" + parentText, item.Icon);
 
@@ -2508,7 +2507,8 @@ namespace ProcessHacker
                                           using (Win32.ProcessHandle phandle = 
                                               new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                                           {
-                                              Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm);
+                                              if (!Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm))
+                                                  throw new Exception(Win32.GetLastErrorMessage());
 
                                               return flags == Win32.DEPFLAGS.PROCESS_DEP_DISABLE ? "Disabled" :
                                                   (flags == Win32.DEPFLAGS.PROCESS_DEP_ENABLE ? "Enabled" :
@@ -2527,7 +2527,8 @@ namespace ProcessHacker
                                           using (Win32.ProcessHandle phandle = 
                                               new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                                           {
-                                              Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm);
+                                              if (!Win32.GetProcessDEPPolicy(phandle.Handle, out flags, out perm))
+                                                  throw new Exception(Win32.GetLastErrorMessage());
 
                                               return perm == 0 ? "No" : "Yes";
                                           }
@@ -2546,7 +2547,7 @@ namespace ProcessHacker
                                       delegate (Process p)
                                       {
                                           using (Win32.ProcessHandle phandle = 
-                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                              new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                                           {
                                               Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
 
@@ -2558,7 +2559,7 @@ namespace ProcessHacker
                                       delegate (Process p)
                                       {
                                           using (Win32.ProcessHandle phandle = 
-                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                              new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                                           {
                                               Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
 
@@ -2570,7 +2571,7 @@ namespace ProcessHacker
                                       delegate (Process p)
                                       {
                                           using (Win32.ProcessHandle phandle = 
-                                              new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                                              new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                                           {
                                               Win32.IO_COUNTERS counters = Win32.GetProcessIoCounters(phandle);
 

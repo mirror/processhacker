@@ -75,7 +75,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(TID, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(TID, Program.MinThreadQueryRights))
                 {
                     try
                     {
@@ -338,7 +338,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Program.MinThreadQueryRights))
                 {
                     TokenWindow tokForm = new TokenWindow(thread);
 

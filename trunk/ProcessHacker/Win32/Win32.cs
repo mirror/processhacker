@@ -275,7 +275,7 @@ namespace ProcessHacker
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, out process_handle,
-                                    (STANDARD_RIGHTS)PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, 0) != 0)
+                                    (STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
                                     throw new Exception("Could not duplicate process handle!");
 
                                 try
@@ -305,7 +305,7 @@ namespace ProcessHacker
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, out thread_handle,
-                                    (STANDARD_RIGHTS)THREAD_RIGHTS.THREAD_QUERY_INFORMATION, 0, 0) != 0)
+                                    (STANDARD_RIGHTS)Program.MinThreadQueryRights, 0, 0) != 0)
                                     throw new Exception("Could not duplicate thread handle!");
 
                                 try
