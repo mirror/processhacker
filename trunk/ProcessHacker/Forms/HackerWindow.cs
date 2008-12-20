@@ -458,7 +458,9 @@ namespace ProcessHacker
                     if (Win32.TSGetProcessUsername(p.Id, true) == "NT AUTHORITY\\SYSTEM" &&
                         Win32.GetProcessSessionId(p.Id) == myId)
                     {
-                        treeProcesses.FindTreeNode(p.Id).IsSelected = true;
+                        TreeNodeAdv node = treeProcesses.FindTreeNode(p.Id);
+                        node.IsSelected = true;
+                        node.EnsureVisible();
                     }
                 }
                 catch
@@ -1635,8 +1637,11 @@ namespace ProcessHacker
 
             try
             {
-                treeProcesses.FindTreeNode(serviceP.Dictionary[
-                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID).IsSelected = true;
+                TreeNodeAdv node = treeProcesses.FindTreeNode(serviceP.Dictionary[
+                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID);
+                
+                node.IsSelected = true;
+                node.EnsureVisible();
 
                 tabControlBig.SelectedTab = tabProcesses;
             }

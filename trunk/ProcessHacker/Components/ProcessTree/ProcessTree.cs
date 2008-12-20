@@ -189,61 +189,73 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ProcessItem item)
         {
-            _treeModel.Add(item);
-
-            TreeNodeAdv node = this.FindTreeNode(item.PID);
-
-            if (node != null)
+            lock (this)
             {
-                if (_provider.RunCount > 1)
-                {
-                    node.State = TreeNodeAdv.NodeState.New;
-                    this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                        new MethodInvoker(delegate { node.State = TreeNodeAdv.NodeState.Normal; }));
-                }
+                _treeModel.Add(item);
 
-                node.BackColor = GetProcessColor(item);
-                node.ExpandAll();
+                TreeNodeAdv node = this.FindTreeNode(item.PID);
+
+                if (node != null)
+                {
+                    if (_provider.RunCount > 1)
+                    {
+                        node.State = TreeNodeAdv.NodeState.New;
+                        this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                            new MethodInvoker(delegate { node.State = TreeNodeAdv.NodeState.Normal; }));
+                    }
+
+                    node.BackColor = GetProcessColor(item);
+                    node.ExpandAll();
+                }
             }
         }
 
         private void provider_DictionaryModified(ProcessItem oldItem, ProcessItem newItem)
         {
-            _treeModel.Modify(oldItem, newItem);
-
-            TreeNodeAdv node = this.FindTreeNode(newItem.PID);
-
-            if (node != null)
+            lock (this)
             {
-                node.BackColor = GetProcessColor(newItem);
-            }
+                _treeModel.Modify(oldItem, newItem);
 
-            if (_treeModel.GetSortColumn() != "")
-                _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+                TreeNodeAdv node = this.FindTreeNode(newItem.PID);
+
+                if (node != null)
+                {
+                    node.BackColor = GetProcessColor(newItem);
+                }
+
+                if (_treeModel.GetSortColumn() != "")
+                    _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+            }
         }
 
         private void provider_DictionaryRemoved(ProcessItem item)
         {
-            TreeNodeAdv node = this.FindTreeNode(item.PID);
+            lock (this)
+            {
+                TreeNodeAdv node = this.FindTreeNode(item.PID);
 
-            node.State = TreeNodeAdv.NodeState.Removed;
-            this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                new MethodInvoker(delegate { _treeModel.Remove(item); }));
+                node.State = TreeNodeAdv.NodeState.Removed;
+                this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                    new MethodInvoker(delegate { _treeModel.Remove(item); }));
+            }
         }
 
         public void RefreshItems()
         {
-            foreach (TreeNodeAdv node in treeProcesses.AllNodes)
+            lock (this)
             {
-                try
+                foreach (TreeNodeAdv node in treeProcesses.AllNodes)
                 {
-                    ProcessNode pNode = this.FindNode(node);
-                    ProcessItem item = _provider.Dictionary[pNode.PID];
+                    try
+                    {
+                        ProcessNode pNode = this.FindNode(node);
+                        ProcessItem item = _provider.Dictionary[pNode.PID];
 
-                    node.BackColor = this.GetProcessColor(item);
+                        node.BackColor = this.GetProcessColor(item);
+                    }
+                    catch
+                    { }
                 }
-                catch
-                { }
             }
         }
 

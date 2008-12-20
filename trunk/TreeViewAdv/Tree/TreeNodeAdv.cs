@@ -360,6 +360,19 @@ namespace Aga.Controls.Tree
 			SetIsExpanded(false, ignoreChildren);
         }
 
+        public void EnsureVisible()
+        {
+            TreeNodeAdv parent = this.Parent;
+
+            while (parent != _tree.Root)
+            {
+                parent.Expand();
+                parent = parent.Parent;
+            }
+
+            _tree.ScrollTo(this);
+        }
+
 		public void Expand()
 		{
 			if (!_isExpanded)
