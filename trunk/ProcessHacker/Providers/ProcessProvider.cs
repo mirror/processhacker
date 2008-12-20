@@ -215,7 +215,7 @@ namespace ProcessHacker
                     {
                         using (Win32.ProcessHandle phandle =
                             new Win32.ProcessHandle(p.Id,
-                                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                                Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                             item.CmdLine = phandle.GetCommandLine();
                     }
                     catch
@@ -262,7 +262,7 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                            new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                         {
                             try
                             {
