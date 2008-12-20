@@ -69,8 +69,6 @@
             this.exitProcessProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.searchProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.copyProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.menuThread = new System.Windows.Forms.ContextMenu();
             this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -376,9 +374,7 @@
             this.runAsProcessMenuItem,
             this.injectorMenuItem,
             this.menuItem7,
-            this.searchProcessMenuItem,
-            this.copyProcessMenuItem,
-            this.selectAllMenuItem});
+            this.searchProcessMenuItem});
             this.menuProcess.Popup += new System.EventHandler(this.menuProcess_Popup);
             // 
             // terminateMenuItem
@@ -548,18 +544,6 @@
             this.searchProcessMenuItem.Index = 12;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
-            // 
-            // copyProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 13;
-            this.copyProcessMenuItem.Text = "C&opy";
-            // 
-            // selectAllMenuItem
-            // 
-            this.selectAllMenuItem.Index = 14;
-            this.selectAllMenuItem.Text = "Select &All";
-            this.selectAllMenuItem.Click += new System.EventHandler(this.selectAllMenuItem_Click);
             // 
             // menuThread
             // 
@@ -1638,7 +1622,6 @@
         private System.Windows.Forms.MenuItem menuItem5;
         private System.Windows.Forms.MenuItem priorityMenuItem;
         private System.Windows.Forms.MenuItem menuItem7;
-        private System.Windows.Forms.MenuItem selectAllMenuItem;
         private System.Windows.Forms.MenuItem realTimeMenuItem;
         private System.Windows.Forms.MenuItem highMenuItem;
         private System.Windows.Forms.MenuItem aboveNormalMenuItem;
@@ -1706,7 +1689,6 @@
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;
         private ProcessHacker.ProcessTree treeProcesses;
         private ThreadList listThreads;
-        private System.Windows.Forms.MenuItem copyProcessMenuItem;
         private System.Windows.Forms.MenuItem copyThreadMenuItem;
         private System.Windows.Forms.MenuItem copyModuleMenuItem;
         private System.Windows.Forms.MenuItem menuItem2;
