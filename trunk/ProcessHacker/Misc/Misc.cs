@@ -353,7 +353,7 @@ namespace ProcessHacker
         /// Selects all of the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        public static void SelectAll(IEnumerable<ListViewItem> items)
+        public static void SelectAll(ListView.ListViewItemCollection items)
         {
             foreach (ListViewItem item in items)
                 item.Selected = true;

@@ -415,7 +415,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        Misc.SelectAll((IEnumerable<ListViewItem>)c.GetType().GetProperty("Items").GetValue(c, null));
+                        Misc.SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
                     }
                     catch
                     { }
@@ -666,7 +666,7 @@ namespace ProcessHacker
 
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll((IEnumerable<ListViewItem>)listMemory.Items);
+            Misc.SelectAll(listMemory.Items);
         }
 
         #endregion
@@ -891,7 +891,7 @@ namespace ProcessHacker
 
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll((IEnumerable<ListViewItem>)listModules.Items);
+            Misc.SelectAll(listModules.Items);
         }
 
         #endregion
@@ -1753,7 +1753,7 @@ namespace ProcessHacker
 
         private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll((IEnumerable<ListViewItem>)listServices.Items);
+            Misc.SelectAll(listServices.Items);
         }
 
         #endregion
@@ -2087,7 +2087,7 @@ namespace ProcessHacker
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll((IEnumerable<ListViewItem>)listThreads.Items);
+            Misc.SelectAll(listThreads.Items);
         }
 
         #endregion

@@ -264,7 +264,7 @@ namespace ProcessHacker
                 {
                     Win32.WriteTokenPrivilege(
                         _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES),
-                        item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                        item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
 
                     item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
                     item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
@@ -289,7 +289,7 @@ namespace ProcessHacker
                     {
                         Win32.WriteTokenPrivilege(
                             _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES),
-                            item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                            item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
 
                         item.Remove();
                     }
@@ -305,7 +305,7 @@ namespace ProcessHacker
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll((IEnumerable<ListViewItem>)listPrivileges.Items);
+            Misc.SelectAll(listPrivileges.Items);
         }
     }
 }
