@@ -1005,16 +1005,6 @@ namespace ProcessHacker
                 terminateMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
-                copyProcessMenuItem.Enabled = true;
-            }
-
-            if (treeProcesses.Nodes.Count == 0)
-            {
-                selectAllMenuItem.Enabled = false;
-            }
-            else
-            {
-                selectAllMenuItem.Enabled = true;
             }
         }
 
