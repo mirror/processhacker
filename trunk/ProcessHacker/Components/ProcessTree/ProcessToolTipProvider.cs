@@ -38,7 +38,7 @@ namespace ProcessHacker
                 ProcessNode pNode = _tree.FindNode(node);
 
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
-                        (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine, 100) + "\n\n") : "");
+                        (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine, 100) + "\n") : "");
 
                 string fileText = "";
 
@@ -58,8 +58,8 @@ namespace ProcessHacker
                     FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                         Misc.GetRealPath(filename));
 
-                    fileText = info.FileName + "\n" +
-                        info.FileDescription + " (" + info.FileVersion + ")\n" +
+                    fileText = "File:\n    " + info.FileName + "\n    " +
+                        info.FileDescription + info.FileVersion + "\n    " +
                         info.CompanyName;
                 }
                 catch
@@ -76,18 +76,18 @@ namespace ProcessHacker
                             if (Program.HackerWindow.ServiceProvider.Dictionary.ContainsKey(service))
                             {
                                 if (Program.HackerWindow.ServiceProvider.Dictionary[service].Status.DisplayName != "")
-                                    servicesText += service + " (" +
+                                    servicesText += "    " + service + " (" +
                                     Program.HackerWindow.ServiceProvider.Dictionary[service].Status.DisplayName + ")\n";
                                 else
-                                    servicesText += service + "\n";
+                                    servicesText += "    " + service + "\n";
                             }
                             else
                             {
-                                servicesText += service + "\n";
+                                servicesText += "    " + service + "\n";
                             }
                         }
 
-                        servicesText = "\n\nServices:\n" + servicesText.TrimEnd('\n');
+                        servicesText = "\nServices:\n" + servicesText.TrimEnd('\n');
                     }
                 }
                 catch
