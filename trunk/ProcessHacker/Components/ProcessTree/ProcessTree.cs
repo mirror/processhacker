@@ -234,9 +234,12 @@ namespace ProcessHacker
             {
                 TreeNodeAdv node = this.FindTreeNode(item.PID);
 
-                node.State = TreeNodeAdv.NodeState.Removed;
-                this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                    new MethodInvoker(delegate { try { _treeModel.Remove(item); } catch { } }));
+                if (node != null)
+                {
+                    node.State = TreeNodeAdv.NodeState.Removed;
+                    this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                        new MethodInvoker(delegate { try { _treeModel.Remove(item); } catch { } }));
+                }
             }
         }
 
