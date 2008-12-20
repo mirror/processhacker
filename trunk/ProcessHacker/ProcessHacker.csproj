@@ -476,4 +476,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>"$(SolutionDir)\ProcessHacker\Build\merge_and_clean.cmd" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
