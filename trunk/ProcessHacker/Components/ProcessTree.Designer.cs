@@ -80,7 +80,7 @@
             // 
             this.columnName.Header = "Name";
             this.columnName.Sortable = true;
-            this.columnName.SortOrder = System.Windows.Forms.SortOrder.Ascending;
+            this.columnName.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnName.TooltipText = null;
             this.columnName.Width = 160;
             // 
@@ -94,7 +94,6 @@
             // columnMemory
             // 
             this.columnMemory.Header = "Pvt. Memory";
-            this.columnMemory.Sortable = true;
             this.columnMemory.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnMemory.TooltipText = null;
             this.columnMemory.Width = 70;
@@ -165,13 +164,13 @@
             this.nodeUsername.ParentColumn = this.columnUsername;
             this.nodeUsername.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
-            // ProcessList
+            // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeProcesses);
             this.DoubleBuffered = true;
-            this.Name = "ProcessList";
+            this.Name = "ProcessTree";
             this.Size = new System.Drawing.Size(450, 472);
             this.ResumeLayout(false);
 

@@ -34,6 +34,9 @@ namespace ProcessHacker
 
         public static string WindowsVersion = "Unknown";
 
+        public static Win32.PROCESS_RIGHTS MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION;
+        public static Win32.THREAD_RIGHTS MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION;
+
         public static int CurrentProcess;
         public static int CurrentSessionId;
 
@@ -82,6 +85,12 @@ namespace ProcessHacker
                 WindowsVersion = "XP";
             else if (Environment.OSVersion.Version.Major == 6)
                 WindowsVersion = "Vista";
+
+            if (WindowsVersion == "Vista")
+            {
+                MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
+                MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
+            }
 
             try
             {

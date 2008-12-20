@@ -110,7 +110,9 @@ namespace ProcessHacker
                         item.SessionId = Win32.GetProcessSessionId(p.Id);
                     }
                     catch
-                    { }
+                    {
+                        item.SessionId = -1;
+                    }
 
                     try
                     {
@@ -153,7 +155,7 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                            new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                         {
                             try
                             {
@@ -183,7 +185,9 @@ namespace ProcessHacker
                                 item.ParentPID = phandle.GetParentPID();
                             }
                             catch
-                            { }
+                            {
+                                item.ParentPID = -1;
+                            }
                         }
                     }
                     catch
