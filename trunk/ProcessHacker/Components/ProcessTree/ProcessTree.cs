@@ -232,6 +232,11 @@ namespace ProcessHacker
             return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[PID]));
         }
 
+        public TreeNodeAdv FindTreeNode(ProcessNode node)
+        {
+            return this.FindTreeNode(node.PID);
+        }
+
         public ProcessNode FindNode(TreeNodeAdv node)
         {
             return treeProcesses.GetPath(node).LastNode as ProcessNode;

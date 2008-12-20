@@ -77,6 +77,7 @@ namespace ProcessHacker
         {
             ProcessNode targetNode = _processes[item.PID];
             ProcessNode[] nodes = _roots.ToArray();
+            ProcessNode[] targetChildren = null;
 
             foreach (ProcessNode node in nodes)
             {
@@ -93,6 +94,7 @@ namespace ProcessHacker
                     if (foundNode != null)
                     {
                         foundNode.Children.Remove(targetNode);
+                        targetChildren = targetNode.Children.ToArray();
                         this.MoveChildrenToRoot(targetNode);
                         break;
                     }
@@ -102,6 +104,16 @@ namespace ProcessHacker
             _processes.Remove(item.PID);
 
             this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
+
+            foreach (ProcessNode n in targetChildren)
+            {
+                try
+                {
+                    _tree.FindTreeNode(n).ExpandAll();
+                }
+                catch
+                { }
+            }
         }
 
         public TreePath GetPath(ProcessNode node)
