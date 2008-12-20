@@ -59,7 +59,7 @@ namespace ProcessHacker
                         Misc.GetRealPath(filename));
 
                     fileText = "File:\n    " + info.FileName + "\n    " +
-                        info.FileDescription + info.FileVersion + "\n    " +
+                        info.FileDescription + " " + info.FileVersion + "\n    " +
                         info.CompanyName;
                 }
                 catch
