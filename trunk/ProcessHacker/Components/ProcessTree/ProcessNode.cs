@@ -93,6 +93,9 @@ namespace ProcessHacker
 
         private string GetBestUsername(string username, bool includeDomain)
         {
+            if (username == null)
+                return "";
+
             if (!username.Contains("\\"))
                 return username;
 
