@@ -158,13 +158,25 @@ namespace ProcessHacker
         {
             _treeModel.Add(item);
 
-            if (this.FindTreeNode(item.PID) != null)
-                this.FindTreeNode(item.PID).ExpandAll();
+            TreeNodeAdv node = this.FindTreeNode(item.PID);
+
+            if (node != null)
+            {
+                node.BackColor = GetProcessColor(item);
+                node.ExpandAll();
+            }
         }
 
         private void provider_DictionaryModified(ProcessItem oldItem, ProcessItem newItem)
         {
             _treeModel.Modify(oldItem, newItem);
+
+            TreeNodeAdv node = this.FindTreeNode(newItem.PID);
+
+            if (node != null)
+            {
+                node.BackColor = GetProcessColor(newItem);
+            }
         }
 
         private void provider_DictionaryRemoved(ProcessItem item)
@@ -174,22 +186,18 @@ namespace ProcessHacker
 
         public void RefreshItems()
         {
-            //lock (listProcesses)
-            //{
-            //    foreach (ListViewItem litem in listProcesses.Items)
-            //    {
-            //        try
-            //        {
-            //            ProcessItem item = _provider.Dictionary[int.Parse(litem.Name)];
+            foreach (TreeNodeAdv node in treeProcesses.AllNodes)
+            {
+                try
+                {
+                    ProcessNode pNode = this.FindNode(node);
+                    ProcessItem item = _provider.Dictionary[pNode.PID];
 
-            //            (litem as HighlightedListViewItem).NormalColor = this.GetProcessColor(item);
-            //            litem.SubItems[4].Text = this.GetBestUsername(item.Username,
-            //                Properties.Settings.Default.ShowAccountDomains);
-            //        }
-            //        catch
-            //        { }
-            //    }
-            //}
+                    node.BackColor = this.GetProcessColor(item);
+                }
+                catch
+                { }
+            }
         }
 
         public Dictionary<int, ProcessNode> Nodes
@@ -200,6 +208,11 @@ namespace ProcessHacker
         public TreeNodeAdv FindTreeNode(int PID)
         {
             return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[PID]));
+        }
+
+        public ProcessNode FindNode(TreeNodeAdv node)
+        {
+            return treeProcesses.GetPath(node).LastNode as ProcessNode;
         }
 
         #endregion
@@ -496,7 +509,7 @@ namespace ProcessHacker
         {
             try
             {
-                ProcessNode pNode = _tree.Tree.GetPath(node).LastNode as ProcessNode;
+                ProcessNode pNode = _tree.FindNode(node);
 
                 string filename = "";
 

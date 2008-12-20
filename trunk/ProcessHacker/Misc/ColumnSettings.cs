@@ -21,6 +21,7 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
+using Aga.Controls.Tree;
 
 namespace ProcessHacker
 {
@@ -69,6 +70,31 @@ namespace ProcessHacker
                     lv.Columns[i].DisplayIndex = Int32.Parse(s[0]);
                     lv.Columns[i].Width = Int32.Parse(s[1]);
                 }
+            }
+            catch
+            { }
+        }
+
+        public static void LoadSettings(string settings, TreeViewAdv tv)
+        {
+            string[] list = settings.Split('|');
+
+            try
+            {
+                TreeColumn[] columns = new TreeColumn[list.Length];
+
+                for (int i = 0; i < list.Length; i++)
+                {
+                    string[] s = list[i].Split(',');
+
+                    tv.Columns[i].Width = Int32.Parse(s[1]);
+                    columns[Int32.Parse(s[0])] = tv.Columns[i];
+                }
+
+                tv.Columns.Clear();
+
+                foreach (TreeColumn column in columns)
+                    tv.Columns.Add(column);
             }
             catch
             { }

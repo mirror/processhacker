@@ -87,7 +87,14 @@ namespace Aga.Controls.Tree
 			{
 				return _index;
 			}
-		}
+        }
+
+        private Color _backColor = SystemColors.Window;
+        public Color BackColor
+        {
+            get { return _backColor; }
+            set { _backColor = value; }
+        }
 
 		private bool _isSelected;
 		public bool IsSelected

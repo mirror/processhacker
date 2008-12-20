@@ -95,6 +95,7 @@ namespace Aga.Controls.Tree
 			TreeNodeAdv node = RowMap[row];
 			context.DrawSelection = DrawSelectionMode.None;
 			context.CurrentEditorOwner = _currentEditorOwner;
+
 			if (DragMode)
 			{
 				if ((_dropPosition.Node == node) && _dropPosition.Position == NodePosition.Inside && HighlightDropPosition)
@@ -107,26 +108,30 @@ namespace Aga.Controls.Tree
 				else if (node.IsSelected && !Focused && !HideSelection)
 					context.DrawSelection = DrawSelectionMode.Inactive;
 			}
+
 			context.DrawFocus = Focused && CurrentNode == node;
 
-			if (FullRowSelect)
-			{
-				context.DrawFocus = false;
-				if (context.DrawSelection == DrawSelectionMode.Active || context.DrawSelection == DrawSelectionMode.Inactive)
-				{
-					Rectangle focusRect = new Rectangle(OffsetX, rowRect.Y, ClientRectangle.Width, rowRect.Height);
-					if (context.DrawSelection == DrawSelectionMode.Active)
-					{
-						e.Graphics.FillRectangle(SystemBrushes.Highlight, focusRect);
-						context.DrawSelection = DrawSelectionMode.FullRowSelect;
-					}
-					else
-					{
-						e.Graphics.FillRectangle(SystemBrushes.InactiveBorder, focusRect);
-						context.DrawSelection = DrawSelectionMode.None;
-					}
-				}
-			}
+            if (FullRowSelect)
+            {
+                Rectangle focusRect = new Rectangle(OffsetX, rowRect.Y, ClientRectangle.Width, rowRect.Height);
+
+                e.Graphics.FillRectangle(new SolidBrush(node.BackColor), focusRect);
+                context.DrawFocus = false;
+
+                if (context.DrawSelection == DrawSelectionMode.Active || context.DrawSelection == DrawSelectionMode.Inactive)
+                {
+                    if (context.DrawSelection == DrawSelectionMode.Active)
+                    {
+                        e.Graphics.FillRectangle(SystemBrushes.Highlight, focusRect);
+                        context.DrawSelection = DrawSelectionMode.FullRowSelect;
+                    }
+                    else
+                    {
+                        e.Graphics.FillRectangle(SystemBrushes.InactiveBorder, focusRect);
+                        context.DrawSelection = DrawSelectionMode.None;
+                    }
+                }
+            }
 
             if ((GridLineStyle & GridLineStyle.Horizontal) == GridLineStyle.Horizontal)
 				e.Graphics.DrawLine(SystemPens.InactiveBorder, 0, rowRect.Bottom, e.Graphics.ClipBounds.Right, rowRect.Bottom);
