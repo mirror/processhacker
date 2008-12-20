@@ -106,6 +106,9 @@ namespace ProcessHacker
 
         public TreePath GetPath(ProcessNode node)
         {
+            if (this.GetSortColumn() != "")
+                return new TreePath(node);
+
             if (node == null)
                 return TreePath.Empty;
             else
@@ -145,8 +148,6 @@ namespace ProcessHacker
             get { return _processes; }
         }
 
-        #region ITreeModel Members
-
         public string GetSortColumn()
         {
             foreach (TreeColumn column in _tree.Tree.Columns)
@@ -168,9 +169,9 @@ namespace ProcessHacker
         public int ModifySort(int sortResult, SortOrder order)
         {
             if (order == SortOrder.Ascending)
-                return sortResult;
-            else if (order == SortOrder.Descending)
                 return sortResult * -1;
+            else if (order == SortOrder.Descending)
+                return sortResult;
             else
                 return 0;
         }
@@ -233,7 +234,5 @@ namespace ProcessHacker
         {
             this.StructureChanged(this, args);
         }
-
-        #endregion
     }
 }

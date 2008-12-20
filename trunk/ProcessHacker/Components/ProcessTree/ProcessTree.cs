@@ -73,11 +73,11 @@ namespace ProcessHacker
         {
             if (e.Column.SortOrder == SortOrder.None)  
             {
-                e.Column.SortOrder = SortOrder.Ascending;
+                e.Column.SortOrder = SortOrder.Descending;
             }
-            else if (e.Column.SortOrder == SortOrder.Ascending) 
+            else if (e.Column.SortOrder == SortOrder.Descending) 
             {
-                e.Column.SortOrder = SortOrder.Descending;  
+                e.Column.SortOrder = SortOrder.Ascending;  
             }
             else
             {
