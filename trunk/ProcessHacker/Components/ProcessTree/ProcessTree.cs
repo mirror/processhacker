@@ -236,7 +236,7 @@ namespace ProcessHacker
 
                 node.State = TreeNodeAdv.NodeState.Removed;
                 this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                    new MethodInvoker(delegate { _treeModel.Remove(item); }));
+                    new MethodInvoker(delegate { try { _treeModel.Remove(item); } catch { } }));
             }
         }
 
