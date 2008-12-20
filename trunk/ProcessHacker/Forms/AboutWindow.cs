@@ -98,5 +98,10 @@ namespace ProcessHacker
             Program.HackerWindow.HelpForm.Show();
             Program.HackerWindow.HelpForm.SelectById("copyright");
         }
+
+        private void linkTreeViewAdv_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            TryStart("http://sourceforge.net/projects/treeviewadv");
+        }
     }
 }

@@ -41,6 +41,7 @@
             this.buttonMoreInfo = new System.Windows.Forms.Button();
             this.linkAsm = new System.Windows.Forms.LinkLabel();
             this.buttonLicenses = new System.Windows.Forms.Button();
+            this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,7 +49,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(333, 218);
+            this.buttonClose.Location = new System.Drawing.Point(333, 226);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 0;
@@ -139,7 +140,7 @@
             // 
             this.linkSourceforge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkSourceforge.AutoSize = true;
-            this.linkSourceforge.Location = new System.Drawing.Point(12, 223);
+            this.linkSourceforge.Location = new System.Drawing.Point(12, 231);
             this.linkSourceforge.Name = "linkSourceforge";
             this.linkSourceforge.Size = new System.Drawing.Size(229, 13);
             this.linkSourceforge.TabIndex = 9;
@@ -149,8 +150,9 @@
             // 
             // linkEmail
             // 
+            this.linkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkEmail.AutoSize = true;
-            this.linkEmail.Location = new System.Drawing.Point(12, 203);
+            this.linkEmail.Location = new System.Drawing.Point(12, 213);
             this.linkEmail.Name = "linkEmail";
             this.linkEmail.Size = new System.Drawing.Size(190, 13);
             this.linkEmail.TabIndex = 10;
@@ -162,7 +164,7 @@
             // 
             this.buttonMoreInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonMoreInfo.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonMoreInfo.Location = new System.Drawing.Point(252, 218);
+            this.buttonMoreInfo.Location = new System.Drawing.Point(252, 226);
             this.buttonMoreInfo.Name = "buttonMoreInfo";
             this.buttonMoreInfo.Size = new System.Drawing.Size(75, 23);
             this.buttonMoreInfo.TabIndex = 11;
@@ -185,7 +187,7 @@
             // 
             this.buttonLicenses.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonLicenses.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonLicenses.Location = new System.Drawing.Point(252, 189);
+            this.buttonLicenses.Location = new System.Drawing.Point(252, 197);
             this.buttonLicenses.Name = "buttonLicenses";
             this.buttonLicenses.Size = new System.Drawing.Size(75, 23);
             this.buttonLicenses.TabIndex = 13;
@@ -193,12 +195,24 @@
             this.buttonLicenses.UseVisualStyleBackColor = true;
             this.buttonLicenses.Click += new System.EventHandler(this.buttonLicenses_Click);
             // 
+            // linkTreeViewAdv
+            // 
+            this.linkTreeViewAdv.AutoSize = true;
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(174, 175);
+            this.linkTreeViewAdv.Name = "linkTreeViewAdv";
+            this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
+            this.linkTreeViewAdv.TabIndex = 12;
+            this.linkTreeViewAdv.TabStop = true;
+            this.linkTreeViewAdv.Text = "Andrey Gliznetsov - TreeViewAdv";
+            this.linkTreeViewAdv.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTreeViewAdv_LinkClicked);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(420, 253);
+            this.ClientSize = new System.Drawing.Size(420, 261);
             this.Controls.Add(this.buttonLicenses);
+            this.Controls.Add(this.linkTreeViewAdv);
             this.Controls.Add(this.linkAsm);
             this.Controls.Add(this.buttonMoreInfo);
             this.Controls.Add(this.linkEmail);
@@ -243,6 +257,7 @@
         private System.Windows.Forms.Button buttonMoreInfo;
         private System.Windows.Forms.LinkLabel linkAsm;
         private System.Windows.Forms.Button buttonLicenses;
+        private System.Windows.Forms.LinkLabel linkTreeViewAdv;
 
     }
 }
