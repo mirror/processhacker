@@ -286,6 +286,20 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Adds an ellipsis to a string if it is longer than the specified length.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="len">The maximum length.</param>
+        /// <returns>The modified string.</returns>
+        public static string MakeEllipsis(string s, int len)
+        {
+            if (s.Length <= len)
+                return s;
+            else
+                return s.Substring(0, len - 4) + " ...";
+        }
+
+        /// <summary>
         /// Makes a character printable by converting unprintable characters to a dot ('.').
         /// </summary>
         /// <param name="c">The character to convert.</param>

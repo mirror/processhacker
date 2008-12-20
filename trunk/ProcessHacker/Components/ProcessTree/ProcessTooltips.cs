@@ -51,7 +51,8 @@ namespace ProcessHacker
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(
                     Misc.GetRealPath(filename));
 
-                string fileText = (pNode.ProcessItem.CmdLine != null ? (pNode.ProcessItem.CmdLine + "\n\n") : "") + info.FileName + "\n" +
+                string fileText = (pNode.ProcessItem.CmdLine != null ? 
+                    (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine, 100) + "\n\n") : "") + info.FileName + "\n" +
                     info.FileDescription + " (" + info.FileVersion + ")\n" +
                     info.CompanyName;
 
