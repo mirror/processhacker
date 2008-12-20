@@ -2172,6 +2172,7 @@ namespace ProcessHacker
             if (tabControl.TabPages[Properties.Settings.Default.SelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.SelectedTab];
 
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
@@ -2304,6 +2305,7 @@ namespace ProcessHacker
 
             Properties.Settings.Default.SelectedTab = tabControl.SelectedTab.Name;
 
+            Properties.Settings.Default.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
             Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
             Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
             Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);

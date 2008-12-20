@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
 using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 
 namespace ProcessHacker
 {
@@ -53,6 +54,29 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Saves the column settings of the specified TreeViewAdv to a string.
+        /// </summary>
+        /// <param name="lv"></param>
+        /// <returns></returns>
+        public static string SaveSettings(TreeViewAdv tv)
+        {
+            string result = "";
+
+            try
+            {
+                for (int i = 0; i < tv.Columns.Count; i++)
+                {
+                    TreeColumn c = tv.Columns[i];
+                    result += c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + "|";
+                }
+            }
+            catch
+            { }
+
+            return result;
+        }
+
+        /// <summary>
         /// Loads column settings from a string to a ListView.
         /// </summary>
         /// <param name="settings"></param>
@@ -75,26 +99,43 @@ namespace ProcessHacker
             { }
         }
 
+        /// <summary>
+        /// Loads column settings from a string to a TreeViewAdv.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="tv"></param>
         public static void LoadSettings(string settings, TreeViewAdv tv)
         {
             string[] list = settings.Split('|');
 
             try
             {
-                TreeColumn[] columns = new TreeColumn[list.Length];
+                Dictionary<NodeControl, string> oldAssoc = new Dictionary<NodeControl, string>();
 
-                for (int i = 0; i < list.Length; i++)
+                foreach (NodeControl control in tv.NodeControls)
+                {
+                    oldAssoc.Add(control, control.ParentColumn.Header);
+                }
+
+                TreeColumn[] newColumns = new TreeColumn[tv.Columns.Count];
+                Dictionary<string, TreeColumn> newColumnsD = new Dictionary<string,TreeColumn>();
+
+                for (int i = 0; i < tv.Columns.Count; i++)
                 {
                     string[] s = list[i].Split(',');
 
-                    tv.Columns[i].Width = Int32.Parse(s[1]);
-                    columns[Int32.Parse(s[0])] = tv.Columns[i];
+                    newColumns[i] = new TreeColumn(s[0], Int32.Parse(s[1]));
+                    newColumns[i].SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), s[2]);
+                    newColumnsD.Add(s[0], newColumns[i]);
                 }
 
                 tv.Columns.Clear();
 
-                foreach (TreeColumn column in columns)
+                foreach (TreeColumn column in newColumns)
                     tv.Columns.Add(column);
+
+                foreach (NodeControl c in oldAssoc.Keys)
+                    c.ParentColumn = newColumnsD[oldAssoc[c]];
             }
             catch
             { }

@@ -134,12 +134,12 @@ namespace ProcessHacker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ProcessListViewColumns {
+        public string ProcessTreeColumns {
             get {
-                return ((string)(this["ProcessListViewColumns"]));
+                return ((string)(this["ProcessTreeColumns"]));
             }
             set {
-                this["ProcessListViewColumns"] = value;
+                this["ProcessTreeColumns"] = value;
             }
         }
         

@@ -29,7 +29,7 @@
     <Setting Name="WarnDangerous" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ProcessListViewColumns" Type="System.String" Scope="User">
+    <Setting Name="ProcessTreeColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ThreadListViewColumns" Type="System.String" Scope="User">
