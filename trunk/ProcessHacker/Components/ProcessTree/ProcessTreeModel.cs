@@ -68,9 +68,10 @@ namespace ProcessHacker
 
             ProcessNode node = _processes[newItem.PID];
 
-            this.NodesChanged(this, new TreeModelEventArgs(this.GetPath(
-                _processes.ContainsKey(node.PPID) ? _processes[node.PPID] : null),
-                new object[] { node }));
+            if (node.PPID != -1)
+                this.NodesChanged(this, new TreeModelEventArgs(this.GetPath(
+                    _processes.ContainsKey(node.PPID) ? _processes[node.PPID] : null),
+                    new object[] { node }));
         }
 
         public void Remove(ProcessItem item)

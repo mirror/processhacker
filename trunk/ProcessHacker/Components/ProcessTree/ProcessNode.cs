@@ -78,7 +78,7 @@ namespace ProcessHacker
 
         public int PPID
         {
-            get { return _pitem.ParentPID; }
+            get { if (_pitem.PID == _pitem.ParentPID) return -1; else return _pitem.ParentPID; }
         }
 
         public string Memory
