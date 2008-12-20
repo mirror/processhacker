@@ -155,6 +155,22 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ProcessHandle phandle =
+                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        {
+                            try
+                            {
+                                item.IsBeingDebugged = phandle.IsBeingDebugged();
+                            }
+                            catch
+                            { }
+                        }
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        using (Win32.ProcessHandle phandle =
                             new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                         {
                             try
@@ -162,13 +178,6 @@ namespace ProcessHacker
                                 ulong[] times = Win32.GetProcessTimes(phandle);
 
                                 item.LastTime = times[2] / 10000 + times[3] / 10000;
-                            }
-                            catch
-                            { }
-
-                            try
-                            {
-                                item.IsBeingDebugged = phandle.IsBeingDebugged();
                             }
                             catch
                             { }
@@ -262,6 +271,22 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ProcessHandle phandle =
+                           new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        {
+                            try
+                            {
+                                newitem.IsBeingDebugged = phandle.IsBeingDebugged();
+                            }
+                            catch
+                            { }
+                        } 
+                    }
+                    catch
+                    {}
+
+                    try
+                    {
+                        using (Win32.ProcessHandle phandle =
                             new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                         {
                             try
@@ -270,13 +295,6 @@ namespace ProcessHacker
 
                                 newitem.LastTime = times[2] / 10000 + times[3] / 10000;
                                 newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
-                            }
-                            catch
-                            { }
-
-                            try
-                            {
-                                 newitem.IsBeingDebugged = phandle.IsBeingDebugged();
                             }
                             catch
                             { }
