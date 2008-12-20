@@ -196,6 +196,9 @@ namespace ProcessHacker
             {
                 node.BackColor = GetProcessColor(newItem);
             }
+
+            if (_treeModel.GetSortColumn() != "")
+                _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
         }
 
         private void provider_DictionaryRemoved(ProcessItem item)
