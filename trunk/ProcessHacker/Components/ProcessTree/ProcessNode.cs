@@ -83,7 +83,7 @@ namespace ProcessHacker
 
         public string Memory
         {
-            get { return _pitem.MemoryUsage; }
+            get { return Misc.GetNiceSizeName(_pitem.MemoryUsage); }
         }
 
         public string CPU

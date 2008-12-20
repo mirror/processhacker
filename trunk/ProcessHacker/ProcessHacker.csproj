@@ -477,6 +477,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)\ProcessHacker\Build\merge_and_clean.cmd" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName)==Release "$(SolutionDir)\ProcessHacker\Build\merge_and_clean.cmd" "$(SolutionDir)\ProcessHacker\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

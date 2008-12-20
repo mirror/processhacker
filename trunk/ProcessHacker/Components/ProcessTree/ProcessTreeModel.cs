@@ -20,13 +20,20 @@
 using System;
 using System.Collections.Generic;
 using Aga.Controls.Tree;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
     public class ProcessTreeModel : ITreeModel
     {
+        private ProcessTree _tree;
         private Dictionary<int, ProcessNode> _processes = new Dictionary<int, ProcessNode>();
         private List<ProcessNode> _roots = new List<ProcessNode>();
+
+        public ProcessTreeModel(ProcessTree tree)
+        {
+            _tree = tree;
+        }
 
         public void Add(ProcessItem item)
         {
@@ -140,8 +147,63 @@ namespace ProcessHacker
 
         #region ITreeModel Members
 
+        public string GetSortColumn()
+        {
+            foreach (TreeColumn column in _tree.Tree.Columns)
+                if (column.SortOrder != SortOrder.None)
+                    return column.Header.ToLower();
+
+            return "";
+        }
+
+        public SortOrder GetSortOrder()
+        {
+            foreach (TreeColumn column in _tree.Tree.Columns)
+                if (column.SortOrder != SortOrder.None)
+                    return column.SortOrder;
+
+            return SortOrder.None;
+        }
+
+        public int ModifySort(int sortResult, SortOrder order)
+        {
+            if (order == SortOrder.Ascending)
+                return sortResult;
+            else if (order == SortOrder.Descending)
+                return sortResult * -1;
+            else
+                return 0;
+        }
+
         public System.Collections.IEnumerable GetChildren(TreePath treePath)
         {
+            if (this.GetSortColumn() != "")
+            {
+                List<ProcessNode> nodes = new List<ProcessNode>();
+                string sortC = this.GetSortColumn();
+                SortOrder sortO = this.GetSortOrder();
+
+                nodes.AddRange(_processes.Values);
+
+                nodes.Sort(new Comparison<ProcessNode>(delegate(ProcessNode n1, ProcessNode n2)
+                    {
+                        if (sortC == "name")
+                            return ModifySort(n1.Name.CompareTo(n2.Name), sortO);
+                        else if (sortC == "pid")
+                            return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
+                        else if (sortC == "pvt. memory")
+                            return ModifySort(n1.ProcessItem.MemoryUsage.CompareTo(n2.ProcessItem.MemoryUsage), sortO);
+                        else if (sortC == "cpu")
+                            return ModifySort(n1.ProcessItem.CPUUsage.CompareTo(n2.ProcessItem.CPUUsage), sortO);
+                        else if (sortC == "username")
+                            return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
+                        else
+                            return 0;
+                    }));
+
+                return nodes;
+            }
+
             if (treePath.IsEmpty())
                 return _roots;
             else
@@ -150,6 +212,9 @@ namespace ProcessHacker
 
         public bool IsLeaf(TreePath treePath)
         {
+            if (this.GetSortColumn() != "")
+                return true;
+
             if (treePath.IsEmpty())
                 return false;
             else
@@ -163,6 +228,11 @@ namespace ProcessHacker
         public event EventHandler<TreeModelEventArgs> NodesRemoved;
 
         public event EventHandler<TreePathEventArgs> StructureChanged;
+
+        public void CallStructureChanged(TreePathEventArgs args)
+        {
+            this.StructureChanged(this, args);
+        }
 
         #endregion
     }

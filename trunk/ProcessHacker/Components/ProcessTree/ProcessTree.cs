@@ -69,6 +69,27 @@ namespace ProcessHacker
                 this.KeyDown(sender, e);
         }
 
+        private void treeProcesses_ColumnClicked(object sender, TreeColumnEventArgs e)
+        {
+            if (e.Column.SortOrder == SortOrder.None)  
+            {
+                e.Column.SortOrder = SortOrder.Ascending;
+            }
+            else if (e.Column.SortOrder == SortOrder.Ascending) 
+            {
+                e.Column.SortOrder = SortOrder.Descending;  
+            }
+            else
+            {
+                e.Column.SortOrder = SortOrder.None;
+            }
+
+            _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+
+            treeProcesses.Root.ExpandAll();
+            this.RefreshItems();
+        }
+
         #region Properties
 
         public override bool Focused
@@ -115,7 +136,7 @@ namespace ProcessHacker
 
                 _provider = value;
 
-                treeProcesses.Model = _treeModel = new ProcessTreeModel();
+                treeProcesses.Model = _treeModel = new ProcessTreeModel(this);
 
                 if (_provider != null)
                 {

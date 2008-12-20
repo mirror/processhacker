@@ -75,6 +75,7 @@
             this.treeProcesses.TabIndex = 2;
             this.treeProcesses.UseColumns = true;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
+            this.treeProcesses.ColumnClicked += new System.EventHandler<Aga.Controls.Tree.TreeColumnEventArgs>(this.treeProcesses_ColumnClicked);
             // 
             // columnName
             // 
@@ -94,6 +95,7 @@
             // columnMemory
             // 
             this.columnMemory.Header = "Pvt. Memory";
+            this.columnMemory.Sortable = true;
             this.columnMemory.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnMemory.TooltipText = null;
             this.columnMemory.Width = 70;
@@ -101,6 +103,7 @@
             // columnCPU
             // 
             this.columnCPU.Header = "CPU";
+            this.columnCPU.Sortable = true;
             this.columnCPU.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnCPU.TooltipText = null;
             this.columnCPU.Width = 40;

@@ -33,7 +33,7 @@ namespace ProcessHacker
         public Icon Icon;
         public string CmdLine;
         public float CPUUsage;
-        public string MemoryUsage;
+        public long MemoryUsage;
         public string Name;
         public string Username;
 
@@ -147,7 +147,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.MemoryUsage = Misc.GetNiceSizeName(p.PrivateMemorySize64);
+                        item.MemoryUsage = p.PrivateMemorySize64;
                     }
                     catch
                     { }
@@ -251,7 +251,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.MemoryUsage = Misc.GetNiceSizeName(p.PrivateMemorySize64);
+                        newitem.MemoryUsage = p.PrivateMemorySize64;
                     }
                     catch
                     { }
