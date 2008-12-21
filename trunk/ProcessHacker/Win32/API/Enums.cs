@@ -61,6 +61,17 @@ namespace ProcessHacker
             PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 0x00000002
         }
 
+        public enum EVENT_INFORMATION_CLASS : int
+        {
+            EventBasicInformation
+        }
+
+        public enum EVENT_TYPE : int
+        {
+            NotificationEvent,
+            SynchronizationEvent
+        }
+
         [Flags]
         public enum FILE_OBJECT_FLAGS : int
         {
@@ -142,6 +153,11 @@ namespace ProcessHacker
             MEM_IMAGE = 0x1000000,
             MEM_MAPPED = 0x40000,
             MEM_PRIVATE = 0x20000
+        }
+
+        public enum MUTANT_INFORMATION_CLASS : int
+        {
+            MutantBasicInformation
         }
 
         public enum OBJECT_INFORMATION_CLASS : int
@@ -266,6 +282,36 @@ namespace ProcessHacker
             SE_PRIVILEGE_ENABLED = 0x00000002,
             SE_PRIVILEGE_REMOVED = 0x00000004,
             SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
+        }
+
+        [Flags]
+        public enum SECTION_ATTRIBUTES : int
+        {
+            SEC_FILE = 0x800000,
+            SEC_IMAGE = 0x1000000,
+            SEC_RESERVE = 0x4000000
+        }
+
+        [Flags]
+        public enum SECTION_INFORMATION_CLASS : int
+        {
+            SectionBasicInformation,
+            SectionImageInformation
+        }
+
+        [Flags]
+        public enum SECTION_RIGHTS : uint
+        {
+            SECTION_QUERY = 0x0001,
+            SECTION_MAP_WRITE = 0x0002,
+            SECTION_MAP_READ = 0x0004,
+            SECTION_MAP_EXECUTE = 0x0008,
+            SECTION_EXTEND_SIZE = 0x0010,
+            SECTION_MAP_EXECUTE_EXPLICIT = 0x0020,
+
+            SECTION_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | SECTION_QUERY | 
+                SECTION_MAP_WRITE | SECTION_MAP_READ | SECTION_MAP_EXECUTE |
+                SECTION_EXTEND_SIZE
         }
 
         public enum SECURITY_IMPERSONATION_LEVEL : int
@@ -462,6 +508,21 @@ namespace ProcessHacker
             SYMFLAG_TLSREL = 0x00004000,
             SYMFLAG_VALUEPRESENT = 0x00000001,
             SYMFLAG_VIRTUAL = 0x00001000
+        }
+
+        [Flags]
+        public enum SYNC_RIGHTS : int
+        {
+            EVENT_ALL_ACCESS = 0x1f0003,
+            EVENT_MODIFY_STATE = 0x0002,
+            EVENT_QUERY_STATE = 0x0001,
+            MUTEX_ALL_ACCESS = 0x1f0001,
+            MUTEX_MODIFY_STATE = 0x0001,
+            SEMAPHORE_ALL_ACCESS = 0x1f0003,
+            SEMAPHORE_MODIFY_STATE = 0x0002,
+            TIMER_ALL_ACCESS = 0x1f0003,
+            TIMER_MODIFY_STATE = 0x0002,
+            TIMER_QUERY_STATE = 0x0001
         }
 
         [Flags]

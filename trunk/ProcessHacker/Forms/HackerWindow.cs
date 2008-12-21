@@ -251,8 +251,10 @@ namespace ProcessHacker
                 Misc.EnableAllMenuItems(menuHandle);
 
                 propertiesHandleMenuItem.Enabled = false;
+                
+                string type = listHandles.SelectedItems[0].SubItems[0].Text;
 
-                if (listHandles.SelectedItems[0].SubItems[0].Text == "Token")
+                if (type == "Token" || type == "Event" || type == "Mutant" || type == "Section")
                     propertiesHandleMenuItem.Enabled = true;
             }
             else
@@ -292,13 +294,14 @@ namespace ProcessHacker
             
             try
             {
-                if (type == "Token")
+                int handle = int.Parse(listHandles.SelectedItems[0].Name);
+
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
+                    processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
                 {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
-                        processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                    if (type == "Token")
                     {
-                        TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle,
-                            short.Parse(listHandles.SelectedItems[0].Name)));
+                        TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle, handle));
 
                         tokForm.TopMost = this.TopMost;
                         tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
@@ -306,6 +309,71 @@ namespace ProcessHacker
                             processP.Dictionary[processSelectedPID].Name,
                             processSelectedPID);
                         tokForm.ShowDialog();
+                    }
+                    else if (type == "Event")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int event_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.EVENT_QUERY_STATE);
+                        Win32.EVENT_BASIC_INFORMATION ebi = new Win32.EVENT_BASIC_INFORMATION();
+                        int retLen;
+
+                        Win32.ZwQueryEvent(event_handle, Win32.EVENT_INFORMATION_CLASS.EventBasicInformation,
+                            ref ebi, Marshal.SizeOf(ebi), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Type: " + ebi.EventType.ToString().Replace("Event", "") + 
+                            "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(event_handle);
+                    }
+                    else if (type == "Mutant")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int mutant_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.MUTEX_MODIFY_STATE);
+                        Win32.MUTANT_BASIC_INFORMATION mbi = new Win32.MUTANT_BASIC_INFORMATION();
+                        int retLen;
+
+                        Win32.ZwQueryMutant(mutant_handle, Win32.MUTANT_INFORMATION_CLASS.MutantBasicInformation,
+                            ref mbi, Marshal.SizeOf(mbi), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Count: " + mbi.CurrentCount + 
+                            "\r\nOwned by Caller: " + (mbi.OwnedByCaller != 0 ? "True" : "False") + 
+                            "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(mutant_handle);
+                    }
+                    else if (type == "Section")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int section_handle = rhandle.GetHandle((int)Win32.SECTION_RIGHTS.SECTION_QUERY);
+                        Win32.SECTION_BASIC_INFORMATION sbi = new Win32.SECTION_BASIC_INFORMATION();
+                        Win32.SECTION_IMAGE_INFORMATION sii = new Win32.SECTION_IMAGE_INFORMATION();
+                        int retLen;
+                        int retVal;
+
+                        Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionBasicInformation,
+                            ref sbi, Marshal.SizeOf(sbi), out retLen);
+                        retVal = Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionImageInformation,
+                            ref sii, Marshal.SizeOf(sii), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Attributes: " + Misc.FlagsToString(typeof(Win32.SECTION_ATTRIBUTES), (long)sbi.SectionAttributes) + 
+                            "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" + 
+                            
+                            (retVal == 0 ? ("\r\n\r\nImage Entry Point: 0x" + sii.EntryPoint.ToString("x8") + 
+                            "\r\nImage Machine Type: " + ((PE.MachineType)sii.ImageMachineType).ToString() + 
+                            "\r\nImage Characteristics: " + ((PE.ImageCharacteristics)sii.ImageCharacteristics).ToString() + 
+                            "\r\nImage Subsystem: " + ((PE.ImageSubsystem)sii.ImageSubsystem).ToString() + 
+                            "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(section_handle);
                     }
                 }
             }

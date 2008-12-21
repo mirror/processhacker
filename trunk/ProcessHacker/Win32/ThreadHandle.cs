@@ -40,7 +40,7 @@ namespace ProcessHacker
                 return new ThreadHandle(Handle, false);
             }
 
-            private ThreadHandle(int Handle, bool Owned)
+            internal ThreadHandle(int Handle, bool Owned)
                 : base(Handle, Owned)
             { }
 

@@ -400,6 +400,7 @@
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
     <Compile Include="MemoryAlloc.cs" />
+    <Compile Include="Win32\RemoteHandle.cs" />
     <Compile Include="Win32\LSAPolicyHandle.cs" />
     <Compile Include="Win32\LSAHandle.cs" />
     <Compile Include="Win32\ServiceManagerHandle.cs" />

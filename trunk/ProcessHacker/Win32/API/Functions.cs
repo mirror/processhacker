@@ -565,6 +565,22 @@ namespace ProcessHacker
         #region Undocumented
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
+            ref SECTION_BASIC_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
+            ref SECTION_IMAGE_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryMutant(int MutantHandle, MUTANT_INFORMATION_CLASS MutantInformationClass,
+            ref MUTANT_BASIC_INFORMATION MutantInformation, int MutantInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryEvent(int EventHandle, EVENT_INFORMATION_CLASS EventInformationClass,
+            ref EVENT_BASIC_INFORMATION EventInformation, int EventInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwSetInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
             ref int ThreadInformation, int ThreadInformationLength);
 

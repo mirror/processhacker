@@ -8,6 +8,7 @@ Process Hacker
  * Major refactoring of Win32 code
  * Now shows more information about processes (e.g. audiodg.exe) - uses 
    PROCESS_QUERY_LIMITED_INFORMATION on Vista
+ * Added Properties for more handle types
 
 1.2.6.5
  * A new member of the project - Dean

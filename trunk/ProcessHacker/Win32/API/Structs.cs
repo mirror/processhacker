@@ -105,6 +105,13 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct EVENT_BASIC_INFORMATION
+        {
+            public EVENT_TYPE EventType;
+            public int EventState;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct FLOATING_SAVE_AREA
         {
             public int ControlWord;
@@ -259,6 +266,14 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct MUTANT_BASIC_INFORMATION
+        {
+            public int CurrentCount;
+            public byte OwnedByCaller;
+            public byte AbandonedState;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct OBJECT_BASIC_INFORMATION
         {
             public uint Attributes;
@@ -376,6 +391,32 @@ namespace ProcessHacker
         {
             public SC_ACTION_TYPE Type;
             public int Delay;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SECTION_BASIC_INFORMATION
+        {
+            public int Unknown;
+            public SECTION_ATTRIBUTES SectionAttributes;
+            public long SectionSize;
+        }  
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SECTION_IMAGE_INFORMATION
+        {
+            public int EntryPoint;
+            public int StackZeroBits;
+            public int StackReserved;
+            public int StackCommit;
+            public int ImageSubsystem;
+            public short SubSystemVersionLow;
+            public short SubSystemVersionHigh;
+            public int Unknown1;
+            public int ImageCharacteristics;
+            public int ImageMachineType;
+            public int Unknown2;
+            public int Unknown3;
+            public int Unknown4;
         }
 
         [StructLayout(LayoutKind.Sequential)]

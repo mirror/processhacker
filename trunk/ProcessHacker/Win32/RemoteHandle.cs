@@ -25,22 +25,30 @@ namespace ProcessHacker
     public partial class Win32
     {
         /// <summary>
-        /// Represents a token handle owned by another process.
+        /// Represents a handle owned by another process.
         /// </summary>
-        public class RemoteTokenHandle : RemoteHandle, IWithToken
+        /// <typeparam name="THandle">A type derived from Win32Handle.</typeparam>
+        public class RemoteHandle
         {
-            public RemoteTokenHandle(ProcessHandle phandle, int handle)
-                : base(phandle, handle)
-            { }
+            private ProcessHandle _phandle;
+            private int _handle;
 
-            public TokenHandle GetToken()
+            public RemoteHandle(ProcessHandle phandle, int handle)
             {
-                return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);
+                _phandle = phandle;
+                _handle = handle;
             }
 
-            public TokenHandle GetToken(Win32.TOKEN_RIGHTS access)
+            public int GetHandle(int rights)
             {
-                return new TokenHandle(this.GetHandle((int)access), true);
+                int new_handle = 0;
+
+                if (ZwDuplicateObject(_phandle.Handle, _handle,
+                    Program.CurrentProcess, out new_handle,
+                    (STANDARD_RIGHTS)rights, 0, 0) != 0)
+                    throw new Exception("Could not duplicate token handle!");
+
+                return new_handle;
             }
         }
     }
