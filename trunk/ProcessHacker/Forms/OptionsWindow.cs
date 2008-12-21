@@ -41,6 +41,7 @@ namespace ProcessHacker
             checkUseToolhelpModules.Checked = Properties.Settings.Default.UseToolhelpModules;
             checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
+            checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
@@ -74,6 +75,7 @@ namespace ProcessHacker
             Properties.Settings.Default.UseToolhelpModules = checkUseToolhelpModules.Checked;
             Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
+            Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;

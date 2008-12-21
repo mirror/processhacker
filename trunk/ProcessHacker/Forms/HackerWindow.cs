@@ -3331,5 +3331,16 @@ namespace ProcessHacker
             t.Priority = ThreadPriority.Lowest;
             t.Start();
         }
+
+        private void HackerWindow_SizeChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                if (this.NotifyIcon.Visible&&Properties.Settings.Default.HideWhenMinimized)
+                {
+                    this.Hide();
+                }
+            } 
+        }
     }
 }

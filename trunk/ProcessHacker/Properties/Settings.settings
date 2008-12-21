@@ -170,5 +170,8 @@
     <Setting Name="TokenWindowTab" Type="System.String" Scope="User">
       <Value Profile="(Default)">tabPrivileges</Value>
     </Setting>
+    <Setting Name="HideWhenMinimized" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
