@@ -30,7 +30,6 @@ namespace ProcessHacker
     public partial class MemoryEditor : Form
     {
         private int _pid, _address, _length;
-        private Win32.ProcessHandle _phandle;
         private byte[] _data;
 
         public string Id
@@ -47,22 +46,6 @@ namespace ProcessHacker
             _length = Length;
 
             Program.MemoryEditors.Add(Id, this);
-
-            try
-            {
-                _phandle = new Win32.ProcessHandle(_pid,
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION);
-            }
-            catch (Exception ex)
-            {
-                this.Visible = false;
-                MessageBox.Show("Could not open process:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Close();
-                return;
-            }
 
             this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
                 "), 0x" + String.Format("{0:x}", _address) + "-0x" +
@@ -139,46 +122,52 @@ namespace ProcessHacker
 
         private void ReadMemory()
         {
-            int readmemory = 0;
-
-            _data = new byte[_length];
-
-            if (!Win32.ReadProcessMemory(_phandle.Handle, _address,
-                _data, _length, out readmemory))
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
             {
-                throw new Exception();
-            }
+                int readmemory = 0;
 
-            if (readmemory == 0)
-            {
-                throw new Exception();
-            }
+                _data = new byte[_length];
 
-            hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);
+                if (!Win32.ReadProcessMemory(phandle, _address,
+                    _data, _length, out readmemory))
+                {
+                    throw new Exception();
+                }
+
+                if (readmemory == 0)
+                {
+                    throw new Exception();
+                }
+
+                hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);
+            }
         }
 
         private void WriteMemory()
         {
-            int wrotememory = 0;
-
-            for (long i = 0; i < hexBoxMemory.ByteProvider.Length; i++)
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE))
             {
-                _data[i] = hexBoxMemory.ByteProvider.ReadByte(i);
-            }
+                int wrotememory = 0;
 
-            if (!Win32.WriteProcessMemory(_phandle, _address,
-                _data, _length, out wrotememory))
-            {
-                MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                for (long i = 0; i < hexBoxMemory.ByteProvider.Length; i++)
+                {
+                    _data[i] = hexBoxMemory.ByteProvider.ReadByte(i);
+                }
 
-                return;
-            }
+                if (!Win32.WriteProcessMemory(phandle, _address,
+                    _data, _length, out wrotememory))
+                {
+                    MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
+                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            if (wrotememory == 0)
-            {
-                MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);  
+                    return;
+                }
+
+                if (wrotememory == 0)
+                {
+                    MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
+                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -292,9 +281,9 @@ namespace ProcessHacker
             {
                 WriteMemory();
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Error writing to process memory.",
+                MessageBox.Show("Error writing to process memory:\n\n" + ex.Message,
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

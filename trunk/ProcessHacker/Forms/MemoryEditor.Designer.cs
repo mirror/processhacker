@@ -20,8 +20,6 @@ namespace ProcessHacker
                 components.Dispose();
             }
 
-            _phandle.Dispose();
-
             _data = null;
             hexBoxMemory.ByteProvider = null;
             GC.Collect();
