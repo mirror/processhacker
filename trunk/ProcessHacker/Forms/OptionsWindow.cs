@@ -1,6 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
+ * Copyright (C) 2008 Dean
  * Copyright (C) 2008 wj32
  * 
  * This program is free software: you can redistribute it and/or modify

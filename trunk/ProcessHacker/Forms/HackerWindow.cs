@@ -1,6 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
+ * Copyright (C) 2008 Dean
  * Copyright (C) 2008 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -41,6 +42,7 @@ namespace ProcessHacker
         public int RefreshInterval = 1000;
 
         public HelpWindow HelpForm = new HelpWindow();
+        public SysInfoWindow SysInfoWindow = null;
         public HandleFilterWindow HandleFilterForm = new HandleFilterWindow();
 
         ProcessProvider processP = new ProcessProvider();
@@ -612,6 +614,16 @@ namespace ProcessHacker
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }     
+
+        private void sysInfoMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SysInfoWindow == null)
+            {
+                SysInfoWindow = new SysInfoWindow();
+            }
+            SysInfoWindow.Show();
+            SysInfoWindow.Activate();
         }
 
         #endregion
@@ -3342,5 +3354,9 @@ namespace ProcessHacker
                 }
             } 
         }
+
+       
+
+        
     }
 }
