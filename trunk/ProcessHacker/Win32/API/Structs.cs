@@ -36,6 +36,13 @@ namespace ProcessHacker
             public short Segment;
             public ADDRESS_MODE Mode;
         }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CLIENT_ID
+        {
+            public int UniqueProcess;
+            public int UniqueThread;
+        }
 
         // NOTE: This x86 CONTEXT ONLY!!!
         [StructLayout(LayoutKind.Sequential)]
@@ -593,28 +600,43 @@ namespace ProcessHacker
             public uint NextEntryOffset;
             public uint NumberOfThreads;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 48)]
-            public byte[] Reserved1;
-
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-            public int[] Reserved2;
+            public long[] Reserved1;
 
-            public int UniqueProcessId;
-
-            public int Reserved3;
+            public long CreateTime;
+            public long UserTime;
+            public long KernelTime;
+            public UNICODE_STRING ImageName;
+            public int BasePriority;
+            public int ProcessId;
+            public int InheritedFromProcessId;
             public uint HandleCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] Reserved4;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
+            public int Reserved2;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11)]
-            public int[] Reserved5;
+            public int PrivatePageCount;
+            public VM_COUNTERS VirtualMemoryCounters;
+            public IO_COUNTERS IoCounters;
 
-            public uint PeakPagefileUsage;
-            public uint PrivatePageCount;
+            [MarshalAs(UnmanagedType.ByValArray)]
+            public SYSTEM_THREAD[] Threads;
+        }
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-            public long[] Reserved6;
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_THREAD
+        {
+            public long KernelTime;
+            public long UserTime;
+            public long CreateTime;
+            public int WaitTime;
+            public int StartAddress;
+            public CLIENT_ID ClientId;
+            public int Priority;
+            public int BasePriority;
+            public int ContextSwitchCount;
+            public int State;
+            public KWAIT_REASON WaitReason;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -674,6 +696,22 @@ namespace ProcessHacker
             public ushort MaximumLength;
 
             public int Buffer;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VM_COUNTERS
+        {
+            public int PeakVirtualSize;
+            public int VirtualSize;
+            public int PageFaultCount;
+            public int PeakWorkingSetSize;
+            public int WorkingSetSize;
+            public int QuotaPeakPagedPoolUsage;
+            public int QuotaPagedPoolUsage;
+            public int QuotaPeakNonPagedPoolUsage;
+            public int QuotaNonPagedPoolUsage;
+            public int PagefileUsage;
+            public int PeakPagefileUsage;
         }
 
         [StructLayout(LayoutKind.Sequential)]
