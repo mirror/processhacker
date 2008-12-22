@@ -32,6 +32,9 @@ namespace ProcessHacker
     /// </summary>
     public partial class Win32
     {
+        /// <summary>
+        /// Contains code which uses pointers.
+        /// </summary>
         public unsafe class Unsafe
         {
             /// <summary>
@@ -103,6 +106,11 @@ namespace ProcessHacker
 
         #region Errors
 
+        /// <summary>
+        /// Gets the error message associated with the specified error code.
+        /// </summary>
+        /// <param name="ErrorCode">The error code.</param>
+        /// <returns>An error message.</returns>
         public static string GetErrorMessage(int ErrorCode)
         {
             try
@@ -115,6 +123,10 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Gets the error message associated with the last error that occured.
+        /// </summary>
+        /// <returns>An error message.</returns>
         public static string GetLastErrorMessage()
         {
             return GetErrorMessage(Marshal.GetLastWin32Error());
@@ -133,6 +145,10 @@ namespace ProcessHacker
             public string TypeName;
         }
 
+        /// <summary>
+        /// Enumerates the handles opened by every running process.
+        /// </summary>
+        /// <returns>An array containing information about the handles.</returns>
         public static SYSTEM_HANDLE_INFORMATION[] EnumHandles()
         {
             int retLength = 0;
@@ -392,11 +408,6 @@ namespace ProcessHacker
         #endregion
 
         #region Misc.
-
-        public static T PtrToStructure<T>(IntPtr data)
-        {
-            return (T)Marshal.PtrToStructure(data, typeof(T));
-        }
 
         public static string ReadUnicodeString(UNICODE_STRING str)
         {
@@ -805,13 +816,14 @@ namespace ProcessHacker
             WTSEnumerateSessions(0, 0, 1, out sessions, out count);
             returnSessions = new WTS_SESSION_INFO[count];
 
+            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(sessions);
+
             for (int i = 0; i < count; i++)
             {
-                returnSessions[i] = PtrToStructure<WTS_SESSION_INFO>(
-                    new IntPtr(sessions.ToInt32() + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i));
+                returnSessions[i] = data.ReadStruct<WTS_SESSION_INFO>(i);
             }
 
-            WTSFreeMemory(sessions);
+            data.Dispose();
 
             return returnSessions;
         }

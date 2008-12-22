@@ -332,6 +332,8 @@ namespace ProcessHacker
             }
 
             Dictionary = newdictionary;
+
+            wtsEnumData.Memory.Dispose();
         }
     }
 }
