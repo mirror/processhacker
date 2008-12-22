@@ -174,11 +174,11 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
-            if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
+            if (p.IsBeingDebugged)
+                return Properties.Settings.Default.ColorBeingDebugged;
+            else if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
                 Program.HackerWindow.ProcessServices[p.PID].Count > 0)
                 return Properties.Settings.Default.ColorServiceProcesses;
-            else if (p.IsBeingDebugged)
-                return Properties.Settings.Default.ColorBeingDebugged;
             else if (p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                 return Properties.Settings.Default.ColorElevatedProcesses;
             else if (p.Username == "NT AUTHORITY\\SYSTEM")
