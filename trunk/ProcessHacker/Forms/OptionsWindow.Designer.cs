@@ -37,6 +37,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.checkUseToolhelpModules = new System.Windows.Forms.CheckBox();
@@ -55,7 +56,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
-            this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -94,7 +94,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 229);
+            this.buttonClose.Location = new System.Drawing.Point(284, 240);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 21);
             this.buttonClose.TabIndex = 2;
@@ -106,7 +106,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 120);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 144);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(168, 17);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -117,7 +117,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 76);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 100);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(270, 17);
             this.checkWarnDangerous.TabIndex = 4;
@@ -152,7 +152,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 11);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 212);
+            this.tabControl.Size = new System.Drawing.Size(347, 223);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -167,19 +167,30 @@
             this.tabGeneral.Controls.Add(this.checkUseToolhelpModules);
             this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
             this.tabGeneral.Controls.Add(this.checkWarnDangerous);
-            this.tabGeneral.Location = new System.Drawing.Point(4, 21);
+            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(339, 187);
+            this.tabGeneral.Size = new System.Drawing.Size(339, 197);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // checkHideWhenMinimized
+            // 
+            this.checkHideWhenMinimized.AutoSize = true;
+            this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 77);
+            this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
+            this.checkHideWhenMinimized.Size = new System.Drawing.Size(144, 17);
+            this.checkHideWhenMinimized.TabIndex = 9;
+            this.checkHideWhenMinimized.Text = "Hide when minimized";
+            this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
             // 
             // checkHideHandlesNoName
             // 
             this.checkHideHandlesNoName.AutoSize = true;
             this.checkHideHandlesNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 142);
+            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 166);
             this.checkHideHandlesNoName.Name = "checkHideHandlesNoName";
             this.checkHideHandlesNoName.Size = new System.Drawing.Size(180, 17);
             this.checkHideHandlesNoName.TabIndex = 8;
@@ -201,7 +212,7 @@
             // 
             this.checkUseToolhelpModules.AutoSize = true;
             this.checkUseToolhelpModules.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkUseToolhelpModules.Location = new System.Drawing.Point(6, 98);
+            this.checkUseToolhelpModules.Location = new System.Drawing.Point(6, 122);
             this.checkUseToolhelpModules.Name = "checkUseToolhelpModules";
             this.checkUseToolhelpModules.Size = new System.Drawing.Size(234, 17);
             this.checkUseToolhelpModules.TabIndex = 3;
@@ -224,10 +235,10 @@
             this.tabHighlighting.Controls.Add(this.label4);
             this.tabHighlighting.Controls.Add(this.colorNewProcesses);
             this.tabHighlighting.Controls.Add(this.label3);
-            this.tabHighlighting.Location = new System.Drawing.Point(4, 21);
+            this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 187);
+            this.tabHighlighting.Size = new System.Drawing.Size(339, 186);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -360,23 +371,12 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
-            // checkHideWhenMinimized
-            // 
-            this.checkHideWhenMinimized.AutoSize = true;
-            this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 164);
-            this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
-            this.checkHideWhenMinimized.Size = new System.Drawing.Size(144, 17);
-            this.checkHideWhenMinimized.TabIndex = 9;
-            this.checkHideWhenMinimized.Text = "Hide When Minimized";
-            this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 261);
+            this.ClientSize = new System.Drawing.Size(371, 272);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

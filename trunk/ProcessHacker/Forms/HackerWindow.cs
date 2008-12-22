@@ -986,6 +986,7 @@ namespace ProcessHacker
         private void showHideMenuItem_Click(object sender, EventArgs e)
         {
             this.Visible = !this.Visible;
+            this.WindowState = FormWindowState.Normal;
             this.Activate();
         }
 
@@ -3348,15 +3349,11 @@ namespace ProcessHacker
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
-                if (this.NotifyIcon.Visible&&Properties.Settings.Default.HideWhenMinimized)
+                if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
                 {
                     this.Hide();
                 }
             } 
-        }
-
-       
-
-        
+        } 
     }
 }
