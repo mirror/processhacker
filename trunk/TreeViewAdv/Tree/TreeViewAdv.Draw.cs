@@ -16,7 +16,6 @@ namespace Aga.Controls.Tree
 {
 	public partial class TreeViewAdv
 	{
-
 		private void CreatePens()
 		{
 			CreateLinePen();
@@ -170,7 +169,7 @@ namespace Aga.Controls.Tree
 			{
 				if (c.IsVisible)
 				{
-					if (x >= OffsetX && x - OffsetX < this.Bounds.Width)// skip invisible columns
+					if (x + c.Width >= OffsetX && x - OffsetX < this.Bounds.Width)// skip invisible columns (fixed by wj32)
 					{
 						Rectangle rect = new Rectangle(x, 0, c.Width, ColumnHeaderHeight - 1);
 						gr.SetClip(rect);
@@ -198,7 +197,8 @@ namespace Aga.Controls.Tree
 		{
 			foreach (NodeControlInfo item in GetNodeControls(node))
 			{
-				if (item.Bounds.X >= OffsetX && item.Bounds.X - OffsetX < this.Bounds.Width)// skip invisible nodes
+				if (item.Bounds.X + item.Bounds.Width >= OffsetX && 
+                    item.Bounds.X - OffsetX < this.Bounds.Width)// skip invisible nodes (fixed by wj32)
 				{
 					context.Bounds = item.Bounds;
 					context.Graphics.SetClip(context.Bounds);
