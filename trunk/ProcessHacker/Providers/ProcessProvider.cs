@@ -37,7 +37,10 @@ namespace ProcessHacker
         public string Name;
         public string Username;
 
+        public Win32.TOKEN_ELEVATION_TYPE ElevationType;
+        public bool IsElevated;
         public bool IsBeingDebugged;
+        public bool IsVirtualizationEnabled;
         public ulong LastTime;
         public int SessionId;
         public int ParentPID;
@@ -184,7 +187,16 @@ namespace ProcessHacker
 
                             try
                             {
-                                item.Username = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUsername(true);
+                                Win32.TokenHandle thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+
+                                try { item.Username = thandle.GetUsername(true); }
+                                catch { }
+                                try { item.ElevationType = thandle.GetElevationType(); }
+                                catch { }
+                                try { item.IsElevated = thandle.IsElevated(); }
+                                catch { }
+                                try { item.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
+                                catch { }
                             }
                             catch
                             { }
@@ -240,8 +252,11 @@ namespace ProcessHacker
                     ProcessItem newitem = new ProcessItem();
 
                     newitem.CmdLine = item.CmdLine;
+                    newitem.ElevationType = item.ElevationType;
                     newitem.Icon = item.Icon;
                     newitem.IconAttempts = item.IconAttempts;
+                    newitem.IsElevated = item.IsElevated;
+                    newitem.IsVirtualizationEnabled = item.IsVirtualizationEnabled;
                     newitem.Name = item.Name;
                     newitem.ParentPID = item.ParentPID;
                     newitem.PID = item.PID;
@@ -289,6 +304,16 @@ namespace ProcessHacker
                         using (Win32.ProcessHandle phandle =
                             new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
                         {
+                            try
+                            {
+                                Win32.TokenHandle thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+
+                                try { newitem.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
+                                catch { }
+                            }
+                            catch
+                            { }
+
                             try
                             {
                                 ulong[] times = Win32.GetProcessTimes(phandle);

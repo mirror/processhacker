@@ -397,13 +397,13 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("255, 85, 85")]
-        public global::System.Drawing.Color ColorHighlight {
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 170, 102")]
+        public global::System.Drawing.Color ColorElevatedProcesses {
             get {
-                return ((global::System.Drawing.Color)(this["ColorHighlight"]));
+                return ((global::System.Drawing.Color)(this["ColorElevatedProcesses"]));
             }
             set {
-                this["ColorHighlight"] = value;
+                this["ColorElevatedProcesses"] = value;
             }
         }
         

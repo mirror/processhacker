@@ -179,6 +179,8 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorServiceProcesses;
             else if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
+            else if (p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+                return Properties.Settings.Default.ColorElevatedProcesses;
             else if (p.Username == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
             else if (p.Username == System.Security.Principal.WindowsIdentity.GetCurrent().Name)

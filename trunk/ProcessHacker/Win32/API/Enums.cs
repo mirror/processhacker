@@ -630,6 +630,13 @@ namespace ProcessHacker
                 STANDARD_RIGHTS.SYNCHRONIZE | 0xffff
         }
 
+        public enum TOKEN_ELEVATION_TYPE : int
+        {
+            TokenElevationTypeDefault = 1,
+            TokenElevationTypeFull,
+            TokenElevationTypeLimited
+        }
+
         public enum TOKEN_INFORMATION_CLASS
         {
             TokenUser = 1,

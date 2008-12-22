@@ -95,8 +95,8 @@
     <Setting Name="ColorOwnProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">255, 255, 170</Value>
     </Setting>
-    <Setting Name="ColorHighlight" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">255, 85, 85</Value>
+    <Setting Name="ColorElevatedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 170, 102</Value>
     </Setting>
     <Setting Name="ColorSystemProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">170, 204, 255</Value>

@@ -56,6 +56,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.colorElevatedProcesses = new ProcessHacker.Components.ColorModifier();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -94,7 +96,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 240);
+            this.buttonClose.Location = new System.Drawing.Point(284, 253);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 21);
             this.buttonClose.TabIndex = 2;
@@ -152,7 +154,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 11);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 223);
+            this.tabControl.Size = new System.Drawing.Size(347, 236);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -221,6 +223,8 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.label10);
+            this.tabHighlighting.Controls.Add(this.colorElevatedProcesses);
             this.tabHighlighting.Controls.Add(this.label9);
             this.tabHighlighting.Controls.Add(this.label8);
             this.tabHighlighting.Controls.Add(this.textHighlightingDuration);
@@ -238,7 +242,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 186);
+            this.tabHighlighting.Size = new System.Drawing.Size(339, 210);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -246,7 +250,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 153);
+            this.label9.Location = new System.Drawing.Point(6, 129);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(113, 12);
             this.label9.TabIndex = 7;
@@ -255,7 +259,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 128);
+            this.label8.Location = new System.Drawing.Point(6, 152);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(119, 12);
             this.label8.TabIndex = 6;
@@ -290,7 +294,7 @@
             // colorServiceProcesses
             // 
             this.colorServiceProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorServiceProcesses.Location = new System.Drawing.Point(127, 150);
+            this.colorServiceProcesses.Location = new System.Drawing.Point(127, 126);
             this.colorServiceProcesses.Name = "colorServiceProcesses";
             this.colorServiceProcesses.Size = new System.Drawing.Size(40, 18);
             this.colorServiceProcesses.TabIndex = 3;
@@ -298,7 +302,7 @@
             // colorBeingDebugged
             // 
             this.colorBeingDebugged.Color = System.Drawing.Color.Transparent;
-            this.colorBeingDebugged.Location = new System.Drawing.Point(127, 126);
+            this.colorBeingDebugged.Location = new System.Drawing.Point(127, 150);
             this.colorBeingDebugged.Name = "colorBeingDebugged";
             this.colorBeingDebugged.Size = new System.Drawing.Size(40, 18);
             this.colorBeingDebugged.TabIndex = 3;
@@ -371,12 +375,29 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 176);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(119, 12);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "Elevated Processes:";
+            // 
+            // colorElevatedProcesses
+            // 
+            this.colorElevatedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorElevatedProcesses.Location = new System.Drawing.Point(127, 174);
+            this.colorElevatedProcesses.Name = "colorElevatedProcesses";
+            this.colorElevatedProcesses.Size = new System.Drawing.Size(40, 18);
+            this.colorElevatedProcesses.TabIndex = 8;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 272);
+            this.ClientSize = new System.Drawing.Size(371, 285);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -428,5 +449,7 @@
         private System.Windows.Forms.Label label9;
         private ProcessHacker.Components.ColorModifier colorServiceProcesses;
         private System.Windows.Forms.CheckBox checkHideWhenMinimized;
+        private System.Windows.Forms.Label label10;
+        private ProcessHacker.Components.ColorModifier colorElevatedProcesses;
     }
 }

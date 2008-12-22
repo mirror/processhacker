@@ -9,6 +9,7 @@ Process Hacker
  * Now shows more information about processes (e.g. audiodg.exe) - uses 
    PROCESS_QUERY_LIMITED_INFORMATION on Vista
  * Added Properties for more handle types
+ * Added highlighting of UAC elevated processes
 
 1.2.6.5
  * A new member of the project - Dean

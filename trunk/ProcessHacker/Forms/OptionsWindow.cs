@@ -49,8 +49,9 @@ namespace ProcessHacker
             colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemovedProcesses;
             colorOwnProcesses.Color = Properties.Settings.Default.ColorOwnProcesses;
             colorSystemProcesses.Color = Properties.Settings.Default.ColorSystemProcesses;
-            colorBeingDebugged.Color = Properties.Settings.Default.ColorBeingDebugged;
             colorServiceProcesses.Color = Properties.Settings.Default.ColorServiceProcesses;
+            colorBeingDebugged.Color = Properties.Settings.Default.ColorBeingDebugged;
+            colorElevatedProcesses.Color = Properties.Settings.Default.ColorElevatedProcesses;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -92,8 +93,9 @@ namespace ProcessHacker
             Properties.Settings.Default.ColorRemovedProcesses = colorRemovedProcesses.Color;
             Properties.Settings.Default.ColorOwnProcesses = colorOwnProcesses.Color;
             Properties.Settings.Default.ColorSystemProcesses = colorSystemProcesses.Color;
-            Properties.Settings.Default.ColorBeingDebugged = colorBeingDebugged.Color;
             Properties.Settings.Default.ColorServiceProcesses = colorServiceProcesses.Color;
+            Properties.Settings.Default.ColorBeingDebugged = colorBeingDebugged.Color;
+            Properties.Settings.Default.ColorElevatedProcesses = colorElevatedProcesses.Color;
 
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;

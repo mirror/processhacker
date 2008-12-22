@@ -75,6 +75,22 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the elevation type of the token.
+            /// </summary>
+            /// <returns>A TOKEN_ELEVATION_TYPE enum.</returns>
+            public TOKEN_ELEVATION_TYPE GetElevationType()
+            {
+                int value;
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenElevationType,
+                    out value, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return (TOKEN_ELEVATION_TYPE)value;
+            }
+
+            /// <summary>
             /// Gets the token's username.
             /// </summary>
             /// <param name="IncludeDomain">Specifies whether to include the domain of the user.</param>
@@ -113,6 +129,54 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
 
                 return sessionId;
+            }
+
+            /// <summary>
+            /// Gets whether the token has UAC elevation applied.
+            /// </summary>
+            /// <returns>A boolean.</returns>
+            public bool IsElevated()
+            {
+                int value;
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenElevation,
+                    out value, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return value != 0;
+            }
+
+            /// <summary>
+            /// Gets whether virtualization is allowed.
+            /// </summary>
+            /// <returns>A boolean.</returns>
+            public bool IsVirtualizationAllowed()
+            {
+                int value;
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenVirtualizationAllowed,
+                    out value, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return value != 0;
+            }
+
+            /// <summary>
+            /// Gets whether virtualization is enabled.
+            /// </summary>
+            /// <returns>A boolean.</returns>
+            public bool IsVirtualizationEnabled()
+            {
+                int value;
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenVirtualizationEnabled,
+                    out value, 4, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return value != 0;
             }
         }
     }
