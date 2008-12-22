@@ -9,7 +9,7 @@ using System.Security.Permissions;
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 
 [assembly: AssemblyTitle("Aga.Controls")]
-[assembly: AssemblyCopyright("Copyright © Andrey Gliznetsov 2006 - 2007")]
+[assembly: AssemblyCopyright("Copyright © Andrey Gliznetsov 2006 - 2007, modified by wj32")]
 [assembly: AssemblyDescription("http://sourceforge.net/projects/treeviewadv/")]
 
 [assembly: AssemblyVersion("1.6.1.0")]

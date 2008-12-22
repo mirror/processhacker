@@ -112,13 +112,14 @@ namespace Aga.Controls.Tree
 					context.DrawSelection = DrawSelectionMode.Inactive;
 			}
 
-			context.DrawFocus = Focused && CurrentNode == node;
+            context.DrawFocus = Focused && CurrentNode == node;
+
+            Rectangle focusRect = new Rectangle(OffsetX, rowRect.Y, ClientRectangle.Width, rowRect.Height);
+
+            e.Graphics.FillRectangle(new SolidBrush(node.BackColor), focusRect);
 
             if (FullRowSelect)
             {
-                Rectangle focusRect = new Rectangle(OffsetX, rowRect.Y, ClientRectangle.Width, rowRect.Height);
-
-                e.Graphics.FillRectangle(new SolidBrush(node.BackColor), focusRect);
                 context.DrawFocus = false;
 
                 if (context.DrawSelection == DrawSelectionMode.Active || context.DrawSelection == DrawSelectionMode.Inactive)
