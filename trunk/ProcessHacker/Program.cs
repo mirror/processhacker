@@ -117,9 +117,12 @@ namespace ProcessHacker
             catch
             { }
 
+#if RELEASE
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+#endif
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow());

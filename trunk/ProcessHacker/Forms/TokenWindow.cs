@@ -36,7 +36,7 @@ namespace ProcessHacker
             Misc.SetDoubleBuffered(listGroups, typeof(ListView), true);
             Misc.SetDoubleBuffered(listPrivileges, typeof(ListView), true);
 
-            listGroups.ContextMenu = ListViewMenu.GetMenu(listGroups);
+            listGroups.ContextMenu = GenericViewMenu.GetMenu(listGroups);
             listPrivileges.ContextMenu = menuPrivileges;
 
             typeof(ListView).GetProperty("DoubleBuffered",
@@ -104,7 +104,7 @@ namespace ProcessHacker
 
         private void TokenWindow_Load(object sender, EventArgs e)
         {
-            ListViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
+            GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
 
             this.Size = Properties.Settings.Default.TokenWindowSize;
 

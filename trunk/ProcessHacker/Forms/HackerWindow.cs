@@ -64,7 +64,7 @@ namespace ProcessHacker
         int memoryAddress;
         int memorySize;
 
-        List<Control> listViews = new List<Control>();
+        List<Control> listControls = new List<Control>();
 
         Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
         List<string> log = new List<string>();
@@ -479,16 +479,18 @@ namespace ProcessHacker
 
         private void selectAllHackerMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Control c in listViews)
+            foreach (Control c in listControls)
             {
                 if (c.Focused)
                 {
-                    try
+                    if (c is ListView)
                     {
-                        Misc.SelectAll((ListView.ListViewItemCollection)c.GetType().GetProperty("Items").GetValue(c, null));
+                        Misc.SelectAll((c as ListView).Items);
                     }
-                    catch
-                    { }
+                    else if (c is TreeViewAdv)
+                    {
+                        Misc.SelectAll((c as TreeViewAdv).AllNodes);
+                    }
                 }
             }
         }
@@ -1061,6 +1063,16 @@ namespace ProcessHacker
                 terminateMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
+                copyProcessMenuItem.Enabled = true;
+            }
+
+            if (treeProcesses.Model.Nodes.Count == 0)
+            {
+                selectAllProcessMenuItem.Enabled = false;
+            }
+            else
+            {
+                selectAllProcessMenuItem.Enabled = true;
             }
         }
 
@@ -1411,10 +1423,10 @@ namespace ProcessHacker
             }
         }
 
-        private void selectAllMenuItem_Click(object sender, EventArgs e)
+        private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(treeProcesses.Tree.AllNodes);
-        }
+        } 
 
         #endregion
 
@@ -2349,7 +2361,7 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.RefreshInterval = RefreshInterval;
 
-            if (this.WindowState == FormWindowState.Normal)
+            if (this.WindowState == FormWindowState.Normal && this.Visible)
             {
                 Properties.Settings.Default.WindowLocation = this.Location;
                 Properties.Settings.Default.WindowSize = this.Size;
@@ -2384,6 +2396,12 @@ namespace ProcessHacker
             }
             catch
             { }
+        }
+
+        public void SelectAll(TreeViewAdv tree)
+        {
+            foreach (TreeNodeAdv node in tree.AllNodes)
+                node.IsSelected = true;
         }
 
         private void ShowVirtualProtect()
@@ -3231,18 +3249,19 @@ namespace ProcessHacker
             stringScanMenuItem.Click += new EventHandler(PerformSearch);
             heapScanMenuItem.Click += new EventHandler(PerformSearch);
 
-            listViews.Add(treeProcesses);
-            listViews.Add(listThreads);
-            listViews.Add(listModules);
-            listViews.Add(listMemory);
-            listViews.Add(listHandles);
-            listViews.Add(listServices);
+            listControls.Add(treeProcesses.Tree);
+            listControls.Add(listThreads);
+            listControls.Add(listModules);
+            listControls.Add(listMemory);
+            listControls.Add(listHandles);
+            listControls.Add(listServices);
 
-            ListViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
-            ListViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
-            ListViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
-            ListViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles.List, null);
-            ListViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
+            GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+            GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
+            GenericViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
+            GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
+            GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles.List, null);
+            GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
 
             treeProcesses.ContextMenu = menuProcess;
             listThreads.ContextMenu = menuThread;
@@ -3327,6 +3346,6 @@ namespace ProcessHacker
                     this.Hide();
                 }
             } 
-        } 
+        }
     }
 }

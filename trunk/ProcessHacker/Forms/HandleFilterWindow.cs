@@ -37,7 +37,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            ListViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
+            GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
 
             Misc.SetDoubleBuffered(listHandles, typeof(ListView), true);

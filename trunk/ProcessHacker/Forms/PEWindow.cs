@@ -43,28 +43,28 @@ namespace ProcessHacker
             Program.PEWindows.Add(Id, this);
 
             Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
-            listCOFFHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFHeader);
+            listCOFFHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFHeader);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
 
             Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
-            listCOFFOptionalHeader.ContextMenu = ListViewMenu.GetMenu(listCOFFOptionalHeader);
+            listCOFFOptionalHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFOptionalHeader);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
 
             Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
-            listImageData.ContextMenu = ListViewMenu.GetMenu(listImageData);
+            listImageData.ContextMenu = GenericViewMenu.GetMenu(listImageData);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
 
             Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
-            listSections.ContextMenu = ListViewMenu.GetMenu(listSections);
+            listSections.ContextMenu = GenericViewMenu.GetMenu(listSections);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
 
             Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
-            listExports.ContextMenu = ListViewMenu.GetMenu(listExports,
+            listExports.ContextMenu = GenericViewMenu.GetMenu(listExports,
                 new RetrieveVirtualItemEventHandler(listExports_RetrieveVirtualItem));
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
             Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
-            listImports.ContextMenu = ListViewMenu.GetMenu(listImports);
+            listImports.ContextMenu = GenericViewMenu.GetMenu(listImports);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
 
             try

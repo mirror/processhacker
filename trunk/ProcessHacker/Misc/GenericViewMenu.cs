@@ -21,10 +21,11 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using Aga.Controls.Tree;
+using Aga.Controls.Tree.NodeControls;
 
 namespace ProcessHacker
 {
-    public static class ListViewMenu
+    public static class GenericViewMenu
     {
         public static ContextMenu GetMenu(ListView lv)
         {
@@ -118,6 +119,75 @@ namespace ProcessHacker
                 else
                 {
                     text += collection[i].SubItems[subitem].Text;
+                }
+
+                if (i != collection.Count - 1)
+                    text += "\r\n";
+            }
+
+            Clipboard.SetText(text);
+        }
+
+        public static void AddMenuItems(MenuItem.MenuItemCollection items, TreeViewAdv tv)
+        {
+            MenuItem copyItem = new MenuItem("Copy");
+
+            copyItem.Tag = new object[] { -1, tv };
+            copyItem.Click += new EventHandler(TreeViewAdvMenuItem_Click);
+
+            items.Add(copyItem);
+
+            foreach (TreeColumn c in tv.Columns)
+            {
+                MenuItem item = new MenuItem("Copy \"" + c.Header + "\"");
+
+                item.Tag = new object[] { c.Index, tv };
+                item.Click += new EventHandler(TreeViewAdvMenuItem_Click);
+
+                items.Add(item);
+            }
+        }
+
+        private static void TreeViewAdvMenuItem_Click(object sender, EventArgs e)
+        {
+            MenuItem mitem = (MenuItem)sender;
+            int columnIndex = (int)((object[])mitem.Tag)[0];
+            TreeViewAdv tv = (TreeViewAdv)((object[])mitem.Tag)[1];
+            List<string[]> collection = new List<string[]>();
+            string text = "";
+
+            foreach (TreeNodeAdv item in tv.SelectedNodes)
+            {
+                string[] array = new string[tv.Columns.Count];
+                int i = 0;
+
+                foreach (NodeControl control in tv.NodeControls)
+                {
+                    if (control.ParentColumn.Index == i && (control is BaseTextControl))
+                    {
+                        array[i] = (control as BaseTextControl).GetLabel(item);
+                        i++;
+                    }
+                }
+
+                collection.Add(array);
+            }
+
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (columnIndex == -1)
+                {
+                    for (int j = 0; j < tv.Columns.Count; j++)
+                    {
+                        text += collection[i][j];
+
+                        if (j != tv.Columns.Count - 1)
+                            text += ", ";
+                    }
+                }
+                else
+                {
+                    text += collection[i][columnIndex];
                 }
 
                 if (i != collection.Count - 1)

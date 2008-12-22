@@ -66,7 +66,7 @@ namespace ProcessHacker
         {
             Program.UpdateWindows();
 
-            listResults.ContextMenu = ListViewMenu.GetMenu(listResults, 
+            listResults.ContextMenu = GenericViewMenu.GetMenu(listResults, 
                 new RetrieveVirtualItemEventHandler(listResults_RetrieveVirtualItem));
 
             this.Size = Properties.Settings.Default.ResultsWindowSize;
