@@ -54,6 +54,13 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Creates a new, invalid memory allocation. 
+        /// You must set the pointer using the Memory property.
+        /// </summary>
+        protected MemoryAlloc()
+        { }
+
+        /// <summary>
         /// Creates a new memory allocation with the specified size.
         /// </summary>
         /// <param name="size">The amount of memory, in bytes, to allocate.</param>
@@ -146,7 +153,7 @@ namespace ProcessHacker
         /// Resizes the memory allocation.
         /// </summary>
         /// <param name="newSize">The new size of the allocation.</param>
-        public void Resize(int newSize)
+        public virtual void Resize(int newSize)
         {
             _memory = Marshal.ReAllocHGlobal(_memory, new IntPtr(newSize));
             _size = newSize;
@@ -158,14 +165,20 @@ namespace ProcessHacker
         public IntPtr Memory
         {
             get { return _memory; }
+            protected set { _memory = value; }
         }
 
         /// <summary>
         /// Gets the size of the allocated memory.
         /// </summary>
-        public int Size
+        public virtual int Size
         {
             get { return _size; }
+        }
+
+        protected virtual void Free()
+        {
+            Marshal.FreeHGlobal(_memory);
         }
 
         ~MemoryAlloc()
@@ -183,7 +196,7 @@ namespace ProcessHacker
                 if (!_freed)
                 {
                     _freed = true;
-                    Marshal.FreeHGlobal(_memory);
+                    this.Free();
                 }
             }
         }

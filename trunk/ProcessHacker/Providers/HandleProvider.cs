@@ -48,10 +48,7 @@ namespace ProcessHacker
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = Win32.EnumHandles();
             Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION> processHandles = 
                 new Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION>();
-            Dictionary<short, HandleItem> newdictionary = new Dictionary<short, HandleItem>();
-
-            foreach (short key in Dictionary.Keys)
-                newdictionary.Add(key, Dictionary[key]);
+            Dictionary<short, HandleItem> newdictionary = new Dictionary<short, HandleItem>(this.Dictionary);
 
             foreach (Win32.SYSTEM_HANDLE_INFORMATION handle in handles)
             {

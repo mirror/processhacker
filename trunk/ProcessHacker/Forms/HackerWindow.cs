@@ -514,33 +514,6 @@ namespace ProcessHacker
             }
         }
 
-        private void FSPWSSIDMenuItem_Click(object sender, EventArgs e)
-        {
-            Process[] processes = Process.GetProcesses();
-            int myId = Win32.GetProcessSessionId(Process.GetCurrentProcess().Id);
-
-            DeselectAll(treeProcesses.Tree);
-
-            foreach (Process p in processes)
-            {
-                try
-                {
-                    if (Win32.TSGetProcessUsername(p.Id, true) == "NT AUTHORITY\\SYSTEM" &&
-                        Win32.GetProcessSessionId(p.Id) == myId)
-                    {
-                        TreeNodeAdv node = treeProcesses.FindTreeNode(p.Id);
-                        node.IsSelected = true;
-                        node.EnsureVisible();
-                    }
-                }
-                catch
-                { }
-            }
-
-            tabControlBig.SelectedTab = tabProcesses;
-            treeProcesses.Tree.Select();
-        }
-
         private void runAsMenuItem_Click(object sender, EventArgs e)
         {
              RunWindow run = new RunWindow();

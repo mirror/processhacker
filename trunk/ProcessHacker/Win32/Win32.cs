@@ -415,6 +415,53 @@ namespace ProcessHacker
 
         #region Processes
 
+        public struct SystemProcess
+        {
+            public string Name;
+            public SYSTEM_PROCESS_INFORMATION Process;
+            public SYSTEM_THREAD_INFORMATION[] Threads;
+        }
+
+        public static SystemProcess[] EnumProcesses()
+        {
+            int retLength = 0;
+            List<SystemProcess> returnProcesses;
+
+            using (MemoryAlloc data = new MemoryAlloc(0x1000))
+            {
+                while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
+                    data.Size, ref retLength) == STATUS_INFO_LENGTH_MISMATCH)
+                    data.Resize(data.Size * 2);
+
+                returnProcesses = new List<SystemProcess>();
+
+                int i = 0;
+                SystemProcess currentProcess = new SystemProcess();
+
+                while (true)
+                {
+                    currentProcess.Process = data.ReadStruct<SYSTEM_PROCESS_INFORMATION>(i, 0);
+                    currentProcess.Threads = new SYSTEM_THREAD_INFORMATION[currentProcess.Process.NumberOfThreads];
+                    currentProcess.Name = ReadUnicodeString(currentProcess.Process.ImageName);
+
+                    for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
+                    {
+                        currentProcess.Threads[j] = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
+                            Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
+                    }
+
+                    returnProcesses.Add(currentProcess);
+
+                    if (currentProcess.Process.NextEntryOffset == 0)
+                        break;
+
+                    i += currentProcess.Process.NextEntryOffset;
+                }
+
+                return returnProcesses.ToArray();
+            }
+        }
+
         public static string GetNameFromPID(int pid)
         {
             PROCESSENTRY32 proc = new PROCESSENTRY32();
@@ -485,11 +532,6 @@ namespace ProcessHacker
         #endregion
 
         #region Security
-
-        public static string GetAccountName(WTS_PROCESS_INFO info, bool IncludeDomain)
-        {
-            return GetAccountName(info.SID, IncludeDomain);
-        }
 
         public static string GetAccountName(int SID, bool IncludeDomain)
         {
@@ -754,15 +796,9 @@ namespace ProcessHacker
 
         #region Terminal Server
 
-        public struct WtsProcess
-        {
-            public WTS_PROCESS_INFO Info;
-            public string Username;
-        }
-
         public static WTS_SESSION_INFO[] TSEnumSessions()
         {
-            int sessions;
+            IntPtr sessions;
             int count;
             WTS_SESSION_INFO[] returnSessions;
 
@@ -772,7 +808,7 @@ namespace ProcessHacker
             for (int i = 0; i < count; i++)
             {
                 returnSessions[i] = PtrToStructure<WTS_SESSION_INFO>(
-                    new IntPtr(sessions + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i));
+                    new IntPtr(sessions.ToInt32() + Marshal.SizeOf(typeof(WTS_SESSION_INFO)) * i));
             }
 
             WTSFreeMemory(sessions);
@@ -780,52 +816,29 @@ namespace ProcessHacker
             return returnSessions;
         }
 
-        public static WtsProcess[] TSEnumProcesses()
+        public struct WtsEnumProcessesData
         {
-            int processes;
+            public WTS_PROCESS_INFO[] Processes;
+            public WtsMemoryAlloc Memory;
+        }
+
+        public static WtsEnumProcessesData TSEnumProcesses()
+        {
+            IntPtr processes;
             int count;
-            WtsProcess[] returnProcesses;
+            WTS_PROCESS_INFO[] returnProcesses;
 
             WTSEnumerateProcesses(0, 0, 1, out processes, out count);
-            returnProcesses = new WtsProcess[count];
+            returnProcesses = new WTS_PROCESS_INFO[count];
+
+            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
 
             for (int i = 0; i < count; i++)
             {
-                returnProcesses[i].Info = PtrToStructure<WTS_PROCESS_INFO>(
-                    new IntPtr(processes + Marshal.SizeOf(typeof(WTS_PROCESS_INFO)) * i));
-
-                try
-                {
-                    if (returnProcesses[i].Info.SID == 0)
-                        throw new Exception("Null SID pointer");
-
-                    returnProcesses[i].Username = GetAccountName(returnProcesses[i].Info.SID, true);
-                }
-                catch
-                { }
+                returnProcesses[i] = data.ReadStruct<WTS_PROCESS_INFO>(i);
             }
 
-            WTSFreeMemory(processes);
-
-            return returnProcesses;
-        }
-
-        public static string TSGetProcessUsername(int PID, bool IncludeDomain)
-        {
-            WtsProcess[] processes = TSEnumProcesses();
-
-            foreach (WtsProcess process in processes)
-            {
-                if (process.Info.ProcessID == PID)
-                {
-                    if (IncludeDomain)
-                        return process.Username;
-                    else
-                        return process.Username;
-                }
-            }
-
-            throw new Exception("Process does not exist.");
+            return new WtsEnumProcessesData() { Processes = returnProcesses, Memory = data };
         }
 
         #endregion

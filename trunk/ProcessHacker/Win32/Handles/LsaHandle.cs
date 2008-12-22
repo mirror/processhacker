@@ -25,23 +25,20 @@ namespace ProcessHacker
     public partial class Win32
     {
         /// <summary>
-        /// Represents a handle to the Windows service manager.
+        /// Represents a handle managed by the Local Security Authority.
         /// </summary>
-        public class LSAPolicyHandle : LSAHandle
+        public class LsaHandle : Win32Handle
         {
-            /// <summary>
-            /// Connects to the local LSA policy.
-            /// </summary>
-            /// <param name="access">The desired access to the policy.</param>
-            public LSAPolicyHandle(POLICY_RIGHTS access)
+            public LsaHandle(int Handle, bool Owned)
+                : base(Handle, Owned)
+            { }
+
+            protected LsaHandle()
+            { }
+
+            protected override void Close()
             {
-                LSA_OBJECT_ATTRIBUTES attributes = new LSA_OBJECT_ATTRIBUTES();
-                int handle = 0;
-
-                if (LsaOpenPolicy(0, ref attributes, access, out handle) != 0)
-                    throw new Exception(GetLastErrorMessage());
-
-                this.Handle = handle;
+                LsaClose(this.Handle);
             }
         }
     }

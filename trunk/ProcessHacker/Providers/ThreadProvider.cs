@@ -91,10 +91,7 @@ namespace ProcessHacker
             Process process = Process.GetProcessById(_pid);
             ProcessThreadCollection threads = process.Threads;
             List<int> tids = new List<int>();
-            Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>();
-
-            foreach (int key in Dictionary.Keys)
-                newdictionary.Add(key, Dictionary[key]);
+            Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
             foreach (ProcessThread t in threads)
                 tids.Add(t.Id);

@@ -22,24 +22,40 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
-    public partial class Win32
+    /// <summary>
+    /// Represents an unmanaged memory allocation.
+    /// </summary>
+    public class WtsMemoryAlloc : MemoryAlloc
     {
         /// <summary>
-        /// Represents a handle managed by the Local Security Authority.
+        /// Creates a memory allocation from an existing Terminal Server managed allocation. 
         /// </summary>
-        public class LSAHandle : Win32Handle
+        /// <param name="memory">A pointer to the allocated memory.</param>
+        /// <returns>A new memory allocation object.</returns>
+        public static new WtsMemoryAlloc FromPointer(IntPtr memory)
         {
-            public LSAHandle(int Handle, bool Owned)
-                : base(Handle, Owned)
-            { }
+            return new WtsMemoryAlloc() { Memory = memory };
+        }
 
-            protected LSAHandle()
-            { }
+        private WtsMemoryAlloc()
+        { }
 
-            protected override void Close()
+        public override void Resize(int newSize)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override int Size
+        {
+            get
             {
-                LsaClose(this.Handle);
+                throw new NotSupportedException();
             }
+        }
+
+        protected override void Free()
+        {
+            Win32.WTSFreeMemory(this.Memory);
         }
     }
 }

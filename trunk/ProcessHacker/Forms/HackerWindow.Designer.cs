@@ -135,7 +135,6 @@
             this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
             this.getSNFAMenuItem = new System.Windows.Forms.MenuItem();
-            this.FSPWSSIDMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
@@ -1003,8 +1002,7 @@
             // 
             this.toolsMenuItem.Index = 1;
             this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.getSNFAMenuItem,
-            this.FSPWSSIDMenuItem});
+            this.getSNFAMenuItem});
             this.toolsMenuItem.Text = "&Tools";
             // 
             // getSNFAMenuItem
@@ -1012,13 +1010,6 @@
             this.getSNFAMenuItem.Index = 0;
             this.getSNFAMenuItem.Text = "Get Symbol Name From Address...";
             this.getSNFAMenuItem.Click += new System.EventHandler(this.getSNFAMenuItem_Click);
-            // 
-            // FSPWSSIDMenuItem
-            // 
-            this.FSPWSSIDMenuItem.Index = 1;
-            this.FSPWSSIDMenuItem.Text = "Find SYSTEM processes with same Session ID";
-            this.FSPWSSIDMenuItem.Visible = false;
-            this.FSPWSSIDMenuItem.Click += new System.EventHandler(this.FSPWSSIDMenuItem_Click);
             // 
             // windowMenuItem
             // 
@@ -1184,7 +1175,7 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 281);
+            this.tabThreads.Size = new System.Drawing.Size(430, 280);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -1196,7 +1187,7 @@
             this.listThreads.Location = new System.Drawing.Point(3, 3);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 275);
+            this.listThreads.Size = new System.Drawing.Size(424, 274);
             this.listThreads.TabIndex = 0;
             this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
@@ -1206,7 +1197,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 281);
+            this.tabModules.Size = new System.Drawing.Size(430, 280);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1225,7 +1216,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 275);
+            this.listModules.Size = new System.Drawing.Size(424, 274);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1257,7 +1248,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 281);
+            this.tabMemory.Size = new System.Drawing.Size(430, 280);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1277,7 +1268,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 275);
+            this.listMemory.Size = new System.Drawing.Size(424, 274);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1314,7 +1305,7 @@
             this.tabHandles.Location = new System.Drawing.Point(4, 22);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(430, 281);
+            this.tabHandles.Size = new System.Drawing.Size(430, 280);
             this.tabHandles.TabIndex = 7;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -1326,7 +1317,7 @@
             this.listHandles.Location = new System.Drawing.Point(3, 3);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(424, 275);
+            this.listHandles.Size = new System.Drawing.Size(424, 274);
             this.listHandles.TabIndex = 0;
             // 
             // tabServices
@@ -1739,7 +1730,6 @@
         private System.Windows.Forms.MenuItem getSNFAMenuItem;
         private System.Windows.Forms.MenuItem exitProcessProcessMenuItem;
         private System.Windows.Forms.MenuItem toolsMenuItem;
-        private System.Windows.Forms.MenuItem FSPWSSIDMenuItem;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenu menuIcon;
         private System.Windows.Forms.MenuItem showHideMenuItem;

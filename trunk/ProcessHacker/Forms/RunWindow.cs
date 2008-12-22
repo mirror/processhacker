@@ -43,8 +43,8 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.LSAPolicyHandle policy =
-                    new Win32.LSAPolicyHandle(Win32.POLICY_RIGHTS.POLICY_LOOKUP_NAMES |
+                using (Win32.LsaPolicyHandle policy =
+                    new Win32.LsaPolicyHandle(Win32.POLICY_RIGHTS.POLICY_LOOKUP_NAMES |
                         Win32.POLICY_RIGHTS.POLICY_VIEW_LOCAL_INFORMATION))
                 {
                     IntPtr sids;

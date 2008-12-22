@@ -28,7 +28,6 @@ namespace ProcessHacker
     public struct ProcessItem
     {
         public int PID;
-        public Process Process;
 
         public Icon Icon;
         public string CmdLine;
@@ -45,11 +44,14 @@ namespace ProcessHacker
         public int SessionId;
         public int ParentPID;
         public int IconAttempts;
+
+        public Win32.TokenHandle TokenQueryHandle;
+        public Win32.ProcessHandle ProcessQueryHandle;
+        public Win32.ProcessHandle ProcessQueryLimitedHandle;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
     {
-        private Dictionary<int, Win32.WtsProcess> _tsProcesses;
         private ulong _lastSysTime;
 
         public ProcessProvider()
@@ -65,9 +67,10 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             Process[] processes = Process.GetProcesses();
-            Dictionary<int, Win32.WtsProcess> tsProcesses = new Dictionary<int, Win32.WtsProcess>();
+            Dictionary<int, Win32.WTS_PROCESS_INFO> tsProcesses = new Dictionary<int, Win32.WTS_PROCESS_INFO>();
             Dictionary<int, Process> procs = new Dictionary<int, Process>();
-            Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>();
+            Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
+            Win32.WtsEnumProcessesData wtsEnumData = Win32.TSEnumProcesses();
 
             ulong[] systemTimes = Win32.GetSystemTimes();
             ulong thisSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
@@ -75,13 +78,8 @@ namespace ProcessHacker
 
             _lastSysTime = thisSysTime;
 
-            foreach (Win32.WtsProcess process in Win32.TSEnumProcesses())
-                tsProcesses.Add(process.Info.ProcessID, process);
-
-            _tsProcesses = tsProcesses;
-
-            foreach (int key in Dictionary.Keys)
-                newdictionary.Add(key, Dictionary[key]);
+            foreach (Win32.WTS_PROCESS_INFO process in wtsEnumData.Processes)
+                tsProcesses.Add(process.ProcessID, process);
 
             foreach (Process p in processes)
                 procs.Add(p.Id, p);
@@ -90,8 +88,20 @@ namespace ProcessHacker
             foreach (int pid in Dictionary.Keys)
             {
                 if (!procs.ContainsKey(pid))
-                {                 
-                    this.CallDictionaryRemoved(this.Dictionary[pid]);
+                {
+                    ProcessItem item = this.Dictionary[pid];
+
+                    this.CallDictionaryRemoved(item);
+
+                    if (item.ProcessQueryHandle != null)
+                        item.ProcessQueryHandle.Dispose();
+
+                    if (item.ProcessQueryLimitedHandle != null)
+                        item.ProcessQueryLimitedHandle.Dispose();
+
+                    if (item.TokenQueryHandle != null)
+                        item.TokenQueryHandle.Dispose();
+
                     newdictionary.Remove(pid);
                 }
             }
@@ -101,16 +111,15 @@ namespace ProcessHacker
             {
                 Process p = procs[pid];
 
-                if (!Dictionary.ContainsKey(p.Id))
+                if (!Dictionary.ContainsKey(pid))
                 { 
                     ProcessItem item = new ProcessItem();
 
-                    item.PID = p.Id;
-                    item.Process = p;
+                    item.PID = pid;
 
                     try
                     {
-                        item.SessionId = Win32.GetProcessSessionId(p.Id);
+                        item.SessionId = Win32.GetProcessSessionId(pid);
                     }
                     catch
                     {
@@ -133,7 +142,7 @@ namespace ProcessHacker
                     }
                     catch
                     {
-                        item.Name = Win32.GetNameFromPID(p.Id);
+                        item.Name = Win32.GetNameFromPID(pid);
 
                         if (item.Name == "(error)" || item.Name == "(unknown)")
                         {
@@ -157,98 +166,94 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        item.ProcessQueryHandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                        
+                        try
                         {
-                            try
-                            {
-                                item.IsBeingDebugged = phandle.IsBeingDebugged();
-                            }
-                            catch
-                            { }
+                            item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
                         }
+                        catch
+                        { }
                     }
                     catch
                     { }
 
                     try
                     {
-                        using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
+                        item.ProcessQueryLimitedHandle =  new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
+                        
+                        try
                         {
-                            try
-                            {
-                                ulong[] times = Win32.GetProcessTimes(phandle);
+                            ulong[] times = Win32.GetProcessTimes(item.ProcessQueryLimitedHandle);
 
-                                item.LastTime = times[2] / 10000 + times[3] / 10000;
-                            }
-                            catch
-                            { }
+                            item.LastTime = times[2] / 10000 + times[3] / 10000;
+                        }
+                        catch
+                        { }
 
-                            try
-                            {
-                                Win32.TokenHandle thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+                        try
+                        {
+                            item.TokenQueryHandle = item.ProcessQueryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
 
-                                try { item.Username = thandle.GetUsername(true); }
-                                catch { }
-                                try { item.ElevationType = thandle.GetElevationType(); }
-                                catch { }
-                                try { item.IsElevated = thandle.IsElevated(); }
-                                catch { }
-                                try { item.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
-                                catch { }
-                            }
-                            catch
-                            { }
+                            try { item.Username = item.TokenQueryHandle.GetUsername(true); }
+                            catch { }
+                            try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
+                            catch { }
+                            try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
+                            catch { }
+                            try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
+                            catch { }
+                        }
+                        catch
+                        { }
 
-                            try
-                            {
-                                item.ParentPID = phandle.GetParentPID();
-                            }
-                            catch
-                            {
-                                item.ParentPID = -1;
-                            }
+                        try
+                        {
+                            item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
+                        }
+                        catch
+                        {
+                            item.ParentPID = -1;
                         }
                     }
                     catch
-                    {
-                        if (item.Username == null)
-                        {
-                            try
-                            {
-                                item.Username = tsProcesses[p.Id].Username;
-                            }
-                            catch
-                            { }
-                        }
-                    }
+                    { }
 
-                    if (p.Id == 0 || p.Id == 4)
+                    if (pid == 0 || pid == 4)
                     {
                         item.Username = "NT AUTHORITY\\SYSTEM";
                     }
 
-                    if (p.Id == 0)
+                    if (item.Username == null)
+                    {
+                        try
+                        {
+                            item.Username = Win32.GetAccountName(tsProcesses[pid].SID, true);
+                        }
+                        catch
+                        { }
+                    }
+
+                    if (pid == 0)
                         item.LastTime = systemTimes[0] / 10000;
 
                     try
                     {
                         using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id,
+                            new Win32.ProcessHandle(pid,
                                 Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                             item.CmdLine = phandle.GetCommandLine();
                     }
                     catch
                     { }
 
-                    newdictionary.Add(p.Id, item);
+                    newdictionary.Add(pid, item);
                     this.CallDictionaryAdded(item);
                 }
                 // look for modified processes
                 else
                 {
-                    ProcessItem item = Dictionary[p.Id];
+                    ProcessItem item = Dictionary[pid];
                     ProcessItem newitem = new ProcessItem();
 
                     newitem.CmdLine = item.CmdLine;
@@ -260,9 +265,12 @@ namespace ProcessHacker
                     newitem.Name = item.Name;
                     newitem.ParentPID = item.ParentPID;
                     newitem.PID = item.PID;
-                    newitem.Process = item.Process;
                     newitem.SessionId = item.SessionId;
                     newitem.Username = item.Username;
+
+                    newitem.ProcessQueryHandle = item.ProcessQueryHandle;
+                    newitem.ProcessQueryLimitedHandle = item.ProcessQueryLimitedHandle;
+                    newitem.TokenQueryHandle = item.TokenQueryHandle;
 
                     try
                     {
@@ -285,50 +293,29 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (Win32.ProcessHandle phandle =
-                           new Win32.ProcessHandle(p.Id, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
-                        {
-                            try
-                            {
-                                newitem.IsBeingDebugged = phandle.IsBeingDebugged();
-                            }
-                            catch
-                            { }
-                        } 
-                    }
-                    catch
-                    {}
-
-                    try
-                    {
-                        using (Win32.ProcessHandle phandle =
-                            new Win32.ProcessHandle(p.Id, Program.MinProcessQueryRights))
-                        {
-                            try
-                            {
-                                Win32.TokenHandle thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
-
-                                try { newitem.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
-                                catch { }
-                            }
-                            catch
-                            { }
-
-                            try
-                            {
-                                ulong[] times = Win32.GetProcessTimes(phandle);
-
-                                newitem.LastTime = times[2] / 10000 + times[3] / 10000;
-                                newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
-                            }
-                            catch
-                            { }
-                        }
+                        newitem.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
                     }
                     catch
                     { }
 
-                    if (p.Id == 0)
+                    try
+                    {
+                        newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        ulong[] times = Win32.GetProcessTimes(item.ProcessQueryLimitedHandle);
+
+                        newitem.LastTime = times[2] / 10000 + times[3] / 10000;
+                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
+                    }
+                    catch
+                    { }
+
+                    if (pid == 0)
                     {
                         newitem.LastTime = systemTimes[0] / 10000;
                         newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
@@ -338,18 +325,13 @@ namespace ProcessHacker
                         newitem.CPUUsage != item.CPUUsage || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged)
                     {
-                        newdictionary[p.Id] = newitem;
+                        newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);
                     }
                 }
             }
 
             Dictionary = newdictionary;
-        }
-
-        public Dictionary<int, Win32.WtsProcess> TSProcesses
-        {
-            get { return _tsProcesses; }
         }
     }
 }

@@ -597,34 +597,31 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PROCESS_INFORMATION
         {
-            public uint NextEntryOffset;
-            public uint NumberOfThreads;
+            public int NextEntryOffset;
+            public int NumberOfThreads;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
             public long[] Reserved1;
 
-            public long CreateTime;
-            public long UserTime;
-            public long KernelTime;
+            public ulong CreateTime;
+            public ulong UserTime;
+            public ulong KernelTime;
             public UNICODE_STRING ImageName;
             public int BasePriority;
             public int ProcessId;
             public int InheritedFromProcessId;
-            public uint HandleCount;
+            public int HandleCount;
 
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-            public int Reserved2;
+            public int[] Reserved2;
 
             public int PrivatePageCount;
             public VM_COUNTERS VirtualMemoryCounters;
             public IO_COUNTERS IoCounters;
-
-            [MarshalAs(UnmanagedType.ByValArray)]
-            public SYSTEM_THREAD[] Threads;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SYSTEM_THREAD
+        public struct SYSTEM_THREAD_INFORMATION
         {
             public long KernelTime;
             public long UserTime;

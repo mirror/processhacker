@@ -465,18 +465,14 @@ namespace ProcessHacker
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool WTSEnumerateSessions(int ServerHandle, int Reserved,
-            int Version, out int SessionInfo, out int Count);
+            int Version, out IntPtr SessionInfo, out int Count);
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool WTSEnumerateProcesses(int ServerHandle, int Reserved,
-            int Version, out int ProcessInfo, out int Count);
+            int Version, out IntPtr ProcessInfo, out int Count);
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSFreeMemory(int Memory);
-        [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSFreeMemory(WTS_PROCESS_INFO[] Memory);
-        [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSFreeMemory(WTS_SESSION_INFO[] Memory);
+        public static extern bool WTSFreeMemory(IntPtr Memory);
         [DllImport("wtsapi32.dll", SetLastError = true)]
         public static extern bool WTSFreeMemory(string Memory);
 
