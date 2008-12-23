@@ -256,21 +256,7 @@ namespace ProcessHacker
                     ProcessItem item = Dictionary[pid];
                     ProcessItem newitem = new ProcessItem();
 
-                    newitem.CmdLine = item.CmdLine;
-                    newitem.ElevationType = item.ElevationType;
-                    newitem.Icon = item.Icon;
-                    newitem.IconAttempts = item.IconAttempts;
-                    newitem.IsElevated = item.IsElevated;
-                    newitem.IsVirtualizationEnabled = item.IsVirtualizationEnabled;
-                    newitem.Name = item.Name;
-                    newitem.ParentPID = item.ParentPID;
-                    newitem.PID = item.PID;
-                    newitem.SessionId = item.SessionId;
-                    newitem.Username = item.Username;
-
-                    newitem.ProcessQueryHandle = item.ProcessQueryHandle;
-                    newitem.ProcessQueryLimitedHandle = item.ProcessQueryLimitedHandle;
-                    newitem.TokenQueryHandle = item.TokenQueryHandle;
+                    newitem = item;
 
                     try
                     {
