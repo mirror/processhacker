@@ -66,13 +66,29 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Waits for the thread.
+            /// Gets the thread's context.
             /// </summary>
-            /// <param name="Timeout">The timeout of the wait.</param>
-            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
-            public int Wait(int Timeout)
+            /// <returns>A CONTEXT struct.</returns>
+            public CONTEXT GetContext(CONTEXT_FLAGS flags)
             {
-                return WaitForSingleObject(this.Handle, Timeout);
+                CONTEXT context = new CONTEXT();
+
+                context.ContextFlags = flags;
+
+                if (!GetThreadContext(this, ref context))
+                    throw new Exception(GetLastErrorMessage());
+
+                return context;
+            }
+
+            /// <summary>
+            /// Sets the thread's context.
+            /// </summary>
+            /// <param name="context">A CONTEXT struct.</param>
+            public void SetContext(CONTEXT context)
+            {
+                if (!SetThreadContext(this, ref context))
+                    throw new Exception(GetLastErrorMessage());
             }
 
             /// <summary>
@@ -109,6 +125,16 @@ namespace ProcessHacker
             {
                 if (!TerminateThread(this.Handle, ExitCode))
                     throw new Exception(GetLastErrorMessage());
+            }
+
+            /// <summary>
+            /// Waits for the thread.
+            /// </summary>
+            /// <param name="Timeout">The timeout of the wait.</param>
+            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
+            public int Wait(int Timeout)
+            {
+                return WaitForSingleObject(this.Handle, Timeout);
             }
 
             /// <summary>

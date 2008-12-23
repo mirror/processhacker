@@ -88,6 +88,9 @@ namespace ProcessHacker
         public static extern bool ReadProcessMemory(int Process, int BaseAddress, int Buffer, int Size, out int BytesRead);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool WriteProcessMemory(int Process, int BaseAddress, IntPtr Buffer, int Size, out int BytesWritten);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesWritten);
 
         #endregion
@@ -502,6 +505,9 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int ResumeThread(int ThreadHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetThreadContext(int ThreadHandle, ref CONTEXT Context);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetThreadContext(int ThreadHandle, ref CONTEXT Context);

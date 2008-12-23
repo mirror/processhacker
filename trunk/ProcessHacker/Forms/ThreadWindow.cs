@@ -28,8 +28,8 @@ namespace ProcessHacker
     {
         private int _pid;
         private int _tid;
-        private int _phandle;
-        private int _thandle;
+        private Win32.ProcessHandle _phandle;
+        private Win32.ThreadHandle _thandle;
 
         public const string DisplayFormat = "0x{0:x8}";
 
@@ -114,11 +114,13 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
-            _phandle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ, 0, _pid);
-
-            if (_phandle == 0)
+            try
             {
-                MessageBox.Show("Could not open process!", "Process Hacker", MessageBoxButtons.OK,
+                _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
                 this.Close();
@@ -126,12 +128,14 @@ namespace ProcessHacker
                 return;
             }
 
-            _thandle = Win32.OpenThread(Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
-                Win32.THREAD_RIGHTS.THREAD_TERMINATE | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME, 0, _tid);
-
-            if (_thandle == 0)
+            try
             {
-                MessageBox.Show("Could not open thread!", "Process Hacker", MessageBoxButtons.OK,
+                _thandle = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT | 
+                    Win32.THREAD_RIGHTS.THREAD_TERMINATE | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
                 this.Close();
@@ -256,11 +260,13 @@ namespace ProcessHacker
 
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
-            Win32.CONTEXT context = new Win32.CONTEXT();
+            Win32.CONTEXT context;
 
-            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
-
-            if (!Win32.GetThreadContext(_thandle, ref context))
+            try
+            {
+                context = _thandle.GetContext(Win32.CONTEXT_FLAGS.CONTEXT_ALL);
+            }
+            catch
             {
                 if (listViewCallStack.Enabled)
                 {
@@ -300,32 +306,41 @@ namespace ProcessHacker
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
         {
-            if (Win32.SuspendThread(_thandle) == -1)
+            try
             {
-                MessageBox.Show("Error suspending thread!", "Process Hacker", MessageBoxButtons.OK,
+                _thandle.Suspend();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error suspending thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                  MessageBoxIcon.Error);     
             }
         }
 
         private void resumeMenuItem_Click(object sender, EventArgs e)
         {
-            if (Win32.ResumeThread(_thandle) == -1)
+            try
             {
-                MessageBox.Show("Error resuming thread!", "Process Hacker", MessageBoxButtons.OK,
+                _thandle.Resume();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error resuming thread\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                   MessageBoxIcon.Error);
             }
         }
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
         {
-            if (!Win32.TerminateThread(_thandle, 0))
+            try
             {
-                MessageBox.Show("Error terminating thread!", "Process Hacker", MessageBoxButtons.OK,
-                  MessageBoxIcon.Error);
+                _thandle.Terminate();
+                this.Close();
             }
-            else
+            catch (Exception ex)
             {
-                this.Close();   
+                MessageBox.Show("Error terminating thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                  MessageBoxIcon.Error);
             }
         }
 

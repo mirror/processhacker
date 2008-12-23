@@ -1260,6 +1260,16 @@ namespace ProcessHacker
             }
         }
 
+        private void terminatorProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            TerminatorWindow w = new TerminatorWindow(processSelectedPID);
+
+            w.Text = "Terminator - " + processP.Dictionary[processSelectedPID].Name + 
+                " (PID " + processSelectedPID.ToString() + ")";
+
+            w.ShowDialog();
+        }
+
         #region Run As
 
         private void launchAsUserProcessMenuItem_Click(object sender, EventArgs e)
@@ -2849,7 +2859,7 @@ namespace ProcessHacker
                 {
                     while (true)
                     {
-                        if (!Win32.VirtualQueryEx(phandle.Handle, address, ref info,
+                        if (!Win32.VirtualQueryEx(phandle, address, ref info,
                             Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                         {
                             break;
