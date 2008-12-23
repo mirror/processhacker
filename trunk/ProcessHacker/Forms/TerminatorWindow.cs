@@ -52,6 +52,8 @@ namespace ProcessHacker
 
             ListViewItem item = listTests.Items[id];
 
+            bool hadException = false;
+
             try
             {
                 (item.Tag as Delegate).DynamicInvoke(null);
@@ -60,6 +62,7 @@ namespace ProcessHacker
             {
                 item.ToolTipText = ex.InnerException.Message;
                 item.ImageKey = "cross";
+                hadException = true;
             }
 
             this.Cursor = Cursors.Default;
@@ -68,11 +71,13 @@ namespace ProcessHacker
 
             try
             {
-                Win32.ProcessHandle process = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
-                process.Dispose();
+                System.Diagnostics.Process.GetProcessById(_pid);
 
-                item.ToolTipText = "Process was not terminated.";
-                item.ImageKey = "cross";
+                if (!hadException)
+                {
+                    item.ToolTipText = "Process was not terminated.";
+                    item.ImageKey = "cross";
+                }
             }
             catch
             {
