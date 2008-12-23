@@ -153,6 +153,9 @@
     <EmbeddedResource Include="Forms\SysInfoWindow.resx">
       <DependentUpon>SysInfoWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TerminatorWindow.resx">
+      <DependentUpon>TerminatorWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\TokenWindow.resx">
       <DependentUpon>TokenWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -282,6 +285,12 @@
     </Compile>
     <Compile Include="Forms\SysInfoWindow.Designer.cs">
       <DependentUpon>SysInfoWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TerminatorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TerminatorWindow.Designer.cs">
+      <DependentUpon>TerminatorWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\TokenWindow.cs">
       <SubType>Form</SubType>

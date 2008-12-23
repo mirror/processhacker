@@ -71,7 +71,7 @@
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
-            this.treeProcesses.Size = new System.Drawing.Size(450, 472);
+            this.treeProcesses.Size = new System.Drawing.Size(450, 436);
             this.treeProcesses.TabIndex = 2;
             this.treeProcesses.UseColumns = true;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
@@ -90,6 +90,7 @@
             this.columnPID.Header = "PID";
             this.columnPID.Sortable = true;
             this.columnPID.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnPID.TooltipText = null;
             // 
             // columnMemory
@@ -97,6 +98,7 @@
             this.columnMemory.Header = "Pvt. Memory";
             this.columnMemory.Sortable = true;
             this.columnMemory.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnMemory.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnMemory.TooltipText = null;
             this.columnMemory.Width = 70;
             // 
@@ -105,6 +107,7 @@
             this.columnCPU.Header = "CPU";
             this.columnCPU.Sortable = true;
             this.columnCPU.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnCPU.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnCPU.TooltipText = null;
             this.columnCPU.Width = 40;
             // 
@@ -138,6 +141,7 @@
             this.nodePID.IncrementalSearchEnabled = true;
             this.nodePID.LeftMargin = 3;
             this.nodePID.ParentColumn = this.columnPID;
+            this.nodePID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodePID.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeMemory
@@ -147,6 +151,7 @@
             this.nodeMemory.IncrementalSearchEnabled = true;
             this.nodeMemory.LeftMargin = 3;
             this.nodeMemory.ParentColumn = this.columnMemory;
+            this.nodeMemory.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeMemory.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeCPU
@@ -156,6 +161,7 @@
             this.nodeCPU.IncrementalSearchEnabled = true;
             this.nodeCPU.LeftMargin = 3;
             this.nodeCPU.ParentColumn = this.columnCPU;
+            this.nodeCPU.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeCPU.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeUsername
@@ -169,12 +175,12 @@
             // 
             // ProcessTree
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeProcesses);
             this.DoubleBuffered = true;
             this.Name = "ProcessTree";
-            this.Size = new System.Drawing.Size(450, 472);
+            this.Size = new System.Drawing.Size(450, 436);
             this.ResumeLayout(false);
 
         }
