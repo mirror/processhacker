@@ -67,10 +67,10 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             Process[] processes = Process.GetProcesses();
-            Dictionary<int, Win32.WTS_PROCESS_INFO> tsProcesses = new Dictionary<int, Win32.WTS_PROCESS_INFO>();
+            Dictionary<int, int> tsProcesses = new Dictionary<int,int>();
             Dictionary<int, Process> procs = new Dictionary<int, Process>();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
-            Win32.WtsEnumProcessesData wtsEnumData = Win32.TSEnumProcesses();
+            Win32.WtsEnumProcessesFastData wtsEnumData = Win32.TSEnumProcessesFast();
 
             ulong[] systemTimes = Win32.GetSystemTimes();
             ulong thisSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
@@ -78,8 +78,8 @@ namespace ProcessHacker
 
             _lastSysTime = thisSysTime;
 
-            foreach (Win32.WTS_PROCESS_INFO process in wtsEnumData.Processes)
-                tsProcesses.Add(process.ProcessID, process);
+            for (int i = 0; i < wtsEnumData.PIDs.Length; i++)
+                tsProcesses.Add(wtsEnumData.PIDs[i], wtsEnumData.SIDs[i]);
 
             foreach (Process p in processes)
                 procs.Add(p.Id, p);
@@ -228,7 +228,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.Username = Win32.GetAccountName(tsProcesses[pid].SID, true);
+                            item.Username = Win32.GetAccountName(tsProcesses[pid], true);
                         }
                         catch
                         { }

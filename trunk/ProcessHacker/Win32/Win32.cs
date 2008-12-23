@@ -861,6 +861,36 @@ namespace ProcessHacker
             return new WtsEnumProcessesData() { Processes = returnProcesses, Memory = data };
         }
 
+        public struct WtsEnumProcessesFastData
+        {
+            public int[] PIDs;
+            public int[] SIDs;
+            public WtsMemoryAlloc Memory;
+        }
+
+        public static WtsEnumProcessesFastData TSEnumProcessesFast()
+        {
+            IntPtr processes;
+            int count;
+            int[] pids;
+            int[] sids;
+
+            WTSEnumerateProcesses(0, 0, 1, out processes, out count);
+
+            pids = new int[count];
+            sids = new int[count];
+
+            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
+
+            for (int i = 0; i < count; i++)
+            {
+                pids[i] = data.ReadInt32(16 * i + 4);
+                sids[i] = data.ReadInt32(16 * i + 12);
+            }
+
+            return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
+        }
+
         #endregion
     }
 }

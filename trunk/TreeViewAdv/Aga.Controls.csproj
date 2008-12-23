@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E73BB233-D88B-44A7-A98F-D71EE158381D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GifDecoder.cs" />
-    <Compile Include="PerformanceAnalyzer.cs" />
     <Compile Include="ResourceHelper.cs" />
     <Compile Include="StringCollectionEditor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

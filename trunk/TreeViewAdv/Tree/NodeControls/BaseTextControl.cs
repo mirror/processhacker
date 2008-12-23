@@ -117,7 +117,6 @@ namespace Aga.Controls.Tree.NodeControls
 
 		protected Size GetLabelSize(TreeNodeAdv node, DrawContext context, string label)
 		{
-			PerformanceAnalyzer.Start("GetLabelSize");
 			CheckThread();
 			Font font = GetDrawingFont(node, context, label);
 			Size s = Size.Empty;
@@ -128,7 +127,6 @@ namespace Aga.Controls.Tree.NodeControls
 				SizeF sf = context.Graphics.MeasureString(label, font);
 				s = Size.Ceiling(sf); 
 			}
-			PerformanceAnalyzer.Finish("GetLabelSize");
 
 			if (!s.IsEmpty)
 				return s;
@@ -162,7 +160,6 @@ namespace Aga.Controls.Tree.NodeControls
 			if (context.CurrentEditorOwner == this && node == Parent.CurrentNode)
 				return;
 
-			PerformanceAnalyzer.Start("BaseTextControl.Draw");
 			string label = GetLabel(node);
 			Rectangle bounds = GetBounds(node, context);
 			Rectangle focusRect = new Rectangle(bounds.X, context.Bounds.Y,	
@@ -189,7 +186,6 @@ namespace Aga.Controls.Tree.NodeControls
                 TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
             else
                 context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
-			PerformanceAnalyzer.Finish("BaseTextControl.Draw");
 		}
 
 		private static Dictionary<Color, Brush> _brushes = new Dictionary<Color,Brush>();
