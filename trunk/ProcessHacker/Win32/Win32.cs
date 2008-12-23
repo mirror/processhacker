@@ -414,7 +414,7 @@ namespace ProcessHacker
             if (str.Length == 0)
                 return null;
 
-            return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length);
+            return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length / 2);
         }
 
         #endregion
