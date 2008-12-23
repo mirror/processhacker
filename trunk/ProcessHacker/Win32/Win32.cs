@@ -414,12 +414,7 @@ namespace ProcessHacker
             if (str.Length == 0)
                 return null;
 
-            byte[] buf = new byte[str.Length];
-            int bytesRead = 0;
-
-            ReadProcessMemory(GetCurrentProcess(), str.Buffer, buf, str.Length, out bytesRead);
-
-            return UnicodeEncoding.Unicode.GetString(buf);
+            return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length);
         }
 
         #endregion
@@ -868,7 +863,7 @@ namespace ProcessHacker
             public WtsMemoryAlloc Memory;
         }
 
-        public static WtsEnumProcessesFastData TSEnumProcessesFast()
+        public unsafe static WtsEnumProcessesFastData TSEnumProcessesFast()
         {
             IntPtr processes;
             int count;
@@ -881,11 +876,12 @@ namespace ProcessHacker
             sids = new int[count];
 
             WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
+            int* dataP = (int*)data.Memory.ToPointer();
 
             for (int i = 0; i < count; i++)
             {
-                pids[i] = data.ReadInt32(16 * i + 4);
-                sids[i] = data.ReadInt32(16 * i + 12);
+                pids[i] = dataP[i * 4 + 1];
+                sids[i] = dataP[i * 4 + 3];
             }
 
             return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
