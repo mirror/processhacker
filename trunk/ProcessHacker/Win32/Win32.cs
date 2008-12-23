@@ -552,16 +552,24 @@ namespace ProcessHacker
             int domainlen = 255;
             SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
 
-            if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
+            try
             {
-                name.EnsureCapacity(namelen);
-                domain.EnsureCapacity(domainlen);
-
                 if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
                 {
-                    if (name.ToString() == "" && domain.ToString() == "")
-                        throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                    name.EnsureCapacity(namelen);
+                    domain.EnsureCapacity(domainlen);
+
+                    if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
+                    {
+                        if (name.ToString() == "" && domain.ToString() == "")
+                            throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                    }
                 }
+            }
+            catch
+            {
+                return new System.Security.Principal.SecurityIdentifier(
+                                new IntPtr(SID)).ToString();
             }
 
             if (IncludeDomain)

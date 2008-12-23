@@ -12,6 +12,7 @@ Process Hacker
  * Added highlighting of UAC elevated processes
  * Process list has less CPU usage (again); so does lsass.exe
  * Added Terminator tool
+ * Added support for showing SIDs without account names
 
 1.2.6.5
  * A new member of the project - Dean

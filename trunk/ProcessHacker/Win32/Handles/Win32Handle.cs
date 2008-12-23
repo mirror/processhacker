@@ -38,6 +38,11 @@ namespace ProcessHacker
                 return handle.Handle;
             }
 
+            public static implicit operator IntPtr(Win32Handle handle)
+            {
+                return new IntPtr(handle.Handle);
+            }
+
             /// <summary>
             /// Creates a new, invalid handle. You must set the handle using the Handle property.
             /// </summary>
