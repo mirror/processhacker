@@ -67,7 +67,8 @@ namespace ProcessHacker
 
             /// <summary>
             /// Gets the process' basic information through the undocumented Native API function 
-            /// ZwQueryInformationProcess.
+            /// ZwQueryInformationProcess. This function requires the PROCESS_QUERY_LIMITED_INFORMATION 
+            /// permission.
             /// </summary>
             /// <returns>A PROCESS_BASIC_INFORMATION structure.</returns>
             public PROCESS_BASIC_INFORMATION GetBasicInformation()
@@ -83,7 +84,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the command line used to start the process.
+            /// Gets the command line used to start the process. This requires 
+            /// the PROCESS_QUERY_LIMITED_INFORMATION and PROCESS_VM_READ permissions.
             /// </summary>
             /// <returns>A string.</returns>
             public string GetCommandLine()
@@ -92,7 +94,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the file name of the process' image.
+            /// Gets the file name of the process' image. This requires 
+            /// the PROCESS_QUERY_LIMITED_INFORMATION and PROCESS_VM_READ permissions.
             /// </summary>
             /// <returns>A file name, in kernel file name format.</returns>
             public string GetImageFileName()
@@ -101,7 +104,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the process' parent's process ID.
+            /// Gets the process' parent's process ID. This requires 
+            /// the PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
             /// <returns>The process ID.</returns>
             public int GetParentPID()
@@ -149,7 +153,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets whether the process is currently being debugged.
+            /// Gets whether the process is currently being debugged. This requires 
+            /// the PROCESS_QUERY_INFORMATION permission.
             /// </summary>
             /// <returns>A boolean value.</returns>
             public bool IsBeingDebugged()
@@ -173,7 +178,7 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Terminates the process.
+            /// Terminates the process. This requires the PROCESS_TERMINATE permission.
             /// </summary>
             public void Terminate()
             {
@@ -181,7 +186,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Terminates the process, specifying the exit code.
+            /// Terminates the process, specifying the exit code. This requires the 
+            /// PROCESS_TERMINATE permission.
             /// </summary>
             /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
@@ -191,7 +197,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Opens and returns a handle to the process' token.
+            /// Opens and returns a handle to the process' token. This requires the 
+            /// PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
             /// <returns>A handle to the process' token.</returns>
             public TokenHandle GetToken()
@@ -200,7 +207,8 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Opens and returns a handle to the process' token.
+            /// Opens and returns a handle to the process' token. This requires the 
+            /// PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
             /// <param name="access">The desired access to the token.</param>
             /// <returns>A handle to the process' token.</returns>
