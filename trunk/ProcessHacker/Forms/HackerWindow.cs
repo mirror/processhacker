@@ -409,6 +409,10 @@ namespace ProcessHacker
 
         private void listProcesses_SelectionChanged(object sender, EventArgs e)
         {
+            listMemory.Enabled = true;
+            listModules.Enabled = true;
+            listThreads.Enabled = true;
+
             processSelectedItems = treeProcesses.SelectedNodes.Count;
 
             if (processSelectedItems == 1)
