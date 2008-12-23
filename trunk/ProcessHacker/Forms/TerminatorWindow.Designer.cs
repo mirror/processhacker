@@ -41,9 +41,9 @@
             // labelProgress
             // 
             this.labelProgress.AutoSize = true;
-            this.labelProgress.Location = new System.Drawing.Point(12, 8);
+            this.labelProgress.Location = new System.Drawing.Point(12, 9);
             this.labelProgress.Name = "labelProgress";
-            this.labelProgress.Size = new System.Drawing.Size(53, 12);
+            this.labelProgress.Size = new System.Drawing.Size(53, 13);
             this.labelProgress.TabIndex = 0;
             this.labelProgress.Text = "Message.";
             // 
@@ -53,11 +53,11 @@
             this.columnID,
             this.columnDescription});
             this.listTests.FullRowSelect = true;
-            this.listTests.Location = new System.Drawing.Point(12, 35);
+            this.listTests.Location = new System.Drawing.Point(12, 38);
             this.listTests.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.listTests.Name = "listTests";
             this.listTests.ShowItemToolTips = true;
-            this.listTests.Size = new System.Drawing.Size(442, 332);
+            this.listTests.Size = new System.Drawing.Size(442, 356);
             this.listTests.SmallImageList = this.imageList;
             this.listTests.TabIndex = 1;
             this.listTests.UseCompatibleStateImageBehavior = false;
@@ -83,10 +83,10 @@
             // buttonRun
             // 
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonRun.Location = new System.Drawing.Point(379, 371);
+            this.buttonRun.Location = new System.Drawing.Point(379, 402);
             this.buttonRun.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonRun.Name = "buttonRun";
-            this.buttonRun.Size = new System.Drawing.Size(75, 20);
+            this.buttonRun.Size = new System.Drawing.Size(75, 22);
             this.buttonRun.TabIndex = 2;
             this.buttonRun.Text = "&Run";
             this.buttonRun.UseVisualStyleBackColor = true;
@@ -94,9 +94,9 @@
             // 
             // TerminatorWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(466, 403);
+            this.ClientSize = new System.Drawing.Size(466, 437);
             this.Controls.Add(this.buttonRun);
             this.Controls.Add(this.listTests);
             this.Controls.Add(this.labelProgress);
