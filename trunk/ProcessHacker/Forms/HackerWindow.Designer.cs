@@ -53,6 +53,7 @@
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.servicesProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.tokenMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.priorityMenuItem = new System.Windows.Forms.MenuItem();
             this.realTimeMenuItem = new System.Windows.Forms.MenuItem();
             this.highMenuItem = new System.Windows.Forms.MenuItem();
@@ -201,7 +202,6 @@
             this.menuMisc = new System.Windows.Forms.ContextMenu();
             this.copyMiscMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
@@ -436,6 +436,12 @@
             this.tokenMenuItem.Index = 7;
             this.tokenMenuItem.Text = "To&ken...";
             this.tokenMenuItem.Click += new System.EventHandler(this.tokenMenuItem_Click);
+            // 
+            // terminatorProcessMenuItem
+            // 
+            this.terminatorProcessMenuItem.Index = 8;
+            this.terminatorProcessMenuItem.Text = "Terminator...";
+            this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
@@ -1014,6 +1020,7 @@
             // 
             this.sysInfoMenuItem.Index = 10;
             this.sysInfoMenuItem.Text = "System &Information";
+            this.sysInfoMenuItem.Visible = false;
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
             // toolsMenuItem
@@ -1559,12 +1566,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // terminatorProcessMenuItem
-            // 
-            this.terminatorProcessMenuItem.Index = 8;
-            this.terminatorProcessMenuItem.Text = "Terminator...";
-            this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // HackerWindow
             // 
