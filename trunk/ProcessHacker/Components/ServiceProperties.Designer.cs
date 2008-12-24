@@ -44,7 +44,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.buttonCancel = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.textUserAccount = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -106,7 +105,6 @@
             this.panelService.Controls.Add(this.label4);
             this.panelService.Controls.Add(this.label3);
             this.panelService.Controls.Add(this.buttonApply);
-            this.panelService.Controls.Add(this.buttonCancel);
             this.panelService.Controls.Add(this.label2);
             this.panelService.Controls.Add(this.textUserAccount);
             this.panelService.Controls.Add(this.label1);
@@ -225,18 +223,6 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // buttonCancel
-            // 
-            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(225, 183);
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 6;
-            this.buttonCancel.Text = "&Cancel";
-            this.buttonCancel.UseVisualStyleBackColor = true;
-            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -324,7 +310,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonApply;
-        private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textUserAccount;
         private System.Windows.Forms.Label label1;

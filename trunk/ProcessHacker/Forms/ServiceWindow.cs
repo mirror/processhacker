@@ -31,18 +31,14 @@ namespace ProcessHacker
         private ServiceProperties _serviceProps;
 
         public ServiceWindow(string service)
-            : this(true, new string[] { service })
+            : this(new string[] { service })
         { }
 
         public ServiceWindow(string[] services)
-            : this(false, services)
-        { }
-
-        private ServiceWindow(bool hideList, string[] services)
         {
             InitializeComponent();
 
-            _serviceProps = new ServiceProperties(hideList, services);
+            _serviceProps = new ServiceProperties(services);
             _serviceProps.Dock = DockStyle.Fill;
             _serviceProps.NeedsClose += new EventHandler(_serviceProps_NeedsClose);
             this.Controls.Add(_serviceProps);

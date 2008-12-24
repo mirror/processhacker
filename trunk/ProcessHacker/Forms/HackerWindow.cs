@@ -1208,70 +1208,11 @@ namespace ProcessHacker
             this.Location = Properties.Settings.Default.WindowLocation;
             this.Size = Properties.Settings.Default.WindowSize;
             this.WindowState = Properties.Settings.Default.WindowState;
-            //splitMain.SplitterDistance = Properties.Settings.Default.SplitterDistance;
-            //buttonSearch.Text = Properties.Settings.Default.SearchType;
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
         }
-
-        //private void PerformSearch(string text)
-        //{
-        //    Point location = this.Location;
-        //    System.Drawing.Size size = this.Size;
-
-        //    ResultsWindow rw = Program.GetResultsWindow(processSelectedPID, new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
-        //    {
-        //        if (text == "&New Results Window...")
-        //        {
-        //            f.Show();
-        //        }
-        //        else if (text == "&Literal Search...")
-        //        {
-        //            if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
-        //            {
-        //                f.Show();
-        //                f.StartSearch();
-        //            }
-        //            else
-        //            {
-        //                f.Close();
-        //            }
-        //        }
-        //        else if (text == "&Regex Search...")
-        //        {
-        //            if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
-        //            {
-        //                f.Show();
-        //                f.StartSearch();
-        //            }
-        //            else
-        //            {
-        //                f.Close();
-        //            }
-        //        }
-        //        else if (text == "&String Scan...")
-        //        {
-        //            f.SearchOptions.Type = SearchType.String;
-        //            f.Show();
-        //            f.StartSearch();
-        //        }
-        //        else if (text == "&Heap Scan...")
-        //        {
-        //            f.SearchOptions.Type = SearchType.Heap;
-        //            f.Show();
-        //            f.StartSearch();
-        //        }
-        //    }));
-
-        //    buttonSearch.Text = text;
-        //}
-
-        //private void PerformSearch(object sender, EventArgs e)
-        //{
-        //    PerformSearch(((MenuItem)sender).Text);
-        //}
 
         public void QueueMessage(string message)
         {
@@ -1296,9 +1237,7 @@ namespace ProcessHacker
 
             Properties.Settings.Default.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
-            //Properties.Settings.Default.SplitterDistance = splitMain.SplitterDistance;
 
-            //Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.PromptBoxText = PromptBox.LastValue;
 
             Properties.Settings.Default.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
@@ -1354,21 +1293,6 @@ namespace ProcessHacker
             catch { }
 
             return false;
-        }
-
-        private bool IsDifferentSessionId(int pid)
-        {
-            try
-            {
-                if (Win32.GetProcessSessionId(pid) == Program.CurrentSessionId)
-                    return false;
-                else
-                    return true;
-            }
-            catch
-            {
-                return true;
-            }
         }
 
         private void SetProcessPriority(ProcessPriorityClass priority)

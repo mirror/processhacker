@@ -15,14 +15,10 @@ namespace ProcessHacker
         public event EventHandler NeedsClose;
 
         public ServiceProperties(string service)
-            : this(false, new string[] { service })
+            : this(new string[] { service })
         { }
 
         public ServiceProperties(string[] services)
-            : this(false, services)
-        { }
-
-        public ServiceProperties(bool hideList, string[] services)
         {
             InitializeComponent();
 
@@ -32,23 +28,11 @@ namespace ProcessHacker
 
             if (services.Length == 1)
             {
-                hideList = true;
                 this.Text = "Service - " + services[0];
             }
             else
             {
                 this.Text = "Services";
-            }
-
-            if (hideList)
-            {
-                listServices.Visible = false;
-                this.Height -= listServices.Height - 5;
-                panelService.Dock = DockStyle.Fill;
-            }
-            else
-            {
-                buttonCancel.Visible = false;
             }
 
             foreach (string s in services)
@@ -58,6 +42,7 @@ namespace ProcessHacker
             }
 
             _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
+            _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
 
             this.FillComboBox(comboErrorControl, typeof(Win32.SERVICE_ERROR_CONTROL));
             this.FillComboBox(comboStartType, typeof(Win32.SERVICE_START_TYPE));
@@ -67,12 +52,8 @@ namespace ProcessHacker
             listServices.Visible = true;
             if (listServices.Items.Count > 0)
                 listServices.Items[0].Selected = true;
-            if (listServices.Items.Count == 1)
-                listServices.Visible = false;
 
             this.UpdateInformation();
-            buttonCancel.Select();
-            buttonCancel.Focus();
         }
 
         public int PID { get; set; }
@@ -86,12 +67,20 @@ namespace ProcessHacker
         public void Deinit()
         {
             _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
+            _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
         }
 
         private void FillComboBox(ComboBox box, Type t)
         {
             foreach (string s in Enum.GetNames(t))
                 box.Items.Add(s);
+        }
+
+        private void _provider_DictionaryRemoved(ServiceItem item)
+        {
+            // remove the item from the list if it's there
+            if (listServices.Items.ContainsKey(item.Status.ServiceName))
+                listServices.Items[item.Status.ServiceName].Remove();
         }
 
         private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
@@ -119,11 +108,14 @@ namespace ProcessHacker
             // if the service was just started in this process, add it to the list
             if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
             {
-                listServices.Items.Add(new ListViewItem(new string[] { 
+                if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                {
+                    listServices.Items.Add(new ListViewItem(new string[] { 
                     newItem.Status.ServiceName, 
                     newItem.Status.DisplayName,
                     newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
                 })).Name = newItem.Status.ServiceName;
+                }
             }
         }
 
@@ -138,7 +130,6 @@ namespace ProcessHacker
             {
                 if (listServices.SelectedItems.Count == 0)
                 {
-                    buttonCancel.Enabled = false;
                     buttonApply.Enabled = false;
                     buttonStart.Enabled = false;
                     buttonStop.Enabled = false;
@@ -150,7 +141,6 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    buttonCancel.Enabled = true;
                     buttonApply.Enabled = true;
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
@@ -196,11 +186,6 @@ namespace ProcessHacker
                 textUserAccount.Text = "";
                 textLoadOrderGroup.Text = "";
             }
-        }
-
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            this.Close();
         }
 
         private void buttonApply_Click(object sender, EventArgs e)

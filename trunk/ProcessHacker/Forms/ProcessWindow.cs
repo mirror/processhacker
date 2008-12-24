@@ -64,6 +64,7 @@ namespace ProcessHacker
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
             this.Size = Properties.Settings.Default.ProcessWindowSize;
+            buttonSearch.Text = Properties.Settings.Default.SearchType;
 
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
@@ -277,6 +278,7 @@ namespace ProcessHacker
             _tokenProps.SaveSettings();
 
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
+            Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
@@ -455,6 +457,89 @@ namespace ProcessHacker
                 MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void newWindowSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(newWindowSearchMenuItem.Text);
+        }
+
+        private void literalSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(literalSearchMenuItem.Text);
+        }
+
+        private void regexSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(regexSearchMenuItem.Text);
+        }
+
+        private void stringScanMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(stringScanMenuItem.Text);
+        }
+
+        private void heapScanMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(heapScanMenuItem.Text);
+        }
+
+        private void PerformSearch(string text)
+        {
+            Point location = this.Location;
+            System.Drawing.Size size = this.Size;
+
+            ResultsWindow rw = Program.GetResultsWindow(_pid, 
+                new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
+            {
+                if (text == "&New Results Window...")
+                {
+                    f.Show();
+                }
+                else if (text == "&Literal Search...")
+                {
+                    if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&Regex Search...")
+                {
+                    if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&String Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.String;
+                    f.Show();
+                    f.StartSearch();
+                }
+                else if (text == "&Heap Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.Heap;
+                    f.Show();
+                    f.StartSearch();
+                }
+            }));
+
+            buttonSearch.Text = text;
+        }
+
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            PerformSearch(buttonSearch.Text);
         }
     }
 }
