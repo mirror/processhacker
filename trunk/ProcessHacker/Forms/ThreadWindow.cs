@@ -81,7 +81,7 @@ namespace ProcessHacker
                     {
                         using (Win32.TokenHandle token = thandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
                         {
-                            labelThreadUser.Text = "Username: " + token.GetUsername(true);
+                            labelThreadUser.Text = "Username: " + token.GetUser().GetName(true);
                         }
                     }
                     catch (Exception ex)

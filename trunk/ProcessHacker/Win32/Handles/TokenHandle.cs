@@ -19,6 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace ProcessHacker
 {
@@ -29,6 +30,12 @@ namespace ProcessHacker
         /// </summary>
         public class TokenHandle : Win32Handle
         {
+            public struct TokenGroupsData
+            {
+                public TOKEN_GROUPS Groups;
+                public MemoryAlloc Data;
+            }
+
             /// <summary>
             /// Creates a token handle using an existing handle. 
             /// The handle will not be closed automatically.
@@ -91,52 +98,98 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the token's user in Security Descriptor Definition Language (SDDL).
+            /// Gets the token's groups.
             /// </summary>
-            /// <returns>A SDDL string.</returns>
-            public string GetUserStringSID()
+            /// <param name="IncludeDomains">Specifies whether to include the account's domains.</param>
+            /// <returns>A TokenGroupsData struct.</returns>
+            public TokenGroupsData GetGroups()
             {
                 int retLen = 0;
 
-                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, 0, out retLen);
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenGroups, IntPtr.Zero, 0, out retLen);
+
+                MemoryAlloc data = new MemoryAlloc(retLen);
+                
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenGroups, data,
+                    data.Size, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
+            }
+
+            private TOKEN_GROUPS GetGroupsInternal(MemoryAlloc data)
+            {
+                uint number = data.ReadUInt32(0);
+                TOKEN_GROUPS groups = new TOKEN_GROUPS();
+
+                groups.GroupCount = number;
+                groups.Groups = new SID_AND_ATTRIBUTES[number];
+
+                for (int i = 0; i < number; i++)
+                {
+                    groups.Groups[i] = data.ReadStruct<SID_AND_ATTRIBUTES>(4, i);
+                }
+
+                return groups;
+            }
+
+            /// <summary>
+            /// Gets the token's owner.
+            /// </summary>
+            /// <returns>A WindowsSID instance.</returns>
+            public WindowsSID GetOwner()
+            {
+                int retLen;
+
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenOwner, IntPtr.Zero, 0, out retLen);
 
                 using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
-                    if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data.Memory,
+                    if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenOwner, data,
                         data.Size, out retLen))
-                    {
                         throw new Exception(Win32.GetLastErrorMessage());
-                    }
 
-                    TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
-
-                    return GetAccountStringSID(user.User.SID);
+                    return new WindowsSID(data.ReadInt32(0));
                 }
             }
 
             /// <summary>
-            /// Gets the token's username.
+            /// Gets the token's primary group.
             /// </summary>
-            /// <param name="IncludeDomain">Specifies whether to include the domain of the user.</param>
-            /// <returns>The token's username.</returns>
-            public string GetUsername(bool IncludeDomain)
+            /// <returns>A WindowsSID instance.</returns>
+            public WindowsSID GetPrimaryGroup()
             {
-                int retLen = 0;
+                int retLen;
 
-                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, 0, out retLen);
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenPrimaryGroup, IntPtr.Zero, 0, out retLen);
 
                 using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
-                    if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data.Memory,
+                    if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenPrimaryGroup, data,
                         data.Size, out retLen))
-                    {
                         throw new Exception(Win32.GetLastErrorMessage());
-                    }
 
-                    TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
-
-                    return GetAccountName(user.User.SID, IncludeDomain);
+                    return new WindowsSID(data.ReadInt32(0));
                 }
+            }
+
+            /// <summary>
+            /// Gets the restricted token's restricting SIDs.
+            /// </summary>
+            /// <returns>A TokenGroupsData struct.</returns>
+            public TokenGroupsData GetRestrictingGroups()
+            {
+                int retLen = 0;
+
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenRestrictedSids, IntPtr.Zero, 0, out retLen);
+
+                MemoryAlloc data = new MemoryAlloc(retLen);
+             
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenRestrictedSids, data,
+                    data.Size, out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
             }
 
             /// <summary>
@@ -153,6 +206,44 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
 
                 return sessionId;
+            }
+
+            /// <summary>
+            /// Gets the token's source.
+            /// </summary>
+            /// <returns>A TOKEN_SOURCE struct.</returns>
+            public TOKEN_SOURCE GetSource()
+            {
+                TOKEN_SOURCE source = new TOKEN_SOURCE();
+                int retLen;
+
+                if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenSource,
+                    ref source, Marshal.SizeOf(source), out retLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return source;
+            }
+
+            /// <summary>
+            /// Gets the token's user.
+            /// </summary>
+            /// <returns>A WindowsSID instance.</returns>
+            public WindowsSID GetUser()
+            {
+                int retLen;
+
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data,
+                        data.Size, out retLen))
+                        throw new Exception(Win32.GetLastErrorMessage());
+
+                    TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
+
+                    return new WindowsSID(user.User.SID);
+                }
             }
 
             /// <summary>

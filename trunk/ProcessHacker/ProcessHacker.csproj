@@ -143,6 +143,10 @@
       <DependentUpon>ProcessTree.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\TokenGroups.resx">
+      <DependentUpon>TokenGroups.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\TokenProperties.resx">
       <DependentUpon>TokenProperties.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -282,6 +286,12 @@
     </Compile>
     <Compile Include="Components\ProcessTree\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TokenGroups.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TokenGroups.Designer.cs">
+      <DependentUpon>TokenGroups.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\TokenProperties.cs">
       <SubType>UserControl</SubType>
@@ -462,6 +472,7 @@
     <Compile Include="Win32\Handles\ThreadHandle.cs" />
     <Compile Include="Win32\Handles\ProcessHandle.cs" />
     <Compile Include="Win32\Handles\Win32Handle.cs" />
+    <Compile Include="Win32\WindowsSID.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />

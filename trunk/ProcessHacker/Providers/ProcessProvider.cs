@@ -195,7 +195,7 @@ namespace ProcessHacker
                         {
                             item.TokenQueryHandle = item.ProcessQueryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
 
-                            try { item.Username = item.TokenQueryHandle.GetUsername(true); }
+                            try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
                             catch { }
                             try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
                             catch { }

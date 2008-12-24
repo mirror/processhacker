@@ -658,8 +658,6 @@ namespace ProcessHacker
 
             [MarshalAs(UnmanagedType.ByValArray)]
             public SID_AND_ATTRIBUTES[] Groups;
-
-            public string[] Names;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -677,7 +675,7 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
             public string SourceName;
 
-            LUID SourceIdentifier;
+            public LUID SourceIdentifier;
         }
 
         [StructLayout(LayoutKind.Sequential)]

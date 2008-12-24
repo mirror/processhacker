@@ -32,6 +32,7 @@ namespace ProcessHacker
     public partial class TokenProperties : UserControl
     {
         private Win32.IWithToken _object;
+        private TokenGroups _groups;
 
         public TokenProperties(Win32.IWithToken obj)
         {
@@ -39,10 +40,8 @@ namespace ProcessHacker
 
             _object = obj;
 
-            Misc.SetDoubleBuffered(listGroups, typeof(ListView), true);
             Misc.SetDoubleBuffered(listPrivileges, typeof(ListView), true);
 
-            listGroups.ContextMenu = GenericViewMenu.GetMenu(listGroups);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
 
@@ -55,9 +54,26 @@ namespace ProcessHacker
             {
                 using (Win32.TokenHandle token = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
                 {
-                    textUser.Text = token.GetUsername(true);
-                    textUserSID.Text = token.GetUserStringSID();
-                    textSessionID.Text = token.GetSessionId().ToString();
+                    try
+                    {
+                        textUser.Text = token.GetUser().GetName(true);
+                        textUserSID.Text = token.GetUser().GetStringSID();
+                        textOwner.Text = token.GetOwner().GetName(true);
+                        textPrimaryGroup.Text = token.GetPrimaryGroup().GetName(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        textUser.Text = ex.Message;
+                    }
+
+                    try
+                    {
+                        textSessionID.Text = token.GetSessionId().ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        textSessionID.Text = ex.Message;
+                    }
 
                     Win32.TOKEN_ELEVATION_TYPE type = token.GetElevationType();
 
@@ -72,140 +88,110 @@ namespace ProcessHacker
                     {
                         Win32.TokenWithLinkedToken tokWLT = new Win32.TokenWithLinkedToken(token);
 
-                        tokWLT.GetToken();
+                        tokWLT.GetToken().Dispose();
                     }
                     catch
                     {
                        buttonLinkedToken.Visible = false;
                     }
 
-                    bool virtAllowed = token.IsVirtualizationAllowed();
-                    bool virtEnabled = token.IsVirtualizationEnabled();
-                    string virtText;
+                    try
+                    {
+                        bool virtAllowed = token.IsVirtualizationAllowed();
+                        bool virtEnabled = token.IsVirtualizationEnabled();
+                        string virtText;
 
-                    if (virtAllowed)
-                        virtText = "Virtualization is allowed ";
-                    else
-                        virtText = "Virtualization is not allowed.";
+                        if (virtAllowed)
+                            virtText = "Virtualization is allowed ";
+                        else
+                            virtText = "Virtualization is not allowed.";
 
-                    if (virtEnabled)
-                        virtText += "and enabled.";
-                    else if (virtAllowed)
-                        virtText += "but disabled.";
+                        if (virtEnabled)
+                            virtText += "and enabled.";
+                        else if (virtAllowed)
+                            virtText += "but disabled.";
 
-                    textVirtualized.Text = virtText;
+                        textVirtualized.Text = virtText;
+                    }
+                    catch (Exception ex)
+                    {
+                        textVirtualized.Text = ex.Message;
+                    }
+
+                    try
+                    {
+                        using (Win32.TokenHandle tokenSource = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY_SOURCE))
+                        {
+                            Win32.TOKEN_SOURCE source = tokenSource.GetSource();
+
+                            textSourceName.Text = source.SourceName.TrimEnd('\0', '\r', '\n', ' ');
+
+                            long luid = (source.SourceIdentifier.HighPart << 32) | source.SourceIdentifier.LowPart;
+
+                            textSourceLUID.Text = "0x" + luid.ToString("x");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        textSourceName.Text = ex.Message;
+                    }
+
+                    try
+                    {
+                        Win32.TokenHandle.TokenGroupsData groups = token.GetGroups();
+                        _groups = new TokenGroups(groups);
+
+                        _groups.Dock = DockStyle.Fill;
+                        tabGroups.Controls.Add(_groups);
+                    }
+                    catch (Exception ex)
+                    {
+                        tabGroups.Text = "(" + ex.Message + ")";
+                    }
+
+                    try
+                    {
+                        Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(token);
+
+                        for (int i = 0; i < privileges.PrivilegeCount; i++)
+                        {
+                            string name = Win32.GetPrivilegeName(privileges.Privileges[i].Luid);
+                            ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
+
+                            item.BackColor = GetAttributeColor(privileges.Privileges[i].Attributes);
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
+                                GetAttributeString(privileges.Privileges[i].Attributes)));
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        tabPrivileges.Text = "(" + ex.Message + ")";
+                    }
                 }
             }
             catch (Exception ex)
             {
-                textUser.Text = "(" + ex.Message + ")";
-            }
+                tabControl.Visible = false;
 
-            try
-            {
-                Win32.TOKEN_GROUPS groups = Win32.ReadTokenGroups(_object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY),
-                    Properties.Settings.Default.ShowAccountDomains);
+                Label errorMessage = new Label();
 
-                for (int i = 0; i < groups.GroupCount; i++)
-                {
-                    string name = groups.Names[i];
+                errorMessage.Text = ex.Message;
 
-                    if (name == "" || name == null)
-                        continue;
-
-                    ListViewItem item = listGroups.Items.Add(name.ToLower(), name, 0);
-
-                    item.BackColor = GetAttributeColor(groups.Groups[i].Attributes);
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
-                        GetAttributeString(groups.Groups[i].Attributes)));
-                }
-            }
-            catch (Exception ex)
-            {
-                tabGroups.Text = "(" + ex.Message + ")";
-            }
-
-            try
-            {
-                Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(_object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY));
-
-                for (int i = 0; i < privileges.PrivilegeCount; i++)
-                {
-                    string name = Win32.GetPrivilegeName(privileges.Privileges[i].Luid);
-                    ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
-
-                    item.BackColor = GetAttributeColor(privileges.Privileges[i].Attributes);
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
-                        GetAttributeString(privileges.Privileges[i].Attributes)));
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
-                }
-            }
-            catch (Exception ex)
-            {
-                tabPrivileges.Text = "(" + ex.Message + ")";
+                this.Padding = new Padding(15, 10, 0, 0);
+                this.Controls.Add(errorMessage);
             }
 
             if (tabControl.TabPages[Properties.Settings.Default.TokenWindowTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.TokenWindowTab];
 
-            ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PrivilegeListColumns, listPrivileges);
         }
 
         public void SaveSettings()
         {
             Properties.Settings.Default.TokenWindowTab = tabControl.SelectedTab.Name;
-
-            Properties.Settings.Default.GroupListColumns = ColumnSettings.SaveSettings(listGroups);
             Properties.Settings.Default.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
-        }
-
-        private string GetAttributeString(Win32.SID_ATTRIBUTES Attributes)
-        {
-            string text = "";
-
-            if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_INTEGRITY) != 0)
-            {
-                if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_INTEGRITY_ENABLED) != 0)
-                    return "Integrity";
-                else
-                    return "Integrity (Disabled)";
-            }
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_LOGON_ID) != 0)
-                text = "Logon ID";
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_MANDATORY) != 0)
-                text = "Mandatory";
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_OWNER) != 0)
-                text = "Owner";
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_RESOURCE) != 0)
-                text = "Resource";
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_USE_FOR_DENY_ONLY) != 0)
-                text = "Use for Deny Only";
-
-            if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_ENABLED_BY_DEFAULT) != 0)
-                return text + " (Default Enabled)";
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_ENABLED) != 0)
-                return text;
-            else
-                return text + " (Disabled)";
-        }
-
-        private Color GetAttributeColor(Win32.SID_ATTRIBUTES Attributes)
-        {
-            if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_INTEGRITY) != 0)
-            {
-                if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_INTEGRITY_ENABLED) == 0)
-                    return Color.FromArgb(0xe0e0e0);
-                else
-                    return Color.White;
-            }
-
-            if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_ENABLED_BY_DEFAULT) != 0)
-                return Color.FromArgb(0xe0f0e0);
-            else if ((Attributes & Win32.SID_ATTRIBUTES.SE_GROUP_ENABLED) != 0)
-                return Color.White;
-            else
-                return Color.FromArgb(0xf0e0e0);
         }
 
         private string GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES Attributes)

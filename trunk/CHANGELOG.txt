@@ -13,6 +13,7 @@ Process Hacker
  * Process list has less CPU usage (again); so does lsass.exe
  * Added Terminator tool
  * Added support for showing SIDs without account names
+ * Token information window is much more detailed
 
 1.2.6.5
  * A new member of the project - Dean

@@ -358,7 +358,7 @@ namespace ProcessHacker
 
                                 try
                                 {
-                                    info.BestName = TokenHandle.FromHandle(token_handle).GetUsername(true);
+                                    info.BestName = TokenHandle.FromHandle(token_handle).GetUser().GetName(true);
                                 }
                                 finally
                                 {
@@ -627,41 +627,6 @@ namespace ProcessHacker
             LookupPrivilegeName(0, ref Luid, sb, out size);
 
             return sb.ToString();
-        }
-
-        public static TOKEN_GROUPS ReadTokenGroups(TokenHandle TokenHandle, bool IncludeDomains)
-        {
-            int retLen = 0;
-
-            GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenGroups, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
-            {
-                if (!GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenGroups, data,
-                    data.Size, out retLen))
-                    throw new Exception(GetLastErrorMessage());
-
-                uint number = data.ReadUInt32(0);
-                TOKEN_GROUPS groups = new TOKEN_GROUPS();
-
-                groups.GroupCount = number;
-                groups.Groups = new SID_AND_ATTRIBUTES[number];
-                groups.Names = new string[number];
-
-                for (int i = 0; i < number; i++)
-                {
-                    groups.Groups[i] = data.ReadStruct<SID_AND_ATTRIBUTES>(4, i);
-
-                    try
-                    {
-                        groups.Names[i] = GetAccountName(groups.Groups[i].SID, IncludeDomains);
-                    }
-                    catch
-                    { }
-                }
-
-                return groups;
-            }
         }
 
         public static TOKEN_PRIVILEGES ReadTokenPrivileges(TokenHandle TokenHandle)
