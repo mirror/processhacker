@@ -83,8 +83,8 @@ namespace ProcessHacker
             Program.MemoryEditors.Add(this.Id, this);
 
             this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
-                "), 0x" + String.Format("{0:x}", _address) + "-0x" +
-                String.Format("{0:x}", _address + _length) + " - Memory Editor";
+                "), 0x" + _address.ToString("x8") + "-0x" +
+                (_address + _length).ToString("x8") + " - Memory Editor";
 
             try
             {

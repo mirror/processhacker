@@ -134,7 +134,9 @@ namespace ProcessHacker
                 _provider = value;
 
                 listModules.Items.Clear();
+                listModules.ListViewItemSorter = null;
                 _pid = -1;
+                _mainModule = null;
 
                 if (_provider != null)
                 {
@@ -148,6 +150,19 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _pid = _provider.PID;
+
+                    try
+                    {
+                        if (_pid == 4)
+                            _mainModule = Misc.GetRealPath(Misc.GetKernelFileName());
+                        else
+                            _mainModule = Misc.GetRealPath(Process.GetProcessById(_pid).MainModule.FileName);
+
+                        _mainModule = _mainModule.ToLower();
+                        listModules.ListViewItemSorter = new ModuleListComparer(_mainModule);
+                    }
+                    catch
+                    { }
                 }
             }
         }
@@ -167,6 +182,9 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
             litem.ToolTipText = item.FileName;
             litem.Tag = item;
+
+            if (item.FileName.ToLower() == _mainModule)
+                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
 
             listModules.Items.Add(litem);
         }
@@ -203,6 +221,7 @@ namespace ProcessHacker
         #endregion
 
         private int _pid;
+        private string _mainModule;
 
         public void SaveSettings()
         {
@@ -352,6 +371,31 @@ namespace ProcessHacker
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(listModules.Items);
+        }
+    }
+
+    public class ModuleListComparer : System.Collections.IComparer
+    {
+        private string _mainModule;
+
+        public ModuleListComparer(string mainModule)
+        {
+            _mainModule = mainModule.ToLower();
+        }
+
+        public int Compare(object x, object y)
+        {
+            ListViewItem lx = x as ListViewItem;
+            ListViewItem ly = y as ListViewItem;
+            ModuleItem mx = (ModuleItem)lx.Tag;
+            ModuleItem my = (ModuleItem)ly.Tag;
+
+            if (mx.FileName.ToLower() == _mainModule)
+                return -1;
+            if (my.FileName.ToLower() == _mainModule)
+                return 1;
+
+            return mx.Name.CompareTo(my.Name);
         }
     }
 }

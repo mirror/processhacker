@@ -29,6 +29,7 @@ namespace ProcessHacker
     public struct MemoryItem
     {
         public int Address;
+        public string ModuleName;
         public int Size;
         public Win32.MEMORY_TYPE Type;
         public Win32.MEMORY_STATE State;
@@ -48,6 +49,16 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
+            Dictionary<int, ProcessModule> modules = new Dictionary<int, ProcessModule>();
+
+            try
+            {
+                foreach (ProcessModule m in Process.GetProcessById(_pid).Modules)
+                    modules.Add(m.BaseAddress.ToInt32(), m);
+            }
+            catch
+            { }
+
             Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
             Dictionary<int, Win32.MEMORY_BASIC_INFORMATION> memoryInfo = new Dictionary<int, Win32.MEMORY_BASIC_INFORMATION>();
             Dictionary<int, MemoryItem> newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
@@ -64,7 +75,9 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        memoryInfo.Add(info.BaseAddress, info);
+                        if ((this.IgnoreFreeRegions && info.State != Win32.MEMORY_STATE.MEM_FREE) || 
+                            (!this.IgnoreFreeRegions))
+                            memoryInfo.Add(info.BaseAddress, info);
 
                         address += info.RegionSize;
                     }
@@ -81,6 +94,10 @@ namespace ProcessHacker
                 }
             }
 
+            string lastModuleName = null;
+            int lastModuleAddress = 0;
+            int lastModuleSize = 0;
+
             foreach (int address in memoryInfo.Keys)
             {
                 Win32.MEMORY_BASIC_INFORMATION info = memoryInfo[address];
@@ -94,6 +111,18 @@ namespace ProcessHacker
                     item.Type = info.Type;
                     item.State = info.State;
                     item.Protection = info.Protect;
+
+                    if (modules.ContainsKey(item.Address))
+                    {
+                        lastModuleName = modules[item.Address].ModuleName; 
+                        lastModuleAddress = modules[item.Address].BaseAddress.ToInt32();
+                        lastModuleSize = modules[item.Address].ModuleMemorySize;
+                    }
+
+                    if (item.Address >= lastModuleAddress && item.Address < lastModuleAddress + lastModuleSize)
+                        item.ModuleName = lastModuleName;
+                    else
+                        item.ModuleName = null;
                                                     
                     newdictionary.Add(address, item);
                     this.CallDictionaryAdded(item);
@@ -124,6 +153,8 @@ namespace ProcessHacker
             phandle.Dispose();
             Dictionary = newdictionary;
         }
+
+        public bool IgnoreFreeRegions { get; set; }
 
         public int PID
         {

@@ -31,9 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.listMemory = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnAddress = new System.Windows.Forms.ColumnHeader();
             this.columnSize = new System.Windows.Forms.ColumnHeader();
-            this.columnType = new System.Windows.Forms.ColumnHeader();
-            this.columnState = new System.Windows.Forms.ColumnHeader();
             this.columnProtection = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.changeMemoryProtectionMemoryMenuItem = new System.Windows.Forms.MenuItem();
@@ -51,9 +50,8 @@
             this.listMemory.AllowColumnReorder = true;
             this.listMemory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnName,
+            this.columnAddress,
             this.columnSize,
-            this.columnType,
-            this.columnState,
             this.columnProtection});
             this.listMemory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listMemory.FullRowSelect = true;
@@ -62,7 +60,6 @@
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
             this.listMemory.Size = new System.Drawing.Size(450, 472);
-            this.listMemory.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listMemory.TabIndex = 3;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -71,20 +68,16 @@
             // columnName
             // 
             this.columnName.Text = "Name";
-            this.columnName.Width = 80;
+            this.columnName.Width = 160;
+            // 
+            // columnAddress
+            // 
+            this.columnAddress.Text = "Address";
+            this.columnAddress.Width = 80;
             // 
             // columnSize
             // 
             this.columnSize.Text = "Size";
-            // 
-            // columnType
-            // 
-            this.columnType.Text = "Type";
-            this.columnType.Width = 80;
-            // 
-            // columnState
-            // 
-            this.columnState.Text = "State";
             // 
             // columnProtection
             // 
@@ -164,8 +157,7 @@
         private System.Windows.Forms.ColumnHeader columnName;
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ColumnHeader columnSize;
-        private System.Windows.Forms.ColumnHeader columnType;
-        private System.Windows.Forms.ColumnHeader columnState;
+        private System.Windows.Forms.ColumnHeader columnAddress;
         private System.Windows.Forms.ColumnHeader columnProtection;
         private System.Windows.Forms.ContextMenu menuMemory;
         private System.Windows.Forms.MenuItem changeMemoryProtectionMemoryMenuItem;

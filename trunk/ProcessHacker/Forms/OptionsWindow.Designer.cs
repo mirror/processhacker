@@ -38,7 +38,6 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
-            this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
             this.label10 = new System.Windows.Forms.Label();
@@ -95,7 +94,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 264);
+            this.buttonClose.Location = new System.Drawing.Point(284, 270);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -153,13 +152,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 246);
+            this.tabControl.Size = new System.Drawing.Size(347, 252);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
             this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
-            this.tabGeneral.Controls.Add(this.checkHideHandlesNoName);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label1);
             this.tabGeneral.Controls.Add(this.textSearchEngine);
@@ -170,7 +168,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(339, 220);
+            this.tabGeneral.Size = new System.Drawing.Size(339, 226);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -185,17 +183,6 @@
             this.checkHideWhenMinimized.TabIndex = 9;
             this.checkHideWhenMinimized.Text = "Hide when minimized";
             this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
-            // 
-            // checkHideHandlesNoName
-            // 
-            this.checkHideHandlesNoName.AutoSize = true;
-            this.checkHideHandlesNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesNoName.Location = new System.Drawing.Point(6, 156);
-            this.checkHideHandlesNoName.Name = "checkHideHandlesNoName";
-            this.checkHideHandlesNoName.Size = new System.Drawing.Size(160, 18);
-            this.checkHideHandlesNoName.TabIndex = 8;
-            this.checkHideHandlesNoName.Text = "Hide handles with no name";
-            this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
             // 
             // checkShowTrayIcon
             // 
@@ -229,7 +216,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 220);
+            this.tabHighlighting.Size = new System.Drawing.Size(339, 226);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -384,7 +371,7 @@
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 299);
+            this.ClientSize = new System.Drawing.Size(371, 305);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -429,7 +416,6 @@
         private System.Windows.Forms.NumericUpDown textHighlightingDuration;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox checkShowTrayIcon;
-        private System.Windows.Forms.CheckBox checkHideHandlesNoName;
         private System.Windows.Forms.Label label8;
         private ProcessHacker.Components.ColorModifier colorBeingDebugged;
         private System.Windows.Forms.Label label9;

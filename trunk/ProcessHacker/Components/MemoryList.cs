@@ -43,6 +43,8 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
             listMemory.ContextMenu = menuMemory;
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
+
+            listMemory.ListViewItemSorter = new MemoryListComparer();
         }
 
         private void listMemory_MouseUp(object sender, MouseEventArgs e)
@@ -210,10 +212,28 @@ namespace ProcessHacker
             HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
 
             litem.Name = item.Address.ToString();
-            litem.Text = "0x" + item.Address.ToString("x8");
+
+            if (item.State == Win32.MEMORY_STATE.MEM_FREE)
+            {
+                litem.Text = "Free";
+            }
+            else if (item.Type == Win32.MEMORY_TYPE.MEM_IMAGE)
+            {
+                if (item.ModuleName != null)
+                    litem.Text = item.ModuleName;
+                else
+                    litem.Text = "Image";
+
+                litem.Text += " (" + GetStateStr(item.State) + ")";
+            }
+            else
+            {
+                litem.Text = GetTypeStr(item.Type);
+                litem.Text += " (" + GetStateStr(item.State) + ")";
+            }
+
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Address.ToString("x8")));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Misc.GetNiceSizeName(item.Size)));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, GetTypeStr(item.Type)));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, GetStateStr(item.State)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, GetProtectStr(item.Protection)));
             litem.Tag = item;
 
@@ -226,10 +246,28 @@ namespace ProcessHacker
             {
                 ListViewItem litem = listMemory.Items[newItem.Address.ToString()];
 
-                litem.SubItems[1].Text = Misc.GetNiceSizeName(newItem.Size);
-                litem.SubItems[2].Text = GetTypeStr(newItem.Type);
-                litem.SubItems[3].Text = GetStateStr(newItem.State);
-                litem.SubItems[4].Text = GetProtectStr(newItem.Protection);
+                if (newItem.State == Win32.MEMORY_STATE.MEM_FREE) 
+                {
+                    litem.Text = "Free";
+                }
+                else if (newItem.Type == Win32.MEMORY_TYPE.MEM_IMAGE)
+                {
+                    if (newItem.ModuleName != null)
+                        litem.Text = newItem.ModuleName;
+                    else
+                        litem.Text = "Image";
+
+                    litem.Text += " (" + GetStateStr(newItem.State) + ")";
+                }
+                else
+                {
+                    litem.Text = GetTypeStr(newItem.Type);
+                    litem.Text += " (" + GetStateStr(newItem.State) + ")";
+                }
+
+                litem.SubItems[1].Text = "0x" + newItem.Address.ToString("x8");
+                litem.SubItems[2].Text = Misc.GetNiceSizeName(newItem.Size);
+                litem.SubItems[3].Text = GetProtectStr(newItem.Protection);
             }
         }
 
@@ -392,6 +430,19 @@ namespace ProcessHacker
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(listMemory.Items);
+        }
+    }
+
+    public class MemoryListComparer : System.Collections.IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            ListViewItem lx = x as ListViewItem;
+            ListViewItem ly = y as ListViewItem;
+            MemoryItem mx = (MemoryItem)lx.Tag;
+            MemoryItem my = (MemoryItem)ly.Tag;
+
+            return mx.Address.CompareTo(my.Address);
         }
     }
 }

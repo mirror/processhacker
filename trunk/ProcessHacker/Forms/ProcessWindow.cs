@@ -65,6 +65,7 @@ namespace ProcessHacker
         {
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
+            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
 
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
@@ -96,6 +97,7 @@ namespace ProcessHacker
             listMemory.BeginUpdate();
             listMemory.Highlight = false;
             _memoryP = new MemoryProvider(_pid);
+            _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
             _memoryP.RunOnceAsync();
@@ -176,7 +178,7 @@ namespace ProcessHacker
 
             this.UpdateDEPStatus();
 
-            tabControl_TabIndexChanged(null, null);
+            tabControl_SelectedIndexChanged(null, null);
         }
 
         public void UpdateDEPStatus()
@@ -274,7 +276,14 @@ namespace ProcessHacker
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             _threadP.Kill();
+            _moduleP.Kill();
+            _memoryP.Kill();
+            _handleP.Kill();
+
             listThreads.SaveSettings();
+            listModules.SaveSettings();
+            listMemory.SaveSettings();
+            listHandles.SaveSettings();
             _tokenProps.SaveSettings();
 
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
@@ -290,6 +299,18 @@ namespace ProcessHacker
         public wyDay.Controls.VistaMenu VistaMenu
         {
             get { return vistaMenu; }
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_threadP != null)
+                _threadP.Enabled = tabControl.SelectedTab == tabThreads;
+            if (_moduleP != null)
+                _moduleP.Enabled = tabControl.SelectedTab == tabModules;
+            if (_memoryP != null)
+                _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
+            if (_handleP != null)
+                _handleP.Enabled = tabControl.SelectedTab == tabHandles;
         }
 
         private void inspectImageFileMenuItem_Click(object sender, EventArgs e)
@@ -324,23 +345,6 @@ namespace ProcessHacker
                 MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-        }
-
-        private void tabControl_TabIndexChanged(object sender, EventArgs e)
-        {
-            _threadP.Enabled = false;
-            _moduleP.Enabled = false;
-            _memoryP.Enabled = false;
-            _handleP.Enabled = false;
-
-            if (tabControl.SelectedTab == tabThreads)
-                _threadP.Enabled = true;
-            else if (tabControl.SelectedTab == tabModules)
-                _moduleP.Enabled = true;
-            else if (tabControl.SelectedTab == tabMemory)
-                _memoryP.Enabled = true;
-            else if (tabControl.SelectedTab == tabHandles)
-                _handleP.Enabled = true;
         }
 
         private void buttonPEBStrings_Click(object sender, EventArgs e)
@@ -540,6 +544,29 @@ namespace ProcessHacker
         private void buttonSearch_Click(object sender, EventArgs e)
         {
             PerformSearch(buttonSearch.Text);
+        }
+
+        private void checkHideFreeRegions_CheckedChanged(object sender, EventArgs e)
+        {
+            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
+        }
+
+        private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
+
+            if (_handleP != null)
+            {
+                _handleP.Kill();
+                listHandles.BeginUpdate();
+                listHandles.Highlight = false;
+                _handleP = new HandleProvider(_pid);
+                _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+                _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+                _handleP.RunOnceAsync();
+                listHandles.Provider = _handleP;
+                _handleP.Enabled = true;
+            }
         }
     }
 }

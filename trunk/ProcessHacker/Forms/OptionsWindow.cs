@@ -39,7 +39,6 @@ namespace ProcessHacker
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
-            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
 
@@ -73,7 +72,6 @@ namespace ProcessHacker
             Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
-            Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
 
