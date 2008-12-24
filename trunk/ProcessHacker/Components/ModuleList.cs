@@ -42,6 +42,10 @@ namespace ProcessHacker
             listModules.MouseUp += new MouseEventHandler(listModules_MouseUp);
             listModules.DoubleClick += new EventHandler(listModules_DoubleClick);
             listModules.SelectedIndexChanged += new System.EventHandler(listModules_SelectedIndexChanged);
+
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
+            listModules.ContextMenu = menuModule;
+            GenericViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
         }
 
         private void listModules_DoubleClick(object sender, EventArgs e)
@@ -64,8 +68,7 @@ namespace ProcessHacker
 
         private void listModules_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (this.SelectedIndexChanged != null)
-                this.SelectedIndexChanged(sender, e);
+
         }
 
         private void ModuleList_KeyDown(object sender, KeyEventArgs e)
@@ -75,6 +78,8 @@ namespace ProcessHacker
         }
 
         #region Properties
+
+        public bool Highlight { get; set; }
 
         public new bool DoubleBuffered
         {
@@ -129,6 +134,7 @@ namespace ProcessHacker
                 _provider = value;
 
                 listModules.Items.Clear();
+                _pid = -1;
 
                 if (_provider != null)
                 {
@@ -141,6 +147,7 @@ namespace ProcessHacker
                     _provider.Invoke = new ModuleProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _pid = _provider.PID;
                 }
             }
         }
@@ -151,7 +158,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ModuleItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
 
             litem.Name = item.BaseAddress.ToString();
             litem.Text = item.Name;
@@ -159,6 +166,7 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Misc.GetNiceSizeName(item.Size)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
             litem.ToolTipText = item.FileName;
+            litem.Tag = item;
 
             listModules.Items.Add(litem);
         }
@@ -193,5 +201,157 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        private int _pid;
+
+        public void SaveSettings()
+        {
+            Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
+        }
+
+        private void menuModule_Popup(object sender, EventArgs e)
+        {
+            if (listModules.SelectedItems.Count == 1)
+            {
+                if (_pid == 4)
+                {
+                    Misc.DisableAllMenuItems(menuModule);
+
+                    inspectModuleMenuItem.Enabled = true;
+                    searchModuleMenuItem.Enabled = true;
+                    copyFileNameMenuItem.Enabled = true;
+                    copyModuleMenuItem.Enabled = true;
+                    openContainingFolderMenuItem.Enabled = true;
+                    propertiesMenuItem.Enabled = true;
+                }
+                else
+                {
+                    Misc.EnableAllMenuItems(menuModule);
+                }
+            }
+            else
+            {
+                Misc.DisableAllMenuItems(menuModule);
+
+                if (listModules.SelectedItems.Count > 1)
+                {
+                    copyFileNameMenuItem.Enabled = true;
+                    copyModuleMenuItem.Enabled = true;
+                }
+            }
+
+            if (listModules.Items.Count > 0)
+            {
+                selectAllModuleMenuItem.Enabled = true;
+            }
+            else
+            {
+                selectAllModuleMenuItem.Enabled = false;
+            }
+        }
+
+        private void searchModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
+                    listModules.SelectedItems[0].Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void copyFileNameMenuItem_Click(object sender, EventArgs e)
+        {
+            string text = "";
+
+            for (int i = 0; i < listModules.SelectedItems.Count; i++)
+            {
+                text += listModules.SelectedItems[i].ToolTipText;
+
+                if (i != listModules.SelectedItems.Count - 1)
+                    text += "\r\n";
+            }
+
+            Clipboard.SetText(text);
+        }
+
+        private void openContainingFolderMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start("explorer.exe", "/select," + listModules.SelectedItems[0].ToolTipText);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void propertiesMenuItem_Click(object sender, EventArgs e)
+        {
+            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+            info.lpFile = listModules.SelectedItems[0].ToolTipText;
+            info.nShow = Win32.SW_SHOW;
+            info.fMask = Win32.SEE_MASK_INVOKEIDLIST;
+            info.lpVerb = "properties";
+
+            Win32.ShellExecuteEx(ref info);
+        }
+
+        private void inspectModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PEWindow pw = Program.GetPEWindow(listModules.SelectedItems[0].ToolTipText,
+                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                    {
+                        try
+                        {
+                            f.Show();
+                            f.Activate();
+                        }
+                        catch
+                        { }
+                    }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void getFuncAddressMenuItem_Click(object sender, EventArgs e)
+        {
+            GetProcAddressWindow gpaWindow = new GetProcAddressWindow(listModules.SelectedItems[0].ToolTipText);
+
+            gpaWindow.ShowDialog();
+        }
+
+        private void changeMemoryProtectionModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
+            VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.BaseAddress, item.Size);
+
+            w.ShowDialog();
+        }
+
+        private void readMemoryModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            ModuleItem item = (ModuleItem)listModules.SelectedItems[0].Tag;
+
+            MemoryEditor.ReadWriteMemory(_pid, item.BaseAddress, item.Size, true);
+        }
+
+        private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listModules.Items);
+        }
     }
 }

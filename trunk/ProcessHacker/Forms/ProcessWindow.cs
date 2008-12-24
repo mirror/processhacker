@@ -37,6 +37,8 @@ namespace ProcessHacker
 
         private ThreadProvider _threadP;
         private ModuleProvider _moduleP;
+        private MemoryProvider _memoryP;
+        private HandleProvider _handleP;
 
         private TokenProperties _tokenProps;
 
@@ -71,17 +73,41 @@ namespace ProcessHacker
             _tokenProps.Dock = DockStyle.Fill;
             tabToken.Controls.Add(_tokenProps);
 
+            listThreads.BeginUpdate();
+            listThreads.Highlight = false;
             _threadP = new ThreadProvider(_pid);
             _threadP.Interval = Properties.Settings.Default.RefreshInterval;
+            _threadP.Updated += new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
             _threadP.RunOnceAsync();
             listThreads.Provider = _threadP;
             _threadP.Enabled = true;
 
+            listModules.BeginUpdate();
+            listModules.Highlight = false;
             _moduleP = new ModuleProvider(_pid);
             _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _moduleP.Updated += new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
             _moduleP.RunOnceAsync();
             listModules.Provider = _moduleP;
             _moduleP.Enabled = true;
+
+            listMemory.BeginUpdate();
+            listMemory.Highlight = false;
+            _memoryP = new MemoryProvider(_pid);
+            _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
+            _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
+            _memoryP.RunOnceAsync();
+            listMemory.Provider = _memoryP;
+            _memoryP.Enabled = true;
+
+            listHandles.BeginUpdate();
+            listHandles.Highlight = false;
+            _handleP = new HandleProvider(_pid);
+            _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+            _handleP.RunOnceAsync();
+            listHandles.Provider = _handleP;
+            _handleP.Enabled = true;
 
             try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
             catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
@@ -121,6 +147,70 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 textCurrentDirectory.Text = "(" + ex.Message + ")";
+            }
+
+            if (_processItem.ParentPID != -1)
+            {
+                if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPID))
+                    textParent.Text =
+                        Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPID].Name +
+                        " (" + _processItem.ParentPID.ToString() + ")";
+                else
+                    textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
+            }
+
+            tabControl_TabIndexChanged(null, null);
+        }
+
+        private void _memoryP_Updated()
+        {
+            if (_memoryP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listMemory.EndUpdate();
+                    listMemory.Highlight = true;
+                }));
+                _memoryP.Updated -= new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
+            }
+        }
+
+        private void _handleP_Updated()
+        {
+            if (_handleP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listHandles.EndUpdate();
+                    listHandles.Highlight = true;
+                }));
+                _handleP.Updated -= new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+            }
+        }
+
+        private void _moduleP_Updated()
+        {
+            if (_moduleP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listModules.EndUpdate();
+                    listModules.Highlight = true;
+                }));
+                _moduleP.Updated -= new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
+            }
+        }
+
+        private void _threadP_Updated()
+        {
+            if (_threadP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listThreads.EndUpdate();
+                    listThreads.Highlight = true;
+                }));
+                _threadP.Updated -= new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
             }
         }
 
@@ -182,11 +272,17 @@ namespace ProcessHacker
         {
             _threadP.Enabled = false;
             _moduleP.Enabled = false;
+            _memoryP.Enabled = false;
+            _handleP.Enabled = false;
 
             if (tabControl.SelectedTab == tabThreads)
                 _threadP.Enabled = true;
             else if (tabControl.SelectedTab == tabModules)
                 _moduleP.Enabled = true;
+            else if (tabControl.SelectedTab == tabMemory)
+                _memoryP.Enabled = true;
+            else if (tabControl.SelectedTab == tabHandles)
+                _handleP.Enabled = true;
         }
 
         private void buttonPEBStrings_Click(object sender, EventArgs e)

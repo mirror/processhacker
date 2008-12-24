@@ -124,6 +124,10 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\MemoryList.resx">
+      <DependentUpon>MemoryList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ModuleList.resx">
       <DependentUpon>ModuleList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -161,6 +165,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutWindow.resx">
       <DependentUpon>AboutWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GetProcAddressWindow.resx">
+      <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ListWindow.resx">
@@ -241,6 +249,10 @@
       <DependentUpon>ThreadWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VirtualProtectWindow.resx">
+      <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Help.htm">
       <SubType>Form</SubType>
     </EmbeddedResource>
@@ -260,6 +272,12 @@
     </Compile>
     <Compile Include="Components\ColorModifier.Designer.cs">
       <DependentUpon>ColorModifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MemoryList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MemoryList.Designer.cs">
+      <DependentUpon>MemoryList.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\ModuleList.cs">
       <SubType>UserControl</SubType>
@@ -318,6 +336,12 @@
     </Compile>
     <Compile Include="FormHelper\HandleFilter.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\GetProcAddressWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GetProcAddressWindow.Designer.cs">
+      <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ListWindow.cs">
       <SubType>Form</SubType>
@@ -391,6 +415,12 @@
     <Compile Include="Forms\ServiceWindow.Designer.cs">
       <DependentUpon>ServiceWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\VirtualProtectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
+      <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\GenericViewMenu.cs" />
     <Compile Include="PE\ImportData.cs" />
@@ -405,6 +435,7 @@
     <Compile Include="PE\ImageSubsystem.cs" />
     <Compile Include="PE\MachineType.cs" />
     <Compile Include="PE\PEFile.cs" />
+    <Compile Include="Providers\MemoryProvider.cs" />
     <Compile Include="Providers\ModuleProvider.cs" />
     <Compile Include="Providers\HandleProvider.cs" />
     <Compile Include="Providers\ServiceProvider.cs" />

@@ -71,11 +71,15 @@ namespace ProcessHacker
 
         private Color _normalColor = SystemColors.Window;
 
-        public HighlightedListViewItem() : this("") { }
+        public HighlightedListViewItem() : this(true) { }
 
-        public HighlightedListViewItem(string text) : base(text)
+        public HighlightedListViewItem(bool highlight) : this("", highlight) { }
+
+        public HighlightedListViewItem(string text) : this(text, true) { }
+
+        public HighlightedListViewItem(string text, bool highlight) : base(text)
         {
-            if (_stateHighlighting)
+            if (_stateHighlighting && highlight)
             {
                 this.BackColor = _colors[ListViewItemState.New];
                 _state = ListViewItemState.New;
@@ -87,7 +91,7 @@ namespace ProcessHacker
             }
             else
             {
-                this.PerformDelayed(new MethodInvoker(delegate { this.BackColor = _normalColor; }));
+                this.BackColor = _normalColor;
             }
         }
 

@@ -190,8 +190,6 @@ namespace ProcessHacker
             {
                 ed = new MemoryEditor(PID, address, length);
 
-                id = ed.Id;
-
                 action(ed);
 
                 try

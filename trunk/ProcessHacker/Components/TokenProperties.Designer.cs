@@ -285,9 +285,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(6, 178);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(58, 13);
+            this.label5.Size = new System.Drawing.Size(69, 13);
             this.label5.TabIndex = 8;
-            this.label5.Text = "Virtualized:";
+            this.label5.Text = "Virtualization:";
             // 
             // label3
             // 

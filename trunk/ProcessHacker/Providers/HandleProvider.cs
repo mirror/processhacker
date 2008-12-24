@@ -101,5 +101,10 @@ namespace ProcessHacker
             processHandle.Dispose();
             Dictionary = newdictionary;
         }
+
+        public int PID
+        {
+            get { return _pid; }
+        }
     }
 }

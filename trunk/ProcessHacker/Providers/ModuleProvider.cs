@@ -105,6 +105,9 @@ namespace ProcessHacker
 
                     try
                     {
+                        System.IO.FileInfo fi = new System.IO.FileInfo(item.FileName);
+                        item.FileName = fi.FullName;
+
                         FileVersionInfo info = FileVersionInfo.GetVersionInfo(item.FileName);
 
                         item.FileDescription = info.FileDescription;

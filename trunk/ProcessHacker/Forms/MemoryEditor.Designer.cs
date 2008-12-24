@@ -24,7 +24,7 @@ namespace ProcessHacker
             hexBoxMemory.ByteProvider = null;
             GC.Collect();
 
-            Program.MemoryEditors.Remove(Id);
+            Program.MemoryEditors.Remove(this.Id);
             Program.UpdateWindows();
 
             base.Dispose(disposing);

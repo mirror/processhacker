@@ -35,6 +35,19 @@
             this.columnSize = new System.Windows.Forms.ColumnHeader();
             this.columnDesc = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.changeMemoryProtectionModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.readMemoryModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.inspectModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.openContainingFolderMenuItem = new System.Windows.Forms.MenuItem();
+            this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuModule = new System.Windows.Forms.ContextMenu();
+            this.getFuncAddressMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem3 = new System.Windows.Forms.MenuItem();
+            this.searchModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.selectAllModuleMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,6 +95,98 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // changeMemoryProtectionModuleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.changeMemoryProtectionModuleMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
+            this.changeMemoryProtectionModuleMenuItem.Index = 1;
+            this.changeMemoryProtectionModuleMenuItem.Text = "Change &Memory Protection...";
+            this.changeMemoryProtectionModuleMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionModuleMenuItem_Click);
+            // 
+            // readMemoryModuleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.readMemoryModuleMenuItem, global::ProcessHacker.Properties.Resources.page);
+            this.readMemoryModuleMenuItem.Index = 2;
+            this.readMemoryModuleMenuItem.Text = "Read Memory...";
+            this.readMemoryModuleMenuItem.Click += new System.EventHandler(this.readMemoryModuleMenuItem_Click);
+            // 
+            // inspectModuleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.inspectModuleMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.inspectModuleMenuItem.Index = 3;
+            this.inspectModuleMenuItem.Text = "&Inspect...";
+            this.inspectModuleMenuItem.Click += new System.EventHandler(this.inspectModuleMenuItem_Click);
+            // 
+            // copyModuleMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyModuleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyModuleMenuItem.Index = 7;
+            this.copyModuleMenuItem.Text = "Copy";
+            // 
+            // openContainingFolderMenuItem
+            // 
+            this.vistaMenu.SetImage(this.openContainingFolderMenuItem, global::ProcessHacker.Properties.Resources.folder_explore);
+            this.openContainingFolderMenuItem.Index = 8;
+            this.openContainingFolderMenuItem.Text = "&Open Containing Folder";
+            this.openContainingFolderMenuItem.Click += new System.EventHandler(this.openContainingFolderMenuItem_Click);
+            // 
+            // propertiesMenuItem
+            // 
+            this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_view_detail);
+            this.propertiesMenuItem.Index = 9;
+            this.propertiesMenuItem.Text = "Prope&rties...";
+            this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
+            // 
+            // menuModule
+            // 
+            this.menuModule.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.getFuncAddressMenuItem,
+            this.changeMemoryProtectionModuleMenuItem,
+            this.readMemoryModuleMenuItem,
+            this.inspectModuleMenuItem,
+            this.menuItem3,
+            this.searchModuleMenuItem,
+            this.copyFileNameMenuItem,
+            this.copyModuleMenuItem,
+            this.openContainingFolderMenuItem,
+            this.propertiesMenuItem,
+            this.menuItem6,
+            this.selectAllModuleMenuItem});
+            this.menuModule.Popup += new System.EventHandler(this.menuModule_Popup);
+            // 
+            // getFuncAddressMenuItem
+            // 
+            this.getFuncAddressMenuItem.Index = 0;
+            this.getFuncAddressMenuItem.Text = "Get &Function Address...";
+            this.getFuncAddressMenuItem.Click += new System.EventHandler(this.getFuncAddressMenuItem_Click);
+            // 
+            // menuItem3
+            // 
+            this.menuItem3.Index = 4;
+            this.menuItem3.Text = "-";
+            // 
+            // searchModuleMenuItem
+            // 
+            this.searchModuleMenuItem.Index = 5;
+            this.searchModuleMenuItem.Text = "&Search Online...";
+            this.searchModuleMenuItem.Click += new System.EventHandler(this.searchModuleMenuItem_Click);
+            // 
+            // copyFileNameMenuItem
+            // 
+            this.copyFileNameMenuItem.Index = 6;
+            this.copyFileNameMenuItem.Text = "&Copy File Name(s)";
+            this.copyFileNameMenuItem.Click += new System.EventHandler(this.copyFileNameMenuItem_Click);
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 10;
+            this.menuItem6.Text = "-";
+            // 
+            // selectAllModuleMenuItem
+            // 
+            this.selectAllModuleMenuItem.Index = 11;
+            this.selectAllModuleMenuItem.Text = "Select &All";
+            this.selectAllModuleMenuItem.Click += new System.EventHandler(this.selectAllModuleMenuItem_Click);
+            // 
             // ModuleList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -103,5 +208,18 @@
         private System.Windows.Forms.ColumnHeader columnSize;
         private System.Windows.Forms.ColumnHeader columnDesc;
         private wyDay.Controls.VistaMenu vistaMenu;
+        private System.Windows.Forms.ContextMenu menuModule;
+        private System.Windows.Forms.MenuItem getFuncAddressMenuItem;
+        private System.Windows.Forms.MenuItem changeMemoryProtectionModuleMenuItem;
+        private System.Windows.Forms.MenuItem readMemoryModuleMenuItem;
+        private System.Windows.Forms.MenuItem inspectModuleMenuItem;
+        private System.Windows.Forms.MenuItem menuItem3;
+        private System.Windows.Forms.MenuItem searchModuleMenuItem;
+        private System.Windows.Forms.MenuItem copyFileNameMenuItem;
+        private System.Windows.Forms.MenuItem copyModuleMenuItem;
+        private System.Windows.Forms.MenuItem openContainingFolderMenuItem;
+        private System.Windows.Forms.MenuItem propertiesMenuItem;
+        private System.Windows.Forms.MenuItem menuItem6;
+        private System.Windows.Forms.MenuItem selectAllModuleMenuItem;
     }
 }

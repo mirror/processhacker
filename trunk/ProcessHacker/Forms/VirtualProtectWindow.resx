@@ -117,10 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="vistaMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="menuModule.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>120, 20</value>
-  </metadata>
+  <data name="labelVirtualProtectInfo.Text" xml:space="preserve">
+    <value>Possible values:
+
+0x10 - PAGE_EXECUTE
+0x20 - PAGE_EXECUTE_READ
+0x40 - PAGE_EXECUTE_READWRITE
+0x80 - PAGE_EXECUTE_WRITECOPY
+0x01 - PAGE_NOACCESS
+0x02 - PAGE_READONLY
+0x04 - PAGE_READWRITE
+0x08 - PAGE_WRITECOPY
+
+For example, input 0x01 to protect the area from any access.</value>
+  </data>
 </root>

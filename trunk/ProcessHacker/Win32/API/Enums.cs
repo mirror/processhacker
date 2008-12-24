@@ -162,6 +162,7 @@ namespace ProcessHacker
             IMAGE_FILE_MACHINE_AMD64 = 0x8664
         }
 
+        [Flags]
         public enum MEMORY_PROTECTION : int
         {
             PAGE_ACCESS_DENIED = 0x0,

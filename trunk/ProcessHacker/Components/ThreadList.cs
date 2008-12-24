@@ -71,6 +71,8 @@ namespace ProcessHacker
 
         #region Properties
 
+        public bool Highlight { get; set; }
+
         public new bool DoubleBuffered
         {
             get
@@ -162,7 +164,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
 
             litem.Name = item.TID.ToString();
             litem.Text = item.TID.ToString();
