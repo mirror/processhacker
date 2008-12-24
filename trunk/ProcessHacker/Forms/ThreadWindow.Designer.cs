@@ -18,9 +18,6 @@
                 components.Dispose();
             }
 
-            Win32.CloseHandle(_thandle);
-            Win32.CloseHandle(_phandle);
-
             Program.ThreadWindows.Remove(Id);
             Program.UpdateWindows();
 

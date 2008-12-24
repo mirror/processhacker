@@ -147,14 +147,11 @@
             this.tabControlBig = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
             this.splitMain = new System.Windows.Forms.SplitContainer();
-            this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcess = new System.Windows.Forms.TabPage();
             this.groupSearch = new System.Windows.Forms.GroupBox();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.treeMisc = new System.Windows.Forms.TreeView();
             this.tabThreads = new System.Windows.Forms.TabPage();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new System.Windows.Forms.ListView();
             this.columnModuleName = new System.Windows.Forms.ColumnHeader();
@@ -169,9 +166,7 @@
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
             this.tabHandles = new System.Windows.Forms.TabPage();
-            this.listHandles = new ProcessHacker.HandleList();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.listServices = new ProcessHacker.ServiceList();
             this.menuService = new System.Windows.Forms.ContextMenu();
             this.goToProcessServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.startServiceMenuItem = new System.Windows.Forms.MenuItem();
@@ -201,6 +196,11 @@
             this.propertiesHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.menuMisc = new System.Windows.Forms.ContextMenu();
             this.copyMiscMenuItem = new System.Windows.Forms.MenuItem();
+            this.treeProcesses = new ProcessHacker.ProcessTree();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
+            this.listThreads = new ProcessHacker.ThreadList();
+            this.listHandles = new ProcessHacker.HandleList();
+            this.listServices = new ProcessHacker.ServiceList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.panelProc.SuspendLayout();
             this.panelVirtualProtect.SuspendLayout();
@@ -233,19 +233,19 @@
             this.panelProc.Controls.Add(this.buttonGetProcAddress);
             this.panelProc.Controls.Add(this.textProcName);
             this.panelProc.Controls.Add(this.labelProcedureName);
-            this.panelProc.Location = new System.Drawing.Point(592, 28);
+            this.panelProc.Location = new System.Drawing.Point(592, 30);
             this.panelProc.Name = "panelProc";
             this.panelProc.Padding = new System.Windows.Forms.Padding(3);
-            this.panelProc.Size = new System.Drawing.Size(200, 92);
+            this.panelProc.Size = new System.Drawing.Size(200, 100);
             this.panelProc.TabIndex = 3;
             this.panelProc.Visible = false;
             // 
             // buttonCloseProc
             // 
             this.buttonCloseProc.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCloseProc.Location = new System.Drawing.Point(119, 42);
+            this.buttonCloseProc.Location = new System.Drawing.Point(119, 46);
             this.buttonCloseProc.Name = "buttonCloseProc";
-            this.buttonCloseProc.Size = new System.Drawing.Size(75, 21);
+            this.buttonCloseProc.Size = new System.Drawing.Size(75, 23);
             this.buttonCloseProc.TabIndex = 4;
             this.buttonCloseProc.Text = "&Close";
             this.buttonCloseProc.UseVisualStyleBackColor = true;
@@ -253,18 +253,18 @@
             // 
             // textProcAddress
             // 
-            this.textProcAddress.Location = new System.Drawing.Point(6, 68);
+            this.textProcAddress.Location = new System.Drawing.Point(6, 74);
             this.textProcAddress.Name = "textProcAddress";
             this.textProcAddress.ReadOnly = true;
-            this.textProcAddress.Size = new System.Drawing.Size(188, 21);
+            this.textProcAddress.Size = new System.Drawing.Size(188, 20);
             this.textProcAddress.TabIndex = 3;
             // 
             // buttonGetProcAddress
             // 
             this.buttonGetProcAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonGetProcAddress.Location = new System.Drawing.Point(6, 42);
+            this.buttonGetProcAddress.Location = new System.Drawing.Point(6, 46);
             this.buttonGetProcAddress.Name = "buttonGetProcAddress";
-            this.buttonGetProcAddress.Size = new System.Drawing.Size(75, 21);
+            this.buttonGetProcAddress.Size = new System.Drawing.Size(75, 23);
             this.buttonGetProcAddress.TabIndex = 2;
             this.buttonGetProcAddress.Text = "Get Address";
             this.buttonGetProcAddress.UseVisualStyleBackColor = true;
@@ -272,9 +272,9 @@
             // 
             // textProcName
             // 
-            this.textProcName.Location = new System.Drawing.Point(6, 18);
+            this.textProcName.Location = new System.Drawing.Point(6, 20);
             this.textProcName.Name = "textProcName";
-            this.textProcName.Size = new System.Drawing.Size(188, 21);
+            this.textProcName.Size = new System.Drawing.Size(188, 20);
             this.textProcName.TabIndex = 1;
             // 
             // labelProcedureName
@@ -282,7 +282,7 @@
             this.labelProcedureName.AutoSize = true;
             this.labelProcedureName.Location = new System.Drawing.Point(6, 3);
             this.labelProcedureName.Name = "labelProcedureName";
-            this.labelProcedureName.Size = new System.Drawing.Size(137, 12);
+            this.labelProcedureName.Size = new System.Drawing.Size(120, 13);
             this.labelProcedureName.TabIndex = 0;
             this.labelProcedureName.Text = "Function Name/Ordinal:";
             // 
@@ -307,10 +307,10 @@
             this.panelVirtualProtect.Controls.Add(this.textNewProtection);
             this.panelVirtualProtect.Controls.Add(this.labelNewValue);
             this.panelVirtualProtect.Controls.Add(this.labelVirtualProtectInfo);
-            this.panelVirtualProtect.Location = new System.Drawing.Point(467, 28);
+            this.panelVirtualProtect.Location = new System.Drawing.Point(467, 30);
             this.panelVirtualProtect.Name = "panelVirtualProtect";
             this.panelVirtualProtect.Padding = new System.Windows.Forms.Padding(3);
-            this.panelVirtualProtect.Size = new System.Drawing.Size(325, 192);
+            this.panelVirtualProtect.Size = new System.Drawing.Size(325, 208);
             this.panelVirtualProtect.TabIndex = 4;
             this.panelVirtualProtect.Visible = false;
             // 
@@ -318,9 +318,9 @@
             // 
             this.buttonCloseVirtualProtect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCloseVirtualProtect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCloseVirtualProtect.Location = new System.Drawing.Point(242, 163);
+            this.buttonCloseVirtualProtect.Location = new System.Drawing.Point(242, 177);
             this.buttonCloseVirtualProtect.Name = "buttonCloseVirtualProtect";
-            this.buttonCloseVirtualProtect.Size = new System.Drawing.Size(75, 21);
+            this.buttonCloseVirtualProtect.Size = new System.Drawing.Size(75, 23);
             this.buttonCloseVirtualProtect.TabIndex = 5;
             this.buttonCloseVirtualProtect.Text = "Close";
             this.buttonCloseVirtualProtect.UseVisualStyleBackColor = true;
@@ -329,9 +329,9 @@
             // buttonVirtualProtect
             // 
             this.buttonVirtualProtect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonVirtualProtect.Location = new System.Drawing.Point(161, 163);
+            this.buttonVirtualProtect.Location = new System.Drawing.Point(161, 177);
             this.buttonVirtualProtect.Name = "buttonVirtualProtect";
-            this.buttonVirtualProtect.Size = new System.Drawing.Size(75, 21);
+            this.buttonVirtualProtect.Size = new System.Drawing.Size(75, 23);
             this.buttonVirtualProtect.TabIndex = 4;
             this.buttonVirtualProtect.Text = "&Change";
             this.buttonVirtualProtect.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -340,17 +340,17 @@
             // 
             // textNewProtection
             // 
-            this.textNewProtection.Location = new System.Drawing.Point(73, 165);
+            this.textNewProtection.Location = new System.Drawing.Point(73, 179);
             this.textNewProtection.Name = "textNewProtection";
-            this.textNewProtection.Size = new System.Drawing.Size(82, 21);
+            this.textNewProtection.Size = new System.Drawing.Size(82, 20);
             this.textNewProtection.TabIndex = 3;
             // 
             // labelNewValue
             // 
             this.labelNewValue.AutoSize = true;
-            this.labelNewValue.Location = new System.Drawing.Point(6, 168);
+            this.labelNewValue.Location = new System.Drawing.Point(6, 182);
             this.labelNewValue.Name = "labelNewValue";
-            this.labelNewValue.Size = new System.Drawing.Size(65, 12);
+            this.labelNewValue.Size = new System.Drawing.Size(61, 13);
             this.labelNewValue.TabIndex = 2;
             this.labelNewValue.Text = "New value:";
             // 
@@ -358,7 +358,7 @@
             // 
             this.labelVirtualProtectInfo.Location = new System.Drawing.Point(6, 3);
             this.labelVirtualProtectInfo.Name = "labelVirtualProtectInfo";
-            this.labelVirtualProtectInfo.Size = new System.Drawing.Size(313, 152);
+            this.labelVirtualProtectInfo.Size = new System.Drawing.Size(313, 165);
             this.labelVirtualProtectInfo.TabIndex = 0;
             this.labelVirtualProtectInfo.Text = resources.GetString("labelVirtualProtectInfo.Text");
             // 
@@ -1043,14 +1043,14 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 435);
+            this.statusBar.Location = new System.Drawing.Point(0, 445);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
             this.statusIcon,
             this.statusText});
             this.statusBar.ShowPanels = true;
-            this.statusBar.Size = new System.Drawing.Size(804, 20);
+            this.statusBar.Size = new System.Drawing.Size(804, 22);
             this.statusBar.TabIndex = 5;
             // 
             // statusGeneral
@@ -1087,7 +1087,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 435);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 445);
             this.tabControlBig.TabIndex = 6;
             // 
             // tabProcesses
@@ -1096,7 +1096,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 409);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 419);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -1115,20 +1115,9 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControl);
-            this.splitMain.Size = new System.Drawing.Size(790, 403);
+            this.splitMain.Size = new System.Drawing.Size(790, 413);
             this.splitMain.SplitterDistance = 348;
             this.splitMain.TabIndex = 3;
-            // 
-            // treeProcesses
-            // 
-            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeProcesses.Location = new System.Drawing.Point(0, 0);
-            this.treeProcesses.Name = "treeProcesses";
-            this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(348, 402);
-            this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
-            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabControl
             // 
@@ -1141,7 +1130,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 403);
+            this.tabControl.Size = new System.Drawing.Size(438, 413);
             this.tabControl.TabIndex = 5;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -1152,7 +1141,7 @@
             this.tabProcess.Location = new System.Drawing.Point(4, 22);
             this.tabProcess.Name = "tabProcess";
             this.tabProcess.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcess.Size = new System.Drawing.Size(430, 377);
+            this.tabProcess.Size = new System.Drawing.Size(430, 387);
             this.tabProcess.TabIndex = 4;
             this.tabProcess.Text = "Process";
             this.tabProcess.UseVisualStyleBackColor = true;
@@ -1162,24 +1151,12 @@
             this.groupSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupSearch.Controls.Add(this.buttonSearch);
-            this.groupSearch.Location = new System.Drawing.Point(6, 6);
+            this.groupSearch.Location = new System.Drawing.Point(6, 7);
             this.groupSearch.Name = "groupSearch";
-            this.groupSearch.Size = new System.Drawing.Size(418, 43);
+            this.groupSearch.Size = new System.Drawing.Size(418, 47);
             this.groupSearch.TabIndex = 4;
             this.groupSearch.TabStop = false;
             this.groupSearch.Text = "Search";
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 18);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(111, 22);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 3;
-            this.buttonSearch.Text = "Search button";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // treeMisc
             // 
@@ -1188,10 +1165,10 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.treeMisc.FullRowSelect = true;
             this.treeMisc.HideSelection = false;
-            this.treeMisc.Location = new System.Drawing.Point(6, 54);
+            this.treeMisc.Location = new System.Drawing.Point(6, 59);
             this.treeMisc.Name = "treeMisc";
             this.treeMisc.ShowNodeToolTips = true;
-            this.treeMisc.Size = new System.Drawing.Size(418, 319);
+            this.treeMisc.Size = new System.Drawing.Size(418, 321);
             this.treeMisc.TabIndex = 1;
             // 
             // tabThreads
@@ -1200,21 +1177,10 @@
             this.tabThreads.Location = new System.Drawing.Point(4, 22);
             this.tabThreads.Name = "tabThreads";
             this.tabThreads.Padding = new System.Windows.Forms.Padding(3);
-            this.tabThreads.Size = new System.Drawing.Size(430, 377);
+            this.tabThreads.Size = new System.Drawing.Size(430, 140);
             this.tabThreads.TabIndex = 6;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Location = new System.Drawing.Point(3, 3);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(424, 371);
-            this.listThreads.TabIndex = 0;
-            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
             // 
             // tabModules
             // 
@@ -1222,7 +1188,7 @@
             this.tabModules.Location = new System.Drawing.Point(4, 22);
             this.tabModules.Name = "tabModules";
             this.tabModules.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModules.Size = new System.Drawing.Size(430, 377);
+            this.tabModules.Size = new System.Drawing.Size(430, 140);
             this.tabModules.TabIndex = 0;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -1241,7 +1207,7 @@
             this.listModules.Location = new System.Drawing.Point(3, 3);
             this.listModules.Name = "listModules";
             this.listModules.ShowItemToolTips = true;
-            this.listModules.Size = new System.Drawing.Size(424, 371);
+            this.listModules.Size = new System.Drawing.Size(424, 134);
             this.listModules.TabIndex = 1;
             this.listModules.UseCompatibleStateImageBehavior = false;
             this.listModules.View = System.Windows.Forms.View.Details;
@@ -1273,7 +1239,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 22);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(430, 377);
+            this.tabMemory.Size = new System.Drawing.Size(430, 140);
             this.tabMemory.TabIndex = 1;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -1293,7 +1259,7 @@
             this.listMemory.Location = new System.Drawing.Point(3, 3);
             this.listMemory.Name = "listMemory";
             this.listMemory.ShowItemToolTips = true;
-            this.listMemory.Size = new System.Drawing.Size(424, 371);
+            this.listMemory.Size = new System.Drawing.Size(424, 134);
             this.listMemory.TabIndex = 2;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
@@ -1330,20 +1296,10 @@
             this.tabHandles.Location = new System.Drawing.Point(4, 22);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(430, 377);
+            this.tabHandles.Size = new System.Drawing.Size(430, 140);
             this.tabHandles.TabIndex = 7;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
-            // 
-            // listHandles
-            // 
-            this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listHandles.DoubleBuffered = true;
-            this.listHandles.Location = new System.Drawing.Point(3, 3);
-            this.listHandles.Name = "listHandles";
-            this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(424, 371);
-            this.listHandles.TabIndex = 0;
             // 
             // tabServices
             // 
@@ -1351,21 +1307,10 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 409);
+            this.tabServices.Size = new System.Drawing.Size(796, 172);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
-            // 
-            // listServices
-            // 
-            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listServices.DoubleBuffered = true;
-            this.listServices.Location = new System.Drawing.Point(3, 3);
-            this.listServices.Name = "listServices";
-            this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 403);
-            this.listServices.TabIndex = 0;
-            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
             // menuService
             // 
@@ -1563,15 +1508,70 @@
             this.copyMiscMenuItem.Text = "&Copy";
             this.copyMiscMenuItem.Click += new System.EventHandler(this.copyMiscMenuItem_Click);
             // 
+            // treeProcesses
+            // 
+            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.Location = new System.Drawing.Point(0, 0);
+            this.treeProcesses.Name = "treeProcesses";
+            this.treeProcesses.Provider = null;
+            this.treeProcesses.Size = new System.Drawing.Size(348, 412);
+            this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 20);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(111, 25);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 3;
+            this.buttonSearch.Text = "Search button";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Location = new System.Drawing.Point(3, 3);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(424, 134);
+            this.listThreads.TabIndex = 0;
+            this.listThreads.DoubleClick += new System.EventHandler(this.listThreads_DoubleClick);
+            // 
+            // listHandles
+            // 
+            this.listHandles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listHandles.DoubleBuffered = true;
+            this.listHandles.Location = new System.Drawing.Point(3, 3);
+            this.listHandles.Name = "listHandles";
+            this.listHandles.Provider = null;
+            this.listHandles.Size = new System.Drawing.Size(424, 134);
+            this.listHandles.TabIndex = 0;
+            // 
+            // listServices
+            // 
+            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listServices.DoubleBuffered = true;
+            this.listServices.Location = new System.Drawing.Point(3, 3);
+            this.listServices.Name = "listServices";
+            this.listServices.Provider = null;
+            this.listServices.Size = new System.Drawing.Size(790, 166);
+            this.listServices.TabIndex = 0;
+            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
             // 
             // HackerWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 455);
+            this.ClientSize = new System.Drawing.Size(804, 467);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.panelVirtualProtect);

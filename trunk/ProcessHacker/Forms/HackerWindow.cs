@@ -1187,33 +1187,17 @@ namespace ProcessHacker
         {
             try
             {
-                string path;
-
-                if (processSelectedPID == 4)
+                ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPID],
+                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                 {
-                    path = Misc.GetKernelFileName();
-                }
-                else
-                {
-                    path = Misc.GetRealPath(processSelected.MainModule.FileName);
-                }
-
-                PEWindow pw = Program.GetPEWindow(path,
-                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
-                    {
-                        try
-                        {
-                            f.Show();
-                            f.Activate();
-                        }
-                        catch
-                        { }
-                    }));
+                    f.Show();
+                    f.Activate();
+                }));
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

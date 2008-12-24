@@ -57,10 +57,14 @@ namespace ProcessHacker
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
+        public static Dictionary<int, ProcessWindow> PWindows = new Dictionary<int, ProcessWindow>();
+        public static Dictionary<int, Thread> PThreads = new Dictionary<int, Thread>();
+
         public delegate void ResultsWindowInvokeAction(ResultsWindow f);
         public delegate void MemoryEditorInvokeAction(MemoryEditor f);
         public delegate void ThreadWindowInvokeAction(ThreadWindow f);
         public delegate void PEWindowInvokeAction(PEWindow f);
+        public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
         /// <summary>
@@ -117,7 +121,8 @@ namespace ProcessHacker
             catch
             { }
 
-#if RELEASE
+#if DEBUG
+#else
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -353,6 +358,55 @@ namespace ProcessHacker
             return pw;
         }
 
+        /// <summary>
+        /// Creates an instance of the process window on a separate thread.
+        /// </summary>
+        public static ProcessWindow GetProcessWindow(ProcessItem process)
+        {
+            return GetProcessWindow(process, new PWindowInvokeAction(delegate { }));
+        }
+
+        /// <summary>
+        /// Creates an instance of the process window on a separate thread and invokes an action on that thread.
+        /// </summary>
+        /// <param name="action">The action to be performed.</param>
+        public static ProcessWindow GetProcessWindow(ProcessItem process, PWindowInvokeAction action)
+        {
+            ProcessWindow pw = null;
+
+            if (PWindows.ContainsKey(process.PID))
+            {
+                pw = PWindows[process.PID];
+
+                pw.Invoke(new MethodInvoker(delegate { action(pw); }));
+
+                return pw;
+            }
+
+            Thread t = new Thread(new ThreadStart(delegate
+            {
+                pw = new ProcessWindow(process);
+
+                action(pw);
+
+                try
+                {
+                    Application.Run(pw);
+                }
+                catch
+                { }
+
+                Program.PWindows.Remove(process.PID);
+            }));
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+
+            Program.PThreads.Add(process.PID, t);
+
+            return pw;
+        }
+
         public static void FocusWindow(Form f)
         {
             if (f.InvokeRequired)
@@ -434,29 +488,30 @@ namespace ProcessHacker
         {
             Dictionary<string, Form> TextToForm = new Dictionary<string, Form>();
             List<string> Texts = new List<string>();
+            List<object> dics = new List<object>();
+            List<Form> forms = new List<Form>();
+
+            dics.Add(Program.MemoryEditors);
+            dics.Add(Program.ResultsWindows);
+            dics.Add(Program.ThreadWindows);
+            dics.Add(Program.PEWindows);
+            dics.Add(Program.PWindows);
+
+            foreach (object dic in dics)
+            {
+                object valueCollection = dic.GetType().GetProperty("Values").GetValue(dic, null);
+                object enumerator = valueCollection.GetType().GetMethod("GetEnumerator").Invoke(valueCollection, null);
+
+                while ((bool)enumerator.GetType().GetMethod("MoveNext").Invoke(enumerator, null))
+                {
+                    forms.Add((Form)enumerator.GetType().GetProperty("Current").GetValue(enumerator, null));
+                }
+            }
 
             TextToForm.Add("Process Hacker", HackerWindow);
             Texts.Add("Process Hacker");
 
-            foreach (Form f in Program.MemoryEditors.Values)
-            {
-                TextToForm.Add(f.Text, f);
-                Texts.Add(f.Text);
-            }
-
-            foreach (Form f in Program.ResultsWindows.Values)
-            {
-                TextToForm.Add(f.Text, f);
-                Texts.Add(f.Text);
-            }
-
-            foreach (Form f in Program.ThreadWindows.Values)
-            {
-                TextToForm.Add(f.Text, f);
-                Texts.Add(f.Text);
-            }
-
-            foreach (Form f in Program.PEWindows.Values)
+            foreach (Form f in forms)
             {
                 TextToForm.Add(f.Text, f);
                 Texts.Add(f.Text);
@@ -465,23 +520,8 @@ namespace ProcessHacker
             Texts.Sort();
 
             UpdateWindow(HackerWindow, Texts, TextToForm);
-                                             
-            foreach (Form f in MemoryEditors.Values)
-            {
-                UpdateWindow(f, Texts, TextToForm);
-            }
 
-            foreach (Form f in ResultsWindows.Values)
-            {
-                 UpdateWindow(f, Texts, TextToForm);
-            }
-
-            foreach (Form f in ThreadWindows.Values)
-            {
-                UpdateWindow(f, Texts, TextToForm);
-            }
-
-            foreach (Form f in PEWindows.Values)
+            foreach (Form f in forms)
             {
                 UpdateWindow(f, Texts, TextToForm);
             }

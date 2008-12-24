@@ -40,7 +40,7 @@ namespace ProcessHacker
                 return new TokenHandle(Handle, false);
             }
 
-            internal TokenHandle(int Handle, bool Owned)
+            public TokenHandle(int Handle, bool Owned)
                 : base(Handle, Owned)
             { }
 
@@ -88,6 +88,30 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
 
                 return (TOKEN_ELEVATION_TYPE)value;
+            }
+
+            /// <summary>
+            /// Gets the token's user in Security Descriptor Definition Language (SDDL).
+            /// </summary>
+            /// <returns>A SDDL string.</returns>
+            public string GetUserStringSID()
+            {
+                int retLen = 0;
+
+                GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data.Memory,
+                        data.Size, out retLen))
+                    {
+                        throw new Exception(Win32.GetLastErrorMessage());
+                    }
+
+                    TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
+
+                    return GetAccountStringSID(user.User.SID);
+                }
             }
 
             /// <summary>

@@ -563,8 +563,7 @@ namespace ProcessHacker
             }
             catch
             {
-                return new System.Security.Principal.SecurityIdentifier(
-                                new IntPtr(SID)).ToString();
+                return GetAccountStringSID(SID);
             }
 
             if (IncludeDomain)
@@ -575,6 +574,11 @@ namespace ProcessHacker
             {
                 return name.ToString();
             }
+        }
+
+        public static string GetAccountStringSID(int SID)
+        {
+            return new System.Security.Principal.SecurityIdentifier(new IntPtr(SID)).ToString();
         }
 
         public static SID_NAME_USE GetAccountType(int SID)

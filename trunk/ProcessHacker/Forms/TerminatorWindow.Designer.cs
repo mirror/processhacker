@@ -83,6 +83,7 @@
             // buttonRun
             // 
             this.buttonRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonRun.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonRun.Location = new System.Drawing.Point(379, 402);
             this.buttonRun.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.buttonRun.Name = "buttonRun";
