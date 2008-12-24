@@ -50,8 +50,8 @@
     <Setting Name="ResultsListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="SelectedTab" Type="System.String" Scope="User">
-      <Value Profile="(Default)">tabProcesses</Value>
+    <Setting Name="ProcessWindowSelectedTab" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tabGeneral</Value>
     </Setting>
     <Setting Name="PrivilegeListColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

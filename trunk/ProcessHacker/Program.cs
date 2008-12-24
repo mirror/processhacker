@@ -396,7 +396,7 @@ namespace ProcessHacker
                 catch
                 { }
 
-                Program.PWindows.Remove(process.PID);
+                Program.PThreads.Remove(process.PID);
             }));
 
             t.SetApartmentState(ApartmentState.STA);

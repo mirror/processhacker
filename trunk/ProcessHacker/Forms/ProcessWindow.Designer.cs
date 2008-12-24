@@ -18,7 +18,7 @@
                 components.Dispose();
             }
 
-            Program.PWindows.Remove(_processItem.PID);
+            Program.PWindows.Remove(_pid);
             Program.UpdateWindows();
 
             base.Dispose(disposing);
@@ -39,9 +39,10 @@
             this.inspectImageFileMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.tabThreads = new System.Windows.Forms.TabPage();
             this.tabToken = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.tabGeneral = new System.Windows.Forms.TabPage();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -75,14 +76,35 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabGeneral);
+            this.tabControl.Controls.Add(this.tabThreads);
             this.tabControl.Controls.Add(this.tabToken);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.ImageList = this.imageList;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(763, 416);
+            this.tabControl.Size = new System.Drawing.Size(477, 428);
             this.tabControl.TabIndex = 0;
+            // 
+            // tabGeneral
+            // 
+            this.tabGeneral.ImageKey = "application";
+            this.tabGeneral.Location = new System.Drawing.Point(4, 23);
+            this.tabGeneral.Name = "tabGeneral";
+            this.tabGeneral.Size = new System.Drawing.Size(469, 401);
+            this.tabGeneral.TabIndex = 2;
+            this.tabGeneral.Text = "General";
+            this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // tabThreads
+            // 
+            this.tabThreads.ImageKey = "cog";
+            this.tabThreads.Location = new System.Drawing.Point(4, 23);
+            this.tabThreads.Name = "tabThreads";
+            this.tabThreads.Size = new System.Drawing.Size(469, 365);
+            this.tabThreads.TabIndex = 3;
+            this.tabThreads.Text = "Threads";
+            this.tabThreads.UseVisualStyleBackColor = true;
             // 
             // tabToken
             // 
@@ -90,7 +112,7 @@
             this.tabToken.Location = new System.Drawing.Point(4, 23);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(755, 256);
+            this.tabToken.Size = new System.Drawing.Size(447, 386);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -101,16 +123,7 @@
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList.Images.SetKeyName(0, "token");
             this.imageList.Images.SetKeyName(1, "application");
-            // 
-            // tabGeneral
-            // 
-            this.tabGeneral.ImageKey = "application";
-            this.tabGeneral.Location = new System.Drawing.Point(4, 23);
-            this.tabGeneral.Name = "tabGeneral";
-            this.tabGeneral.Size = new System.Drawing.Size(755, 389);
-            this.tabGeneral.TabIndex = 2;
-            this.tabGeneral.Text = "General";
-            this.tabGeneral.UseVisualStyleBackColor = true;
+            this.imageList.Images.SetKeyName(2, "cog");
             // 
             // vistaMenu
             // 
@@ -120,7 +133,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(763, 416);
+            this.ClientSize = new System.Drawing.Size(477, 428);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Menu = this.mainMenu;
@@ -145,5 +158,6 @@
         private System.Windows.Forms.TabPage tabToken;
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.TabPage tabGeneral;
+        private System.Windows.Forms.TabPage tabThreads;
     }
 }

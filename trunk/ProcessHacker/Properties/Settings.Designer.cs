@@ -217,13 +217,13 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("tabProcesses")]
-        public string SelectedTab {
+        [global::System.Configuration.DefaultSettingValueAttribute("tabGeneral")]
+        public string ProcessWindowSelectedTab {
             get {
-                return ((string)(this["SelectedTab"]));
+                return ((string)(this["ProcessWindowSelectedTab"]));
             }
             set {
-                this["SelectedTab"] = value;
+                this["ProcessWindowSelectedTab"] = value;
             }
         }
         

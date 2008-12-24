@@ -83,8 +83,6 @@ namespace ProcessHacker
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
-            if (Program.HackerWindow.ThreadProvider != null)
-                Program.HackerWindow.ThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
             if (Program.HackerWindow.HandleProvider != null)
                 Program.HackerWindow.HandleProvider.Interval = Properties.Settings.Default.RefreshInterval;
 

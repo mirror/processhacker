@@ -35,6 +35,7 @@ namespace ProcessHacker
         private int _pid;
         private Process _process;
 
+        private ProcessThreads _procThreads;
         private TokenProperties _tokenProps;
 
         public ProcessWindow(ProcessItem process)
@@ -58,7 +59,15 @@ namespace ProcessHacker
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
             this.Size = Properties.Settings.Default.ProcessWindowSize;
+
+            if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
+                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
+
             Program.UpdateWindows();
+
+            _procThreads = new ProcessThreads(_pid);
+            _procThreads.Dock = DockStyle.Fill;
+            tabThreads.Controls.Add(_procThreads);
 
             _tokenProps = new TokenProperties(_processItem.ProcessQueryLimitedHandle);
             _tokenProps.Dock = DockStyle.Fill;
@@ -67,6 +76,11 @@ namespace ProcessHacker
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _procThreads.Kill();
+            _procThreads.SaveSettings();
+            _tokenProps.SaveSettings();
+
+            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 

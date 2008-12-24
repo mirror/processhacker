@@ -47,7 +47,6 @@ namespace ProcessHacker
 
         ProcessProvider processP = new ProcessProvider();
         ServiceProvider serviceP = new ServiceProvider();
-        ThreadProvider threadP;
         HandleProvider handleP;
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
@@ -98,11 +97,6 @@ namespace ProcessHacker
             get { return serviceP; }
         }
 
-        public ThreadProvider ThreadProvider
-        {
-            get { return threadP; }
-        }
-
         public HandleProvider HandleProvider
         {
             get { return handleP; }
@@ -130,7 +124,6 @@ namespace ProcessHacker
             this.AcceptButton = null;
 
             treeProcesses.Enabled = true;
-            listThreads.Enabled = true;
             tabControl.Enabled = true;
         }
 
@@ -411,7 +404,6 @@ namespace ProcessHacker
         {
             listMemory.Enabled = true;
             listModules.Enabled = true;
-            listThreads.Enabled = true;
 
             processSelectedItems = treeProcesses.SelectedNodes.Count;
 
@@ -442,7 +434,6 @@ namespace ProcessHacker
 
                     listMemory.Enabled = false;
                     listModules.Enabled = false;
-                    listThreads.Enabled = false;
                 }
             }
             else
@@ -459,7 +450,6 @@ namespace ProcessHacker
 
                 processSelected = null;
 
-                listThreads.Items.Clear();
                 treeMisc.Enabled = false;
                 buttonSearch.Enabled = false;
 
@@ -470,11 +460,6 @@ namespace ProcessHacker
         private void listServices_DoubleClick(object sender, EventArgs e)
         {
             propertiesServiceMenuItem_Click(null, null);
-        }
-
-        private void listThreads_DoubleClick(object sender, EventArgs e)
-        {
-            inspectThreadMenuItem_Click(null, null);
         }
 
         #endregion
@@ -890,7 +875,6 @@ namespace ProcessHacker
         private void getFuncAddressMenuItem_Click(object sender, EventArgs e)
         {
             treeProcesses.Enabled = false;
-            listThreads.Enabled = false;
             tabControl.Enabled = false;
 
             panelProc.Visible = true;
@@ -1826,332 +1810,14 @@ namespace ProcessHacker
 
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (threadP != null)
-                threadP.Enabled = false;
-
             if (handleP != null)
                 handleP.Enabled = false;
 
-            if (tabControl.SelectedTab == tabThreads)
-            {
-                if (threadP != null)
-                    threadP.Enabled = true;
-            }
-            else if (tabControl.SelectedTab == tabHandles)
+            if (tabControl.SelectedTab == tabHandles)
             {
                 if (handleP != null)
                     handleP.Enabled = true;
             }
-        }
-
-        #endregion
-
-        #region Thread Context Menu
-
-        private void menuThread_Popup(object sender, EventArgs e)
-        {
-            if (treeProcesses.SelectedTreeNodes.Count == 0 || listThreads.SelectedItems.Count == 0)
-            {
-                Misc.DisableAllMenuItems(menuThread);
-
-                return;
-            }
-            else if (listThreads.SelectedItems.Count == 1)
-            {
-                Misc.EnableAllMenuItems(menuThread);
-
-                timeCriticalThreadMenuItem.Checked = false;
-                highestThreadMenuItem.Checked = false;
-                aboveNormalThreadMenuItem.Checked = false;
-                normalThreadMenuItem.Checked = false;
-                belowNormalThreadMenuItem.Checked = false;
-                lowestThreadMenuItem.Checked = false;
-                idleThreadMenuItem.Checked = false;
-                terminateThreadMenuItem.Text = "&Terminate Thread";
-                suspendThreadMenuItem.Text = "&Suspend Thread";
-                resumeThreadMenuItem.Text = "&Resume Thread";
-                priorityThreadMenuItem.Text = "&Priority";
-
-                try
-                {
-                    Process p = Process.GetProcessById(processSelectedPID);
-                    ProcessThread thread = null;
-
-                    foreach (ProcessThread t in p.Threads)
-                    {
-                        if (t.Id.ToString() == listThreads.SelectedItems[0].SubItems[0].Text)
-                        {
-                            thread = t;
-                            break;
-                        }
-                    }
-
-                    if (thread == null)
-                        return;
-
-                    switch (thread.PriorityLevel)
-                    {
-                        case ThreadPriorityLevel.TimeCritical:
-                            timeCriticalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Highest:
-                            highestThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.AboveNormal:
-                            aboveNormalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Normal:
-                            normalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.BelowNormal:
-                            belowNormalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Lowest:
-                            lowestThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Idle:
-                            idleThreadMenuItem.Checked = true;
-                            break;
-                    }
-
-                    priorityThreadMenuItem.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    priorityThreadMenuItem.Text = "(" + ex.Message + ")";
-                    priorityThreadMenuItem.Enabled = false;
-                }
-            }
-            else
-            {
-                Misc.DisableAllMenuItems(menuThread);
-
-                terminateThreadMenuItem.Enabled = true;
-                suspendThreadMenuItem.Enabled = true;
-                resumeThreadMenuItem.Enabled = true;
-                terminateThreadMenuItem.Text = "&Terminate Threads";
-                suspendThreadMenuItem.Text = "&Suspend Threads";
-                resumeThreadMenuItem.Text = "&Resume Threads";
-                copyThreadMenuItem.Enabled = true;
-            }
-
-            if (listThreads.Items.Count == 0)
-            {
-                selectAllThreadMenuItem.Enabled = false;
-            }
-            else
-            {
-                selectAllThreadMenuItem.Enabled = true;
-            }
-        }
-
-        private void inspectThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            if (processSelectedPID == Process.GetCurrentProcess().Id)
-            {
-                if (MessageBox.Show(
-                    "Inspecting Process Hacker's threads will lead to instability. Are you sure you want to continue?",
-                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-                    == DialogResult.No)
-                    return;
-            }
-
-            if (IsDangerousPID(processSelectedPID))
-            {
-                if (MessageBox.Show(
-                  "Inspecting a system process' threads will lead to instability. Are you sure you want to continue?",
-                  "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-                  == DialogResult.No)
-                    return;
-            }
-
-            ThreadWindow window;
-
-            this.UseWaitCursor = true;
-
-            foreach (string s in Symbols.Keys)
-            {
-                // unload EXE symbols - they usually conflict with the current process
-                if (s.ToLower().EndsWith(".exe"))
-                    Symbols.UnloadSymbols(s);
-            }
-
-            try
-            {
-                foreach (ProcessModule module in processSelected.Modules)
-                {
-                    try
-                    {
-                        statusIcon.Icon = null;
-                        statusText.Text = "Loading symbols for " + module.ModuleName + "...";
-                        Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
-                    }
-                    catch (Exception ex)
-                    {
-                        QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not load symbols for selected process:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-
-            statusIcon.Icon = null;
-            statusText.Text = "";
-            this.UseWaitCursor = false;
-
-            try
-            {
-                window = Program.GetThreadWindow(processSelectedPID,
-                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
-                    new Program.ThreadWindowInvokeAction(delegate(ThreadWindow f)
-                {
-                    try
-                    {
-                        f.Show();
-                        f.Activate();
-                    }
-                    catch
-                    { }
-                }));
-            }
-            catch
-            { }
-        }
-
-        private void terminateThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
-            {
-                DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
-                    " sure you want to terminate the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                if (result == DialogResult.No)
-                    return;
-            }
-
-            foreach (ListViewItem item in listThreads.SelectedItems)
-            {
-                try
-                {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text), 
-                        Win32.THREAD_RIGHTS.THREAD_TERMINATE))
-                        handle.Terminate();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not terminate thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
-        }
-
-        private void suspendThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
-            {
-                DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
-                    " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                if (result == DialogResult.No)
-                    return;
-            }
-
-            foreach (ListViewItem item in listThreads.SelectedItems)
-            {
-                try
-                {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                     Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
-                        handle.Suspend();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not suspend thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
-        }
-
-        private void resumeThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (ListViewItem item in listThreads.SelectedItems)
-            {
-                try
-                {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                    Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
-                        handle.Resume();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not resume thread with ID " + item.SubItems[0].Text + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
-        }
-
-        #region Priority
-
-        private void timeCriticalThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.TimeCritical);
-        }
-
-        private void highestThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.Highest);
-        }
-
-        private void aboveNormalThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.AboveNormal);
-        }
-
-        private void normalThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.Normal);
-        }
-
-        private void belowNormalThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.BelowNormal);
-        }
-
-        private void lowestThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.Lowest);
-        }
-
-        private void idleThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            SetThreadPriority(ThreadPriorityLevel.Idle);
-        }
-
-        #endregion
-
-        private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            Misc.SelectAll(listThreads.Items);
         }
 
         #endregion
@@ -2213,7 +1879,6 @@ namespace ProcessHacker
             panelVirtualProtect.Visible = false;
             treeProcesses.Enabled = true;
             tabControl.Enabled = true;
-            listThreads.Enabled = true;
         }
 
         public void DeselectAll(ListView list)
@@ -2238,11 +1903,7 @@ namespace ProcessHacker
             buttonSearch.Text = Properties.Settings.Default.SearchType;
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
 
-            if (tabControl.TabPages[Properties.Settings.Default.SelectedTab] != null)
-                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.SelectedTab];
-
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
             ColumnSettings.LoadSettings(Properties.Settings.Default.HandleListViewColumns, listHandles.List);
@@ -2372,10 +2033,7 @@ namespace ProcessHacker
             Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.PromptBoxText = PromptBox.LastValue;
 
-            Properties.Settings.Default.SelectedTab = tabControl.SelectedTab.Name;
-
             Properties.Settings.Default.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
-            Properties.Settings.Default.ThreadListViewColumns = ColumnSettings.SaveSettings(listThreads.List);
             Properties.Settings.Default.ModuleListViewColumns = ColumnSettings.SaveSettings(listModules);
             Properties.Settings.Default.MemoryListViewColumns = ColumnSettings.SaveSettings(listMemory);
             Properties.Settings.Default.HandleListViewColumns = ColumnSettings.SaveSettings(listHandles.List);
@@ -2411,7 +2069,6 @@ namespace ProcessHacker
             this.AcceptButton = buttonVirtualProtect;
             treeProcesses.Enabled = false;
             tabControl.Enabled = false;
-            listThreads.Enabled = false;
         }
 
         private void UpdateStatusInfo()
@@ -2465,36 +2122,6 @@ namespace ProcessHacker
             try
             {
                 Process.GetProcessById(processSelectedPID).PriorityClass = priority;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void SetThreadPriority(ThreadPriorityLevel priority)
-        {
-            try
-            {
-                Process p = Process.GetProcessById(processSelectedPID);
-                ProcessThread thread = null;
-
-                foreach (ProcessThread t in p.Threads)
-                {
-                    if (t.Id.ToString() == listThreads.SelectedItems[0].SubItems[0].Text)
-                    {
-                        thread = t;
-                        break;
-                    }
-                }
-
-                if (thread == null)
-                {
-                    MessageBox.Show("Thread not found.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                thread.PriorityLevel = priority;
             }
             catch (Exception ex)
             {
@@ -3075,13 +2702,7 @@ namespace ProcessHacker
             listModules.Items.Clear();
             listMemory.Items.Clear();
                                   
-            listThreads.Provider = null;
             listHandles.Provider = null;
-
-            if (threadP != null)
-                threadP.Kill();
-
-            threadP = null;
 
             if (handleP != null)
                 handleP.Kill();
@@ -3097,15 +2718,6 @@ namespace ProcessHacker
 
             this.Cursor = Cursors.WaitCursor;
             Application.DoEvents();
-
-            threadP = new ThreadProvider(processSelectedPID);
-            listThreads.Provider = threadP;
-            threadP.Interval = Properties.Settings.Default.RefreshInterval;
-
-            if (tabControl.SelectedTab == tabThreads)
-                threadP.Enabled = true;
-
-            threadP.RunOnceAsync();
 
             if (processSelectedPID != Process.GetCurrentProcess().Id)
             {
@@ -3136,8 +2748,6 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.AlwaysOnTop = this.TopMost;
 
-            if (threadP != null)
-                threadP.Kill();
             if (handleP != null)
                 handleP.Kill();
 
@@ -3248,21 +2858,18 @@ namespace ProcessHacker
             heapScanMenuItem.Click += new EventHandler(PerformSearch);
 
             listControls.Add(treeProcesses.Tree);
-            listControls.Add(listThreads);
             listControls.Add(listModules);
             listControls.Add(listMemory);
             listControls.Add(listHandles);
             listControls.Add(listServices);
 
             GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
-            GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads.List, null);
             GenericViewMenu.AddMenuItems(copyModuleMenuItem.MenuItems, listModules, null);
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles.List, null);
             GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
 
             treeProcesses.ContextMenu = menuProcess;
-            listThreads.ContextMenu = menuThread;
             listModules.ContextMenu = menuModule;
             listMemory.ContextMenu = menuMemory;
             listHandles.ContextMenu = menuHandle;
