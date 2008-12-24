@@ -921,14 +921,12 @@ namespace ProcessHacker
         {
             if (item.Status.ServiceStatusProcess.ProcessID != 0)
             {
-                if (!processServices.ContainsKey(item.Status.ServiceStatusProcess.ProcessID))
-                    processServices.Add(item.Status.ServiceStatusProcess.ProcessID, new List<string>());
-
-                if (!processServices[item.Status.ServiceStatusProcess.ProcessID].Contains(
-                    item.Status.ServiceName))
-                    processServices[item.Status.ServiceStatusProcess.ProcessID].Add(item.Status.ServiceName);
-
-                processServices[item.Status.ServiceStatusProcess.ProcessID].Sort();
+                if (processServices.ContainsKey(item.Status.ServiceStatusProcess.ProcessID))
+                {
+                    if (processServices[item.Status.ServiceStatusProcess.ProcessID].Contains(
+                        item.Status.ServiceName))
+                        processServices[item.Status.ServiceStatusProcess.ProcessID].Remove(item.Status.ServiceName);
+                }
             }
         }
 

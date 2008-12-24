@@ -41,6 +41,7 @@ namespace ProcessHacker
         private HandleProvider _handleP;
 
         private TokenProperties _tokenProps;
+        private ServiceProperties _serviceProps;
 
         public ProcessWindow(ProcessItem process)
         {
@@ -108,6 +109,13 @@ namespace ProcessHacker
             _handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
+
+            _serviceProps = new ServiceProperties(
+                Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
+                Program.HackerWindow.ProcessServices[_pid].ToArray() : 
+                new string[0]);
+            _serviceProps.Dock = DockStyle.Fill;
+            tabServices.Controls.Add(_serviceProps);
 
             try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
             catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }

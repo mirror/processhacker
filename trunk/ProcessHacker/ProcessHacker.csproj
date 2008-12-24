@@ -143,6 +143,10 @@
       <DependentUpon>ServiceList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\ServiceProperties.resx">
+      <DependentUpon>ServiceProperties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ThreadList.resx">
       <DependentUpon>ThreadList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -306,6 +310,12 @@
     </Compile>
     <Compile Include="Components\Plotter.Designer.cs">
       <DependentUpon>Plotter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ServiceProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ServiceProperties.Designer.cs">
+      <DependentUpon>ServiceProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\ThreadList.cs">
       <SubType>UserControl</SubType>
