@@ -131,10 +131,6 @@
     <EmbeddedResource Include="Components\Plotter.resx">
       <DependentUpon>Plotter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\ProcessThreads.resx">
-      <DependentUpon>ProcessThreads.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Components\ServiceList.resx">
       <DependentUpon>ServiceList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -262,12 +258,6 @@
     </Compile>
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ProcessThreads.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\ProcessThreads.Designer.cs">
-      <DependentUpon>ProcessThreads.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />

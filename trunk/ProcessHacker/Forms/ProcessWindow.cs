@@ -35,7 +35,8 @@ namespace ProcessHacker
         private int _pid;
         private Process _process;
 
-        private ProcessThreads _procThreads;
+        private ThreadProvider _threadP;
+
         private TokenProperties _tokenProps;
 
         public ProcessWindow(ProcessItem process)
@@ -65,19 +66,21 @@ namespace ProcessHacker
 
             Program.UpdateWindows();
 
-            _procThreads = new ProcessThreads(_pid);
-            _procThreads.Dock = DockStyle.Fill;
-            tabThreads.Controls.Add(_procThreads);
-
             _tokenProps = new TokenProperties(_processItem.ProcessQueryLimitedHandle);
             _tokenProps.Dock = DockStyle.Fill;
             tabToken.Controls.Add(_tokenProps);
+
+            _threadP = new ThreadProvider(_pid);
+            _threadP.Interval = Properties.Settings.Default.RefreshInterval;
+            _threadP.RunOnceAsync();
+            listThreads.Provider = _threadP;
+            _threadP.Enabled = true;
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _procThreads.Kill();
-            _procThreads.SaveSettings();
+            _threadP.Kill();
+            listThreads.SaveSettings();
             _tokenProps.SaveSettings();
 
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;

@@ -182,5 +182,10 @@ namespace ProcessHacker
 
             Dictionary = newdictionary;
         }
+
+        public int PID
+        {
+            get { return _pid; }
+        }
     }
 }
