@@ -39,7 +39,6 @@ namespace ProcessHacker
             listMemory.KeyDown += new KeyEventHandler(MemoryList_KeyDown);
             listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
             listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
-            listMemory.DoubleClick += new EventHandler(listMemory_DoubleClick);
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.MemoryListViewColumns, listMemory);
             listMemory.ContextMenu = menuMemory;
@@ -356,21 +355,27 @@ namespace ProcessHacker
 
                 items.Sort(new Comparison<MemoryItem>(delegate(MemoryItem i1, MemoryItem i2)
                     {
-                        return i1.Size.CompareTo(i2.Size);
+                        return i1.Address.CompareTo(i2.Address);
                     }));
+
+                int i = 0;
 
                 foreach (MemoryItem item in items)
                 {
                     if (item.Address > address)
                     {
-                        listMemory.Items[item.Address.ToString()].Selected = true;
-                        listMemory.Items[item.Address.ToString()].EnsureVisible();
-                        regionAddress = item.Address;
-                        regionSize = item.Size;
+                        MemoryItem regionItem = items[i - 1];
+
+                        listMemory.Items[regionItem.Address.ToString()].Selected = true;
+                        listMemory.Items[regionItem.Address.ToString()].EnsureVisible();
+                        regionAddress = regionItem.Address;
+                        regionSize = regionItem.Size;
                         found = true;
 
                         break;
                     }
+
+                    i++;
                 }
 
                 if (!found)
@@ -379,14 +384,8 @@ namespace ProcessHacker
                     return;
                 }
 
-                MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, regionSize, false);
-
-                try
-                {
-                    m_e.BeginInvoke(new MethodInvoker(delegate { m_e.Select(address - regionAddress, 1); }));
-                }
-                catch
-                { }
+                MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, regionSize, false,
+                   new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { f.Select(address - regionAddress, 1); }));
             }
         }
 

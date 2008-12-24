@@ -31,6 +31,13 @@ namespace ProcessHacker
     {
         public static MemoryEditor ReadWriteMemory(int pid, int address, int size, bool RO)
         {
+            return ReadWriteMemory(pid, address, size, RO, 
+                new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { }));
+        }
+
+        public static MemoryEditor ReadWriteMemory(int pid, int address, int size, bool RO, 
+            Program.MemoryEditorInvokeAction action)
+        {
             try
             {
                 MemoryEditor ed = null;
@@ -42,6 +49,7 @@ namespace ProcessHacker
                         {
                             f.ReadOnly = RO;
                             f.Show();
+                            action(f);
                             f.Activate();
                         }
                         catch
@@ -71,9 +79,9 @@ namespace ProcessHacker
             _pid = PID;
             _address = Address;
             _length = Length;
-            
+
             Program.MemoryEditors.Add(this.Id, this);
-            
+
             this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
                 "), 0x" + String.Format("{0:x}", _address) + "-0x" +
                 String.Format("{0:x}", _address + _length) + " - Memory Editor";

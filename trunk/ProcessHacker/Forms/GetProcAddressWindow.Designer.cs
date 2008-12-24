@@ -78,6 +78,7 @@
             // buttonLookup
             // 
             this.buttonLookup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonLookup.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonLookup.Location = new System.Drawing.Point(307, 64);
             this.buttonLookup.Name = "buttonLookup";
             this.buttonLookup.Size = new System.Drawing.Size(75, 23);
@@ -89,12 +90,14 @@
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonClose.Location = new System.Drawing.Point(226, 64);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 4;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
             // GetProcAddressWindow
             // 

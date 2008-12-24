@@ -25,7 +25,7 @@ using System.Drawing;
 
 namespace ProcessHacker
 {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main Process Hacker window instance
