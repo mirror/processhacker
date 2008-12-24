@@ -122,8 +122,8 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new Provider<short, HandleItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved -= new Provider<short, HandleItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryRemoved -= new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -138,9 +138,9 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new Provider<short, HandleItem>.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new Provider<short, HandleItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved += new Provider<short, HandleItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new HandleProvider.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryRemoved += new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }

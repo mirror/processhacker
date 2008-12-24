@@ -48,6 +48,7 @@ namespace ProcessHacker
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
         public Win32.ProcessHandle ProcessQueryLimitedHandle;
+        public Win32.ProcessHandle ProcessQueryLimitedVmReadHandle;
     }
 
     public class ProcessProvider : Provider<int, ProcessItem>
@@ -239,10 +240,11 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (Win32.ProcessHandle phandle =
+                        item.ProcessQueryLimitedVmReadHandle =
                             new Win32.ProcessHandle(pid,
-                                Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
-                            item.CmdLine = phandle.GetCommandLine();
+                                Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+
+                        item.CmdLine = item.ProcessQueryLimitedVmReadHandle.GetCommandLine();
                     }
                     catch
                     { }

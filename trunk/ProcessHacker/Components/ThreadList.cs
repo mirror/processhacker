@@ -42,6 +42,7 @@ namespace ProcessHacker
             listThreads.SelectedIndexChanged += new System.EventHandler(listThreads_SelectedIndexChanged);
 
             listThreads.ContextMenu = menuThread;
+            GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)
@@ -119,9 +120,9 @@ namespace ProcessHacker
 
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new Provider<int, ThreadItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new Provider<int, ThreadItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new Provider<int, ThreadItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -136,10 +137,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new Provider<int, ThreadItem>.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new Provider<int, ThreadItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new Provider<int, ThreadItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new Provider<int, ThreadItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new ThreadProvider.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
 
                     _pid = _provider.PID;
                     _process = Process.GetProcessById(_pid);

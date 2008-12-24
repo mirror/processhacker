@@ -63,7 +63,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        textUser.Text = ex.Message;
+                        textUser.Text = "(" + ex.Message + ")";
                     }
 
                     try
@@ -72,17 +72,24 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        textSessionID.Text = ex.Message;
+                        textSessionID.Text = "(" + ex.Message + ")";
                     }
 
-                    Win32.TOKEN_ELEVATION_TYPE type = token.GetElevationType();
+                    try
+                    {
+                        Win32.TOKEN_ELEVATION_TYPE type = token.GetElevationType();
 
-                    if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
-                        textElevated.Text = "N/A";
-                    else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
-                        textElevated.Text = "True";
-                    else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                        textElevated.Text = "False";
+                        if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
+                            textElevated.Text = "N/A";
+                        else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+                            textElevated.Text = "True";
+                        else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                            textElevated.Text = "False";
+                    }
+                    catch (Exception ex)
+                    {
+                        textElevated.Text = "(" + ex.Message + ")";
+                    }
 
                     try
                     {
@@ -109,7 +116,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        textVirtualized.Text = ex.Message;
+                        textVirtualized.Text = "(" + ex.Message + ")";
                     }
 
                     try
@@ -127,7 +134,7 @@ namespace ProcessHacker
                     }
                     catch (Exception ex)
                     {
-                        textSourceName.Text = ex.Message;
+                        textSourceName.Text = "(" + ex.Message + ")";
                     }
 
                     try

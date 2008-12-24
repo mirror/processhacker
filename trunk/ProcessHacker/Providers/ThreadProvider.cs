@@ -90,16 +90,16 @@ namespace ProcessHacker
         {
             Process process = Process.GetProcessById(_pid);
             ProcessThreadCollection threads = process.Threads;
-            List<int> tids = new List<int>();
+            Dictionary<int, ProcessThread> tids = new Dictionary<int, ProcessThread>();
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
             foreach (ProcessThread t in threads)
-                tids.Add(t.Id);
+                tids.Add(t.Id, t);
 
             // look for dead threads
             foreach (int tid in Dictionary.Keys)
             {
-                if (!tids.Contains(tid))
+                if (!tids.ContainsKey(tid))
                 {
                     this.CallDictionaryRemoved(this.Dictionary[tid]);
                     newdictionary.Remove(tid);
@@ -107,9 +107,11 @@ namespace ProcessHacker
             }
 
             // look for new threads
-            foreach (ProcessThread t in threads)
+            foreach (int tid in tids.Keys)
             {
-                if (!Dictionary.ContainsKey(t.Id))
+                ProcessThread t = tids[tid];
+
+                if (!Dictionary.ContainsKey(tid))
                 {
                     ThreadItem item = new ThreadItem();
 
@@ -125,7 +127,7 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ThreadHandle handle =
-                            new Win32.ThreadHandle(t.Id, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                            new Win32.ThreadHandle(tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
                         {
                             int retLen;
 

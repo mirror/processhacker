@@ -41,19 +41,26 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
+            this.buttonOpenCurDir = new System.Windows.Forms.Button();
+            this.buttonPEBStrings = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textCurrentDirectory = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textCmdLine = new System.Windows.Forms.TextBox();
             this.groupFile = new System.Windows.Forms.GroupBox();
+            this.buttonOpenFileNameFolder = new System.Windows.Forms.Button();
             this.pictureIcon = new System.Windows.Forms.PictureBox();
             this.textFileDescription = new System.Windows.Forms.TextBox();
             this.textFileName = new System.Windows.Forms.TextBox();
             this.textFileCompany = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textFileVersion = new System.Windows.Forms.TextBox();
             this.tabThreads = new System.Windows.Forms.TabPage();
             this.listThreads = new ProcessHacker.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
             this.tabModules = new System.Windows.Forms.TabPage();
+            this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
             this.tabHandles = new System.Windows.Forms.TabPage();
             this.tabServices = new System.Windows.Forms.TabPage();
@@ -65,6 +72,7 @@
             this.groupFile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
             this.tabThreads.SuspendLayout();
+            this.tabModules.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -108,7 +116,7 @@
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(477, 291);
+            this.tabControl.Size = new System.Drawing.Size(477, 368);
             this.tabControl.TabIndex = 0;
             this.tabControl.TabIndexChanged += new System.EventHandler(this.tabControl_TabIndexChanged);
             // 
@@ -121,7 +129,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 42);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(469, 245);
+            this.tabGeneral.Size = new System.Drawing.Size(469, 322);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -131,14 +139,59 @@
             this.groupProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupProcess.Controls.Add(this.buttonOpenCurDir);
+            this.groupProcess.Controls.Add(this.buttonPEBStrings);
+            this.groupProcess.Controls.Add(this.label4);
+            this.groupProcess.Controls.Add(this.textCurrentDirectory);
             this.groupProcess.Controls.Add(this.label2);
             this.groupProcess.Controls.Add(this.textCmdLine);
-            this.groupProcess.Location = new System.Drawing.Point(8, 117);
+            this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(455, 122);
+            this.groupProcess.Size = new System.Drawing.Size(455, 190);
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
+            // 
+            // buttonOpenCurDir
+            // 
+            this.buttonOpenCurDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOpenCurDir.Image = global::ProcessHacker.Properties.Resources.folder_go;
+            this.buttonOpenCurDir.Location = new System.Drawing.Point(425, 42);
+            this.buttonOpenCurDir.Name = "buttonOpenCurDir";
+            this.buttonOpenCurDir.Size = new System.Drawing.Size(24, 24);
+            this.buttonOpenCurDir.TabIndex = 4;
+            this.buttonOpenCurDir.UseVisualStyleBackColor = true;
+            this.buttonOpenCurDir.Click += new System.EventHandler(this.buttonOpenCurDir_Click);
+            // 
+            // buttonPEBStrings
+            // 
+            this.buttonPEBStrings.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonPEBStrings.Location = new System.Drawing.Point(6, 71);
+            this.buttonPEBStrings.Name = "buttonPEBStrings";
+            this.buttonPEBStrings.Size = new System.Drawing.Size(102, 23);
+            this.buttonPEBStrings.TabIndex = 4;
+            this.buttonPEBStrings.Text = "PEB Strings...";
+            this.buttonPEBStrings.UseVisualStyleBackColor = true;
+            this.buttonPEBStrings.Click += new System.EventHandler(this.buttonPEBStrings_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 48);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(89, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Current Directory:";
+            // 
+            // textCurrentDirectory
+            // 
+            this.textCurrentDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textCurrentDirectory.Location = new System.Drawing.Point(101, 45);
+            this.textCurrentDirectory.Name = "textCurrentDirectory";
+            this.textCurrentDirectory.ReadOnly = true;
+            this.textCurrentDirectory.Size = new System.Drawing.Size(318, 20);
+            this.textCurrentDirectory.TabIndex = 3;
             // 
             // label2
             // 
@@ -153,28 +206,41 @@
             // 
             this.textCmdLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textCmdLine.Location = new System.Drawing.Point(92, 19);
+            this.textCmdLine.Location = new System.Drawing.Point(101, 19);
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.ReadOnly = true;
-            this.textCmdLine.Size = new System.Drawing.Size(357, 20);
+            this.textCmdLine.Size = new System.Drawing.Size(348, 20);
             this.textCmdLine.TabIndex = 3;
             // 
             // groupFile
             // 
             this.groupFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupFile.Controls.Add(this.buttonOpenFileNameFolder);
             this.groupFile.Controls.Add(this.pictureIcon);
             this.groupFile.Controls.Add(this.textFileDescription);
             this.groupFile.Controls.Add(this.textFileName);
             this.groupFile.Controls.Add(this.textFileCompany);
+            this.groupFile.Controls.Add(this.label1);
             this.groupFile.Controls.Add(this.label3);
             this.groupFile.Controls.Add(this.textFileVersion);
             this.groupFile.Location = new System.Drawing.Point(6, 6);
             this.groupFile.Name = "groupFile";
-            this.groupFile.Size = new System.Drawing.Size(457, 105);
+            this.groupFile.Size = new System.Drawing.Size(457, 114);
             this.groupFile.TabIndex = 4;
             this.groupFile.TabStop = false;
             this.groupFile.Text = "File";
+            // 
+            // buttonOpenFileNameFolder
+            // 
+            this.buttonOpenFileNameFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOpenFileNameFolder.Image = global::ProcessHacker.Properties.Resources.folder_go;
+            this.buttonOpenFileNameFolder.Location = new System.Drawing.Point(427, 80);
+            this.buttonOpenFileNameFolder.Name = "buttonOpenFileNameFolder";
+            this.buttonOpenFileNameFolder.Size = new System.Drawing.Size(24, 24);
+            this.buttonOpenFileNameFolder.TabIndex = 4;
+            this.buttonOpenFileNameFolder.UseVisualStyleBackColor = true;
+            this.buttonOpenFileNameFolder.Click += new System.EventHandler(this.buttonOpenFileNameFolder_Click);
             // 
             // pictureIcon
             // 
@@ -202,10 +268,10 @@
             // 
             this.textFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textFileName.Location = new System.Drawing.Point(101, 76);
+            this.textFileName.Location = new System.Drawing.Point(101, 83);
             this.textFileName.Name = "textFileName";
             this.textFileName.ReadOnly = true;
-            this.textFileName.Size = new System.Drawing.Size(350, 20);
+            this.textFileName.Size = new System.Drawing.Size(320, 20);
             this.textFileName.TabIndex = 3;
             // 
             // textFileCompany
@@ -221,10 +287,19 @@
             this.textFileCompany.TabIndex = 2;
             this.textFileCompany.Text = "File Company";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Image Version:";
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 79);
+            this.label3.Location = new System.Drawing.Point(6, 86);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 13);
             this.label3.TabIndex = 0;
@@ -234,14 +309,11 @@
             // 
             this.textFileVersion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textFileVersion.BackColor = System.Drawing.SystemColors.Window;
-            this.textFileVersion.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textFileVersion.Location = new System.Drawing.Point(6, 57);
+            this.textFileVersion.Location = new System.Drawing.Point(101, 57);
             this.textFileVersion.Name = "textFileVersion";
             this.textFileVersion.ReadOnly = true;
-            this.textFileVersion.Size = new System.Drawing.Size(445, 13);
+            this.textFileVersion.Size = new System.Drawing.Size(350, 20);
             this.textFileVersion.TabIndex = 2;
-            this.textFileVersion.Text = "File Version";
             // 
             // tabThreads
             // 
@@ -249,7 +321,7 @@
             this.tabThreads.ImageKey = "hourglass";
             this.tabThreads.Location = new System.Drawing.Point(4, 42);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(469, 245);
+            this.tabThreads.Size = new System.Drawing.Size(469, 322);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -261,7 +333,7 @@
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(469, 245);
+            this.listThreads.Size = new System.Drawing.Size(469, 322);
             this.listThreads.TabIndex = 0;
             // 
             // tabToken
@@ -270,27 +342,38 @@
             this.tabToken.Location = new System.Drawing.Point(4, 42);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(469, 245);
+            this.tabToken.Size = new System.Drawing.Size(469, 322);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
             // 
             // tabModules
             // 
+            this.tabModules.Controls.Add(this.listModules);
             this.tabModules.ImageKey = "page_white_wrench";
             this.tabModules.Location = new System.Drawing.Point(4, 42);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(469, 245);
+            this.tabModules.Size = new System.Drawing.Size(469, 322);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
+            // 
+            // listModules
+            // 
+            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
+            this.listModules.Location = new System.Drawing.Point(0, 0);
+            this.listModules.Name = "listModules";
+            this.listModules.Provider = null;
+            this.listModules.Size = new System.Drawing.Size(469, 322);
+            this.listModules.TabIndex = 0;
             // 
             // tabMemory
             // 
             this.tabMemory.ImageKey = "database";
             this.tabMemory.Location = new System.Drawing.Point(4, 42);
             this.tabMemory.Name = "tabMemory";
-            this.tabMemory.Size = new System.Drawing.Size(469, 245);
+            this.tabMemory.Size = new System.Drawing.Size(469, 322);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -300,7 +383,7 @@
             this.tabHandles.ImageKey = "connect";
             this.tabHandles.Location = new System.Drawing.Point(4, 42);
             this.tabHandles.Name = "tabHandles";
-            this.tabHandles.Size = new System.Drawing.Size(469, 245);
+            this.tabHandles.Size = new System.Drawing.Size(469, 322);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -310,7 +393,7 @@
             this.tabServices.ImageKey = "cog";
             this.tabServices.Location = new System.Drawing.Point(4, 42);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(469, 245);
+            this.tabServices.Size = new System.Drawing.Size(469, 322);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -335,7 +418,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(477, 291);
+            this.ClientSize = new System.Drawing.Size(477, 368);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Menu = this.mainMenu;
@@ -351,6 +434,7 @@
             this.groupFile.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
             this.tabThreads.ResumeLayout(false);
+            this.tabModules.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
@@ -383,5 +467,12 @@
         private System.Windows.Forms.GroupBox groupFile;
         private System.Windows.Forms.GroupBox groupProcess;
         private System.Windows.Forms.TabPage tabServices;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonPEBStrings;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textCurrentDirectory;
+        private System.Windows.Forms.Button buttonOpenFileNameFolder;
+        private System.Windows.Forms.Button buttonOpenCurDir;
+        private ModuleList listModules;
     }
 }

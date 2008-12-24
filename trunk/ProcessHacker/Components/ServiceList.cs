@@ -123,9 +123,9 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new Provider<string, ServiceItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new Provider<string, ServiceItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new Provider<string, ServiceItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -140,10 +140,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new Provider<string, ServiceItem>.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new Provider<string, ServiceItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new ServiceProvider.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }

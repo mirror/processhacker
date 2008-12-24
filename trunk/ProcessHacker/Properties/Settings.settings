@@ -174,7 +174,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ProcessWindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">779, 569</Value>
+      <Value Profile="(Default)">493, 465</Value>
     </Setting>
   </Settings>
 </SettingsFile>

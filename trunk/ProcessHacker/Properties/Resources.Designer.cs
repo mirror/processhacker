@@ -221,6 +221,13 @@ namespace ProcessHacker.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap folder_go {
+            get {
+                object obj = ResourceManager.GetObject("folder_go", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap group {
             get {
                 object obj = ResourceManager.GetObject("group", resourceCulture);
@@ -302,6 +309,13 @@ namespace ProcessHacker.Properties {
             get {
                 object obj = ResourceManager.GetObject("pencil_go", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon Process {
+            get {
+                object obj = ResourceManager.GetObject("Process", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

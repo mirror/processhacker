@@ -30,6 +30,21 @@ namespace ProcessHacker
         public class ProcessHandle : Win32Handle, IWithToken
         {
             /// <summary>
+            /// Specifies an offset in a process' process environment block (PEB).
+            /// </summary>
+            public enum PEBOffset
+            {
+                CurrentDirectoryPath = 0x24,
+                DllPath = 0x30,
+                ImagePathName = 0x38,
+                CommandLine = 0x40,
+                WindowTitle = 0x70,
+                DesktopName = 0x78,
+                ShellInfo = 0x80,
+                RuntimeData = 0x88
+            }
+
+            /// <summary>
             /// Creates a process handle using an existing handle. 
             /// The handle will not be closed automatically.
             /// </summary>
@@ -90,7 +105,7 @@ namespace ProcessHacker
             /// <returns>A string.</returns>
             public string GetCommandLine()
             {
-                return this.GetPEBString(66);
+                return this.GetPEBString(PEBOffset.CommandLine);
             }
 
             /// <summary>
@@ -100,7 +115,7 @@ namespace ProcessHacker
             /// <returns>A file name, in kernel file name format.</returns>
             public string GetImageFileName()
             {
-                return this.GetPEBString(58);
+                return this.GetPEBString(PEBOffset.ImagePathName);
             }
 
             /// <summary>
@@ -113,39 +128,46 @@ namespace ProcessHacker
                 return this.GetBasicInformation().InheritedFromUniqueProcessId;
             }
 
-            private string GetPEBString(int offset)
+            /// <summary>
+            /// Reads a UNICODE_STRING from the process' process environment block.
+            /// </summary>
+            /// <param name="offset">The offset to the UNICODE_STRING structure.</param>
+            /// <returns>A string.</returns>
+            public string GetPEBString(PEBOffset offset)
             {
-                PROCESS_BASIC_INFORMATION basicInfo = new PROCESS_BASIC_INFORMATION();
-                int retLen;
+                int readLen;
                 int pebBaseAddress = 0x7ffd7000;
 
-                if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
-                    ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
-                    pebBaseAddress = basicInfo.PebBaseAddress;
+                try
+                {
+                    pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+                }
+                catch
+                { }
 
                 byte[] data2 = new byte[4];
 
                 // read address of parameter information block
-                if (!ReadProcessMemory(this, basicInfo.PebBaseAddress + 16, data2, 4, out retLen))
+                if (!ReadProcessMemory(this, pebBaseAddress + 16, data2, 4, out readLen))
                     throw new Exception(GetLastErrorMessage());
 
                 int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
 
                 // read length of string
-                if (!ReadProcessMemory(this, paramInfoAddrI + offset, data2, 2, out retLen))
+                if (!ReadProcessMemory(this, paramInfoAddrI + (int)offset, data2, 2, out readLen))
                     throw new Exception(GetLastErrorMessage());
 
                 ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
                 byte[] stringData = new byte[strLength];
 
                 // read address of string
-                if (!ReadProcessMemory(this, paramInfoAddrI + offset + 2, data2, 4, out retLen))
+                if (!ReadProcessMemory(this, paramInfoAddrI + (int)offset + 4, data2, 4, out readLen))
                     throw new Exception(GetLastErrorMessage());
 
                 int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
 
                 // read string
-                if (!ReadProcessMemory(this, strAddr, stringData, strLength, out retLen))
+                if (!ReadProcessMemory(this, strAddr, stringData, strLength, out readLen))
                     throw new Exception(GetLastErrorMessage());
 
                 // return decoded unicode string

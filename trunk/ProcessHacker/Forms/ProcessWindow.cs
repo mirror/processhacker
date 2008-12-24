@@ -36,6 +36,7 @@ namespace ProcessHacker
         private Process _process;
 
         private ThreadProvider _threadP;
+        private ModuleProvider _moduleP;
 
         private TokenProperties _tokenProps;
 
@@ -76,21 +77,51 @@ namespace ProcessHacker
             listThreads.Provider = _threadP;
             _threadP.Enabled = true;
 
+            _moduleP = new ModuleProvider(_pid);
+            _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _moduleP.RunOnceAsync();
+            listModules.Provider = _moduleP;
+            _moduleP.Enabled = true;
+
             try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
-            catch { }
+            catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
             try
             {
-                FileVersionInfo info = FileVersionInfo.GetVersionInfo(Misc.GetRealPath(_process.MainModule.FileName));
+                string fileName;
+
+                if (_pid == 4)
+                    fileName = Misc.GetKernelFileName();
+                else
+                    fileName = Misc.GetRealPath(_process.MainModule.FileName);
+
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
 
                 textFileDescription.Text = info.FileDescription;
                 textFileCompany.Text = info.CompanyName;
                 textFileVersion.Text = info.FileVersion;
                 textFileName.Text = info.FileName;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                textFileDescription.Text = "(" + ex.Message + ")";
+                textFileCompany.Text = "";
+            }
 
             textCmdLine.Text = _processItem.CmdLine;
+
+            try
+            {
+                using (Win32.ProcessHandle phandle
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    textCurrentDirectory.Text =
+                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                textCurrentDirectory.Text = "(" + ex.Message + ")";
+            }
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -150,9 +181,76 @@ namespace ProcessHacker
         private void tabControl_TabIndexChanged(object sender, EventArgs e)
         {
             _threadP.Enabled = false;
+            _moduleP.Enabled = false;
 
             if (tabControl.SelectedTab == tabThreads)
                 _threadP.Enabled = true;
+            else if (tabControl.SelectedTab == tabModules)
+                _moduleP.Enabled = true;
+        }
+
+        private void buttonPEBStrings_Click(object sender, EventArgs e)
+        {
+            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+
+            try
+            {
+                using (Win32.ProcessHandle ph
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    list.Add(new KeyValuePair<string, string>("Command Line",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.CommandLine)));
+                    list.Add(new KeyValuePair<string, string>("Current Directory Path",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath)));
+                    list.Add(new KeyValuePair<string, string>("Desktop Name",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.DesktopName)));
+                    list.Add(new KeyValuePair<string, string>("Path",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.DllPath)));
+                    list.Add(new KeyValuePair<string, string>("Image File Name",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.ImagePathName)));
+                    list.Add(new KeyValuePair<string, string>("Runtime Data",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.RuntimeData)));
+                    list.Add(new KeyValuePair<string, string>("Shell Info",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.ShellInfo)));
+                    list.Add(new KeyValuePair<string, string>("Window Title",
+                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.WindowTitle)));
+                }
+
+                ListWindow window = new ListWindow(list);
+
+                window.TopMost = this.TopMost;
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonOpenFileNameFolder_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start("explorer.exe", "/select," + textFileName.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonOpenCurDir_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start("explorer.exe", "/select," + textCurrentDirectory.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

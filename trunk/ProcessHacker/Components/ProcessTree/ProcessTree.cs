@@ -129,9 +129,9 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new Provider<int, ProcessItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new Provider<int, ProcessItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new Provider<int, ProcessItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new ProcessProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new ProcessProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new ProcessProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -146,10 +146,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new Provider<int, ProcessItem>.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new Provider<int, ProcessItem>.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new Provider<int, ProcessItem>.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new Provider<int, ProcessItem>.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new ProcessProvider.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new ProcessProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new ProcessProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new ProcessProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }

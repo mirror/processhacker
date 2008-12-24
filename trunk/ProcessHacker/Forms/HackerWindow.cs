@@ -2808,10 +2808,10 @@ namespace ProcessHacker
             listServices.List.EndUpdate();
             HighlightedListViewItem.StateHighlighting = true;
 
-            serviceP.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(serviceP_DictionaryAdded);
-            serviceP.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(serviceP_DictionaryModified);
-            serviceP.DictionaryRemoved += new Provider<string, ServiceItem>.ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
-            serviceP.Updated -= new Provider<string, ServiceItem>.ProviderUpdateOnce(serviceP_Updated);
+            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
+            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified);
+            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
+            serviceP.Updated -= new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
 
             if (processP.RunCount >= 1)
                 this.Invoke(new MethodInvoker(UpdateCommon));
@@ -2819,9 +2819,9 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            processP.DictionaryAdded += new Provider<int, ProcessItem>.ProviderDictionaryAdded(processP_DictionaryAdded);
-            processP.DictionaryRemoved += new Provider<int, ProcessItem>.ProviderDictionaryRemoved(processP_DictionaryRemoved);
-            processP.Updated -= new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_Updated);
+            processP.DictionaryAdded += new ProcessProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
+            processP.DictionaryRemoved += new ProcessProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
+            processP.Updated -= new ProcessProvider.ProviderUpdateOnce(processP_Updated);
 
             if (processP.RunCount >= 1)
                 this.Invoke(new MethodInvoker(UpdateCommon));
@@ -2870,7 +2870,7 @@ namespace ProcessHacker
 
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
-            processP.Updated += new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_Updated);
+            processP.Updated += new ProcessProvider.ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
@@ -2878,10 +2878,10 @@ namespace ProcessHacker
             listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
-            serviceP.DictionaryAdded += new Provider<string, ServiceItem>.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
-            serviceP.DictionaryModified += new Provider<string, ServiceItem>.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
-            serviceP.DictionaryRemoved += new Provider<string, ServiceItem>.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
-            serviceP.Updated += new Provider<string, ServiceItem>.ProviderUpdateOnce(serviceP_Updated);
+            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
+            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
+            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
+            serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
 
             statusText.Text = "Waiting...";
