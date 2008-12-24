@@ -493,6 +493,11 @@ namespace ProcessHacker
 
         public static Icon GetProcessIcon(Process p)
         {
+            return GetProcessIcon(p, false);
+        }
+
+        public static Icon GetProcessIcon(Process p, bool large)
+        {
             Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
 
             try
@@ -500,7 +505,7 @@ namespace ProcessHacker
                 if (Win32.SHGetFileInfo(Misc.GetRealPath(p.MainModule.FileName), 0, ref shinfo,
                       (uint)Marshal.SizeOf(shinfo),
                        Win32.SHGFI_ICON |
-                       Win32.SHGFI_SMALLICON) == 0)
+                       (large ? Win32.SHGFI_LARGEICON : Win32.SHGFI_SMALLICON)) == 0)
                 {
                     return null;
                 }

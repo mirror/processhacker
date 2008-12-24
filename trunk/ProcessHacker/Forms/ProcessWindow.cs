@@ -75,6 +75,22 @@ namespace ProcessHacker
             _threadP.RunOnceAsync();
             listThreads.Provider = _threadP;
             _threadP.Enabled = true;
+
+            try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
+            catch { }
+            try
+            {
+                FileVersionInfo info = FileVersionInfo.GetVersionInfo(Misc.GetRealPath(_process.MainModule.FileName));
+
+                textFileDescription.Text = info.FileDescription;
+                textFileCompany.Text = info.CompanyName;
+                textFileVersion.Text = info.FileVersion;
+                textFileName.Text = info.FileName;
+            }
+            catch
+            { }
+
+            textCmdLine.Text = _processItem.CmdLine;
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -129,6 +145,14 @@ namespace ProcessHacker
                 MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void tabControl_TabIndexChanged(object sender, EventArgs e)
+        {
+            _threadP.Enabled = false;
+
+            if (tabControl.SelectedTab == tabThreads)
+                _threadP.Enabled = true;
         }
     }
 }

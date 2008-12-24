@@ -89,6 +89,7 @@
             // 
             // tabToken
             // 
+            this.tabToken.AutoScroll = true;
             this.tabToken.Controls.Add(this.groupSource);
             this.tabToken.Controls.Add(this.groupToken);
             this.tabToken.Location = new System.Drawing.Point(4, 22);

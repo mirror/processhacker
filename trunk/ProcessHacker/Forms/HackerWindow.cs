@@ -993,11 +993,6 @@ namespace ProcessHacker
                     servicesProcessMenuItem.Enabled = false;
                 }
 
-                if (IsDifferentSessionId(processSelectedPID))
-                    injectorMenuItem.Enabled = false;
-                else
-                    injectorMenuItem.Enabled = true;
-
                 realTimeMenuItem.Checked = false;
                 highMenuItem.Checked = false;
                 aboveNormalMenuItem.Checked = false;
@@ -2765,9 +2760,6 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
-
-            //if (!System.IO.File.Exists(Application.StartupPath + "\\Injector.exe"))
-            injectorMenuItem.Visible = false;
 
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
