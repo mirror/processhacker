@@ -335,22 +335,6 @@ namespace ProcessHacker
                 suspendMenuItem.Text = "&Suspend Process";
                 resumeMenuItem.Text = "&Resume Process";
 
-                try
-                {
-                    List<string> services = processServices[processSelectedPID];
-
-                    if (services == null)
-                        throw new Exception();
-                    if (services.Count == 0)
-                        throw new Exception();
-
-                    servicesProcessMenuItem.Enabled = true;
-                }
-                catch
-                {
-                    servicesProcessMenuItem.Enabled = false;
-                }
-
                 realTimeMenuItem.Checked = false;
                 highMenuItem.Checked = false;
                 aboveNormalMenuItem.Checked = false;

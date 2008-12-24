@@ -61,6 +61,14 @@ namespace ProcessHacker
             PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION = 0x00000002
         }
 
+        public enum DEP_SYSTEM_POLICY_TYPE : int
+        {
+            AlwaysOff = 0,
+            AlwaysOn,
+            OptIn,
+            OptOut
+        }
+
         public enum EVENT_INFORMATION_CLASS : int
         {
             EventBasicInformation

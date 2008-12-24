@@ -259,7 +259,14 @@ namespace ProcessHacker
             else
             {
                 if (e != null)
-                    e.DynamicInvoke(item);
+                {
+                    try
+                    {
+                        e.DynamicInvoke(item);
+                    }
+                    catch
+                    { }
+                }
             }
         }
 
@@ -275,7 +282,14 @@ namespace ProcessHacker
             else
             {
                 if (e != null)
-                    e.DynamicInvoke(oldItem, newItem);
+                {
+                    try
+                    {
+                        e.DynamicInvoke(oldItem, newItem);
+                    }
+                    catch
+                    { }
+                }
             }
         }
 

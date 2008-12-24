@@ -38,7 +38,6 @@
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.servicesProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.priorityMenuItem = new System.Windows.Forms.MenuItem();
             this.realTimeMenuItem = new System.Windows.Forms.MenuItem();
@@ -147,7 +146,6 @@
             this.resumeMenuItem,
             this.menuItem5,
             this.affinityProcessMenuItem,
-            this.servicesProcessMenuItem,
             this.terminatorProcessMenuItem,
             this.priorityMenuItem,
             this.runAsProcessMenuItem,
@@ -191,23 +189,16 @@
             this.affinityProcessMenuItem.Text = "Affinity...";
             this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
             // 
-            // servicesProcessMenuItem
-            // 
-            this.vistaMenu.SetImage(this.servicesProcessMenuItem, global::ProcessHacker.Properties.Resources.cog);
-            this.servicesProcessMenuItem.Index = 5;
-            this.servicesProcessMenuItem.Text = "Services...";
-            this.servicesProcessMenuItem.Click += new System.EventHandler(this.servicesProcessMenuItem_Click);
-            // 
             // terminatorProcessMenuItem
             // 
-            this.terminatorProcessMenuItem.Index = 6;
+            this.terminatorProcessMenuItem.Index = 5;
             this.terminatorProcessMenuItem.Text = "Terminator...";
             this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 7;
+            this.priorityMenuItem.Index = 6;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -261,7 +252,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 8;
+            this.runAsProcessMenuItem.Index = 7;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -282,30 +273,30 @@
             // propertiesProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesProcessMenuItem.Index = 9;
+            this.propertiesProcessMenuItem.Index = 8;
             this.propertiesProcessMenuItem.Text = "&Properties...";
             this.propertiesProcessMenuItem.Click += new System.EventHandler(this.inspectProcessMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 10;
+            this.menuItem7.Index = 9;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 11;
+            this.searchProcessMenuItem.Index = 10;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 12;
+            this.copyProcessMenuItem.Index = 11;
             this.copyProcessMenuItem.Text = "&Copy";
             // 
             // selectAllProcessMenuItem
             // 
-            this.selectAllProcessMenuItem.Index = 13;
+            this.selectAllProcessMenuItem.Index = 12;
             this.selectAllProcessMenuItem.Text = "Select &All";
             this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
             // 
@@ -849,7 +840,6 @@
         private System.Windows.Forms.MenuItem deleteServiceMenuItem;
         private System.Windows.Forms.MenuItem continueServiceMenuItem;
         private System.Windows.Forms.MenuItem goToProcessServiceMenuItem;
-        private System.Windows.Forms.MenuItem servicesProcessMenuItem;
         private System.Windows.Forms.MenuItem menuItem8;
         private System.Windows.Forms.MenuItem copyServiceMenuItem;
         private System.Windows.Forms.MenuItem selectAllServiceMenuItem;

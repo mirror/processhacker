@@ -44,6 +44,12 @@ namespace ProcessHacker
                 RuntimeData = 0x88
             }
 
+            [Flags]
+            public enum DEPStatus
+            {
+                Enabled = 0x1, Permanent, ATLThunkEmulationDisabled
+            }
+
             /// <summary>
             /// Creates a process handle using an existing handle. 
             /// The handle will not be closed automatically.
@@ -81,6 +87,22 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Creates a remote thread in the process.
+            /// </summary>
+            /// <param name="startAddress">The address at which to begin execution (e.g. a function).</param>
+            /// <param name="parameter">The parameter to pass to the function.</param>
+            /// <returns>The ID of the new thread.</returns>
+            public int CreateThread(int startAddress, int parameter)
+            {
+                int threadId;
+
+                if (!CreateRemoteThread(this, 0, 0, startAddress, parameter, 0, out threadId))
+                    throw new Exception(GetLastErrorMessage());
+
+                return threadId;
+            }
+
+            /// <summary>
             /// Gets the process' basic information through the undocumented Native API function 
             /// ZwQueryInformationProcess. This function requires the PROCESS_QUERY_LIMITED_INFORMATION 
             /// permission.
@@ -106,6 +128,25 @@ namespace ProcessHacker
             public string GetCommandLine()
             {
                 return this.GetPEBString(PEBOffset.CommandLine);
+            }
+
+            /// <summary>
+            /// Gets the process' DEP policy.
+            /// </summary>
+            /// <returns>A DEPStatus enum.</returns>
+            public DEPStatus GetDEPStatus()
+            {
+                DEPFLAGS flags;
+                int perm;
+
+                if (!GetProcessDEPPolicy(this, out flags, out perm))
+                    throw new Exception(GetLastErrorMessage());
+
+                return
+                    ((flags & DEPFLAGS.PROCESS_DEP_ENABLE) != 0 ? DEPStatus.Enabled : 0) |
+                    ((flags & DEPFLAGS.PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION) != 0 ? 
+                    (DEPStatus.Enabled | DEPStatus.ATLThunkEmulationDisabled) : 0) |
+                    ((perm != 0) ? DEPStatus.Permanent : 0);
             }
 
             /// <summary>

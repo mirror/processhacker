@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EEEA1778-1702-4964-8793-A98FE37E4D2B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -170,6 +170,9 @@
     <EmbeddedResource Include="Forms\AboutWindow.resx">
       <DependentUpon>AboutWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditDEPWindow.resx">
+      <DependentUpon>EditDEPWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetProcAddressWindow.resx">
       <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
@@ -346,6 +349,12 @@
     </Compile>
     <Compile Include="FormHelper\HandleFilter.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\EditDEPWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditDEPWindow.Designer.cs">
+      <DependentUpon>EditDEPWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\GetProcAddressWindow.cs">
       <SubType>Form</SubType>
@@ -577,6 +586,7 @@
     <None Include="Icons\Process_small.ico" />
     <None Include="Icons\Process.ico" />
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\cog_edit.png" />
     <None Include="Resources\folder_go.png" />
     <None Include="Resources\report_user.png" />
     <None Include="Resources\asterisk_orange.png" />

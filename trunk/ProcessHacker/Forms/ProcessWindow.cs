@@ -115,6 +115,7 @@ namespace ProcessHacker
                 Program.HackerWindow.ProcessServices[_pid].ToArray() : 
                 new string[0]);
             _serviceProps.Dock = DockStyle.Fill;
+            _serviceProps.PID = _pid;
             tabServices.Controls.Add(_serviceProps);
 
             try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
@@ -167,7 +168,49 @@ namespace ProcessHacker
                     textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
             }
 
+            this.UpdateDEPStatus();
+
             tabControl_TabIndexChanged(null, null);
+        }
+
+        public void UpdateDEPStatus()
+        {
+            try
+            {
+                using (Win32.ProcessHandle phandle
+                    = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                {
+                    var depStatus = phandle.GetDEPStatus();
+                    string str;
+
+                    if ((depStatus & Win32.ProcessHandle.DEPStatus.Enabled) != 0)
+                    {
+                        str = "Enabled";
+                    }
+                    else
+                    {
+                        str = "Disabled";
+                    }
+
+                    if ((depStatus & Win32.ProcessHandle.DEPStatus.Permanent) != 0)
+                    {
+                        buttonEditDEP.Enabled = false;
+                        str += ", Permanent";
+                    }
+
+                    if ((depStatus & Win32.ProcessHandle.DEPStatus.ATLThunkEmulationDisabled) != 0)
+                        str += ", DEP-ATL thunk emulation disabled";
+
+                    textDEP.Text = str;
+                }
+            }
+            catch (Exception ex)
+            {
+                textDEP.Text = "(" + ex.Message + ")";
+            }
+
+            if (_processItem.SessionId != Program.CurrentSessionId)
+                buttonEditDEP.Enabled = false;
         }
 
         private void _memoryP_Updated()
@@ -355,6 +398,34 @@ namespace ProcessHacker
                 MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void buttonTerminate_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to terminate this process?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                try
+                {
+                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                        phandle.Terminate();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker",
+                      MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void buttonEditDEP_Click(object sender, EventArgs e)
+        {
+            EditDEPWindow w = new EditDEPWindow(_pid);
+
+            w.TopMost = this.TopMost;
+            w.ShowDialog();
+
+            this.UpdateDEPStatus();
         }
     }
 }

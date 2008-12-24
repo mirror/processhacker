@@ -26,6 +26,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            PID = -1;
+
             _provider = Program.HackerWindow.ServiceProvider;
 
             if (services.Length == 1)
@@ -73,6 +75,8 @@ namespace ProcessHacker
             buttonCancel.Focus();
         }
 
+        public int PID { get; set; }
+
         private void Close()
         {
             if (this.NeedsClose != null)
@@ -92,21 +96,34 @@ namespace ProcessHacker
 
         private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
-            ServiceItem sitem = (ServiceItem)newItem;
+            // update the state of the service
+            if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
+                    newItem.Status.ServiceStatusProcess.CurrentState.ToString();
 
-            if (listServices.Items.ContainsKey(sitem.Status.ServiceName))
-                listServices.Items[sitem.Status.ServiceName].SubItems[2].Text =
-                    sitem.Status.ServiceStatusProcess.CurrentState.ToString();
-
-            if (listServices.SelectedItems[0].Name == sitem.Status.ServiceName)
+            // update the start and stop buttons if we have a service selected
+            if (listServices.SelectedItems.Count == 1)
             {
-                buttonStart.Enabled = false;
-                buttonStop.Enabled = false;
+                if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
+                {
+                    buttonStart.Enabled = false;
+                    buttonStop.Enabled = false;
 
-                if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
-                    buttonStop.Enabled = true;
-                else if (sitem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
-                    buttonStart.Enabled = true;
+                    if (newItem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                        buttonStop.Enabled = true;
+                    else if (newItem.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                        buttonStart.Enabled = true;
+                }
+            }
+
+            // if the service was just started in this process, add it to the list
+            if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+            {
+                listServices.Items.Add(new ListViewItem(new string[] { 
+                    newItem.Status.ServiceName, 
+                    newItem.Status.DisplayName,
+                    newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
+                })).Name = newItem.Status.ServiceName;
             }
         }
 
