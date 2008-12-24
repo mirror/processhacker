@@ -68,8 +68,16 @@ namespace ProcessHacker
                     else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
                         textElevated.Text = "False";
 
-                    if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
-                        buttonLinkedToken.Visible = false;
+                    try
+                    {
+                        Win32.TokenWithLinkedToken tokWLT = new Win32.TokenWithLinkedToken(token);
+
+                        tokWLT.GetToken();
+                    }
+                    catch
+                    {
+                       buttonLinkedToken.Visible = false;
+                    }
 
                     bool virtAllowed = token.IsVirtualizationAllowed();
                     bool virtEnabled = token.IsVirtualizationEnabled();

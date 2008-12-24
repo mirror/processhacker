@@ -57,8 +57,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textVirtualized = new System.Windows.Forms.TextBox();
             this.textElevated = new System.Windows.Forms.TextBox();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.buttonLinkedToken = new System.Windows.Forms.Button();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabToken.SuspendLayout();
             this.tabGroups.SuspendLayout();
@@ -305,10 +305,12 @@
             // 
             // textVirtualized
             // 
+            this.textVirtualized.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textVirtualized.Location = new System.Drawing.Point(73, 112);
             this.textVirtualized.Name = "textVirtualized";
             this.textVirtualized.ReadOnly = true;
-            this.textVirtualized.Size = new System.Drawing.Size(109, 20);
+            this.textVirtualized.Size = new System.Drawing.Size(488, 20);
             this.textVirtualized.TabIndex = 11;
             // 
             // textElevated
@@ -318,10 +320,6 @@
             this.textElevated.ReadOnly = true;
             this.textElevated.Size = new System.Drawing.Size(109, 20);
             this.textElevated.TabIndex = 12;
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
             // 
             // buttonLinkedToken
             // 
@@ -333,6 +331,10 @@
             this.buttonLinkedToken.Text = "Linked Token...";
             this.buttonLinkedToken.UseVisualStyleBackColor = true;
             this.buttonLinkedToken.Click += new System.EventHandler(this.buttonLinkedToken_Click);
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
             // 
             // TokenProperties
             // 

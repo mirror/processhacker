@@ -47,7 +47,7 @@ namespace ProcessHacker
 
             public Win32.TokenHandle GetToken(Win32.TOKEN_RIGHTS access)
             {
-                throw new NotSupportedException();
+                return this.GetToken();
             }
         }
     }
