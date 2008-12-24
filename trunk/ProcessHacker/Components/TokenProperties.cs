@@ -184,6 +184,9 @@ namespace ProcessHacker
 
         public void SaveSettings()
         {
+            if (_groups != null)
+                _groups.SaveSettings();
+
             Properties.Settings.Default.TokenWindowTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
         }
