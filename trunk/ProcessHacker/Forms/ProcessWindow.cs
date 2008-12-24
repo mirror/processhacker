@@ -161,11 +161,16 @@ namespace ProcessHacker
             if (_processItem.ParentPID != -1)
             {
                 if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPID))
+                {
                     textParent.Text =
                         Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPID].Name +
                         " (" + _processItem.ParentPID.ToString() + ")";
+                }
                 else
+                {
                     textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
+                    buttonInspectParent.Enabled = false;
+                }
             }
 
             this.UpdateDEPStatus();
@@ -426,6 +431,30 @@ namespace ProcessHacker
             w.ShowDialog();
 
             this.UpdateDEPStatus();
+        }
+
+        private void buttonInspectParent_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ProcessWindow pForm = Program.GetProcessWindow(
+                    Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPID],
+                    new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                    {
+                        f.Show();
+                        f.Activate();
+                    }));
+            }
+            catch (KeyNotFoundException)
+            {
+                MessageBox.Show("The process could not be found.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
