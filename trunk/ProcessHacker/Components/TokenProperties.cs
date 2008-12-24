@@ -99,19 +99,13 @@ namespace ProcessHacker
                     {
                         bool virtAllowed = token.IsVirtualizationAllowed();
                         bool virtEnabled = token.IsVirtualizationEnabled();
-                        string virtText;
-
-                        if (virtAllowed)
-                            virtText = "Virtualization is allowed ";
-                        else
-                            virtText = "Virtualization is not allowed.";
 
                         if (virtEnabled)
-                            virtText += "and enabled.";
+                            textVirtualized.Text = "Enabled";
                         else if (virtAllowed)
-                            virtText += "but disabled.";
-
-                        textVirtualized.Text = virtText;
+                            textVirtualized.Text = "Disabled";
+                        else
+                            textVirtualized.Text = "Not Allowed";
                     }
                     catch (Exception ex)
                     {
