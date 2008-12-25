@@ -23,24 +23,10 @@ using System.Text;
 
 namespace ProcessHacker.Structs
 {
-    [Flags]
-    public enum FieldType : uint
+    public struct FieldValue
     {
-        Bool8 = 0x1,
-        Bool32,
-        CharASCII,
-        CharUTF16,
-        Int8,
-        Int16,
-        Int32,
-        Int64,
-        UInt8,
-        UInt16,
-        UInt32,
-        UInt64,
-        StringASCII,
-        StringUTF16,
-        Struct,
-        Pointer = 0x8000000
+        public string Name;
+        public FieldType FieldType;
+        public object Value;
     }
 }

@@ -524,10 +524,13 @@
       <DependentUpon>InformationBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Misc\Tokenizer.cs" />
+    <Compile Include="Structs\ProcessMemoryIO.cs" />
+    <Compile Include="Structs\FieldValue.cs" />
     <Compile Include="Structs\FieldType.cs" />
     <Compile Include="Structs\IStructIOProvider.cs" />
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
+    <Compile Include="Structs\StructParser.cs" />
     <Compile Include="Symbols\Symbols.cs" />
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />

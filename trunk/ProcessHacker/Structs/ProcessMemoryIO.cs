@@ -23,24 +23,31 @@ using System.Text;
 
 namespace ProcessHacker.Structs
 {
-    [Flags]
-    public enum FieldType : uint
+    public class ProcessMemoryIO : IStructIOProvider
     {
-        Bool8 = 0x1,
-        Bool32,
-        CharASCII,
-        CharUTF16,
-        Int8,
-        Int16,
-        Int32,
-        Int64,
-        UInt8,
-        UInt16,
-        UInt32,
-        UInt64,
-        StringASCII,
-        StringUTF16,
-        Struct,
-        Pointer = 0x8000000
+        private Win32.ProcessHandle _phandleR;
+        private Win32.ProcessHandle _phandleW;
+
+        public ProcessMemoryIO(int pid)
+        {
+            try { _phandleR = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ); }
+            catch { }
+            try
+            {
+                _phandleW = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE);
+            }
+            catch { }
+        }
+
+        public byte[] ReadBytes(int offset, int length)
+        {
+            return _phandleR.ReadMemory(offset, length);
+        }
+
+        public void WriteBytes(int offset, byte[] bytes)
+        {
+            _phandleW.WriteMemory(offset, bytes);
+        }
     }
 }

@@ -25,6 +25,7 @@ namespace ProcessHacker.Structs
 {
     public interface IStructIOProvider
     {
-
+        byte[] ReadBytes(int offset, int length);
+        void WriteBytes(int offset, byte[] bytes);
     }
 }

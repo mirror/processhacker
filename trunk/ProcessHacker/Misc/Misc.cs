@@ -424,6 +424,24 @@ namespace ProcessHacker
             }
         }
 
+        public static long BytesToLong(byte[] data, Endianness type)
+        {
+            if (type == Endianness.Little)
+            {
+                return (data[0]) | (data[1] << 8) | (data[2] << 16) | (data[3] << 24) | 
+                    (data[4] << 32) | (data[5] << 40) | (data[6] << 48) | (data[7] << 56);
+            }
+            else if (type == Endianness.Big)
+            {
+                return (data[0] << 56) | (data[1] << 48) | (data[2] << 40) | (data[3] << 32) |
+                    (data[4] << 24) | (data[5] << 16) | (data[6] << 8) | (data[7]);
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+
         public static uint BytesToUInt(byte[] data, Endianness type)
         {
             return BytesToUInt(data, 0, type);

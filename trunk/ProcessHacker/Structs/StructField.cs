@@ -25,70 +25,26 @@ namespace ProcessHacker.Structs
 {
     public class StructField
     {
-        public static int SizeOf(FieldType type)
+        private FieldType _type;
+        private bool _array;
+
+        public StructField(string name, FieldType type)
         {
-            switch (type)
-            {
-                case FieldType.Bool32:
-                    return 4;
-                case FieldType.Bool8:
-                    return 1;
-                case FieldType.CharASCII:
-                    return 1;
-                case FieldType.CharUTF16:
-                    return 2; // UCS-2
-                case FieldType.CharUTF8:
-                    return 1; // fake
-                case FieldType.Handle:
-                    return 4;
-                case FieldType.Int16:
-                    return 2;
-                case FieldType.Int32:
-                    return 4;
-                case FieldType.Int64:
-                    return 8;
-                case FieldType.Int8:
-                    return 1;
-                case FieldType.StringASCII:
-                    return -1;
-                case FieldType.StringUTF16:
-                    return -1;
-                case FieldType.StringUTF8:
-                    return -1;
-                case FieldType.Struct:
-                    return -1;
-                case FieldType.UInt16:
-                    return 2;
-                case FieldType.UInt32:
-                    return 4;
-                case FieldType.UInt64:
-                    return 8;
-                case FieldType.UInt8:
-                    return 1;
-                default:
-                    return -1;
-            }
+            VarLength = -1;
+            VarArrayLength = 1;
+            Name = name;
+            _type = type;
         }
 
-        private StructDef _struct;
-        private FieldType _type;
-        private bool _ptr;
-
-        public StructField(StructDef struc, FieldType type, bool isPointer)
+        public bool IsArray
         {
-            _struct = struc;
-            _type = type;
-            _ptr = isPointer;
+            get { return _array; }
+            set { _array = value; }
         }
 
         public bool IsPointer
         {
-            get { return _ptr; }
-        }
-
-        public StructDef Struct
-        {
-            get { return _struct; }
+            get { return (_type & FieldType.Pointer) != 0; }
         }
 
         /// <summary>
@@ -98,16 +54,84 @@ namespace ProcessHacker.Structs
         {
             get
             {
-                if (_ptr)
+                if (this.IsPointer)
+                {
                     return 4; // 32-bit only
+                }
                 else
-                    return StructField.SizeOf(_type);
+                {
+                    int size;
+
+                    switch (_type)
+                    {
+                        case FieldType.Bool32:
+                            size = 4;
+                            break;
+                        case FieldType.Bool8:
+                            size = 1;
+                            break;
+                        case FieldType.CharASCII:
+                            size = 1;
+                            break;
+                        case FieldType.CharUTF16:
+                            size = 2; // UCS-2 
+                            break;
+                        case FieldType.Int16:
+                            size = 2;
+                            break;
+                        case FieldType.Int32:
+                            size = 4;
+                            break;
+                        case FieldType.Int64:
+                            size = 8;
+                            break;
+                        case FieldType.Int8:
+                            size = 1;
+                            break;
+                        case FieldType.StringASCII:
+                            size = VarLength;
+                            break;
+                        case FieldType.StringUTF16:
+                            size = VarLength * 2;
+                            break;
+                        case FieldType.Struct:
+                            size = 0;
+                            break;
+                        case FieldType.UInt16:
+                            size = 2;
+                            break;
+                        case FieldType.UInt32:
+                            size = 4;
+                            break;
+                        case FieldType.UInt64:
+                            size = 8;
+                            break;
+                        case FieldType.UInt8:
+                            size = 1;
+                            break;
+                        default:
+                            size = 0;
+                            break;
+                    }
+
+                    return size * VarArrayLength;
+                }
             }
         }
 
+        public string Name { get; set; }
+
+        internal int VarArrayLength { get; set; }
+
+        internal int VarLength { get; set; }
+
+        public string SetsVarOn { get; set; }
+
+        public string StructName { get; set; }
+
         public FieldType Type
         {
-            get { return _type; }
+            get { return _type & (~FieldType.Pointer); }
         }
     }
 }

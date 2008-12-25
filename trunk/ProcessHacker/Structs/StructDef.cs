@@ -25,8 +25,256 @@ namespace ProcessHacker.Structs
 {
     public class StructDef
     {
-        public List<StructField> Fields { get; set; }
+        private List<StructField> _fields = new List<StructField>();
+        private Dictionary<string, StructField> _fieldsByName = new Dictionary<string, StructField>();
 
-        
+        public IStructIOProvider IOProvider { get; set; }
+
+        public int Size
+        {
+            get
+            {
+                int size = 0;
+
+                foreach (StructField field in _fields)
+                    size += field.Size;
+
+                return size;
+            }
+        }
+
+        public int Offset { get; set; }
+
+        public Dictionary<string, StructDef> Structs { get; set; }
+
+        public StructField AddField(StructField field)
+        {
+            _fieldsByName.Add(field.Name, field);
+            _fields.Add(field);
+
+            return field;
+        }
+
+        public bool ContainsField(string name)
+        {
+            return _fieldsByName.ContainsKey(name);
+        }
+
+        public StructField GetField(int index)
+        {
+            return _fields[index];
+        }
+
+        public StructField GetField(string name)
+        {
+            return _fieldsByName[name];
+        }
+
+        public void RemoveField(int index)
+        {
+            _fieldsByName.Remove(_fields[index].Name);
+            _fields.RemoveAt(index);
+        }
+
+        public void RemoveField(string name)
+        {
+            _fields.Remove(_fieldsByName[name]);
+            _fieldsByName.Remove(name);
+        }
+
+        public void RemoveField(StructField field)
+        {
+            _fieldsByName.Remove(field.Name);
+            _fields.Remove(field);
+        }
+
+        public FieldValue[] Read()
+        {
+            FieldValue[] values;
+
+            this.Read(out values);
+
+            return values;
+        }
+
+        private int Read(StructField field, int offset, out FieldValue valueOut)
+        {
+            FieldValue value = new FieldValue() { FieldType = field.Type, Name = field.Name };
+            int readSize = 0;
+
+            switch (field.Type)
+            {
+                case FieldType.Bool32:
+                    value.Value = Misc.BytesToInt(IOProvider.ReadBytes(offset, 4),
+                        Misc.Endianness.Little) != 0;
+                    readSize = 4;
+                    break;
+                case FieldType.Bool8:
+                    value.Value = IOProvider.ReadBytes(offset, 1)[0] != 0;
+                    readSize = 1;
+                    break;
+                case FieldType.CharASCII:
+                    value.Value = (char)IOProvider.ReadBytes(offset, 1)[0];
+                    readSize = 1;
+                    break;
+                case FieldType.CharUTF16:
+                    value.Value = UnicodeEncoding.Unicode.GetString(IOProvider.ReadBytes(offset, 2))[0];
+                    readSize = 2;
+                    break;
+                case FieldType.Int16:
+                    value.Value = (short)Misc.BytesToUShort(
+                        IOProvider.ReadBytes(offset, 2), Misc.Endianness.Little);
+                    readSize = 2;
+                    break;
+                case FieldType.Int32:
+                    value.Value = Misc.BytesToInt(
+                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+                    readSize = 4;
+                    break;
+                case FieldType.Int64:
+                    value.Value = Misc.BytesToLong(
+                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+                    readSize = 8;
+                    break;
+                case FieldType.Int8:
+                    value.Value = (sbyte)IOProvider.ReadBytes(offset, 1)[0];
+                    readSize = 1;
+                    break;
+                case FieldType.StringASCII:
+                    {
+                        StringBuilder str = new StringBuilder();
+
+                        if (field.VarLength == -1)
+                        {
+                            int i;
+
+                            for (i = 0; ; i++)
+                            {
+                                byte b = IOProvider.ReadBytes(offset + i, 1)[0];
+
+                                if (b == 0)
+                                    break;
+
+                                str.Append((char)b);
+                            }
+
+                            readSize = i;
+                        }
+                        else
+                        {
+                            str.Append(ASCIIEncoding.ASCII.GetString(
+                                IOProvider.ReadBytes(offset, field.VarLength)));
+                            readSize = field.VarLength;
+                        }
+
+                        value.Value = str.ToString();
+                    }
+
+                    break;
+                case FieldType.StringUTF16:
+                    {
+                        StringBuilder str = new StringBuilder();
+
+                        if (field.VarLength == -1)
+                        {
+                            int i;
+
+                            for (i = 0; ; i += 2)
+                            {
+                                byte[] b = IOProvider.ReadBytes(offset + i, 2);
+
+                                if (Misc.IsEmpty(b))
+                                    break;
+
+                                str.Append(UnicodeEncoding.Unicode.GetString(b));
+                            }
+
+                            readSize = i;
+                        }
+                        else
+                        {
+                            str.Append(UnicodeEncoding.Unicode.GetString(
+                                IOProvider.ReadBytes(offset, field.VarLength)));
+                            readSize = field.VarLength;
+                        }
+
+                        value.Value = str.ToString();
+                    }
+
+                    break;
+                case FieldType.Struct:
+                    {
+                        FieldValue[] valuesOut;
+                        StructDef struc = Structs[field.StructName];
+
+                        struc.IOProvider = this.IOProvider;
+                        struc.Offset = offset;
+                        readSize = struc.Read(out valuesOut);
+                        value.Value = valuesOut;
+                    }
+
+                    break;
+                case FieldType.UInt16:
+                    value.Value = Misc.BytesToUShort(
+                        IOProvider.ReadBytes(offset, 2), Misc.Endianness.Little);
+                    readSize = 2;
+                    break;
+                case FieldType.UInt32:
+                    value.Value = Misc.BytesToUInt(
+                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+                    readSize = 4;
+                    break;
+                case FieldType.UInt64:
+                    value.Value = (ulong)Misc.BytesToLong(
+                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+                    readSize = 8;
+                    break;
+                case FieldType.UInt8:
+                    value.Value = IOProvider.ReadBytes(offset, 1)[0];
+                    readSize = 1;
+                    break;
+                default:
+                    readSize = 0;
+                    break;
+            }
+
+            valueOut = value;
+
+            return readSize;
+        }
+
+        public int Read(out FieldValue[] values)
+        {
+            List<FieldValue> list = new List<FieldValue>();
+            int localOffset = 0;
+
+            foreach (StructField field in _fields)
+            {
+                FieldValue value;
+
+                if (field.IsPointer)
+                {
+                    int pointingTo = Misc.BytesToInt(IOProvider.ReadBytes(Offset + localOffset, 4), Misc.Endianness.Little);
+
+                    localOffset += Read(field, pointingTo, out value);
+                }
+                else
+                {
+                    localOffset += Read(field, Offset + localOffset, out value);
+                }
+
+                if (field.SetsVarOn != null)
+                {
+                    _fieldsByName[field.SetsVarOn].VarLength = int.Parse(value.Value.ToString());
+                    _fieldsByName[field.SetsVarOn].VarArrayLength = int.Parse(value.Value.ToString());
+                }
+
+                list.Add(value);
+            }
+
+            values = list.ToArray();
+
+            return localOffset;
+        }
     }
 }

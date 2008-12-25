@@ -231,6 +231,23 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Reads data from the process' virtual memory.
+            /// </summary>
+            /// <param name="offset">The offset at which to begin reading.</param>
+            /// <param name="length">The length, in bytes, to read.</param>
+            /// <returns>An array of bytes</returns>
+            public byte[] ReadMemory(int offset, int length)
+            {
+                byte[] buf = new byte[length];
+                int readLen;
+
+                if (!ReadProcessMemory(this, offset, buf, length, out readLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return buf;
+            }
+
+            /// <summary>
             /// Waits for the process.
             /// </summary>
             /// <param name="Timeout">The timeout of the wait.</param>
@@ -238,6 +255,22 @@ namespace ProcessHacker
             public int Wait(int Timeout)
             {
                 return WaitForSingleObject(this.Handle, Timeout);
+            }
+
+            /// <summary>
+            /// Writes data to the process' virtual memory.
+            /// </summary>
+            /// <param name="offset">The offset at which to begin writing.</param>
+            /// <param name="data">The data to write.</param>
+            /// <returns>The length, in bytes, that was written.</returns>
+            public int WriteMemory(int offset, byte[] data)
+            {
+                int writLen;
+
+                if (!WriteProcessMemory(this, offset, data, data.Length, out writLen))
+                    throw new Exception(GetLastErrorMessage());
+
+                return writLen;
             }
 
             /// <summary>

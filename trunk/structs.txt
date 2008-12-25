@@ -1,0 +1,114 @@
+typedef int handle;
+typedef int pvoid;
+typedef pvoid ppvoid;
+
+UNICODE_STRING
+{
+    ushort Length;
+    ushort MaximumLength;
+    wstr* Buffer[Length];
+}
+
+RTL_DRIVE_LETTER_CURDIR
+{
+    ushort Flags;
+    ushort Length;
+    ulong TimeStamp;
+    UNICODE_STRING DosPath;
+}
+
+RTL_USER_PROCESS_PARAMETERS
+{
+    ulong MaximumLength;
+    ulong Length;
+    ulong Flags;
+    ulong DebugFlags;
+    pvoid ConsoleHandle;
+    ulong ConsoleFlags;
+    handle StdInputHandle;
+    handle StdOutputHandle;
+    handle StdErrorHandle;
+    UNICODE_STRING CurrentDirectoryPath;
+    handle CurrentDirectoryHandle;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    pvoid Environment;
+    ulong StartingPositionLeft;
+    ulong StartingPositionTop;
+    ulong Width;
+    ulong Height;
+    ulong CharWidth;
+    ulong CharHeight;
+    ulong ConsoleTextAttributes;
+    ulong WindowFlags;
+    ulong ShowWindowFlags;
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopName;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+    RTL_DRIVE_LETTER_CURDIR DLCurrentDirectory[0x20];
+}
+
+PEBLOCKROUTINE
+{
+    pvoid PebLock;
+}
+
+PEB
+{
+    boolean InheritedAddressSpace;
+    boolean ReadImageFileExecOptions;
+    boolean BeingDebugged;
+    boolean Spare;
+    handle Mutant;
+    pvoid ImageBaseAddress;
+    pvoid LoaderData; /* should be PEB_LDR_DATA* */
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; 
+    pvoid SubSystemData;
+    pvoid ProcessHeap;
+    pvoid FastPebLock;
+    PEBLOCKROUTINE* FastPebLockRoutine;
+    PEBLOCKROUTINE* FastPebUnlockRoutine;
+    ulong EnvironmentUpdateCount;
+    ppvoid KernelCallbackTable;
+    pvoid EventLogSection;
+    pvoid EventLog;
+    pvoid FreeList; /* should be PEB_FREE_BLOCK* */
+    ulong TlsExpansionCounter;
+    pvoid TlsBitmap;
+    ulong TlsBitmapBits[0x2];
+    pvoid ReadOnlySharedMemoryBase;
+    pvoid ReadOnlySharedMemoryHeap;
+    ppvoid ReadOnlyStaticServerData;
+    pvoid AnsiCodePageData;
+    pvoid OemCodePageData;
+    pvoid UnicodeCaseTableData;
+    ulong NumberOfProcessors;
+    ulong NtGlobalFlag;
+    byte Spare2[0x4];
+    large_integer CriticalSectionTimeout;
+    ulong HeapSegmentReserve;
+    ulong HeapSegmentCommit;
+    ulong HeapDeCommitTotalFreeThreshold;
+    ulong HeapDeCommitFreeBlockThreshold;
+    ulong NumberOfHeaps;
+    ulong MaximumNumberOfHeaps;
+    ppvoid ProcessHeaps;
+    pvoid GdiSharedHandleTable;
+    pvoid ProcessStarterHelper;
+    pvoid GdiDCAttributeList;
+    pvoid LoaderLock;
+    ulong OSMajorVersion;
+    ulong OSMinorVersion;
+    ulong OSBuildNumber;
+    ulong OSPlatformId;
+    ulong ImageSubSystem;
+    ulong ImageSubSystemMajorVersion;
+    ulong ImageSubSystemMinorVersion;
+    ulong GdiHandleBuffer[0x22];
+    ulong PostProcessInitRoutine;
+    ulong TlsExpansionBitmap;
+    byte TlsExpansionBitmapBits[0x80];
+    ulong SessionId;
+}
