@@ -7,7 +7,7 @@
 
 typedef int handle;
 typedef int NTSTATUS; /* no enum support *yet* */
-typedef pvoid ppvoid; /* what the hell are ppvoids? */
+typedef pvoid ppvoid;
 
 /* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
 UNICODE_STRING

@@ -103,6 +103,7 @@
             this.menuStruct.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.numbersMenuItem,
             this.copyMenuItem});
+            this.menuStruct.Popup += new System.EventHandler(this.menuStruct_Popup);
             // 
             // numbersMenuItem
             // 
@@ -116,11 +117,13 @@
             // 
             this.decMenuItem.Index = 0;
             this.decMenuItem.Text = "&Decimal";
+            this.decMenuItem.Click += new System.EventHandler(this.decMenuItem_Click);
             // 
             // hexMenuItem
             // 
             this.hexMenuItem.Index = 1;
             this.hexMenuItem.Text = "&Hexadecimal";
+            this.hexMenuItem.Click += new System.EventHandler(this.hexMenuItem_Click);
             // 
             // copyMenuItem
             // 

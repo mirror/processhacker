@@ -67,6 +67,29 @@ namespace ProcessHacker
         }
 
         public bool Error { get; private set; }
+
+        private void menuStruct_Popup(object sender, EventArgs e)
+        {
+            decMenuItem.Checked = false;
+            hexMenuItem.Checked = false;
+
+            if (_model.IntegerDisplayBase == IntegerDisplayBase.Decimal)
+                decMenuItem.Checked = true;
+            else if (_model.IntegerDisplayBase == IntegerDisplayBase.Hexadecimal)
+                hexMenuItem.Checked = true;
+        }
+
+        private void decMenuItem_Click(object sender, EventArgs e)
+        {
+            _model.IntegerDisplayBase = IntegerDisplayBase.Decimal;
+            _model.OnStructureChanged(new TreePathEventArgs(new TreePath()));
+        }
+
+        private void hexMenuItem_Click(object sender, EventArgs e)
+        {
+            _model.IntegerDisplayBase = IntegerDisplayBase.Hexadecimal;
+            _model.OnStructureChanged(new TreePathEventArgs(new TreePath()));
+        }
     }
 
     public enum IntegerDisplayBase
