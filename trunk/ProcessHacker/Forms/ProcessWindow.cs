@@ -161,6 +161,18 @@ namespace ProcessHacker
                 textCurrentDirectory.Text = "(" + ex.Message + ")";
             }
 
+            try
+            {
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                {
+                    textPEBAddress.Text = "0x" + phandle.GetBasicInformation().PebBaseAddress.ToString("x8");
+                }
+            }
+            catch (Exception ex)
+            {
+                textPEBAddress.Text = "(" + ex.Message + ")";
+            }
+
             if (_processItem.ParentPID != -1)
             {
                 if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPID))

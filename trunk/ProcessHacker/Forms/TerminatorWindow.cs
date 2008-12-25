@@ -257,6 +257,10 @@ namespace ProcessHacker
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Are you sure you want to run the tests?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                return;
+
             foreach (string test in _tests)
             {
                 if (this.RunTest(test))
@@ -266,6 +270,10 @@ namespace ProcessHacker
 
         private void listTests_DoubleClick(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Are you sure you want to run the selected test?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                return;
+
             this.RunTest(listTests.SelectedItems[0].Name);
         }
     }

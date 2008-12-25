@@ -41,13 +41,6 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
-            this.menuSearch = new System.Windows.Forms.ContextMenu();
-            this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.regexSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
-            this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.textDEP = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.buttonTerminate = new System.Windows.Forms.Button();
@@ -76,6 +69,13 @@
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
+            this.menuSearch = new System.Windows.Forms.ContextMenu();
+            this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
+            this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
+            this.regexSearchMenuItem = new System.Windows.Forms.MenuItem();
+            this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
+            this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.checkHideFreeRegions = new System.Windows.Forms.CheckBox();
             this.listMemory = new ProcessHacker.MemoryList();
             this.tabHandles = new System.Windows.Forms.TabPage();
@@ -84,6 +84,8 @@
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.label7 = new System.Windows.Forms.Label();
+            this.textPEBAddress = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -159,7 +161,7 @@
             this.groupProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupProcess.Controls.Add(this.buttonSearch);
+            this.groupProcess.Controls.Add(this.label7);
             this.groupProcess.Controls.Add(this.textDEP);
             this.groupProcess.Controls.Add(this.label6);
             this.groupProcess.Controls.Add(this.buttonTerminate);
@@ -170,6 +172,7 @@
             this.groupProcess.Controls.Add(this.label5);
             this.groupProcess.Controls.Add(this.textParent);
             this.groupProcess.Controls.Add(this.label4);
+            this.groupProcess.Controls.Add(this.textPEBAddress);
             this.groupProcess.Controls.Add(this.textCurrentDirectory);
             this.groupProcess.Controls.Add(this.label2);
             this.groupProcess.Controls.Add(this.textCmdLine);
@@ -180,63 +183,12 @@
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
             // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 19);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 8;
-            this.buttonSearch.Text = "&String Scan...";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
-            // 
-            // menuSearch
-            // 
-            this.menuSearch.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.newWindowSearchMenuItem,
-            this.literalSearchMenuItem,
-            this.regexSearchMenuItem,
-            this.stringScanMenuItem,
-            this.heapScanMenuItem});
-            // 
-            // newWindowSearchMenuItem
-            // 
-            this.newWindowSearchMenuItem.Index = 0;
-            this.newWindowSearchMenuItem.Text = "&New Window...";
-            this.newWindowSearchMenuItem.Click += new System.EventHandler(this.newWindowSearchMenuItem_Click);
-            // 
-            // literalSearchMenuItem
-            // 
-            this.literalSearchMenuItem.Index = 1;
-            this.literalSearchMenuItem.Text = "&Literal...";
-            this.literalSearchMenuItem.Click += new System.EventHandler(this.literalSearchMenuItem_Click);
-            // 
-            // regexSearchMenuItem
-            // 
-            this.regexSearchMenuItem.Index = 2;
-            this.regexSearchMenuItem.Text = "&Regex...";
-            this.regexSearchMenuItem.Click += new System.EventHandler(this.regexSearchMenuItem_Click);
-            // 
-            // stringScanMenuItem
-            // 
-            this.stringScanMenuItem.Index = 3;
-            this.stringScanMenuItem.Text = "&String Scan...";
-            this.stringScanMenuItem.Click += new System.EventHandler(this.stringScanMenuItem_Click);
-            // 
-            // heapScanMenuItem
-            // 
-            this.heapScanMenuItem.Index = 4;
-            this.heapScanMenuItem.Text = "&Heap Scan...";
-            this.heapScanMenuItem.Click += new System.EventHandler(this.heapScanMenuItem_Click);
-            // 
             // textDEP
             // 
             this.textDEP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textDEP.BackColor = System.Drawing.SystemColors.Control;
-            this.textDEP.Location = new System.Drawing.Point(101, 159);
+            this.textDEP.Location = new System.Drawing.Point(101, 156);
             this.textDEP.Name = "textDEP";
             this.textDEP.ReadOnly = true;
             this.textDEP.Size = new System.Drawing.Size(500, 20);
@@ -245,7 +197,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 162);
+            this.label6.Location = new System.Drawing.Point(6, 159);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(32, 13);
             this.label6.TabIndex = 6;
@@ -267,7 +219,7 @@
             // 
             this.buttonInspectParent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonInspectParent.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonInspectParent.Location = new System.Drawing.Point(607, 130);
+            this.buttonInspectParent.Location = new System.Drawing.Point(607, 127);
             this.buttonInspectParent.Name = "buttonInspectParent";
             this.buttonInspectParent.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectParent.TabIndex = 4;
@@ -278,7 +230,7 @@
             // 
             this.buttonEditDEP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEditDEP.Image = global::ProcessHacker.Properties.Resources.cog_edit;
-            this.buttonEditDEP.Location = new System.Drawing.Point(607, 156);
+            this.buttonEditDEP.Location = new System.Drawing.Point(607, 153);
             this.buttonEditDEP.Name = "buttonEditDEP";
             this.buttonEditDEP.Size = new System.Drawing.Size(24, 24);
             this.buttonEditDEP.TabIndex = 4;
@@ -299,7 +251,7 @@
             // buttonPEBStrings
             // 
             this.buttonPEBStrings.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonPEBStrings.Location = new System.Drawing.Point(6, 104);
+            this.buttonPEBStrings.Location = new System.Drawing.Point(529, 102);
             this.buttonPEBStrings.Name = "buttonPEBStrings";
             this.buttonPEBStrings.Size = new System.Drawing.Size(102, 23);
             this.buttonPEBStrings.TabIndex = 4;
@@ -310,7 +262,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 136);
+            this.label5.Location = new System.Drawing.Point(6, 133);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(41, 13);
             this.label5.TabIndex = 0;
@@ -321,7 +273,7 @@
             this.textParent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textParent.BackColor = System.Drawing.SystemColors.Control;
-            this.textParent.Location = new System.Drawing.Point(101, 133);
+            this.textParent.Location = new System.Drawing.Point(101, 130);
             this.textParent.Name = "textParent";
             this.textParent.ReadOnly = true;
             this.textParent.Size = new System.Drawing.Size(500, 20);
@@ -525,6 +477,7 @@
             // 
             // tabMemory
             // 
+            this.tabMemory.Controls.Add(this.buttonSearch);
             this.tabMemory.Controls.Add(this.checkHideFreeRegions);
             this.tabMemory.Controls.Add(this.listMemory);
             this.tabMemory.ImageKey = "database";
@@ -536,13 +489,64 @@
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
             // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 9;
+            this.buttonSearch.Text = "&String Scan...";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
+            // menuSearch
+            // 
+            this.menuSearch.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.newWindowSearchMenuItem,
+            this.literalSearchMenuItem,
+            this.regexSearchMenuItem,
+            this.stringScanMenuItem,
+            this.heapScanMenuItem});
+            // 
+            // newWindowSearchMenuItem
+            // 
+            this.newWindowSearchMenuItem.Index = 0;
+            this.newWindowSearchMenuItem.Text = "&New Window...";
+            this.newWindowSearchMenuItem.Click += new System.EventHandler(this.newWindowSearchMenuItem_Click);
+            // 
+            // literalSearchMenuItem
+            // 
+            this.literalSearchMenuItem.Index = 1;
+            this.literalSearchMenuItem.Text = "&Literal...";
+            this.literalSearchMenuItem.Click += new System.EventHandler(this.literalSearchMenuItem_Click);
+            // 
+            // regexSearchMenuItem
+            // 
+            this.regexSearchMenuItem.Index = 2;
+            this.regexSearchMenuItem.Text = "&Regex...";
+            this.regexSearchMenuItem.Click += new System.EventHandler(this.regexSearchMenuItem_Click);
+            // 
+            // stringScanMenuItem
+            // 
+            this.stringScanMenuItem.Index = 3;
+            this.stringScanMenuItem.Text = "&String Scan...";
+            this.stringScanMenuItem.Click += new System.EventHandler(this.stringScanMenuItem_Click);
+            // 
+            // heapScanMenuItem
+            // 
+            this.heapScanMenuItem.Index = 4;
+            this.heapScanMenuItem.Text = "&Heap Scan...";
+            this.heapScanMenuItem.Click += new System.EventHandler(this.heapScanMenuItem_Click);
+            // 
             // checkHideFreeRegions
             // 
             this.checkHideFreeRegions.AutoSize = true;
             this.checkHideFreeRegions.Checked = true;
             this.checkHideFreeRegions.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkHideFreeRegions.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideFreeRegions.Location = new System.Drawing.Point(6, 6);
+            this.checkHideFreeRegions.Location = new System.Drawing.Point(6, 35);
             this.checkHideFreeRegions.Name = "checkHideFreeRegions";
             this.checkHideFreeRegions.Size = new System.Drawing.Size(120, 18);
             this.checkHideFreeRegions.TabIndex = 1;
@@ -557,10 +561,10 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listMemory.DoubleBuffered = true;
             this.listMemory.Highlight = false;
-            this.listMemory.Location = new System.Drawing.Point(3, 30);
+            this.listMemory.Location = new System.Drawing.Point(3, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(645, 302);
+            this.listMemory.Size = new System.Drawing.Size(645, 273);
             this.listMemory.TabIndex = 0;
             // 
             // tabHandles
@@ -626,6 +630,25 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 107);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(72, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "PEB Address:";
+            // 
+            // textPEBAddress
+            // 
+            this.textPEBAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textPEBAddress.Location = new System.Drawing.Point(101, 104);
+            this.textPEBAddress.Name = "textPEBAddress";
+            this.textPEBAddress.ReadOnly = true;
+            this.textPEBAddress.Size = new System.Drawing.Size(422, 20);
+            this.textPEBAddress.TabIndex = 3;
             // 
             // ProcessWindow
             // 
@@ -700,7 +723,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button buttonEditDEP;
         private System.Windows.Forms.Button buttonInspectParent;
-        private wyDay.Controls.SplitButton buttonSearch;
         private System.Windows.Forms.ContextMenu menuSearch;
         private System.Windows.Forms.MenuItem newWindowSearchMenuItem;
         private System.Windows.Forms.MenuItem literalSearchMenuItem;
@@ -709,5 +731,8 @@
         private System.Windows.Forms.MenuItem heapScanMenuItem;
         private System.Windows.Forms.CheckBox checkHideFreeRegions;
         private System.Windows.Forms.CheckBox checkHideHandlesNoName;
+        private wyDay.Controls.SplitButton buttonSearch;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textPEBAddress;
     }
 }

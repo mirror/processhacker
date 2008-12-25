@@ -1,19 +1,18 @@
 Process Hacker
 
 1.3.0.0
- * The process list is now a process tree
- * Groups and privileges are now shown in one window
- * Shows groups and privileges for token handles owned by 
-   other processes
- * Major refactoring of Win32 code
- * Now shows more information about processes (e.g. audiodg.exe) - uses 
-   PROCESS_QUERY_LIMITED_INFORMATION on Vista
- * Added Properties for more handle types
- * Added highlighting of UAC elevated processes
- * Process list has less CPU usage (again); so does lsass.exe
- * Added Terminator tool
- * Added support for showing SIDs without account names
- * Token information window is much more detailed
+ * NEW: Process tree
+ * NEW: Process properties window
+ * NEW: Displays more information about tokens
+ * NEW: Displays information about Events, Mutants, Sections and Tokens 
+   other processes have handles to
+ * NEW: Terminator tool - tries to terminate processes using many different 
+   techniques
+ * NEW: Highlighting for UAC elevated processes
+ * FIXED: Shows SIDs without names in SDDL format
+ * FIXED: Less "Access denied" errors - uses PROCESS_QUERY_LIMITED_INFORMATION 
+   on Vista
+ * FIXED: Major refactoring of Win32 code
 
 1.2.6.5
  * A new member of the project - Dean
