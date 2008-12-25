@@ -5,12 +5,14 @@
  * wj32.
  */
 
+include "base.txt"
+
 typedef int handle;
 typedef int NTSTATUS; /* no enum support *yet* */
 typedef pvoid ppvoid;
 
 /* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
-UNICODE_STRING
+struct UNICODE_STRING
 {
     ushort Length;
     ushort MaximumLength;
@@ -18,19 +20,19 @@ UNICODE_STRING
 }
 
 /* A doubly-linked list.  */
-LIST_ENTRY
+struct LIST_ENTRY
 {
     LIST_ENTRY* Flink;
     LIST_ENTRY* Blink;
 }
 
-CLIENT_ID
+struct CLIENT_ID
 {
     pvoid UniqueProcess;
     pvoid UniqueThread;
 }
 
-RTL_DRIVE_LETTER_CURDIR
+struct RTL_DRIVE_LETTER_CURDIR
 {
     ushort Flags;
     ushort Length;
@@ -39,7 +41,7 @@ RTL_DRIVE_LETTER_CURDIR
 }
 
 /* Lots of useful stuff like current directory and command line */
-RTL_USER_PROCESS_PARAMETERS
+struct RTL_USER_PROCESS_PARAMETERS
 {
     ulong MaximumLength;
     ulong Length;
@@ -73,13 +75,13 @@ RTL_USER_PROCESS_PARAMETERS
 }
 
 /* Contains the address of a fast-locking routine for the PEB */
-PEBLOCKROUTINE
+struct PEBLOCKROUTINE
 {
     pvoid PebLock;
 }
 
 /* Process Environment Block */
-PEB
+struct PEB
 {
     boolean InheritedAddressSpace;
     boolean ReadImageFileExecOptions;
@@ -137,7 +139,7 @@ PEB
     ulong SessionId;
 }
 
-NT_TIB
+struct NT_TIB
 {
     pvoid ExceptionList; /* EXCEPTION_REGISTRATION_RECORD* */
     pvoid StackBase;
@@ -149,7 +151,7 @@ NT_TIB
 }
 
 /* Thread Environment Block */
-TEB
+struct TEB
 {
     NT_TIB Tib;
     pvoid EnvironmentPointer;

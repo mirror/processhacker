@@ -619,6 +619,9 @@
   <ItemGroup>
     <None Include="Icons\Process_small.ico" />
     <None Include="Icons\Process.ico" />
+    <Content Include="base.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />
     <Content Include="structs.txt">

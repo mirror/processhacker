@@ -66,6 +66,22 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the thread's basic information.
+            /// </summary>
+            /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
+            public THREAD_BASIC_INFORMATION GetBasicInformation()
+            {
+                THREAD_BASIC_INFORMATION basicInfo = new THREAD_BASIC_INFORMATION();
+                int retLen;
+
+                if (ZwQueryInformationThread(this, THREAD_INFORMATION_CLASS.ThreadBasicInformation,
+                    ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                return basicInfo;
+            }
+
+            /// <summary>
             /// Gets the thread's context.
             /// </summary>
             /// <returns>A CONTEXT struct.</returns>

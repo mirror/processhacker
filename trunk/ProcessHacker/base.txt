@@ -1,0 +1,36 @@
+/*
+ * Base typedefs
+ */
+
+typedef bool32 bool;
+typedef bool8 boolean; /* used primarily by lower-level Windows components */
+    
+typedef charascii char;
+typedef charutf16 wchar;
+
+typedef int8 sbyte; /* should be byte, actually */
+typedef uint8 byte;
+
+typedef int16 short;
+typedef int16 word;
+typedef uint16 ushort;
+
+typedef int32 int;
+typedef int32 dword;
+typedef int32 long;
+typedef uint32 uint;
+typedef uint32 ulong;
+
+typedef int64 large_integer; /* or LARGE_INTEGER */
+typedef int64 longlong;
+typedef int64 qword;
+typedef uint64 ulonglong;
+
+typedef stringascii str;
+typedef stringascii string;
+typedef stringutf16 wstr;
+typedef stringutf16 wstring;
+
+typedef wstr* lpcwstr; /* "Long Pointer To Const Wide-Character String" */
+typedef wstr* lpctstr; /* most apps are in Unicode, so assume TCHAR = WCHAR */
+typedef str* lpcstr; /* ANSI */

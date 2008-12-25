@@ -637,6 +637,17 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct THREAD_BASIC_INFORMATION
+        {
+            public int ExitStatus;
+            public int TebBaseAddress;
+            public CLIENT_ID ClientId;
+            public int AffinityMask;
+            public int Priority;
+            public int BasePriority;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct THREADENTRY32
         {
             public int dwSize;

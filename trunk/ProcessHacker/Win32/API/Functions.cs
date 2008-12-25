@@ -578,6 +578,10 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            ref THREAD_BASIC_INFORMATION ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
             out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]

@@ -307,8 +307,6 @@ namespace ProcessHacker
             return false;
         }
 
-        #region Thread Context Menu
-
         private void menuThread_Popup(object sender, EventArgs e)
         {
             if (listThreads.SelectedItems.Count == 0)
@@ -564,6 +562,34 @@ namespace ProcessHacker
             }
         }
 
+        private void inspectTEBMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text)))
+                {
+                    int tebBaseAddress = thandle.GetBasicInformation().TebBaseAddress;
+
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            StructWindow sw = new StructWindow(_pid, tebBaseAddress, Program.Structs["TEB"]);
+
+                            try
+                            {
+                                sw.Show();
+                                sw.Activate();
+                            }
+                            catch
+                            { }
+                        }));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         #region Priority
 
         private void timeCriticalThreadMenuItem_Click(object sender, EventArgs e)
@@ -607,7 +633,5 @@ namespace ProcessHacker
         {
             Misc.SelectAll(listThreads.Items);
         }
-
-        #endregion
     }
 }

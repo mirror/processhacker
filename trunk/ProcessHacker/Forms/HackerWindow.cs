@@ -1364,7 +1364,7 @@ namespace ProcessHacker
                 {
                     Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
 
-                    parser.Parse(System.IO.File.ReadAllText(Application.StartupPath + "\\structs.txt"));
+                    parser.Parse(Application.StartupPath + "\\structs.txt");
                 }
             }
             catch (Exception ex)

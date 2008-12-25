@@ -25,13 +25,15 @@ namespace ProcessHacker.Structs
 {
     public class ParserException : Exception
     {
-        public ParserException(int line, string message) : base("Line " + line.ToString() + ": " + message) { }
+        public ParserException(string fileName, int line, string message) : 
+            base((new System.IO.FileInfo(fileName)).Name + ": " + line.ToString() + ": " + message) { }
     }
 
     public class StructParser
     {
         private Dictionary<string, StructDef> _structs;
 
+        private string _fileName = "";
         private int _lineNumber = 1;
         private Dictionary<string, FieldType> _typeDefs = new Dictionary<string, FieldType>();
         private bool _eatResult = false;
@@ -48,35 +50,6 @@ namespace ProcessHacker.Structs
             foreach (string s in Enum.GetNames(typeof(FieldType)))
                 if (s != "Pointer")
                     _typeDefs.Add(s.ToLower(), (FieldType)Enum.Parse(typeof(FieldType), s));
-
-            _typeDefs.Add("bool", FieldType.Bool32);
-            _typeDefs.Add("boolean", FieldType.Bool8);
-
-            _typeDefs.Add("char", FieldType.CharASCII);
-            _typeDefs.Add("wchar", FieldType.CharUTF16);
-
-            _typeDefs.Add("sbyte", FieldType.Int8);
-            _typeDefs.Add("byte", FieldType.UInt8);
-
-            _typeDefs.Add("short", FieldType.Int16);
-            _typeDefs.Add("word", FieldType.Int16);
-            _typeDefs.Add("ushort", FieldType.UInt16);
-
-            _typeDefs.Add("int", FieldType.Int32);
-            _typeDefs.Add("dword", FieldType.Int32);
-            _typeDefs.Add("long", FieldType.Int32);
-            _typeDefs.Add("uint", FieldType.UInt32);
-            _typeDefs.Add("ulong", FieldType.UInt32);
-
-            _typeDefs.Add("large_integer", FieldType.Int64);
-            _typeDefs.Add("longlong", FieldType.Int64);
-            _typeDefs.Add("qword", FieldType.Int64);
-            _typeDefs.Add("ulonglong", FieldType.UInt64);
-
-            _typeDefs.Add("str", FieldType.StringASCII);
-            _typeDefs.Add("string", FieldType.StringASCII);
-            _typeDefs.Add("wstr", FieldType.StringUTF16);
-            _typeDefs.Add("wstring", FieldType.StringUTF16);
         }
 
         private FieldType GetType(string typeName)
@@ -84,7 +57,7 @@ namespace ProcessHacker.Structs
             if (_typeDefs.ContainsKey(typeName))
                 return _typeDefs[typeName];
             else
-                throw new ParserException(_lineNumber, "Unknown identifier '" + typeName + "' (type name)");
+                throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + typeName + "' (type name)");
         }
 
         private bool IsTypePointer(FieldType type)
@@ -92,79 +65,130 @@ namespace ProcessHacker.Structs
             return (type & FieldType.Pointer) != 0;
         }
 
-        public void Parse(string text)
+        public void Parse(string fileName)
         {
             List<StructDef> defs = new List<StructDef>();
             int i = 0;
+            string text = System.IO.File.ReadAllText(fileName);
+
+            _lineNumber = 1;
+            _fileName = fileName;
 
             while (true)
             {
                 if (EatWhitespace(text, ref i)) break;
 
-                string structName = EatId(text, ref i);
+                string modeName = EatId(text, ref i);
 
-                if (structName == "")
-                    throw new ParserException(_lineNumber, "Expected identifier (struct name or 'typedef')");
-                if (_structs.ContainsKey(structName))
-                    throw new ParserException(_lineNumber, "Struct name '" + structName + "' already used");
+                if (modeName == "")
+                    throw new ParserException(_fileName, _lineNumber, "Expected keyword");
 
-                if (structName == "typedef")
+                if (modeName == "typedef")
+                {
+                    this.ParseTypeDef(text, ref i);
+                }
+                else if (modeName == "struct")
+                {
+                    this.ParseStructDef(text, ref i);
+                }
+                else if (modeName == "include")
                 {
                     _eatResult = EatWhitespace(text, ref i);
-                    string existingType = EatId(text, ref i);
+                    string includeFile = EatQuotedString(text, ref i);
 
-                    if (_eatResult || existingType == "")
-                        throw new ParserException(_lineNumber, "Expected identifier (type name)");
+                    if (_eatResult || includeFile == "")
+                        throw new ParserException(_fileName, _lineNumber, "String expected (file name)");
 
-                    if (!_typeDefs.ContainsKey(existingType))
-                        throw new ParserException(_lineNumber, "Unknown identifier '" + existingType + "' (type name)");
+                    System.IO.FileInfo info = new System.IO.FileInfo(_fileName);
 
-                    // check for asterisk (pointer)
-                    _eatResult = EatWhitespace(text, ref i);
-                    string asterisk = EatSymbol(text, ref i);
+                    // if the filename contains ':', use the absolute path. otherwise, append it to the 
+                    // current filename's directory
+                    string oldFileName = _fileName;
+                    int oldLine = _lineNumber;
 
-                    if (asterisk != "*" && asterisk.Length > 0)
-                        throw new ParserException(_lineNumber, "Unexpected '" + asterisk + "'");
+                    try
+                    {
+                        if (includeFile.Contains(":"))
+                            this.Parse(includeFile);
+                        else
+                            this.Parse(info.DirectoryName + "\\" + includeFile);
+                    }
+                    catch (System.IO.FileNotFoundException)
+                    {
+                        throw new ParserException(_fileName, _lineNumber, "Could not find the file '" + includeFile + "'");
+                    }
 
-                    _eatResult = EatWhitespace(text, ref i);
-                    string newType = EatId(text, ref i);
-
-                    if (_eatResult || existingType == "")
-                        throw new ParserException(_lineNumber, "Expected identifier (new type name)");
-
-                    if (_typeDefs.ContainsKey(newType))
-                        throw new ParserException(_lineNumber, "Type name '" + newType + "' already used");
-
-                    if (this.IsTypePointer(this.GetType(existingType)) && asterisk == "*")
-                        throw new ParserException(_lineNumber, "Invalid '*'; type '" + existingType + "' is already a pointer");
-
-                    _typeDefs.Add(newType, this.GetType(existingType) | (asterisk == "*" ? FieldType.Pointer : 0));
-
-                    _eatResult = EatWhitespace(text, ref i);
-                    string endSemicolon = EatSymbol(text, ref i);
-
-                    if (_eatResult || endSemicolon != ";")
-                        throw new ParserException(_lineNumber, "Expected ';'");
+                    _fileName = oldFileName;
+                    _lineNumber = oldLine;
                 }
                 else
                 {
-                    // add it first so that structs can be self-referential
-                    _structs.Add(structName, null);
-                    _structs[structName] = this.ParseDef(text, ref i);
+                    throw new ParserException(_fileName, _lineNumber, "Expected keyword");
                 }
             }
         }
 
-        private StructDef ParseDef(string text, ref int i)
+        private void ParseTypeDef(string text, ref int i)
+        {
+            _eatResult = EatWhitespace(text, ref i);
+            string existingType = EatId(text, ref i);
+
+            if (_eatResult || existingType == "")
+                throw new ParserException(_fileName, _lineNumber, "Expected identifier (type name)");
+
+            if (!_typeDefs.ContainsKey(existingType))
+                throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + existingType + "' (type name)");
+
+            // check for asterisk (pointer)
+            _eatResult = EatWhitespace(text, ref i);
+            string asterisk = EatSymbol(text, ref i);
+
+            if (asterisk != "*" && asterisk.Length > 0)
+                throw new ParserException(_fileName, _lineNumber, "Unexpected '" + asterisk + "'");
+
+            _eatResult = EatWhitespace(text, ref i);
+            string newType = EatId(text, ref i);
+
+            if (_eatResult || existingType == "")
+                throw new ParserException(_fileName, _lineNumber, "Expected identifier (new type name)");
+
+            if (_typeDefs.ContainsKey(newType))
+                throw new ParserException(_fileName, _lineNumber, "Type name '" + newType + "' already used");
+
+            if (this.IsTypePointer(this.GetType(existingType)) && asterisk == "*")
+                throw new ParserException(_fileName, _lineNumber, "Invalid '*'; type '" + existingType + "' is already a pointer");
+
+            _typeDefs.Add(newType, this.GetType(existingType) | (asterisk == "*" ? FieldType.Pointer : 0));
+
+            _eatResult = EatWhitespace(text, ref i);
+            string endSemicolon = EatSymbol(text, ref i);
+
+            if (_eatResult || endSemicolon != ";")
+                throw new ParserException(_fileName, _lineNumber, "Expected ';'");
+        }
+
+        private void ParseStructDef(string text, ref int i)
         {
             StructDef def = new StructDef();
+
+            _eatResult = EatWhitespace(text, ref i);
+            string structName = EatId(text, ref i);
+
+            if (_eatResult || structName == "")
+                throw new ParserException(_fileName, _lineNumber, "Expected identifier (struct name)");
+
+            if (_structs.ContainsKey(structName))
+                throw new ParserException(_fileName, _lineNumber, "Struct name '" + structName + "' already used");
+
+            // add it first so that structs can be self-referential
+            _structs.Add(structName, null);
 
             // {
             _eatResult = EatWhitespace(text, ref i);
             string openingBrace = EatSymbol(text, ref i);
 
             if (_eatResult || openingBrace != "{")
-                throw new ParserException(_lineNumber, "Expected '{'");
+                throw new ParserException(_fileName, _lineNumber, "Expected '{'");
 
             while (true)
             {
@@ -173,18 +197,18 @@ namespace ProcessHacker.Structs
                 string endBrace = EatSymbol(text, ref i);
 
                 if (_eatResult)
-                    throw new ParserException(_lineNumber, "Expected type name or '}'");
+                    throw new ParserException(_fileName, _lineNumber, "Expected type name or '}'");
                 if (endBrace == "}")
                     break;
                 if (endBrace.Length > 0)
-                    throw new ParserException(_lineNumber, "Unexpected '" + endBrace + "'");
+                    throw new ParserException(_fileName, _lineNumber, "Unexpected '" + endBrace + "'");
 
                 // TYPE
                 _eatResult = EatWhitespace(text, ref i);
                 string typeName = EatId(text, ref i);
 
                 if (_eatResult || typeName == "")
-                    throw new ParserException(_lineNumber, "Expected type name");
+                    throw new ParserException(_fileName, _lineNumber, "Expected type name");
 
                 FieldType type;
 
@@ -197,7 +221,7 @@ namespace ProcessHacker.Structs
                     type = FieldType.Struct;
 
                     if (!_structs.ContainsKey(typeName))
-                        throw new ParserException(_lineNumber, "Unknown identifier '" + typeName + "' (type or struct name)");
+                        throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + typeName + "' (type or struct name)");
                 }
 
                 // type, without the pointer or array flag
@@ -210,7 +234,7 @@ namespace ProcessHacker.Structs
                 if (EatSymbol(text, ref i) == "*")
                 {
                     if (this.IsTypePointer(type))
-                        throw new ParserException(_lineNumber, "Invalid '*'; type '" + typeName + "' is already a pointer");
+                        throw new ParserException(_fileName, _lineNumber, "Invalid '*'; type '" + typeName + "' is already a pointer");
 
                     type |= FieldType.Pointer;
                 }
@@ -220,10 +244,10 @@ namespace ProcessHacker.Structs
                 string fieldName = EatId(text, ref i);
 
                 if (_eatResult || fieldName == "")
-                    throw new ParserException(_lineNumber, "Expected identifier (struct field name)");
+                    throw new ParserException(_fileName, _lineNumber, "Expected identifier (struct field name)");
 
                 if (def.ContainsField(fieldName))
-                    throw new ParserException(_lineNumber, "Field name '" + fieldName + "' already used");
+                    throw new ParserException(_fileName, _lineNumber, "Field name '" + fieldName + "' already used");
 
                 _eatResult = EatWhitespace(text, ref i);
                 string leftSqBracket = EatSymbol(text, ref i);
@@ -238,7 +262,7 @@ namespace ProcessHacker.Structs
                     if (fieldRefName != "")
                     {
                         if (!def.ContainsField(fieldRefName))
-                            throw new ParserException(_lineNumber, "Unknown identifier '" + fieldRefName + "' (field name)");
+                            throw new ParserException(_fileName, _lineNumber, "Unknown identifier '" + fieldRefName + "' (field name)");
 
                         def.GetField(fieldRefName).SetsVarOn = fieldName;
 
@@ -262,6 +286,8 @@ namespace ProcessHacker.Structs
 
                             if (plusSign == "+")
                                 def.GetField(fieldRefName).SetsVarOnAdd = EatParseInt(text, ref i);
+                            else if (plusSign == "-")
+                                def.GetField(fieldRefName).SetsVarOnAdd = -EatParseInt(text, ref i);
                             else
                                 i = iSave2;
                         }
@@ -276,6 +302,8 @@ namespace ProcessHacker.Structs
 
                             if (plusSign == "+")
                                 def.GetField(fieldRefName).SetsVarOnAdd = EatParseInt(text, ref i);
+                            else if (plusSign == "-")
+                                def.GetField(fieldRefName).SetsVarOnAdd = -EatParseInt(text, ref i);
                             else
                                 i = iSave2;
                         }
@@ -294,12 +322,12 @@ namespace ProcessHacker.Structs
                         }
                         catch
                         {
-                            throw new ParserException(_lineNumber, "Could not parse number '" + fieldSizeSpec + "'");
+                            throw new ParserException(_fileName, _lineNumber, "Could not parse number '" + fieldSizeSpec + "'");
                         }
                     }
                     else
                     {
-                        throw new ParserException(_lineNumber, "Number or identifier expected (size specifier)");
+                        throw new ParserException(_fileName, _lineNumber, "Number or identifier expected (size specifier)");
                     }
 
                     // if it's not a string, it's an array
@@ -310,7 +338,7 @@ namespace ProcessHacker.Structs
                     string rightSqBracket = EatSymbol(text, ref i);
 
                     if (_eatResult || rightSqBracket != "]")
-                        throw new ParserException(_lineNumber, "Expected ']'");
+                        throw new ParserException(_fileName, _lineNumber, "Expected ']'");
 
                     // fix up the semicolon
                     _eatResult = EatWhitespace(text, ref i);
@@ -321,7 +349,7 @@ namespace ProcessHacker.Structs
                 string endSemicolon = leftSqBracket;
 
                 if (_eatResult || endSemicolon != ";")
-                    throw new ParserException(_lineNumber, "Expected ';'");
+                    throw new ParserException(_fileName, _lineNumber, "Expected ';'");
 
                 StructField field = new StructField(fieldName, type);
 
@@ -334,7 +362,7 @@ namespace ProcessHacker.Structs
                 def.AddField(field);
             }
 
-            return def;
+            _structs[structName] = def;
         }
 
         private float EatParseFloat(string text, ref int i)
@@ -343,7 +371,7 @@ namespace ProcessHacker.Structs
             string number = EatNumber(text, ref i);
 
             if (_eatResult || number == "")
-                throw new ParserException(_lineNumber, "Expected floating-point number");
+                throw new ParserException(_fileName, _lineNumber, "Expected floating-point number");
 
             try
             {
@@ -351,7 +379,7 @@ namespace ProcessHacker.Structs
             }
             catch
             {
-                throw new ParserException(_lineNumber, "Could not parse number '" + number + "'");
+                throw new ParserException(_fileName, _lineNumber, "Could not parse number '" + number + "'");
             }
         }
 
@@ -361,7 +389,7 @@ namespace ProcessHacker.Structs
             string number = EatNumber(text, ref i);
 
             if (_eatResult || number == "")
-                throw new ParserException(_lineNumber, "Expected integer");
+                throw new ParserException(_fileName, _lineNumber, "Expected integer");
 
             try
             {
@@ -369,7 +397,7 @@ namespace ProcessHacker.Structs
             }
             catch
             {
-                throw new ParserException(_lineNumber, "Could not parse number '" + number + "'");
+                throw new ParserException(_fileName, _lineNumber, "Could not parse number '" + number + "'");
             }
         }
 
@@ -437,6 +465,60 @@ namespace ProcessHacker.Structs
             }
 
             return ranOut;
+        }
+
+        private string EatQuotedString(string text, ref int i)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool inEscape = false;
+
+            if (text[i] == '"')
+            {
+                i++;
+            }
+            else
+                return "";
+
+            while (i < text.Length)
+            {
+                if (text[i] == '\\')
+                {
+                    inEscape = true; 
+                    i++;
+                    continue;
+                }
+                else if (inEscape)
+                {
+                    if (text[i] == '\\')
+                        sb.Append('\\');
+                    else if (text[i] == '"')
+                        sb.Append('"');
+                    else if (text[i] == '\'')
+                        sb.Append('\'');
+                    else if (text[i] == 'r')
+                        sb.Append('\r');
+                    else if (text[i] == 'n')
+                        sb.Append('\n');
+                    else if (text[i] == 't')
+                        sb.Append('\t');
+                    else
+                        throw new ParserException(_fileName, _lineNumber, "Unrecognized escape sequence '\\" + text[i] + "'");
+
+                    i++;
+                    inEscape = false;
+                    continue;
+                }
+                else if (text[i] == '"')
+                {
+                    i++;
+                    break;
+                }
+
+                sb.Append(text[i]);
+                i++;
+            }
+
+            return sb.ToString();
         }
 
         private string EatId(string text, ref int i)
