@@ -151,11 +151,7 @@ namespace ProcessHacker
                 else
                 {
                     ThreadItem item = Dictionary[t.Id];
-                    ThreadItem newitem = new ThreadItem();
-
-                    newitem.TID = item.TID;
-                    newitem.Thread = item.Thread;
-                    newitem.StartAddressI = item.StartAddressI;
+                    ThreadItem newitem = item;
 
                     try { newitem.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
                     catch { }
