@@ -26,20 +26,18 @@ namespace ProcessHacker.Structs
     public class StructField
     {
         private FieldType _type;
-        private bool _array;
 
         public StructField(string name, FieldType type)
         {
             VarLength = -1;
-            VarArrayLength = 1;
+            VarArrayLength = 0;
             Name = name;
             _type = type;
         }
 
         public bool IsArray
         {
-            get { return _array; }
-            set { _array = value; }
+            get { return (_type & FieldType.Array) != 0; }
         }
 
         public bool IsPointer
@@ -114,7 +112,10 @@ namespace ProcessHacker.Structs
                             break;
                     }
 
-                    return size * VarArrayLength;
+                    if (this.IsArray)
+                        return size * VarArrayLength;
+                    else
+                        return size;
                 }
             }
         }
@@ -131,7 +132,12 @@ namespace ProcessHacker.Structs
 
         public FieldType Type
         {
-            get { return _type & (~FieldType.Pointer); }
+            get { return _type & (~FieldType.Pointer) & (~FieldType.Array); }
+        }
+
+        public FieldType RawType
+        {
+            get { return _type; }
         }
     }
 }

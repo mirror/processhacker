@@ -40,6 +40,7 @@ namespace ProcessHacker.Structs
         StringASCII,
         StringUTF16,
         Struct,
-        Pointer = 0x8000000
+        Pointer = 0x4000000,
+        Array = 0x8000000
     }
 }
