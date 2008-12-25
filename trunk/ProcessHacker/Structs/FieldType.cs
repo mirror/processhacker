@@ -23,7 +23,6 @@ using System.Text;
 
 namespace ProcessHacker.Structs
 {
-    [Flags]
     public enum FieldType : uint
     {
         Bool8 = 0x1,

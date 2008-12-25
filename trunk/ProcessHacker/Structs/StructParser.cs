@@ -296,23 +296,27 @@ namespace ProcessHacker.Structs
                 if (inComment && text[i] == '*')
                 {
                     prePostComment = true;
+                    i++;
                     continue;
                 }
                 else if (prePostComment && text[i] == '/')
                 {
                     prePostComment = false;
                     inComment = false;
+                    i++;
                     continue;
                 }
                 else if (!inComment && text[i] == '/')
                 {
                     preComment = true;
+                    i++;
                     continue;
                 }
                 else if (preComment && text[i] == '*')
                 {
                     preComment = false;
                     inComment = true;
+                    i++;
                     continue;
                 }
                 else
@@ -324,7 +328,7 @@ namespace ProcessHacker.Structs
                 if (text[i] == '\n')
                     _lineNumber++;
 
-                if (!Char.IsWhiteSpace(text[i]) && !inComment)
+                if (!(text[i] == '\r' || text[i] == '\n' || text[i] == ' ' || text[i] == '\t') && !inComment)
                 {
                     ranOut = false;
                     break;
@@ -345,12 +349,12 @@ namespace ProcessHacker.Structs
                 // identifiers can't start with a number-
                 if (sb.Length == 0)
                 {
-                    if (!char.IsLetter(text[i]))
+                    if (!(char.IsLetter(text[i]) || text[i] == '_'))
                         break;
                 }
                 else
                 {
-                    if (!char.IsLetterOrDigit(text[i]))
+                    if (!(char.IsLetterOrDigit(text[i]) || text[i] == '_'))
                         break;
                 }
 
@@ -390,9 +394,9 @@ namespace ProcessHacker.Structs
         {
             StringBuilder sb = new StringBuilder();
 
-            while (i < text.Length)
+            while (i < text.Length && sb.Length < 1) // we need a proper parser to solve this
             {
-                if (!char.IsSymbol(text[i]))
+                if (!char.IsPunctuation(text[i]) && !char.IsSymbol(text[i]))
                     break;
 
                 sb.Append(text[i]);

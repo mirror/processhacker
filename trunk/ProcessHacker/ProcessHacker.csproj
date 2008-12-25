@@ -593,6 +593,9 @@
     <None Include="Icons\Process_small.ico" />
     <None Include="Icons\Process.ico" />
     <Content Include="ProcessHacker.ico" />
+    <Content Include="structs.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\cog_edit.png" />
     <None Include="Resources\folder_go.png" />
     <None Include="Resources\report_user.png" />

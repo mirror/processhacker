@@ -1357,6 +1357,20 @@ namespace ProcessHacker
             startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
             stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
             DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+
+            try
+            {
+                if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+                {
+                    Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+
+                    parser.Parse(System.IO.File.ReadAllText(Application.StartupPath + "\\structs.txt"));
+                }
+            }
+            catch (Exception ex)
+            {
+                QueueMessage("Error loading structure definitions: " + ex.Message);
+            }
         }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)

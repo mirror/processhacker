@@ -1,7 +1,15 @@
+/*
+ * Process Hacker's Structs file - contains 
+ * common structures used in Windows
+ *
+ * wj32.
+ */
+
 typedef int handle;
 typedef int pvoid;
 typedef pvoid ppvoid;
 
+/* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
 UNICODE_STRING
 {
     ushort Length;
@@ -17,6 +25,7 @@ RTL_DRIVE_LETTER_CURDIR
     UNICODE_STRING DosPath;
 }
 
+/* Lots of useful stuff like current directory and command line */
 RTL_USER_PROCESS_PARAMETERS
 {
     ulong MaximumLength;
@@ -50,11 +59,13 @@ RTL_USER_PROCESS_PARAMETERS
     RTL_DRIVE_LETTER_CURDIR DLCurrentDirectory[0x20];
 }
 
+/* Contains the address of a fast-locking routine for the PEB */
 PEBLOCKROUTINE
 {
     pvoid PebLock;
 }
 
+/* Process Environment Block */
 PEB
 {
     boolean InheritedAddressSpace;

@@ -45,6 +45,8 @@ namespace ProcessHacker
         /// </summary>
         public static IdGenerator ResultsIds = new IdGenerator();
 
+        public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
+
         public static Dictionary<string, MemoryEditor> MemoryEditors = new Dictionary<string, MemoryEditor>();
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
 
