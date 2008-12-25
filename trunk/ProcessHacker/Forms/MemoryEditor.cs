@@ -180,7 +180,8 @@ namespace ProcessHacker
 
         private void WriteMemory()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE))
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
+                Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
             {
                 int wrotememory = 0;
 

@@ -70,8 +70,26 @@ namespace ProcessHacker.Structs
             }
         }
 
+        private StructDef _struct;
         private FieldType _type;
         private bool _ptr;
+
+        public StructField(StructDef struc, FieldType type, bool isPointer)
+        {
+            _struct = struc;
+            _type = type;
+            _ptr = isPointer;
+        }
+
+        public bool IsPointer
+        {
+            get { return _ptr; }
+        }
+
+        public StructDef Struct
+        {
+            get { return _struct; }
+        }
 
         /// <summary>
         /// Gets the size of the field, in bytes.
@@ -85,6 +103,11 @@ namespace ProcessHacker.Structs
                 else
                     return StructField.SizeOf(_type);
             }
+        }
+
+        public FieldType Type
+        {
+            get { return _type; }
         }
     }
 }

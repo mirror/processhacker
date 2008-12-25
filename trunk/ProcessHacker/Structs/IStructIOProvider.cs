@@ -23,10 +23,8 @@ using System.Text;
 
 namespace ProcessHacker.Structs
 {
-    public class StructDef
+    public interface IStructIOProvider
     {
-        public List<StructField> Fields { get; set; }
 
-        
     }
 }

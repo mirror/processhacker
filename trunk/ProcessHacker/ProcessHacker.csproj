@@ -525,6 +525,7 @@
     </Compile>
     <Compile Include="Misc\Tokenizer.cs" />
     <Compile Include="Structs\FieldType.cs" />
+    <Compile Include="Structs\IStructIOProvider.cs" />
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Symbols\Symbols.cs" />
