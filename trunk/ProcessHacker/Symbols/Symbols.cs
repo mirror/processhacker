@@ -31,6 +31,35 @@ namespace ProcessHacker
     /// </summary>
     public class Symbols
     {
+        /// <summary>
+        /// Specifies the detail with which the address's name was resolved.
+        /// </summary>
+        public enum FoundLevel
+        {
+            /// <summary>
+            /// Indicates that the address was resolved to a module, a function and possibly an offset. 
+            /// For example: mymodule.dll!MyExportedFunction+0x123
+            /// </summary>
+            Function,
+
+            /// <summary>
+            /// Indicates that the address was resolved to a module and an offset.
+            /// For example: mymodule.dll+0x4321
+            /// </summary>
+            Module,
+
+            /// <summary>
+            /// Indicates that the address was not resolved.
+            /// For example: 0x12345678
+            /// </summary>
+            Address,
+
+            /// <summary>
+            /// Indicates that the address was invalid (for example, 0x0).
+            /// </summary>
+            Invalid
+        }
+
         private static List<KeyValuePair<int, string>> _libraryLookup;
         private static Dictionary<string, List<KeyValuePair<int, string>>> _symbols;
         private static Dictionary<string, uint> _librarySizes;
@@ -160,8 +189,18 @@ namespace ProcessHacker
 
         public static string GetNameFromAddress(int address)
         {
+            FoundLevel level;
+
+            return GetNameFromAddress(address, out level);
+        }
+
+        public static string GetNameFromAddress(int address, out FoundLevel level)
+        {
             if (address == 0)
+            {
+                level = FoundLevel.Invalid;
                 return "(invalid)";
+            }
 
             // go through each loaded library
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
@@ -181,6 +220,8 @@ namespace ProcessHacker
                             // we found a function name
                             int offset = address - kvps.Key;
 
+                            level = FoundLevel.Function;
+
                             // don't need to put in the +
                             if (offset == 0)
                                 return string.Format("{0}!{1}", fi.Name, kvps.Value);
@@ -190,12 +231,14 @@ namespace ProcessHacker
                         }
                     }
 
-                    // no function name found, but we have a library name
+                    // no function name found, but we have a library name    
+                    level = FoundLevel.Module;
                     return string.Format("{0}+0x{1:x}", fi.Name, address - kvp.Key);
                 }
             }
 
             // we didn't find anything
+            level = FoundLevel.Address;
             return "0x" + address.ToString("x8");
         }
 

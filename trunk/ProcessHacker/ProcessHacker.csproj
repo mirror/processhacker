@@ -147,6 +147,9 @@
       <DependentUpon>ServiceProperties.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\StructViewer.resx">
+      <DependentUpon>StructViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ThreadList.resx">
       <DependentUpon>ThreadList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -185,6 +188,9 @@
     <EmbeddedResource Include="Forms\ProcessWindow.resx">
       <DependentUpon>ProcessWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StructWindow.resx">
+      <DependentUpon>StructWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SysInfoWindow.resx">
       <DependentUpon>SysInfoWindow.cs</DependentUpon>
@@ -320,6 +326,12 @@
     <Compile Include="Components\ServiceProperties.Designer.cs">
       <DependentUpon>ServiceProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\StructViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\StructViewer.Designer.cs">
+      <DependentUpon>StructViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\ThreadList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -373,6 +385,12 @@
     </Compile>
     <Compile Include="Forms\ProcessWindow.Designer.cs">
       <DependentUpon>ProcessWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StructWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StructWindow.Designer.cs">
+      <DependentUpon>StructWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SysInfoWindow.cs">
       <SubType>Form</SubType>

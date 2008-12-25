@@ -163,7 +163,15 @@ namespace ProcessHacker
                     try { newitem.Priority = t.PriorityLevel.ToString(); }
                     catch { }
 
-                    try { newitem.StartAddress = Symbols.GetNameFromAddress(newitem.StartAddressI); }
+                    try
+                    {
+                        Symbols.FoundLevel level;
+
+                        string symName = Symbols.GetNameFromAddress(newitem.StartAddressI, out level);
+
+                        if (level != Symbols.FoundLevel.Address)
+                            newitem.StartAddress = symName;
+                    }
                     catch { }
 
                     try { newitem.WaitReason = t.WaitReason.ToString(); }
