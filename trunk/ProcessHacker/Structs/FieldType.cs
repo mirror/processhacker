@@ -19,36 +19,29 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
-using System.Windows.Forms;
 
-namespace ProcessHacker
+namespace ProcessHacker.Structs
 {
-    public partial class ListWindow : Form
+    public enum FieldType
     {
-        public ListWindow(List<KeyValuePair<string, string>> list)
-        {
-            InitializeComponent();
-
-            foreach (KeyValuePair<string, string> kvp in list)
-            {
-                ListViewItem item = new ListViewItem();
-
-                item.Text = kvp.Key;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, kvp.Value));
-
-                listView.Items.Add(item);
-            }
-
-            listView.ContextMenu = GenericViewMenu.GetMenu(listView);
-        }
-
-        private void buttonClose_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        Bool8,
+        Bool32,
+        CharASCII,
+        CharUTF8,
+        CharUTF16,
+        Int8,
+        Int16,
+        Int32,
+        Int64,
+        UInt8,
+        UInt16,
+        UInt32,
+        UInt64,
+        StringASCII,
+        StringUTF8,
+        StringUTF16,
+        Struct,
+        Handle
     }
 }
