@@ -401,5 +401,34 @@ namespace ProcessHacker
             }
             catch { }
         }
+
+        private void buttonStruct_Click(object sender, EventArgs e)
+        {
+            int selectionStart = (int)hexBoxMemory.SelectionStart;
+
+            List<string> structNames = new List<string>(Program.Structs.Keys);
+
+            structNames.Sort();
+
+            ListPickerWindow lpw = new ListPickerWindow(structNames.ToArray());
+
+            lpw.Text = "Select a Struct";
+
+            if (lpw.ShowDialog() == DialogResult.OK)
+            {
+                if (Program.Structs.ContainsKey(lpw.SelectedItem))
+                {
+                    // stupid TreeViewAdv only works on the one thread
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            StructWindow sw = new StructWindow(_pid, (int)(_address + selectionStart),
+                                Program.Structs[lpw.SelectedItem]);
+
+                            sw.Show();
+                            sw.Activate();
+                        }));
+                }
+            }
+        }
     }
 }

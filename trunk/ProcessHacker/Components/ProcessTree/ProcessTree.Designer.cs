@@ -46,7 +46,6 @@
             // 
             this.treeProcesses.AllowColumnReorder = true;
             this.treeProcesses.BackColor = System.Drawing.SystemColors.Window;
-            this.treeProcesses.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.treeProcesses.Columns.Add(this.columnName);
             this.treeProcesses.Columns.Add(this.columnPID);
             this.treeProcesses.Columns.Add(this.columnMemory);
@@ -71,7 +70,7 @@
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
-            this.treeProcesses.Size = new System.Drawing.Size(450, 436);
+            this.treeProcesses.Size = new System.Drawing.Size(450, 472);
             this.treeProcesses.TabIndex = 2;
             this.treeProcesses.UseColumns = true;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
@@ -175,12 +174,12 @@
             // 
             // ProcessTree
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.treeProcesses);
             this.DoubleBuffered = true;
             this.Name = "ProcessTree";
-            this.Size = new System.Drawing.Size(450, 436);
+            this.Size = new System.Drawing.Size(450, 472);
             this.ResumeLayout(false);
 
         }

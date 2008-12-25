@@ -6,15 +6,28 @@
  */
 
 typedef int handle;
-typedef int pvoid;
-typedef pvoid ppvoid;
+typedef int NTSTATUS; /* no enum support *yet* */
+typedef pvoid ppvoid; /* what the hell are ppvoids? */
 
 /* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
 UNICODE_STRING
 {
     ushort Length;
     ushort MaximumLength;
-    wstr* Buffer[Length];
+    wstr* Buffer[Length / 2]; /* Length is in bytes, and each wchar is 2 bytes */
+}
+
+/* A doubly-linked list.  */
+LIST_ENTRY
+{
+    LIST_ENTRY* Flink;
+    LIST_ENTRY* Blink;
+}
+
+CLIENT_ID
+{
+    pvoid UniqueProcess;
+    pvoid UniqueThread;
 }
 
 RTL_DRIVE_LETTER_CURDIR
@@ -122,4 +135,77 @@ PEB
     ulong TlsExpansionBitmap;
     byte TlsExpansionBitmapBits[0x80];
     ulong SessionId;
+}
+
+NT_TIB
+{
+    pvoid ExceptionList; /* EXCEPTION_REGISTRATION_RECORD* */
+    pvoid StackBase;
+    pvoid StackLimit;
+    pvoid SubSystemTib;
+    ulong FiberData_Version_Union;
+    pvoid ArbitraryUserPointer;
+    pvoid Self; /* NT_TIB* */
+}
+
+/* Thread Environment Block */
+TEB
+{
+    NT_TIB Tib;
+    pvoid EnvironmentPointer;
+    CLIENT_ID Cid;
+    pvoid ActiveRpcInfo;
+    pvoid ThreadLocalStoragePointer;
+    PEB* Peb;
+    ulong LastErrorValue;
+    ulong CountOfOwnedCriticalSections;
+    pvoid CsrClientThread;
+    pvoid Win32ThreadInfo;
+    ulong Win32ClientInfo[0x1f];
+    pvoid WOW32Reserved;
+    ulong CurrentLocale;
+    ulong FpSoftwareStatusRegister;
+    pvoid SystemReserved1[0x36];
+    pvoid Spare1;
+    ulong ExceptionCode;
+    ulong SpareBytes1[0x28];
+    pvoid SystemReserved2[0xa];
+    ulong GdiRgn;
+    ulong GdiPen;
+    ulong GdiBrush;
+    CLIENT_ID RealClientId;
+    pvoid GdiCachedProcessHandle;
+    ulong GdiClientPID;
+    ulong GdiClientTID;
+    pvoid GdiThreadLocaleInfo;
+    pvoid UserReserved[5];
+    pvoid GlDispatchTable[0x118];
+    ulong GlReserved1[0x1a];
+    pvoid GlReserved2;
+    pvoid GlSectionInfo;
+    pvoid GlSection;
+    pvoid GlTable;
+    pvoid GlCurrentRC;
+    pvoid GlContext;
+    NTSTATUS LastStatusValue;
+    UNICODE_STRING StaticUnicodeString;
+    wchar StaticUnicodeBuffer[0x105];
+    pvoid DeallocationStack;
+    pvoid TlsSlots[0x40];
+    LIST_ENTRY TlsLinks;
+    pvoid Vdm;
+    pvoid ReservedForNtRpc;
+    pvoid DbgSsReserved[0x2];
+    ulong HardErrorDisabled;
+    pvoid Instrumentation[0x10];
+    pvoid WinSockData;
+    ulong GdiBatchCount;
+    ulong Spare2;
+    ulong Spare3;
+    ulong Spare4;
+    pvoid ReservedForOle;
+    ulong WaitingOnLoaderLock;
+    pvoid StackCommit;
+    pvoid StackCommitMax;
+    pvoid StackReserved;
 }

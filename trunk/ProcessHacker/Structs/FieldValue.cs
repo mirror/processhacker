@@ -28,5 +28,7 @@ namespace ProcessHacker.Structs
         public string Name;
         public FieldType FieldType;
         public object Value;
+        public string StructName;
+        public int PointerValue;
     }
 }

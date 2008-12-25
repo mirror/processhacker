@@ -36,6 +36,9 @@ namespace ProcessHacker
             InitializeComponent();
 
             _fileName = fileName;
+
+            textProcName.Focus();
+            textProcName.Select();
         }
 
         private void buttonLookup_Click(object sender, EventArgs e)

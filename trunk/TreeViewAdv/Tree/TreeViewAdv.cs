@@ -1,20 +1,18 @@
+/*
+ * Modified by wj32.
+ */
+
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Security.Permissions;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Collections;
-using System.Drawing.Design;
-using Aga.Controls.Tree.NodeControls;
-using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.Threading;
+using System.Windows.Forms;
 using Aga.Controls.Threading;
+using Aga.Controls.Tree.NodeControls;
 
 
 namespace Aga.Controls.Tree
@@ -434,8 +432,8 @@ namespace Aga.Controls.Tree
 					case BorderStyle.FixedSingle:
 							res.Style |= 0x800000;
 							break;
-					case BorderStyle.Fixed3D:
-							res.ExStyle |= 0x200;
+                    case BorderStyle.Fixed3D:
+                            res.ExStyle |= 0x20000;
 						break;
 				}
 				return res;

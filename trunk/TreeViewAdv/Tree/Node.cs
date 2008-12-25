@@ -228,7 +228,7 @@ namespace Aga.Controls.Tree
 			return Text;
 		}
 
-		private TreeModel FindModel()
+		public TreeModel FindModel()
 		{
 			Node node = this;
 			while (node != null)

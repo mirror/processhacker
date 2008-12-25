@@ -41,6 +41,7 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.textDEP = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.buttonTerminate = new System.Windows.Forms.Button();
@@ -51,6 +52,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textParent = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.textPEBAddress = new System.Windows.Forms.TextBox();
             this.textCurrentDirectory = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textCmdLine = new System.Windows.Forms.TextBox();
@@ -84,8 +86,6 @@
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.textPEBAddress = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -182,6 +182,15 @@
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 107);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(72, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "PEB Address:";
             // 
             // textDEP
             // 
@@ -287,6 +296,16 @@
             this.label4.Size = new System.Drawing.Size(89, 13);
             this.label4.TabIndex = 0;
             this.label4.Text = "Current Directory:";
+            // 
+            // textPEBAddress
+            // 
+            this.textPEBAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textPEBAddress.Location = new System.Drawing.Point(101, 104);
+            this.textPEBAddress.Name = "textPEBAddress";
+            this.textPEBAddress.ReadOnly = true;
+            this.textPEBAddress.Size = new System.Drawing.Size(422, 20);
+            this.textPEBAddress.TabIndex = 3;
             // 
             // textCurrentDirectory
             // 
@@ -630,25 +649,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 107);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(72, 13);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "PEB Address:";
-            // 
-            // textPEBAddress
-            // 
-            this.textPEBAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.textPEBAddress.Location = new System.Drawing.Point(101, 104);
-            this.textPEBAddress.Name = "textPEBAddress";
-            this.textPEBAddress.ReadOnly = true;
-            this.textPEBAddress.Size = new System.Drawing.Size(422, 20);
-            this.textPEBAddress.TabIndex = 3;
             // 
             // ProcessWindow
             // 

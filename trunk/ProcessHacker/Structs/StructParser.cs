@@ -148,9 +148,9 @@ namespace ProcessHacker.Structs
                 }
                 else
                 {
-                    StructDef def = this.ParseDef(text, ref i);
-                    
-                    _structs.Add(structName, def);
+                    // add it first so that structs can be self-referential
+                    _structs.Add(structName, null);
+                    _structs[structName] = this.ParseDef(text, ref i);
                 }
             }
         }
@@ -200,6 +200,9 @@ namespace ProcessHacker.Structs
                         throw new ParserException(_lineNumber, "Unknown identifier '" + typeName + "' (type or struct name)");
                 }
 
+                // type, without the pointer or array flag
+                FieldType justType = type;
+
                 // TYPE*
                 // optional asterisk (pointer)
                 _eatResult = EatWhitespace(text, ref i);
@@ -222,13 +225,9 @@ namespace ProcessHacker.Structs
                 if (def.ContainsField(fieldName))
                     throw new ParserException(_lineNumber, "Field name '" + fieldName + "' already used");
 
-                StructField field = new StructField(fieldName, type);
-
-                if (field.Type == FieldType.Struct)
-                    field.StructName = typeName;
-
                 _eatResult = EatWhitespace(text, ref i);
                 string leftSqBracket = EatSymbol(text, ref i);
+                int varLength = 0;
 
                 if (leftSqBracket == "[")
                 {
@@ -242,13 +241,56 @@ namespace ProcessHacker.Structs
                             throw new ParserException(_lineNumber, "Unknown identifier '" + fieldRefName + "' (field name)");
 
                         def.GetField(fieldRefName).SetsVarOn = fieldName;
+
+                        // const add/multiply
+                        int iSave = i;
+
+                        _eatResult = EatWhitespace(text, ref i);
+                        string plusOrMulOrDivSign = EatSymbol(text, ref i);
+
+                        if (plusOrMulOrDivSign == "+")
+                        {
+                            def.GetField(fieldRefName).SetsVarOnAdd = EatParseInt(text, ref i);
+                        }
+                        else if (plusOrMulOrDivSign == "*")
+                        {
+                            def.GetField(fieldRefName).SetsVarOnMultiply = EatParseFloat(text, ref i);
+
+                            int iSave2 = i;
+                            _eatResult = EatWhitespace(text, ref i);
+                            string plusSign = EatSymbol(text, ref i);
+
+                            if (plusSign == "+")
+                                def.GetField(fieldRefName).SetsVarOnAdd = EatParseInt(text, ref i);
+                            else
+                                i = iSave2;
+                        }
+                        else if (plusOrMulOrDivSign == "/")
+                        {
+                            // here we just set SetsVarOnMultiply to 1 / value
+                            def.GetField(fieldRefName).SetsVarOnMultiply = 1 / EatParseFloat(text, ref i);
+
+                            int iSave2 = i;
+                            _eatResult = EatWhitespace(text, ref i);
+                            string plusSign = EatSymbol(text, ref i);
+
+                            if (plusSign == "+")
+                                def.GetField(fieldRefName).SetsVarOnAdd = EatParseInt(text, ref i);
+                            else
+                                i = iSave2;
+                        }
+                        else
+                        {
+                            // that didn't work; restore the index
+                            i = iSave;
+                        }
                     }
                     else if (fieldSizeSpec != "")
                     {
                         try
                         {
-                            field.VarArrayLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
-                            field.VarLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
+                            varLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
+                            varLength = (int)BaseConverter.ToNumberParse(fieldSizeSpec);
                         }
                         catch
                         {
@@ -259,6 +301,10 @@ namespace ProcessHacker.Structs
                     {
                         throw new ParserException(_lineNumber, "Number or identifier expected (size specifier)");
                     }
+
+                    // if it's not a string, it's an array
+                    if (justType != FieldType.StringASCII && justType != FieldType.StringUTF16)
+                        type |= FieldType.Array;
 
                     _eatResult = EatWhitespace(text, ref i);
                     string rightSqBracket = EatSymbol(text, ref i);
@@ -277,10 +323,54 @@ namespace ProcessHacker.Structs
                 if (_eatResult || endSemicolon != ";")
                     throw new ParserException(_lineNumber, "Expected ';'");
 
+                StructField field = new StructField(fieldName, type);
+
+                if (field.Type == FieldType.Struct)
+                    field.StructName = typeName;
+
+                field.VarArrayLength = varLength;
+                field.VarLength = varLength;
+
                 def.AddField(field);
             }
 
             return def;
+        }
+
+        private float EatParseFloat(string text, ref int i)
+        {
+            _eatResult = EatWhitespace(text, ref i);
+            string number = EatNumber(text, ref i);
+
+            if (_eatResult || number == "")
+                throw new ParserException(_lineNumber, "Expected floating-point number");
+
+            try
+            {
+                return float.Parse(number);
+            }
+            catch
+            {
+                throw new ParserException(_lineNumber, "Could not parse number '" + number + "'");
+            }
+        }
+
+        private int EatParseInt(string text, ref int i)
+        {
+            _eatResult = EatWhitespace(text, ref i);
+            string number = EatNumber(text, ref i);
+
+            if (_eatResult || number == "")
+                throw new ParserException(_lineNumber, "Expected integer");
+
+            try
+            {
+                return (int)BaseConverter.ToNumberParse(number);
+            }
+            catch
+            {
+                throw new ParserException(_lineNumber, "Could not parse number '" + number + "'");
+            }
         }
 
         // my idea of a tokenizer follows...
@@ -312,12 +402,21 @@ namespace ProcessHacker.Structs
                     i++;
                     continue;
                 }
-                else if (preComment && text[i] == '*')
+                else if (preComment)
                 {
-                    preComment = false;
-                    inComment = true;
-                    i++;
-                    continue;
+                    if (text[i] == '*')
+                    {
+                        preComment = false;
+                        inComment = true;
+                        i++;
+                        continue;
+                    }
+                    else
+                    {
+                        // it's a mistake, revert!
+                        i -= 1;
+                        break;
+                    }
                 }
                 else
                 {
@@ -371,10 +470,21 @@ namespace ProcessHacker.Structs
 
             while (i < text.Length)
             {
-                // allow hex numbers
+                // allow hex numbers and floating-point numbers
                 if (sb.Length == 1 && sb[0] == '0')
                 {
-                    if (!char.IsDigit(text[i]) && text[i] != 'x')
+                    if (!char.IsDigit(text[i]) && char.ToLower(text[i]) != 'x' && text[i] != '.')
+                        break;
+                }
+                else if (sb.Length >= 2 && sb[0] == '0' && char.ToLower(sb[1]) == 'x')
+                {
+                    if (!(char.IsDigit(text[i]) ||
+                        char.ToLower(text[i]) == 'a' ||
+                        char.ToLower(text[i]) == 'b' ||
+                        char.ToLower(text[i]) == 'c' ||
+                        char.ToLower(text[i]) == 'd' ||
+                        char.ToLower(text[i]) == 'e' ||
+                        char.ToLower(text[i]) == 'f'))
                         break;
                 }
                 else
@@ -396,10 +506,14 @@ namespace ProcessHacker.Structs
 
             while (i < text.Length && sb.Length < 1) // we need a proper parser to solve this
             {
-                if (!char.IsPunctuation(text[i]) && !char.IsSymbol(text[i]))
+                char c = text[i];
+
+                if (c < ' ' || c > '~') // check if its an ASCII character
+                    break;
+                if (char.IsLetterOrDigit(c) || c == '_') // check if its eligible to be an identifier
                     break;
 
-                sb.Append(text[i]);
+                sb.Append(c);
                 i++;
             }
 

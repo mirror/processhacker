@@ -86,6 +86,9 @@ namespace ProcessHacker.Structs
                         case FieldType.Int8:
                             size = 1;
                             break;
+                        case FieldType.PVoid:
+                            size = 4;
+                            break;
                         case FieldType.StringASCII:
                             size = VarLength;
                             break;
@@ -127,6 +130,10 @@ namespace ProcessHacker.Structs
         internal int VarLength { get; set; }
 
         public string SetsVarOn { get; set; }
+
+        public int SetsVarOnAdd { get; set; }
+
+        public float SetsVarOnMultiply { get; set; }
 
         public string StructName { get; set; }
 

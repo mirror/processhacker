@@ -181,6 +181,9 @@
       <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ListPickerWindow.resx">
+      <DependentUpon>ListPickerWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -373,6 +376,12 @@
     </Compile>
     <Compile Include="Forms\GetProcAddressWindow.Designer.cs">
       <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ListPickerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ListPickerWindow.Designer.cs">
+      <DependentUpon>ListPickerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ListWindow.cs">
       <SubType>Form</SubType>
@@ -611,6 +620,7 @@
     <None Include="Icons\Process_small.ico" />
     <None Include="Icons\Process.ico" />
     <Content Include="ProcessHacker.ico" />
+    <None Include="Resources\bricks.png" />
     <Content Include="structs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

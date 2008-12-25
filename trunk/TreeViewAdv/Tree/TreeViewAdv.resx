@@ -117,29 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9/f3AZl8Z2Sgd1b0sX9V/659Uf+gdFL2lHZfcwAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlntlPZ96WuexgFf/y6qI/9GzlP+6jWL/tIZZ/6p2
-        TP+adFXrknVgRgAAAAAAAAAAAAAAAAAAAABrjW0Ua45tCKx+Vf7Vup7/1rqd/9O3m//RspP/tohc/7mN
-        Yf+3jGD/sYBV/6d0TP4AAAAA9/f3AWyPbmNglGT0YqFp/2CgaP+wfVH/4c23/9i/pP/Yv6b/1Lmc/7eL
-        X/+2iV//t4xg/7mNYf+wfVH/bY5xPWeVa+dlomv/kr+Y/53Ho/9wq3f/rn1Q/+PQu//awqr/07ed/8ei
-        fP/Al27/tYhb/7aJX/+5jWH/sH9T/2Keav6oza7/pcyr/6HJqP+YxJ7/aqhz/617Tv/cyK//vp6A/7eM
-        ZP/Rso7/0bKO/7qPZf+7kGf/tolf/7B9Uf9hoGj/v9rE/6zQsv+qzrD/ncil/2ypdf+Uen3/WWDI/09X
-        4/9OVeD/V17I/493g/+6j2X/0bKO/8Whev+od07+X59n/8Teyf+z1Lj/o8mp/4Cqmf9gbML/T1fg/2Vn
-        6/+SkvT/YGLq/1da5P9IUdz/X2K9/6WIfv/AmXD/pIRqyFyeZP+41r3/hrmO/3Crd/9SWNz/ZWnr/5eV
-        9P+QkPP/iInw/1pe5/9eYen/XGDo/1BX5P9IU9j+lX11Q6WLdgpjn2r+hbmO/5jFof9zrHv/Tlbi/7Ow
-        +f+WlfT/kpL0/4uM8P9bX+j/W2Dn/1xg6P9eYen/Tlbi/2x0ujAAAAAAdJ15yHuzhP91rn3/bqp3/01T
-        4f+zsPn/lJX1/2Vp6/9ucOz/bXHs/1lb5f9bYOf/XmHp/1BX4v9sdLowAAAAAH2efwpylHQ7a45uW22n
-        dv9LUeD/oaH0/2lr7P9gYur/lpL3/5aS9/9jZ+n/ZGXq/1tg5/9OVuL/bHS6MAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAU1nb/nt78v+Wkvf/Y2fp/1FX4/9RV+P/Y2fp/5aS9/97e/L/TFXZ/mx0uiYAAAAAAAAAAAAA
-        AAAAAAAAAAAAAHJ3zshtbuz/ZWfr/15h6f93d/D/c3Pw/15h6f9oauv/bnDs/3F2zMgAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAB/h8oKc3vAO2xzvFtgYuP/UFbi/1BW4v9eYeP/a3O7XnN6wDt/h8oKAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAA/gOsQfwArEHwAKxBgACsQQAArEEAAKxBAACsQQAArEEAAKxBAAGsQQABrEEAAaxB8AGsQfAD
-        rEHwA6xB//+sQQ==
-</value>
-  </data>
+  <metadata name="_vScrollBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>128, 17</value>
+  </metadata>
+  <metadata name="_hScrollBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="$this.TrayLargeIcon" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
 </root>

@@ -359,7 +359,8 @@ namespace Aga.Controls.Tree
 				if (_borderStyle != value)
 				{
 					_borderStyle = value;
-					base.UpdateStyles();
+                    this.RecreateHandle();
+                    this.Invalidate();
 				}
 			}
 		}

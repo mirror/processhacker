@@ -9,6 +9,7 @@ Process Hacker
  * NEW: Terminator tool - tries to terminate processes using many different 
    techniques
  * NEW: Highlighting for UAC elevated processes
+ * NEW: Struct reader (with support for user-defined structs)
  * FIXED: Shows SIDs without names in SDDL format
  * FIXED: Less "Access denied" errors - uses PROCESS_QUERY_LIMITED_INFORMATION 
    on Vista
