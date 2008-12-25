@@ -11,11 +11,25 @@ namespace ProcessHacker
 {
     public partial class StructWindow : Form
     {
+        private int _pid;
+        private int _address;
+        private StructDef _struct;
+
         public StructWindow(int pid, int address, StructDef struc)
         {
             InitializeComponent();
 
-            StructViewer sv = new StructViewer(pid, address, struc);
+            _pid = pid;
+            _address = address;
+            _struct = struc;
+        }
+
+        private void StructWindow_Load(object sender, EventArgs e)
+        {
+            StructViewer sv = new StructViewer(_pid, _address, _struct);
+
+            if (sv.Error)
+                this.Close();
 
             sv.Dock = DockStyle.Fill;
             panel.Controls.Add(sv);

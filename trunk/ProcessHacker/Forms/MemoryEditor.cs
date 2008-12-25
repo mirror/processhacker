@@ -424,8 +424,13 @@ namespace ProcessHacker
                             StructWindow sw = new StructWindow(_pid, (int)(_address + selectionStart),
                                 Program.Structs[lpw.SelectedItem]);
 
-                            sw.Show();
-                            sw.Activate();
+                            try
+                            {
+                                sw.Show();
+                                sw.Activate();
+                            }
+                            catch
+                            { }
                         }));
                 }
             }

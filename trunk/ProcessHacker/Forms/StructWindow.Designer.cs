@@ -66,6 +66,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "StructWindow";
             this.Text = "Struct";
+            this.Load += new System.EventHandler(this.StructWindow_Load);
             this.ResumeLayout(false);
 
         }

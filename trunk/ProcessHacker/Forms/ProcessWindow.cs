@@ -451,6 +451,38 @@ namespace ProcessHacker
             this.UpdateDEPStatus();
         }
 
+        private void buttonInspectPEB_Click(object sender, EventArgs e)
+        {
+            try
+            { 
+                if (!Program.Structs.ContainsKey("PEB"))
+                    throw new Exception("The struct 'PEB' has not been loaded. Make sure structs.txt was loaded successfully.");
+
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                {
+                    int baseAddress = phandle.GetBasicInformation().PebBaseAddress;
+
+                    Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
+                    {
+                        StructWindow sw = new StructWindow(_pid, baseAddress, Program.Structs["PEB"]);
+
+                        try
+                        {
+                            sw.Show();
+                            sw.Activate();
+                        }
+                        catch
+                        { }
+                    }));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not inspect the PEB:\n\n" + ex.Message,
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void buttonInspectParent_Click(object sender, EventArgs e)
         {
             try

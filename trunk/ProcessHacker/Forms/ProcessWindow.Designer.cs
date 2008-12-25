@@ -48,7 +48,6 @@
             this.buttonInspectParent = new System.Windows.Forms.Button();
             this.buttonEditDEP = new System.Windows.Forms.Button();
             this.buttonOpenCurDir = new System.Windows.Forms.Button();
-            this.buttonPEBStrings = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.textParent = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -66,12 +65,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textFileVersion = new System.Windows.Forms.TextBox();
             this.tabThreads = new System.Windows.Forms.TabPage();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
             this.tabModules = new System.Windows.Forms.TabPage();
-            this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -79,12 +75,16 @@
             this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.checkHideFreeRegions = new System.Windows.Forms.CheckBox();
-            this.listMemory = new ProcessHacker.MemoryList();
             this.tabHandles = new System.Windows.Forms.TabPage();
             this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
-            this.listHandles = new ProcessHacker.HandleList();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.buttonInspectPEB = new System.Windows.Forms.Button();
+            this.listThreads = new ProcessHacker.ThreadList();
+            this.listModules = new ProcessHacker.ModuleList();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
+            this.listMemory = new ProcessHacker.MemoryList();
+            this.listHandles = new ProcessHacker.HandleList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -138,7 +138,7 @@
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(659, 362);
+            this.tabControl.Size = new System.Drawing.Size(659, 357);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -151,7 +151,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 23);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(651, 335);
+            this.tabGeneral.Size = new System.Drawing.Size(651, 330);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -165,10 +165,10 @@
             this.groupProcess.Controls.Add(this.textDEP);
             this.groupProcess.Controls.Add(this.label6);
             this.groupProcess.Controls.Add(this.buttonTerminate);
+            this.groupProcess.Controls.Add(this.buttonInspectPEB);
             this.groupProcess.Controls.Add(this.buttonInspectParent);
             this.groupProcess.Controls.Add(this.buttonEditDEP);
             this.groupProcess.Controls.Add(this.buttonOpenCurDir);
-            this.groupProcess.Controls.Add(this.buttonPEBStrings);
             this.groupProcess.Controls.Add(this.label5);
             this.groupProcess.Controls.Add(this.textParent);
             this.groupProcess.Controls.Add(this.label4);
@@ -178,7 +178,7 @@
             this.groupProcess.Controls.Add(this.textCmdLine);
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(637, 203);
+            this.groupProcess.Size = new System.Drawing.Size(637, 198);
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
@@ -257,17 +257,6 @@
             this.buttonOpenCurDir.UseVisualStyleBackColor = true;
             this.buttonOpenCurDir.Click += new System.EventHandler(this.buttonOpenCurDir_Click);
             // 
-            // buttonPEBStrings
-            // 
-            this.buttonPEBStrings.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonPEBStrings.Location = new System.Drawing.Point(529, 102);
-            this.buttonPEBStrings.Name = "buttonPEBStrings";
-            this.buttonPEBStrings.Size = new System.Drawing.Size(102, 23);
-            this.buttonPEBStrings.TabIndex = 4;
-            this.buttonPEBStrings.Text = "PEB Strings...";
-            this.buttonPEBStrings.UseVisualStyleBackColor = true;
-            this.buttonPEBStrings.Click += new System.EventHandler(this.buttonPEBStrings_Click);
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -304,7 +293,7 @@
             this.textPEBAddress.Location = new System.Drawing.Point(101, 104);
             this.textPEBAddress.Name = "textPEBAddress";
             this.textPEBAddress.ReadOnly = true;
-            this.textPEBAddress.Size = new System.Drawing.Size(422, 20);
+            this.textPEBAddress.Size = new System.Drawing.Size(500, 20);
             this.textPEBAddress.TabIndex = 3;
             // 
             // textCurrentDirectory
@@ -445,21 +434,10 @@
             this.tabThreads.ImageKey = "hourglass";
             this.tabThreads.Location = new System.Drawing.Point(4, 23);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(651, 335);
+            this.tabThreads.Size = new System.Drawing.Size(651, 272);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Highlight = false;
-            this.listThreads.Location = new System.Drawing.Point(0, 0);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(651, 335);
-            this.listThreads.TabIndex = 0;
             // 
             // tabToken
             // 
@@ -467,7 +445,7 @@
             this.tabToken.Location = new System.Drawing.Point(4, 23);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(651, 335);
+            this.tabToken.Size = new System.Drawing.Size(651, 272);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -478,21 +456,10 @@
             this.tabModules.ImageKey = "page_white_wrench";
             this.tabModules.Location = new System.Drawing.Point(4, 23);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(651, 335);
+            this.tabModules.Size = new System.Drawing.Size(651, 272);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
-            // 
-            // listModules
-            // 
-            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listModules.DoubleBuffered = true;
-            this.listModules.Highlight = false;
-            this.listModules.Location = new System.Drawing.Point(0, 0);
-            this.listModules.Name = "listModules";
-            this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(651, 335);
-            this.listModules.TabIndex = 0;
             // 
             // tabMemory
             // 
@@ -503,22 +470,10 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 23);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(651, 335);
+            this.tabMemory.Size = new System.Drawing.Size(651, 272);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 9;
-            this.buttonSearch.Text = "&String Scan...";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // menuSearch
             // 
@@ -573,19 +528,6 @@
             this.checkHideFreeRegions.UseVisualStyleBackColor = true;
             this.checkHideFreeRegions.CheckedChanged += new System.EventHandler(this.checkHideFreeRegions_CheckedChanged);
             // 
-            // listMemory
-            // 
-            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listMemory.DoubleBuffered = true;
-            this.listMemory.Highlight = false;
-            this.listMemory.Location = new System.Drawing.Point(3, 59);
-            this.listMemory.Name = "listMemory";
-            this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(645, 273);
-            this.listMemory.TabIndex = 0;
-            // 
             // tabHandles
             // 
             this.tabHandles.Controls.Add(this.checkHideHandlesNoName);
@@ -594,7 +536,7 @@
             this.tabHandles.Location = new System.Drawing.Point(4, 23);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(651, 335);
+            this.tabHandles.Size = new System.Drawing.Size(651, 272);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -611,25 +553,12 @@
             this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
             this.checkHideHandlesNoName.CheckedChanged += new System.EventHandler(this.checkHideHandlesNoName_CheckedChanged);
             // 
-            // listHandles
-            // 
-            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHandles.DoubleBuffered = true;
-            this.listHandles.Highlight = false;
-            this.listHandles.Location = new System.Drawing.Point(3, 30);
-            this.listHandles.Name = "listHandles";
-            this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(645, 302);
-            this.listHandles.TabIndex = 0;
-            // 
             // tabServices
             // 
             this.tabServices.ImageKey = "cog";
             this.tabServices.Location = new System.Drawing.Point(4, 23);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(651, 335);
+            this.tabServices.Size = new System.Drawing.Size(651, 272);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -646,6 +575,77 @@
             this.imageList.Images.SetKeyName(5, "connect");
             this.imageList.Images.SetKeyName(6, "hourglass");
             // 
+            // buttonInspectPEB
+            // 
+            this.buttonInspectPEB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonInspectPEB.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
+            this.buttonInspectPEB.Location = new System.Drawing.Point(607, 101);
+            this.buttonInspectPEB.Name = "buttonInspectPEB";
+            this.buttonInspectPEB.Size = new System.Drawing.Size(24, 24);
+            this.buttonInspectPEB.TabIndex = 4;
+            this.buttonInspectPEB.UseVisualStyleBackColor = true;
+            this.buttonInspectPEB.Click += new System.EventHandler(this.buttonInspectPEB_Click);
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Highlight = false;
+            this.listThreads.Location = new System.Drawing.Point(0, 0);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(651, 272);
+            this.listThreads.TabIndex = 0;
+            // 
+            // listModules
+            // 
+            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
+            this.listModules.Highlight = false;
+            this.listModules.Location = new System.Drawing.Point(0, 0);
+            this.listModules.Name = "listModules";
+            this.listModules.Provider = null;
+            this.listModules.Size = new System.Drawing.Size(651, 272);
+            this.listModules.TabIndex = 0;
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 9;
+            this.buttonSearch.Text = "&String Scan...";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
+            // listMemory
+            // 
+            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listMemory.DoubleBuffered = true;
+            this.listMemory.Highlight = false;
+            this.listMemory.Location = new System.Drawing.Point(3, 59);
+            this.listMemory.Name = "listMemory";
+            this.listMemory.Provider = null;
+            this.listMemory.Size = new System.Drawing.Size(645, 210);
+            this.listMemory.TabIndex = 0;
+            // 
+            // listHandles
+            // 
+            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.DoubleBuffered = true;
+            this.listHandles.Highlight = false;
+            this.listHandles.Location = new System.Drawing.Point(3, 30);
+            this.listHandles.Name = "listHandles";
+            this.listHandles.Provider = null;
+            this.listHandles.Size = new System.Drawing.Size(645, 239);
+            this.listHandles.TabIndex = 0;
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -654,7 +654,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(659, 362);
+            this.ClientSize = new System.Drawing.Size(659, 357);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Menu = this.mainMenu;
@@ -708,7 +708,6 @@
         private System.Windows.Forms.GroupBox groupProcess;
         private System.Windows.Forms.TabPage tabServices;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button buttonPEBStrings;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textCurrentDirectory;
         private System.Windows.Forms.Button buttonOpenFileNameFolder;
@@ -734,5 +733,6 @@
         private wyDay.Controls.SplitButton buttonSearch;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textPEBAddress;
+        private System.Windows.Forms.Button buttonInspectPEB;
     }
 }

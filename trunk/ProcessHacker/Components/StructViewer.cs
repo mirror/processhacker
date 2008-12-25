@@ -38,14 +38,18 @@ namespace ProcessHacker
                 _struct.Structs = Program.Structs;
                 values = _struct.Read();
 
-                _model.Nodes.Add(new StructNode(new FieldValue() { Name = "Struct" }));
+                _model.Nodes.Add(new StructNode(new FieldValue() 
+                { Name = "Struct", FieldType = FieldType.StringUTF16, Value = "" }));
 
                 foreach (FieldValue val in values)
                     this.AddNode(_model.Nodes[0], val);
+
+                treeStruct.Root.Children[0].IsExpanded = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Error = true;
             }
         }
 
@@ -61,6 +65,8 @@ namespace ProcessHacker
 
             node.Nodes.Add(newNode);
         }
+
+        public bool Error { get; private set; }
     }
 
     public enum IntegerDisplayBase
