@@ -195,6 +195,8 @@ namespace ProcessHacker
 
         public void UpdateDEPStatus()
         {
+            labelDEP.Enabled = true;
+            textDEP.Enabled = true;
             try
             {
                 using (Win32.ProcessHandle phandle
@@ -224,9 +226,18 @@ namespace ProcessHacker
                     textDEP.Text = str;
                 }
             }
+            catch (EntryPointNotFoundException)
+            {
+                labelDEP.Enabled = false;
+                textDEP.Enabled = false;
+                textDEP.Text = "";
+                //textDEP.Text = "(This feature is not supported on your version of Windows)";
+                buttonEditDEP.Enabled = false;
+            }
             catch (Exception ex)
             {
                 textDEP.Text = "(" + ex.Message + ")";
+                buttonEditDEP.Enabled = false;
             }
 
             if (_processItem.SessionId != Program.CurrentSessionId)

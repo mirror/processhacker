@@ -183,6 +183,17 @@ namespace ProcessHacker
                 this.Controls.Add(errorMessage);
             }
 
+            if (Program.WindowsVersion == "XP")
+            {
+                // XP obviously doesn't have UAC
+                labelElevated.Enabled = false;
+                textElevated.Enabled = false;
+                textElevated.Text = "";
+                labelVirtualization.Enabled = false;
+                textVirtualized.Enabled = false;
+                textVirtualized.Text = "";
+            }
+
             if (tabControl.TabPages[Properties.Settings.Default.TokenWindowTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.TokenWindowTab];
 

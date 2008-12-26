@@ -49,9 +49,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textVirtualized = new System.Windows.Forms.TextBox();
             this.textSessionID = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.labelVirtualization = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.labelElevated = new System.Windows.Forms.Label();
             this.textUserSID = new System.Windows.Forms.TextBox();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.tabPrivileges = new System.Windows.Forms.TabPage();
@@ -166,9 +166,9 @@
             this.groupToken.Controls.Add(this.label2);
             this.groupToken.Controls.Add(this.textVirtualized);
             this.groupToken.Controls.Add(this.textSessionID);
-            this.groupToken.Controls.Add(this.label5);
+            this.groupToken.Controls.Add(this.labelVirtualization);
             this.groupToken.Controls.Add(this.label3);
-            this.groupToken.Controls.Add(this.label4);
+            this.groupToken.Controls.Add(this.labelElevated);
             this.groupToken.Controls.Add(this.textUserSID);
             this.groupToken.Location = new System.Drawing.Point(6, 8);
             this.groupToken.Name = "groupToken";
@@ -280,14 +280,14 @@
             this.textSessionID.Size = new System.Drawing.Size(109, 20);
             this.textSessionID.TabIndex = 4;
             // 
-            // label5
+            // labelVirtualization
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 178);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(69, 13);
-            this.label5.TabIndex = 8;
-            this.label5.Text = "Virtualization:";
+            this.labelVirtualization.AutoSize = true;
+            this.labelVirtualization.Location = new System.Drawing.Point(6, 178);
+            this.labelVirtualization.Name = "labelVirtualization";
+            this.labelVirtualization.Size = new System.Drawing.Size(69, 13);
+            this.labelVirtualization.TabIndex = 8;
+            this.labelVirtualization.Text = "Virtualization:";
             // 
             // label3
             // 
@@ -298,14 +298,14 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "User SID:";
             // 
-            // label4
+            // labelElevated
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 152);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(52, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Elevated:";
+            this.labelElevated.AutoSize = true;
+            this.labelElevated.Location = new System.Drawing.Point(6, 152);
+            this.labelElevated.Name = "labelElevated";
+            this.labelElevated.Size = new System.Drawing.Size(52, 13);
+            this.labelElevated.TabIndex = 7;
+            this.labelElevated.Text = "Elevated:";
             // 
             // textUserSID
             // 
@@ -469,8 +469,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textElevated;
         private System.Windows.Forms.TextBox textVirtualized;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelVirtualization;
+        private System.Windows.Forms.Label labelElevated;
         private System.Windows.Forms.Button buttonLinkedToken;
         private System.Windows.Forms.GroupBox groupSource;
         private System.Windows.Forms.Label label7;

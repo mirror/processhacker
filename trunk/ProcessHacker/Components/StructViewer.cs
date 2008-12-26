@@ -70,6 +70,15 @@ namespace ProcessHacker
 
         private void menuStruct_Popup(object sender, EventArgs e)
         {
+            if (treeStruct.SelectedNodes.Count == 0)
+            {
+                copyMenuItem.Enabled = false;
+            }
+            else
+            {
+                copyMenuItem.Enabled = true;
+            }
+
             decMenuItem.Checked = false;
             hexMenuItem.Checked = false;
 
