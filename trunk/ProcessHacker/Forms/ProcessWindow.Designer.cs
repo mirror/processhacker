@@ -580,10 +580,10 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listMemory.DoubleBuffered = true;
             this.listMemory.Highlight = false;
-            this.listMemory.Location = new System.Drawing.Point(3, 59);
+            this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(645, 210);
+            this.listMemory.Size = new System.Drawing.Size(639, 265);
             this.listMemory.TabIndex = 0;
             // 
             // tabHandles
@@ -618,10 +618,10 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listHandles.DoubleBuffered = true;
             this.listHandles.Highlight = false;
-            this.listHandles.Location = new System.Drawing.Point(3, 30);
+            this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(645, 239);
+            this.listHandles.Size = new System.Drawing.Size(639, 294);
             this.listHandles.TabIndex = 0;
             // 
             // tabServices
