@@ -61,12 +61,6 @@
             this.toolStripMenuItem13 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem14 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem15 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuSearch = new System.Windows.Forms.ContextMenu();
-            this.newResultsWindowMenuItem = new System.Windows.Forms.MenuItem();
-            this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.regexSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
-            this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllHackerMenuItem = new System.Windows.Forms.MenuItem();
@@ -115,8 +109,6 @@
             this.stoppedSMenuItem = new System.Windows.Forms.MenuItem();
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuMisc = new System.Windows.Forms.ContextMenu();
-            this.copyMiscMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
@@ -341,41 +333,6 @@
             this.toolStripMenuItem15.Name = "toolStripMenuItem15";
             this.toolStripMenuItem15.Size = new System.Drawing.Size(151, 22);
             this.toolStripMenuItem15.Text = "Idle";
-            // 
-            // menuSearch
-            // 
-            this.menuSearch.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.newResultsWindowMenuItem,
-            this.literalSearchMenuItem,
-            this.regexSearchMenuItem,
-            this.stringScanMenuItem,
-            this.heapScanMenuItem});
-            // 
-            // newResultsWindowMenuItem
-            // 
-            this.vistaMenu.SetImage(this.newResultsWindowMenuItem, global::ProcessHacker.Properties.Resources.table);
-            this.newResultsWindowMenuItem.Index = 0;
-            this.newResultsWindowMenuItem.Text = "&New Results Window...";
-            // 
-            // literalSearchMenuItem
-            // 
-            this.literalSearchMenuItem.Index = 1;
-            this.literalSearchMenuItem.Text = "&Literal Search...";
-            // 
-            // regexSearchMenuItem
-            // 
-            this.regexSearchMenuItem.Index = 2;
-            this.regexSearchMenuItem.Text = "&Regex Search...";
-            // 
-            // stringScanMenuItem
-            // 
-            this.stringScanMenuItem.Index = 3;
-            this.stringScanMenuItem.Text = "&String Scan...";
-            // 
-            // heapScanMenuItem
-            // 
-            this.heapScanMenuItem.Index = 4;
-            this.heapScanMenuItem.Text = "&Heap Scan...";
             // 
             // mainMenu
             // 
@@ -736,17 +693,6 @@
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
-            // menuMisc
-            // 
-            this.menuMisc.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.copyMiscMenuItem});
-            // 
-            // copyMiscMenuItem
-            // 
-            this.vistaMenu.SetImage(this.copyMiscMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMiscMenuItem.Index = 0;
-            this.copyMiscMenuItem.Text = "&Copy";
-            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
@@ -810,12 +756,6 @@
         private System.Windows.Forms.MenuItem helpMenuItem;
         private System.Windows.Forms.MenuItem exitMenuItem;
         private System.Windows.Forms.MenuItem windowMenuItem;
-        private System.Windows.Forms.ContextMenu menuSearch;
-        private System.Windows.Forms.MenuItem literalSearchMenuItem;
-        private System.Windows.Forms.MenuItem regexSearchMenuItem;
-        private System.Windows.Forms.MenuItem stringScanMenuItem;
-        private System.Windows.Forms.MenuItem heapScanMenuItem;
-        private System.Windows.Forms.MenuItem newResultsWindowMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem selectAllHackerMenuItem;
         private ProcessHacker.ProcessTree treeProcesses;
@@ -857,8 +797,6 @@
         private System.Windows.Forms.MenuItem stoppedSMenuItem;
         private System.Windows.Forms.MenuItem DSMenuItem;
         private System.Windows.Forms.MenuItem findHandlesMenuItem;
-        private System.Windows.Forms.ContextMenu menuMisc;
-        private System.Windows.Forms.MenuItem copyMiscMenuItem;
         private System.Windows.Forms.MenuItem affinityProcessMenuItem;
         private System.Windows.Forms.MenuItem runAsMenuItem;
         private System.Windows.Forms.MenuItem runAsProcessMenuItem;

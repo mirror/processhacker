@@ -82,7 +82,7 @@
             this.columnName.Sortable = true;
             this.columnName.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnName.TooltipText = null;
-            this.columnName.Width = 160;
+            this.columnName.Width = 300;
             // 
             // columnPID
             // 
