@@ -74,7 +74,7 @@ namespace ProcessHacker
 
             timerGraphs.Interval = Properties.Settings.Default.RefreshInterval;
             timerGraphs.Tick += new EventHandler(timerGraphs_Tick);
-            timerGraphs.Enabled = true;
+            //timerGraphs.Enabled = true;
         }
 
         private void timerGraphs_Tick(object sender, EventArgs e)
