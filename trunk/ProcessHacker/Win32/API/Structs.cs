@@ -595,6 +595,85 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_PERFORMANCE_INFORMATION
+        {
+            long IdleProcessTime;
+            long IoReadTransferCount;
+            long IoWriteTransferCount;
+            long IoOtherTransferCount;
+            int IoReadOperationCount;
+            int IoWriteOperationCount;
+            int IoOtherOperationCount;
+            int AvailablePages;
+            int CommittedPages;
+            int CommitLimit;
+            int PeakCommitment;
+            int PageFaultCount;
+            int CopyOnWriteCount;
+            int TransitionCount;
+            int CacheTransitionCount;
+            int DemandZeroCount;
+            int PageReadCount;
+            int PageReadIoCount;
+            int CacheReadCount;
+            int CacheIoCount;
+            int DirtyPagesWriteCount;
+            int DirtyWriteIoCount;
+            int MappedPagesWriteCount;
+            int MappedWriteIoCount;
+            int PagedPoolPages;
+            int NonPagedPoolPages;
+            int PagedPoolAllocs;
+            int PagedPoolFrees;
+            int NonPagedPoolAllocs;
+            int NonPagedPoolFrees;
+            int FreeSystemPtes;
+            int ResidentSystemCodePage;
+            int TotalSystemDriverPages;
+            int TotalSystemCodePages;
+            int NonPagedPoolLookasideHits;
+            int PagedPoolLookasideHits;
+            int Spare3Count;
+            int ResidentSystemCachePage;
+            int ResidentPagedPoolPage;
+            int ResidentSystemDriverPage;
+            int CcFastReadNoWait;
+            int CcFastReadWait;
+            int CcFastReadResourceMiss;
+            int CcFastReadNotPossible;
+            int CcFastMdlReadNoWait;
+            int CcFastMdlReadWait;
+            int CcFastMdlReadResourceMiss;
+            int CcFastMdlReadNotPossible;
+            int CcMapDataNoWait;
+            int CcMapDataWait;
+            int CcMapDataNoWaitMiss;
+            int CcMapDataWaitMiss;
+            int CcPinMappedDataCount;
+            int CcPinReadNoWait;
+            int CcPinReadWait;
+            int CcPinReadNoWaitMiss;
+            int CcPinReadWaitMiss;
+            int CcCopyReadNoWait;
+            int CcCopyReadWait;
+            int CcCopyReadNoWaitMiss;
+            int CcCopyReadWaitMiss;
+            int CcMdlReadNoWait;
+            int CcMdlReadWait;
+            int CcMdlReadNoWaitMiss;
+            int CcMdlReadWaitMiss;
+            int CcReadAheadIos;
+            int CcLazyWriteIos;
+            int CcLazyWritePages;
+            int CcDataFlushes;
+            int CcDataPages;
+            int ContextSwitches;
+            int FirstLevelTbFills;
+            int SecondLevelTbFills;
+            int SystemCalls;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PROCESS_INFORMATION
         {
             public int NextEntryOffset;
@@ -611,13 +690,21 @@ namespace ProcessHacker
             public int ProcessId;
             public int InheritedFromProcessId;
             public int HandleCount;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-            public int[] Reserved2;
-
-            public int PrivatePageCount;
-            public VM_COUNTERS VirtualMemoryCounters;
+            public int SessionId;
+            public int PageDirectoryBase;
+            public VM_COUNTERS_EX VirtualMemoryCounters;
             public IO_COUNTERS IoCounters;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION
+        {
+            long IdleTime;
+            long KernelTime;
+            long UserTime;
+            long DpcTime;
+            long InterruptTime;
+            int InterruptCount;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -718,6 +805,23 @@ namespace ProcessHacker
             public int QuotaNonPagedPoolUsage;
             public int PagefileUsage;
             public int PeakPagefileUsage;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct VM_COUNTERS_EX
+        {
+            public int PeakVirtualSize;
+            public int VirtualSize;
+            public int PageFaultCount;
+            public int PeakWorkingSetSize;
+            public int WorkingSetSize;
+            public int QuotaPeakPagedPoolUsage;
+            public int QuotaPagedPoolUsage;
+            public int QuotaPeakNonPagedPoolUsage;
+            public int QuotaNonPagedPoolUsage;
+            public int PagefileUsage;
+            public int PeakPagefileUsage;
+            public int PrivatePageCount;
         }
 
         [StructLayout(LayoutKind.Sequential)]
