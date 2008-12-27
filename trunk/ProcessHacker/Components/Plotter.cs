@@ -1,6 +1,7 @@
 ﻿/*
  * Process Hacker
- * 
+ *                 
+ * Copyright (C) 2008 wj32
  * Copyright (C) 2008 Dean
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -39,9 +40,8 @@ namespace ProcessHacker.Components
         }
 
         private int _gridStartPos = 0;
-        private List<float> ListData = new List<float>();
-
-
+        private List<float> ListData1 = new List<float>();
+        private List<float> ListData2 = new List<float>();
 
         private void Plotter_Paint(object sender, PaintEventArgs e)
         {
@@ -79,15 +79,37 @@ namespace ProcessHacker.Components
 
             //draw line
             int px = tWidth - _moveStep;
-            int start = ListData.Count - 2;
-            Pen lGrid = new Pen(_lineColor);
+            int start = ListData1.Count - 2;
+            Pen lGrid1 = new Pen(_lineColor1);
+            Pen lGrid2 = new Pen(_lineColor2);
+
             while (start >= 0)
             {
-                float f = (float)ListData[start];
-                float fPre = (float)ListData[start + 1];
+                float f = ListData1[start];
+                float fPre = ListData1[start + 1];
                 int h = (int)(tHeight - (tHeight * f));
                 int hPre = (int)(tHeight - (tHeight * fPre));
-                g.DrawLine(lGrid, px, h, px + _moveStep, hPre);
+
+                // fill in the area below the line
+                g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor1)),
+                    new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
+                        new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
+                g.DrawLine(lGrid1, px, h, px + _moveStep, hPre);
+
+                if (this.UseSecondLine)
+                {
+                    f = ListData2[start];
+                    fPre = ListData2[start + 1];
+                    h = (int)(tHeight - (tHeight * f));
+                    hPre = (int)(tHeight - (tHeight * fPre));
+
+                    // draw the second line
+                    g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
+                        new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
+                        new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
+                    g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                }
+
                 if (px < 0)
                 {
                     break;
@@ -104,16 +126,21 @@ namespace ProcessHacker.Components
         public void ReSet()
         {
             _gridStartPos = 0;
-            ListData.Clear();
+            ListData1.Clear();
+            ListData2.Clear();
             PaintLine();
         }
 
         /// <summary>
-        /// add a CpuUsage data (less than 1)
+        /// Adds two numbers to the lists of data.
         /// </summary>
-        public void Add(float f)
+        /// <param name="f1">A floating-point number less than or equal to 1.</param> 
+        /// <param name="f2">A floating-point number less than or equal to 1.</param>
+        public void Add(float f1, float f2)
         {
-            ListData.Add(f);
+            ListData1.Add(f1);
+            ListData2.Add(f2);
+
             if (_isMoved)
             {
                 _gridStartPos += _moveStep;
@@ -125,11 +152,20 @@ namespace ProcessHacker.Components
             PaintLine();
         }
 
-        private Color _lineColor = Color.FromArgb(0, 255, 0);
-        public Color LineColor
+        public bool UseSecondLine { get; set; }
+
+        private Color _lineColor1 = Color.FromArgb(0, 255, 0);
+        public Color LineColor1
         {
-            get { return _lineColor; }
-            set { _lineColor = value; }
+            get { return _lineColor1; }
+            set { _lineColor1 = value; }
+        }
+
+        private Color _lineColor2 = Color.FromArgb(255, 0, 0);
+        public Color LineColor2
+        {
+            get { return _lineColor2; }
+            set { _lineColor2 = value; }
         }
 
         private Color _gridColor = Color.Black;

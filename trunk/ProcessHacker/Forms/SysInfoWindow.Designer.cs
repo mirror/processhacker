@@ -51,7 +51,7 @@
             this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
             this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
             this.plotterCPU.IsMoved = true;
-            this.plotterCPU.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
             this.plotterCPU.Location = new System.Drawing.Point(6, 21);
             this.plotterCPU.MoveStep = 3;
             this.plotterCPU.Name = "plotterCPU";

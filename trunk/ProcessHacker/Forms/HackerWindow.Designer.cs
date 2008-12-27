@@ -429,7 +429,6 @@
             // 
             this.sysInfoMenuItem.Index = 10;
             this.sysInfoMenuItem.Text = "System &Information";
-            this.sysInfoMenuItem.Visible = false;
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
             // toolsMenuItem

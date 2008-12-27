@@ -1,6 +1,7 @@
 ﻿/*
  * Process Hacker
- * 
+ *                     
+ * Copyright (C) 2008 wj32
  * Copyright (C) 2008 Dean
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -32,12 +33,15 @@ namespace ProcessHacker
         public SysInfoWindow()
         {
             InitializeComponent();
+
+            plotterCPU.UseSecondLine = true;
         }
 
         private void tmrSysInfo_Tick(object sender, EventArgs e)
         {
-            //plotterCPU.Add(**** / 100F);
-            plotterCPU.Add((new Random().Next(0, 100))/100f);            
+            Random r = new Random();
+
+            plotterCPU.Add((float)r.NextDouble(), (float)r.NextDouble());        
         }
 
         private void SysInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
