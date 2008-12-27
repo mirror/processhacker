@@ -71,6 +71,17 @@ namespace ProcessHacker
             get { return _pitem.Name; }
         }
 
+        public string DisplayPID
+        {
+            get
+            {
+                if (_pitem.PID >= 0)
+                    return _pitem.PID.ToString();
+                else
+                    return "";
+            }
+        }
+
         public int PID
         {
             get { return _pitem.PID; }
@@ -88,7 +99,13 @@ namespace ProcessHacker
 
         public string CPU
         {
-            get { return _pitem.CPUUsage.ToString("F2"); }
+            get
+            {
+                if (_pitem.CPUUsage == 0)
+                    return "";
+                else
+                    return _pitem.CPUUsage.ToString("F2");
+            }
         }
 
         private string GetBestUsername(string username, bool includeDomain)

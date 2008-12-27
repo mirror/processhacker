@@ -10,6 +10,9 @@ Process Hacker
    techniques
  * NEW: Highlighting for UAC elevated processes
  * NEW: Struct reader (with support for user-defined structs)
+ * NEW: Tray icon now displays the current CPU usage, and the tooltip is almost 
+   exactly the same as Process Explorer's (current CPU usage + process using most 
+   of the CPU)
  * FIXED: Shows SIDs without names in SDDL format
  * FIXED: Less "Access denied" errors - uses PROCESS_QUERY_LIMITED_INFORMATION 
    on Vista

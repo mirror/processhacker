@@ -135,7 +135,7 @@
             // 
             // nodePID
             // 
-            this.nodePID.DataPropertyName = "PID";
+            this.nodePID.DataPropertyName = "DisplayPID";
             this.nodePID.EditEnabled = false;
             this.nodePID.IncrementalSearchEnabled = true;
             this.nodePID.LeftMargin = 3;

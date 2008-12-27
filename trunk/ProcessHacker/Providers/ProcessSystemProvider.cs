@@ -56,6 +56,7 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
+        private long _lastIdleTime;
         private long _lastSysTime;
 
         public ProcessSystemProvider()
@@ -69,23 +70,53 @@ namespace ProcessHacker
             Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemBasicInformation, ref basic,
                 Marshal.SizeOf(basic), out retLen);
             this.System = basic;
+            this.ProcessorPerfArray = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[this.System.NumberOfProcessors];
 
             this.UpdateProcessorPerf();
             _lastSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
+            _lastIdleTime = this.ProcessorPerf.IdleTime;
         }
 
         public Win32.SYSTEM_BASIC_INFORMATION System { get; private set; }
         public Win32.SYSTEM_PERFORMANCE_INFORMATION Performance { get; private set; }
         public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION ProcessorPerf { get; private set; }
+        public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] ProcessorPerfArray { get; private set; }
+        public float CurrentCPUUsage { get; private set; }
+        public int PIDWithMostCPUUsage { get; private set; }
 
         private void UpdateProcessorPerf()
         {
-            int retLen;
-            Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION procPerf = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
+            using (MemoryAlloc data =
+                new MemoryAlloc(Marshal.SizeOf(typeof(Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION)) *
+                this.ProcessorPerfArray.Length))
+            {
+                int retLen;
 
-            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemProcessorTimes,
-                ref procPerf, Marshal.SizeOf(procPerf), out retLen);
-            this.ProcessorPerf = procPerf;
+                Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemProcessorTimes,
+                    data, data.Size, out retLen);
+
+                var newAverages = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
+
+                for (int i = 0; i < this.ProcessorPerfArray.Length; i++)
+                {
+                    this.ProcessorPerfArray[i] = data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(
+                        i);
+                    newAverages.DpcTime += this.ProcessorPerfArray[i].DpcTime
+                        / this.ProcessorPerfArray.Length;
+                    newAverages.IdleTime += this.ProcessorPerfArray[i].IdleTime
+                        / this.ProcessorPerfArray.Length;
+                    newAverages.InterruptCount += this.ProcessorPerfArray[i].InterruptCount
+                        / this.ProcessorPerfArray.Length;
+                    newAverages.InterruptTime += this.ProcessorPerfArray[i].InterruptTime
+                        / this.ProcessorPerfArray.Length;
+                    newAverages.KernelTime += this.ProcessorPerfArray[i].KernelTime
+                        / this.ProcessorPerfArray.Length;
+                    newAverages.UserTime += this.ProcessorPerfArray[i].UserTime
+                        / this.ProcessorPerfArray.Length;
+                }
+
+                this.ProcessorPerf = newAverages;
+            }
         }
 
         private void UpdatePerformance()
@@ -113,12 +144,17 @@ namespace ProcessHacker
 
             _lastSysTime = thisSysTime;
 
+            long thisIdleTime = this.ProcessorPerf.IdleTime;
+            long idleTime = thisIdleTime - _lastIdleTime;
+
+            _lastIdleTime = thisIdleTime;
+
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
             {
                 Win32.SystemProcess proc = procs[0];
 
-                proc.Process.KernelTime = this.ProcessorPerf.IdleTime * 4; // must not be divided by 4
+                proc.Process.KernelTime = this.ProcessorPerf.IdleTime * this.System.NumberOfProcessors;
                 procs.Remove(0);
                 procs.Add(0, proc);
             }
@@ -130,7 +166,7 @@ namespace ProcessHacker
                 {
                     ProcessId = -2,
                     InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.DpcTime * 4,
+                    KernelTime = this.ProcessorPerf.DpcTime * this.System.NumberOfProcessors,
                     SessionId = -1
                 }
             });
@@ -142,10 +178,12 @@ namespace ProcessHacker
                 {
                     ProcessId = -3,
                     InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.InterruptTime * 4,
+                    KernelTime = this.ProcessorPerf.InterruptTime * this.System.NumberOfProcessors,
                     SessionId = -1
                 }
             });
+
+            float mostCPUUsage = 0;
 
             // look for dead processes
             foreach (int pid in Dictionary.Keys)
@@ -306,8 +344,14 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime) /
+                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / sysTime /
                             this.System.NumberOfProcessors;
+
+                        if (pid != 0 && newitem.CPUUsage > mostCPUUsage)
+                        {
+                            mostCPUUsage = newitem.CPUUsage;
+                            this.PIDWithMostCPUUsage = pid;
+                        }
                     }
                     catch
                     { }
@@ -348,6 +392,9 @@ namespace ProcessHacker
                     }
                 }
             }
+
+            if (thisSysTime != 0)
+                this.CurrentCPUUsage = (float)(sysTime - idleTime) / (sysTime);
 
             Dictionary = newdictionary;
 

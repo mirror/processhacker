@@ -194,6 +194,7 @@
             this.checkShowTrayIcon.TabIndex = 7;
             this.checkShowTrayIcon.Text = "Show tray icon";
             this.checkShowTrayIcon.UseVisualStyleBackColor = true;
+            this.checkShowTrayIcon.CheckedChanged += new System.EventHandler(this.checkShowTrayIcon_CheckedChanged);
             // 
             // tabHighlighting
             // 

@@ -19,7 +19,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Drawing;
+using System.Drawing;   
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -32,17 +33,51 @@ namespace ProcessHacker
     public class UsageIcon
     {
         private List<float> _values;
+        private int _width;
+        private int _height;
 
-        public UsageIcon(int size)
+        public UsageIcon(int width, int height)
         {
-            _values = new List<float>(size);
+            _values = new List<float>();
+            _width = width;
+            _height = height;
+
+            for (int i = 0; i < width; i++)
+                _values.Add(0);
         }
 
         public void Update(float value)
         {
-            
+            if (value > 1)
+                throw new ArgumentOutOfRangeException();
+
+            // shift values left, push value onto the end
+            _values.RemoveAt(0);
+            _values.Add(value);
         }
 
+        public Color BackColor { get; set; }
 
+        public Color Color { get; set; }
+
+        public Icon GetIcon()
+        {
+            using (Bitmap bm = new Bitmap(_width, _height))
+            {
+                using (Graphics g = Graphics.FromImage(bm))
+                {
+                    g.FillRectangle(new SolidBrush(this.BackColor), new Rectangle(0, 0, _width, _height));
+
+                    for (int x = 0; x < _width; x++)
+                    {
+                        int height = (int)(_values[x] * _height);
+
+                        g.DrawLine(new Pen(this.Color), new Point(x, _height), new Point(x, _height - height));
+                    }
+
+                    return Icon.FromHandle(bm.GetHicon());
+                }
+            }
+        }
     }
 }

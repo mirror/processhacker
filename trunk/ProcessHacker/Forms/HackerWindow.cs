@@ -48,6 +48,8 @@ namespace ProcessHacker
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
 
+        UsageIcon cpuUsageIcon = new UsageIcon(16, 16);
+
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
         int processSelectedItems;
@@ -756,6 +758,22 @@ namespace ProcessHacker
 
         #region Providers
 
+        private void processP_Updated()
+        {
+            processP.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
+            processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
+            processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
+
+            if (processP.RunCount >= 1)
+                this.Invoke(new MethodInvoker(UpdateCommon));
+        }
+
+        private void processP_IconUpdater()
+        {
+            cpuUsageIcon.Update(processP.CurrentCPUUsage);
+            notifyIcon.Icon = cpuUsageIcon.GetIcon();
+        }
+
         public void processP_DictionaryAdded(ProcessItem item)
         {
             ProcessItem parent = new ProcessItem();
@@ -792,6 +810,20 @@ namespace ProcessHacker
             if (TPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "Terminated Process",
                     "The process " + item.Name + " (" + item.PID.ToString() + ") was terminated.", ToolTipIcon.Info);
+        }
+
+        private void serviceP_Updated()
+        {
+            listServices.List.EndUpdate();
+            HighlightedListViewItem.StateHighlighting = true;
+
+            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
+            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified);
+            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
+            serviceP.Updated -= new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
+
+            if (processP.RunCount >= 1)
+                this.Invoke(new MethodInvoker(UpdateCommon));
         }
 
         public void serviceP_DictionaryAdded(ServiceItem item)
@@ -1151,6 +1183,17 @@ namespace ProcessHacker
         private void timerFire_Tick(object sender, EventArgs e)
         {
             UpdateStatusInfo();
+             
+            notifyIcon.Text = "Process Hacker\n" + 
+                "CPU Usage: " + (processP.CurrentCPUUsage * 100).ToString("F2") + "%";
+
+            try
+            {
+                notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
+                    ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
+            }
+            catch
+            { }
         }
 
         private void timerMessages_Tick(object sender, EventArgs e)
@@ -1383,30 +1426,6 @@ namespace ProcessHacker
             ((MenuItem)sender).Checked = !((MenuItem)sender).Checked;
         }
 
-        private void serviceP_Updated()
-        {
-            listServices.List.EndUpdate();
-            HighlightedListViewItem.StateHighlighting = true;
-
-            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
-            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified);
-            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
-            serviceP.Updated -= new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
-
-            if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(UpdateCommon));
-        }
-
-        private void processP_Updated()
-        {
-            processP.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
-            processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
-            processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
-
-            if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(UpdateCommon));
-        }
-
         private void UpdateCommon()
         {
             timerMessages.Enabled = true;
@@ -1441,7 +1460,11 @@ namespace ProcessHacker
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
+            processP.Updated += new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_IconUpdater);
             processP.Enabled = true;
+
+            cpuUsageIcon.BackColor = Color.Black;
+            cpuUsageIcon.Color = Color.Red;
 
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightedListViewItem.StateHighlighting = false;

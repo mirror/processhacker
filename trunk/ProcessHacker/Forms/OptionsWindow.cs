@@ -98,5 +98,18 @@ namespace ProcessHacker
             Program.HackerWindow.ProcessList.RefreshItems();
             this.Close();
         }
+
+        private void checkShowTrayIcon_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkShowTrayIcon.Checked)
+            {
+                checkHideWhenMinimized.Enabled = true;
+            }
+            else
+            {
+                checkHideWhenMinimized.Enabled = false;
+                checkHideWhenMinimized.Checked = false;
+            }
+        }
     }
 }

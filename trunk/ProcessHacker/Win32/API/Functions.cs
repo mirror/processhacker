@@ -610,7 +610,8 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ref SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+            [MarshalAs(UnmanagedType.LPArray)] SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] SystemInformation, 
+            int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
