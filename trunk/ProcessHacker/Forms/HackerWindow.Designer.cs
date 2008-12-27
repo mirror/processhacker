@@ -264,6 +264,7 @@
             // 
             // propertiesProcessMenuItem
             // 
+            this.propertiesProcessMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.propertiesProcessMenuItem.Index = 8;
             this.propertiesProcessMenuItem.Text = "&Properties...";
@@ -517,6 +518,7 @@
             this.treeProcesses.Provider = null;
             this.treeProcesses.Size = new System.Drawing.Size(790, 394);
             this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.DoubleClick += new System.EventHandler(this.treeProcesses_DoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
             this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 

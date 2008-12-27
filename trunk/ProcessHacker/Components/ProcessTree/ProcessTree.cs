@@ -32,6 +32,7 @@ namespace ProcessHacker
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
+        public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
 
         public ProcessTree()
@@ -41,8 +42,15 @@ namespace ProcessHacker
             treeProcesses.KeyDown += new KeyEventHandler(ProcessTree_KeyDown);
             treeProcesses.MouseDown += new MouseEventHandler(treeProcesses_MouseDown);
             treeProcesses.MouseUp += new MouseEventHandler(treeProcesses_MouseUp);
+            treeProcesses.DoubleClick += new EventHandler(treeProcesses_DoubleClick);
 
             nodeName.ToolTipProvider = new ProcessToolTipProvider(this);
+        }
+
+        private void treeProcesses_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.DoubleClick != null)
+                this.DoubleClick(sender, e);
         }
 
         private void treeProcesses_SelectionChanged(object sender, EventArgs e)

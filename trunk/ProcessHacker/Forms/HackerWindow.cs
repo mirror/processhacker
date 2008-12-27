@@ -1217,6 +1217,15 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Trees
+
+        private void treeProcesses_DoubleClick(object sender, EventArgs e)
+        {
+            inspectProcessMenuItem_Click(null, null);
+        }
+
+        #endregion
+
         #endregion
 
         #region Form-related Helper functions
