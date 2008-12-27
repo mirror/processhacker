@@ -391,6 +391,11 @@ namespace ProcessHacker
                 copyProcessMenuItem.Enabled = true;
             }
 
+            if (processSelectedPID < 0)
+            {
+                Misc.DisableAllMenuItems(menuProcess);
+            }
+
             if (treeProcesses.Model.Nodes.Count == 0)
             {
                 selectAllProcessMenuItem.Enabled = false;

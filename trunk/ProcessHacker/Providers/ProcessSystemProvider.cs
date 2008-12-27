@@ -113,6 +113,40 @@ namespace ProcessHacker
 
             _lastSysTime = thisSysTime;
 
+            // set System Idle Process CPU time
+            if (procs.ContainsKey(0))
+            {
+                Win32.SystemProcess proc = procs[0];
+
+                proc.Process.KernelTime = this.ProcessorPerf.IdleTime * 4; // must not be divided by 4
+                procs.Remove(0);
+                procs.Add(0, proc);
+            }
+
+            procs.Add(-2, new Win32.SystemProcess()
+            {
+                Name = "DPCs",
+                Process = new Win32.SYSTEM_PROCESS_INFORMATION()
+                {
+                    ProcessId = -2,
+                    InheritedFromProcessId = 0,
+                    KernelTime = this.ProcessorPerf.DpcTime * 4,
+                    SessionId = -1
+                }
+            });
+
+            procs.Add(-3, new Win32.SystemProcess()
+            {
+                Name = "Interrupts",
+                Process = new Win32.SYSTEM_PROCESS_INFORMATION()
+                {
+                    ProcessId = -3,
+                    InheritedFromProcessId = 0,
+                    KernelTime = this.ProcessorPerf.InterruptTime * 4,
+                    SessionId = -1
+                }
+            });
+
             // look for dead processes
             foreach (int pid in Dictionary.Keys)
             {
@@ -139,7 +173,10 @@ namespace ProcessHacker
             foreach (int pid in procs.Keys)
             {
                 Win32.SYSTEM_PROCESS_INFORMATION processInfo = procs[pid].Process;
-                Process p = Process.GetProcessById(pid);
+                Process p = null;
+
+                try { p = Process.GetProcessById(pid); }
+                catch { }
 
                 if (!Dictionary.ContainsKey(pid))
                 {
@@ -151,31 +188,17 @@ namespace ProcessHacker
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
 
+                    if (pid == 0)
+                        item.Name = "System Idle Process";
+                    else
+                        item.Name = procs[pid].Name;
+
                     try
                     {
                         item.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
                     }
                     catch
                     { }
-
-                    try
-                    {
-                        if (p.Id == 0)
-                            item.Name = "System Idle Process";
-                        else
-                            item.Name = procs[pid].Name;
-                    }
-                    catch
-                    {
-                        try
-                        {
-                            item.Name = p.MainModule.ModuleName;
-                        }
-                        catch
-                        {
-                            item.Name = Win32.GetNameFromPID(pid);
-                        }
-                    }
 
                     try
                     {
@@ -257,9 +280,6 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (pid == 0)
-                        item.LastTime = this.ProcessorPerf.IdleTime;
-
                     try
                     {
                         item.ProcessQueryLimitedVmReadHandle =
@@ -291,12 +311,6 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-
-                    if (pid == 0)
-                    {
-                        newitem.LastTime = this.ProcessorPerf.IdleTime;
-                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
-                    }
 
                     if (newitem.Icon == null && newitem.IconAttempts < 5)
                     {
