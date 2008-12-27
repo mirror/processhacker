@@ -43,6 +43,9 @@ namespace ProcessHacker
         private TokenProperties _tokenProps;
         private ServiceProperties _serviceProps;
 
+        private DeltaManager<string, long> _processStats =
+            new DeltaManager<string, long>(new Int64Subtractor());
+
         public ProcessWindow(ProcessItem process)
         {
             InitializeComponent();
@@ -59,6 +62,50 @@ namespace ProcessHacker
                 this.Icon = Program.HackerWindow.Icon;
 
             Program.PWindows.Add(_pid, this);
+
+            _processStats.Add("System Idle", 0);
+            _processStats.Add("System Kernel", 0);
+            _processStats.Add("System User", 0);
+            _processStats.Add("Process Kernel", 0);
+            _processStats.Add("Process User", 0);
+            _processStats.Add("Memory", 0);
+            _processStats.Add("IO Read+Other", 0);
+            _processStats.Add("IO Write", 0);
+
+            timerGraphs.Interval = Properties.Settings.Default.RefreshInterval;
+            timerGraphs.Tick += new EventHandler(timerGraphs_Tick);
+            timerGraphs.Enabled = true;
+        }
+
+        private void timerGraphs_Tick(object sender, EventArgs e)
+        {
+            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+
+            // update deltas         
+            _processStats.Update("System Idle",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
+            _processStats.Update("System Kernel",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
+            _processStats.Update("System User",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
+            _processStats.Update("Process Kernel", item.Process.KernelTime);
+            _processStats.Update("Process User", item.Process.UserTime);
+            _processStats.Update("Memory", item.Process.VirtualMemoryCounters.PrivatePageCount);
+            _processStats.Update("IO Read+Other",
+                (long)item.Process.IoCounters.ReadTransferCount +
+                (long)item.Process.IoCounters.OtherTransferCount);
+            _processStats.Update("IO Write",
+                (long)item.Process.IoCounters.WriteTransferCount);
+
+            // update graphs
+            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User");
+            float procKernel = (float)_processStats.GetDelta("Process Kernel") / sysTotal;
+            float procUser = (float)_processStats.GetDelta("Process User") / sysTotal;
+            int noProcs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
+            float procTotal = (procKernel + procUser) / noProcs;
+
+            plotterCPUUsage.Add(procKernel / noProcs, procUser / noProcs);
+            plotterCPUUsage.Text = (procTotal * 100).ToString("F2") + "%";
         }
 
         private void ProcessWindow_Load(object sender, EventArgs e)

@@ -341,6 +341,7 @@ namespace ProcessHacker
                     newitem = item;
                     newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
                     newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
+                    newitem.Process = processInfo;
 
                     try
                     {

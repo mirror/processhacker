@@ -65,6 +65,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textFileVersion = new System.Windows.Forms.TextBox();
+            this.tabPerformance = new System.Windows.Forms.TabPage();
+            this.groupCPUUsage = new System.Windows.Forms.GroupBox();
+            this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
             this.tabThreads = new System.Windows.Forms.TabPage();
             this.listThreads = new ProcessHacker.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
@@ -86,11 +89,14 @@
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.timerGraphs = new System.Windows.Forms.Timer(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
             this.groupFile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
+            this.tabPerformance.SuspendLayout();
+            this.groupCPUUsage.SuspendLayout();
             this.tabThreads.SuspendLayout();
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
@@ -126,6 +132,7 @@
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabGeneral);
+            this.tabControl.Controls.Add(this.tabPerformance);
             this.tabControl.Controls.Add(this.tabThreads);
             this.tabControl.Controls.Add(this.tabToken);
             this.tabControl.Controls.Add(this.tabModules);
@@ -138,7 +145,7 @@
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(659, 357);
+            this.tabControl.Size = new System.Drawing.Size(659, 376);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -151,7 +158,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 23);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(651, 330);
+            this.tabGeneral.Size = new System.Drawing.Size(651, 349);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -178,7 +185,7 @@
             this.groupProcess.Controls.Add(this.textCmdLine);
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(637, 198);
+            this.groupProcess.Size = new System.Drawing.Size(637, 217);
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
@@ -439,13 +446,54 @@
             this.textFileVersion.Size = new System.Drawing.Size(532, 20);
             this.textFileVersion.TabIndex = 2;
             // 
+            // tabPerformance
+            // 
+            this.tabPerformance.Controls.Add(this.groupCPUUsage);
+            this.tabPerformance.ImageKey = "chart_pie";
+            this.tabPerformance.Location = new System.Drawing.Point(4, 23);
+            this.tabPerformance.Name = "tabPerformance";
+            this.tabPerformance.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPerformance.Size = new System.Drawing.Size(651, 349);
+            this.tabPerformance.TabIndex = 8;
+            this.tabPerformance.Text = "Performance";
+            this.tabPerformance.UseVisualStyleBackColor = true;
+            // 
+            // groupCPUUsage
+            // 
+            this.groupCPUUsage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupCPUUsage.Controls.Add(this.plotterCPUUsage);
+            this.groupCPUUsage.Location = new System.Drawing.Point(6, 6);
+            this.groupCPUUsage.Name = "groupCPUUsage";
+            this.groupCPUUsage.Size = new System.Drawing.Size(639, 107);
+            this.groupCPUUsage.TabIndex = 0;
+            this.groupCPUUsage.TabStop = false;
+            this.groupCPUUsage.Text = "CPU Usage";
+            // 
+            // plotterCPUUsage
+            // 
+            this.plotterCPUUsage.BackColor = System.Drawing.Color.Black;
+            this.plotterCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPUUsage.GridColor = System.Drawing.Color.Green;
+            this.plotterCPUUsage.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterCPUUsage.IsMoved = true;
+            this.plotterCPUUsage.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
+            this.plotterCPUUsage.MoveStep = 3;
+            this.plotterCPUUsage.Name = "plotterCPUUsage";
+            this.plotterCPUUsage.Size = new System.Drawing.Size(633, 88);
+            this.plotterCPUUsage.TabIndex = 0;
+            this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.UseSecondLine = true;
+            // 
             // tabThreads
             // 
             this.tabThreads.Controls.Add(this.listThreads);
             this.tabThreads.ImageKey = "hourglass";
             this.tabThreads.Location = new System.Drawing.Point(4, 23);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(651, 330);
+            this.tabThreads.Size = new System.Drawing.Size(651, 349);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -458,7 +506,7 @@
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(651, 330);
+            this.listThreads.Size = new System.Drawing.Size(651, 349);
             this.listThreads.TabIndex = 0;
             // 
             // tabToken
@@ -467,7 +515,7 @@
             this.tabToken.Location = new System.Drawing.Point(4, 23);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(651, 330);
+            this.tabToken.Size = new System.Drawing.Size(651, 349);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -478,7 +526,7 @@
             this.tabModules.ImageKey = "page_white_wrench";
             this.tabModules.Location = new System.Drawing.Point(4, 23);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(651, 330);
+            this.tabModules.Size = new System.Drawing.Size(651, 349);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -491,7 +539,7 @@
             this.listModules.Location = new System.Drawing.Point(0, 0);
             this.listModules.Name = "listModules";
             this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(651, 330);
+            this.listModules.Size = new System.Drawing.Size(651, 349);
             this.listModules.TabIndex = 0;
             // 
             // tabMemory
@@ -503,7 +551,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 23);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(651, 330);
+            this.tabMemory.Size = new System.Drawing.Size(651, 349);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -583,7 +631,7 @@
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(639, 265);
+            this.listMemory.Size = new System.Drawing.Size(639, 260);
             this.listMemory.TabIndex = 0;
             // 
             // tabHandles
@@ -594,7 +642,7 @@
             this.tabHandles.Location = new System.Drawing.Point(4, 23);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(651, 330);
+            this.tabHandles.Size = new System.Drawing.Size(651, 349);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -621,7 +669,7 @@
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(639, 294);
+            this.listHandles.Size = new System.Drawing.Size(639, 289);
             this.listHandles.TabIndex = 0;
             // 
             // tabServices
@@ -629,7 +677,7 @@
             this.tabServices.ImageKey = "cog";
             this.tabServices.Location = new System.Drawing.Point(4, 23);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(651, 330);
+            this.tabServices.Size = new System.Drawing.Size(651, 349);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -645,16 +693,21 @@
             this.imageList.Images.SetKeyName(4, "database");
             this.imageList.Images.SetKeyName(5, "connect");
             this.imageList.Images.SetKeyName(6, "hourglass");
+            this.imageList.Images.SetKeyName(7, "chart_pie");
             // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // timerGraphs
+            // 
+            this.timerGraphs.Interval = 1000;
+            // 
             // ProcessWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(659, 357);
+            this.ClientSize = new System.Drawing.Size(659, 376);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Menu = this.mainMenu;
@@ -669,6 +722,8 @@
             this.groupFile.ResumeLayout(false);
             this.groupFile.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
+            this.tabPerformance.ResumeLayout(false);
+            this.groupCPUUsage.ResumeLayout(false);
             this.tabThreads.ResumeLayout(false);
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
@@ -734,5 +789,9 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textPEBAddress;
         private System.Windows.Forms.Button buttonInspectPEB;
+        private System.Windows.Forms.TabPage tabPerformance;
+        private System.Windows.Forms.GroupBox groupCPUUsage;
+        private ProcessHacker.Components.Plotter plotterCPUUsage;
+        private System.Windows.Forms.Timer timerGraphs;
     }
 }

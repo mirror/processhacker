@@ -117,6 +117,25 @@ namespace ProcessHacker.Components
                 px -= _moveStep;
                 start--;
             }
+
+            // draw the text
+            if (this.Text != "" && this.Text != null)
+            {
+                Font font = new Font(FontFamily.GenericSansSerif, 8);
+                Size textSize = TextRenderer.MeasureText(this.Text, font);
+                int xMargin = 3;
+                int yMargin = 3;
+                int xPadding = 5;
+                int yPadding = 3;
+
+                // draw the background for the text
+                g.FillRectangle(new SolidBrush(Color.FromArgb(127, Color.Black)),
+                    new Rectangle(this.Size.Width - textSize.Width - xPadding * 2 - xMargin, yMargin,
+                        textSize.Width + xPadding * 2, textSize.Height + yPadding * 2));
+                TextRenderer.DrawText(g, this.Text, font,
+                    new Point(this.Size.Width - textSize.Width - xPadding - xMargin, yPadding + yMargin), _textColor);
+            }
+
             g.Dispose();
         }
 
@@ -150,6 +169,26 @@ namespace ProcessHacker.Components
                 }
             }
             PaintLine();
+        }
+
+        public override string Text
+        {
+            get
+            {
+                return base.Text;
+            }
+            set
+            {
+                base.Text = value;
+                this.Invalidate();
+            }
+        }
+
+        private Color _textColor = Color.FromArgb(0, 255, 0);
+        public Color TextColor
+        {
+            get { return _textColor; }
+            set { _textColor = value; }
         }
 
         public bool UseSecondLine { get; set; }

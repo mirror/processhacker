@@ -37,10 +37,12 @@
             // 
             // gboxCPUPlotter
             // 
+            this.gboxCPUPlotter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.gboxCPUPlotter.Controls.Add(this.plotterCPU);
-            this.gboxCPUPlotter.Location = new System.Drawing.Point(170, 12);
+            this.gboxCPUPlotter.Location = new System.Drawing.Point(12, 12);
             this.gboxCPUPlotter.Name = "gboxCPUPlotter";
-            this.gboxCPUPlotter.Size = new System.Drawing.Size(395, 181);
+            this.gboxCPUPlotter.Size = new System.Drawing.Size(712, 124);
             this.gboxCPUPlotter.TabIndex = 2;
             this.gboxCPUPlotter.TabStop = false;
             this.gboxCPUPlotter.Text = "CPU Usage History";
@@ -48,15 +50,18 @@
             // plotterCPU
             // 
             this.plotterCPU.BackColor = System.Drawing.Color.Black;
+            this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
             this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
             this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
             this.plotterCPU.IsMoved = true;
             this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPU.Location = new System.Drawing.Point(6, 21);
+            this.plotterCPU.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPU.Location = new System.Drawing.Point(3, 16);
             this.plotterCPU.MoveStep = 3;
             this.plotterCPU.Name = "plotterCPU";
-            this.plotterCPU.Size = new System.Drawing.Size(382, 154);
+            this.plotterCPU.Size = new System.Drawing.Size(706, 105);
             this.plotterCPU.TabIndex = 0;
+            this.plotterCPU.UseSecondLine = false;
             // 
             // tmrSysInfo
             // 
@@ -66,12 +71,12 @@
             // 
             // SysInfoWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(590, 528);
+            this.ClientSize = new System.Drawing.Size(736, 549);
             this.Controls.Add(this.gboxCPUPlotter);
             this.Name = "SysInfoWindow";
-            this.Text = "SysInfoWindow";
+            this.Text = "System Information";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SysInfoWindow_FormClosing);
             this.gboxCPUPlotter.ResumeLayout(false);
             this.ResumeLayout(false);

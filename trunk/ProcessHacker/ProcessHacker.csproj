@@ -170,6 +170,9 @@
       <DependentUpon>UtilitiesButton.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\VerticleProgressBar.resx">
+      <DependentUpon>VerticleProgressBar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutWindow.resx">
       <DependentUpon>AboutWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -359,6 +362,12 @@
     <Compile Include="Components\TokenProperties.Designer.cs">
       <DependentUpon>TokenProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\VerticleProgressBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\VerticleProgressBar.Designer.cs">
+      <DependentUpon>VerticleProgressBar.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormHelper\AsyncUtils.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -468,6 +477,7 @@
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Misc\ColumnSettings.cs" />
+    <Compile Include="Misc\DeltaManager.cs" />
     <Compile Include="Misc\UsageIcon.cs" />
     <Compile Include="Misc\GenericViewMenu.cs" />
     <Compile Include="PE\ImportData.cs" />
