@@ -187,6 +187,11 @@ namespace ProcessHacker
                     buttonInspectParent.Enabled = false;
                 }
             }
+            else
+            {
+                textParent.Text = "No parent";
+                buttonInspectParent.Enabled = false;
+            }
 
             this.UpdateDEPStatus();
 

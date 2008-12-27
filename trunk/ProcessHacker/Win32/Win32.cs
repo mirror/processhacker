@@ -158,7 +158,7 @@ namespace ProcessHacker
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
                 while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
-                    data.Size, ref retLength) == STATUS_INFO_LENGTH_MISMATCH)
+                    data.Size, out retLength) == STATUS_INFO_LENGTH_MISMATCH)
                     data.Resize(data.Size * 2);
 
                 handleCount = data.ReadInt32(0);
@@ -195,14 +195,14 @@ namespace ProcessHacker
                 ObjectInformation info = new ObjectInformation();
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                    IntPtr.Zero, 0, ref retLength);
+                    IntPtr.Zero, 0, out retLength);
 
                 if (retLength > 0)
                 {
                     using (MemoryAlloc obiMem = new MemoryAlloc(retLength))
                     {
                         ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                            obiMem.Memory, obiMem.Size, ref retLength);
+                            obiMem.Memory, obiMem.Size, out retLength);
 
                         OBJECT_BASIC_INFORMATION obi = obiMem.ReadStruct<OBJECT_BASIC_INFORMATION>();
                         info.Basic = obi;
@@ -216,14 +216,14 @@ namespace ProcessHacker
                 else
                 {
                     ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                        IntPtr.Zero, 0, ref retLength);
+                        IntPtr.Zero, 0, out retLength);
 
                     if (retLength > 0)
                     {
                         using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
                         {
                             if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                                otiMem.Memory, otiMem.Size, ref retLength) != 0)
+                                otiMem.Memory, otiMem.Size, out retLength) != 0)
                                 throw new Exception("ZwQueryObject failed");
 
                             OBJECT_TYPE_INFORMATION oti = otiMem.ReadStruct<OBJECT_TYPE_INFORMATION>();
@@ -239,14 +239,14 @@ namespace ProcessHacker
                         throw new Exception("0x0012019f access is banned");
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    IntPtr.Zero, 0, ref retLength);
+                    IntPtr.Zero, 0, out retLength);
                 
                 if (retLength > 0)
                 {
                     using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                     {
                         if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                            oniMem.Memory, oniMem.Size, ref retLength) != 0)
+                            oniMem.Memory, oniMem.Size, out retLength) != 0)
                             throw new Exception("ZwQueryObject failed");
 
                         OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
@@ -425,21 +425,23 @@ namespace ProcessHacker
         {
             public string Name;
             public SYSTEM_PROCESS_INFORMATION Process;
-            public SYSTEM_THREAD_INFORMATION[] Threads;
+            // public SYSTEM_THREAD_INFORMATION[] Threads;
         }
 
-        public static SystemProcess[] EnumProcesses()
+        public static Dictionary<int, SystemProcess> EnumProcesses()
         {
             int retLength = 0;
-            List<SystemProcess> returnProcesses;
+            Dictionary<int, SystemProcess> returnProcesses;
 
-            using (MemoryAlloc data = new MemoryAlloc(0x1000))
+            ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, IntPtr.Zero,
+                0, out retLength);
+
+            using (MemoryAlloc data = new MemoryAlloc(retLength))
             {
-                while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
-                    data.Size, ref retLength) == STATUS_INFO_LENGTH_MISMATCH)
-                    data.Resize(data.Size * 2);
+                ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
+                    data.Size, out retLength);
 
-                returnProcesses = new List<SystemProcess>();
+                returnProcesses = new Dictionary<int, SystemProcess>();
 
                 int i = 0;
                 SystemProcess currentProcess = new SystemProcess();
@@ -447,16 +449,16 @@ namespace ProcessHacker
                 while (true)
                 {
                     currentProcess.Process = data.ReadStruct<SYSTEM_PROCESS_INFORMATION>(i, 0);
-                    currentProcess.Threads = new SYSTEM_THREAD_INFORMATION[currentProcess.Process.NumberOfThreads];
+                    //currentProcess.Threads = new SYSTEM_THREAD_INFORMATION[currentProcess.Process.NumberOfThreads];
                     currentProcess.Name = ReadUnicodeString(currentProcess.Process.ImageName);
 
-                    for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
-                    {
-                        currentProcess.Threads[j] = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
-                            Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
-                    }
+                    //for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
+                    //{
+                    //    currentProcess.Threads[j] = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
+                    //        Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
+                    //}
 
-                    returnProcesses.Add(currentProcess);
+                    returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);
 
                     if (currentProcess.Process.NextEntryOffset == 0)
                         break;
@@ -464,7 +466,7 @@ namespace ProcessHacker
                     i += currentProcess.Process.NextEntryOffset;
                 }
 
-                return returnProcesses.ToArray();
+                return returnProcesses;
             }
         }
 

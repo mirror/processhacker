@@ -27,7 +27,7 @@ namespace ProcessHacker
 {
     public partial class ProcessTree : UserControl
     {
-        ProcessProvider _provider;
+        ProcessSystemProvider _provider;
         ProcessTreeModel _treeModel;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -122,16 +122,16 @@ namespace ProcessHacker
             get { return _treeModel; }
         }
 
-        public ProcessProvider Provider
+        public ProcessSystemProvider Provider
         {
             get { return _provider; }
             set
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ProcessProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ProcessProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ProcessProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.DictionaryAdded -= new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified -= new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved -= new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
 
                 _provider = value;
@@ -146,10 +146,10 @@ namespace ProcessHacker
                     }
 
                     _provider.UseInvoke = true;
-                    _provider.Invoke = new ProcessProvider.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new ProcessProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ProcessProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ProcessProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Invoke = new ProcessSystemProvider.ProviderInvokeMethod(this.BeginInvoke);
+                    _provider.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                    _provider.DictionaryModified += new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                    _provider.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                 }
             }
         }

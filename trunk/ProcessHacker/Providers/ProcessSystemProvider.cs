@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -35,12 +36,14 @@ namespace ProcessHacker
         public long MemoryUsage;
         public string Name;
         public string Username;
+        public Win32.SYSTEM_PROCESS_INFORMATION Process;
+        public Win32.SYSTEM_THREAD_INFORMATION[] Threads;
 
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public bool IsElevated;
         public bool IsBeingDebugged;
         public bool IsVirtualizationEnabled;
-        public ulong LastTime;
+        public long LastTime;
         public int SessionId;
         public int ParentPID;
         public int IconAttempts;
@@ -51,39 +54,64 @@ namespace ProcessHacker
         public Win32.ProcessHandle ProcessQueryLimitedVmReadHandle;
     }
 
-    public class ProcessProvider : Provider<int, ProcessItem>
+    public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        private ulong _lastSysTime;
+        private long _lastSysTime;
 
-        public ProcessProvider()
+        public ProcessSystemProvider()
             : base()
         {      
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
-            ulong[] systemTimes = Win32.GetSystemTimes();
+            Win32.SYSTEM_BASIC_INFORMATION basic = new Win32.SYSTEM_BASIC_INFORMATION();
+            int retLen;
 
-            _lastSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
+            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemBasicInformation, ref basic,
+                Marshal.SizeOf(basic), out retLen);
+            this.System = basic;
+
+            this.UpdateProcessorPerf();
+            _lastSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
+        }
+
+        public Win32.SYSTEM_BASIC_INFORMATION System { get; private set; }
+        public Win32.SYSTEM_PERFORMANCE_INFORMATION Performance { get; private set; }
+        public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION ProcessorPerf { get; private set; }
+
+        private void UpdateProcessorPerf()
+        {
+            int retLen;
+            Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION procPerf = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
+
+            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemProcessorTimes,
+                ref procPerf, Marshal.SizeOf(procPerf), out retLen);
+            this.ProcessorPerf = procPerf;
+        }
+
+        private void UpdatePerformance()
+        {
+            int retLen;
+            Win32.SYSTEM_PERFORMANCE_INFORMATION performance = new Win32.SYSTEM_PERFORMANCE_INFORMATION();
+
+            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemPerformanceInformation,
+                ref performance, Marshal.SizeOf(performance), out retLen);
+            this.Performance = performance;
         }
 
         private void UpdateOnce()
         {
-            Process[] processes = Process.GetProcesses();
+            this.UpdatePerformance();
+            this.UpdateProcessorPerf();
+
             Dictionary<int, int> tsProcesses = new Dictionary<int,int>();
-            Dictionary<int, Process> procs = new Dictionary<int, Process>();
+            Dictionary<int, Win32.SystemProcess> procs = Win32.EnumProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = Win32.TSEnumProcessesFast();
 
-            ulong[] systemTimes = Win32.GetSystemTimes();
-            ulong thisSysTime = systemTimes[1] / 10000 + systemTimes[2] / 10000;
-            ulong sysTime = thisSysTime - _lastSysTime;
+            long thisSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
+            long sysTime = thisSysTime - _lastSysTime;
 
             _lastSysTime = thisSysTime;
-
-            for (int i = 0; i < wtsEnumData.PIDs.Length; i++)
-                tsProcesses.Add(wtsEnumData.PIDs[i], wtsEnumData.SIDs[i]);
-
-            foreach (Process p in processes)
-                procs.Add(p.Id, p);
 
             // look for dead processes
             foreach (int pid in Dictionary.Keys)
@@ -110,22 +138,18 @@ namespace ProcessHacker
             // look for new processes
             foreach (int pid in procs.Keys)
             {
-                Process p = procs[pid];
+                Win32.SYSTEM_PROCESS_INFORMATION processInfo = procs[pid].Process;
+                Process p = Process.GetProcessById(pid);
 
                 if (!Dictionary.ContainsKey(pid))
-                { 
+                {
                     ProcessItem item = new ProcessItem();
 
                     item.PID = pid;
-
-                    try
-                    {
-                        item.SessionId = Win32.GetProcessSessionId(pid);
-                    }
-                    catch
-                    {
-                        item.SessionId = -1;
-                    }
+                    item.LastTime = processInfo.KernelTime + processInfo.UserTime;
+                    item.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
+                    item.Process = processInfo;
+                    item.SessionId = processInfo.SessionId;
 
                     try
                     {
@@ -139,31 +163,19 @@ namespace ProcessHacker
                         if (p.Id == 0)
                             item.Name = "System Idle Process";
                         else
-                            item.Name = p.MainModule.ModuleName;
+                            item.Name = procs[pid].Name;
                     }
                     catch
                     {
-                        item.Name = Win32.GetNameFromPID(pid);
-
-                        if (item.Name == "(error)" || item.Name == "(unknown)")
+                        try
                         {
-                            try
-                            {
-                                item.Name = "(" + p.ProcessName + ")";
-                            }
-                            catch
-                            {
-                                item.Name = "(unknown)";
-                            }
+                            item.Name = p.MainModule.ModuleName;
+                        }
+                        catch
+                        {
+                            item.Name = Win32.GetNameFromPID(pid);
                         }
                     }
-
-                    try
-                    {
-                        item.MemoryUsage = p.PrivateMemorySize64;
-                    }
-                    catch
-                    { }
 
                     try
                     {
@@ -182,15 +194,6 @@ namespace ProcessHacker
                     try
                     {
                         item.ProcessQueryLimitedHandle =  new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
-                        
-                        try
-                        {
-                            ulong[] times = Win32.GetProcessTimes(item.ProcessQueryLimitedHandle);
-
-                            item.LastTime = times[2] / 10000 + times[3] / 10000;
-                        }
-                        catch
-                        { }
 
                         try
                         {
@@ -211,6 +214,18 @@ namespace ProcessHacker
                         try
                         {
                             item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
+
+                            // check the parent's creation time to see if it's actually the parent
+                            try
+                            {
+                                DateTime thisStartTime = p.StartTime;
+                                DateTime parentStartTime = Process.GetProcessById(item.ParentPID).StartTime;
+
+                                if (parentStartTime > thisStartTime)
+                                    item.ParentPID = -1; // parent was started later than child! it's a fake.
+                            }
+                            catch
+                            { } // item.ParentPID = -1;
                         }
                         catch
                         {
@@ -227,6 +242,13 @@ namespace ProcessHacker
 
                     if (item.Username == null)
                     {
+                        if (tsProcesses.Count == 0)
+                        {
+                            // delay loading until this point
+                            for (int i = 0; i < wtsEnumData.PIDs.Length; i++)
+                                tsProcesses.Add(wtsEnumData.PIDs[i], wtsEnumData.SIDs[i]);
+                        }
+
                         try
                         {
                             item.Username = Win32.GetAccountName(tsProcesses[pid], true);
@@ -236,7 +258,7 @@ namespace ProcessHacker
                     }
 
                     if (pid == 0)
-                        item.LastTime = systemTimes[0] / 10000;
+                        item.LastTime = this.ProcessorPerf.IdleTime;
 
                     try
                     {
@@ -259,13 +281,22 @@ namespace ProcessHacker
                     ProcessItem newitem = new ProcessItem();
 
                     newitem = item;
+                    newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
+                    newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
 
                     try
                     {
-                        newitem.MemoryUsage = p.PrivateMemorySize64;
+                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime) /
+                            this.System.NumberOfProcessors;
                     }
                     catch
                     { }
+
+                    if (pid == 0)
+                    {
+                        newitem.LastTime = this.ProcessorPerf.IdleTime;
+                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
+                    }
 
                     if (newitem.Icon == null && newitem.IconAttempts < 5)
                     {
@@ -293,25 +324,10 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    try
-                    {
-                        ulong[] times = Win32.GetProcessTimes(item.ProcessQueryLimitedHandle);
-
-                        newitem.LastTime = times[2] / 10000 + times[3] / 10000;
-                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
-                    }
-                    catch
-                    { }
-
-                    if (pid == 0)
-                    {
-                        newitem.LastTime = systemTimes[0] / 10000;
-                        newitem.CPUUsage = ((float)(newitem.LastTime - item.LastTime) * 100 / sysTime);
-                    }
-
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
-                        newitem.IsBeingDebugged != item.IsBeingDebugged)
+                        newitem.IsBeingDebugged != item.IsBeingDebugged ||
+                        newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled)
                     {
                         newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);

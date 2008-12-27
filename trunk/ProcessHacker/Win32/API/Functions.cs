@@ -602,11 +602,23 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            IntPtr SystemInformation, int SystemInformationLength, ref int ReturnLength);
+            ref SYSTEM_BASIC_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            IntPtr ObjectInformation, int ObjectInformationLength, ref int ReturnLength);
+            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
 
         #endregion
 

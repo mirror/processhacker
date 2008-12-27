@@ -482,12 +482,12 @@
     <Compile Include="PE\ImageSubsystem.cs" />
     <Compile Include="PE\MachineType.cs" />
     <Compile Include="PE\PEFile.cs" />
+    <Compile Include="Providers\ProcessSystemProvider.cs" />
     <Compile Include="Providers\MemoryProvider.cs" />
     <Compile Include="Providers\ModuleProvider.cs" />
     <Compile Include="Providers\HandleProvider.cs" />
     <Compile Include="Providers\ServiceProvider.cs" />
     <Compile Include="Providers\ThreadProvider.cs" />
-    <Compile Include="Providers\ProcessProvider.cs" />
     <Compile Include="Components\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>

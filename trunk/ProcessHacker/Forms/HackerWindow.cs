@@ -45,7 +45,7 @@ namespace ProcessHacker
         public SysInfoWindow SysInfoWindow = null;
         public HandleFilterWindow HandleFilterForm = new HandleFilterWindow();
 
-        ProcessProvider processP = new ProcessProvider();
+        ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
@@ -78,7 +78,7 @@ namespace ProcessHacker
             get { return vistaMenu; }
         }
 
-        public ProcessProvider ProcessProvider
+        public ProcessSystemProvider ProcessProvider
         {
             get { return processP; }
         }
@@ -1394,9 +1394,9 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            processP.DictionaryAdded += new ProcessProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
-            processP.DictionaryRemoved += new ProcessProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
-            processP.Updated -= new ProcessProvider.ProviderUpdateOnce(processP_Updated);
+            processP.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
+            processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
+            processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
 
             if (processP.RunCount >= 1)
                 this.Invoke(new MethodInvoker(UpdateCommon));
@@ -1435,7 +1435,7 @@ namespace ProcessHacker
 
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
-            processP.Updated += new ProcessProvider.ProviderUpdateOnce(processP_Updated);
+            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Enabled = true;
 
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;

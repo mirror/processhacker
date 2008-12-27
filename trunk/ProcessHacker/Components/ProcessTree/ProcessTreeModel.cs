@@ -126,23 +126,26 @@ namespace ProcessHacker
                 return TreePath.Empty;
             else
             {
+                ProcessNode currentNode = node;
                 Stack<ProcessNode> stack = new Stack<ProcessNode>();
 
                 while (true)
                 {
-                    stack.Push(node);
+                    stack.Push(currentNode);
 
-                    if (_processes.ContainsKey(node.PPID))
+                    if (_processes.ContainsKey(currentNode.PPID))
                     {
-                        ProcessNode newNode = _processes[node.PPID];
+                        ProcessNode newNode = _processes[currentNode.PPID];
 
-                        if (newNode == node)
+                        if (newNode == currentNode)
                             break;
 
-                        node = newNode;
+                        currentNode = newNode;
                     }
                     else
+                    {
                         break;
+                    }
                 }
 
                 return new TreePath(stack.ToArray());

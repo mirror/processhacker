@@ -564,6 +564,22 @@ namespace ProcessHacker
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SYMBOL_NAME_MAXSIZE)]
             public string Name;
+        } 
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_BASIC_INFORMATION
+        {
+            public int Reserved;
+            public int TimerResolution;
+            public int PageSize;
+            public int NumberOfPhysicalPages;
+            public int LowestPhysicalPageNumber;
+            public int HighestPhysicalPageNumber;
+            public int AllocationGranularity;
+            public int MinimumUserModeAddress;
+            public int MaximumUserModeAddress;
+            public int ActiveProcessorsAffinityMask;
+            public byte NumberOfProcessors;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -597,80 +613,80 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PERFORMANCE_INFORMATION
         {
-            long IdleProcessTime;
-            long IoReadTransferCount;
-            long IoWriteTransferCount;
-            long IoOtherTransferCount;
-            int IoReadOperationCount;
-            int IoWriteOperationCount;
-            int IoOtherOperationCount;
-            int AvailablePages;
-            int CommittedPages;
-            int CommitLimit;
-            int PeakCommitment;
-            int PageFaultCount;
-            int CopyOnWriteCount;
-            int TransitionCount;
-            int CacheTransitionCount;
-            int DemandZeroCount;
-            int PageReadCount;
-            int PageReadIoCount;
-            int CacheReadCount;
-            int CacheIoCount;
-            int DirtyPagesWriteCount;
-            int DirtyWriteIoCount;
-            int MappedPagesWriteCount;
-            int MappedWriteIoCount;
-            int PagedPoolPages;
-            int NonPagedPoolPages;
-            int PagedPoolAllocs;
-            int PagedPoolFrees;
-            int NonPagedPoolAllocs;
-            int NonPagedPoolFrees;
-            int FreeSystemPtes;
-            int ResidentSystemCodePage;
-            int TotalSystemDriverPages;
-            int TotalSystemCodePages;
-            int NonPagedPoolLookasideHits;
-            int PagedPoolLookasideHits;
-            int Spare3Count;
-            int ResidentSystemCachePage;
-            int ResidentPagedPoolPage;
-            int ResidentSystemDriverPage;
-            int CcFastReadNoWait;
-            int CcFastReadWait;
-            int CcFastReadResourceMiss;
-            int CcFastReadNotPossible;
-            int CcFastMdlReadNoWait;
-            int CcFastMdlReadWait;
-            int CcFastMdlReadResourceMiss;
-            int CcFastMdlReadNotPossible;
-            int CcMapDataNoWait;
-            int CcMapDataWait;
-            int CcMapDataNoWaitMiss;
-            int CcMapDataWaitMiss;
-            int CcPinMappedDataCount;
-            int CcPinReadNoWait;
-            int CcPinReadWait;
-            int CcPinReadNoWaitMiss;
-            int CcPinReadWaitMiss;
-            int CcCopyReadNoWait;
-            int CcCopyReadWait;
-            int CcCopyReadNoWaitMiss;
-            int CcCopyReadWaitMiss;
-            int CcMdlReadNoWait;
-            int CcMdlReadWait;
-            int CcMdlReadNoWaitMiss;
-            int CcMdlReadWaitMiss;
-            int CcReadAheadIos;
-            int CcLazyWriteIos;
-            int CcLazyWritePages;
-            int CcDataFlushes;
-            int CcDataPages;
-            int ContextSwitches;
-            int FirstLevelTbFills;
-            int SecondLevelTbFills;
-            int SystemCalls;
+            public long IdleProcessTime;
+            public long IoReadTransferCount;
+            public long IoWriteTransferCount;
+            public long IoOtherTransferCount;
+            public int IoReadOperationCount;
+            public int IoWriteOperationCount;
+            public int IoOtherOperationCount;
+            public int AvailablePages;
+            public int CommittedPages;
+            public int CommitLimit;
+            public int PeakCommitment;
+            public int PageFaultCount;
+            public int CopyOnWriteCount;
+            public int TransitionCount;
+            public int CacheTransitionCount;
+            public int DemandZeroCount;
+            public int PageReadCount;
+            public int PageReadIoCount;
+            public int CacheReadCount;
+            public int CacheIoCount;
+            public int DirtyPagesWriteCount;
+            public int DirtyWriteIoCount;
+            public int MappedPagesWriteCount;
+            public int MappedWriteIoCount;
+            public int PagedPoolPages;
+            public int NonPagedPoolPages;
+            public int PagedPoolAllocs;
+            public int PagedPoolFrees;
+            public int NonPagedPoolAllocs;
+            public int NonPagedPoolFrees;
+            public int FreeSystemPtes;
+            public int ResidentSystemCodePage;
+            public int TotalSystemDriverPages;
+            public int TotalSystemCodePages;
+            public int NonPagedPoolLookasideHits;
+            public int PagedPoolLookasideHits;
+            public int Spare3Count;
+            public int ResidentSystemCachePage;
+            public int ResidentPagedPoolPage;
+            public int ResidentSystemDriverPage;
+            public int CcFastReadNoWait;
+            public int CcFastReadWait;
+            public int CcFastReadResourceMiss;
+            public int CcFastReadNotPossible;
+            public int CcFastMdlReadNoWait;
+            public int CcFastMdlReadWait;
+            public int CcFastMdlReadResourceMiss;
+            public int CcFastMdlReadNotPossible;
+            public int CcMapDataNoWait;
+            public int CcMapDataWait;
+            public int CcMapDataNoWaitMiss;
+            public int CcMapDataWaitMiss;
+            public int CcPinMappedDataCount;
+            public int CcPinReadNoWait;
+            public int CcPinReadWait;
+            public int CcPinReadNoWaitMiss;
+            public int CcPinReadWaitMiss;
+            public int CcCopyReadNoWait;
+            public int CcCopyReadWait;
+            public int CcCopyReadNoWaitMiss;
+            public int CcCopyReadWaitMiss;
+            public int CcMdlReadNoWait;
+            public int CcMdlReadWait;
+            public int CcMdlReadNoWaitMiss;
+            public int CcMdlReadWaitMiss;
+            public int CcReadAheadIos;
+            public int CcLazyWriteIos;
+            public int CcLazyWritePages;
+            public int CcDataFlushes;
+            public int CcDataPages;
+            public int ContextSwitches;
+            public int FirstLevelTbFills;
+            public int SecondLevelTbFills;
+            public int SystemCalls;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -682,9 +698,9 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
             public long[] Reserved1;
 
-            public ulong CreateTime;
-            public ulong UserTime;
-            public ulong KernelTime;
+            public long CreateTime;
+            public long UserTime;
+            public long KernelTime;
             public UNICODE_STRING ImageName;
             public int BasePriority;
             public int ProcessId;
@@ -699,12 +715,12 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION
         {
-            long IdleTime;
-            long KernelTime;
-            long UserTime;
-            long DpcTime;
-            long InterruptTime;
-            int InterruptCount;
+            public long IdleTime;
+            public long KernelTime;
+            public long UserTime;
+            public long DpcTime;
+            public long InterruptTime;
+            public int InterruptCount;
         }
 
         [StructLayout(LayoutKind.Sequential)]
