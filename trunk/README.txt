@@ -29,3 +29,8 @@ Hacker > Help).
 
 KNOWN ISSUES
  * Process Hacker does not display File handles on Windows XP
+
+Process Hacker is brought to you by the small Process Hacker team:
+ * wj32 (Project Manager)
+ * Dean (Developer)
+ * Paul Pacheco (Developer)
