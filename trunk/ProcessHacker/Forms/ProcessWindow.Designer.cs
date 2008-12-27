@@ -631,7 +631,7 @@
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(639, 260);
+            this.listMemory.Size = new System.Drawing.Size(639, 284);
             this.listMemory.TabIndex = 0;
             // 
             // tabHandles
@@ -669,7 +669,7 @@
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(639, 289);
+            this.listHandles.Size = new System.Drawing.Size(639, 313);
             this.listHandles.TabIndex = 0;
             // 
             // tabServices
