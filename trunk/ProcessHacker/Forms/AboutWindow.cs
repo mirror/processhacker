@@ -76,18 +76,6 @@ namespace ProcessHacker
             TryStart("mailto:wj32.64@gmail.com");
         }
 
-        private void buttonMoreInfo_Click(object sender, EventArgs e)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine(
-                string.Format("Loaded symbols: {0} symbols over {1} modules.", Symbols.SymbolCount, Symbols.LibraryCount));
-
-            InformationBox box = new InformationBox(sb.ToString());
-
-            box.ShowDialog();
-        }
-
         private void linkAsm_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             TryStart("http://www.ollydbg.de");

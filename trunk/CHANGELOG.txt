@@ -17,6 +17,8 @@ Process Hacker
  * FIXED: Less "Access denied" errors - uses PROCESS_QUERY_LIMITED_INFORMATION 
    on Vista
  * FIXED: Major refactoring of Win32 code
+ * FIXED: Symbols are now bound to each process - no more weird stack traces/symbol 
+   names
 
 1.2.6.5
  * A new member of the project - Dean

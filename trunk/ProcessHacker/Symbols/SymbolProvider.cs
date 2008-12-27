@@ -29,8 +29,15 @@ namespace ProcessHacker
     /// <summary>
     /// Provides services for retrieving symbol information.
     /// </summary>
-    public class Symbols
+    public class SymbolProvider
     {
+        public static SymbolProvider BaseInstance { get; private set; }
+
+        static SymbolProvider()
+        {
+            SymbolProvider.BaseInstance = new SymbolProvider();
+        }
+
         /// <summary>
         /// Specifies the detail with which the address's name was resolved.
         /// </summary>
@@ -60,23 +67,36 @@ namespace ProcessHacker
             Invalid
         }
 
-        private static List<KeyValuePair<int, string>> _libraryLookup;
-        private static Dictionary<string, List<KeyValuePair<int, string>>> _symbols;
-        private static Dictionary<string, uint> _librarySizes;
+        private List<KeyValuePair<int, string>> _libraryLookup;
+        private Dictionary<string, List<KeyValuePair<int, string>>> _symbols;
+        private Dictionary<string, uint> _librarySizes;
 
-        static Symbols()
+        public SymbolProvider()
         {
-            _libraryLookup = new List<KeyValuePair<int, string>>();
-            _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
-            _librarySizes = new Dictionary<string, uint>();
+            if (SymbolProvider.BaseInstance != null)
+            {
+                _libraryLookup = new List<KeyValuePair<int, string>>(SymbolProvider.BaseInstance._libraryLookup);
+                _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
+
+                foreach (string k in SymbolProvider.BaseInstance._symbols.Keys)
+                    _symbols.Add(k, new List<KeyValuePair<int, string>>(SymbolProvider.BaseInstance._symbols[k]));
+
+                _librarySizes = new Dictionary<string, uint>(SymbolProvider.BaseInstance._librarySizes);
+            }
+            else
+            {
+                _libraryLookup = new List<KeyValuePair<int, string>>();
+                _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
+                _librarySizes = new Dictionary<string, uint>();
+            }
         }
 
-        public static void LoadSymbolsFromLibrary(string path)
+        public void LoadSymbolsFromLibrary(string path)
         {
             LoadSymbolsFromLibrary(path, Process.GetCurrentProcess().Modules);
         }
 
-        public static void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
+        public void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
         {
             string realPath = Misc.GetRealPath(path).ToLower();
             int imageBase = -1;
@@ -98,7 +118,7 @@ namespace ProcessHacker
             LoadSymbolsFromLibrary(path, imageBase);
         }
 
-        public static void LoadSymbolsFromLibrary(string path, int imageBase)
+        public void LoadSymbolsFromLibrary(string path, int imageBase)
         {
             string realPath = Misc.GetRealPath(path).ToLower();
 
@@ -172,7 +192,7 @@ namespace ProcessHacker
                     }));
         }
 
-        public static void UnloadSymbols(string path)
+        public void UnloadSymbols(string path)
         {
             foreach (KeyValuePair<int, string> kvp in _libraryLookup)
             {
@@ -187,14 +207,14 @@ namespace ProcessHacker
             _symbols.Remove(path);
         }
 
-        public static string GetNameFromAddress(int address)
+        public string GetNameFromAddress(int address)
         {
             FoundLevel level;
 
             return GetNameFromAddress(address, out level);
         }
 
-        public static string GetNameFromAddress(int address, out FoundLevel level)
+        public string GetNameFromAddress(int address, out FoundLevel level)
         {
             if (address == 0)
             {
@@ -207,7 +227,8 @@ namespace ProcessHacker
             {
                 uint size = _librarySizes[kvp.Value];
 
-                if ((uint)address >= (uint)kvp.Key && (uint)address < ((uint)kvp.Key + size))
+                //if ((uint)address >= (uint)kvp.Key && (uint)address < ((uint)kvp.Key + size))       
+                if ((uint)address >= (uint)kvp.Key)
                 {
                     List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];  
                     FileInfo fi = new FileInfo(kvp.Value);
@@ -242,12 +263,12 @@ namespace ProcessHacker
             return "0x" + address.ToString("x8");
         }
 
-        public static int LibraryCount
+        public int LibraryCount
         {
             get { return _libraryLookup.Count; }
         }
 
-        public static int SymbolCount
+        public int SymbolCount
         {
             get
             {
@@ -260,15 +281,11 @@ namespace ProcessHacker
             }
         }
 
-        public static string[] Keys
+        public IEnumerable<string> Keys
         {
             get
             {
-                string[] strings = new string[_symbols.Keys.Count];
-
-                _symbols.Keys.CopyTo(strings, 0);
-
-                return strings;
+                return _symbols.Keys;
             }
         }
     }

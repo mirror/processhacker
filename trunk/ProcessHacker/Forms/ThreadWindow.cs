@@ -30,6 +30,7 @@ namespace ProcessHacker
         private int _tid;
         private Win32.ProcessHandle _phandle;
         private Win32.ThreadHandle _thandle;
+        private SymbolProvider _symbols;
 
         public const string DisplayFormat = "0x{0:x8}";
 
@@ -41,12 +42,13 @@ namespace ProcessHacker
             get { return _pid + "-" + _tid; }
         }
 
-        public ThreadWindow(int PID, int TID)
+        public ThreadWindow(int PID, int TID, SymbolProvider symbols)
         {
             InitializeComponent();
 
             _pid = PID;
             _tid = TID;
+            _symbols = symbols;
 
             Program.ThreadWindows.Add(Id, this);
 
@@ -237,7 +239,7 @@ namespace ProcessHacker
 
                     ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
                         "0x" + addr.ToString("x8"),
-                        Symbols.GetNameFromAddress(addr)
+                        _symbols.GetNameFromAddress(addr)
                     }));
 
                     if (stackFrame.Params.Length > 0)

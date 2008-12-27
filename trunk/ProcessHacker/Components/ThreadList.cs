@@ -431,39 +431,11 @@ namespace ProcessHacker
 
             ThreadWindow window;
 
-            this.UseWaitCursor = true;
-
-            foreach (string s in Symbols.Keys)
-            {
-                // unload EXE symbols - they usually conflict with the current process
-                if (s.ToLower().EndsWith(".exe"))
-                    Symbols.UnloadSymbols(s);
-            }
-
-            try
-            {
-                foreach (ProcessModule module in _process.Modules)
-                {
-                    try
-                    {
-                        Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
-                    }
-                    catch
-                    { }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not load symbols for selected process:\n\n" + ex.Message,
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-
-            this.UseWaitCursor = false;
-
             try
             {
                 window = Program.GetThreadWindow(_pid,
                     Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
+                    _provider.Symbols,
                     new Program.ThreadWindowInvokeAction(delegate(ThreadWindow f)
                     {
                         try

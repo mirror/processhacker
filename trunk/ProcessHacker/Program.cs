@@ -259,16 +259,16 @@ namespace ProcessHacker
         /// <summary>
         /// Creates an instance of the thread window on a separate thread.
         /// </summary>
-        public static ThreadWindow GetThreadWindow(int PID, int TID)
+        public static ThreadWindow GetThreadWindow(int PID, int TID, SymbolProvider symbols)
         {
-            return GetThreadWindow(PID, TID, new ThreadWindowInvokeAction(delegate { }));
+            return GetThreadWindow(PID, TID, symbols, new ThreadWindowInvokeAction(delegate { }));
         }
 
         /// <summary>
         /// Creates an instance of the thread window on a separate thread and invokes an action on that thread.
         /// </summary>
         /// <param name="action">The action to be performed.</param>
-        public static ThreadWindow GetThreadWindow(int PID, int TID, ThreadWindowInvokeAction action)
+        public static ThreadWindow GetThreadWindow(int PID, int TID, SymbolProvider symbols, ThreadWindowInvokeAction action)
         {
             ThreadWindow tw = null;
             string id = PID + "-" + TID;
@@ -284,7 +284,7 @@ namespace ProcessHacker
 
             Thread t = new Thread(new ThreadStart(delegate
             {
-                tw = new ThreadWindow(PID, TID);
+                tw = new ThreadWindow(PID, TID, symbols);
 
                 id = tw.Id;
 

@@ -170,7 +170,7 @@
       <DependentUpon>UtilitiesButton.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\VerticleProgressBar.resx">
+    <EmbeddedResource Include="FormHelper\VerticleProgressBar.resx">
       <DependentUpon>VerticleProgressBar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutWindow.resx">
@@ -362,10 +362,10 @@
     <Compile Include="Components\TokenProperties.Designer.cs">
       <DependentUpon>TokenProperties.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\VerticleProgressBar.cs">
+    <Compile Include="FormHelper\VerticleProgressBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Components\VerticleProgressBar.Designer.cs">
+    <Compile Include="FormHelper\VerticleProgressBar.Designer.cs">
       <DependentUpon>VerticleProgressBar.cs</DependentUpon>
     </Compile>
     <Compile Include="FormHelper\AsyncUtils.cs">
@@ -569,7 +569,7 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
-    <Compile Include="Symbols\Symbols.cs" />
+    <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />

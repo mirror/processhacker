@@ -38,7 +38,6 @@
             this.labelBy = new System.Windows.Forms.Label();
             this.linkSourceforge = new System.Windows.Forms.LinkLabel();
             this.linkEmail = new System.Windows.Forms.LinkLabel();
-            this.buttonMoreInfo = new System.Windows.Forms.Button();
             this.linkAsm = new System.Windows.Forms.LinkLabel();
             this.buttonLicenses = new System.Windows.Forms.Button();
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
@@ -160,18 +159,6 @@
             this.linkEmail.Text = "Send feedback to wj32.64@gmail.com";
             this.linkEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEmail_LinkClicked);
             // 
-            // buttonMoreInfo
-            // 
-            this.buttonMoreInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonMoreInfo.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonMoreInfo.Location = new System.Drawing.Point(252, 226);
-            this.buttonMoreInfo.Name = "buttonMoreInfo";
-            this.buttonMoreInfo.Size = new System.Drawing.Size(75, 23);
-            this.buttonMoreInfo.TabIndex = 11;
-            this.buttonMoreInfo.Text = "More...";
-            this.buttonMoreInfo.UseVisualStyleBackColor = true;
-            this.buttonMoreInfo.Click += new System.EventHandler(this.buttonMoreInfo_Click);
-            // 
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
@@ -187,7 +174,7 @@
             // 
             this.buttonLicenses.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonLicenses.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonLicenses.Location = new System.Drawing.Point(252, 197);
+            this.buttonLicenses.Location = new System.Drawing.Point(252, 226);
             this.buttonLicenses.Name = "buttonLicenses";
             this.buttonLicenses.Size = new System.Drawing.Size(75, 23);
             this.buttonLicenses.TabIndex = 13;
@@ -214,7 +201,6 @@
             this.Controls.Add(this.buttonLicenses);
             this.Controls.Add(this.linkTreeViewAdv);
             this.Controls.Add(this.linkAsm);
-            this.Controls.Add(this.buttonMoreInfo);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
@@ -254,7 +240,6 @@
         private System.Windows.Forms.Label labelBy;
         private System.Windows.Forms.LinkLabel linkSourceforge;
         private System.Windows.Forms.LinkLabel linkEmail;
-        private System.Windows.Forms.Button buttonMoreInfo;
         private System.Windows.Forms.LinkLabel linkAsm;
         private System.Windows.Forms.Button buttonLicenses;
         private System.Windows.Forms.LinkLabel linkTreeViewAdv;

@@ -191,27 +191,6 @@ namespace ProcessHacker
             }
         }
 
-        private void getSNFAMenuItem_Click(object sender, EventArgs e)
-        {
-            PromptBox box = new PromptBox();
-
-            if (box.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    int address = (int)BaseConverter.ToNumberParse(box.Value);
-
-                    InformationBox infoBox = new InformationBox(Symbols.GetNameFromAddress(address));
-
-                    infoBox.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
         private void runAsMenuItem_Click(object sender, EventArgs e)
         {
              RunWindow run = new RunWindow();
@@ -1504,7 +1483,7 @@ namespace ProcessHacker
                     try
                     {
                         if (!module.FileName.ToLower().EndsWith(".exe"))
-                            Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                            SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
                     }
                     catch (Exception ex)
                     {

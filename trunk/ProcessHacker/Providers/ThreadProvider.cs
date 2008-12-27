@@ -40,6 +40,7 @@ namespace ProcessHacker
 
     public class ThreadProvider : Provider<int, ThreadItem>
     {
+        private SymbolProvider _symbols = new SymbolProvider();
         private int _pid;
 
         public ThreadProvider(int PID)
@@ -48,20 +49,6 @@ namespace ProcessHacker
             _pid = PID;
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
-            
-            foreach (string s in Symbols.Keys)
-            {
-                if (s.ToLower().EndsWith(".exe"))
-                    Symbols.UnloadSymbols(s);
-            }
-
-            try
-            {
-                ProcessModule module = Process.GetProcessById(_pid).MainModule;
-                Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
-            }
-            catch
-            { }
 
             // start loading symbols
             Thread t = new Thread(new ThreadStart(delegate
@@ -72,7 +59,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            Symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                            _symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
                         }
                         catch
                         { }
@@ -137,7 +124,7 @@ namespace ProcessHacker
                                 throw new Exception();
                         }
 
-                        item.StartAddress = Symbols.GetNameFromAddress(item.StartAddressI);
+                        item.StartAddress = _symbols.GetNameFromAddress(item.StartAddressI);
                     }
                     catch { }
 
@@ -161,11 +148,11 @@ namespace ProcessHacker
 
                     try
                     {
-                        Symbols.FoundLevel level;
+                        SymbolProvider.FoundLevel level;
 
-                        string symName = Symbols.GetNameFromAddress(newitem.StartAddressI, out level);
+                        string symName = _symbols.GetNameFromAddress(newitem.StartAddressI, out level);
 
-                        if (level != Symbols.FoundLevel.Address)
+                        if (level != SymbolProvider.FoundLevel.Address)
                             newitem.StartAddress = symName;
                     }
                     catch { }
@@ -187,6 +174,11 @@ namespace ProcessHacker
             }
 
             Dictionary = newdictionary;
+        }
+
+        public SymbolProvider Symbols
+        {
+            get { return _symbols; }
         }
 
         public int PID

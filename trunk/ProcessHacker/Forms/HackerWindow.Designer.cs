@@ -75,7 +75,6 @@
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
-            this.getSNFAMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
             this.statusGeneral = new System.Windows.Forms.StatusBarPanel();
@@ -435,15 +434,7 @@
             // toolsMenuItem
             // 
             this.toolsMenuItem.Index = 1;
-            this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.getSNFAMenuItem});
             this.toolsMenuItem.Text = "&Tools";
-            // 
-            // getSNFAMenuItem
-            // 
-            this.getSNFAMenuItem.Index = 0;
-            this.getSNFAMenuItem.Text = "Get Symbol Name From Address...";
-            this.getSNFAMenuItem.Click += new System.EventHandler(this.getSNFAMenuItem_Click);
             // 
             // windowMenuItem
             // 
@@ -784,7 +775,6 @@
         private System.Windows.Forms.MenuItem menuItem8;
         private System.Windows.Forms.MenuItem copyServiceMenuItem;
         private System.Windows.Forms.MenuItem selectAllServiceMenuItem;
-        private System.Windows.Forms.MenuItem getSNFAMenuItem;
         private System.Windows.Forms.MenuItem toolsMenuItem;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenu menuIcon;
