@@ -374,6 +374,7 @@ namespace ProcessHacker
 
             if (processSelectedPID < 0)
             {
+                priorityMenuItem.Text = "&Priority";
                 Misc.DisableAllMenuItems(menuProcess);
             }
 
