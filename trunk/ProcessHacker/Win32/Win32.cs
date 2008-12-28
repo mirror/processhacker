@@ -567,7 +567,7 @@ namespace ProcessHacker
             }
             catch
             {
-                using (ProcessHandle phandle = new ProcessHandle(ProcessId, PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                using (ProcessHandle phandle = new ProcessHandle(ProcessId, Program.MinProcessQueryRights))
                 {
                     return phandle.GetToken(TOKEN_RIGHTS.TOKEN_QUERY).GetSessionId();
                 }

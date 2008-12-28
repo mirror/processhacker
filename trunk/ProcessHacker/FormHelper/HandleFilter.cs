@@ -36,6 +36,7 @@ namespace ProcessHacker.FormHelper
         public event MatchProgressEvent MatchProgress;
         private string strFilter;
         private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(100);
+        private Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
 
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
             : base(isi)
@@ -88,8 +89,20 @@ namespace ProcessHacker.FormHelper
             {
                 try
                 {
-                    if (Win32.GetProcessSessionId(currhandle.ProcessId) != Program.CurrentSessionId)
-                        return;
+                    if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
+                    {
+                        if (!isCurrentSessionIdCache[currhandle.ProcessId])
+                            return;
+                    }
+                    else
+                    {
+                        bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
+
+                        isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
+
+                        if (!isCurrentSessionId)
+                            return;
+                    }
                 }
                 catch
                 {
