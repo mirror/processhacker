@@ -276,17 +276,19 @@ namespace ProcessHacker
                         {
                             item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
 
-                            // check the parent's creation time to see if it's actually the parent
-                            try
+                            if (!procs.ContainsKey(item.ParentPID))
                             {
-                                DateTime thisStartTime = p.StartTime;
-                                DateTime parentStartTime = Process.GetProcessById(item.ParentPID).StartTime;
+                                item.ParentPID = -1;
+                            }
+                            else
+                            {
+                                // check the parent's creation time to see if it's actually the parent
+                                long parentStartTime = procs[item.ParentPID].Process.CreateTime;
+                                long thisStartTime = processInfo.CreateTime;
 
                                 if (parentStartTime > thisStartTime)
-                                    item.ParentPID = -1; // parent was started later than child! it's a fake.
+                                    item.ParentPID = -1;
                             }
-                            catch
-                            { } // item.ParentPID = -1;
                         }
                         catch
                         {
