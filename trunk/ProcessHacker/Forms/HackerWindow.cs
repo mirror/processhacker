@@ -372,7 +372,7 @@ namespace ProcessHacker
                 copyProcessMenuItem.Enabled = true;
             }
 
-            if (processSelectedPID < 0)
+            if (processSelectedPID < 0 && treeProcesses.SelectedNodes.Count == 1)
             {
                 priorityMenuItem.Text = "&Priority";
                 Misc.DisableAllMenuItems(menuProcess);
