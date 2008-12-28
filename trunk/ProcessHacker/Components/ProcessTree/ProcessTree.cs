@@ -45,6 +45,9 @@ namespace ProcessHacker
             treeProcesses.DoubleClick += new EventHandler(treeProcesses_DoubleClick);
 
             nodeName.ToolTipProvider = new ProcessToolTipProvider(this);
+
+            // make it draw when we want it to draw :)
+            treeProcesses.BeginUpdate();
         }
 
         private void treeProcesses_DoubleClick(object sender, EventArgs e)
@@ -140,6 +143,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.BeforeUpdate -= new Provider<int, ProcessItem>.ProviderUpdateOnce(_provider_BeforeUpdate);
                 }
 
                 _provider = value;
@@ -158,13 +162,17 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.BeforeUpdate += new Provider<int, ProcessItem>.ProviderUpdateOnce(_provider_BeforeUpdate);
                 }
             }
         }
 
         #endregion
 
-        #region Core Process List
+        private void _provider_BeforeUpdate()
+        {
+            treeProcesses.Invalidate();
+        }
 
         private void PerformDelayed(int delay, MethodInvoker action)
         {
@@ -211,11 +219,16 @@ namespace ProcessHacker
                     {
                         node.State = TreeNodeAdv.NodeState.New;
                         this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                            new MethodInvoker(delegate { node.State = TreeNodeAdv.NodeState.Normal; }));
+                            new MethodInvoker(delegate
+                        {
+                            node.State = TreeNodeAdv.NodeState.Normal;
+                            treeProcesses.Invalidate();
+                        }));
                     }
 
                     node.BackColor = GetProcessColor(item);
                     node.ExpandAll();
+                    treeProcesses.Invalidate();
                 }
             }
         }
@@ -248,7 +261,16 @@ namespace ProcessHacker
                 {
                     node.State = TreeNodeAdv.NodeState.Removed;
                     this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                        new MethodInvoker(delegate { try { _treeModel.Remove(item); } catch { } }));
+                        new MethodInvoker(delegate
+                    {
+                        try
+                        {
+                            _treeModel.Remove(item);
+                        }
+                        catch { }
+                    }));
+
+                    treeProcesses.Invalidate();
                 }
             }
         }
@@ -291,8 +313,6 @@ namespace ProcessHacker
         {
             return treeProcesses.GetPath(node).LastNode as ProcessNode;
         }
-
-        #endregion
 
         #region Interfacing
 

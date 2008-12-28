@@ -484,23 +484,20 @@ namespace ProcessHacker
                 while (true)
                 {
                     currentProcess.Process = data.ReadStruct<SYSTEM_PROCESS_INFORMATION>(i, 0);
-                    currentProcess.Threads = new Dictionary<int, SYSTEM_THREAD_INFORMATION>();
                     currentProcess.Name = ReadUnicodeString(currentProcess.Process.ImageName);
 
-                    if (ProcessesWithThreads.ContainsKey(currentProcess.Process.ProcessId))
+                    if (ProcessesWithThreads.ContainsKey(currentProcess.Process.ProcessId) && 
+                        currentProcess.Process.ProcessId != 0)
                     {
-                        try
-                        {
-                            for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
-                            {
-                                Win32.SYSTEM_THREAD_INFORMATION thread = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
-                                    Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
+                        currentProcess.Threads = new Dictionary<int, SYSTEM_THREAD_INFORMATION>();
 
-                                currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
-                            }
+                        for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
+                        {
+                            Win32.SYSTEM_THREAD_INFORMATION thread = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
+                                Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
+
+                            currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
                         }
-                        catch
-                        { }
                     }
 
                     returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);

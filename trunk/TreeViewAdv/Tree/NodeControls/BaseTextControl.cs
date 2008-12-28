@@ -120,13 +120,16 @@ namespace Aga.Controls.Tree.NodeControls
 			CheckThread();
 			Font font = GetDrawingFont(node, context, label);
 			Size s = Size.Empty;
-			if (UseCompatibleTextRendering)
-				s = TextRenderer.MeasureText(label, font);
-			else
-			{
-				SizeF sf = context.Graphics.MeasureString(label, font);
-				s = Size.Ceiling(sf); 
-			}
+
+            if (!UseCompatibleTextRendering)
+            {
+                SizeF sf = context.Graphics.MeasureString(label, font);
+                s = Size.Ceiling(sf);
+            }
+            else
+            {
+                s = TextRenderer.MeasureText(label, font);
+            }
 
 			if (!s.IsEmpty)
 				return s;
@@ -182,10 +185,10 @@ namespace Aga.Controls.Tree.NodeControls
 					_focusPen.Color = SystemColors.InactiveCaption;
 				context.Graphics.DrawRectangle(_focusPen, focusRect);
 			}
-            if (UseCompatibleTextRendering)
-                TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
-            else
+            if (!UseCompatibleTextRendering)                                       
                 context.Graphics.DrawString(label, font, GetFrush(textColor), bounds, _format);
+            else
+                TextRenderer.DrawText(context.Graphics, label, font, bounds, textColor, _formatFlags);
 		}
 
 		private static Dictionary<Color, Brush> _brushes = new Dictionary<Color,Brush>();

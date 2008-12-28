@@ -76,6 +76,8 @@ namespace ProcessHacker
 
         protected event System.Windows.Forms.MethodInvoker Killed;
 
+        public event ProviderUpdateOnce BeforeUpdate;
+
         /// <summary>
         /// Occurs when the provider has been updated.
         /// </summary>
@@ -203,6 +205,9 @@ namespace ProcessHacker
 
                 if (ProviderUpdate != null)
                 {
+                    if (BeforeUpdate != null)
+                        BeforeUpdate();
+
                     try
                     {
                         ProviderUpdate();

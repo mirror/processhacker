@@ -84,6 +84,8 @@ namespace ProcessHacker
         public float CurrentCPUUsage { get; private set; }
         public int PIDWithMostCPUUsage { get; private set; }
 
+        public bool PerformanceEnabled { get; set; }
+
         private void UpdateProcessorPerf()
         {
             using (MemoryAlloc data =
@@ -121,6 +123,9 @@ namespace ProcessHacker
 
         private void UpdatePerformance()
         {
+            if (!this.PerformanceEnabled)
+                return;
+
             int retLen;
             Win32.SYSTEM_PERFORMANCE_INFORMATION performance = new Win32.SYSTEM_PERFORMANCE_INFORMATION();
 
@@ -387,14 +392,17 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    newdictionary[pid] = newitem;
-
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged ||
                         newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled)
-                    {
+                    {                                           
+                        newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);
+                    }
+                    else if (Win32.ProcessesWithThreads.ContainsKey(pid))
+                    {
+                        newdictionary[pid] = newitem;
                     }
                 }
             }

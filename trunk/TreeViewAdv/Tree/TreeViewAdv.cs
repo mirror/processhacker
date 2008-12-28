@@ -39,6 +39,7 @@ namespace Aga.Controls.Tree
 		private IncrementalSearch _search;
 		private List<TreeNodeAdv> _expandingNodes = new List<TreeNodeAdv>();
 		private AbortableThreadPool _threadPool = new AbortableThreadPool();
+        private Stack<bool> _suspendedStack = new Stack<bool>();
 
 		#region Public Events
 
@@ -270,18 +271,20 @@ namespace Aga.Controls.Tree
 
 		public void BeginUpdate()
 		{
+            _suspendedStack.Push(_suspendUpdate);
 			_suspendUpdate = true;
-			SuspendSelectionEvent = true;
+			//SuspendSelectionEvent = true;
 		}
 
 		public void EndUpdate()
 		{
-			_suspendUpdate = false;
+			_suspendUpdate = _suspendedStack.Pop();
+
 			if (_needFullUpdate)
 				FullUpdate();
 			else
 				UpdateView();
-			SuspendSelectionEvent = false;
+			//SuspendSelectionEvent = false;
 		}
 
 		public void ExpandAll()
@@ -371,6 +374,7 @@ namespace Aga.Controls.Tree
 			ArrangeControls();
 			SafeUpdateScrollBars();
 			base.OnSizeChanged(e);
+            this.Invalidate();
 		}
 
 		private void ArrangeControls()
@@ -821,11 +825,13 @@ namespace Aga.Controls.Tree
 		private void _vScrollBar_ValueChanged(object sender, EventArgs e)
 		{
 			FirstVisibleRow = _vScrollBar.Value;
+            this.Invalidate();
 		}
 
 		private void _hScrollBar_ValueChanged(object sender, EventArgs e)
 		{
-			OffsetX = _hScrollBar.Value;
+            OffsetX = _hScrollBar.Value;
+            this.Invalidate();
 		}
 
 		internal void SmartFullUpdate()
@@ -867,7 +873,7 @@ namespace Aga.Controls.Tree
 				}
 
 			if (flag)
-				OnSelectionChanged();
+                OnSelectionChanged();
 		}
 
 		internal void ChangeColumnWidth(TreeColumn column)
@@ -1046,6 +1052,9 @@ namespace Aga.Controls.Tree
 			}
 			//else 
 			//	throw new ArgumentException("Path not found");
+
+            this.FullUpdate();
+            this.Invalidate();
 		}
 
 		private void _model_NodesRemoved(object sender, TreeModelEventArgs e)

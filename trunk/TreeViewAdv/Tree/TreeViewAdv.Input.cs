@@ -11,6 +11,7 @@ namespace Aga.Controls.Tree
 {
 	public partial class TreeViewAdv
 	{
+        // Note by wj32: I've added a whole bunch of this.Invalidate()s that are necessary for PH.
 		#region Keys
 
 		protected override bool IsInputChar(char charCode)
@@ -65,7 +66,8 @@ namespace Aga.Controls.Tree
 							break;
 					}
 				}
-			}
+            }
+            this.Invalidate();
 		}
 
 		protected override void OnKeyUp(KeyEventArgs e)
@@ -91,7 +93,8 @@ namespace Aga.Controls.Tree
 		{
 			base.OnKeyPress(e);
 			if (!e.Handled)
-				_search.Search(e.KeyChar);
+                _search.Search(e.KeyChar);
+            this.Invalidate();
 		}
 
 		#endregion
@@ -159,6 +162,7 @@ namespace Aga.Controls.Tree
 				Input.MouseDown(args);
 
 			base.OnMouseDown(e);
+            this.Invalidate();
 		}
 
 		protected override void OnMouseClick(MouseEventArgs e)

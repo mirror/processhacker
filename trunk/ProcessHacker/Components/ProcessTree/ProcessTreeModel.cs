@@ -115,6 +115,8 @@ namespace ProcessHacker
                 catch
                 { }
             }
+
+            _tree.Invalidate();
         }
 
         public TreePath GetPath(ProcessNode node)
