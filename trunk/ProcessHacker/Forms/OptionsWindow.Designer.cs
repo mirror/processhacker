@@ -85,9 +85,19 @@
             0,
             0,
             0});
+            this.textUpdateInterval.Minimum = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
             this.textUpdateInterval.Name = "textUpdateInterval";
             this.textUpdateInterval.Size = new System.Drawing.Size(66, 20);
             this.textUpdateInterval.TabIndex = 1;
+            this.textUpdateInterval.Value = new decimal(new int[] {
+            250,
+            0,
+            0,
+            0});
             this.textUpdateInterval.Leave += new System.EventHandler(this.textUpdateInterval_Leave);
             // 
             // buttonClose
