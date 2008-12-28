@@ -32,8 +32,7 @@
             this.listThreads = new System.Windows.Forms.ListView();
             this.columnThreadID = new System.Windows.Forms.ColumnHeader();
             this.columnStartAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnCPUTime = new System.Windows.Forms.ColumnHeader();
-            this.columnPriority = new System.Windows.Forms.ColumnHeader();
+            this.columnContextSwitchesDelta = new System.Windows.Forms.ColumnHeader();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -41,6 +40,7 @@
             this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.copyThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuThread = new System.Windows.Forms.ContextMenu();
+            this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.priorityThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.timeCriticalThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -52,7 +52,6 @@
             this.idleThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.selectAllThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,8 +61,7 @@
             this.listThreads.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnThreadID,
             this.columnStartAddress,
-            this.columnCPUTime,
-            this.columnPriority});
+            this.columnContextSwitchesDelta});
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -85,17 +83,12 @@
             // columnStartAddress
             // 
             this.columnStartAddress.Text = "Start Address";
-            this.columnStartAddress.Width = 160;
+            this.columnStartAddress.Width = 220;
             // 
-            // columnCPUTime
+            // columnContextSwitchesDelta
             // 
-            this.columnCPUTime.Text = "CPU Time";
-            this.columnCPUTime.Width = 70;
-            // 
-            // columnPriority
-            // 
-            this.columnPriority.Text = "Priority";
-            this.columnPriority.Width = 80;
+            this.columnContextSwitchesDelta.Text = "Context Switches Delta";
+            this.columnContextSwitchesDelta.Width = 70;
             // 
             // vistaMenu
             // 
@@ -150,6 +143,12 @@
             this.copyThreadMenuItem,
             this.selectAllThreadMenuItem});
             this.menuThread.Popup += new System.EventHandler(this.menuThread_Popup);
+            // 
+            // inspectTEBMenuItem
+            // 
+            this.inspectTEBMenuItem.Index = 4;
+            this.inspectTEBMenuItem.Text = "Inspect TEB...";
+            this.inspectTEBMenuItem.Click += new System.EventHandler(this.inspectTEBMenuItem_Click);
             // 
             // menuItem4
             // 
@@ -229,12 +228,6 @@
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
-            // inspectTEBMenuItem
-            // 
-            this.inspectTEBMenuItem.Index = 4;
-            this.inspectTEBMenuItem.Text = "Inspect TEB...";
-            this.inspectTEBMenuItem.Click += new System.EventHandler(this.inspectTEBMenuItem_Click);
-            // 
             // ThreadList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -252,8 +245,7 @@
 
         private System.Windows.Forms.ListView listThreads;
         private System.Windows.Forms.ColumnHeader columnThreadID;
-        private System.Windows.Forms.ColumnHeader columnCPUTime;
-        private System.Windows.Forms.ColumnHeader columnPriority;
+        private System.Windows.Forms.ColumnHeader columnContextSwitchesDelta;
         private System.Windows.Forms.ColumnHeader columnStartAddress;
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.ContextMenu menuThread;

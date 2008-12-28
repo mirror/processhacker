@@ -72,8 +72,8 @@ namespace ProcessHacker
             _processStats.Add("IO Read+Other", 0);
             _processStats.Add("IO Write", 0);
 
-            timerGraphs.Interval = Properties.Settings.Default.RefreshInterval;
-            timerGraphs.Tick += new EventHandler(timerGraphs_Tick);
+            timerPerformance.Interval = Properties.Settings.Default.RefreshInterval;
+            timerPerformance.Tick += new EventHandler(timerGraphs_Tick);
             //timerGraphs.Enabled = true;
         }
 

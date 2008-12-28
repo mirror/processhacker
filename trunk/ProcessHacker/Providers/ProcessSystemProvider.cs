@@ -37,7 +37,7 @@ namespace ProcessHacker
         public string Name;
         public string Username;
         public Win32.SYSTEM_PROCESS_INFORMATION Process;
-        public Win32.SYSTEM_THREAD_INFORMATION[] Threads;
+        public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
 
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public bool IsElevated;
@@ -225,6 +225,7 @@ namespace ProcessHacker
                     item.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
+                    item.Threads = procs[pid].Threads;
 
                     if (pid == 0)
                         item.Name = "System Idle Process";
@@ -344,6 +345,7 @@ namespace ProcessHacker
                     newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
                     newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
                     newitem.Process = processInfo;
+                    newitem.Threads = procs[pid].Threads;
 
                     try
                     {
@@ -385,12 +387,13 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    newdictionary[pid] = newitem;
+
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged ||
                         newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled)
                     {
-                        newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);
                     }
                 }

@@ -156,7 +156,7 @@ namespace ProcessHacker
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {
-            if (titem.WaitReason == "Suspended")
+            if (titem.WaitReason == Win32.KWAIT_REASON.Suspended)
                 return System.Drawing.Color.LightGray;
 
             return System.Drawing.SystemColors.Window;
@@ -169,8 +169,7 @@ namespace ProcessHacker
             litem.Name = item.TID.ToString();
             litem.Text = item.TID.ToString();
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.CPUTime));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ContextSwitchesDelta.ToString()));
 
             litem.NormalColor = GetThreadColor(item);
 
@@ -187,8 +186,7 @@ namespace ProcessHacker
                     return;
 
                 litem.SubItems[1].Text = newItem.StartAddress;
-                litem.SubItems[2].Text = newItem.CPUTime;
-                litem.SubItems[3].Text = newItem.Priority;
+                litem.SubItems[2].Text = newItem.ContextSwitchesDelta.ToString();
 
                 (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
             }

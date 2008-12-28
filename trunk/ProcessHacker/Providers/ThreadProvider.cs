@@ -29,13 +29,13 @@ namespace ProcessHacker
     public struct ThreadItem
     {
         public int TID;
-        public ProcessThread Thread;
 
-        public string CPUTime;
+        public long ContextSwitches;
+        public long ContextSwitchesDelta;
         public string Priority;
         public int StartAddressI;
         public string StartAddress;
-        public string WaitReason;
+        public Win32.KWAIT_REASON WaitReason;
     }
 
     public class ThreadProvider : Provider<int, ThreadItem>
@@ -48,7 +48,11 @@ namespace ProcessHacker
         {
             _pid = PID;
 
+            if (!Win32.ProcessesWithThreads.ContainsKey(_pid))
+                Win32.ProcessesWithThreads.Add(_pid, null);
+
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+            this.Killed += new MethodInvoker(ThreadProvider_Killed);
 
             // start loading symbols
             Thread t = new Thread(new ThreadStart(delegate
@@ -73,20 +77,22 @@ namespace ProcessHacker
             t.Start();
         }
 
+        private void ThreadProvider_Killed()
+        {
+            if (Win32.ProcessesWithThreads.ContainsKey(_pid))
+                Win32.ProcessesWithThreads.Remove(_pid);
+        }
+
         private void UpdateOnce()
         {
-            Process process = Process.GetProcessById(_pid);
-            ProcessThreadCollection threads = process.Threads;
-            Dictionary<int, ProcessThread> tids = new Dictionary<int, ProcessThread>();
+            Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> threads =
+                Program.HackerWindow.ProcessProvider.Dictionary[_pid].Threads;
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
-
-            foreach (ProcessThread t in threads)
-                tids.Add(t.Id, t);
 
             // look for dead threads
             foreach (int tid in Dictionary.Keys)
             {
-                if (!tids.ContainsKey(tid))
+                if (!threads.ContainsKey(tid))
                 {
                     this.CallDictionaryRemoved(this.Dictionary[tid]);
                     newdictionary.Remove(tid);
@@ -94,22 +100,17 @@ namespace ProcessHacker
             }
 
             // look for new threads
-            foreach (int tid in tids.Keys)
+            foreach (int tid in threads.Keys)
             {
-                ProcessThread t = tids[tid];
+                Win32.SYSTEM_THREAD_INFORMATION t = threads[tid];
 
                 if (!Dictionary.ContainsKey(tid))
                 {
                     ThreadItem item = new ThreadItem();
 
-                    item.TID = t.Id;
-                    item.Thread = t;
-
-                    try { item.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
-                    catch { }
-
-                    try { item.Priority = t.PriorityLevel.ToString(); }
-                    catch { }
+                    item.TID = tid;
+                    item.ContextSwitches = t.ContextSwitchCount;
+                    item.WaitReason = t.WaitReason;
 
                     try
                     {
@@ -118,33 +119,27 @@ namespace ProcessHacker
                         {
                             int retLen;
 
-                            if (Win32.ZwQueryInformationThread(handle.Handle,
+                            Win32.ZwQueryInformationThread(handle.Handle,
                                 Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
-                                out item.StartAddressI, 4, out retLen) != 0)
-                                throw new Exception();
+                                out item.StartAddressI, 4, out retLen);
                         }
 
                         item.StartAddress = _symbols.GetNameFromAddress(item.StartAddressI);
                     }
                     catch { }
 
-                    try { item.WaitReason = t.WaitReason.ToString(); }
-                    catch { }
-
-                    newdictionary.Add(t.Id, item);
+                    newdictionary.Add(tid, item);
                     this.CallDictionaryAdded(item);
                 }
                 // look for modified threads
                 else
                 {
-                    ThreadItem item = Dictionary[t.Id];
+                    ThreadItem item = Dictionary[tid];
                     ThreadItem newitem = item;
 
-                    try { newitem.CPUTime = Misc.GetNiceTimeSpan(t.TotalProcessorTime); }
-                    catch { }
-
-                    try { newitem.Priority = t.PriorityLevel.ToString(); }
-                    catch { }
+                    newitem.ContextSwitchesDelta = t.ContextSwitchCount - newitem.ContextSwitches;
+                    newitem.ContextSwitches = t.ContextSwitchCount;
+                    newitem.WaitReason = t.WaitReason;
 
                     try
                     {
@@ -157,17 +152,15 @@ namespace ProcessHacker
                     }
                     catch { }
 
-                    try { newitem.WaitReason = t.WaitReason.ToString(); }
-                    catch { }
-
-                    if (
-                        newitem.CPUTime != item.CPUTime ||
+                    if (                  
+                        newitem.ContextSwitches != item.ContextSwitches || 
+                        newitem.ContextSwitchesDelta != item.ContextSwitchesDelta ||
                         newitem.Priority != item.Priority || 
                         newitem.StartAddress != item.StartAddress ||
                         newitem.WaitReason != item.WaitReason
                         )
                     {
-                        newdictionary[t.Id] = newitem;
+                        newdictionary[tid] = newitem;
                         this.CallDictionaryModified(item, newitem);
                     }
                 }

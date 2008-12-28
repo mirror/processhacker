@@ -449,8 +449,15 @@ namespace ProcessHacker
         {
             public string Name;
             public SYSTEM_PROCESS_INFORMATION Process;
-            // public SYSTEM_THREAD_INFORMATION[] Threads;
+            public Dictionary<int, SYSTEM_THREAD_INFORMATION> Threads;
         }
+
+        /// <summary>
+        /// Specifies the processes which should have their threads filled in. This is
+        /// used as a performance boost.
+        /// </summary>
+        public static Dictionary<int, object> ProcessesWithThreads
+            = new Dictionary<int, object>();
 
         /// <summary>
         /// Gets a dictionary containing the currently running processes.
@@ -477,15 +484,24 @@ namespace ProcessHacker
                 while (true)
                 {
                     currentProcess.Process = data.ReadStruct<SYSTEM_PROCESS_INFORMATION>(i, 0);
-                    // we don't actually use the thread information from SYSTEM_PROCESS_INFORMATION right now
-                    //currentProcess.Threads = new SYSTEM_THREAD_INFORMATION[currentProcess.Process.NumberOfThreads];
+                    currentProcess.Threads = new Dictionary<int, SYSTEM_THREAD_INFORMATION>();
                     currentProcess.Name = ReadUnicodeString(currentProcess.Process.ImageName);
 
-                    //for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
-                    //{
-                    //    currentProcess.Threads[j] = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
-                    //        Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
-                    //}
+                    if (ProcessesWithThreads.ContainsKey(currentProcess.Process.ProcessId))
+                    {
+                        try
+                        {
+                            for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
+                            {
+                                Win32.SYSTEM_THREAD_INFORMATION thread = data.ReadStruct<SYSTEM_THREAD_INFORMATION>(i +
+                                    Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)), j);
+
+                                currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
+                            }
+                        }
+                        catch
+                        { }
+                    }
 
                     returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);
 

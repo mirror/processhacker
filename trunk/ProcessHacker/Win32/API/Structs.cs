@@ -334,6 +334,20 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct POOLED_USAGE_AND_LIMITS
+        {
+            public int PeakPagedPoolUsage;
+            public int PagedPoolUsage;
+            public int PagedPoolLimit;
+            public int PeakNonPagedPoolUsage;
+            public int NonPagedPoolUsage;
+            public int NonPagedPoolLimit;
+            public int PeakPagefileUsage;
+            public int PagefileUsage;
+            public int PagefileLimit;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct PROCESS_BASIC_INFORMATION
         {
             public int ExitStatus;
@@ -391,6 +405,17 @@ namespace ProcessHacker
 
             [MarshalAs(UnmanagedType.LPTStr)]
             public string DisplayName;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct QUOTA_LIMITS
+        {
+            public int PagedPoolLimit;
+            public int NonPagedPoolLimit;
+            public int MinimumWorkingSetSize;
+            public int MaximumWorkingSetSizse;
+            public int PagefileLimit;
+            public long TimeLimit;
         }
 
         [StructLayout(LayoutKind.Sequential)]

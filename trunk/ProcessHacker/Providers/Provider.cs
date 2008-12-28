@@ -74,6 +74,8 @@ namespace ProcessHacker
         /// </summary>
         protected event ProviderUpdateOnce ProviderUpdate;
 
+        protected event System.Windows.Forms.MethodInvoker Killed;
+
         /// <summary>
         /// Occurs when the provider has been updated.
         /// </summary>
@@ -245,6 +247,9 @@ namespace ProcessHacker
 
             foreach (Thread t in _asyncThreads)
                 t.Abort();
+
+            if (this.Killed != null)
+                this.Killed();
         }
 
         private void CallEvent(Delegate e, TValue item, bool useInvoke)
