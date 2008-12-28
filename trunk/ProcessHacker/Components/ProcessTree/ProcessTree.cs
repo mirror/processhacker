@@ -143,7 +143,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.BeforeUpdate -= new Provider<int, ProcessItem>.ProviderUpdateOnce(_provider_BeforeUpdate);
+                    _provider.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(_provider_Updated);
                 }
 
                 _provider = value;
@@ -162,14 +162,14 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.BeforeUpdate += new Provider<int, ProcessItem>.ProviderUpdateOnce(_provider_BeforeUpdate);
+                    _provider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(_provider_Updated);
                 }
             }
         }
 
         #endregion
 
-        private void _provider_BeforeUpdate()
+        private void _provider_Updated()
         {
             treeProcesses.Invalidate();
         }
