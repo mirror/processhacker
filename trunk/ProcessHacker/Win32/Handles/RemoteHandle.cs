@@ -27,7 +27,6 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a handle owned by another process.
         /// </summary>
-        /// <typeparam name="THandle">A type derived from Win32Handle.</typeparam>
         public class RemoteHandle
         {
             private ProcessHandle _phandle;
@@ -39,6 +38,16 @@ namespace ProcessHacker
                 _handle = handle;
             }
 
+            /// <summary>
+            /// Duplicates the handle owned by the process.
+            /// </summary>
+            /// <param name="rights">The desired access to the handle's object.</param>
+            /// <returns>A local copy of the handle.</returns>
+            /// <remarks>
+            /// We can't use a template for this because of C#'s rules for template 
+            /// restrictions. Specifically, we can only specify that the type must have a
+            /// constructor with 0 arguments, but no more.
+            /// </remarks>
             public int GetHandle(int rights)
             {
                 int new_handle = 0;

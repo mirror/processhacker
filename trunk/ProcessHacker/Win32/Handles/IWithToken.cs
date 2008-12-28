@@ -27,6 +27,10 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a Windows object that contains a token.
         /// </summary>
+        /// <remarks>
+        /// This interface is useful because both processes and threads have 
+        /// tokens, but the method used to open their tokens are different.
+        /// </remarks>
         public interface IWithToken
         {
             /// <summary>

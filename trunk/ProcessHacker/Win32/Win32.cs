@@ -80,6 +80,10 @@ namespace ProcessHacker
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
+        /// <summary>
+        /// A cache for type names; QuerySystemInformation with ALL_TYPES_INFORMATION fails for some 
+        /// reason. The dictionary relates object type numbers to their names.
+        /// </summary>
         public static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
 
         #region Consts
@@ -115,6 +119,7 @@ namespace ProcessHacker
         {
             try
             {
+                // Win32Exception calls FormatMessage for us
                 throw new System.ComponentModel.Win32Exception(ErrorCode);
             }
             catch (System.ComponentModel.Win32Exception ex)
@@ -157,10 +162,15 @@ namespace ProcessHacker
 
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
+                // This is needed because ZwQuerySystemInformation with SystemHandleInformation doesn't 
+                // actually give a real return length when called with an insufficient buffer. This code 
+                // tries repeatedly to call the function, doubling the buffer size each time it fails.
                 while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
                     data.Size, out retLength) == STATUS_INFO_LENGTH_MISMATCH)
                     data.Resize(data.Size * 2);
 
+                // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
+                // structures.
                 handleCount = data.ReadInt32(0);
                 returnHandles = new SYSTEM_HANDLE_INFORMATION[handleCount];
 
@@ -186,6 +196,7 @@ namespace ProcessHacker
             int object_handle;
             int retLength = 0;
 
+            // duplicates the handle so we can query it
             if (ZwDuplicateObject(process.Handle, handle.Handle,
                 Program.CurrentProcess, out object_handle, 0, 0, 0) != 0)
                 throw new Exception("Could not duplicate object!");
@@ -209,6 +220,8 @@ namespace ProcessHacker
                     }
                 }
 
+                // If the cache contains the object type's name, use it. Otherwise, query the type 
+                // for its name.
                 if (ObjectTypes.ContainsKey(handle.ObjectTypeNumber))
                 {
                     info.TypeName = ObjectTypes[handle.ObjectTypeNumber];
@@ -233,7 +246,9 @@ namespace ProcessHacker
                         }
                     }
                 }
-
+                
+                // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
+                // is guaranteed to work, but filters out useful files as well.
                 if (info.TypeName == "File")
                     if ((int)handle.GrantedAccess == 0x0012019f)
                         throw new Exception("0x0012019f access is banned");
@@ -256,6 +271,7 @@ namespace ProcessHacker
                     }
                 }
 
+                // get a better name for the handle
                 try
                 {
                     switch (info.TypeName)
@@ -402,6 +418,7 @@ namespace ProcessHacker
                 CloseHandle(object_handle);
             }
 
+            // this means that for some reason, the return statement above didn't execute.
             throw new Exception("Failed");
         }
 
@@ -409,6 +426,13 @@ namespace ProcessHacker
 
         #region Misc.
 
+        /// <summary>
+        /// Reads a Unicode string.
+        /// </summary>
+        /// <param name="str">A UNICODE_STRING structure.</param>
+        /// <returns>A string.</returns>
+        /// <remarks>This function is needed because some LSA strings are not 
+        /// null-terminated, so we can't use .NET's marshalling.</remarks>
         public static string ReadUnicodeString(UNICODE_STRING str)
         {
             if (str.Length == 0)
@@ -428,6 +452,10 @@ namespace ProcessHacker
             // public SYSTEM_THREAD_INFORMATION[] Threads;
         }
 
+        /// <summary>
+        /// Gets a dictionary containing the currently running processes.
+        /// </summary>
+        /// <returns>A dictionary, indexed by process ID.</returns>
         public static Dictionary<int, SystemProcess> EnumProcesses()
         {
             int retLength = 0;
@@ -449,6 +477,7 @@ namespace ProcessHacker
                 while (true)
                 {
                     currentProcess.Process = data.ReadStruct<SYSTEM_PROCESS_INFORMATION>(i, 0);
+                    // we don't actually use the thread information from SYSTEM_PROCESS_INFORMATION right now
                     //currentProcess.Threads = new SYSTEM_THREAD_INFORMATION[currentProcess.Process.NumberOfThreads];
                     currentProcess.Name = ReadUnicodeString(currentProcess.Process.ImageName);
 
@@ -470,6 +499,11 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Gets the name of the process with the specified process ID.
+        /// </summary>
+        /// <param name="pid">The ID of the process to search for.</param>
+        /// <returns>The name of the process</returns>
         public static string GetNameFromPID(int pid)
         {
             PROCESSENTRY32 proc = new PROCESSENTRY32();
@@ -558,6 +592,7 @@ namespace ProcessHacker
             {
                 if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
                 {
+                    // if the name is longer than 255 characters, increase the capacity.
                     name.EnsureCapacity(namelen);
                     domain.EnsureCapacity(domainlen);
 
@@ -570,6 +605,7 @@ namespace ProcessHacker
             }
             catch
             {
+                // if we didn't find a name, then return the string SID version.
                 return GetAccountStringSID(SID);
             }
 
@@ -596,6 +632,7 @@ namespace ProcessHacker
             int domainlen = 255;
             SID_NAME_USE use = SID_NAME_USE.SidTypeUser;
 
+            // we don't actually need to get the account name
             if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
             {
                 name.EnsureCapacity(namelen);
@@ -806,7 +843,18 @@ namespace ProcessHacker
 
             return returnSessions;
         }
-
+ 
+        /// <remarks>
+        /// Before we had the WtsMemoryAlloc class, these enumerator 
+        /// functions queried LSA about each process' username, 
+        /// regardless of whether they were going to be used.
+        /// If they didn't do that, the memory allocated for the 
+        /// data would be freed and we would end up with invalid 
+        /// SID pointers. This structure keeps a WtsMemoryAlloc 
+        /// instance alive so that it isn't freed until told to 
+        /// do so. This then means that the enumerator functions 
+        /// don't need to query LSA so often.
+        /// </remarks>
         public struct WtsEnumProcessesData
         {
             public WTS_PROCESS_INFO[] Processes;

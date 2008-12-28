@@ -192,6 +192,16 @@ namespace ProcessHacker
         {
             MEM_COMMIT = 0x1000,
             MEM_RESERVE = 0x2000,
+
+            /// <summary>
+            /// Decommits memory, putting them into the reserved state.
+            /// </summary>
+            MEM_DECOMMIT = 0x4000,
+
+            /// <summary>
+            /// Frees memory, putting them into the freed state.
+            /// </summary>
+            MEM_RELEASE = 0x8000,
             MEM_FREE = 0x10000,
             MEM_RESET = 0x80000,
             MEM_TOP_DOWN = 0x100000,

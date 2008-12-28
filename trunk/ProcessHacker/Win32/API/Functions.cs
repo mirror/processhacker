@@ -73,13 +73,13 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.Struct)] ref MEMORY_BASIC_INFORMATION Buffer, int Size);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualProtect(int Address, int Size, int NewProtect, out int OldProtect);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualProtectEx(int Process, int Address, int Size, int NewProtect, out int OldProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualAllocEx(int Process, int Address, int Size, MEMORY_STATE Type, MEMORY_PROTECTION Protect);
+        public static extern int VirtualAllocEx(int Process, int Address, int Size, MEMORY_STATE Type, MEMORY_PROTECTION Protect);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool VirtualFreeEx(int Process, int Address, int Size, MEMORY_STATE FreeType);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool ReadProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesRead);

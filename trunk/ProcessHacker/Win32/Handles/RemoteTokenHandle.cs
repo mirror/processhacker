@@ -27,6 +27,11 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a token handle owned by another process.
         /// </summary>
+        /// <remarks>
+        /// This is a wrapper class so that we can view information 
+        /// about tokens other processes have handles to. TokenProperties 
+        /// only takes an IWithToken object.
+        /// </remarks>
         public class RemoteTokenHandle : RemoteHandle, IWithToken
         {
             public RemoteTokenHandle(ProcessHandle phandle, int handle)

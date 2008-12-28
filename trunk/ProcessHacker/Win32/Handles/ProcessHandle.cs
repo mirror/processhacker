@@ -87,9 +87,43 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Allocates a memory region in the process' virtual memory.
+            /// </summary>      
+            /// <param name="address">The base address of the region.</param>
+            /// <param name="size">The size of the region.</param>
+            /// <param name="protection">The protection of the region.</param>
+            /// <returns>The base address of the allocated pages.</returns>
+            public int AllocMemory(int address, int size, MEMORY_PROTECTION protection)
+            {
+                int newAddress;
+
+                if ((newAddress = VirtualAllocEx(this, address, size, MEMORY_STATE.MEM_COMMIT, protection))
+                    == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                return newAddress;
+            }
+
+            /// <summary>
+            /// Allocates a memory region in the process' virtual memory. The function decides where 
+            /// to allocate the memory.
+            /// </summary>
+            /// <param name="size">The size of the region.</param>
+            /// <param name="protection">The protection of the region.</param>
+            /// <returns>The base address of the allocated pages.</returns>
+            public int AllocMemory(int size, MEMORY_PROTECTION protection)
+            {
+                return this.AllocMemory(0, size, protection);
+            }
+
+            /// <summary>
             /// Creates a remote thread in the process.
             /// </summary>
-            /// <param name="startAddress">The address at which to begin execution (e.g. a function).</param>
+            /// <param name="startAddress">The address at which to begin execution (e.g. a function). The 
+            /// function must be accessible from the remote process; that is, it must be in its 
+            /// virtual address space, either copied using AllocMemory or loaded as module using 
+            /// LoadLibrary.
+            /// </param>
             /// <param name="parameter">The parameter to pass to the function.</param>
             /// <returns>The ID of the new thread.</returns>
             public int CreateThread(int startAddress, int parameter)
@@ -100,6 +134,20 @@ namespace ProcessHacker
                     throw new Exception(GetLastErrorMessage());
 
                 return threadId;
+            }
+
+            /// <summary>
+            /// Frees a memory region in the process' virtual memory.
+            /// </summary>
+            /// <param name="address">The address of the region to free.</param>
+            /// <param name="size">The size to free.</param>
+            /// <param name="reserveOnly">Specifies whether or not to only 
+            /// reserve the memory instead of freeing it.</param>
+            public void FreeMemory(int address, int size, bool reserveOnly)
+            {
+                if (!VirtualFreeEx(this, address, size,
+                    reserveOnly ? MEMORY_STATE.MEM_DECOMMIT : MEMORY_STATE.MEM_RELEASE))
+                    throw new Exception(GetLastErrorMessage());
             }
 
             /// <summary>
@@ -176,9 +224,9 @@ namespace ProcessHacker
             /// <returns>A string.</returns>
             public string GetPEBString(PEBOffset offset)
             {
-                int readLen;
                 int pebBaseAddress = 0x7ffd7000;
 
+                // get the real PEB address of the process if we can.
                 try
                 {
                     pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
@@ -188,31 +236,39 @@ namespace ProcessHacker
 
                 byte[] data2 = new byte[4];
 
-                // read address of parameter information block
-                if (!ReadProcessMemory(this, pebBaseAddress + 16, data2, 4, out readLen))
-                    throw new Exception(GetLastErrorMessage());
+                /* read address of parameter information block
+                 *
+                 * off field
+                 * +00 BOOLEAN InheritedAddressSpace;
+                 * +01 BOOLEAN ReadImageFileExecOptions;
+                 * +02 BOOLEAN BeingDebugged;
+                 * +03 BOOLEAN Spare;
+                 * +04 HANDLE Mutant;
+                 * +08 PVOID ImageBaseAddress;
+                 * +0c PVOID LoaderData;
+                 * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
+                 */
+                int paramInfoAddrI = 
+                    Misc.BytesToInt(this.ReadMemory(pebBaseAddress + 0x10, 4), Misc.Endianness.Little);
 
-                int paramInfoAddrI = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-                // read length of string
-                if (!ReadProcessMemory(this, paramInfoAddrI + (int)offset, data2, 2, out readLen))
-                    throw new Exception(GetLastErrorMessage());
-
-                ushort strLength = Misc.BytesToUShort(data2, Misc.Endianness.Little);
+                // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
+                // specified in the enum.
+                //
+                // off field
+                // +00 USHORT Length;
+                // +02 USHORT MaximumLength;
+                // +04 PWSTR Buffer;
+                ushort strLength = Misc.BytesToUShort(
+                    this.ReadMemory(paramInfoAddrI + (int)offset, 2), Misc.Endianness.Little);
                 byte[] stringData = new byte[strLength];
 
                 // read address of string
-                if (!ReadProcessMemory(this, paramInfoAddrI + (int)offset + 4, data2, 4, out readLen))
-                    throw new Exception(GetLastErrorMessage());
+                int strAddr = Misc.BytesToInt(
+                    this.ReadMemory(paramInfoAddrI + (int)offset + 0x4, 4), Misc.Endianness.Little);
 
-                int strAddr = Misc.BytesToInt(data2, Misc.Endianness.Little);
-
-                // read string
-                if (!ReadProcessMemory(this, strAddr, stringData, strLength, out readLen))
-                    throw new Exception(GetLastErrorMessage());
-
-                // return decoded unicode string
-                return System.Text.UnicodeEncoding.Unicode.GetString(stringData).TrimEnd('\0');
+                // read string and decode it
+                return System.Text.UnicodeEncoding.Unicode.GetString(
+                    this.ReadMemory(strAddr, strLength)).TrimEnd('\0');
             }
 
             /// <summary>
@@ -248,7 +304,7 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Waits for the process.
+            /// Waits for the process to terminate.
             /// </summary>
             /// <param name="Timeout">The timeout of the wait.</param>
             /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
