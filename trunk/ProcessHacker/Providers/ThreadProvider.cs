@@ -36,6 +36,8 @@ namespace ProcessHacker
         public int StartAddressI;
         public string StartAddress;
         public Win32.KWAIT_REASON WaitReason;
+
+        public Win32.ThreadHandle ThreadQueryLimitedHandle;
     }
 
     public class ThreadProvider : Provider<int, ThreadItem>
@@ -94,7 +96,12 @@ namespace ProcessHacker
             {
                 if (!threads.ContainsKey(tid))
                 {
-                    this.CallDictionaryRemoved(this.Dictionary[tid]);
+                    ThreadItem item = this.Dictionary[tid];
+
+                    if (item.ThreadQueryLimitedHandle != null)
+                        item.ThreadQueryLimitedHandle.Dispose();
+
+                    this.CallDictionaryRemoved(item);
                     newdictionary.Remove(tid);
                 }
             }
@@ -111,6 +118,20 @@ namespace ProcessHacker
                     item.TID = tid;
                     item.ContextSwitches = t.ContextSwitchCount;
                     item.WaitReason = t.WaitReason;
+
+                    try
+                    {
+                        item.ThreadQueryLimitedHandle = new Win32.ThreadHandle(tid, Program.MinThreadQueryRights);
+
+                        try
+                        {
+                            item.Priority = item.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
+                        }
+                        catch
+                        { }
+                    }
+                    catch
+                    { }
 
                     try
                     {
@@ -140,6 +161,13 @@ namespace ProcessHacker
                     newitem.ContextSwitchesDelta = t.ContextSwitchCount - newitem.ContextSwitches;
                     newitem.ContextSwitches = t.ContextSwitchCount;
                     newitem.WaitReason = t.WaitReason;
+
+                    try
+                    {
+                        newitem.Priority = newitem.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
+                    }
+                    catch
+                    { }
 
                     try
                     {

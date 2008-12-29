@@ -98,6 +98,21 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the thread's priority level.
+            /// </summary>
+            /// <returns>A ThreadPriorityLevel enum.</returns>
+            public System.Diagnostics.ThreadPriorityLevel GetPriorityLevel()
+            {
+                int priority = GetThreadPriority(this);
+
+                // this is what Microsoft does in its ProcessThread class (found out using Reflector)
+                if (priority == 0x7fffffff)
+                    throw new Exception(GetLastErrorMessage());
+
+                return (System.Diagnostics.ThreadPriorityLevel)priority;
+            }
+
+            /// <summary>
             /// Sets the thread's context.
             /// </summary>
             /// <param name="context">A CONTEXT struct.</param>

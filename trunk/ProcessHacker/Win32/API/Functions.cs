@@ -102,6 +102,9 @@ namespace ProcessHacker
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool IsProcessInJob(int ProcessHandle, int JobHandle, out bool Result);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -472,6 +475,9 @@ namespace ProcessHacker
         #endregion
 
         #region Threads
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetThreadPriority(int ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int CreateThread(int ThreadAttributes, int StackSize,

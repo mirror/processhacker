@@ -168,8 +168,9 @@ namespace ProcessHacker
 
             litem.Name = item.TID.ToString();
             litem.Text = item.TID.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ContextSwitchesDelta.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
 
             litem.NormalColor = GetThreadColor(item);
 
@@ -185,8 +186,9 @@ namespace ProcessHacker
                 if (litem == null)
                     return;
 
-                litem.SubItems[1].Text = newItem.StartAddress;
-                litem.SubItems[2].Text = newItem.ContextSwitchesDelta.ToString();
+                litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString();
+                litem.SubItems[2].Text = newItem.StartAddress;
+                litem.SubItems[3].Text = newItem.Priority;
 
                 (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
             }

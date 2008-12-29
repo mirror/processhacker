@@ -33,4 +33,6 @@ KNOWN ISSUES
 Process Hacker is brought to you by the small Process Hacker team:
  * wj32 (Project Manager)
  * Dean (Developer)
+   * Plotter
+   * Speed improvements in handle filter
  * Paul Pacheco (Developer)

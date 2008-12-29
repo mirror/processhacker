@@ -201,6 +201,8 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorSystemProcesses;
             else if (p.Username == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
                 return Properties.Settings.Default.ColorOwnProcesses;
+            else if (p.IsInJob)
+                return Properties.Settings.Default.ColorJobProcesses;
             else
                 return SystemColors.Window;
         }

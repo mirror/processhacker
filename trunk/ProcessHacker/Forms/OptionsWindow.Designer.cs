@@ -57,6 +57,7 @@
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPlotting = new System.Windows.Forms.TabPage();
+            this.checkPlotterAntialias = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.colorIORO = new ProcessHacker.Components.ColorModifier();
@@ -69,7 +70,8 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.checkPlotterAntialias = new System.Windows.Forms.CheckBox();
+            this.colorJobProcesses = new ProcessHacker.Components.ColorModifier();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -119,7 +121,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 270);
+            this.buttonClose.Location = new System.Drawing.Point(284, 288);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -178,7 +180,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 252);
+            this.tabControl.Size = new System.Drawing.Size(347, 270);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -224,6 +226,8 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.label11);
+            this.tabHighlighting.Controls.Add(this.colorJobProcesses);
             this.tabHighlighting.Controls.Add(this.label10);
             this.tabHighlighting.Controls.Add(this.colorElevatedProcesses);
             this.tabHighlighting.Controls.Add(this.label9);
@@ -243,7 +247,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 226);
+            this.tabHighlighting.Size = new System.Drawing.Size(339, 244);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -416,6 +420,17 @@
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
             // 
+            // checkPlotterAntialias
+            // 
+            this.checkPlotterAntialias.AutoSize = true;
+            this.checkPlotterAntialias.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkPlotterAntialias.Location = new System.Drawing.Point(6, 6);
+            this.checkPlotterAntialias.Name = "checkPlotterAntialias";
+            this.checkPlotterAntialias.Size = new System.Drawing.Size(110, 18);
+            this.checkPlotterAntialias.TabIndex = 22;
+            this.checkPlotterAntialias.Text = "Use Anti-aliasing";
+            this.checkPlotterAntialias.UseVisualStyleBackColor = true;
+            // 
             // label12
             // 
             this.label12.AutoSize = true;
@@ -518,23 +533,29 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // checkPlotterAntialias
+            // colorJobProcesses
             // 
-            this.checkPlotterAntialias.AutoSize = true;
-            this.checkPlotterAntialias.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkPlotterAntialias.Location = new System.Drawing.Point(6, 6);
-            this.checkPlotterAntialias.Name = "checkPlotterAntialias";
-            this.checkPlotterAntialias.Size = new System.Drawing.Size(110, 18);
-            this.checkPlotterAntialias.TabIndex = 22;
-            this.checkPlotterAntialias.Text = "Use Anti-aliasing";
-            this.checkPlotterAntialias.UseVisualStyleBackColor = true;
+            this.colorJobProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorJobProcesses.Location = new System.Drawing.Point(127, 215);
+            this.colorJobProcesses.Name = "colorJobProcesses";
+            this.colorJobProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorJobProcesses.TabIndex = 8;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 217);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(79, 13);
+            this.label11.TabIndex = 9;
+            this.label11.Text = "Job Processes:";
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 305);
+            this.ClientSize = new System.Drawing.Size(371, 323);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -602,5 +623,7 @@
         private ProcessHacker.Components.ColorModifier colorCPUKT;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.CheckBox checkPlotterAntialias;
+        private System.Windows.Forms.Label label11;
+        private ProcessHacker.Components.ColorModifier colorJobProcesses;
     }
 }

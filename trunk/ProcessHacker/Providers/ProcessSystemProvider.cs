@@ -40,8 +40,9 @@ namespace ProcessHacker
         public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
 
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
-        public bool IsElevated;
         public bool IsBeingDebugged;
+        public bool IsElevated;
+        public bool IsInJob;
         public bool IsVirtualizationEnabled;
         public long LastTime;
         public int SessionId;
@@ -260,7 +261,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.ProcessQueryLimitedHandle =  new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
+                        item.ProcessQueryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
 
                         try
                         {
@@ -277,6 +278,9 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+
+                        try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
+                        catch { }
 
                         try
                         {

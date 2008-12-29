@@ -304,6 +304,20 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Determines whether the process is running in a job.
+            /// </summary>
+            /// <returns>A boolean.</returns>
+            public bool IsInJob()
+            {
+                bool result;
+
+                if (!IsProcessInJob(this, 0, out result))
+                    throw new Exception(GetLastErrorMessage());
+
+                return result;
+            }
+
+            /// <summary>
             /// Reads data from the process' virtual memory.
             /// </summary>
             /// <param name="offset">The offset at which to begin reading.</param>

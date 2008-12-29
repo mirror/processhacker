@@ -197,5 +197,8 @@
     <Setting Name="PlotterIOWColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">DarkViolet</Value>
     </Setting>
+    <Setting Name="ColorJobProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Peru</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -52,6 +52,7 @@
             this.idleThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.selectAllThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.columnPriority = new System.Windows.Forms.ColumnHeader();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -60,8 +61,9 @@
             this.listThreads.AllowColumnReorder = true;
             this.listThreads.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnThreadID,
+            this.columnContextSwitchesDelta,
             this.columnStartAddress,
-            this.columnContextSwitchesDelta});
+            this.columnPriority});
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
@@ -228,6 +230,11 @@
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
+            // columnPriority
+            // 
+            this.columnPriority.Text = "Priority";
+            this.columnPriority.Width = 100;
+            // 
             // ThreadList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -266,5 +273,6 @@
         private System.Windows.Forms.MenuItem copyThreadMenuItem;
         private System.Windows.Forms.MenuItem selectAllThreadMenuItem;
         private System.Windows.Forms.MenuItem inspectTEBMenuItem;
+        private System.Windows.Forms.ColumnHeader columnPriority;
     }
 }

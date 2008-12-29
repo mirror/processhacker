@@ -802,5 +802,17 @@ namespace ProcessHacker.Properties {
                 this["PlotterIOWColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Peru")]
+        public global::System.Drawing.Color ColorJobProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorJobProcesses"]));
+            }
+            set {
+                this["ColorJobProcesses"] = value;
+            }
+        }
     }
 }
