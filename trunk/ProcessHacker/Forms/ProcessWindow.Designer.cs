@@ -65,16 +65,45 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textFileVersion = new System.Windows.Forms.TextBox();
+            this.tabStatistics = new System.Windows.Forms.TabPage();
+            this.flowStats = new System.Windows.Forms.FlowLayoutPanel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.labelCPUPriority = new System.Windows.Forms.Label();
+            this.labelCPUKernelTime = new System.Windows.Forms.Label();
+            this.labelCPUUserTime = new System.Windows.Forms.Label();
+            this.labelCPUTotalTime = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.labelMemoryPB = new System.Windows.Forms.Label();
+            this.labelMemoryWS = new System.Windows.Forms.Label();
+            this.labelMemoryPWS = new System.Windows.Forms.Label();
+            this.labelMemoryVS = new System.Windows.Forms.Label();
+            this.labelMemoryPVS = new System.Windows.Forms.Label();
+            this.labelMemoryPU = new System.Windows.Forms.Label();
+            this.labelMemoryPPU = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.labelMemoryPF = new System.Windows.Forms.Label();
             this.tabPerformance = new System.Windows.Forms.TabPage();
+            this.tablePerformance = new System.Windows.Forms.TableLayoutPanel();
             this.groupCPUUsage = new System.Windows.Forms.GroupBox();
-            this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabThreads = new System.Windows.Forms.TabPage();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
             this.tabModules = new System.Windows.Forms.TabPage();
-            this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -82,27 +111,62 @@
             this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.checkHideFreeRegions = new System.Windows.Forms.CheckBox();
-            this.listMemory = new ProcessHacker.MemoryList();
             this.tabHandles = new System.Windows.Forms.TabPage();
             this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
-            this.listHandles = new ProcessHacker.HandleList();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
+            this.plotterIO = new ProcessHacker.Components.Plotter();
+            this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.listThreads = new ProcessHacker.ThreadList();
+            this.listModules = new ProcessHacker.ModuleList();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
+            this.listMemory = new ProcessHacker.MemoryList();
+            this.listHandles = new ProcessHacker.HandleList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.timerPerformance = new System.Windows.Forms.Timer(this.components);
-            this.tabStatistics = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.labelIOReads = new System.Windows.Forms.Label();
+            this.labelIOReadBytes = new System.Windows.Forms.Label();
+            this.labelIOWrites = new System.Windows.Forms.Label();
+            this.labelIOWriteBytes = new System.Windows.Forms.Label();
+            this.labelIOOther = new System.Windows.Forms.Label();
+            this.labelIOOtherBytes = new System.Windows.Forms.Label();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.label27 = new System.Windows.Forms.Label();
+            this.labelOtherHandles = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
             this.groupFile.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
+            this.tabStatistics.SuspendLayout();
+            this.flowStats.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tabPerformance.SuspendLayout();
+            this.tablePerformance.SuspendLayout();
             this.groupCPUUsage.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tabThreads.SuspendLayout();
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
             this.tabHandles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
+            this.groupBox5.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -147,7 +211,7 @@
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(438, 376);
+            this.tabControl.Size = new System.Drawing.Size(438, 399);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -160,7 +224,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 42);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(430, 330);
+            this.tabGeneral.Size = new System.Drawing.Size(430, 353);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -187,7 +251,7 @@
             this.groupProcess.Controls.Add(this.textCmdLine);
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(416, 198);
+            this.groupProcess.Size = new System.Drawing.Size(416, 221);
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
@@ -448,76 +512,431 @@
             this.textFileVersion.Size = new System.Drawing.Size(311, 20);
             this.textFileVersion.TabIndex = 2;
             // 
+            // tabStatistics
+            // 
+            this.tabStatistics.Controls.Add(this.flowStats);
+            this.tabStatistics.ImageKey = "chart_bar";
+            this.tabStatistics.Location = new System.Drawing.Point(4, 42);
+            this.tabStatistics.Name = "tabStatistics";
+            this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
+            this.tabStatistics.Size = new System.Drawing.Size(430, 353);
+            this.tabStatistics.TabIndex = 9;
+            this.tabStatistics.Text = "Statistics";
+            this.tabStatistics.UseVisualStyleBackColor = true;
+            // 
+            // flowStats
+            // 
+            this.flowStats.Controls.Add(this.groupBox1);
+            this.flowStats.Controls.Add(this.groupBox4);
+            this.flowStats.Controls.Add(this.groupBox5);
+            this.flowStats.Controls.Add(this.groupBox6);
+            this.flowStats.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowStats.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowStats.Location = new System.Drawing.Point(3, 3);
+            this.flowStats.Name = "flowStats";
+            this.flowStats.Size = new System.Drawing.Size(424, 347);
+            this.flowStats.TabIndex = 0;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.tableLayoutPanel1);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(195, 108);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "CPU";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.label6, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label8, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label9, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label10, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.labelCPUPriority, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.labelCPUKernelTime, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.labelCPUUserTime, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.labelCPUTotalTime, 1, 3);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(189, 89);
+            this.tableLayoutPanel1.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 4);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(38, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Priority";
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Kernel Time";
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 48);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(55, 13);
+            this.label9.TabIndex = 1;
+            this.label9.Text = "User Time";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 71);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Total Time";
+            // 
+            // labelCPUPriority
+            // 
+            this.labelCPUPriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelCPUPriority.AutoSize = true;
+            this.labelCPUPriority.Location = new System.Drawing.Point(153, 4);
+            this.labelCPUPriority.Name = "labelCPUPriority";
+            this.labelCPUPriority.Size = new System.Drawing.Size(33, 13);
+            this.labelCPUPriority.TabIndex = 1;
+            this.labelCPUPriority.Text = "value";
+            // 
+            // labelCPUKernelTime
+            // 
+            this.labelCPUKernelTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelCPUKernelTime.AutoSize = true;
+            this.labelCPUKernelTime.Location = new System.Drawing.Point(153, 26);
+            this.labelCPUKernelTime.Name = "labelCPUKernelTime";
+            this.labelCPUKernelTime.Size = new System.Drawing.Size(33, 13);
+            this.labelCPUKernelTime.TabIndex = 1;
+            this.labelCPUKernelTime.Text = "value";
+            // 
+            // labelCPUUserTime
+            // 
+            this.labelCPUUserTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelCPUUserTime.AutoSize = true;
+            this.labelCPUUserTime.Location = new System.Drawing.Point(153, 48);
+            this.labelCPUUserTime.Name = "labelCPUUserTime";
+            this.labelCPUUserTime.Size = new System.Drawing.Size(33, 13);
+            this.labelCPUUserTime.TabIndex = 1;
+            this.labelCPUUserTime.Text = "value";
+            // 
+            // labelCPUTotalTime
+            // 
+            this.labelCPUTotalTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelCPUTotalTime.AutoSize = true;
+            this.labelCPUTotalTime.Location = new System.Drawing.Point(153, 71);
+            this.labelCPUTotalTime.Name = "labelCPUTotalTime";
+            this.labelCPUTotalTime.Size = new System.Drawing.Size(33, 13);
+            this.labelCPUTotalTime.TabIndex = 1;
+            this.labelCPUTotalTime.Text = "value";
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.tableLayoutPanel2);
+            this.groupBox4.Location = new System.Drawing.Point(3, 117);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(195, 180);
+            this.groupBox4.TabIndex = 0;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Memory";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.label24, 0, 6);
+            this.tableLayoutPanel2.Controls.Add(this.label22, 0, 5);
+            this.tableLayoutPanel2.Controls.Add(this.label20, 0, 4);
+            this.tableLayoutPanel2.Controls.Add(this.label11, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label12, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label13, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label14, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPB, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryWS, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPWS, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryVS, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPVS, 1, 4);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPU, 1, 5);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPPU, 1, 6);
+            this.tableLayoutPanel2.Controls.Add(this.label25, 0, 7);
+            this.tableLayoutPanel2.Controls.Add(this.labelMemoryPF, 1, 7);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 8;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(189, 161);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // label24
+            // 
+            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(3, 123);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(107, 13);
+            this.label24.TabIndex = 7;
+            this.label24.Text = "Peak Pagefile Usage";
+            // 
+            // label22
+            // 
+            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(3, 103);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(79, 13);
+            this.label22.TabIndex = 5;
+            this.label22.Text = "Pagefile Usage";
+            // 
+            // label20
+            // 
+            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(3, 83);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(87, 13);
+            this.label20.TabIndex = 3;
+            this.label20.Text = "Peak Virtual Size";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(69, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Private Bytes";
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 23);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(66, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "Working Set";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 43);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(94, 13);
+            this.label13.TabIndex = 1;
+            this.label13.Text = "Peak Working Set";
+            // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 63);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(59, 13);
+            this.label14.TabIndex = 1;
+            this.label14.Text = "Virtual Size";
+            // 
+            // labelMemoryPB
+            // 
+            this.labelMemoryPB.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPB.AutoSize = true;
+            this.labelMemoryPB.Location = new System.Drawing.Point(153, 3);
+            this.labelMemoryPB.Name = "labelMemoryPB";
+            this.labelMemoryPB.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPB.TabIndex = 1;
+            this.labelMemoryPB.Text = "value";
+            // 
+            // labelMemoryWS
+            // 
+            this.labelMemoryWS.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryWS.AutoSize = true;
+            this.labelMemoryWS.Location = new System.Drawing.Point(153, 23);
+            this.labelMemoryWS.Name = "labelMemoryWS";
+            this.labelMemoryWS.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryWS.TabIndex = 1;
+            this.labelMemoryWS.Text = "value";
+            // 
+            // labelMemoryPWS
+            // 
+            this.labelMemoryPWS.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPWS.AutoSize = true;
+            this.labelMemoryPWS.Location = new System.Drawing.Point(153, 43);
+            this.labelMemoryPWS.Name = "labelMemoryPWS";
+            this.labelMemoryPWS.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPWS.TabIndex = 1;
+            this.labelMemoryPWS.Text = "value";
+            // 
+            // labelMemoryVS
+            // 
+            this.labelMemoryVS.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryVS.AutoSize = true;
+            this.labelMemoryVS.Location = new System.Drawing.Point(153, 63);
+            this.labelMemoryVS.Name = "labelMemoryVS";
+            this.labelMemoryVS.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryVS.TabIndex = 1;
+            this.labelMemoryVS.Text = "value";
+            // 
+            // labelMemoryPVS
+            // 
+            this.labelMemoryPVS.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPVS.AutoSize = true;
+            this.labelMemoryPVS.Location = new System.Drawing.Point(153, 83);
+            this.labelMemoryPVS.Name = "labelMemoryPVS";
+            this.labelMemoryPVS.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPVS.TabIndex = 1;
+            this.labelMemoryPVS.Text = "value";
+            // 
+            // labelMemoryPU
+            // 
+            this.labelMemoryPU.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPU.AutoSize = true;
+            this.labelMemoryPU.Location = new System.Drawing.Point(153, 103);
+            this.labelMemoryPU.Name = "labelMemoryPU";
+            this.labelMemoryPU.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPU.TabIndex = 1;
+            this.labelMemoryPU.Text = "value";
+            // 
+            // labelMemoryPPU
+            // 
+            this.labelMemoryPPU.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPPU.AutoSize = true;
+            this.labelMemoryPPU.Location = new System.Drawing.Point(153, 123);
+            this.labelMemoryPPU.Name = "labelMemoryPPU";
+            this.labelMemoryPPU.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPPU.TabIndex = 1;
+            this.labelMemoryPPU.Text = "value";
+            // 
+            // label25
+            // 
+            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(3, 144);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(63, 13);
+            this.label25.TabIndex = 7;
+            this.label25.Text = "Page Faults";
+            // 
+            // labelMemoryPF
+            // 
+            this.labelMemoryPF.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelMemoryPF.AutoSize = true;
+            this.labelMemoryPF.Location = new System.Drawing.Point(153, 144);
+            this.labelMemoryPF.Name = "labelMemoryPF";
+            this.labelMemoryPF.Size = new System.Drawing.Size(33, 13);
+            this.labelMemoryPF.TabIndex = 1;
+            this.labelMemoryPF.Text = "value";
+            // 
             // tabPerformance
             // 
-            this.tabPerformance.Controls.Add(this.groupCPUUsage);
+            this.tabPerformance.Controls.Add(this.tablePerformance);
             this.tabPerformance.ImageKey = "chart_pie";
-            this.tabPerformance.Location = new System.Drawing.Point(4, 23);
+            this.tabPerformance.Location = new System.Drawing.Point(4, 42);
             this.tabPerformance.Name = "tabPerformance";
             this.tabPerformance.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPerformance.Size = new System.Drawing.Size(651, 349);
+            this.tabPerformance.Size = new System.Drawing.Size(430, 353);
             this.tabPerformance.TabIndex = 8;
             this.tabPerformance.Text = "Performance";
             this.tabPerformance.UseVisualStyleBackColor = true;
             // 
+            // tablePerformance
+            // 
+            this.tablePerformance.ColumnCount = 1;
+            this.tablePerformance.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tablePerformance.Controls.Add(this.groupCPUUsage, 0, 0);
+            this.tablePerformance.Controls.Add(this.groupBox3, 0, 2);
+            this.tablePerformance.Controls.Add(this.groupBox2, 0, 1);
+            this.tablePerformance.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tablePerformance.Location = new System.Drawing.Point(3, 3);
+            this.tablePerformance.Name = "tablePerformance";
+            this.tablePerformance.RowCount = 3;
+            this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tablePerformance.Size = new System.Drawing.Size(424, 347);
+            this.tablePerformance.TabIndex = 1;
+            // 
             // groupCPUUsage
             // 
-            this.groupCPUUsage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupCPUUsage.Controls.Add(this.plotterCPUUsage);
-            this.groupCPUUsage.Location = new System.Drawing.Point(6, 6);
+            this.groupCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupCPUUsage.Location = new System.Drawing.Point(3, 3);
             this.groupCPUUsage.Name = "groupCPUUsage";
-            this.groupCPUUsage.Size = new System.Drawing.Size(639, 107);
+            this.groupCPUUsage.Size = new System.Drawing.Size(418, 109);
             this.groupCPUUsage.TabIndex = 0;
             this.groupCPUUsage.TabStop = false;
-            this.groupCPUUsage.Text = "CPU Usage";
+            this.groupCPUUsage.Text = "CPU Usage (Kernel, User)";
             // 
-            // plotterCPUUsage
+            // groupBox3
             // 
-            this.plotterCPUUsage.BackColor = System.Drawing.Color.Black;
-            this.plotterCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterCPUUsage.GridColor = System.Drawing.Color.Green;
-            this.plotterCPUUsage.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterCPUUsage.IsMoved = true;
-            this.plotterCPUUsage.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
-            this.plotterCPUUsage.MoveStep = 3;
-            this.plotterCPUUsage.Name = "plotterCPUUsage";
-            this.plotterCPUUsage.Size = new System.Drawing.Size(633, 88);
-            this.plotterCPUUsage.TabIndex = 0;
-            this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.UseSecondLine = true;
+            this.groupBox3.Controls.Add(this.plotterIO);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(3, 233);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(418, 111);
+            this.groupBox3.TabIndex = 0;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "I/O (Read+Other, Write)";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.plotterMemory);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(3, 118);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(418, 109);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Memory (Private Pages, Working Set)";
             // 
             // tabThreads
             // 
             this.tabThreads.Controls.Add(this.listThreads);
             this.tabThreads.ImageKey = "hourglass";
-            this.tabThreads.Location = new System.Drawing.Point(4, 23);
+            this.tabThreads.Location = new System.Drawing.Point(4, 42);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(651, 349);
+            this.tabThreads.Size = new System.Drawing.Size(430, 353);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
             // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Highlight = false;
-            this.listThreads.Location = new System.Drawing.Point(0, 0);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(651, 349);
-            this.listThreads.TabIndex = 0;
-            // 
             // tabToken
             // 
             this.tabToken.ImageKey = "token";
-            this.tabToken.Location = new System.Drawing.Point(4, 23);
+            this.tabToken.Location = new System.Drawing.Point(4, 42);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(651, 349);
+            this.tabToken.Size = new System.Drawing.Size(430, 353);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -526,23 +945,12 @@
             // 
             this.tabModules.Controls.Add(this.listModules);
             this.tabModules.ImageKey = "page_white_wrench";
-            this.tabModules.Location = new System.Drawing.Point(4, 23);
+            this.tabModules.Location = new System.Drawing.Point(4, 42);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(651, 349);
+            this.tabModules.Size = new System.Drawing.Size(430, 353);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
-            // 
-            // listModules
-            // 
-            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listModules.DoubleBuffered = true;
-            this.listModules.Highlight = false;
-            this.listModules.Location = new System.Drawing.Point(0, 0);
-            this.listModules.Name = "listModules";
-            this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(651, 349);
-            this.listModules.TabIndex = 0;
             // 
             // tabMemory
             // 
@@ -550,25 +958,13 @@
             this.tabMemory.Controls.Add(this.checkHideFreeRegions);
             this.tabMemory.Controls.Add(this.listMemory);
             this.tabMemory.ImageKey = "database";
-            this.tabMemory.Location = new System.Drawing.Point(4, 23);
+            this.tabMemory.Location = new System.Drawing.Point(4, 42);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(651, 349);
+            this.tabMemory.Size = new System.Drawing.Size(430, 353);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 9;
-            this.buttonSearch.Text = "&String Scan...";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // menuSearch
             // 
@@ -623,28 +1019,15 @@
             this.checkHideFreeRegions.UseVisualStyleBackColor = true;
             this.checkHideFreeRegions.CheckedChanged += new System.EventHandler(this.checkHideFreeRegions_CheckedChanged);
             // 
-            // listMemory
-            // 
-            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listMemory.DoubleBuffered = true;
-            this.listMemory.Highlight = false;
-            this.listMemory.Location = new System.Drawing.Point(6, 59);
-            this.listMemory.Name = "listMemory";
-            this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(639, 284);
-            this.listMemory.TabIndex = 0;
-            // 
             // tabHandles
             // 
             this.tabHandles.Controls.Add(this.checkHideHandlesNoName);
             this.tabHandles.Controls.Add(this.listHandles);
             this.tabHandles.ImageKey = "connect";
-            this.tabHandles.Location = new System.Drawing.Point(4, 23);
+            this.tabHandles.Location = new System.Drawing.Point(4, 42);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(651, 349);
+            this.tabHandles.Size = new System.Drawing.Size(430, 353);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -661,25 +1044,12 @@
             this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
             this.checkHideHandlesNoName.CheckedChanged += new System.EventHandler(this.checkHideHandlesNoName_CheckedChanged);
             // 
-            // listHandles
-            // 
-            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHandles.DoubleBuffered = true;
-            this.listHandles.Highlight = false;
-            this.listHandles.Location = new System.Drawing.Point(6, 30);
-            this.listHandles.Name = "listHandles";
-            this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(639, 313);
-            this.listHandles.TabIndex = 0;
-            // 
             // tabServices
             // 
             this.tabServices.ImageKey = "cog";
-            this.tabServices.Location = new System.Drawing.Point(4, 23);
+            this.tabServices.Location = new System.Drawing.Point(4, 42);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(651, 349);
+            this.tabServices.Size = new System.Drawing.Size(430, 353);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -698,33 +1068,347 @@
             this.imageList.Images.SetKeyName(7, "chart_pie");
             this.imageList.Images.SetKeyName(8, "chart_bar");
             // 
+            // plotterCPUUsage
+            // 
+            this.plotterCPUUsage.BackColor = System.Drawing.Color.Black;
+            this.plotterCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPUUsage.GridColor = System.Drawing.Color.Green;
+            this.plotterCPUUsage.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterCPUUsage.IsMoved = true;
+            this.plotterCPUUsage.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
+            this.plotterCPUUsage.MoveStep = 3;
+            this.plotterCPUUsage.Name = "plotterCPUUsage";
+            this.plotterCPUUsage.Size = new System.Drawing.Size(412, 90);
+            this.plotterCPUUsage.TabIndex = 0;
+            this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterCPUUsage.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterCPUUsage.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterCPUUsage.UseSecondLine = true;
+            // 
+            // plotterIO
+            // 
+            this.plotterIO.BackColor = System.Drawing.Color.Black;
+            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterIO.GridColor = System.Drawing.Color.Green;
+            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterIO.IsMoved = true;
+            this.plotterIO.LineColor1 = System.Drawing.Color.Yellow;
+            this.plotterIO.LineColor2 = System.Drawing.Color.Purple;
+            this.plotterIO.Location = new System.Drawing.Point(3, 16);
+            this.plotterIO.MoveStep = 3;
+            this.plotterIO.Name = "plotterIO";
+            this.plotterIO.Size = new System.Drawing.Size(412, 92);
+            this.plotterIO.TabIndex = 0;
+            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterIO.UseSecondLine = true;
+            // 
+            // plotterMemory
+            // 
+            this.plotterMemory.BackColor = System.Drawing.Color.Black;
+            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterMemory.GridColor = System.Drawing.Color.Green;
+            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterMemory.IsMoved = true;
+            this.plotterMemory.LineColor1 = System.Drawing.Color.Orange;
+            this.plotterMemory.LineColor2 = System.Drawing.Color.Cyan;
+            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
+            this.plotterMemory.MoveStep = 3;
+            this.plotterMemory.Name = "plotterMemory";
+            this.plotterMemory.Size = new System.Drawing.Size(412, 90);
+            this.plotterMemory.TabIndex = 0;
+            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterMemory.UseSecondLine = true;
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Highlight = false;
+            this.listThreads.Location = new System.Drawing.Point(0, 0);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(430, 353);
+            this.listThreads.TabIndex = 0;
+            // 
+            // listModules
+            // 
+            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
+            this.listModules.Highlight = false;
+            this.listModules.Location = new System.Drawing.Point(0, 0);
+            this.listModules.Name = "listModules";
+            this.listModules.Provider = null;
+            this.listModules.Size = new System.Drawing.Size(430, 353);
+            this.listModules.TabIndex = 0;
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 9;
+            this.buttonSearch.Text = "&String Scan...";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
+            // listMemory
+            // 
+            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listMemory.DoubleBuffered = true;
+            this.listMemory.Highlight = false;
+            this.listMemory.Location = new System.Drawing.Point(6, 59);
+            this.listMemory.Name = "listMemory";
+            this.listMemory.Provider = null;
+            this.listMemory.Size = new System.Drawing.Size(418, 288);
+            this.listMemory.TabIndex = 0;
+            // 
+            // listHandles
+            // 
+            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.DoubleBuffered = true;
+            this.listHandles.Highlight = false;
+            this.listHandles.Location = new System.Drawing.Point(6, 30);
+            this.listHandles.Name = "listHandles";
+            this.listHandles.Provider = null;
+            this.listHandles.Size = new System.Drawing.Size(418, 317);
+            this.listHandles.TabIndex = 0;
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // timerPerformance
+            // groupBox5
             // 
-            this.timerPerformance.Interval = 1000;
+            this.groupBox5.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox5.Location = new System.Drawing.Point(204, 3);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(195, 146);
+            this.groupBox5.TabIndex = 0;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "I/O";
             // 
-            // tabStatistics
+            // tableLayoutPanel3
             // 
-            this.tabStatistics.ImageKey = "chart_bar";
-            this.tabStatistics.Location = new System.Drawing.Point(4, 42);
-            this.tabStatistics.Name = "tabStatistics";
-            this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistics.Size = new System.Drawing.Size(430, 330);
-            this.tabStatistics.TabIndex = 9;
-            this.tabStatistics.Text = "Statistics";
-            this.tabStatistics.UseVisualStyleBackColor = true;
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel3.Controls.Add(this.label16, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.label17, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.label18, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label19, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label21, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label23, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOReads, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOReadBytes, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOWrites, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOWriteBytes, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOOther, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.labelIOOtherBytes, 1, 5);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 6;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 127);
+            this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // label16
+            // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 109);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(62, 13);
+            this.label16.TabIndex = 5;
+            this.label16.Text = "Other Bytes";
+            // 
+            // label17
+            // 
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(3, 88);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(33, 13);
+            this.label17.TabIndex = 3;
+            this.label17.Text = "Other";
+            // 
+            // label18
+            // 
+            this.label18.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 4);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(38, 13);
+            this.label18.TabIndex = 1;
+            this.label18.Text = "Reads";
+            // 
+            // label19
+            // 
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 25);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(62, 13);
+            this.label19.TabIndex = 1;
+            this.label19.Text = "Read Bytes";
+            // 
+            // label21
+            // 
+            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(3, 46);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(37, 13);
+            this.label21.TabIndex = 1;
+            this.label21.Text = "Writes";
+            // 
+            // label23
+            // 
+            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(3, 67);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(61, 13);
+            this.label23.TabIndex = 1;
+            this.label23.Text = "Write Bytes";
+            // 
+            // labelIOReads
+            // 
+            this.labelIOReads.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOReads.AutoSize = true;
+            this.labelIOReads.Location = new System.Drawing.Point(153, 4);
+            this.labelIOReads.Name = "labelIOReads";
+            this.labelIOReads.Size = new System.Drawing.Size(33, 13);
+            this.labelIOReads.TabIndex = 1;
+            this.labelIOReads.Text = "value";
+            // 
+            // labelIOReadBytes
+            // 
+            this.labelIOReadBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOReadBytes.AutoSize = true;
+            this.labelIOReadBytes.Location = new System.Drawing.Point(153, 25);
+            this.labelIOReadBytes.Name = "labelIOReadBytes";
+            this.labelIOReadBytes.Size = new System.Drawing.Size(33, 13);
+            this.labelIOReadBytes.TabIndex = 1;
+            this.labelIOReadBytes.Text = "value";
+            // 
+            // labelIOWrites
+            // 
+            this.labelIOWrites.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOWrites.AutoSize = true;
+            this.labelIOWrites.Location = new System.Drawing.Point(153, 46);
+            this.labelIOWrites.Name = "labelIOWrites";
+            this.labelIOWrites.Size = new System.Drawing.Size(33, 13);
+            this.labelIOWrites.TabIndex = 1;
+            this.labelIOWrites.Text = "value";
+            // 
+            // labelIOWriteBytes
+            // 
+            this.labelIOWriteBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOWriteBytes.AutoSize = true;
+            this.labelIOWriteBytes.Location = new System.Drawing.Point(153, 67);
+            this.labelIOWriteBytes.Name = "labelIOWriteBytes";
+            this.labelIOWriteBytes.Size = new System.Drawing.Size(33, 13);
+            this.labelIOWriteBytes.TabIndex = 1;
+            this.labelIOWriteBytes.Text = "value";
+            // 
+            // labelIOOther
+            // 
+            this.labelIOOther.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOOther.AutoSize = true;
+            this.labelIOOther.Location = new System.Drawing.Point(153, 88);
+            this.labelIOOther.Name = "labelIOOther";
+            this.labelIOOther.Size = new System.Drawing.Size(33, 13);
+            this.labelIOOther.TabIndex = 1;
+            this.labelIOOther.Text = "value";
+            // 
+            // labelIOOtherBytes
+            // 
+            this.labelIOOtherBytes.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelIOOtherBytes.AutoSize = true;
+            this.labelIOOtherBytes.Location = new System.Drawing.Point(153, 109);
+            this.labelIOOtherBytes.Name = "labelIOOtherBytes";
+            this.labelIOOtherBytes.Size = new System.Drawing.Size(33, 13);
+            this.labelIOOtherBytes.TabIndex = 1;
+            this.labelIOOtherBytes.Text = "value";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.tableLayoutPanel4);
+            this.groupBox6.Location = new System.Drawing.Point(204, 155);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(195, 42);
+            this.groupBox6.TabIndex = 0;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Other";
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel4.Controls.Add(this.label27, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.labelOtherHandles, 1, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 23);
+            this.tableLayoutPanel4.TabIndex = 1;
+            // 
+            // label27
+            // 
+            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(3, 5);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(46, 13);
+            this.label27.TabIndex = 1;
+            this.label27.Text = "Handles";
+            // 
+            // labelOtherHandles
+            // 
+            this.labelOtherHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelOtherHandles.AutoSize = true;
+            this.labelOtherHandles.Location = new System.Drawing.Point(153, 5);
+            this.labelOtherHandles.Name = "labelOtherHandles";
+            this.labelOtherHandles.Size = new System.Drawing.Size(33, 13);
+            this.labelOtherHandles.TabIndex = 1;
+            this.labelOtherHandles.Text = "value";
             // 
             // ProcessWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(438, 376);
+            this.ClientSize = new System.Drawing.Size(438, 399);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Menu = this.mainMenu;
+            this.MinimumSize = new System.Drawing.Size(454, 433);
             this.Name = "ProcessWindow";
             this.Text = "Process";
             this.Load += new System.EventHandler(this.ProcessWindow_Load);
@@ -736,8 +1420,19 @@
             this.groupFile.ResumeLayout(false);
             this.groupFile.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
+            this.tabStatistics.ResumeLayout(false);
+            this.flowStats.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.tabPerformance.ResumeLayout(false);
+            this.tablePerformance.ResumeLayout(false);
             this.groupCPUUsage.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.tabThreads.ResumeLayout(false);
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
@@ -745,6 +1440,12 @@
             this.tabHandles.ResumeLayout(false);
             this.tabHandles.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -806,7 +1507,58 @@
         private System.Windows.Forms.TabPage tabPerformance;
         private System.Windows.Forms.GroupBox groupCPUUsage;
         private ProcessHacker.Components.Plotter plotterCPUUsage;
-        private System.Windows.Forms.Timer timerPerformance;
         private System.Windows.Forms.TabPage tabStatistics;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private ProcessHacker.Components.Plotter plotterMemory;
+        private System.Windows.Forms.TableLayoutPanel tablePerformance;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private ProcessHacker.Components.Plotter plotterIO;
+        private System.Windows.Forms.FlowLayoutPanel flowStats;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label labelCPUPriority;
+        private System.Windows.Forms.Label labelCPUKernelTime;
+        private System.Windows.Forms.Label labelCPUUserTime;
+        private System.Windows.Forms.Label labelCPUTotalTime;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label labelMemoryPB;
+        private System.Windows.Forms.Label labelMemoryWS;
+        private System.Windows.Forms.Label labelMemoryPWS;
+        private System.Windows.Forms.Label labelMemoryVS;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label labelMemoryPVS;
+        private System.Windows.Forms.Label labelMemoryPU;
+        private System.Windows.Forms.Label labelMemoryPPU;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label labelMemoryPF;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label labelIOReads;
+        private System.Windows.Forms.Label labelIOReadBytes;
+        private System.Windows.Forms.Label labelIOWrites;
+        private System.Windows.Forms.Label labelIOWriteBytes;
+        private System.Windows.Forms.Label labelIOOther;
+        private System.Windows.Forms.Label labelIOOtherBytes;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Label labelOtherHandles;
     }
 }

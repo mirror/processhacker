@@ -17,6 +17,10 @@
             {
                 components.Dispose();
             }
+
+            if (_managedBackBuffer != NO_MANAGED_BACK_BUFFER)
+                _managedBackBuffer.Dispose();
+
             base.Dispose(disposing);
         }
 

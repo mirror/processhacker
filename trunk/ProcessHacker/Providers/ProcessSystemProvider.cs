@@ -227,7 +227,7 @@ namespace ProcessHacker
 
                     item.PID = pid;
                     item.LastTime = processInfo.KernelTime + processInfo.UserTime;
-                    item.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
+                    item.MemoryUsage = processInfo.VirtualMemoryCounters.PrivateBytes;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;
@@ -348,7 +348,7 @@ namespace ProcessHacker
 
                     newitem = item;
                     newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
-                    newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivatePageCount;
+                    newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivateBytes;
                     newitem.Process = processInfo;
                     newitem.Threads = procs[pid].Threads;
 

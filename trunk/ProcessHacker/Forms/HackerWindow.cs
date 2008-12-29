@@ -374,8 +374,10 @@ namespace ProcessHacker
 
             if (processSelectedPID < 0 && treeProcesses.SelectedNodes.Count == 1)
             {
+                // probably DPCs or Interrupts
                 priorityMenuItem.Text = "&Priority";
                 Misc.DisableAllMenuItems(menuProcess);
+                propertiesProcessMenuItem.Enabled = true;
             }
 
             if (treeProcesses.Model.Nodes.Count == 0)
@@ -1449,7 +1451,7 @@ namespace ProcessHacker
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
-            processP.Updated += new Provider<int, ProcessItem>.ProviderUpdateOnce(processP_IconUpdater);
+            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_IconUpdater);
             processP.Enabled = true;
 
             cpuUsageIcon.BackColor = Color.Black;

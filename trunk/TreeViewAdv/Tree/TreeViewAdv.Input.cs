@@ -173,6 +173,8 @@ namespace Aga.Controls.Tree
 				OnNodeMouseClick(args);
 
 			base.OnMouseClick(e);
+            this.FullUpdate();
+            this.Invalidate();
 		}
 
 		protected override void OnMouseDoubleClick(MouseEventArgs e)

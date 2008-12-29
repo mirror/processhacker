@@ -171,7 +171,7 @@ namespace ProcessHacker
 
         private void _provider_Updated()
         {
-            treeProcesses.Invalidate();
+            this.BeginInvoke(new MethodInvoker(delegate { treeProcesses.Invalidate(); }));
         }
 
         private void PerformDelayed(int delay, MethodInvoker action)

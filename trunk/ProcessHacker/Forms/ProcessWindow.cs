@@ -52,7 +52,6 @@ namespace ProcessHacker
 
             _processItem = process;
             _pid = process.PID;
-            _process = Process.GetProcessById(_pid);
 
             this.Text = process.Name + " (PID " + _pid.ToString() + ")";
 
@@ -63,53 +62,41 @@ namespace ProcessHacker
 
             Program.PWindows.Add(_pid, this);
 
-            _processStats.Add("System Idle", 0);
-            _processStats.Add("System Kernel", 0);
-            _processStats.Add("System User", 0);
-            _processStats.Add("Process Kernel", 0);
-            _processStats.Add("Process User", 0);
-            _processStats.Add("Memory", 0);
-            _processStats.Add("IO Read+Other", 0);
-            _processStats.Add("IO Write", 0);
+            try
+            {
+                ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
 
-            timerPerformance.Interval = Properties.Settings.Default.RefreshInterval;
-            timerPerformance.Tick += new EventHandler(timerGraphs_Tick);
-            //timerGraphs.Enabled = true;
+                _processStats.Add("System Idle",
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
+                _processStats.Add("System Kernel",
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
+                _processStats.Add("System User",
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
+                _processStats.Add("Process Kernel", item.Process.KernelTime);
+                _processStats.Add("Process User", item.Process.UserTime);
+                _processStats.Add("IO Read+Other",
+                    (long)item.Process.IoCounters.ReadTransferCount +
+                    (long)item.Process.IoCounters.OtherTransferCount);
+                _processStats.Add("IO Write",
+                    (long)item.Process.IoCounters.WriteTransferCount);
+            }
+            catch
+            { }
         }
 
-        private void timerGraphs_Tick(object sender, EventArgs e)
+        public MenuItem WindowMenuItem
         {
-            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+            get { return windowMenuItem; }
+        }
 
-            // update deltas         
-            _processStats.Update("System Idle",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
-            _processStats.Update("System Kernel",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
-            _processStats.Update("System User",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
-            _processStats.Update("Process Kernel", item.Process.KernelTime);
-            _processStats.Update("Process User", item.Process.UserTime);
-            _processStats.Update("Memory", item.Process.VirtualMemoryCounters.PrivatePageCount);
-            _processStats.Update("IO Read+Other",
-                (long)item.Process.IoCounters.ReadTransferCount +
-                (long)item.Process.IoCounters.OtherTransferCount);
-            _processStats.Update("IO Write",
-                (long)item.Process.IoCounters.WriteTransferCount);
-
-            // update graphs
-            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User");
-            float procKernel = (float)_processStats.GetDelta("Process Kernel") / sysTotal;
-            float procUser = (float)_processStats.GetDelta("Process User") / sysTotal;
-            int noProcs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
-            float procTotal = (procKernel + procUser) / noProcs;
-
-            plotterCPUUsage.Add(procKernel / noProcs, procUser / noProcs);
-            plotterCPUUsage.Text = (procTotal * 100).ToString("F2") + "%";
+        public wyDay.Controls.VistaMenu VistaMenu
+        {
+            get { return vistaMenu; }
         }
 
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
+            // load settings
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
             checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
@@ -117,57 +104,44 @@ namespace ProcessHacker
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
 
+            // update the Window menu
             Program.UpdateWindows();
 
-            _tokenProps = new TokenProperties(_processItem.ProcessQueryLimitedHandle);
-            _tokenProps.Dock = DockStyle.Fill;
-            tabToken.Controls.Add(_tokenProps);
+            this.InitializeSubControls();
+            this.ClearStatistics();
 
-            listThreads.BeginUpdate();
-            listThreads.Highlight = false;
-            _threadP = new ThreadProvider(_pid);
-            _threadP.Interval = Properties.Settings.Default.RefreshInterval;
-            _threadP.Updated += new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
-            _threadP.RunOnceAsync();
-            listThreads.Provider = _threadP;
-            _threadP.Enabled = true;
+            // intialize everything
+            try
+            {
+                _process = Process.GetProcessById(_pid);
 
-            listModules.BeginUpdate();
-            listModules.Highlight = false;
-            _moduleP = new ModuleProvider(_pid);
-            _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
-            _moduleP.Updated += new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
-            _moduleP.RunOnceAsync();
-            listModules.Provider = _moduleP;
-            _moduleP.Enabled = true;
+                this.InitializeProviders();
+                this.UpdateProcessProperties();
+            }
+            catch
+            {
+                // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
+                buttonEditDEP.Enabled = false;
+                buttonInspectParent.Enabled = false;
+                buttonInspectPEB.Enabled = false;
+                buttonOpenCurDir.Enabled = false;
+                buttonOpenFileNameFolder.Enabled = false;
+                buttonSearch.Enabled = false;
+                buttonTerminate.Enabled = false;
+            }
 
-            listMemory.BeginUpdate();
-            listMemory.Highlight = false;
-            _memoryP = new MemoryProvider(_pid);
-            _memoryP.IgnoreFreeRegions = true;
-            _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
-            _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
-            _memoryP.RunOnceAsync();
-            listMemory.Provider = _memoryP;
-            _memoryP.Enabled = true;
+            this.UpdateDeltas();
 
-            listHandles.BeginUpdate();
-            listHandles.Highlight = false;
-            _handleP = new HandleProvider(_pid);
-            _handleP.Interval = Properties.Settings.Default.RefreshInterval;
-            _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
-            _handleP.RunOnceAsync();
-            listHandles.Provider = _handleP;
-            _handleP.Enabled = true;
+            // add our handler to the process provider
+            Program.HackerWindow.ProcessProvider.Updated += 
+                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
-            _serviceProps = new ServiceProperties(
-                Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
-                Program.HackerWindow.ProcessServices[_pid].ToArray() : 
-                new string[0]);
-            _serviceProps.Dock = DockStyle.Fill;
-            _serviceProps.PID = _pid;
-            tabServices.Controls.Add(_serviceProps);
+            // disable providers which aren't in use
+            tabControl_SelectedIndexChanged(null, null);
+        }
 
+        private void UpdateProcessProperties()
+        {
             try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
             catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
             try
@@ -241,8 +215,82 @@ namespace ProcessHacker
             }
 
             this.UpdateDEPStatus();
+        }
 
-            tabControl_SelectedIndexChanged(null, null);
+        private void InitializeSubControls()
+        {
+            _tokenProps = new TokenProperties(_processItem.ProcessQueryLimitedHandle);
+            _tokenProps.Dock = DockStyle.Fill;
+            tabToken.Controls.Add(_tokenProps);
+
+            _serviceProps = new ServiceProperties(
+                Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
+                Program.HackerWindow.ProcessServices[_pid].ToArray() :
+                new string[0]);
+            _serviceProps.Dock = DockStyle.Fill;
+            _serviceProps.PID = _pid;
+            tabServices.Controls.Add(_serviceProps);
+        }
+
+        private void InitializeProviders()
+        {
+            listThreads.BeginUpdate();
+            listThreads.Highlight = false;
+            _threadP = new ThreadProvider(_pid);
+            _threadP.Interval = Properties.Settings.Default.RefreshInterval;
+            _threadP.Updated += new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
+            _threadP.RunOnceAsync();
+            listThreads.Provider = _threadP;
+            _threadP.Enabled = true;
+
+            listModules.BeginUpdate();
+            listModules.Highlight = false;
+            _moduleP = new ModuleProvider(_pid);
+            _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _moduleP.Updated += new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
+            _moduleP.RunOnceAsync();
+            listModules.Provider = _moduleP;
+            _moduleP.Enabled = true;
+
+            listMemory.BeginUpdate();
+            listMemory.Highlight = false;
+            _memoryP = new MemoryProvider(_pid);
+            _memoryP.IgnoreFreeRegions = true;
+            _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
+            _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
+            _memoryP.RunOnceAsync();
+            listMemory.Provider = _memoryP;
+            _memoryP.Enabled = true;
+
+            listHandles.BeginUpdate();
+            listHandles.Highlight = false;
+            _handleP = new HandleProvider(_pid);
+            _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+            _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+            _handleP.RunOnceAsync();
+            listHandles.Provider = _handleP;
+            _handleP.Enabled = true;
+        }
+
+        private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _threadP.Kill();
+            _moduleP.Kill();
+            _memoryP.Kill();
+            _handleP.Kill();
+
+            listThreads.SaveSettings();
+            listModules.SaveSettings();
+            listMemory.SaveSettings();
+            listHandles.SaveSettings();
+            _tokenProps.SaveSettings();
+
+            Program.HackerWindow.ProcessProvider.Updated -=
+                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+
+            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
+            Properties.Settings.Default.SearchType = buttonSearch.Text;
+            Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
         public void UpdateDEPStatus()
@@ -296,131 +344,161 @@ namespace ProcessHacker
                 buttonEditDEP.Enabled = false;
         }
 
-        private void _memoryP_Updated()
+        private void PerformSearch(string text)
         {
-            if (_memoryP.RunCount > 1)
+            Point location = this.Location;
+            System.Drawing.Size size = this.Size;
+
+            ResultsWindow rw = Program.GetResultsWindow(_pid, 
+                new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
             {
-                this.BeginInvoke(new MethodInvoker(delegate
+                if (text == "&New Results Window...")
                 {
-                    listMemory.EndUpdate();
-                    listMemory.Highlight = true;
-                }));
-                _memoryP.Updated -= new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
-            }
-        }
-
-        private void _handleP_Updated()
-        {
-            if (_handleP.RunCount > 1)
-            {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listHandles.EndUpdate();
-                    listHandles.Highlight = true;
-                }));
-                _handleP.Updated -= new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
-            }
-        }
-
-        private void _moduleP_Updated()
-        {
-            if (_moduleP.RunCount > 1)
-            {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listModules.EndUpdate();
-                    listModules.Highlight = true;
-                }));
-                _moduleP.Updated -= new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
-            }
-        }
-
-        private void _threadP_Updated()
-        {
-            if (_threadP.RunCount > 1)
-            {
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    listThreads.EndUpdate();
-                    listThreads.Highlight = true;
-                }));
-                _threadP.Updated -= new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
-            }
-        }
-
-        private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _threadP.Kill();
-            _moduleP.Kill();
-            _memoryP.Kill();
-            _handleP.Kill();
-
-            listThreads.SaveSettings();
-            listModules.SaveSettings();
-            listMemory.SaveSettings();
-            listHandles.SaveSettings();
-            _tokenProps.SaveSettings();
-
-            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
-            Properties.Settings.Default.SearchType = buttonSearch.Text;
-            Properties.Settings.Default.ProcessWindowSize = this.Size;
-        }
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
-        }
-
-        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (_threadP != null)
-                _threadP.Enabled = tabControl.SelectedTab == tabThreads;
-            if (_moduleP != null)
-                _moduleP.Enabled = tabControl.SelectedTab == tabModules;
-            if (_memoryP != null)
-                _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
-            if (_handleP != null)
-                _handleP.Enabled = tabControl.SelectedTab == tabHandles;
-        }
-
-        private void inspectImageFileMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string path;
-
-                if (_pid == 4)
-                {
-                    path = Misc.GetKernelFileName();
+                    f.Show();
                 }
-                else
+                else if (text == "&Literal Search...")
                 {
-                    path = Misc.GetRealPath(_process.MainModule.FileName);
-                }
-
-                PEWindow pw = Program.GetPEWindow(path,
-                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                    if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
                     {
-                        try
-                        {
-                            f.Show();
-                            f.Activate();
-                        }
-                        catch
-                        { }
-                    }));
-            }
-            catch (Exception ex)
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&Regex Search...")
+                {
+                    if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
+                else if (text == "&String Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.String;
+                    f.Show();
+                    f.StartSearch();
+                }
+                else if (text == "&Heap Scan...")
+                {
+                    f.SearchOptions.Type = SearchType.Heap;
+                    f.Show();
+                    f.StartSearch();
+                }
+            }));
+
+            buttonSearch.Text = text;
+        }
+
+        private void ClearStatistics()
+        {
+            labelCPUPriority.Text = "";
+            labelCPUKernelTime.Text = "";
+            labelCPUUserTime.Text = "";
+            labelCPUTotalTime.Text = "";
+
+            labelMemoryPB.Text = "";
+            labelMemoryWS.Text = "";
+            labelMemoryPWS.Text = "";
+            labelMemoryVS.Text = "";
+            labelMemoryPVS.Text = "";
+            labelMemoryPU.Text = "";
+            labelMemoryPPU.Text = "";
+            labelMemoryPF.Text = "";
+
+            labelIOReads.Text = "";
+            labelIOReadBytes.Text = "";
+            labelIOWrites.Text = "";
+            labelIOWriteBytes.Text = "";
+            labelIOOther.Text = "";
+            labelIOOtherBytes.Text = "";
+
+            labelOtherHandles.Text = "";
+        }
+
+        private void UpdateDeltas()
+        {
+            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+
+            // update deltas         
+            _processStats.Update("System Idle",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
+            _processStats.Update("System Kernel",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
+            _processStats.Update("System User",
+                Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
+            _processStats.Update("Process Kernel", item.Process.KernelTime);
+            _processStats.Update("Process User", item.Process.UserTime);
+            _processStats.Update("IO Read+Other",
+                (long)item.Process.IoCounters.ReadTransferCount +
+                (long)item.Process.IoCounters.OtherTransferCount);
+            _processStats.Update("IO Write",
+                (long)item.Process.IoCounters.WriteTransferCount);
+        }
+
+        private void UpdatePerformance()
+        {
+            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+
+            // update graphs
+            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User");
+            float procKernel = (float)_processStats.GetDelta("Process Kernel") / sysTotal;
+            float procUser = (float)_processStats.GetDelta("Process User") / sysTotal;
+            int noProcs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
+
+            if (procKernel / noProcs <= 1 && procUser / noProcs <= 1)
             {
-                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                plotterCPUUsage.Add(procKernel / noProcs, procUser / noProcs);
+                plotterCPUUsage.Text = ((procKernel + procUser) * 100 / noProcs).ToString("F2") + 
+                    "% (K: " + (procKernel * 100 / noProcs).ToString("F2") + 
+                    "%, U: " + (procUser * 100 / noProcs).ToString("F2") + "%)";
+            }
+
+            plotterMemory.Add(item.Process.VirtualMemoryCounters.PrivateBytes,
+                item.Process.VirtualMemoryCounters.WorkingSetSize);
+            plotterMemory.Text = "Pvt: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes) + 
+                ", WS: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
+
+            plotterIO.Add(_processStats.GetDelta("IO Read+Other"), _processStats.GetDelta("IO Write"));
+            plotterIO.Text = "R+O: " + Misc.GetNiceSizeName(_processStats.GetDelta("IO Read+Other")) +
+                ", W: " + Misc.GetNiceSizeName(_processStats.GetDelta("IO Write"));
+
+            // update statistics
+            if (tabControl.SelectedTab == tabStatistics)
+            {
+                labelCPUPriority.Text = item.Process.BasePriority.ToString();
+                labelCPUKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
+                labelCPUUserTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.UserTime));
+                labelCPUTotalTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
+
+                labelMemoryPB.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
+                labelMemoryWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
+                labelMemoryPWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
+                labelMemoryVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.VirtualSize);
+                labelMemoryPVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
+                labelMemoryPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
+                labelMemoryPPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
+                labelMemoryPF.Text = item.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0");
+
+                labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
+                labelIOReadBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
+                labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
+                labelIOWriteBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
+                labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
+                labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
+
+                labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
             }
         }
+
+        #region Buttons
 
         private void buttonPEBStrings_Click(object sender, EventArgs e)
         {
@@ -570,6 +648,155 @@ namespace ProcessHacker
             }
         }
 
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            PerformSearch(buttonSearch.Text);
+        }
+
+        #endregion
+
+        #region Check Boxes
+
+        private void checkHideFreeRegions_CheckedChanged(object sender, EventArgs e)
+        {
+            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
+        }
+
+        private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
+
+            if (_handleP != null)
+            {
+                _handleP.Kill();
+                listHandles.BeginUpdate();
+                listHandles.Highlight = false;
+                _handleP = new HandleProvider(_pid);
+                _handleP.Interval = Properties.Settings.Default.RefreshInterval;
+                _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+                _handleP.RunOnceAsync();
+                listHandles.Provider = _handleP;
+                _handleP.Enabled = true;
+            }
+        }
+
+        #endregion       
+
+        #region Menu Items 
+
+        private void inspectImageFileMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string path;
+
+                if (_pid == 4)
+                {
+                    path = Misc.GetKernelFileName();
+                }
+                else
+                {
+                    path = Misc.GetRealPath(_process.MainModule.FileName);
+                }
+
+                PEWindow pw = Program.GetPEWindow(path,
+                    new Program.PEWindowInvokeAction(delegate(PEWindow f)
+                    {
+                        try
+                        {
+                            f.Show();
+                            f.Activate();
+                        }
+                        catch
+                        { }
+                    }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error inspecting:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
+
+        #region Providers
+
+        private void ProcessProvider_Updated()
+        {
+            try
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    try
+                    {
+                        this.UpdateDeltas();
+                        this.UpdatePerformance();
+                    }
+                    catch
+                    { }
+                }));
+            }
+            catch
+            { }
+        }
+
+        private void _memoryP_Updated()
+        {
+            if (_memoryP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listMemory.EndUpdate();
+                    listMemory.Highlight = true;
+                }));
+                _memoryP.Updated -= new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
+            }
+        }
+
+        private void _handleP_Updated()
+        {
+            if (_handleP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listHandles.EndUpdate();
+                    listHandles.Highlight = true;
+                }));
+                _handleP.Updated -= new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+            }
+        }
+
+        private void _moduleP_Updated()
+        {
+            if (_moduleP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listModules.EndUpdate();
+                    listModules.Highlight = true;
+                }));
+                _moduleP.Updated -= new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
+            }
+        }
+
+        private void _threadP_Updated()
+        {
+            if (_threadP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listThreads.EndUpdate();
+                    listThreads.Highlight = true;
+                }));
+                _threadP.Updated -= new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
+            }
+        }
+
+        #endregion
+
+        #region Search Menu Items
+
         private void newWindowSearchMenuItem_Click(object sender, EventArgs e)
         {
             PerformSearch(newWindowSearchMenuItem.Text);
@@ -595,85 +822,22 @@ namespace ProcessHacker
             PerformSearch(heapScanMenuItem.Text);
         }
 
-        private void PerformSearch(string text)
+        #endregion      
+
+        #region Tab Controls
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Point location = this.Location;
-            System.Drawing.Size size = this.Size;
-
-            ResultsWindow rw = Program.GetResultsWindow(_pid, 
-                new Program.ResultsWindowInvokeAction(delegate(ResultsWindow f)
-            {
-                if (text == "&New Results Window...")
-                {
-                    f.Show();
-                }
-                else if (text == "&Literal Search...")
-                {
-                    if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
-                    {
-                        f.Show();
-                        f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-                else if (text == "&Regex Search...")
-                {
-                    if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
-                    {
-                        f.Show();
-                        f.StartSearch();
-                    }
-                    else
-                    {
-                        f.Close();
-                    }
-                }
-                else if (text == "&String Scan...")
-                {
-                    f.SearchOptions.Type = SearchType.String;
-                    f.Show();
-                    f.StartSearch();
-                }
-                else if (text == "&Heap Scan...")
-                {
-                    f.SearchOptions.Type = SearchType.Heap;
-                    f.Show();
-                    f.StartSearch();
-                }
-            }));
-
-            buttonSearch.Text = text;
-        }
-
-        private void buttonSearch_Click(object sender, EventArgs e)
-        {
-            PerformSearch(buttonSearch.Text);
-        }
-
-        private void checkHideFreeRegions_CheckedChanged(object sender, EventArgs e)
-        {
-            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
-        }
-
-        private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
-
+            if (_threadP != null)
+                _threadP.Enabled = tabControl.SelectedTab == tabThreads;
+            if (_moduleP != null)
+                _moduleP.Enabled = tabControl.SelectedTab == tabModules;
+            if (_memoryP != null)
+                _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
             if (_handleP != null)
-            {
-                _handleP.Kill();
-                listHandles.BeginUpdate();
-                listHandles.Highlight = false;
-                _handleP = new HandleProvider(_pid);
-                _handleP.Interval = Properties.Settings.Default.RefreshInterval;
-                _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
-                _handleP.RunOnceAsync();
-                listHandles.Provider = _handleP;
-                _handleP.Enabled = true;
-            }
+                _handleP.Enabled = tabControl.SelectedTab == tabHandles;
         }
+
+        #endregion
     }
 }

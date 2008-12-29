@@ -35,7 +35,7 @@ namespace ProcessHacker
             public enum PEBOffset
             {
                 CurrentDirectoryPath = 0x24,
-                DllPath = 0x30,
+                DllPath = 0x30, // usually a copy of the PATH environment variable
                 ImagePathName = 0x38,
                 CommandLine = 0x40,
                 WindowTitle = 0x70,
@@ -44,10 +44,27 @@ namespace ProcessHacker
                 RuntimeData = 0x88
             }
 
+            /// <summary>
+            /// Specifies the DEP status of a process.
+            /// </summary>
             [Flags]
             public enum DEPStatus
             {
-                Enabled = 0x1, Permanent, ATLThunkEmulationDisabled
+                /// <summary>
+                /// DEP is enabled.
+                /// </summary>
+                Enabled = 0x1,
+                
+                /// <summary>
+                /// DEP is permanently enabled or disabled and cannot
+                /// be enabled or disabled.
+                /// </summary>
+                Permanent,
+                
+                /// <summary>
+                /// DEP is enabled with DEP-ATL thunk emulation disabled.
+                /// </summary>
+                ATLThunkEmulationDisabled
             }
 
             /// <summary>
@@ -234,10 +251,9 @@ namespace ProcessHacker
                 catch
                 { }
 
-                byte[] data2 = new byte[4];
-
                 /* read address of parameter information block
                  *
+                 * PEB
                  * off field
                  * +00 BOOLEAN InheritedAddressSpace;
                  * +01 BOOLEAN ReadImageFileExecOptions;
@@ -254,6 +270,7 @@ namespace ProcessHacker
                 // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
                 // specified in the enum.
                 //
+                // UNICODE_STRING
                 // off field
                 // +00 USHORT Length;
                 // +02 USHORT MaximumLength;

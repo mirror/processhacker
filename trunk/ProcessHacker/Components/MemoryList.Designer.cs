@@ -82,7 +82,6 @@
             // columnProtection
             // 
             this.columnProtection.Text = "Protection";
-            this.columnProtection.Width = 120;
             // 
             // vistaMenu
             // 

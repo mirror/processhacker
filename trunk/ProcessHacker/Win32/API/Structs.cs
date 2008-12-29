@@ -862,7 +862,7 @@ namespace ProcessHacker
             public int QuotaNonPagedPoolUsage;
             public int PagefileUsage;
             public int PeakPagefileUsage;
-            public int PrivatePageCount;
+            public int PrivateBytes;
         }
 
         [StructLayout(LayoutKind.Sequential)]

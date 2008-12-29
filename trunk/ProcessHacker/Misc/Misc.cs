@@ -228,10 +228,11 @@ namespace ProcessHacker
         /// <returns></returns>
         public static string GetNiceTimeSpan(TimeSpan time)
         {
-            return String.Format("{0:d3}:{1:d2}:{2:d3}",
-                                time.Minutes,
-                                time.Seconds,
-                                time.Milliseconds);
+            return String.Format("{0:d2}:{1:d2}:{2:d2}.{3:d3}",
+                time.Hours,
+                time.Minutes,
+                time.Seconds,
+                time.Milliseconds);
         }
 
         /// <summary>
