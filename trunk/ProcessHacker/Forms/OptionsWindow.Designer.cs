@@ -56,11 +56,26 @@
             this.label4 = new System.Windows.Forms.Label();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.label3 = new System.Windows.Forms.Label();
+            this.tabPlotting = new System.Windows.Forms.TabPage();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.colorIORO = new ProcessHacker.Components.ColorModifier();
+            this.colorIOW = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryWS = new ProcessHacker.Components.ColorModifier();
+            this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
+            this.label14 = new System.Windows.Forms.Label();
+            this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.label17 = new System.Windows.Forms.Label();
+            this.checkPlotterAntialias = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
+            this.tabPlotting.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -159,6 +174,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabGeneral);
             this.tabControl.Controls.Add(this.tabHighlighting);
+            this.tabControl.Controls.Add(this.tabPlotting);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -377,6 +393,142 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "New Objects:";
             // 
+            // tabPlotting
+            // 
+            this.tabPlotting.Controls.Add(this.checkPlotterAntialias);
+            this.tabPlotting.Controls.Add(this.label12);
+            this.tabPlotting.Controls.Add(this.label13);
+            this.tabPlotting.Controls.Add(this.colorIORO);
+            this.tabPlotting.Controls.Add(this.colorIOW);
+            this.tabPlotting.Controls.Add(this.colorMemoryWS);
+            this.tabPlotting.Controls.Add(this.colorMemoryPB);
+            this.tabPlotting.Controls.Add(this.label14);
+            this.tabPlotting.Controls.Add(this.colorCPUUT);
+            this.tabPlotting.Controls.Add(this.label15);
+            this.tabPlotting.Controls.Add(this.label16);
+            this.tabPlotting.Controls.Add(this.colorCPUKT);
+            this.tabPlotting.Controls.Add(this.label17);
+            this.tabPlotting.Location = new System.Drawing.Point(4, 22);
+            this.tabPlotting.Name = "tabPlotting";
+            this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPlotting.Size = new System.Drawing.Size(339, 226);
+            this.tabPlotting.TabIndex = 2;
+            this.tabPlotting.Text = "Plotting";
+            this.tabPlotting.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 135);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(87, 13);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "IO Reads+Other:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 160);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(54, 13);
+            this.label13.TabIndex = 20;
+            this.label13.Text = "IO Writes:";
+            // 
+            // colorIORO
+            // 
+            this.colorIORO.Color = System.Drawing.Color.Transparent;
+            this.colorIORO.Location = new System.Drawing.Point(124, 133);
+            this.colorIORO.Name = "colorIORO";
+            this.colorIORO.Size = new System.Drawing.Size(40, 20);
+            this.colorIORO.TabIndex = 17;
+            // 
+            // colorIOW
+            // 
+            this.colorIOW.Color = System.Drawing.Color.Transparent;
+            this.colorIOW.Location = new System.Drawing.Point(124, 159);
+            this.colorIOW.Name = "colorIOW";
+            this.colorIOW.Size = new System.Drawing.Size(40, 20);
+            this.colorIOW.TabIndex = 18;
+            // 
+            // colorMemoryWS
+            // 
+            this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 107);
+            this.colorMemoryWS.Name = "colorMemoryWS";
+            this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryWS.TabIndex = 19;
+            // 
+            // colorMemoryPB
+            // 
+            this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 81);
+            this.colorMemoryPB.Name = "colorMemoryPB";
+            this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
+            this.colorMemoryPB.TabIndex = 15;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(6, 109);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(69, 13);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Working Set:";
+            // 
+            // colorCPUUT
+            // 
+            this.colorCPUUT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 55);
+            this.colorCPUUT.Name = "colorCPUUT";
+            this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUUT.TabIndex = 16;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 83);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(72, 13);
+            this.label15.TabIndex = 13;
+            this.label15.Text = "Private Bytes:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 58);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(83, 13);
+            this.label16.TabIndex = 14;
+            this.label16.Text = "CPU User Time:";
+            // 
+            // colorCPUKT
+            // 
+            this.colorCPUKT.Color = System.Drawing.Color.Transparent;
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 29);
+            this.colorCPUKT.Name = "colorCPUKT";
+            this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
+            this.colorCPUKT.TabIndex = 11;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 32);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(91, 13);
+            this.label17.TabIndex = 10;
+            this.label17.Text = "CPU Kernel Time:";
+            // 
+            // checkPlotterAntialias
+            // 
+            this.checkPlotterAntialias.AutoSize = true;
+            this.checkPlotterAntialias.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkPlotterAntialias.Location = new System.Drawing.Point(6, 6);
+            this.checkPlotterAntialias.Name = "checkPlotterAntialias";
+            this.checkPlotterAntialias.Size = new System.Drawing.Size(110, 18);
+            this.checkPlotterAntialias.TabIndex = 22;
+            this.checkPlotterAntialias.Text = "Use Anti-aliasing";
+            this.checkPlotterAntialias.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
@@ -400,6 +552,8 @@
             this.tabHighlighting.ResumeLayout(false);
             this.tabHighlighting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
+            this.tabPlotting.ResumeLayout(false);
+            this.tabPlotting.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -434,5 +588,19 @@
         private System.Windows.Forms.CheckBox checkHideWhenMinimized;
         private System.Windows.Forms.Label label10;
         private ProcessHacker.Components.ColorModifier colorElevatedProcesses;
+        private System.Windows.Forms.TabPage tabPlotting;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private ProcessHacker.Components.ColorModifier colorIORO;
+        private ProcessHacker.Components.ColorModifier colorIOW;
+        private ProcessHacker.Components.ColorModifier colorMemoryWS;
+        private ProcessHacker.Components.ColorModifier colorMemoryPB;
+        private System.Windows.Forms.Label label14;
+        private ProcessHacker.Components.ColorModifier colorCPUUT;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private ProcessHacker.Components.ColorModifier colorCPUKT;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.CheckBox checkPlotterAntialias;
     }
 }

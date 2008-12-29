@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
@@ -63,6 +64,9 @@ namespace ProcessHacker.Components
             int tHeight = this.Height;
 
             Graphics g = _managedBackBuffer.Graphics;
+            g.SmoothingMode = Properties.Settings.Default.PlotterAntialias ?
+                SmoothingMode.AntiAlias : SmoothingMode.Default;
+
             g.FillRectangle(new SolidBrush(this.BackColor), 0, 0, tWidth, tHeight);
 
             //draw grid

@@ -128,6 +128,14 @@ namespace ProcessHacker
                 buttonOpenFileNameFolder.Enabled = false;
                 buttonSearch.Enabled = false;
                 buttonTerminate.Enabled = false;
+
+                // remove tab controls not relevant to DPCs/Interrupts
+                tabControl.TabPages.Remove(tabHandles);
+                tabControl.TabPages.Remove(tabMemory);
+                tabControl.TabPages.Remove(tabModules);
+                tabControl.TabPages.Remove(tabServices);
+                tabControl.TabPages.Remove(tabThreads);
+                tabControl.TabPages.Remove(tabToken);
             }
 
             this.UpdateDeltas();
@@ -274,16 +282,20 @@ namespace ProcessHacker
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _threadP.Kill();
-            _moduleP.Kill();
-            _memoryP.Kill();
-            _handleP.Kill();
+            // don't try to save settings if we're inspecting DPCs or Interrupts
+            if (_pid >= 0)
+            {
+                _threadP.Kill();
+                _moduleP.Kill();
+                _memoryP.Kill();
+                _handleP.Kill();
 
-            listThreads.SaveSettings();
-            listModules.SaveSettings();
-            listMemory.SaveSettings();
-            listHandles.SaveSettings();
-            _tokenProps.SaveSettings();
+                listThreads.SaveSettings();
+                listModules.SaveSettings();
+                listMemory.SaveSettings();
+                listHandles.SaveSettings();
+                _tokenProps.SaveSettings();
+            }
 
             Program.HackerWindow.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
@@ -446,6 +458,13 @@ namespace ProcessHacker
         private void UpdatePerformance()
         {
             ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+
+            plotterCPUUsage.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
+            plotterCPUUsage.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
+            plotterMemory.LineColor1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
+            plotterMemory.LineColor2 = Properties.Settings.Default.PlotterMemoryWSColor;
+            plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
+            plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
 
             // update graphs
             long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User");

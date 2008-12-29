@@ -50,6 +50,14 @@ namespace ProcessHacker
             colorServiceProcesses.Color = Properties.Settings.Default.ColorServiceProcesses;
             colorBeingDebugged.Color = Properties.Settings.Default.ColorBeingDebugged;
             colorElevatedProcesses.Color = Properties.Settings.Default.ColorElevatedProcesses;
+
+            checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
+            colorCPUKT.Color = Properties.Settings.Default.PlotterCPUKernelColor;
+            colorCPUUT.Color = Properties.Settings.Default.PlotterCPUUserColor;
+            colorMemoryPB.Color = Properties.Settings.Default.PlotterMemoryPrivateColor;
+            colorMemoryWS.Color = Properties.Settings.Default.PlotterMemoryWSColor;
+            colorIORO.Color = Properties.Settings.Default.PlotterIOROColor;
+            colorIOW.Color = Properties.Settings.Default.PlotterIOWColor;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -88,6 +96,15 @@ namespace ProcessHacker
             Properties.Settings.Default.ColorBeingDebugged = colorBeingDebugged.Color;
             Properties.Settings.Default.ColorElevatedProcesses = colorElevatedProcesses.Color;
 
+            Properties.Settings.Default.PlotterAntialias = checkPlotterAntialias.Checked;
+            Properties.Settings.Default.PlotterCPUKernelColor = colorCPUKT.Color;
+            Properties.Settings.Default.PlotterCPUUserColor = colorCPUUT.Color;
+            Properties.Settings.Default.PlotterMemoryPrivateColor = colorMemoryPB.Color;
+            Properties.Settings.Default.PlotterMemoryWSColor = colorMemoryWS.Color;
+            Properties.Settings.Default.PlotterIOROColor = colorIORO.Color;
+            Properties.Settings.Default.PlotterIOWColor = colorIOW.Color;
+
+            // apply the settings immediately if we can
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;

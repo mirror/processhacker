@@ -176,5 +176,26 @@
     <Setting Name="ProcessWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">493, 465</Value>
     </Setting>
+    <Setting Name="PlotterAntialias" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PlotterCPUKernelColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Lime</Value>
+    </Setting>
+    <Setting Name="PlotterCPUUserColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="PlotterMemoryPrivateColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Orange</Value>
+    </Setting>
+    <Setting Name="PlotterMemoryWSColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Cyan</Value>
+    </Setting>
+    <Setting Name="PlotterIOROColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Yellow</Value>
+    </Setting>
+    <Setting Name="PlotterIOWColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DarkViolet</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
