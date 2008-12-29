@@ -814,5 +814,17 @@ namespace ProcessHacker.Properties {
                 this["ColorJobProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowOneGraphPerCPU {
+            get {
+                return ((bool)(this["ShowOneGraphPerCPU"]));
+            }
+            set {
+                this["ShowOneGraphPerCPU"] = value;
+            }
+        }
     }
 }

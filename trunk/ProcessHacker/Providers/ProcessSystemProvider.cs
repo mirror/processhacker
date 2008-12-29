@@ -57,7 +57,7 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        private long _lastIdleTime;
+        private long _lastOtherTime;
         private long _lastSysTime;
 
         public ProcessSystemProvider()
@@ -75,7 +75,7 @@ namespace ProcessHacker
 
             this.UpdateProcessorPerf();
             _lastSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
-            _lastIdleTime = this.ProcessorPerf.IdleTime;
+            _lastOtherTime = this.ProcessorPerf.IdleTime;
         }
 
         public Win32.SYSTEM_BASIC_INFORMATION System { get; private set; }
@@ -150,10 +150,10 @@ namespace ProcessHacker
 
             _lastSysTime = thisSysTime;
 
-            long thisIdleTime = this.ProcessorPerf.IdleTime;
-            long idleTime = thisIdleTime - _lastIdleTime;
+            long thisOtherTime = this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime;
+            long otherTime = thisOtherTime - _lastOtherTime;
 
-            _lastIdleTime = thisIdleTime;
+            _lastOtherTime = thisOtherTime;
 
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
@@ -412,7 +412,7 @@ namespace ProcessHacker
             }
 
             if (thisSysTime != 0)
-                this.CurrentCPUUsage = (float)(sysTime - idleTime) / (sysTime);
+                this.CurrentCPUUsage = (float)(sysTime - otherTime) / sysTime;
 
             Dictionary = newdictionary;
 

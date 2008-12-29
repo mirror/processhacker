@@ -367,6 +367,10 @@ namespace ProcessHacker
 
         #region Statistics
 
+        [DllImport("psapi.dll", SetLastError = true)]
+        public static extern bool GetPerformanceInfo(ref PERFORMANCE_INFORMATION PerformanceInformation,
+            int Size);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetProcessTimes(int ProcessHandle, out ulong CreationTime, out ulong ExitTime,
             out ulong KernelTime, out ulong UserTime);

@@ -334,6 +334,22 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct PERFORMANCE_INFORMATION
+        {
+            public int Size;
+
+            // I've made this an array because we already have this 
+            // stuff from SYSTEM_PERFORMANCE_INFORMATION. I just want 
+            // counts below.
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
+            public int[] IDontCare;
+
+            public int HandlesCount;
+            public int ProcessCount;
+            public int ThreadCouont;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct POOLED_USAGE_AND_LIMITS
         {
             public int PeakPagedPoolUsage;
@@ -638,79 +654,396 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PERFORMANCE_INFORMATION
         {
-            public long IdleProcessTime;
+            /// <summary>
+            /// The total idle time of all processors in units of 100-nanoseconds.
+            /// </summary>
+            public long IdleTime;
+
+            /// <summary>
+            /// Total bytes read by calls to ZwReadFile.
+            /// </summary>
             public long IoReadTransferCount;
+
+            /// <summary>
+            /// Total bytes written by calls to ZwWriteFile.
+            /// </summary>
             public long IoWriteTransferCount;
+
+            /// <summary>
+            /// Total bytes transferred by other I/O operations.
+            /// </summary>
             public long IoOtherTransferCount;
+
+            /// <summary>
+            /// Number of calls to ZwReadFile.
+            /// </summary>
             public int IoReadOperationCount;
+
+            /// <summary>
+            /// Number of calls to ZwWriteFile.
+            /// </summary>
             public int IoWriteOperationCount;
+
+            /// <summary>
+            /// Number of calls to other I/O functions.
+            /// </summary>
             public int IoOtherOperationCount;
+
+            /// <summary>
+            /// The number of pages of physical memory available.
+            /// </summary>
             public int AvailablePages;
+
+            /// <summary>
+            /// The number of pages of committed virtual memory.
+            /// </summary>
             public int CommittedPages;
+
+            /// <summary>
+            /// The number of pages of virtual memory that could be committed 
+            /// without extending the system's pagefiles.
+            /// </summary>
             public int CommitLimit;
+
+            /// <summary>
+            /// The peak number of pages of committed virtual memory.
+            /// </summary>
             public int PeakCommitment;
-            public int PageFaultCount;
-            public int CopyOnWriteCount;
-            public int TransitionCount;
-            public int CacheTransitionCount;
-            public int DemandZeroCount;
-            public int PageReadCount;
-            public int PageReadIoCount;
-            public int CacheReadCount;
-            public int CacheIoCount;
-            public int DirtyPagesWriteCount;
-            public int DirtyWriteIoCount;
-            public int MappedPagesWriteCount;
-            public int MappedWriteIoCount;
-            public int PagedPoolPages;
-            public int NonPagedPoolPages;
+
+            /// <summary>
+            /// The total number of soft and hard page faults.
+            /// </summary>
+            public int PageFaults;
+
+            /// <summary>
+            /// The number of copy-on-write page faults.
+            /// </summary>
+            public int CopyOnWriteFaults;
+
+            /// <summary>
+            /// The number of soft page faults.
+            /// </summary>
+            public int TransitionFaults;
+
+            /// <summary>
+            /// Something that the Native API reference book doesn't have.
+            /// </summary>
+            public int CacheTransitionFaults;
+
+            /// <summary>
+            /// The number of demand zero faults.
+            /// </summary>
+            public int DemandZeroFaults;
+
+            /// <summary>
+            /// The number of pages read from disk to resolve page faults.
+            /// </summary>
+            public int PagesRead;
+
+            /// <summary>
+            /// The number of read operations initiated to resolve page faults.
+            /// </summary>
+            public int PagesReadIos;
+
+            public int CacheRead;
+            public int CacheReadIos;
+
+            /// <summary>
+            /// The number of pages written to the system's pagefiles.
+            /// </summary>
+            public int PagefilePagesWritten;
+
+            /// <summary>
+            /// The number of write operations performed on the system's pagefiles.
+            /// </summary>
+            public int PagefilePagesWriteIos;
+
+            /// <summary>
+            /// The number of pages written to mapped files.
+            /// </summary>
+            public int MappedFilePagesWritten;
+
+            /// <summary>
+            /// The number of write operations performed on mapped files.
+            /// </summary>
+            public int MappedFilePageWriteIos;
+
+            /// <summary>
+            /// The number of pages used by the paged pool.
+            /// </summary>
+            public int PagedPoolUsage;
+
+            /// <summary>
+            /// The number of pages used by the non-paged pool.
+            /// </summary>
+            public int NonPagedPoolUsage;
+
+            /// <summary>
+            /// The number of allocations made from the paged pool.
+            /// </summary>
             public int PagedPoolAllocs;
+
+            /// <summary>
+            /// The number of allocations returned to the paged pool.
+            /// </summary>
             public int PagedPoolFrees;
+
+            /// <summary>
+            /// The number of allocations made from the non-paged pool.
+            /// </summary>
             public int NonPagedPoolAllocs;
+
+            /// <summary>
+            /// The number of allocations returned to the non-paged pool.
+            /// </summary>
             public int NonPagedPoolFrees;
+
+            /// <summary>
+            /// The number of available System Page Table Entries.
+            /// </summary>
             public int FreeSystemPtes;
-            public int ResidentSystemCodePage;
+
+            /// <summary>
+            /// The number of pages of pageable OS code and data in physical 
+            /// memory.
+            /// </summary>
+            public int SystemCodePages;
+
+            /// <summary>
+            /// The number of pages of pageable driver code and data.
+            /// </summary>
             public int TotalSystemDriverPages;
+
+            /// <summary>
+            /// The number of pages of OS driver code and data.
+            /// </summary>
             public int TotalSystemCodePages;
-            public int NonPagedPoolLookasideHits;
-            public int PagedPoolLookasideHits;
-            public int Spare3Count;
-            public int ResidentSystemCachePage;
-            public int ResidentPagedPoolPage;
-            public int ResidentSystemDriverPage;
-            public int CcFastReadNoWait;
-            public int CcFastReadWait;
-            public int CcFastReadResourceMiss;
-            public int CcFastReadNotPossible;
-            public int CcFastMdlReadNoWait;
-            public int CcFastMdlReadWait;
-            public int CcFastMdlReadResourceMiss;
-            public int CcFastMdlReadNotPossible;
-            public int CcMapDataNoWait;
-            public int CcMapDataWait;
-            public int CcMapDataNoWaitMiss;
-            public int CcMapDataWaitMiss;
-            public int CcPinMappedDataCount;
-            public int CcPinReadNoWait;
-            public int CcPinReadWait;
-            public int CcPinReadNoWaitMiss;
-            public int CcPinReadWaitMiss;
-            public int CcCopyReadNoWait;
-            public int CcCopyReadWait;
-            public int CcCopyReadNoWaitMiss;
-            public int CcCopyReadWaitMiss;
-            public int CcMdlReadNoWait;
-            public int CcMdlReadWait;
-            public int CcMdlReadNoWaitMiss;
-            public int CcMdlReadWaitMiss;
-            public int CcReadAheadIos;
-            public int CcLazyWriteIos;
-            public int CcLazyWritePages;
-            public int CcDataFlushes;
-            public int CcDataPages;
+
+            /// <summary>
+            /// The number of times an allocation could be statisfied by one of the 
+            /// small non-paged lookaside lists.
+            /// </summary>
+            public int SmallNonPagedPoolLookasideListAllocateHits;
+
+            /// <summary>
+            /// The number of times an allocation could be statisfied by one of the 
+            /// small paged lookaside lists.
+            /// </summary>
+            public int SmallPagedPoolLookasideAllocateHits;
+
+            public int Reserved3;
+
+            /// <summary>
+            /// The number of pages of the system cache in physical memory.
+            /// </summary>
+            public int SystemCachePages;
+
+            /// <summary>
+            /// The number of pages of the paged pool in physical memory.
+            /// </summary>
+            public int PagedPoolPages;
+
+            /// <summary>
+            /// The number of pages of pageable driver code and data in physical memory.
+            /// </summary>
+            public int SystemDriverPages;
+
+            /// <summary>
+            /// The number of asynchronous fast read operations.
+            /// </summary>
+            public int FastReadNoWait;
+
+            /// <summary>
+            /// The number of synchronous fast read operations.
+            /// </summary>
+            public int FastReadWait;
+
+            /// <summary>
+            /// The number of fast read operations not possible because of resource 
+            /// conflicts.
+            /// </summary>
+            public int FastReadResourceMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int FastReadNotPossible;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int FastMdlReadNoWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int FastMdlReadWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int FastMdlReadResourceMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int FastMdlReadNotPossible;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MapDataNoWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MapDataWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MapDataNoWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MapDataWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int PinMappedDataCount;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int PinReadNoWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int PinReadWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int PinReadNoWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int PinReadWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int CopyReadNoWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int CopyReadWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int CopyReadNoWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int CopyReadWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MdlReadNoWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MdlReadWait;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MdlReadNoWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int MdlReadWaitMiss;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int ReadAheadIos;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int LazyWriteIos;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int LazyWritePages;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int DataFlushes;
+
+            /// <remarks>
+            /// Google Books won't let me read the page containing the description 
+            /// for this field!
+            /// </remarks>
+            public int DataPages;
+
+            /// <summary>
+            /// The total number of context switches.
+            /// </summary>
             public int ContextSwitches;
+
+            /// <summary>
+            /// The number of first level translation buffer fills.
+            /// </summary>
             public int FirstLevelTbFills;
+
+            /// <summary>
+            /// The number of second level translation buffer fills.
+            /// </summary>
             public int SecondLevelTbFills;
+
+            /// <summary>
+            /// The number of system calls executed.
+            /// </summary>
             public int SystemCalls;
         }
 
