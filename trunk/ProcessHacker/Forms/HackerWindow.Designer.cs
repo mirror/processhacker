@@ -68,12 +68,13 @@
             this.runAsMenuItem = new System.Windows.Forms.MenuItem();
             this.findHandlesMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
-            this.logMenuItem = new System.Windows.Forms.MenuItem();
+            this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
+            this.logMenuItem = new System.Windows.Forms.MenuItem();
             this.optionsMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
-            this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.statusBar = new System.Windows.Forms.StatusBar();
@@ -109,7 +110,6 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
@@ -392,12 +392,16 @@
             this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
             this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
             // 
-            // logMenuItem
+            // sysInfoMenuItem
             // 
-            this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
-            this.logMenuItem.Index = 8;
-            this.logMenuItem.Text = "&Log...";
-            this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
+            this.sysInfoMenuItem.Index = 5;
+            this.sysInfoMenuItem.Text = "System &Information...";
+            this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 6;
+            this.menuItem2.Text = "-";
             // 
             // aboutMenuItem
             // 
@@ -405,6 +409,13 @@
             this.aboutMenuItem.Index = 7;
             this.aboutMenuItem.Text = "&About...";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            // 
+            // logMenuItem
+            // 
+            this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
+            this.logMenuItem.Index = 8;
+            this.logMenuItem.Text = "&Log...";
+            this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
             // 
             // optionsMenuItem
             // 
@@ -427,16 +438,11 @@
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
-            // sysInfoMenuItem
-            // 
-            this.sysInfoMenuItem.Index = 5;
-            this.sysInfoMenuItem.Text = "System &Information...";
-            this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
-            // 
             // toolsMenuItem
             // 
             this.toolsMenuItem.Index = 1;
             this.toolsMenuItem.Text = "&Tools";
+            this.toolsMenuItem.Visible = false;
             // 
             // windowMenuItem
             // 
@@ -690,11 +696,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 6;
-            this.menuItem2.Text = "-";
             // 
             // HackerWindow
             // 
