@@ -167,6 +167,10 @@ namespace ProcessHacker.Components
                 f1 = 1.0f;
             if (f2 > 1.0f)
                 f2 = 1.0f;
+            if (f1 < 0.0f)
+                f1 = 0.0f;
+            if (f2 < 0.0f)
+                f2 = 0.0f;
 
             _listData1.Add(f1);
             _listData2.Add(f2);
