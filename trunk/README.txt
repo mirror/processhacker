@@ -34,5 +34,6 @@ Process Hacker is brought to you by the small Process Hacker team:
  * wj32 (Project Manager)
  * Dean (Developer)
    * Plotter
+   * System Information Window
    * Speed improvements in handle filter
  * Paul Pacheco (Developer)

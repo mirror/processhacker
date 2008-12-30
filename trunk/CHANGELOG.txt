@@ -1,26 +1,23 @@
 Process Hacker
 
 1.3.0.0
- * NEW: Process tree
- * NEW: Process properties window
- * NEW: Process performance information and graphs
- * NEW: Displays more information about tokens
- * NEW: Displays information about Events, Mutants, Sections and Tokens 
-   other processes have handles to
- * NEW: Terminator tool - tries to terminate processes using many different 
-   techniques
- * NEW: Highlighting for UAC elevated processes and processes in job objects
- * NEW: Struct reader (with support for user-defined structs)
- * NEW: Tray icon now displays the current CPU usage, and the tooltip is almost 
-   exactly the same as Process Explorer's (current CPU usage + process using most 
-   of the CPU)
- * FIXED: Shows SIDs without names in SDDL format
- * FIXED: Less "Access denied" errors - uses PROCESS_QUERY_LIMITED_INFORMATION 
-   on Vista
- * FIXED: Major refactoring of Win32 code
- * FIXED: Symbols are now bound to each process - no more weird stack traces/symbol 
-   names
- * FIXED: Handle filtering is now much faster - uses a cache for session ID checking
+ * NEW:
+   * Process tree using TreeViewAdv
+   * Process properties window with statistics and graphs
+   * System Information Window with statistics and graphs
+   * Detailed token information, including source, owner and primary group
+   * Information about remote handles to events, mutants, sections and tokens
+   * Terminator tool - tries many techniques to terminate processes
+   * Highlighting for UAC elevated processes and processes in job objects
+   * Struct reader for examining PEBs and TEBs - note that this can be 
+     extended by writing your own definitions
+   * Better tray icon - displays a graph, and the tooltip contains the current 
+     CPU usage and the process using most of the CPU
+ * FIXED:
+   * Shows SIDs without names (like Logon IDs) in SDDL format
+   * Uses PROCESS_QUERY_LIMITED_INFORMATION on Windows Vista - e.g. on audiodg.exe
+   * Symbols are now bound to each process - no more weird stack traces/symbols
+   * Handle filtering is now much faster - uses a cache for session ID checking
 
 1.2.6.5
  * A new member of the project - Dean

@@ -99,6 +99,12 @@ namespace ProcessHacker.Structs
                     if (_eatResult || includeFile == "")
                         throw new ParserException(_fileName, _lineNumber, "String expected (file name)");
 
+                    _eatResult = EatWhitespace(text, ref i);
+                    string endSemicolon = EatSymbol(text, ref i);
+
+                    if (_eatResult || endSemicolon != ";")
+                        throw new ParserException(_fileName, _lineNumber, "Expected ';'");
+
                     System.IO.FileInfo info = new System.IO.FileInfo(_fileName);
 
                     // if the filename contains ':', use the absolute path. otherwise, append it to the 

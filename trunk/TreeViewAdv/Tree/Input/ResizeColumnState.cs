@@ -46,6 +46,7 @@ namespace Aga.Controls.Tree
         {
 			Column.Width = _initWidth + args.Location.X - _initLocation.X;
             Tree.UpdateView();
+            Tree.Invalidate();
             return true;
         }
 	}

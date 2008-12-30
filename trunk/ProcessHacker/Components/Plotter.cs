@@ -163,6 +163,11 @@ namespace ProcessHacker.Components
         /// <param name="f2">A floating-point number less than or equal to 1.</param>
         public void Add(float f1, float f2)
         {
+            if (f1 > 1.0f)
+                f1 = 1.0f;
+            if (f2 > 1.0f)
+                f2 = 1.0f;
+
             _listData1.Add(f1);
             _listData2.Add(f2);
 

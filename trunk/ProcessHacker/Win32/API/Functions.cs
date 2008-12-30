@@ -97,6 +97,9 @@ namespace ProcessHacker
 
         #region Misc.
 
+        [DllImport("kernel32.dll")]
+        public static extern int GetTickCount();
+
         #endregion
 
         #region Processes
@@ -625,6 +628,10 @@ namespace ProcessHacker
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             ref SYSTEM_BASIC_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_CACHE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,

@@ -95,6 +95,11 @@ namespace ProcessHacker
             _deltas.Add(key, initialValue);
         }
 
+        public void SetDelta(TKey key, TValue value)
+        {
+            _deltas[key] = value;
+        }
+
         public TValue Update(TKey key, TValue value)
         {
             _deltas[key] = _subtractor.Subtract(value, _values[key]);

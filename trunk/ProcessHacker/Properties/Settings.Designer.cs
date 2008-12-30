@@ -826,5 +826,17 @@ namespace ProcessHacker.Properties {
                 this["ShowOneGraphPerCPU"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public int UnitSpecifier {
+            get {
+                return ((int)(this["UnitSpecifier"]));
+            }
+            set {
+                this["UnitSpecifier"] = value;
+            }
+        }
     }
 }

@@ -272,8 +272,10 @@ namespace ProcessHacker
             {
                 SysInfoWindow = new SysInfoWindow();
             }
+
             SysInfoWindow.Show();
             SysInfoWindow.Activate();
+            SysInfoWindow.Start();
         }
 
         #endregion

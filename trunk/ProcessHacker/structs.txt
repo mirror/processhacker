@@ -5,7 +5,7 @@
  * wj32.
  */
 
-include "base.txt"
+include "base.txt";
 
 typedef int handle;
 typedef int NTSTATUS; /* no enum support *yet* */

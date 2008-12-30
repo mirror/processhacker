@@ -66,8 +66,10 @@ namespace ProcessHacker
             {
                 ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
 
-                _processStats.Add("System Idle",
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
+                _processStats.Add("System Other",
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime + 
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.DpcTime + 
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptTime);
                 _processStats.Add("System Kernel",
                     Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
                 _processStats.Add("System User",
@@ -440,8 +442,10 @@ namespace ProcessHacker
             ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
 
             // update deltas         
-            _processStats.Update("System Idle",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime);
+            _processStats.Update("System Other",
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime +
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.DpcTime +
+                    Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptTime);
             _processStats.Update("System Kernel",
                 Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
             _processStats.Update("System User",
@@ -467,18 +471,15 @@ namespace ProcessHacker
             plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
 
             // update graphs
-            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User");
+            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User")
+                + _processStats.GetDelta("System Other");
             float procKernel = (float)_processStats.GetDelta("Process Kernel") / sysTotal;
             float procUser = (float)_processStats.GetDelta("Process User") / sysTotal;
-            int noProcs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
 
-            if (procKernel / noProcs <= 1 && procUser / noProcs <= 1)
-            {
-                plotterCPUUsage.Add(procKernel / noProcs, procUser / noProcs);
-                plotterCPUUsage.Text = ((procKernel + procUser) * 100 / noProcs).ToString("F2") + 
-                    "% (K: " + (procKernel * 100 / noProcs).ToString("F2") + 
-                    "%, U: " + (procUser * 100 / noProcs).ToString("F2") + "%)";
-            }
+            plotterCPUUsage.Add(procKernel, procUser);
+            plotterCPUUsage.Text = ((procKernel + procUser) * 100).ToString("F2") +
+                "% (K: " + (procKernel * 100).ToString("F2") +
+                "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
             plotterMemory.Add(item.Process.VirtualMemoryCounters.PrivateBytes,
                 item.Process.VirtualMemoryCounters.WorkingSetSize);

@@ -98,31 +98,33 @@ namespace ProcessHacker
                 Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemProcessorTimes,
                     data, data.Size, out retLen);
 
-                var newAverages = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
+                var newSums = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
 
+                // Thanks to:
+                // http://www.netperf.org/svn/netperf2/trunk/src/netcpu_ntperf.c
+                // for the critical information:
+                // "KernelTime needs to be fixed-up; it includes both idle & true kernel time".
+                // This is why I love free software.
                 for (int i = 0; i < this.ProcessorPerfArray.Length; i++)
                 {
-                    this.ProcessorPerfArray[i] = data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(
-                        i);
-                    newAverages.DpcTime += this.ProcessorPerfArray[i].DpcTime
-                        / this.ProcessorPerfArray.Length;
-                    newAverages.IdleTime += this.ProcessorPerfArray[i].IdleTime
-                        / this.ProcessorPerfArray.Length;
-                    newAverages.InterruptCount += this.ProcessorPerfArray[i].InterruptCount
-                        / this.ProcessorPerfArray.Length;
-                    newAverages.InterruptTime += this.ProcessorPerfArray[i].InterruptTime
-                        / this.ProcessorPerfArray.Length;
-                    newAverages.KernelTime += this.ProcessorPerfArray[i].KernelTime
-                        / this.ProcessorPerfArray.Length;
-                    newAverages.UserTime += this.ProcessorPerfArray[i].UserTime
-                        / this.ProcessorPerfArray.Length;
+                    this.ProcessorPerfArray[i] = 
+                        data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(i);
+
+                    this.ProcessorPerfArray[i].KernelTime -= this.ProcessorPerfArray[i].IdleTime + 
+                        this.ProcessorPerfArray[i].DpcTime + this.ProcessorPerfArray[i].InterruptTime;
+                    newSums.DpcTime += this.ProcessorPerfArray[i].DpcTime;
+                    newSums.IdleTime += this.ProcessorPerfArray[i].IdleTime;
+                    newSums.InterruptCount += this.ProcessorPerfArray[i].InterruptCount;
+                    newSums.InterruptTime += this.ProcessorPerfArray[i].InterruptTime;
+                    newSums.KernelTime += this.ProcessorPerfArray[i].KernelTime;
+                    newSums.UserTime += this.ProcessorPerfArray[i].UserTime;
                 }
 
-                this.ProcessorPerf = newAverages;
+                this.ProcessorPerf = newSums;
             }
         }
 
-        private void UpdatePerformance()
+        public void UpdatePerformance()
         {
             if (!this.PerformanceEnabled)
                 return;
@@ -160,7 +162,7 @@ namespace ProcessHacker
             {
                 Win32.SystemProcess proc = procs[0];
 
-                proc.Process.KernelTime = this.ProcessorPerf.IdleTime * this.System.NumberOfProcessors;
+                proc.Process.KernelTime = this.ProcessorPerf.IdleTime;
                 procs.Remove(0);
                 procs.Add(0, proc);
             }
@@ -172,7 +174,7 @@ namespace ProcessHacker
                 {
                     ProcessId = -2,
                     InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.DpcTime * this.System.NumberOfProcessors,
+                    KernelTime = this.ProcessorPerf.DpcTime,
                     SessionId = -1
                 }
             });
@@ -184,7 +186,7 @@ namespace ProcessHacker
                 {
                     ProcessId = -3,
                     InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.InterruptTime * this.System.NumberOfProcessors,
+                    KernelTime = this.ProcessorPerf.InterruptTime,
                     SessionId = -1
                 }
             });
@@ -358,8 +360,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / sysTime /
-                            this.System.NumberOfProcessors;
+                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / (sysTime + otherTime);
 
                         if (pid != 0 && newitem.CPUUsage > mostCPUUsage)
                         {
@@ -412,7 +413,7 @@ namespace ProcessHacker
             }
 
             if (thisSysTime != 0)
-                this.CurrentCPUUsage = (float)(sysTime - otherTime) / sysTime;
+                this.CurrentCPUUsage = (float)sysTime / (sysTime + otherTime);
 
             Dictionary = newdictionary;
 

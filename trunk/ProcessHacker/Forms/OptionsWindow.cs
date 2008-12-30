@@ -37,6 +37,8 @@ namespace ProcessHacker
 
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
+            comboSizeUnits.SelectedItem =
+                Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
@@ -83,6 +85,8 @@ namespace ProcessHacker
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
+            Properties.Settings.Default.UnitSpecifier = 
+                Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;

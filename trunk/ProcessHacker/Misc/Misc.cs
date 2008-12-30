@@ -32,6 +32,8 @@ namespace ProcessHacker
     {
         #region Constants
 
+        public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
+
         public static string[] DangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 
@@ -188,17 +190,7 @@ namespace ProcessHacker
         /// <returns></returns>
         public static string GetNiceSizeName(long size)
         {
-            string[] names = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
-            int i = 0;
-            decimal s = (decimal)size;
-
-            while (s > 1024 && i < names.Length)
-            {
-                s /= 1024;
-                i++;
-            }
-
-            return String.Format("{0:f2}", s) + " " + names[i];
+            return GetNiceSizeName((ulong)size);
         }
 
         /// <summary>
@@ -208,17 +200,16 @@ namespace ProcessHacker
         /// <returns></returns>
         public static string GetNiceSizeName(ulong size)
         {
-            string[] names = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
             int i = 0;
             decimal s = (decimal)size;
 
-            while (s > 1024 && i < names.Length)
+            while (s > 1024 && i < SizeUnitNames.Length && i < Properties.Settings.Default.UnitSpecifier)
             {
                 s /= 1024;
                 i++;
             }
 
-            return String.Format("{0:f2}", s) + " " + names[i];
+            return String.Format("{0:f2}", s) + " " + SizeUnitNames[i];
         }
 
         /// <summary>

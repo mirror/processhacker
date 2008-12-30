@@ -346,7 +346,7 @@ namespace ProcessHacker
 
             public int HandlesCount;
             public int ProcessCount;
-            public int ThreadCouont;
+            public int ThreadCount;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -621,6 +621,31 @@ namespace ProcessHacker
             public int MaximumUserModeAddress;
             public int ActiveProcessorsAffinityMask;
             public byte NumberOfProcessors;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_CACHE_INFORMATION
+        {
+            /// <summary>
+            /// The size of the system working set, in bytes.
+            /// </summary>
+            public int SystemCacheWsSize;
+            public int SystemCacheWsPeakSize;
+            public int SystemCacheWsFaults;
+
+            /// <summary>
+            /// Measured in pages.
+            /// </summary>
+            public int SystemCacheWsMinimum;
+
+            /// <summary>
+            /// Measured in pages.
+            /// </summary>
+            public int SystemCacheWsMaximum;
+            public int TransitionSharedPages;
+            public int TransitionSharedPagesPeak;
+            public int Reserved1;
+            public int Reserved2;
         }
 
         [StructLayout(LayoutKind.Sequential)]
