@@ -109,6 +109,7 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
@@ -350,12 +351,13 @@
             this.runAsMenuItem,
             this.findHandlesMenuItem,
             this.inspectPEFileMenuItem,
-            this.logMenuItem,
+            this.sysInfoMenuItem,
+            this.menuItem2,
             this.aboutMenuItem,
+            this.logMenuItem,
             this.optionsMenuItem,
             this.helpMenuItem,
-            this.exitMenuItem,
-            this.sysInfoMenuItem});
+            this.exitMenuItem});
             this.hackerMenuItem.Text = "&Hacker";
             // 
             // selectAllHackerMenuItem
@@ -393,42 +395,42 @@
             // logMenuItem
             // 
             this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
-            this.logMenuItem.Index = 5;
+            this.logMenuItem.Index = 8;
             this.logMenuItem.Text = "&Log...";
             this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
             // 
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 6;
+            this.aboutMenuItem.Index = 7;
             this.aboutMenuItem.Text = "&About...";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // optionsMenuItem
             // 
             this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
-            this.optionsMenuItem.Index = 7;
+            this.optionsMenuItem.Index = 9;
             this.optionsMenuItem.Text = "&Options...";
             this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
             // 
             // helpMenuItem
             // 
             this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
-            this.helpMenuItem.Index = 8;
+            this.helpMenuItem.Index = 10;
             this.helpMenuItem.Text = "&Help...";
             this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
             // 
             // exitMenuItem
             // 
             this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitMenuItem.Index = 9;
+            this.exitMenuItem.Index = 11;
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
             // sysInfoMenuItem
             // 
-            this.sysInfoMenuItem.Index = 10;
-            this.sysInfoMenuItem.Text = "System &Information";
+            this.sysInfoMenuItem.Index = 5;
+            this.sysInfoMenuItem.Text = "System &Information...";
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
             // toolsMenuItem
@@ -689,6 +691,11 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 6;
+            this.menuItem2.Text = "-";
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -797,6 +804,7 @@
         private System.Windows.Forms.MenuItem copyProcessMenuItem;
         private System.Windows.Forms.MenuItem selectAllProcessMenuItem;
         private System.Windows.Forms.MenuItem terminatorProcessMenuItem;
+        private System.Windows.Forms.MenuItem menuItem2;
     }
 }
 
