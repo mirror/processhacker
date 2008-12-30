@@ -292,6 +292,11 @@ namespace ProcessHacker
                             {
                                 item.ParentPID = -1;
                             }
+                            else if (pid > 4 && item.ParentPID == 0)
+                            {
+                                // the PID is 0 for processes we got Access Denied on
+                                item.ParentPID = -1;
+                            }
                             else
                             {
                                 // check the parent's creation time to see if it's actually the parent
