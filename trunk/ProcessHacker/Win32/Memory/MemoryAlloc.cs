@@ -19,6 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -157,6 +158,19 @@ namespace ProcessHacker
         {
             _memory = Marshal.ReAllocHGlobal(_memory, new IntPtr(newSize));
             _size = newSize;
+        }
+
+        /// <summary>
+        /// Writes a Unicode string to the allocated memory.
+        /// </summary>
+        /// <param name="offset">The offset to add.</param>
+        /// <param name="s">The string to write.</param>
+        public void WriteUnicodeString(int offset, string s)
+        {
+            byte[] b = UnicodeEncoding.Unicode.GetBytes(s);
+
+            for (int i = 0; i < b.Length; i++)
+                Marshal.WriteByte(this.Memory, offset + i, b[i]);
         }
 
         /// <summary>

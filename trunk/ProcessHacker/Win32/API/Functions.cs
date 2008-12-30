@@ -647,6 +647,10 @@ namespace ProcessHacker
             IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_LOAD_AND_CALL_IMAGE SystemInformation, int SystemInformationLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
             IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
 

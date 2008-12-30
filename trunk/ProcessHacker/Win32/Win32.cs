@@ -427,6 +427,33 @@ namespace ProcessHacker
         #region Misc.
 
         /// <summary>
+        /// Loads an image into kernel-mode using ZwSetSystemInformation 
+        /// with SystemLoadAndCallImage.
+        /// </summary>
+        /// <param name="fileName">The path to the driver.</param>
+        public static void LoadKernelImage(string fileName)
+        {
+            System.IO.FileInfo info = new System.IO.FileInfo(fileName);
+            string ntFileName = "\\??\\" + info.FullName;
+
+            SYSTEM_LOAD_AND_CALL_IMAGE laci = new SYSTEM_LOAD_AND_CALL_IMAGE();
+
+            using (MemoryAlloc stringData = new MemoryAlloc(ntFileName.Length * 2 + 2))
+            {
+                laci.ModuleName = new UNICODE_STRING();
+
+                stringData.WriteUnicodeString(0, ntFileName);
+                laci.ModuleName.Buffer = stringData;
+                laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
+                laci.ModuleName.MaximumLength = laci.ModuleName.Length;
+
+                if (ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS.SystemLoadAndCallImage,
+                    ref laci, Marshal.SizeOf(laci)) != 0)
+                    throw new Exception("Failed to load the kernel image");
+            }
+        }
+
+        /// <summary>
         /// Reads a Unicode string.
         /// </summary>
         /// <param name="str">A UNICODE_STRING structure.</param>

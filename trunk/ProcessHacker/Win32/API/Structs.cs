@@ -660,6 +660,12 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct SYSTEM_LOAD_AND_CALL_IMAGE
+        {
+            public UNICODE_STRING ModuleName;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_OBJECT_TYPE_INFORMATION
         {
             public uint NextEntryOffset;
