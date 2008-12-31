@@ -1,3 +1,7 @@
+NOTE:
+If you do not have ILMerge, Visual Studio will report errors when trying to build 
+Process Hacker. You can ignore these messages.
+
 Note to SVN users:
 If you use SVN code you may encounter weird bugs. Please use releases instead.
 
