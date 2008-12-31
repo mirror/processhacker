@@ -1,5 +1,9 @@
 Process Hacker
 
+1.3.0.5
+ * FIXED:
+   * System information window resizing
+
 1.3.0.0
  * NEW:
    * Process tree using TreeViewAdv
