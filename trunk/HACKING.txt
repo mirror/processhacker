@@ -34,6 +34,8 @@ GUIDE TO DIRECTORY ORGANIZATION
   * Searchers - contains the "searchers" (classes which search process memory 
     in the background and add items to a results list) - heap searcher, 
     literal bytes searcher, regex searcher and string searcher/scanner.
+  * Structs - contains the struct reader and definition parser. Struct 
+    definition files have a syntax very similar to C.
   * Symbols - contains the symbol "server". This is dependent on the PE reader 
     because:
       1. The P/Invoked APIs for dbghelp.dll didn't work when I tried them, and
