@@ -1,6 +1,7 @@
 NOTE:
-If you do not have ILMerge, Visual Studio will report errors when trying to build 
-Process Hacker. You can ignore these messages.
+Process Hacker uses a script in the Build directory named merge_and_clean.cmd. 
+If you do not want this script to delete *.pdb files or merge Aga.Controls.dll 
+with ProcessHacker.exe, edit the script.
 
 Note to SVN users:
 If you use SVN code you may encounter weird bugs. Please use releases instead.
