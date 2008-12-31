@@ -40,6 +40,33 @@ namespace ProcessHacker
                 if (this.Handle == 0)
                     throw new Exception(GetLastErrorMessage());
             }
+
+            public ServiceHandle CreateService(string name, string displayName,
+                SERVICE_TYPE type, string binaryPath)
+            {
+                return this.CreateService(name, displayName, type, SERVICE_START_TYPE.DemandStart,
+                    SERVICE_ERROR_CONTROL.Ignore, binaryPath, null, null, null);
+            }
+
+            public ServiceHandle CreateService(string name, string displayName,
+                SERVICE_TYPE type, SERVICE_START_TYPE startType, string binaryPath)
+            {
+                return this.CreateService(name, displayName, type, startType,
+                    SERVICE_ERROR_CONTROL.Ignore, binaryPath, null, null, null);
+            }
+
+            public ServiceHandle CreateService(string name, string displayName,
+                SERVICE_TYPE type, SERVICE_START_TYPE startType, SERVICE_ERROR_CONTROL errorControl,
+                string binaryPath, string group, string accountName, string password)
+            {
+                int service;
+
+                if ((service = Win32.CreateService(this, name, displayName, SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
+                    type, startType, errorControl, binaryPath, group, 0, 0, accountName, password)) == 0)
+                    throw new Exception(GetLastErrorMessage());
+
+                return new ServiceHandle(service, true);
+            }
         }
     }
 }
