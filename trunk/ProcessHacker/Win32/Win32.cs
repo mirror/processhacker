@@ -117,15 +117,24 @@ namespace ProcessHacker
         /// <returns>An error message.</returns>
         public static string GetErrorMessage(int ErrorCode)
         {
-            try
+            StringBuilder buffer = new StringBuilder(0x100);
+
+            if (FormatMessage(0x3200, 0, ErrorCode, 0, buffer, buffer.Capacity, IntPtr.Zero) == 0)
+                return "Unknown error (0x" + ErrorCode.ToString("x") + ")";
+
+            StringBuilder result = new StringBuilder();
+            int i = 0;
+
+            while (i < buffer.Length)
             {
-                // Win32Exception calls FormatMessage for us
-                throw new System.ComponentModel.Win32Exception(ErrorCode);
+                if (buffer[i] == '\0')
+                    break;
+
+                result.Append(buffer[i]);
+                i++;
             }
-            catch (System.ComponentModel.Win32Exception ex)
-            {
-                return ex.Message;
-            }
+
+            return result.ToString();
         }
 
         /// <summary>
@@ -135,6 +144,17 @@ namespace ProcessHacker
         public static string GetLastErrorMessage()
         {
             return GetErrorMessage(Marshal.GetLastWin32Error());
+        }
+
+        /// <summary>
+        /// Throws a Win32Exception with the last error that occurred.
+        /// </summary>
+        public static void ThrowLastWin32Error()
+        {
+            int error = Marshal.GetLastWin32Error();
+
+            if (error != 0)
+                throw new Win32Exception(error);
         }
 
         #endregion
@@ -313,7 +333,7 @@ namespace ProcessHacker
                                 try
                                 {
                                     if ((processId = GetProcessId(process_handle)) == 0)
-                                        throw new Exception(GetLastErrorMessage());
+                                        ThrowLastWin32Error();
 
                                     if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
                                         info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
@@ -343,10 +363,10 @@ namespace ProcessHacker
                                 try
                                 {
                                     if ((threadId = GetThreadId(thread_handle)) == 0)
-                                        throw new Exception(GetLastErrorMessage());
+                                        ThrowLastWin32Error();
 
                                     if ((processId = GetProcessIdOfThread(thread_handle)) == 0)
-                                        throw new Exception(GetLastErrorMessage());
+                                        ThrowLastWin32Error();
 
                                     if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
                                         info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
@@ -603,7 +623,7 @@ namespace ProcessHacker
             try
             {
                 if (!ProcessIdToSessionId(ProcessId, out sessionId))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
             catch
             {
@@ -723,7 +743,7 @@ namespace ProcessHacker
             {
                 if (!GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenPrivileges, data.Memory,
                     data.Size, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 uint number = data.ReadUInt32(0);
                 TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
@@ -761,7 +781,7 @@ namespace ProcessHacker
             AdjustTokenPrivileges(TokenHandle.Handle, 0, ref tkp, 0, 0, 0);
 
             if (Marshal.GetLastWin32Error() != 0)
-                throw new Exception(GetLastErrorMessage());
+                ThrowLastWin32Error();
         }
 
         #endregion
@@ -792,7 +812,7 @@ namespace ProcessHacker
                         data.Size, out requiredSize, out servicesReturned,
                         out resume, 0))
                     {
-                        throw new Exception(GetLastErrorMessage());
+                        ThrowLastWin32Error();
                     }
 
                     for (int i = 0; i < servicesReturned; i++)
@@ -834,7 +854,7 @@ namespace ProcessHacker
             IO_COUNTERS counters = new IO_COUNTERS();
 
             if (!GetProcessIoCounters(process.Handle, out counters))
-                throw new Exception(GetLastErrorMessage());
+                ThrowLastWin32Error();
 
             return counters;
         }
@@ -844,7 +864,7 @@ namespace ProcessHacker
             ulong[] times = new ulong[4];
 
             if (!GetProcessTimes(process.Handle, out times[0], out times[1], out times[2], out times[3]))
-                throw new Exception(GetLastErrorMessage());
+                ThrowLastWin32Error();
 
             return times;
         }
@@ -854,7 +874,7 @@ namespace ProcessHacker
             ulong[] times = new ulong[3];
 
             if (!GetSystemTimes(out times[0], out times[1], out times[2]))
-                throw new Exception(GetLastErrorMessage());
+                ThrowLastWin32Error();
 
             return times; 
         }

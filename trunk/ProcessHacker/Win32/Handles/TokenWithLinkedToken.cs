@@ -40,7 +40,7 @@ namespace ProcessHacker
 
                 if (!Win32.GetTokenInformation(_token, Win32.TOKEN_INFORMATION_CLASS.TokenLinkedToken,
                     out linkedToken, 4, out retLen))
-                    throw new Exception(Win32.GetLastErrorMessage());
+                    Win32.ThrowLastWin32Error();
 
                 return new Win32.TokenHandle(linkedToken, true);
             }

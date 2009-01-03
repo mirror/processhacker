@@ -231,9 +231,7 @@ namespace ProcessHacker
                         comboErrorControl.SelectedItem.ToString()),
                         textServiceBinaryPath.Text, textLoadOrderGroup.Text,
                         0, 0, textUserAccount.Text, null, null))
-                    {
-                        throw new Exception(Win32.GetLastErrorMessage());
-                    }
+                        Win32.ThrowLastWin32Error();
                 }
 
                 _provider.UpdateServiceConfig(serviceName, Win32.GetServiceConfig(serviceName));

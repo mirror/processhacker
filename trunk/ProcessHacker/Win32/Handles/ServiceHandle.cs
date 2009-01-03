@@ -65,7 +65,7 @@ namespace ProcessHacker
                     this.Handle = OpenService(manager, ServiceName, access);
 
                     if (this.Handle == 0)
-                        throw new Exception(GetLastErrorMessage());
+                        ThrowLastWin32Error();
                 }
             }
 
@@ -78,7 +78,7 @@ namespace ProcessHacker
                 SERVICE_STATUS status = new SERVICE_STATUS();
 
                 if (!ControlService(this.Handle, control, ref status))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -87,7 +87,7 @@ namespace ProcessHacker
             public void Start()
             {
                 if (!StartService(this.Handle, 0, 0))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -96,7 +96,7 @@ namespace ProcessHacker
             public void Delete()
             {
                 if (!DeleteService(this.Handle))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
         }
     }

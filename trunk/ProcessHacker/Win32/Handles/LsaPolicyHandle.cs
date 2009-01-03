@@ -39,7 +39,7 @@ namespace ProcessHacker
                 int handle = 0;
 
                 if (LsaOpenPolicy(0, ref attributes, access, out handle) != 0)
-                    throw new Exception(GetLastErrorMessage());
+                    Win32.ThrowLastWin32Error();
 
                 this.Handle = handle;
             }

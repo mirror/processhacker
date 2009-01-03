@@ -62,7 +62,7 @@ namespace ProcessHacker
                 this.Handle = OpenThread(access, 0, TID);
 
                 if (this.Handle == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -76,7 +76,7 @@ namespace ProcessHacker
 
                 if (ZwQueryInformationThread(this, THREAD_INFORMATION_CLASS.ThreadBasicInformation,
                     ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return basicInfo;
             }
@@ -92,7 +92,7 @@ namespace ProcessHacker
                 context.ContextFlags = flags;
 
                 if (!GetThreadContext(this, ref context))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return context;
             }
@@ -107,7 +107,7 @@ namespace ProcessHacker
 
                 // this is what Microsoft does in its ProcessThread class (found out using Reflector)
                 if (priority == 0x7fffffff)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return (System.Diagnostics.ThreadPriorityLevel)priority;
             }
@@ -119,7 +119,7 @@ namespace ProcessHacker
             public void SetContext(CONTEXT context)
             {
                 if (!SetThreadContext(this, ref context))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -128,7 +128,7 @@ namespace ProcessHacker
             public void Suspend()
             {
                 if (SuspendThread(this.Handle) == -1)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -137,7 +137,7 @@ namespace ProcessHacker
             public void Resume()
             {
                 if (ResumeThread(this.Handle) == -1)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -155,7 +155,7 @@ namespace ProcessHacker
             public void Terminate(int ExitCode)
             {
                 if (!TerminateThread(this.Handle, ExitCode))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>

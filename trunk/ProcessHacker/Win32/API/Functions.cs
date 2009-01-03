@@ -96,6 +96,17 @@ namespace ProcessHacker
         #endregion
 
         #region Misc.
+        
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int FormatMessage(
+            int Flags, 
+            int Source, 
+            int MessageId,
+            int LanguageId, 
+            StringBuilder Buffer,
+            int Size, 
+            IntPtr Arguments
+            );
 
         [DllImport("kernel32.dll")]
         public static extern int GetTickCount();

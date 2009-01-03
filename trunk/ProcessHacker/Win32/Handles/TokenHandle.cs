@@ -61,7 +61,7 @@ namespace ProcessHacker
                 int h;
 
                 if (!OpenProcessToken(handle.Handle, access, out h))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 this.Handle = h;
             }
@@ -76,7 +76,7 @@ namespace ProcessHacker
                 int h;
 
                 if (!OpenThreadToken(handle.Handle, access, false, out h))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 this.Handle = h;
             }
@@ -92,7 +92,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenElevationType,
                     out value, 4, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return (TOKEN_ELEVATION_TYPE)value;
             }
@@ -112,7 +112,7 @@ namespace ProcessHacker
                 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenGroups, data,
                     data.Size, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
             }
@@ -147,7 +147,7 @@ namespace ProcessHacker
                 {
                     if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenOwner, data,
                         data.Size, out retLen))
-                        throw new Exception(Win32.GetLastErrorMessage());
+                        Win32.ThrowLastWin32Error();
 
                     return new WindowsSID(data.ReadInt32(0));
                 }
@@ -167,7 +167,7 @@ namespace ProcessHacker
                 {
                     if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenPrimaryGroup, data,
                         data.Size, out retLen))
-                        throw new Exception(Win32.GetLastErrorMessage());
+                        Win32.ThrowLastWin32Error();
 
                     return new WindowsSID(data.ReadInt32(0));
                 }
@@ -187,7 +187,7 @@ namespace ProcessHacker
              
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenRestrictedSids, data,
                     data.Size, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
             }
@@ -203,7 +203,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenSessionId,
                     out sessionId, 4, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return sessionId;
             }
@@ -219,7 +219,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenSource,
                     ref source, Marshal.SizeOf(source), out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return source;
             }
@@ -238,7 +238,7 @@ namespace ProcessHacker
                 {
                     if (!GetTokenInformation(this.Handle, TOKEN_INFORMATION_CLASS.TokenUser, data,
                         data.Size, out retLen))
-                        throw new Exception(Win32.GetLastErrorMessage());
+                        Win32.ThrowLastWin32Error();
 
                     TOKEN_USER user = data.ReadStruct<TOKEN_USER>();
 
@@ -257,7 +257,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenElevation,
                     out value, 4, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return value != 0;
             }
@@ -273,7 +273,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenVirtualizationAllowed,
                     out value, 4, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return value != 0;
             }
@@ -289,7 +289,7 @@ namespace ProcessHacker
 
                 if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenVirtualizationEnabled,
                     out value, 4, out retLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return value != 0;
             }

@@ -126,7 +126,7 @@ namespace ProcessHacker
 
             using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
                 if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
-                    throw new Exception(Win32.GetLastErrorMessage());
+                    Win32.ThrowLastWin32Error();
         }
 
         private void TT1()

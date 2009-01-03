@@ -38,7 +38,7 @@ namespace ProcessHacker
                 this.Handle = OpenSCManager(0, 0, access);
 
                 if (this.Handle == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             public ServiceHandle CreateService(string name, string displayName,
@@ -63,7 +63,7 @@ namespace ProcessHacker
 
                 if ((service = Win32.CreateService(this, name, displayName, SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
                     type, startType, errorControl, binaryPath, group, 0, 0, accountName, password)) == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return new ServiceHandle(service, true);
             }

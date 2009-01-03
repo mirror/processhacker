@@ -100,7 +100,7 @@ namespace ProcessHacker
                 this.Handle = OpenProcess(access, 0, PID);
 
                 if (this.Handle == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -116,7 +116,7 @@ namespace ProcessHacker
 
                 if ((newAddress = VirtualAllocEx(this, address, size, MEMORY_STATE.MEM_COMMIT, protection))
                     == 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return newAddress;
             }
@@ -148,7 +148,7 @@ namespace ProcessHacker
                 int threadId;
 
                 if (!CreateRemoteThread(this, 0, 0, startAddress, parameter, 0, out threadId))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return threadId;
             }
@@ -164,7 +164,7 @@ namespace ProcessHacker
             {
                 if (!VirtualFreeEx(this, address, size,
                     reserveOnly ? MEMORY_STATE.MEM_DECOMMIT : MEMORY_STATE.MEM_RELEASE))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
@@ -180,7 +180,7 @@ namespace ProcessHacker
 
                 if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
                     ref pbi, Marshal.SizeOf(pbi), out retLen) != 0)
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return pbi;
             }
@@ -205,7 +205,7 @@ namespace ProcessHacker
                 int perm;
 
                 if (!GetProcessDEPPolicy(this, out flags, out perm))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return
                     ((flags & DEPFLAGS.PROCESS_DEP_ENABLE) != 0 ? DEPStatus.Enabled : 0) |
@@ -298,7 +298,7 @@ namespace ProcessHacker
                 bool debugged;
 
                 if (!Win32.CheckRemoteDebuggerPresent(this, out debugged))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return debugged;
             }
@@ -312,7 +312,7 @@ namespace ProcessHacker
                 bool result;
 
                 if (!IsProcessInJob(this, 0, out result))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return result;
             }
@@ -329,7 +329,7 @@ namespace ProcessHacker
                 int readLen;
 
                 if (!ReadProcessMemory(this, offset, buf, length, out readLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return buf;
             }
@@ -355,7 +355,7 @@ namespace ProcessHacker
                 int writLen;
 
                 if (!WriteProcessMemory(this, offset, data, data.Length, out writLen))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
 
                 return writLen;
             }
@@ -376,7 +376,7 @@ namespace ProcessHacker
             public void Terminate(int ExitCode)
             {
                 if (!TerminateProcess(this, ExitCode))
-                    throw new Exception(GetLastErrorMessage());
+                    ThrowLastWin32Error();
             }
 
             /// <summary>

@@ -88,7 +88,7 @@ namespace ProcessHacker
                     if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
                         0x1 // DUPLICATE_CLOSE_SOURCE
                         ) != 0)
-                        throw new Exception(Win32.GetLastErrorMessage());
+                        Win32.ThrowLastWin32Error();
 
                     listHandles.SelectedItems[0].Remove();
                 }
