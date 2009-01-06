@@ -388,19 +388,25 @@ namespace ProcessHacker
                         newitem.IconAttempts++;
                     }
 
-                    try
+                    if (item.ProcessQueryHandle != null)
                     {
-                        newitem.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                        try
+                        {
+                            newitem.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                        }
+                        catch
+                        { }
                     }
-                    catch
-                    { }
 
-                    try
+                    if (item.ProcessQueryHandle != null)
                     {
-                        newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
+                        try
+                        {
+                            newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
+                        }
+                        catch
+                        { }
                     }
-                    catch
-                    { }
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
