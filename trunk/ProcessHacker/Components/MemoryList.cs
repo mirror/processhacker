@@ -322,6 +322,15 @@ namespace ProcessHacker
             if (listMemory.SelectedItems.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuMemory);
+
+                MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+
+                if (item.State != Win32.MEMORY_STATE.MEM_COMMIT ||
+                    item.Type != Win32.MEMORY_TYPE.MEM_PRIVATE)
+                {                                         
+                    freeMenuItem.Enabled = false;
+                    decommitMenuItem.Enabled = false;
+                }
             }
             else
             {
@@ -430,6 +439,52 @@ namespace ProcessHacker
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(listMemory.Items);
+        }
+
+        private void freeMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to free this memory region?",
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
+                == DialogResult.Yes)
+            {
+                try
+                {
+                    using (Win32.ProcessHandle phandle =
+                        new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+                    {
+                        MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+
+                        phandle.FreeMemory(item.Address, item.Size, false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Message Box", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void decommitMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to decommit this memory region?",
+               "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
+               == DialogResult.Yes)
+            {
+                try
+                {
+                    using (Win32.ProcessHandle phandle =
+                        new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+                    {
+                        MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+
+                        phandle.FreeMemory(item.Address, item.Size, true);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Message Box", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 

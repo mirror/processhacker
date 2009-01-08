@@ -42,6 +42,8 @@
             this.menuMemory = new System.Windows.Forms.ContextMenu();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.freeMenuItem = new System.Windows.Forms.MenuItem();
+            this.decommitMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,7 +92,7 @@
             // changeMemoryProtectionMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.changeMemoryProtectionMemoryMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.changeMemoryProtectionMemoryMenuItem.Index = 0;
+            this.changeMemoryProtectionMemoryMenuItem.Index = 1;
             this.changeMemoryProtectionMemoryMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionMemoryMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionMemoryMenuItem_Click);
             // 
@@ -98,44 +100,60 @@
             // 
             this.readWriteMemoryMemoryMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.readWriteMemoryMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_edit);
-            this.readWriteMemoryMemoryMenuItem.Index = 1;
+            this.readWriteMemoryMemoryMenuItem.Index = 0;
             this.readWriteMemoryMemoryMenuItem.Text = "Read/Write Memory...";
             this.readWriteMemoryMemoryMenuItem.Click += new System.EventHandler(this.readWriteMemoryMemoryMenuItem_Click);
             // 
             // readWriteAddressMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.readWriteAddressMemoryMenuItem, global::ProcessHacker.Properties.Resources.pencil_go);
-            this.readWriteAddressMemoryMenuItem.Index = 2;
+            this.readWriteAddressMemoryMenuItem.Index = 5;
             this.readWriteAddressMemoryMenuItem.Text = "Read/Write Address...";
             this.readWriteAddressMemoryMenuItem.Click += new System.EventHandler(this.readWriteAddressMemoryMenuItem_Click);
             // 
             // copyMemoryMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMemoryMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMemoryMenuItem.Index = 4;
+            this.copyMemoryMenuItem.Index = 6;
             this.copyMemoryMenuItem.Text = "C&opy";
             // 
             // menuMemory
             // 
             this.menuMemory.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.changeMemoryProtectionMemoryMenuItem,
             this.readWriteMemoryMemoryMenuItem,
-            this.readWriteAddressMemoryMenuItem,
+            this.changeMemoryProtectionMemoryMenuItem,
+            this.freeMenuItem,
+            this.decommitMenuItem,
             this.menuItem2,
+            this.readWriteAddressMemoryMenuItem,
             this.copyMemoryMenuItem,
             this.selectAllMemoryMenuItem});
             this.menuMemory.Popup += new System.EventHandler(this.menuMemory_Popup);
             // 
             // menuItem2
             // 
-            this.menuItem2.Index = 3;
+            this.menuItem2.Index = 4;
             this.menuItem2.Text = "-";
             // 
             // selectAllMemoryMenuItem
             // 
-            this.selectAllMemoryMenuItem.Index = 5;
+            this.selectAllMemoryMenuItem.Index = 7;
             this.selectAllMemoryMenuItem.Text = "Select &All";
             this.selectAllMemoryMenuItem.Click += new System.EventHandler(this.selectAllMemoryMenuItem_Click);
+            // 
+            // freeMenuItem
+            // 
+            this.vistaMenu.SetImage(this.freeMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.freeMenuItem.Index = 2;
+            this.freeMenuItem.Text = "&Free";
+            this.freeMenuItem.Click += new System.EventHandler(this.freeMenuItem_Click);
+            // 
+            // decommitMenuItem
+            // 
+            this.vistaMenu.SetImage(this.decommitMenuItem, global::ProcessHacker.Properties.Resources.delete);
+            this.decommitMenuItem.Index = 3;
+            this.decommitMenuItem.Text = "&Decommit";
+            this.decommitMenuItem.Click += new System.EventHandler(this.decommitMenuItem_Click);
             // 
             // MemoryList
             // 
@@ -165,5 +183,7 @@
         private System.Windows.Forms.MenuItem menuItem2;
         private System.Windows.Forms.MenuItem copyMemoryMenuItem;
         private System.Windows.Forms.MenuItem selectAllMemoryMenuItem;
+        private System.Windows.Forms.MenuItem freeMenuItem;
+        private System.Windows.Forms.MenuItem decommitMenuItem;
     }
 }

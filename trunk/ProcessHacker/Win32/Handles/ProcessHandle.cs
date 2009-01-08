@@ -162,6 +162,10 @@ namespace ProcessHacker
             /// reserve the memory instead of freeing it.</param>
             public void FreeMemory(int address, int size, bool reserveOnly)
             {
+                // size needs to be 0 if we're freeing
+                if (!reserveOnly)
+                    size = 0;
+
                 if (!VirtualFreeEx(this, address, size,
                     reserveOnly ? MEMORY_STATE.MEM_DECOMMIT : MEMORY_STATE.MEM_RELEASE))
                     ThrowLastWin32Error();
