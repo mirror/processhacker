@@ -55,6 +55,14 @@ namespace ProcessHacker
 
             this.Text = process.Name + " (PID " + _pid.ToString() + ")";
 
+            // DPCs or Interrupts
+            if (_pid < 0)
+            {
+                this.Text = process.Name;
+                textFileDescription.Text = process.Name;
+                textFileCompany.Text = "";
+            }
+
             if (process.Icon != null)
                 this.Icon = process.Icon;
             else
