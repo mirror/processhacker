@@ -4,6 +4,7 @@ Process Hacker
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions
+   * Problems with the search button
 
 1.3.0.0
  * NEW:

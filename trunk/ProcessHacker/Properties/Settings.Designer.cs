@@ -97,7 +97,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("&Literal Search...")]
+        [global::System.Configuration.DefaultSettingValueAttribute("&String Scan...")]
         public string SearchType {
             get {
                 return ((string)(this["SearchType"]));

@@ -142,6 +142,7 @@
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.label15 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -1244,6 +1245,7 @@
             // 
             // tabMemory
             // 
+            this.tabMemory.Controls.Add(this.label15);
             this.tabMemory.Controls.Add(this.buttonSearch);
             this.tabMemory.Controls.Add(this.checkHideFreeRegions);
             this.tabMemory.Controls.Add(this.listMemory);
@@ -1259,7 +1261,7 @@
             // buttonSearch
             // 
             this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(6, 6);
+            this.buttonSearch.Location = new System.Drawing.Point(58, 6);
             this.buttonSearch.Name = "buttonSearch";
             this.buttonSearch.Size = new System.Drawing.Size(99, 23);
             this.buttonSearch.SplitMenu = this.menuSearch;
@@ -1399,6 +1401,15 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(8, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(44, 13);
+            this.label15.TabIndex = 10;
+            this.label15.Text = "Search:";
             // 
             // ProcessWindow
             // 
@@ -1560,5 +1571,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label labelOtherHandles;
+        private System.Windows.Forms.Label label15;
     }
 }

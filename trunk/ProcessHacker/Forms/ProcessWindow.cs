@@ -370,7 +370,7 @@ namespace ProcessHacker
                 {
                     f.Show();
                 }
-                else if (text == "&Literal Search...")
+                else if (text == "&Literal...")
                 {
                     if (f.EditSearch(SearchType.Literal, location, size) == DialogResult.OK)
                     {
@@ -382,7 +382,7 @@ namespace ProcessHacker
                         f.Close();
                     }
                 }
-                else if (text == "&Regex Search...")
+                else if (text == "&Regex...")
                 {
                     if (f.EditSearch(SearchType.Regex, location, size) == DialogResult.OK)
                     {

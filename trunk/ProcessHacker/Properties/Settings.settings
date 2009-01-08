@@ -21,7 +21,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SearchType" Type="System.String" Scope="User">
-      <Value Profile="(Default)">&amp;Literal Search...</Value>
+      <Value Profile="(Default)">&amp;String Scan...</Value>
     </Setting>
     <Setting Name="ShowAccountDomains" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
