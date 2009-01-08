@@ -40,6 +40,8 @@
             this.nodeMemory = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCPU = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnDescription = new Aga.Controls.Tree.TreeColumn();
+            this.nodeDescription = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -51,6 +53,7 @@
             this.treeProcesses.Columns.Add(this.columnMemory);
             this.treeProcesses.Columns.Add(this.columnCPU);
             this.treeProcesses.Columns.Add(this.columnUsername);
+            this.treeProcesses.Columns.Add(this.columnDescription);
             this.treeProcesses.DefaultToolTipProvider = null;
             this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -67,6 +70,7 @@
             this.treeProcesses.NodeControls.Add(this.nodeMemory);
             this.treeProcesses.NodeControls.Add(this.nodeCPU);
             this.treeProcesses.NodeControls.Add(this.nodeUsername);
+            this.treeProcesses.NodeControls.Add(this.nodeDescription);
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
@@ -172,6 +176,23 @@
             this.nodeUsername.ParentColumn = this.columnUsername;
             this.nodeUsername.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // columnDescription
+            // 
+            this.columnDescription.Header = "Description";
+            this.columnDescription.Sortable = true;
+            this.columnDescription.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnDescription.TooltipText = null;
+            this.columnDescription.Width = 140;
+            // 
+            // nodeDescription
+            // 
+            this.nodeDescription.DataPropertyName = "Description";
+            this.nodeDescription.EditEnabled = false;
+            this.nodeDescription.IncrementalSearchEnabled = true;
+            this.nodeDescription.LeftMargin = 3;
+            this.nodeDescription.ParentColumn = this.columnDescription;
+            this.nodeDescription.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -198,5 +219,7 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeUsername;
         private Aga.Controls.Tree.NodeControls.NodeIcon nodeIcon;
         private Aga.Controls.Tree.TreeColumn columnCPU;
+        private Aga.Controls.Tree.TreeColumn columnDescription;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeDescription;
     }
 }

@@ -131,6 +131,11 @@ namespace ProcessHacker
             get { return this.GetBestUsername(_pitem.Username, Properties.Settings.Default.ShowAccountDomains); }
         }
 
+        public string Description
+        {
+            get { return _pitem.FileDescription; }
+        }
+
         public Bitmap Icon
         {
             get { return _icon; }

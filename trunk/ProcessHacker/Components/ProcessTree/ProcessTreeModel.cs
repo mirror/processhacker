@@ -216,6 +216,8 @@ namespace ProcessHacker
                             return ModifySort(n1.ProcessItem.CPUUsage.CompareTo(n2.ProcessItem.CPUUsage), sortO);
                         else if (sortC == "username")
                             return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
+                        else if (sortC == "description")
+                            return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
                         else
                             return 0;
                     }));

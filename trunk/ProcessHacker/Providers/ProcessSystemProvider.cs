@@ -39,6 +39,8 @@ namespace ProcessHacker
         public Win32.SYSTEM_PROCESS_INFORMATION Process;
         public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
 
+        public string FileDescription;
+
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public bool IsBeingDebugged;
         public bool IsElevated;
@@ -235,17 +237,42 @@ namespace ProcessHacker
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;
 
-                    if (pid == 0)
-                        item.Name = "System Idle Process";
-                    else
-                        item.Name = procs[pid].Name;
-
                     try
                     {
                         item.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
                     }
                     catch
                     { }
+
+                    item.Name = procs[pid].Name;
+
+                    if (pid == 0)
+                    {      
+                        item.Name = "System Idle Process";
+                        item.FileDescription = "System Idle Process";
+                    }
+                    else if (pid == 4)
+                    {
+                        item.FileDescription = "Windows Kernel";
+                    }
+                    else if (pid == -2)
+                    {
+                        item.FileDescription = "Deferred Procedure Calls";
+                    }
+                    else if (pid == -3)
+                    {
+                        item.FileDescription = "Hardware Interrupts";
+                    }
+                    else
+                    {    
+                        try
+                        {
+                            item.FileDescription =
+                                FileVersionInfo.GetVersionInfo(Misc.GetRealPath(p.MainModule.FileName)).FileDescription;
+                        }
+                        catch
+                        { }
+                    }
 
                     try
                     {
