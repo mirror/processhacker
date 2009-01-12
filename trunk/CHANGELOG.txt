@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * "Free" and "Decommit" actions for memory regions
    * "Description" column for processes
+   * Current Directory for processes automatically updates
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

@@ -46,6 +46,8 @@ namespace ProcessHacker
         private DeltaManager<string, long> _processStats =
             new DeltaManager<string, long>(new Int64Subtractor());
 
+        private string _realCurrentDirectory;
+
         public ProcessWindow(ProcessItem process)
         {
             InitializeComponent();
@@ -61,6 +63,10 @@ namespace ProcessHacker
                 this.Text = process.Name;
                 textFileDescription.Text = process.Name;
                 textFileCompany.Text = "";
+            }
+            else
+            {
+                timerUpdate.Enabled = true;
             }
 
             if (process.Icon != null)
@@ -194,11 +200,16 @@ namespace ProcessHacker
                     textCurrentDirectory.Text =
                         phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
                 }
+
+                buttonOpenCurDir.Enabled = true;
             }
             catch (Exception ex)
             {
                 textCurrentDirectory.Text = "(" + ex.Message + ")";
+                buttonOpenCurDir.Enabled = false;
             }
+
+            _realCurrentDirectory = textCurrentDirectory.Text;
 
             try
             {
@@ -874,6 +885,39 @@ namespace ProcessHacker
                 _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
             if (_handleP != null)
                 _handleP.Enabled = tabControl.SelectedTab == tabHandles;
+        }
+
+        #endregion
+
+        #region Textboxes
+
+        private void textCurrentDirectory_Leave(object sender, EventArgs e)
+        {
+            if (textCurrentDirectory.Text != _realCurrentDirectory)
+                textCurrentDirectory.Text = _realCurrentDirectory;
+        }
+
+        #endregion
+
+        #region Timers
+
+        private void timerUpdate_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ProcessHandle phandle
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    _realCurrentDirectory  =
+                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
+
+                    // we don't want to set the text if the user is selecting something in the textbox!
+                    if (!textCurrentDirectory.Focused)
+                        textCurrentDirectory.Text = _realCurrentDirectory;
+                }
+            }
+            catch
+            { }
         }
 
         #endregion

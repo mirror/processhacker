@@ -127,6 +127,7 @@
             this.tabModules = new System.Windows.Forms.TabPage();
             this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
+            this.label15 = new System.Windows.Forms.Label();
             this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -142,7 +143,7 @@
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.label15 = new System.Windows.Forms.Label();
+            this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -390,6 +391,7 @@
             this.textCurrentDirectory.ReadOnly = true;
             this.textCurrentDirectory.Size = new System.Drawing.Size(279, 20);
             this.textCurrentDirectory.TabIndex = 3;
+            this.textCurrentDirectory.Leave += new System.EventHandler(this.textCurrentDirectory_Leave);
             // 
             // label2
             // 
@@ -1258,6 +1260,15 @@
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(8, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(44, 13);
+            this.label15.TabIndex = 10;
+            this.label15.Text = "Search:";
+            // 
             // buttonSearch
             // 
             this.buttonSearch.AutoSize = true;
@@ -1402,14 +1413,11 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // label15
+            // timerUpdate
             // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(8, 11);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(44, 13);
-            this.label15.TabIndex = 10;
-            this.label15.Text = "Search:";
+            this.timerUpdate.Enabled = true;
+            this.timerUpdate.Interval = 2000;
+            this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
             // 
             // ProcessWindow
             // 
@@ -1572,5 +1580,6 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Label labelOtherHandles;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Timer timerUpdate;
     }
 }
