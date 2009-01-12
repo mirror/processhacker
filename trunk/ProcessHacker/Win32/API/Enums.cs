@@ -171,6 +171,15 @@ namespace ProcessHacker
         }
 
         [Flags]
+        public enum MEM_EXECUTE_OPTIONS : int
+        {
+            EnableDEP = 0x1,
+            DisableDEP = 0x2,
+            DisableATLThunkEmulation = 0x4,
+            Permanent = 0x8
+        }
+
+        [Flags]
         public enum MEMORY_PROTECTION : int
         {
             PAGE_ACCESS_DENIED = 0x0,
@@ -291,6 +300,21 @@ namespace ProcessHacker
             ProcessHandleCount,
             ProcessAffinityMask,
             ProcessPriorityBoost,
+            ProcessDeviceMap,
+            ProcessSessionInformation,
+            ProcessForegroundInformation,
+            ProcessWow64Information,
+            ProcessImageFileName,
+            ProcessLUIDDeviceMapsEnabled,
+            ProcessBreakOnTermination,
+            ProcessDebugObjectHandle,
+            ProcessDebugFlags,
+            ProcessHandleTracing,
+            ProcessIoPriority,
+            ProcessExecuteFlags,
+            ProcessResourceManagement,
+            ProcessCookie,
+            ProcessImageInformation, 
             MaxProcessInfoClass
         }
 
