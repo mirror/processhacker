@@ -68,7 +68,7 @@ namespace ProcessHacker
 
         public string Name
         {
-            get { return _pitem.Name; }
+            get { return _pitem.Name != null ? _pitem.Name : ""; }
         }
 
         public string DisplayPID
@@ -133,7 +133,7 @@ namespace ProcessHacker
 
         public string Description
         {
-            get { return _pitem.FileDescription; }
+            get { return _pitem.FileDescription != null ? _pitem.FileDescription : ""; }
         }
 
         public Bitmap Icon

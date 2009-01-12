@@ -52,7 +52,7 @@ namespace ProcessHacker
             // find this process' children
             foreach (ProcessNode node in rootNodes)
             {
-                if (node.PPID == item.PID)
+                if (node.ProcessItem.HasParent && node.PPID == item.PID)
                 {
                     _roots.Remove(node);
                     itemNode.Children.Add(node);
@@ -68,7 +68,7 @@ namespace ProcessHacker
 
             ProcessNode node = _processes[newItem.PID];
 
-            if (node.PPID != -1)
+            if (node.ProcessItem.HasParent && node.PPID != -1)
                 this.NodesChanged(this, new TreeModelEventArgs(this.GetPath(
                     _processes.ContainsKey(node.PPID) ? _processes[node.PPID] : null),
                     new object[] { node }));
@@ -88,7 +88,7 @@ namespace ProcessHacker
                     this.MoveChildrenToRoot(node);
                     break;
                 }
-                else if (_processes.ContainsKey(targetNode.PPID))
+                else if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPID))
                 {
                     ProcessNode foundNode = _processes[targetNode.PPID];
 
@@ -135,7 +135,7 @@ namespace ProcessHacker
                 {
                     stack.Push(currentNode);
 
-                    if (_processes.ContainsKey(currentNode.PPID))
+                    if (currentNode.ProcessItem.HasParent && _processes.ContainsKey(currentNode.PPID))
                     {
                         ProcessNode newNode = _processes[currentNode.PPID];
 
