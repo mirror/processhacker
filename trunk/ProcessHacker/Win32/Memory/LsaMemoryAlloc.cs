@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,21 +23,21 @@ using System.Runtime.InteropServices;
 namespace ProcessHacker
 {
     /// <summary>
-    /// Represents a memory allocation managed by the Terminal Server API.
+    /// Represents a memory allocation managed by the Local Security Authority (LSA).
     /// </summary>
-    public class WtsMemoryAlloc : MemoryAlloc
+    public class LsaMemoryAlloc : MemoryAlloc
     {
         /// <summary>
-        /// Creates a memory allocation from an existing Terminal Server managed allocation. 
+        /// Creates a memory allocation from an existing LSA managed allocation. 
         /// </summary>
         /// <param name="memory">A pointer to the allocated memory.</param>
         /// <returns>A new memory allocation object.</returns>
-        public static new WtsMemoryAlloc FromPointer(IntPtr memory)
+        public static new LsaMemoryAlloc FromPointer(IntPtr memory)
         {
-            return new WtsMemoryAlloc() { Memory = memory };
+            return new LsaMemoryAlloc() { Memory = memory };
         }
 
-        private WtsMemoryAlloc()
+        private LsaMemoryAlloc()
         { }
 
         public override void Resize(int newSize)
@@ -55,7 +55,7 @@ namespace ProcessHacker
 
         protected override void Free()
         {
-            Win32.WTSFreeMemory(this);
+            Win32.LsaFreeMemory(this);
         }
     }
 }

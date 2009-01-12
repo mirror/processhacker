@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32,Dean
+ * Copyright (C) 2009 Dean
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +69,10 @@ namespace ProcessHacker
 
         #region Memory
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32", SetLastError = true)]
+        public static extern IntPtr GetProcessHeap();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualQueryEx(int Process, int Address,
             [MarshalAs(UnmanagedType.Struct)] ref MEMORY_BASIC_INFORMATION Buffer, int Size);
 
@@ -107,6 +111,95 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll")]
         public static extern int GetTickCount();
+
+        #endregion
+
+        #region Native API
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
+            ref SECTION_BASIC_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
+            ref SECTION_IMAGE_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryMutant(int MutantHandle, MUTANT_INFORMATION_CLASS MutantInformationClass,
+            ref MUTANT_BASIC_INFORMATION MutantInformation, int MutantInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryEvent(int EventHandle, EVENT_INFORMATION_CLASS EventInformationClass,
+            ref EVENT_BASIC_INFORMATION EventInformation, int EventInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwSetInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            ref int ThreadInformation, int ThreadInformationLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            ref THREAD_BASIC_INFORMATION ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            out long ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
+            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref POOLED_USAGE_AND_LIMITS ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref QUOTA_LIMITS ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref UNICODE_STRING ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
+            ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+            int TargetProcessHandle, int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+            int TargetProcessHandle, out int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_BASIC_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_CACHE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            [MarshalAs(UnmanagedType.LPArray)] SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] SystemInformation,
+            int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+            ref SYSTEM_LOAD_AND_CALL_IMAGE SystemInformation, int SystemInformationLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
 
         #endregion
 
@@ -436,6 +529,19 @@ namespace ProcessHacker
 
         #endregion
 
+        #region TCP
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int GetTcpStatistics(ref MIB_TCPSTATS pStats);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public static extern int GetTcpTable(byte[] tcpTable, out int pdwSize, bool bOrder);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int AllocateAndGetTcpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+
+        #endregion
+
         #region Terminal Server
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -575,105 +681,6 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Undocumented
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
-            ref SECTION_BASIC_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
-            ref SECTION_IMAGE_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryMutant(int MutantHandle, MUTANT_INFORMATION_CLASS MutantInformationClass,
-            ref MUTANT_BASIC_INFORMATION MutantInformation, int MutantInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryEvent(int EventHandle, EVENT_INFORMATION_CLASS EventInformationClass,
-            ref EVENT_BASIC_INFORMATION EventInformation, int EventInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwSetInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
-            ref int ThreadInformation, int ThreadInformationLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
-            ref THREAD_BASIC_INFORMATION ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
-            out long ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
-            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            ref POOLED_USAGE_AND_LIMITS ProcessInformation, int ProcessInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            ref QUOTA_LIMITS ProcessInformation, int ProcessInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            ref UNICODE_STRING ProcessInformation, int ProcessInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
-            ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, out int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ref SYSTEM_BASIC_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ref SYSTEM_CACHE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ref SYSTEM_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            [MarshalAs(UnmanagedType.LPArray)] SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] SystemInformation, 
-            int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
-            ref SYSTEM_LOAD_AND_CALL_IMAGE SystemInformation, int SystemInformationLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
-            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
-
-        #endregion
-
-        #region Windows
-
-        [DllImport("user32.dll")]
-        public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
-
-        [DllImport("user32.dll")]
-        public static extern int SetActiveWindow(int hWnd);
-
-        #endregion
-
         #region UDP
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
@@ -687,20 +694,14 @@ namespace ProcessHacker
 
         #endregion
 
-        #region TCP
+        #region Windows
 
-        [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int GetTcpStatistics(ref MIB_TCPSTATS pStats);
+        [DllImport("user32.dll")]
+        public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
 
-        [DllImport("iphlpapi.dll", SetLastError = true)]
-        public static extern int GetTcpTable(byte[] tcpTable, out int pdwSize, bool bOrder);
-
-        [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int AllocateAndGetTcpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+        [DllImport("user32.dll")]
+        public static extern int SetActiveWindow(int hWnd);
 
         #endregion
-        // had? will used
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern IntPtr GetProcessHeap();
     }
 }

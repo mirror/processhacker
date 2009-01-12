@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,12 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a handle to a Windows process.
         /// </summary>
+        /// <remarks>The idea of a ProcessHandle class is 
+        /// different to the <see cref="System.Diagnostics.Process"/> class; 
+        /// instead of opening the process with the right permissions every 
+        /// time a query or set function is called, this lets the users control 
+        /// when they want to open handles with certain permissions. This 
+        /// means that handles can be cached (by the users).</remarks>
         public class ProcessHandle : Win32Handle, IWithToken
         {
             /// <summary>
@@ -34,13 +40,48 @@ namespace ProcessHacker
             /// </summary>
             public enum PEBOffset
             {
+                /// <summary>
+                /// The current directory of the process. This may, as the name 
+                /// implies, change very often.
+                /// </summary>
                 CurrentDirectoryPath = 0x24,
-                DllPath = 0x30, // usually a copy of the PATH environment variable
+
+                /// <summary>
+                /// A copy of the PATH environment variable for the process.
+                /// </summary>
+                DllPath = 0x30,
+
+                /// <summary>
+                /// The image file name, in kernel format (e.g. \\?\C:\...,
+                /// \SystemRoot\..., \Device\Harddisk1\...).
+                /// </summary>
                 ImagePathName = 0x38,
+
+                /// <summary>
+                /// The command used to start the program, including arguments.
+                /// </summary>
                 CommandLine = 0x40,
+
+                /// <summary>
+                /// Usually blank.
+                /// </summary>
                 WindowTitle = 0x70,
+
+                /// <summary>
+                /// For interactive programs, contains the window station and 
+                /// desktop name of the first thread that was started, e.g. 
+                /// WinSta0\Default.
+                /// </summary>
                 DesktopName = 0x78,
+
+                /// <summary>
+                /// Usually blank.
+                /// </summary>
                 ShellInfo = 0x80,
+
+                /// <summary>
+                /// Usually blank.
+                /// </summary>
                 RuntimeData = 0x88
             }
 
@@ -203,6 +244,11 @@ namespace ProcessHacker
             /// Gets the process' DEP policy.
             /// </summary>
             /// <returns>A DEPStatus enum.</returns>
+            /// <remarks>This funciton does not work on 
+            /// Windows XP SP2 or lower, since they do not 
+            /// have the GetProcessDEPPolicy function. It is possible 
+            /// to use ZwQueryInformationProcess with ProcessExecuteFlags, 
+            /// but it doesn't seem to work.</remarks>
             public DEPStatus GetDEPStatus()
             {
                 DEPFLAGS flags;
@@ -311,6 +357,9 @@ namespace ProcessHacker
             /// Determines whether the process is running in a job.
             /// </summary>
             /// <returns>A boolean.</returns>
+            /// <remarks>According to this function, almost every single 
+            /// process is in a job! This function does not tell us 
+            /// the name of the job though.</remarks>
             public bool IsInJob()
             {
                 bool result;
@@ -345,7 +394,7 @@ namespace ProcessHacker
             /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
             public int Wait(int Timeout)
             {
-                return WaitForSingleObject(this.Handle, Timeout);
+                return WaitForSingleObject(this, Timeout);
             }
 
             /// <summary>

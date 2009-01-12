@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker
- * 
- * Copyright (C) 2008 wj32,Dean
+ *                       
+ * Copyright (C) 2009 Dean
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -881,6 +882,17 @@ namespace ProcessHacker
 
         #endregion
 
+        #region TCP
+
+        public static MIB_TCPSTATS GetTcpStats()
+        {
+            MIB_TCPSTATS tcpStats = new MIB_TCPSTATS();
+            GetTcpStatistics(ref tcpStats);
+            return tcpStats;
+        }
+
+        #endregion
+
         #region Terminal Server
 
         public static WTS_SESSION_INFO[] TSEnumSessions()
@@ -986,17 +998,6 @@ namespace ProcessHacker
         //todo 
         //GetExUdpConnexions()
         //todo
-
-        #endregion
-
-        #region TCP
-
-        public static MIB_TCPSTATS GetTcpStats()
-        {
-            MIB_TCPSTATS tcpStats = new MIB_TCPSTATS();
-            GetTcpStatistics(ref tcpStats);
-            return tcpStats;
-        }      
 
         #endregion
     }

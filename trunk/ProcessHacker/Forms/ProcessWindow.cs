@@ -2,7 +2,7 @@
  * Process Hacker
  * 
  * Copyright (C) 2008 Dean
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -885,6 +885,11 @@ namespace ProcessHacker
                 _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
             if (_handleP != null)
                 _handleP.Enabled = tabControl.SelectedTab == tabHandles;
+
+            listThreads.EndUpdate();
+            listModules.EndUpdate();
+            listMemory.EndUpdate();
+            listHandles.EndUpdate();
         }
 
         #endregion

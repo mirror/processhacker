@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32,Dean
+ * Copyright (C) 2009 Dean
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +51,8 @@ namespace ProcessHacker
             CONTEXT_EXTENDED_REGISTERS = CONTEXT_i386 | 0x00000020,
             CONTEXT_FULL = CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS,
             CONTEXT_ALL = CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS |
-                          CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS |
-                          CONTEXT_EXTENDED_REGISTERS
+                CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS |
+                CONTEXT_EXTENDED_REGISTERS
         }
 
         public enum DEPFLAGS : int
@@ -223,6 +224,22 @@ namespace ProcessHacker
             MEM_IMAGE = 0x1000000,
             MEM_MAPPED = 0x40000,
             MEM_PRIVATE = 0x20000
+        }
+
+        public enum MIB_TCP_STATE : int
+        {
+            MIB_TCP_STATE_CLOSED = 1,
+            MIB_TCP_STATE_LISTEN,
+            MIB_TCP_STATE_SYN_SENT,
+            MIB_TCP_STATE_SYN_RCVD,
+            MIB_TCP_STATE_ESTAB,
+            MIB_TCP_STATE_FIN_WAIT1,
+            MIB_TCP_STATE_FIN_WAIT2,
+            MIB_TCP_STATE_CLOSE_WAIT,
+            MIB_TCP_STATE_CLOSING,
+            MIB_TCP_STATE_LAST_ACK,
+            MIB_TCP_STATE_TIME_WAIT,
+            MIB_TCP_STATE_DELETE_TCB
         }
 
         public enum MUTANT_INFORMATION_CLASS : int
@@ -829,23 +846,5 @@ namespace ProcessHacker
             WTSIncomingFrames,
             WTSOutgoingFrames
         }
-
-        #region TCP
-        public enum MIB_TCP_STATE : int
-        {
-            MIB_TCP_STATE_CLOSED = 1,
-            MIB_TCP_STATE_LISTEN,
-            MIB_TCP_STATE_SYN_SENT,
-            MIB_TCP_STATE_SYN_RCVD,
-            MIB_TCP_STATE_ESTAB,
-            MIB_TCP_STATE_FIN_WAIT1,
-            MIB_TCP_STATE_FIN_WAIT2,
-            MIB_TCP_STATE_CLOSE_WAIT,
-            MIB_TCP_STATE_CLOSING,
-            MIB_TCP_STATE_LAST_ACK,
-            MIB_TCP_STATE_TIME_WAIT,
-            MIB_TCP_STATE_DELETE_TCB
-        }
-        #endregion
     }
 }

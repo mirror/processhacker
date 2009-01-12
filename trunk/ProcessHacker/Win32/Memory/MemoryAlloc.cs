@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -192,7 +192,7 @@ namespace ProcessHacker
 
         protected virtual void Free()
         {
-            Marshal.FreeHGlobal(_memory);
+            Marshal.FreeHGlobal(this);
         }
 
         ~MemoryAlloc()

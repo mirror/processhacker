@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.LsaPolicyHandle policy =
+                using (var policy =
                     new Win32.LsaPolicyHandle(Win32.POLICY_RIGHTS.POLICY_LOOKUP_NAMES |
                         Win32.POLICY_RIGHTS.POLICY_VIEW_LOCAL_INFORMATION))
                 {
@@ -52,17 +52,18 @@ namespace ProcessHacker
 
                     if (Win32.LsaEnumerateAccountsWithUserRight(policy, 0, out sids, out length) == 0)
                     {
-                        for (int i = 0; i < length; i++)
+                        using (LsaMemoryAlloc memory = LsaMemoryAlloc.FromPointer(sids))
                         {
-                            int sid = System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4);
-                            Win32.SID_NAME_USE type = Win32.GetAccountType(sid);
+                            for (int i = 0; i < length; i++)
+                            {
+                                int sid = System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4);
+                                Win32.SID_NAME_USE type = Win32.GetAccountType(sid);
 
-                            if (type == Win32.SID_NAME_USE.SidTypeUser)
-                                users.Add(Win32.GetAccountName(sid, true));
+                                if (type == Win32.SID_NAME_USE.SidTypeUser)
+                                    users.Add(Win32.GetAccountName(sid, true));
+                            }
                         }
                     }
-
-                    Win32.LsaFreeMemory(sids);
                 }
             }
             catch

@@ -574,6 +574,7 @@
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
     <Compile Include="Win32\Handles\TokenWithLinkedToken.cs" />
+    <Compile Include="Win32\Memory\LsaMemoryAlloc.cs" />
     <Compile Include="Win32\Memory\WtsMemoryAlloc.cs" />
     <Compile Include="Win32\Memory\MemoryAlloc.cs" />
     <Compile Include="Win32\Handles\RemoteHandle.cs" />
