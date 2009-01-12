@@ -186,8 +186,9 @@ namespace Aga.Controls.Tree
 
 			if (!args.Handled)
 			{
-				if (args.Node != null && args.Button == MouseButtons.Left)
-					args.Node.IsExpanded = !args.Node.IsExpanded;
+                // disabled by wj32 - I think this behaviour sucks.
+                //if (args.Node != null && args.Button == MouseButtons.Left)
+                //    args.Node.IsExpanded = !args.Node.IsExpanded;
 
 				if (args.Node != null)
 					OnNodeMouseDoubleClick(args);
