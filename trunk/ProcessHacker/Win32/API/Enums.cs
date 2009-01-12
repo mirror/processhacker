@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008 wj32,Dean
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -829,5 +829,23 @@ namespace ProcessHacker
             WTSIncomingFrames,
             WTSOutgoingFrames
         }
+
+        #region TCP
+        public enum MIB_TCP_STATE : int
+        {
+            MIB_TCP_STATE_CLOSED = 1,
+            MIB_TCP_STATE_LISTEN,
+            MIB_TCP_STATE_SYN_SENT,
+            MIB_TCP_STATE_SYN_RCVD,
+            MIB_TCP_STATE_ESTAB,
+            MIB_TCP_STATE_FIN_WAIT1,
+            MIB_TCP_STATE_FIN_WAIT2,
+            MIB_TCP_STATE_CLOSE_WAIT,
+            MIB_TCP_STATE_CLOSING,
+            MIB_TCP_STATE_LAST_ACK,
+            MIB_TCP_STATE_TIME_WAIT,
+            MIB_TCP_STATE_DELETE_TCB
+        }
+        #endregion
     }
 }

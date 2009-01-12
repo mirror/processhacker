@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008 wj32,Dean
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -970,6 +970,33 @@ namespace ProcessHacker
 
             return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
         }
+
+        #endregion
+
+        #region UDP
+
+        public static MIB_UDPSTATS GetUdpStats()
+        {
+            MIB_UDPSTATS udpStats = new MIB_UDPSTATS();
+            GetUdpStatistics(ref udpStats);
+            return udpStats;
+        }
+
+        //GetUdpConnexions()
+        //todo 
+        //GetExUdpConnexions()
+        //todo
+
+        #endregion
+
+        #region TCP
+
+        public static MIB_TCPSTATS GetTcpStats()
+        {
+            MIB_TCPSTATS tcpStats = new MIB_TCPSTATS();
+            GetTcpStatistics(ref tcpStats);
+            return tcpStats;
+        }      
 
         #endregion
     }

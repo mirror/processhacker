@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008 wj32,Dean
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -673,5 +673,34 @@ namespace ProcessHacker
         public static extern int SetActiveWindow(int hWnd);
 
         #endregion
+
+        #region UDP
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public static extern int GetUdpStatistics(ref MIB_UDPSTATS pStats);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public static extern int GetUdpTable(byte[] udpTable, out int pdwSize, bool bOrder);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int AllocateAndGetUdpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+
+        #endregion
+
+        #region TCP
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int GetTcpStatistics(ref MIB_TCPSTATS pStats);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public static extern int GetTcpTable(byte[] tcpTable, out int pdwSize, bool bOrder);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int AllocateAndGetTcpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+
+        #endregion
+        // had? will used
+        [DllImport("kernel32", SetLastError = true)]
+        public static extern IntPtr GetProcessHeap();
     }
 }

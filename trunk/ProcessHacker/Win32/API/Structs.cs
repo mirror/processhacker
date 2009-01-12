@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008 wj32,Dean
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1259,5 +1259,96 @@ namespace ProcessHacker
 
             WTS_CONNECTSTATE_CLASS State;
         }
+
+
+        #region UDP
+        //http://msdn.microsoft.com/en-us/library/aa366889(VS.85).aspx
+        //UDPRow
+        public struct MIB_UDPROW
+        {
+            //public int LocalAddress;
+            //public int PortPort;
+            public System.Net.IPEndPoint Local;            
+        }
+        //UDPTable
+        public struct MIB_UDPTABLE
+        {
+            public int NumEntries;
+            public MIB_UDPROW[] Table;
+        }
+        //UDPRow And OwnnerPID
+        public struct MIB_UDPROW_OWNER_PID
+        {
+            public System.Net.IPEndPoint Local;
+            public int OwningProcessId;
+        }
+        //UDPRowTable And OwnnerPID
+        public struct MIB_UDPROWTABLE_OWNER_PID
+        {
+            public int NumEntries;
+            public MIB_UDPROW_OWNER_PID[] Table;
+        }
+        //UDPStats
+        [StructLayout(LayoutKind.Sequential)]        
+        public struct MIB_UDPSTATS
+        {
+            public int InDatagrams;
+            public int NoPorts;
+            public int InErrors;
+            public int OutDatagrams;
+            public int NumAddrs;
+        }
+        //later
+        //MIB_UDP6ROW,MIB_UDP6TABLE,MIB_UDP6ROW_OWNER_PID,MIB_UDP6TABLE_OWNER_PID...
+        #endregion
+
+        #region TCP 
+        public struct MIB_TCPROW
+        {
+            public MIB_TCP_STATE State;
+            public System.Net.IPEndPoint Local;
+            public System.Net.IPEndPoint Remote;
+        }
+        public struct MIB_TCPTABLE
+        {
+            public int NumEntries;
+            public MIB_TCPROW[] Table;
+        }
+        public struct MIB_TCPROW_OWNER_PID
+        {
+            public MIB_TCP_STATE State;
+            public System.Net.IPEndPoint Local;
+            public System.Net.IPEndPoint Remote;
+            public int OwningProcessId;
+        }
+        public struct MIB_TCPTABLE_OWNER_PID
+        {
+            public int NumEntries;
+            public MIB_TCPROW_OWNER_PID[] Table;
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIB_TCPSTATS
+        {
+            public int RtoAlgorithm;
+            public int RtoMin;
+            public int RtoMax;
+            public int MaxConn;
+            public int ActiveOpens;
+            public int PassiveOpens;
+            public int AttemptFails;
+            public int EstabResets;
+            public int CurrEstab;
+            public int InSegs;
+            public int OutSegs;
+            public int RetransSegs;
+            public int InErrs;
+            public int OutRsts;
+            public int NumConns;
+        }
+        //later
+        //TCP2,TCP6... 
+        #endregion
+
+
     }
 }
