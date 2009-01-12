@@ -167,9 +167,9 @@ namespace ProcessHacker.Components
                 f1 = 1.0f;
             if (f2 > 1.0f)
                 f2 = 1.0f;
-            if (f1 < 0.0f || f1 == float.NaN)
+            if (f1 < 0.0f || float.IsNaN(f1))
                 f1 = 0.0f;
-            if (f2 < 0.0f || f2 == float.NaN)
+            if (f2 < 0.0f || float.IsNaN(f2))
                 f2 = 0.0f;
 
             _listData1.Add(f1);
