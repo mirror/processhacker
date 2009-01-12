@@ -59,12 +59,12 @@ namespace ProcessHacker
                 /// DEP is permanently enabled or disabled and cannot
                 /// be enabled or disabled.
                 /// </summary>
-                Permanent,
+                Permanent = 0x2,
                 
                 /// <summary>
                 /// DEP is enabled with DEP-ATL thunk emulation disabled.
                 /// </summary>
-                ATLThunkEmulationDisabled
+                ATLThunkEmulationDisabled = 0x4
             }
 
             /// <summary>
