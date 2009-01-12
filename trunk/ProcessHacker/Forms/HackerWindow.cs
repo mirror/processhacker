@@ -763,7 +763,7 @@ namespace ProcessHacker
             ProcessItem parent = new ProcessItem();
             string parentText = "";
 
-            if (item.ParentPID != -1)
+            if (item.HasParent)
             {
                 try
                 {

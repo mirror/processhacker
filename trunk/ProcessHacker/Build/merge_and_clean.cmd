@@ -1,10 +1,11 @@
 @echo off
 set outd=%~p1
 
-@ check if ILMerge is present
-where ilmerge
-if not %errorlevel%==0 goto end
+@rem check if ILMerge is present
+ilmerge
+if %errorlevel%==9009 goto end
 
+:do
 rename "%outd%\ProcessHacker.exe" ProcessHacker_in.exe
 ilmerge /t:winexe /out:"%outd%\ProcessHacker.exe" "%outd%\ProcessHacker_in.exe" "%outd%\Aga.Controls.dll"
 del "%outd%\ProcessHacker_in.exe"

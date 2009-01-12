@@ -11,6 +11,8 @@ Process Hacker
    * Process properties for DPCs and Interrupts
    * Disabled expanding of processes when double-clicking 
      them
+   * Now shows non-existent parent PIDs
+   * build-and-clean script is now XP compatible
 
 1.3.0.0
  * NEW:

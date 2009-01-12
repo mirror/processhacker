@@ -212,7 +212,7 @@ namespace ProcessHacker
                 textPEBAddress.Text = "(" + ex.Message + ")";
             }
 
-            if (_processItem.ParentPID != -1)
+            if (_processItem.HasParent)
             {
                 if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPID))
                 {
@@ -226,9 +226,19 @@ namespace ProcessHacker
                     buttonInspectParent.Enabled = false;
                 }
             }
+            else if (_processItem.ParentPID == -1)
+            {
+                // this process doesn't actually have a parent
+                textParent.Text = "No Parent Process";
+                buttonInspectParent.Enabled = false;
+            }
             else
             {
-                textParent.Text = "No parent";
+                // This process had a parent and it's dead, but 
+                // another running process has the same PID as 
+                // its parent. We checked their creation times 
+                // back in ProcessSystemProvider.cs.
+                textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
                 buttonInspectParent.Enabled = false;
             }
 

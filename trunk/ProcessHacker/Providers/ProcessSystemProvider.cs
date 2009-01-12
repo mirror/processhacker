@@ -48,6 +48,7 @@ namespace ProcessHacker
         public bool IsVirtualizationEnabled;
         public long LastTime;
         public int SessionId;
+        public bool HasParent;
         public int ParentPID;
         public int IconAttempts;
 
@@ -258,10 +259,14 @@ namespace ProcessHacker
                     else if (pid == -2)
                     {
                         item.FileDescription = "Deferred Procedure Calls";
+                        item.ParentPID = 0;
+                        item.HasParent = true;
                     }
                     else if (pid == -3)
                     {
                         item.FileDescription = "Hardware Interrupts";
+                        item.ParentPID = 0;
+                        item.HasParent = true;
                     }
                     else
                     {    
@@ -314,15 +319,19 @@ namespace ProcessHacker
                         try
                         {
                             item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
+                            item.HasParent = true;
 
                             if (!procs.ContainsKey(item.ParentPID))
                             {
-                                item.ParentPID = -1;
+                                item.HasParent = false;
                             }
                             else if (pid > 4 && item.ParentPID == 0)
                             {
-                                // the PID is 0 for processes we got Access Denied on
+                                // the PID is 0 for processes we got Access Denied on, 
+                                // but they don't really have System Idle Process 
+                                // as their parent.
                                 item.ParentPID = -1;
+                                item.HasParent = false;
                             }
                             else
                             {
@@ -331,12 +340,13 @@ namespace ProcessHacker
                                 long thisStartTime = processInfo.CreateTime;
 
                                 if (parentStartTime > thisStartTime)
-                                    item.ParentPID = -1;
+                                    item.HasParent = false;
                             }
                         }
                         catch
                         {
                             item.ParentPID = -1;
+                            item.HasParent = false;
                         }
                     }
                     catch

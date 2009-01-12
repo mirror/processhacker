@@ -40,7 +40,7 @@ namespace ProcessHacker
             ProcessNode itemNode = new ProcessNode(item);
 
             // find this process' parent
-            if (_processes.ContainsKey(item.ParentPID))
+            if (item.HasParent && _processes.ContainsKey(item.ParentPID))
                 _processes[item.ParentPID].Children.Add(itemNode);
             else
                 _roots.Add(itemNode);
