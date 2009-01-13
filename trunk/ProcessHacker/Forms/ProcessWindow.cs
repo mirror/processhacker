@@ -156,6 +156,9 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabToken);
             }
 
+            if (_pid == 0)
+                textFileDescription.Text = "System Idle Process";
+
             this.UpdateDeltas();
 
             // add our handler to the process provider
