@@ -47,6 +47,8 @@
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.groupBoxCallStack = new System.Windows.Forms.GroupBox();
+            this.fileModule = new ProcessHacker.Components.FileNameBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.buttonWalk = new System.Windows.Forms.Button();
             this.groupRegisters = new System.Windows.Forms.GroupBox();
             this.listViewRegisters = new System.Windows.Forms.ListView();
@@ -140,6 +142,7 @@
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
+            this.listViewCallStack.SelectedIndexChanged += new System.EventHandler(this.listViewCallStack_SelectedIndexChanged);
             // 
             // columnHeader3
             // 
@@ -156,6 +159,8 @@
             this.groupBoxCallStack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxCallStack.Controls.Add(this.fileModule);
+            this.groupBoxCallStack.Controls.Add(this.label1);
             this.groupBoxCallStack.Controls.Add(this.buttonWalk);
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 34);
@@ -164,6 +169,26 @@
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
+            // 
+            // fileModule
+            // 
+            this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileModule.Location = new System.Drawing.Point(57, 182);
+            this.fileModule.Name = "fileModule";
+            this.fileModule.ReadOnly = false;
+            this.fileModule.Size = new System.Drawing.Size(231, 24);
+            this.fileModule.TabIndex = 5;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 188);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Module:";
             // 
             // buttonWalk
             // 
@@ -243,6 +268,7 @@
             this.Load += new System.EventHandler(this.ThreadWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThreadWindow_FormClosing);
             this.groupBoxCallStack.ResumeLayout(false);
+            this.groupBoxCallStack.PerformLayout();
             this.groupRegisters.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
@@ -272,5 +298,7 @@
         private System.Windows.Forms.MenuItem tokenMenuItem;
         private System.Windows.Forms.Label labelThreadUser;
         private System.Windows.Forms.MenuItem menuItem2;
+        private ProcessHacker.Components.FileNameBox fileModule;
+        private System.Windows.Forms.Label label1;
     }
 }

@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ namespace ProcessHacker
         public ThreadWindow(int PID, int TID, SymbolProvider symbols)
         {
             InitializeComponent();
+
+            listViewCallStack_SelectedIndexChanged(null, null);
 
             _pid = PID;
             _tid = TID;
@@ -242,6 +244,8 @@ namespace ProcessHacker
                         _symbols.GetNameFromAddress(addr)
                     }));
 
+                    newItem.Tag = addr;
+
                     if (stackFrame.Params.Length > 0)
                         newItem.ToolTipText = "Parameters: ";
 
@@ -368,6 +372,20 @@ namespace ProcessHacker
             {
                 if (!ex.Message.StartsWith("Cannot access a disposed object"))
                     MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void listViewCallStack_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listViewCallStack.SelectedItems.Count == 1)
+            {
+                fileModule.Text = _symbols.GetModuleFromAddress((int)listViewCallStack.SelectedItems[0].Tag);
+                fileModule.Enabled = true;
+            }
+            else
+            {
+                fileModule.Text = "";
+                fileModule.Enabled = false;
             }
         }
     }

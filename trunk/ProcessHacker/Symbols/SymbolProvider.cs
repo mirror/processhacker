@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,6 +205,22 @@ namespace ProcessHacker
 
             _librarySizes.Remove(path);
             _symbols.Remove(path);
+        }
+
+        public string GetModuleFromAddress(int address)
+        {
+            foreach (KeyValuePair<int, string> kvp in _libraryLookup)
+            {
+                if ((uint)address >= (uint)kvp.Key)
+                {
+                    List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];
+                    FileInfo fi = new FileInfo(kvp.Value);
+
+                    return fi.FullName;
+                }
+            }
+
+            return "";
         }
 
         public string GetNameFromAddress(int address)

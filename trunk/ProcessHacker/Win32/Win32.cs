@@ -487,6 +487,19 @@ namespace ProcessHacker
                 return null;
 
             return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length / 2);
+        } 
+
+        public static void ShowProperties(string fileName)
+        {
+            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+            info.lpFile = fileName;
+            info.nShow = Win32.SW_SHOW;
+            info.fMask = Win32.SEE_MASK_INVOKEIDLIST;
+            info.lpVerb = "properties";
+
+            Win32.ShellExecuteEx(ref info);
         }
 
         #endregion

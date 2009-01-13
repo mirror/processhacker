@@ -52,6 +52,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            fileCurrentDirectory.TextBoxLeave += new EventHandler(fileCurrentDirectory_TextBoxLeave);
+
             _processItem = process;
             _pid = process.PID;
 
@@ -140,8 +142,8 @@ namespace ProcessHacker
                 buttonEditDEP.Enabled = false;
                 buttonInspectParent.Enabled = false;
                 buttonInspectPEB.Enabled = false;
-                buttonOpenCurDir.Enabled = false;
-                buttonOpenFileNameFolder.Enabled = false;
+                fileCurrentDirectory.Enabled = false;
+                fileImage.Enabled = false;
                 buttonSearch.Enabled = false;
                 buttonTerminate.Enabled = false;
 
@@ -180,7 +182,7 @@ namespace ProcessHacker
                 textFileDescription.Text = info.FileDescription;
                 textFileCompany.Text = info.CompanyName;
                 textFileVersion.Text = info.FileVersion;
-                textFileName.Text = info.FileName;
+                fileImage.Text = info.FileName;
 
                 try { pictureIcon.Image = Win32.GetFileIcon(fileName, true).ToBitmap(); }
                 catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
@@ -195,22 +197,31 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
-                {
-                    textCurrentDirectory.Text =
-                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
-                }
-
-                buttonOpenCurDir.Enabled = true;
+                textStartTime.Text = _process.StartTime.ToString();
             }
             catch (Exception ex)
             {
-                textCurrentDirectory.Text = "(" + ex.Message + ")";
-                buttonOpenCurDir.Enabled = false;
+                textStartTime.Text = "(" + ex.Message + ")";
             }
 
-            _realCurrentDirectory = textCurrentDirectory.Text;
+            try
+            {
+                using (Win32.ProcessHandle phandle
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    fileCurrentDirectory.Text =
+                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
+                }
+
+                fileCurrentDirectory.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                fileCurrentDirectory.Text = "(" + ex.Message + ")";
+                fileCurrentDirectory.Enabled = false;
+            }
+
+            _realCurrentDirectory = fileCurrentDirectory.Text;
 
             try
             {
@@ -548,6 +559,12 @@ namespace ProcessHacker
             }
         }
 
+        private void fileCurrentDirectory_TextBoxLeave(object sender, EventArgs e)
+        {
+            if (fileCurrentDirectory.Text != _realCurrentDirectory)
+                fileCurrentDirectory.Text = _realCurrentDirectory;
+        }
+
         #region Buttons
 
         private void buttonPEBStrings_Click(object sender, EventArgs e)
@@ -585,32 +602,6 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void buttonOpenFileNameFolder_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start("explorer.exe", "/select," + textFileName.Text);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void buttonOpenCurDir_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start("explorer.exe", "/select," + textCurrentDirectory.Text);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -895,16 +886,6 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Textboxes
-
-        private void textCurrentDirectory_Leave(object sender, EventArgs e)
-        {
-            if (textCurrentDirectory.Text != _realCurrentDirectory)
-                textCurrentDirectory.Text = _realCurrentDirectory;
-        }
-
-        #endregion
-
         #region Timers
 
         private void timerUpdate_Tick(object sender, EventArgs e)
@@ -918,8 +899,8 @@ namespace ProcessHacker
                         phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
 
                     // we don't want to set the text if the user is selecting something in the textbox!
-                    if (!textCurrentDirectory.Focused)
-                        textCurrentDirectory.Text = _realCurrentDirectory;
+                    if (!fileCurrentDirectory.TextBoxFocused)
+                        fileCurrentDirectory.Text = _realCurrentDirectory;
                 }
             }
             catch

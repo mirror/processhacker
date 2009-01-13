@@ -31,14 +31,9 @@
             this.components = new System.ComponentModel.Container();
             this.listThreads = new System.Windows.Forms.ListView();
             this.columnThreadID = new System.Windows.Forms.ColumnHeader();
-            this.columnStartAddress = new System.Windows.Forms.ColumnHeader();
             this.columnContextSwitchesDelta = new System.Windows.Forms.ColumnHeader();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.suspendThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.copyThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.columnStartAddress = new System.Windows.Forms.ColumnHeader();
+            this.columnPriority = new System.Windows.Forms.ColumnHeader();
             this.menuThread = new System.Windows.Forms.ContextMenu();
             this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
@@ -52,25 +47,50 @@
             this.idleThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem9 = new System.Windows.Forms.MenuItem();
             this.selectAllThreadMenuItem = new System.Windows.Forms.MenuItem();
-            this.columnPriority = new System.Windows.Forms.ColumnHeader();
+            this.tableInformation = new System.Windows.Forms.TableLayoutPanel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.labelState = new System.Windows.Forms.Label();
+            this.labelKernelTime = new System.Windows.Forms.Label();
+            this.labelUserTime = new System.Windows.Forms.Label();
+            this.labelTotalTime = new System.Windows.Forms.Label();
+            this.labelPriority = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.labelBasePriority = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.labelContextSwitches = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.inspectThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminateThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.suspendThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyThreadMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.fileModule = new ProcessHacker.Components.FileNameBox();
+            this.tableInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // listThreads
             // 
             this.listThreads.AllowColumnReorder = true;
+            this.listThreads.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listThreads.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnThreadID,
             this.columnContextSwitchesDelta,
             this.columnStartAddress,
             this.columnPriority});
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.FullRowSelect = true;
             this.listThreads.HideSelection = false;
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.ShowItemToolTips = true;
-            this.listThreads.Size = new System.Drawing.Size(450, 472);
+            this.listThreads.Size = new System.Drawing.Size(450, 307);
             this.listThreads.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listThreads.TabIndex = 3;
             this.listThreads.UseCompatibleStateImageBehavior = false;
@@ -82,54 +102,20 @@
             this.columnThreadID.Text = "TID";
             this.columnThreadID.Width = 50;
             // 
-            // columnStartAddress
-            // 
-            this.columnStartAddress.Text = "Start Address";
-            this.columnStartAddress.Width = 220;
-            // 
             // columnContextSwitchesDelta
             // 
             this.columnContextSwitchesDelta.Text = "Context Switches Delta";
             this.columnContextSwitchesDelta.Width = 70;
             // 
-            // vistaMenu
+            // columnStartAddress
             // 
-            this.vistaMenu.ContainerControl = this;
+            this.columnStartAddress.Text = "Start Address";
+            this.columnStartAddress.Width = 220;
             // 
-            // inspectThreadMenuItem
+            // columnPriority
             // 
-            this.inspectThreadMenuItem.DefaultItem = true;
-            this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.inspectThreadMenuItem.Index = 0;
-            this.inspectThreadMenuItem.Text = "&Inspect...";
-            this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
-            // 
-            // terminateThreadMenuItem
-            // 
-            this.vistaMenu.SetImage(this.terminateThreadMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.terminateThreadMenuItem.Index = 1;
-            this.terminateThreadMenuItem.Text = "&Terminate";
-            this.terminateThreadMenuItem.Click += new System.EventHandler(this.terminateThreadMenuItem_Click);
-            // 
-            // suspendThreadMenuItem
-            // 
-            this.vistaMenu.SetImage(this.suspendThreadMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendThreadMenuItem.Index = 2;
-            this.suspendThreadMenuItem.Text = "&Suspend";
-            this.suspendThreadMenuItem.Click += new System.EventHandler(this.suspendThreadMenuItem_Click);
-            // 
-            // resumeThreadMenuItem
-            // 
-            this.vistaMenu.SetImage(this.resumeThreadMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeThreadMenuItem.Index = 3;
-            this.resumeThreadMenuItem.Text = "&Resume";
-            this.resumeThreadMenuItem.Click += new System.EventHandler(this.resumeThreadMenuItem_Click);
-            // 
-            // copyThreadMenuItem
-            // 
-            this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyThreadMenuItem.Index = 8;
-            this.copyThreadMenuItem.Text = "C&opy";
+            this.columnPriority.Text = "Priority";
+            this.columnPriority.Width = 100;
             // 
             // menuThread
             // 
@@ -230,21 +216,255 @@
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
-            // columnPriority
+            // tableInformation
             // 
-            this.columnPriority.Text = "Priority";
-            this.columnPriority.Width = 100;
+            this.tableInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableInformation.ColumnCount = 2;
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableInformation.Controls.Add(this.label1, 0, 6);
+            this.tableInformation.Controls.Add(this.label6, 0, 0);
+            this.tableInformation.Controls.Add(this.label8, 0, 1);
+            this.tableInformation.Controls.Add(this.label9, 0, 2);
+            this.tableInformation.Controls.Add(this.label10, 0, 3);
+            this.tableInformation.Controls.Add(this.labelState, 1, 0);
+            this.tableInformation.Controls.Add(this.labelKernelTime, 1, 1);
+            this.tableInformation.Controls.Add(this.labelUserTime, 1, 2);
+            this.tableInformation.Controls.Add(this.labelTotalTime, 1, 3);
+            this.tableInformation.Controls.Add(this.labelContextSwitches, 1, 6);
+            this.tableInformation.Controls.Add(this.labelBasePriority, 1, 5);
+            this.tableInformation.Controls.Add(this.label2, 0, 5);
+            this.tableInformation.Controls.Add(this.labelPriority, 1, 4);
+            this.tableInformation.Controls.Add(this.label3, 0, 4);
+            this.tableInformation.Location = new System.Drawing.Point(0, 343);
+            this.tableInformation.Name = "tableInformation";
+            this.tableInformation.RowCount = 7;
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
+            this.tableInformation.Size = new System.Drawing.Size(450, 129);
+            this.tableInformation.TabIndex = 4;
+            // 
+            // label6
+            // 
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 2);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(32, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "State";
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 20);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Kernel Time";
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(3, 38);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(55, 13);
+            this.label9.TabIndex = 1;
+            this.label9.Text = "User Time";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 56);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Total Time";
+            // 
+            // labelState
+            // 
+            this.labelState.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelState.AutoSize = true;
+            this.labelState.Location = new System.Drawing.Point(414, 2);
+            this.labelState.Name = "labelState";
+            this.labelState.Size = new System.Drawing.Size(33, 13);
+            this.labelState.TabIndex = 1;
+            this.labelState.Text = "value";
+            // 
+            // labelKernelTime
+            // 
+            this.labelKernelTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelKernelTime.AutoSize = true;
+            this.labelKernelTime.Location = new System.Drawing.Point(414, 20);
+            this.labelKernelTime.Name = "labelKernelTime";
+            this.labelKernelTime.Size = new System.Drawing.Size(33, 13);
+            this.labelKernelTime.TabIndex = 1;
+            this.labelKernelTime.Text = "value";
+            // 
+            // labelUserTime
+            // 
+            this.labelUserTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelUserTime.AutoSize = true;
+            this.labelUserTime.Location = new System.Drawing.Point(414, 38);
+            this.labelUserTime.Name = "labelUserTime";
+            this.labelUserTime.Size = new System.Drawing.Size(33, 13);
+            this.labelUserTime.TabIndex = 1;
+            this.labelUserTime.Text = "value";
+            // 
+            // labelTotalTime
+            // 
+            this.labelTotalTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelTotalTime.AutoSize = true;
+            this.labelTotalTime.Location = new System.Drawing.Point(414, 56);
+            this.labelTotalTime.Name = "labelTotalTime";
+            this.labelTotalTime.Size = new System.Drawing.Size(33, 13);
+            this.labelTotalTime.TabIndex = 1;
+            this.labelTotalTime.Text = "value";
+            // 
+            // labelPriority
+            // 
+            this.labelPriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPriority.AutoSize = true;
+            this.labelPriority.Location = new System.Drawing.Point(414, 74);
+            this.labelPriority.Name = "labelPriority";
+            this.labelPriority.Size = new System.Drawing.Size(33, 13);
+            this.labelPriority.TabIndex = 3;
+            this.labelPriority.Text = "value";
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 92);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Base Priority";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Priority";
+            // 
+            // labelBasePriority
+            // 
+            this.labelBasePriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelBasePriority.AutoSize = true;
+            this.labelBasePriority.Location = new System.Drawing.Point(414, 92);
+            this.labelBasePriority.Name = "labelBasePriority";
+            this.labelBasePriority.Size = new System.Drawing.Size(33, 13);
+            this.labelBasePriority.TabIndex = 4;
+            this.labelBasePriority.Text = "value";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 112);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(89, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Context Switches";
+            // 
+            // labelContextSwitches
+            // 
+            this.labelContextSwitches.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelContextSwitches.AutoSize = true;
+            this.labelContextSwitches.Location = new System.Drawing.Point(414, 112);
+            this.labelContextSwitches.Name = "labelContextSwitches";
+            this.labelContextSwitches.Size = new System.Drawing.Size(33, 13);
+            this.labelContextSwitches.TabIndex = 7;
+            this.labelContextSwitches.Text = "value";
+            // 
+            // label7
+            // 
+            this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 318);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "Start Module:";
+            // 
+            // inspectThreadMenuItem
+            // 
+            this.inspectThreadMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.inspectThreadMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
+            this.inspectThreadMenuItem.Index = 0;
+            this.inspectThreadMenuItem.Text = "&Inspect...";
+            this.inspectThreadMenuItem.Click += new System.EventHandler(this.inspectThreadMenuItem_Click);
+            // 
+            // terminateThreadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.terminateThreadMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.terminateThreadMenuItem.Index = 1;
+            this.terminateThreadMenuItem.Text = "&Terminate";
+            this.terminateThreadMenuItem.Click += new System.EventHandler(this.terminateThreadMenuItem_Click);
+            // 
+            // suspendThreadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.suspendThreadMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
+            this.suspendThreadMenuItem.Index = 2;
+            this.suspendThreadMenuItem.Text = "&Suspend";
+            this.suspendThreadMenuItem.Click += new System.EventHandler(this.suspendThreadMenuItem_Click);
+            // 
+            // resumeThreadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.resumeThreadMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
+            this.resumeThreadMenuItem.Index = 3;
+            this.resumeThreadMenuItem.Text = "&Resume";
+            this.resumeThreadMenuItem.Click += new System.EventHandler(this.resumeThreadMenuItem_Click);
+            // 
+            // copyThreadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyThreadMenuItem.Index = 8;
+            this.copyThreadMenuItem.Text = "C&opy";
+            // 
+            // vistaMenu
+            // 
+            this.vistaMenu.ContainerControl = this;
+            // 
+            // fileModule
+            // 
+            this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileModule.Location = new System.Drawing.Point(79, 313);
+            this.fileModule.Name = "fileModule";
+            this.fileModule.ReadOnly = false;
+            this.fileModule.Size = new System.Drawing.Size(368, 24);
+            this.fileModule.TabIndex = 6;
             // 
             // ThreadList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.fileModule);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.tableInformation);
             this.Controls.Add(this.listThreads);
             this.DoubleBuffered = true;
             this.Name = "ThreadList";
             this.Size = new System.Drawing.Size(450, 472);
+            this.tableInformation.ResumeLayout(false);
+            this.tableInformation.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -274,5 +494,22 @@
         private System.Windows.Forms.MenuItem selectAllThreadMenuItem;
         private System.Windows.Forms.MenuItem inspectTEBMenuItem;
         private System.Windows.Forms.ColumnHeader columnPriority;
+        private System.Windows.Forms.TableLayoutPanel tableInformation;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label labelState;
+        private System.Windows.Forms.Label labelKernelTime;
+        private System.Windows.Forms.Label labelUserTime;
+        private System.Windows.Forms.Label labelTotalTime;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelBasePriority;
+        private System.Windows.Forms.Label labelPriority;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelContextSwitches;
+        private System.Windows.Forms.Label label7;
+        private ProcessHacker.Components.FileNameBox fileModule;
     }
 }

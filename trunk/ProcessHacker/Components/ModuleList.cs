@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -312,15 +312,7 @@ namespace ProcessHacker
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)
         {
-            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
-
-            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-            info.lpFile = listModules.SelectedItems[0].ToolTipText;
-            info.nShow = Win32.SW_SHOW;
-            info.fMask = Win32.SEE_MASK_INVOKEIDLIST;
-            info.lpVerb = "properties";
-
-            Win32.ShellExecuteEx(ref info);
+            Win32.ShowProperties(listModules.SelectedItems[0].ToolTipText);
         }
 
         private void inspectModuleMenuItem_Click(object sender, EventArgs e)

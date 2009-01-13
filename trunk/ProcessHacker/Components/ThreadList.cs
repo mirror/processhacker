@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ namespace ProcessHacker
 
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
+            listThreads_SelectedIndexChanged(null, null);
         }
 
         private void listThreads_MouseUp(object sender, MouseEventArgs e)
@@ -59,6 +60,49 @@ namespace ProcessHacker
 
         private void listThreads_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            if (listThreads.SelectedItems.Count == 1)
+            {
+                int tid = int.Parse(listThreads.SelectedItems[0].Name);
+                ProcessItem process = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+                ProcessThread thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
+
+                try
+                {
+                    fileModule.Text = _provider.Symbols.GetModuleFromAddress(_provider.Dictionary[tid].StartAddressI);
+                    fileModule.Enabled = true;
+
+                    if (thread.ThreadState == ThreadState.Wait)
+                    {
+                        labelState.Text = "Wait: " + process.Threads[tid].WaitReason.ToString();
+                    }
+                    else
+                    {
+                        labelState.Text = thread.ThreadState.ToString();
+                    }
+
+                    labelKernelTime.Text = Misc.GetNiceTimeSpan(thread.PrivilegedProcessorTime);
+                    labelUserTime.Text = Misc.GetNiceTimeSpan(thread.UserProcessorTime);
+                    labelTotalTime.Text = Misc.GetNiceTimeSpan(thread.TotalProcessorTime);
+                    labelPriority.Text = process.Threads[tid].Priority.ToString();
+                    labelBasePriority.Text = process.Threads[tid].BasePriority.ToString();
+                    labelContextSwitches.Text = process.Threads[tid].ContextSwitchCount.ToString("N0");
+                }
+                catch
+                { }
+            }
+            else
+            {
+                fileModule.Text = "";
+                fileModule.Enabled = false;
+                labelState.Text = "";
+                labelKernelTime.Text = "";
+                labelUserTime.Text = "";
+                labelTotalTime.Text = "";
+                labelPriority.Text = "";
+                labelBasePriority.Text = "";
+                labelContextSwitches.Text = "";
+            }
+
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
         }
@@ -168,7 +212,7 @@ namespace ProcessHacker
 
             litem.Name = item.TID.ToString();
             litem.Text = item.TID.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ContextSwitchesDelta.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
 
@@ -186,7 +230,11 @@ namespace ProcessHacker
                 if (litem == null)
                     return;
 
-                litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString();
+                if (newItem.ContextSwitchesDelta == 0)
+                    litem.SubItems[1].Text = "";
+                else
+                    litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString();
+
                 litem.SubItems[2].Text = newItem.StartAddress;
                 litem.SubItems[3].Text = newItem.Priority;
 
