@@ -53,6 +53,8 @@ namespace ProcessHacker
             colorBeingDebugged.Color = Properties.Settings.Default.ColorBeingDebugged;
             colorElevatedProcesses.Color = Properties.Settings.Default.ColorElevatedProcesses;
             colorJobProcesses.Color = Properties.Settings.Default.ColorJobProcesses;
+            colorDotNetProcesses.Color = Properties.Settings.Default.ColorDotNetProcesses;
+            colorPackedProcesses.Color = Properties.Settings.Default.ColorPackedProcesses;
 
             checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
             colorCPUKT.Color = Properties.Settings.Default.PlotterCPUKernelColor;
@@ -99,8 +101,10 @@ namespace ProcessHacker
             Properties.Settings.Default.ColorSystemProcesses = colorSystemProcesses.Color;
             Properties.Settings.Default.ColorServiceProcesses = colorServiceProcesses.Color;
             Properties.Settings.Default.ColorBeingDebugged = colorBeingDebugged.Color;
-            Properties.Settings.Default.ColorElevatedProcesses = colorElevatedProcesses.Color;       
+            Properties.Settings.Default.ColorElevatedProcesses = colorElevatedProcesses.Color;
             Properties.Settings.Default.ColorJobProcesses = colorJobProcesses.Color;
+            Properties.Settings.Default.ColorDotNetProcesses = colorDotNetProcesses.Color;
+            Properties.Settings.Default.ColorPackedProcesses = colorPackedProcesses.Color;
 
             Properties.Settings.Default.PlotterAntialias = checkPlotterAntialias.Checked;
             Properties.Settings.Default.PlotterCPUKernelColor = colorCPUKT.Color;

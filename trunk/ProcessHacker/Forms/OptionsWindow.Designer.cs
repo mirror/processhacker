@@ -37,6 +37,8 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.comboSizeUnits = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
@@ -72,8 +74,10 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.comboSizeUnits = new System.Windows.Forms.ComboBox();
+            this.colorDotNetProcesses = new ProcessHacker.Components.ColorModifier();
+            this.label19 = new System.Windows.Forms.Label();
+            this.colorPackedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.label20 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -123,7 +127,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(284, 288);
+            this.buttonClose.Location = new System.Drawing.Point(362, 243);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -168,7 +172,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textSearchEngine.Location = new System.Drawing.Point(95, 33);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(238, 20);
+            this.textSearchEngine.Size = new System.Drawing.Size(316, 20);
             this.textSearchEngine.TabIndex = 6;
             // 
             // tabControl
@@ -182,7 +186,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(347, 270);
+            this.tabControl.Size = new System.Drawing.Size(425, 225);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -200,10 +204,36 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(339, 244);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 199);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // comboSizeUnits
+            // 
+            this.comboSizeUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboSizeUnits.FormattingEnabled = true;
+            this.comboSizeUnits.Items.AddRange(new object[] {
+            "B",
+            "kB",
+            "MB",
+            "GB",
+            "TB",
+            "PB",
+            "EB"});
+            this.comboSizeUnits.Location = new System.Drawing.Point(95, 59);
+            this.comboSizeUnits.Name = "comboSizeUnits";
+            this.comboSizeUnits.Size = new System.Drawing.Size(67, 21);
+            this.comboSizeUnits.TabIndex = 11;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 62);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(78, 13);
+            this.label18.TabIndex = 10;
+            this.label18.Text = "Max. Size Unit:";
             // 
             // checkHideWhenMinimized
             // 
@@ -230,7 +260,11 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.label20);
+            this.tabHighlighting.Controls.Add(this.label19);
             this.tabHighlighting.Controls.Add(this.label11);
+            this.tabHighlighting.Controls.Add(this.colorPackedProcesses);
+            this.tabHighlighting.Controls.Add(this.colorDotNetProcesses);
             this.tabHighlighting.Controls.Add(this.colorJobProcesses);
             this.tabHighlighting.Controls.Add(this.label10);
             this.tabHighlighting.Controls.Add(this.colorElevatedProcesses);
@@ -251,7 +285,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(339, 244);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 199);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -259,7 +293,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 217);
+            this.label11.Location = new System.Drawing.Point(214, 88);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(79, 13);
             this.label11.TabIndex = 9;
@@ -268,7 +302,7 @@
             // colorJobProcesses
             // 
             this.colorJobProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorJobProcesses.Location = new System.Drawing.Point(127, 215);
+            this.colorJobProcesses.Location = new System.Drawing.Point(335, 86);
             this.colorJobProcesses.Name = "colorJobProcesses";
             this.colorJobProcesses.Size = new System.Drawing.Size(40, 20);
             this.colorJobProcesses.TabIndex = 8;
@@ -276,7 +310,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 191);
+            this.label10.Location = new System.Drawing.Point(214, 62);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(104, 13);
             this.label10.TabIndex = 9;
@@ -285,7 +319,7 @@
             // colorElevatedProcesses
             // 
             this.colorElevatedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorElevatedProcesses.Location = new System.Drawing.Point(127, 189);
+            this.colorElevatedProcesses.Location = new System.Drawing.Point(335, 60);
             this.colorElevatedProcesses.Name = "colorElevatedProcesses";
             this.colorElevatedProcesses.Size = new System.Drawing.Size(40, 20);
             this.colorElevatedProcesses.TabIndex = 8;
@@ -302,7 +336,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 165);
+            this.label8.Location = new System.Drawing.Point(214, 36);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(112, 13);
             this.label8.TabIndex = 6;
@@ -345,7 +379,7 @@
             // colorBeingDebugged
             // 
             this.colorBeingDebugged.Color = System.Drawing.Color.Transparent;
-            this.colorBeingDebugged.Location = new System.Drawing.Point(127, 163);
+            this.colorBeingDebugged.Location = new System.Drawing.Point(335, 34);
             this.colorBeingDebugged.Name = "colorBeingDebugged";
             this.colorBeingDebugged.Size = new System.Drawing.Size(40, 20);
             this.colorBeingDebugged.TabIndex = 3;
@@ -436,7 +470,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(339, 244);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 199);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -554,38 +588,46 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // label18
+            // colorDotNetProcesses
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 62);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(75, 13);
-            this.label18.TabIndex = 10;
-            this.label18.Text = "Max Size Unit:";
+            this.colorDotNetProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorDotNetProcesses.Location = new System.Drawing.Point(335, 111);
+            this.colorDotNetProcesses.Name = "colorDotNetProcesses";
+            this.colorDotNetProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorDotNetProcesses.TabIndex = 8;
             // 
-            // comboSizeUnits
+            // label19
             // 
-            this.comboSizeUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboSizeUnits.FormattingEnabled = true;
-            this.comboSizeUnits.Items.AddRange(new object[] {
-            "B",
-            "kB",
-            "MB",
-            "GB",
-            "TB",
-            "PB",
-            "EB"});
-            this.comboSizeUnits.Location = new System.Drawing.Point(95, 59);
-            this.comboSizeUnits.Name = "comboSizeUnits";
-            this.comboSizeUnits.Size = new System.Drawing.Size(67, 21);
-            this.comboSizeUnits.TabIndex = 11;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(214, 113);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(87, 13);
+            this.label19.TabIndex = 9;
+            this.label19.Text = ".NET Processes:";
+            // 
+            // colorPackedProcesses
+            // 
+            this.colorPackedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorPackedProcesses.Location = new System.Drawing.Point(335, 137);
+            this.colorPackedProcesses.Name = "colorPackedProcesses";
+            this.colorPackedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorPackedProcesses.TabIndex = 8;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(214, 139);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(99, 13);
+            this.label20.TabIndex = 9;
+            this.label20.Text = "Packed Processes:";
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(371, 323);
+            this.ClientSize = new System.Drawing.Size(449, 278);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -657,5 +699,9 @@
         private ProcessHacker.Components.ColorModifier colorJobProcesses;
         private System.Windows.Forms.ComboBox comboSizeUnits;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label19;
+        private ProcessHacker.Components.ColorModifier colorPackedProcesses;
+        private ProcessHacker.Components.ColorModifier colorDotNetProcesses;
     }
 }

@@ -10,6 +10,7 @@ Process Hacker
    * Now displays thread information under the thread list
    * Added module file name info for thread start addresses 
      and stack traces
+   * Highlighting for .NET processes and packed executables
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

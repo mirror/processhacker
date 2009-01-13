@@ -30,14 +30,10 @@ namespace ProcessHacker
                                          new string[] {"Introduction", "intro"},
                                          new string[] {"Options", "options"},
                                          new string[] {"Number Input", "numberinput"},
-                                         new string[] {"Process List", "proclist"},
-                                         new string[] {"Thread List", "threadlist"},
-                                         new string[] {"Modules List", "modlist"},
-                                         new string[] {"Memory List", "memlist"},  
-                                         new string[] {"Handle List", "hlist"},
+                                         new string[] {"Process Tree", "proctree"},    
+                                         new string[] {"Process Properties", "procprops"},
                                          new string[] {"Searching Memory", "memsearch"},
                                          new string[] {"Results Window", "results"},
-                                         new string[] {"Tips", "tips"},
                                          new string[] {"Copyright Information", "copyright"}
                                      };
 

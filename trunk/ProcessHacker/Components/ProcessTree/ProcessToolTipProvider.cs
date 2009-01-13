@@ -48,15 +48,14 @@ namespace ProcessHacker
 
                     if (pNode.PID == 4)
                     {
-                        filename = Misc.GetKernelFileName();
+                        filename = Misc.GetRealPath(Misc.GetKernelFileName());
                     }
                     else
                     {
                         filename = pNode.ProcessItem.FileName;
                     }
 
-                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(
-                        Misc.GetRealPath(filename));
+                    FileVersionInfo info = FileVersionInfo.GetVersionInfo(filename);
 
                     fileText = "File:\n    " + info.FileName + "\n    " +
                         info.FileDescription + " " + info.FileVersion + "\n    " +

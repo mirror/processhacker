@@ -281,16 +281,12 @@ namespace ProcessHacker
 
             if (_peFile.ImportData != null)
             {      
-                List<KeyValuePair<string, int>> list = new List<KeyValuePair<string,int>>();
+                var list = new List<KeyValuePair<string,int>>();
 
                 for (int i = 0; i < _peFile.ImportData.ImportDirectoryTable.Count; i++)
                     list.Add(new KeyValuePair<string,int>(_peFile.ImportData.ImportDirectoryTable[i].Name, i));
 
-                list.Sort(new Comparison<KeyValuePair<string, int>>(
-                    delegate(KeyValuePair<string, int> kvp1, KeyValuePair<string, int> kvp2)
-                    {
-                        return StringComparer.CurrentCultureIgnoreCase.Compare(kvp1.Key, kvp2.Key);
-                    }));
+                list.Sort((kvp1, kvp2) => StringComparer.CurrentCultureIgnoreCase.Compare(kvp1.Key, kvp2.Key));
 
                 for (int i = 0; i < list.Count; i++)
                 {

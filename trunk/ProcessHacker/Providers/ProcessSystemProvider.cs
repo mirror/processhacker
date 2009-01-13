@@ -43,8 +43,10 @@ namespace ProcessHacker
 
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public bool IsBeingDebugged;
+        public bool IsDotNet;
         public bool IsElevated;
         public bool IsInJob;
+        public bool IsPacked;
         public bool IsVirtualizationEnabled;
         public long LastTime;
         public int SessionId;
@@ -366,6 +368,49 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
+
+                    item.IsPacked = false;
+                    // find out if it's packed - if it has less than 3 referenced DLLs and 5 function imports
+                    try
+                    {
+                        var peFile = new PE.PEFile(item.FileName);
+                        int funcTotal = 0;
+
+                        foreach (var i in peFile.ImportData.ImportLookupTable)
+                            funcTotal += i.Count;
+
+                        if (peFile.ImportData.ImportDirectoryTable.Count < 3 &&
+                            funcTotal < 5)
+                            item.IsPacked = true;
+                    }
+                    catch
+                    {
+                        // we can't read it, so...
+                        if (pid > 4)
+                            item.IsPacked = true;
+                    }
+
+                    // find out if it's a .NET process (we'll just see if it has loaded mscoree.dll)
+                    if (item.IsPacked)
+                    {
+                        var modDict = new Dictionary<string, string>();
+
+                        try
+                        {
+                            foreach (ProcessModule m in p.Modules)
+                                modDict.Add(m.ModuleName.ToLower(), m.FileName);
+                        }
+                        catch
+                        { }
+
+                        if (modDict.ContainsKey("mscoree.dll") &&
+                            modDict["mscoree.dll"].ToLower() == (Environment.SystemDirectory + "\\mscoree.dll").ToLower())
+                        {
+                            item.IsDotNet = true;
+                            // .NET processes also look like they're packed
+                            item.IsPacked = false;
+                        }
                     }
 
                     if (pid == 0 || pid == 4)

@@ -497,6 +497,10 @@ namespace ProcessHacker
 
         private void inspectProcessMenuItem_Click(object sender, EventArgs e)
         {
+            // user hasn't got any processes selected
+            if (processSelectedPID == -1)
+                return;
+
             try
             {
                 ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPID],

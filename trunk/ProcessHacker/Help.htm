@@ -18,16 +18,17 @@ pre {
     </style>
   </head>
   <body>
-    <p><em><strong>Process Hacker</strong>, by wj32 and Dean.</em></p>
+    <p><em><strong>Process Hacker</strong>, by wj32 and others.</em></p>
 
     <h1 id="intro">Introduction</h1>
-    <p>Process Hacker is a tool to view and manipulate processes. It can display a process' threads,
-    modules, memory regions and handles. It can also search through a process' memory and read/write
-    process memory.</p>
+    <p>Process Hacker is a tool to view and manipulate processes and services. It can display process' threads,
+    modules, memory regions and handles, search through process memory, and read/write memory using 
+    a built-in hex editor.</p>
 
     <h2>System Requirements</h2>
     <ul>
-      <li>Microsoft Windows XP SP2 or Vista, <strong>32-bit</strong></li>
+      <li>Microsoft Windows XP SP2 or Vista, <strong>32-bit</strong> (Windows XP SP3 and 
+      Windows Vista SP1 required for certain features)</li>
       <li>.NET Framework 2.0</li>
     </ul>
 
@@ -55,12 +56,27 @@ pre {
     <h2>General</h2>
     <dl>
       <dt>Update Interval</dt>
-      <dd>Determines the amount of time in milliseconds between each <em>update</em>; i.e, when 
+      <dd>The amount of time in milliseconds between each <em>update</em>; i.e, when 
       Process Hacker looks for new, modified or removed processes and services.</dd>
       
       <dt>Search Engine</dt>
       <dd>This is used by the <strong>Search Online...</strong> menu item in the process and module 
       context menus. <code>%s</code> is replaced by the name of the selected process or module.</dd>
+      
+      <dt>Max. Size Unit</dt>
+      <dd>Specifies the maximum unit of size; sizes which can be displayed as 1024 or less in a 
+      smaller unit will be displayed in that smaller unit, while sizes requiring a larger unit will 
+      use units up to the maximum unit specified here.</dd>
+      
+      <dt>Show tray icon</dt>
+      <dd>When this option is enabled, Process Hacker will display an icon in the system tray area. 
+      That icon will show the CPU usage history and any enabled notifications such as new/terminated 
+      processes and new/started/stopped/deleted services. You can configure notifications by 
+      right-clicking on the icon.</dd>
+      
+      <dt>Hide when minimized</dt>
+      <dd>When this option is enabled, Process Hacker will automatically hide when it is minimized. You 
+      can double-click on the tray icon to show Process Hacker again.</dd>
       
       <dt>Warn about potentially dangerous actions</dt>
       <dd>When this option is enabled, Process Hacker will warn about certain actions to system processes.</dd>
@@ -68,10 +84,6 @@ pre {
       <dt>Show user/group domains</dt>
       <dd>When this option is enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
       would be shown as <code>machine-name\user</code>.</dd>
-      
-      <dt>Use Toolhelp-based module listings</dt>
-      <dd>When this option is enabled, Process Hacker will try to use the Toolhelp functions to display 
-      module listings. Do not use this option unless module listings are not working.</dd>
     </dl>
     
     <h2>Highlighting</h2>
@@ -79,8 +91,49 @@ pre {
       <dt>Highlighting Duration</dt>
       <dd>This specifies the amount of time for which new and removed objects (processes, threads and services) 
       are highlighted in a different color.</dd>
+      
+      <dt>New Objects</dt>
+      <dd>Highlighting for new processes, services, threads, modules, memory regions, and handles.</dd>
+      
+      <dt>Removed Objects</dt>
+      <dd>Highlighting for the above objects.</dd>
+      
+      <dt>Own Processes</dt>
+      <dd>Highlighting for processes running under the same user account as Process Hacker.</dd>
+      
+      <dt>System Processes</dt>
+      <dd>Highlighting for processes running under the SYSTEM user account.</dd>
+      
+      <dt>Service Processes</dt>
+      <dd>Highlighting for processes hosting one or more services.</dd>
+      
+      <dt>Debugged Processes</dt>
+      <dd>Highlighting for processes currently being debugged.</dd>
+      
+      <dt>Elevated Processes</dt>
+      <dd>Highlighting for processes running with full privileges on a computer with 
+      User Account Control (UAC) enabled.</dd>
+      
+      <dt>Job Processes</dt>
+      <dd>Highlighting for processes associated with a job object.</dd>
+      
+      <dt>.NET Processes</dt>
+      <dd>Highlighting for managed processes. Note that this currently only 
+      highlights pure CLR executables - mixed code executables and processes hosting 
+      .NET code will not be highlighted.</dd>
+      
+      <dt>Packed Processes</dt>
+      <dd>Highlighting for packed images. Images are considered packed if they 
+      contain less than 5 imports and less than 3 referenced libraries.</dd>
     </dl>
-
+    
+    <h2>Plotting</h2>
+    <dl>
+      <dt>Use Anti-aliasing</dt>
+      <dd>If selected, Process Hacker will draw graphs with anti-aliasing. This will 
+      usually consume much more system resources than normal.</dd>
+    </dl>
+    
     <h1 id="numberinput">Number Input</h1>
     <p>Process Hacker supports the input of numbers in various bases (including some non-standard
     extensions). This is allowed in: Get Function Address, Change Memory Protection, the Go To
@@ -97,25 +150,19 @@ pre {
       <li>It starts with <code>r</code> - base 32</li>
     </ul>
 
-    <h1 id="proclist">Process List</h1>
-    <p>The process list displays processes running on the system. Note that if Process Hacker was unable
-    to acquire the debug privilege, it will not be able to display and manipulate processes not owned
-    by the current user. To manipulate a process, right-click on an item. The same can be done to
-    multiple processes. To view process modules, threads, memory and heaps you must click on a
-    process in the list.</p>
-
-    <h2>Columns</h2>
-    <dl>
-      <dt>Name</dt>
-      <dd>This column displays the process names (as reported by the <em>Tool Help</em> API functions). If
-      the process' name could not be retrieved, it will be displayed as <code>(unknown)</code>.</dd>
-
-      <dt>PID</dt>
-      <dd>The process ID.</dd>
-
-      <dt>Pvt. Memory</dt>
-      <dd>The memory usage of the process, excluding shared memory regions.</dd>
-    </dl>
+    <h1 id="proctree">Process Tree</h1>
+    <p>The process tree displays processes running on the system as a tree; processes started by a 
+    particular parent process are shown indented below it. Processes with a non-existent parent 
+    (where its parent has terminated) are shown on the far left. You can manipulate processes by 
+    right-clicking on them, and you can show detailed properties for a process by double-clicking 
+    it or selecting the "Properties..." menu item.</p>
+    
+    <p>You can sort by the various columns by clicking on them - the tree view will temporarily 
+    become a flat list. You can click the same column again to sort in the opposite order, and 
+    once more to return to the tree view.</p>
+    
+    <p>Like Process Explorer, Process Hacker shows Deferred Procedure Calls (DPCs) and Interrupts 
+    in the process tree. The only information these "processes" show is their CPU usage.</p>
 
     <h2>Context Menu</h2>
     <p><strong>Warning:</strong> Manipulating csrss.exe, dwm.exe, lsass.exe, lsm.exe, smss.exe,
@@ -133,43 +180,23 @@ pre {
       <dt>Resume Process(es)</dt>
       <dd>Resumes the process by resuming each of its threads using <code>ResumeThread()</code>.</dd>
       
-      <dt>Go to Parent</dt>
-      <dd>Selects the process' parent (the process which started the selected process).</dd>
+      <dt>Affinity...</dt>
+      <dd>Allows you to view and modify the process' CPU affinity (the CPUs on which it is allowed 
+      to run).</dd>
       
-      <dt>Inspect...</dt>
-      <dd>Inspects the process as a PE file, showing image data, sections, imports and exports.</dd>
-      
-      <dt>Privileges...</dt>
-      <dd>Opens a window allowing you to view, enable, disable or remove any of the process'
-      privileges.</dd>
-      
-      <dt>Groups...</dt>
-      <dd>Opens a window allowing you to view the process' groups (including integrity levels).</dd>
-      
-      <dt>Services...</dt>
-      <dd>Opens a window showing the selected process' services.</dd>
-      
-      <dt>Run As</dt>
-      <dd>These tools require <code>Assistant.exe</code> (distributed with Process Hacker) to be in the same directory 
-      as <code>ProcessHacker.exe</code>. Process Hacker installs a system service to run the programs <strong>Launch As User...</strong> - This allows you to run the selected process as another user.<br />
-      <strong>Launch As This User...</strong> - This allows you to run a program under the selected process' user. This 
-      is useful when you want to start a program as another user but you do not have that user's password.</dd>
-      
-      <!-- <dt>Injector</dt>
-      <dd>This menu item contains several functions for manipulating the selected process using the Injector tool 
-      (supplied with Process Hacker as <code>Injector.exe</code>). If <code>Injector.exe</code> is not present in 
-      the same directory as Process Hacker, this menu item will not be visible. Due to restrictions with 
-      the <code>CreateRemoteThread</code> API function, this menu item is disabled for processes with a different 
-      session ID than Process Hacker (usually processes running under the SYSTEM account).<br /><br />
-      <strong>Start Process...</strong> - forces the target process to start a command you specify. This can be used 
-      to start a process under the SYSTEM account - try targeting <code>winlogon.exe</code>. Note that because of 
-      incompatibilities, this menu item is not available when running Windows XP.<br />
-      <strong>Get Command Line...</strong> - shows the target process' command line.<br />
-      <strong>Exit Process</strong> - forces the target process to terminate itself.</dd> -->
+      <dt>Terminator...</dt>
+      <dd>A tool to try to terminate the selected process using many different techniques.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.
       This option is not available when multiple processes are selected.</dd>
+      
+      <dt>Run As</dt>
+      <dd>These tools require <code>Assistant.exe</code> (distributed with Process Hacker) to be in the same directory 
+      as <code>ProcessHacker.exe</code>.<br />
+      <strong>Launch As User...</strong> - This allows you to run the selected process as another user.<br />
+      <strong>Launch As This User...</strong> - This allows you to run a program under the selected process' user. This 
+      is useful when you want to start a program as another user but you do not have that user's password.</dd>
       
       <dt>Search Online...</dt>
       <dd>Opens the default web browser with the search engine specified in Process Hacker's options.</dd>
@@ -178,168 +205,50 @@ pre {
       <dd>Selects all items in the list.</dd>
     </dl>
 
-    <h1 id="threadlist">Thread List</h1>
-    <p>The thread list displays the selected process' threads. Double-clicking a thread will display its call 
-    stack.</p>
-    
-    <h2>Columns</h2>
+    <h1 id="procprops">Process Properties</h1>
     <dl>
-      <dt>TID</dt>
-      <dd>The thread ID.</dd>
-
-      <dt>State</dt>
-      <dd>The state of the thread - Initialized, Ready, Running, Standby, Terminated, Transition, Unknown,
-      Wait.</dd>
-
-      <dt>CPU Time</dt>
-      <dd>The total CPU Time measured in Minutes:Seconds:Milliseconds.</dd>
-
-      <dt>Priority</dt>
-      <dd>The priority of the thread - Time Critical, Highest, Above Normal, Normal, Below Normal, Lowest,
-      Idle.</dd>
-    </dl>
-
-    <h2>Context Menu</h2>
-    <dl>
-      <dt>Inspect</dt>
-      <dd>Opens a window showing the thread's call stack.</dt>
+      <dt>General</dt>
+      <dd>Displays basic information about the process and its image file. You can also view the 
+      process' PEB contents and view/change its DEP status (requires Windows XP SP3 or higher, and 
+      changing DEP status uses remote thread injection).</dd>
       
-      <dt>Terminate Thread(s)</dt>
-      <dd>Terminates the selected thread(s) using the <code>TerminateThread()</code> API function.</dd>
-
-      <dt>Suspend Thread(s)</dt>
-      <dd>Suspends the selected thread(s) using the <code>SuspendThread()</code> API function.</dd>
-
-      <dt>Resume Thread(s)</dt>
-      <dd>Resumes the selected thread(s) using the <code>ResumeThread()</code> API function.</dd>
-
-      <dt>Priority</dt>
-      <dd>Sets the priority of the thread. This option is not available when multiple threads are
-      selected.</dd>
-
-      <dt>Select All</dt>
-      <dd>Select all items in the list.</dd>
-    </dl>
-
-    <h1 id="modlist">Module List</h1>
-    <p>This list displays all modules loaded by the selected process. Unlike the process list or the
-    thread list, this list does not refresh automatically. To refresh the list, click the name of the
-    process in the process list again. To view the full file name of a module, hover the mouse over the
-    module name or use the <strong>Copy File Name</strong> menu item. Double-clicking an item 
-    in the list will switch to the <strong>Memory</strong> tab and select the associated memory 
-    region.</p>
-    
-    <p>Note that if the <em>System</em> process is selected, the module list will display a list 
-    of drivers loaded by the kernel, as reported by <code>EnumDeviceDrivers()</code>.</p>
-
-    <h2>Columns</h2>
-    <dl>
-      <dt>Name</dt>
-      <dd>The short file name of the module. The main module is displayed at the top in bold font.</dd>
-
-      <dt>Base Address</dt>
-      <dd>The address at which the module was loaded in memory.</dd>
-
-      <dt>Size</dt>
-      <dd>The size, in bytes, of the module in memory.</dd>
+      <dt>Statistics</dt>
+      <dd>Displays statistics and performance information.</dd>
       
-      <dt>Description</dt>
-      <dd>The file description, taken from the version information of the file.</dd>
-    </dl>
-
-    <h2>Context Menu</h2>
-    <dl>
-      <dt>Copy File Name</dt>
-      <dd>Copies the full file name	of the module to the clipboard.</dd>
+      <dt>Performance</dt>
+      <dd>Displays three graphs relating to the process' performance - CPU Usage, 
+      Memory Usage, and I/O activity.</dd>
       
-      <dt>Open Containing Folder</dt>
-      <dd>Opens Windows Explorer with the selected module's file highlighted.</dd>
-
-      <dt>Properties...</dt>
-      <dd>Displays a properties window similar to Windows Explorer's with the module's file.</dd>
-
-      <dt>Get Function Address.</dt>
-      <dd>Opens a small box in which you can type a function name to get its address in memory.
-      Note that if the module has not been loaded by Process Hacker, it will be loaded. After
-      calling <code>GetProcAddress()</code>, Process Hacker will unload the module.</dd>
-
-      <dt>Change Memory Protection...</dt>
-      <dd>Allows you to change the page protection of the module's memory region using the API
-      function <code>VirtualProtectEx()</code>. Note that if Data Execution Prevention (DEP) is
-      enabled on the machine, certain actions may trigger DEP to close the target process.</dd>
-
-      <dt>Read Memory...</dt>
-      <dd>Allows you to read the memory of the module using <code>ReadProcessMemory()</code>.</dd>
-
-      <dt>Go To In Memory View</dt>
-      <dd>Switches to the <strong>Memory</strong> tab and selects the memory region associated
-      with the module.</dd>
+      <dt>Threads</dt>
+      <dd>Displays the process' threads, including their symbolic start addresses. You can click on 
+      a thread to view more information, or double-click a thread to view its call stack.</dd>
+      
+      <dt>Token</dt>
+      <dd>Displays the process' primary token. On Windows Vista with UAC enabled, you can also 
+      click on the <strong>Linked Token...</strong> button to view the token associated with 
+      the process' token. You can also enable and disable privileges.</dd>
+      
+      <dt>Modules</dt>
+      <dd>Displays the modules loaded by the process. Right-click a module for more options.</dd>
+      
+      <dt>Memory</dt>
+      <dd>Displays the process' virtual memory regions. Double-click a memory region to 
+      read/write its contents, and right-click a memory region to perform other actions. You can 
+      also search memory using the search button (see below).</dd>
+      
+      <dt>Handles</dt>
+      <dd>Displays the process' handles - resources it has opened. You can right-click a handle and 
+      close it.</dd>
+      
+      <dt>Services</dt>
+      <dd>Displays services that are registered in the process.</dd>
     </dl>
-
-    <h1 id="memlist">Memory List</h1>
-    <p>This list displays the memory regions of the process using the API function
-    <code>VirtualQueryEx()</code>.</p>
-
-    <h2>Columns</h2>
-    <dl>
-      <dt>Address</dt>
-      <dd>The start of the memory region.</dd>
-
-      <dt>Size</dt>
-      <dd>The size of the memory region.</dd>
-
-      <dt>State</dt>
-      <dd>The state of the memory region - <br>
-      COMMIT - Indicates that physical storage has been allocated for the region,
-      either in memory or in the paging file.<br>
-      FREE - Indicates that the region is available to be allocated.<br>
-      RESERVE - Indicates that the region has been reserved but no physical storage
-      has been allocated for it.
-      </dd>
-
-      <dt>Type</dt>
-      <dd>The type of the memory region - <br>
-      IMAGE - Indicates that the region is mapped into an image (i.e. executable) section.<br>
-      MAPPED - Indicates that the region is mapped.<br>
-      PRIVATE - Indicates that the region is private (i.e. not shared with other processes).
-      </dd>
-
-      <dt>Protection</dt>
-      <dd>The protection of the memory region.</dd>
-    </dl>
-
-    <h2>Context Menu</h2>
-    <dl>
-      <dt>Change Memory Protection...</dt>
-      <dd>Uses the API function <code>VirtualProtectEx()</code> to change the page protection
-      of the memory region.</dd>
-
-      <dt>Read/Write Memory...</dt>
-      <dd>Uses the API functions <code>ReadProcessMemory()</code> and <code>WriteProcessMemory()</code>
-      to read/write data in the memory region. Note that certain actions may trigger DEP to
-      close the target process.</dd>
-
-      <dt>Read/Write Address...</dt>
-      <dd>
-        Allows you to enter an virtual memory address to edit. Process Hacker will find the appropriate
-        memory region and select the correct relative address. For example, if you want to edit memory at
-        <code>0x12345678</code> and the process has a memory region starting at <code>0x12345100</code>,
-        Process Hacker will open the <strong>Read/Write Memory</strong> box and select the relative address
-        <code>0x00000578</code>.
-      </dd>
-    </dl>
-
-    <h1 id="hlist">Handle List</h1>
-    <p>This list displays the handles opened by the process (files, registry keys, various NT objects) and 
-    allows you to close them. This is useful for "unlocking" files which you cannot delete because they 
-    are in use (although this is useless against rootkits).</p>
 
     <h1 id="memsearch">Searching Memory</h1>
     <p>Process Hacker supports searching using a literal string or regular expressions. To 
-    perform a search, select the <strong>Process</strong> tab and select an option in the 
-    search button. A window will appear in which you can enter the data to search for. There 
-    are also checkboxes which control the memory regions to search in. When <strong>OK</strong> 
-    is clicked, a Results Window will appear with the search results.</p>
+    perform a search, open a Properties window for a process, select the <strong>Memory</strong> 
+    tab and select an option in the search button. A window will appear in which you can 
+    enter the data to search for. You can also control the types of memory regions to search.</p>
     
     <dl>
       <dt>Literal Search</dt>
@@ -414,16 +323,6 @@ pre {
       
       <dt>Save...</dt>
       <dd>This allows you to save the search results to a text file.</dd>
-    </dl>
-
-    <h1 id="tips">Tips</h1>
-    <dl>
-      <dt>Terminating Processes</dt>
-      <dd>Almost all processes (including most Anti-virus programs) can be terminated by setting the
-      page protection on their main module to PAGE_NOACCESS. This can be done by right-clicking
-      on the module in bold font and selecting <strong>Change Memory Protection...</strong>.
-      Type <code>0x1</code> and click <strong>Change</strong>. The process should crash within
-      a few seconds.</dd>
     </dl>
     
     <h1 id="copyright">Copyright Information</h1>

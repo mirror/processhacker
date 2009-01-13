@@ -361,7 +361,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("170, 255, 170")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Chartreuse")]
         public global::System.Drawing.Color ColorNewProcesses {
             get {
                 return ((global::System.Drawing.Color)(this["ColorNewProcesses"]));
@@ -373,7 +373,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("255, 170, 170")]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 60, 40")]
         public global::System.Drawing.Color ColorRemovedProcesses {
             get {
                 return ((global::System.Drawing.Color)(this["ColorRemovedProcesses"]));
@@ -836,6 +836,30 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["UnitSpecifier"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("222, 255, 0")]
+        public global::System.Drawing.Color ColorDotNetProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorDotNetProcesses"]));
+            }
+            set {
+                this["ColorDotNetProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DeepPink")]
+        public global::System.Drawing.Color ColorPackedProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorPackedProcesses"]));
+            }
+            set {
+                this["ColorPackedProcesses"] = value;
             }
         }
     }

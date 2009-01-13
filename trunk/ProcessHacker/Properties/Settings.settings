@@ -87,10 +87,10 @@
       <Value Profile="(Default)">http://www.google.com/search?q=%s</Value>
     </Setting>
     <Setting Name="ColorNewProcesses" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">170, 255, 170</Value>
+      <Value Profile="(Default)">Chartreuse</Value>
     </Setting>
     <Setting Name="ColorRemovedProcesses" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">255, 170, 170</Value>
+      <Value Profile="(Default)">255, 60, 40</Value>
     </Setting>
     <Setting Name="ColorOwnProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">255, 255, 170</Value>
@@ -205,6 +205,12 @@
     </Setting>
     <Setting Name="UnitSpecifier" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="ColorDotNetProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">222, 255, 0</Value>
+    </Setting>
+    <Setting Name="ColorPackedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DeepPink</Value>
     </Setting>
   </Settings>
 </SettingsFile>
