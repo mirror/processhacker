@@ -54,16 +54,25 @@ namespace ProcessHacker
             {
                 listBoxContents.Items.Add(s[0]);
             }
+
+            webBrowser.Navigating += (sender, e) => e.Cancel = true;
         }
 
         private void listBoxContents_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (string[] s in contents)
+            if (listBoxContents.SelectedItems.Count == 1)
             {
-                if (s[0] == listBoxContents.SelectedItem.ToString())
+                foreach (string[] s in contents)
                 {
-                    webBrowser.Document.GetElementById(s[1]).ScrollIntoView(true);
-                    break;
+                    if (s[0] == listBoxContents.SelectedItem.ToString())
+                    {
+                        HtmlElement element = webBrowser.Document.GetElementById(s[1]);
+
+                        if (element != null)
+                            element.ScrollIntoView(true);
+
+                        break;
+                    }
                 }
             }
         }
@@ -78,6 +87,19 @@ namespace ProcessHacker
             e.Cancel = true;
 
             this.Hide();
+        }
+
+        private void webBrowser_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            // HACK
+            if (e.KeyData != Keys.F5)
+            {
+                webBrowser.WebBrowserShortcutsEnabled = true;
+            }
+            else
+            {
+                webBrowser.WebBrowserShortcutsEnabled = false;
+            }
         }
     }
 }
