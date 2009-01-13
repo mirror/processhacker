@@ -558,6 +558,38 @@ namespace ProcessHacker
 
                 return returnProcesses;
             }
+        }   
+
+        public static Icon GetFileIcon(string fileName)
+        {
+            return GetFileIcon(fileName, false);
+        }
+
+        public static Icon GetFileIcon(string fileName, bool large)
+        {
+            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
+
+            if (fileName == null || fileName == "")
+                throw new Exception("File name cannot be empty.");
+
+            try
+            {
+                if (Win32.SHGetFileInfo(fileName, 0, ref shinfo,
+                      (uint)Marshal.SizeOf(shinfo),
+                       Win32.SHGFI_ICON |
+                       (large ? Win32.SHGFI_LARGEICON : Win32.SHGFI_SMALLICON)) == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Icon.FromHandle(shinfo.hIcon);
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -586,35 +618,6 @@ namespace ProcessHacker
             } while (Process32Next(snapshot, ref proc) != 0);
 
             return "(unknown)";
-        }
-
-        public static Icon GetProcessIcon(Process p)
-        {
-            return GetProcessIcon(p, false);
-        }
-
-        public static Icon GetProcessIcon(Process p, bool large)
-        {
-            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
-
-            try
-            {
-                if (Win32.SHGetFileInfo(Misc.GetRealPath(p.MainModule.FileName), 0, ref shinfo,
-                      (uint)Marshal.SizeOf(shinfo),
-                       Win32.SHGFI_ICON |
-                       (large ? Win32.SHGFI_LARGEICON : Win32.SHGFI_SMALLICON)) == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return Icon.FromHandle(shinfo.hIcon);
-                }
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         public static int GetProcessSessionId(int ProcessId)

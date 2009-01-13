@@ -166,8 +166,6 @@ namespace ProcessHacker
 
         private void UpdateProcessProperties()
         {
-            try { pictureIcon.Image = Win32.GetProcessIcon(_process, true).ToBitmap(); }
-            catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
             try
             {
                 string fileName;
@@ -175,7 +173,7 @@ namespace ProcessHacker
                 if (_pid == 4)
                     fileName = Misc.GetKernelFileName();
                 else
-                    fileName = Misc.GetRealPath(_process.MainModule.FileName);
+                    fileName = _processItem.FileName;
 
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
 
@@ -183,6 +181,9 @@ namespace ProcessHacker
                 textFileCompany.Text = info.CompanyName;
                 textFileVersion.Text = info.FileVersion;
                 textFileName.Text = info.FileName;
+
+                try { pictureIcon.Image = Win32.GetFileIcon(fileName, true).ToBitmap(); }
+                catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
             }
             catch (Exception ex)
             {
@@ -745,7 +746,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    path = Misc.GetRealPath(_process.MainModule.FileName);
+                    path = _processItem.FileName;
                 }
 
                 PEWindow pw = Program.GetPEWindow(path,

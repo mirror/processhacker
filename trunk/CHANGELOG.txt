@@ -5,6 +5,8 @@ Process Hacker
    * "Free" and "Decommit" actions for memory regions
    * "Description" column for processes
    * Current Directory for processes automatically updates
+   * Can now display the file names of DRM-protected 
+     processes (like audiodg.exe)
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

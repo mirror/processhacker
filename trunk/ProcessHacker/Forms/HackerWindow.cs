@@ -576,7 +576,7 @@ namespace ProcessHacker
         {
             try
             {
-                Properties.Settings.Default.RunAsCommand = Misc.GetRealPath(processSelected.MainModule.FileName);
+                Properties.Settings.Default.RunAsCommand = processP.Dictionary[processSelectedPID].FileName;
 
                 RunWindow run = new RunWindow();
 

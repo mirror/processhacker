@@ -33,13 +33,13 @@ namespace ProcessHacker
         public Icon Icon;
         public string CmdLine;
         public float CPUUsage;
+        public string FileDescription;
+        public string FileName;
         public long MemoryUsage;
         public string Name;
         public string Username;
         public Win32.SYSTEM_PROCESS_INFORMATION Process;
         public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
-
-        public string FileDescription;
 
         public Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public bool IsBeingDebugged;
@@ -238,46 +238,7 @@ namespace ProcessHacker
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;
 
-                    try
-                    {
-                        item.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
-                    }
-                    catch
-                    { }
-
                     item.Name = procs[pid].Name;
-
-                    if (pid == 0)
-                    {      
-                        item.Name = "System Idle Process";
-                        item.FileDescription = "System Idle Process";
-                    }
-                    else if (pid == 4)
-                    {
-                        item.FileDescription = "Windows Kernel";
-                    }
-                    else if (pid == -2)
-                    {
-                        item.FileDescription = "Deferred Procedure Calls";
-                        item.ParentPID = 0;
-                        item.HasParent = true;
-                    }
-                    else if (pid == -3)
-                    {
-                        item.FileDescription = "Hardware Interrupts";
-                        item.ParentPID = 0;
-                        item.HasParent = true;
-                    }
-                    else
-                    {    
-                        try
-                        {
-                            item.FileDescription =
-                                FileVersionInfo.GetVersionInfo(Misc.GetRealPath(p.MainModule.FileName)).FileDescription;
-                        }
-                        catch
-                        { }
-                    }
 
                     try
                     {
@@ -289,6 +250,13 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        item.FileName = Misc.GetRealPath(p.MainModule.FileName);
                     }
                     catch
                     { }
@@ -312,6 +280,16 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+
+                        if (item.FileName == null)
+                        {
+                            try
+                            {
+                                item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
+                            }
+                            catch
+                            { }
+                        }
 
                         try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
                         catch { }
@@ -351,6 +329,44 @@ namespace ProcessHacker
                     }
                     catch
                     { }
+
+                    try
+                    {
+                        item.Icon = (Icon)Win32.GetFileIcon(item.FileName).Clone();
+                    }
+                    catch
+                    { }
+
+                    if (pid == 0)
+                    {
+                        item.Name = "System Idle Process";
+                        item.FileDescription = "System Idle Process";
+                    }
+                    else if (pid == 4)
+                    {
+                        item.FileDescription = "Windows Kernel";
+                    }
+                    else if (pid == -2)
+                    {
+                        item.FileDescription = "Deferred Procedure Calls";
+                        item.ParentPID = 0;
+                        item.HasParent = true;
+                    }
+                    else if (pid == -3)
+                    {
+                        item.FileDescription = "Hardware Interrupts";
+                        item.ParentPID = 0;
+                        item.HasParent = true;
+                    }
+                    else
+                    {
+                        try
+                        {
+                            item.FileDescription = FileVersionInfo.GetVersionInfo(item.FileName).FileDescription;
+                        }
+                        catch
+                        { }
+                    }
 
                     if (pid == 0 || pid == 4)
                     {
@@ -417,7 +433,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            newitem.Icon = (Icon)Win32.GetProcessIcon(p).Clone();
+                            newitem.Icon = (Icon)Win32.GetFileIcon(newitem.FileName).Clone();
                         }
                         catch
                         { }

@@ -205,6 +205,11 @@ namespace ProcessHacker
 
         #region Processes
 
+        // Vista and higher
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool QueryFullProcessImageName(int ProcessHandle, bool UseNativeName,
+            StringBuilder ExeName, ref int Size);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool IsProcessInJob(int ProcessHandle, int JobHandle, out bool Result);
 

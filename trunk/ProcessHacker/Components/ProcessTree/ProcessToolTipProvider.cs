@@ -52,7 +52,7 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        filename = Process.GetProcessById(pNode.PID).MainModule.FileName;
+                        filename = pNode.ProcessItem.FileName;
                     }
 
                     FileVersionInfo info = FileVersionInfo.GetVersionInfo(

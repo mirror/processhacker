@@ -265,13 +265,19 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the file name of the process' image. This requires 
-            /// the PROCESS_QUERY_LIMITED_INFORMATION and PROCESS_VM_READ permissions.
+            /// Gets the file name of the process' image. This requires the
+            /// PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
-            /// <returns>A file name, in kernel file name format.</returns>
+            /// <returns>A file name, in DOS (normal) format.</returns>
             public string GetImageFileName()
             {
-                return this.GetPEBString(PEBOffset.ImagePathName);
+                System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+                int len = 1024;
+
+                if (!QueryFullProcessImageName(this, false, sb, ref len))
+                    ThrowLastWin32Error();
+
+                return Misc.GetRealPath(sb.ToString(0, len));
             }
 
             /// <summary>
