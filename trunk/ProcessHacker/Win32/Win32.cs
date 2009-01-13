@@ -267,12 +267,14 @@ namespace ProcessHacker
                         }
                     }
                 }
-                
-                // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
-                // is guaranteed to work, but filters out useful files as well.
+
                 if (info.TypeName == "File")
+                {
+                    // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
+                    // is guaranteed to work, but filters out useful files as well.
                     if ((int)handle.GrantedAccess == 0x0012019f)
                         throw new Exception("0x0012019f access is banned");
+                }
 
                 ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
                     IntPtr.Zero, 0, out retLength);
@@ -323,8 +325,8 @@ namespace ProcessHacker
 
                         case "Process":
                             {
-                                int process_handle = 0;
-                                int processId = 0;
+                                int process_handle;
+                                int processId;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, out process_handle,
@@ -352,9 +354,9 @@ namespace ProcessHacker
 
                         case "Thread":
                             {
-                                int thread_handle = 0;
-                                int processId = 0;
-                                int threadId = 0;
+                                int thread_handle;
+                                int processId;
+                                int threadId;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, out thread_handle,
@@ -386,7 +388,7 @@ namespace ProcessHacker
 
                         case "Token":
                             {
-                                int token_handle = 0;
+                                int token_handle;
 
                                 if (ZwDuplicateObject(process.Handle, handle.Handle,
                                     Program.CurrentProcess, out token_handle,

@@ -257,7 +257,10 @@ namespace ProcessHacker
            STANDARD_RIGHTS DesiredAccess, int InheritHandle, uint Options);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, ref PIPE_STATE State,
+        public static extern bool GetNamedPipeClientProcessId(int NamedPipeHandle, out int ServerProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, out PIPE_STATE State,
             int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
