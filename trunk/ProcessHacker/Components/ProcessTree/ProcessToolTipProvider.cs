@@ -22,6 +22,7 @@
 
 using System.Diagnostics;
 using Aga.Controls.Tree;
+using System;
 
 namespace ProcessHacker
 {
@@ -67,6 +68,24 @@ namespace ProcessHacker
                 catch
                 { }
 
+                string runDllText = "";
+
+                if (pNode.ProcessItem.FileName.ToLower() == (Environment.SystemDirectory + "\\rundll32.exe").ToLower() && 
+                    pNode.ProcessItem.CmdLine != null)
+                {
+                    try
+                    {
+                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(
+                            pNode.ProcessItem.CmdLine.Split(new char[] { ' ' }, 2)[1].Split(',')[0]); // TODO: fix crappy method
+
+                        runDllText = "\nRunDLL target:\n    " + info.FileName + "\n    " +
+                            info.FileDescription + " " + info.FileVersion + "\n    " +
+                            info.CompanyName;
+                    }
+                    catch
+                    { }
+                }
+
                 string servicesText = "";
 
                 try
@@ -95,7 +114,7 @@ namespace ProcessHacker
                 catch
                 { }
 
-                return (cmdText + fileText + servicesText).Trim(' ', '\n', '\r');
+                return (cmdText + fileText + runDllText + servicesText).Trim(' ', '\n', '\r');
             }
             catch
             { }

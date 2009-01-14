@@ -8,16 +8,17 @@ Process Hacker
    * Can now display the file names of DRM-protected 
      processes (like audiodg.exe)
    * Now displays thread information under the thread list
-   * Added module file name info for thread start addresses 
+   * Module file name info for thread start addresses 
      and stack traces
    * Highlighting for .NET processes and packed executables
    * Shows CPU usage and physical memory usage in the status bar
-   * Added "Reload Struct Definitions" menu item
+   * "Reload Struct Definitions" menu item
    * Struct Searcher - displays addresses which match the specified 
      struct definition
-   * Added ability to unload remote modules (by remote thread 
+   * Ability to unload remote modules (by remote thread 
      injection)
-   * Added float and double types to structs
+   * New float and double types for structs
+   * Special tooltip info for rundll32.exe
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions
