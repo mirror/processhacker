@@ -17,6 +17,7 @@ Process Hacker
      struct definition
    * Added ability to unload remote modules (by remote thread 
      injection)
+   * Added float and double types to structs
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

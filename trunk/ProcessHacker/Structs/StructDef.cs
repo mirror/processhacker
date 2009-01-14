@@ -148,6 +148,11 @@ namespace ProcessHacker.Structs
                     value.Value = UnicodeEncoding.Unicode.GetString(IOProvider.ReadBytes(offset, 2))[0];
                     readSize = 2;
                     break;
+                case FieldType.Double:
+                    value.Value = Win32.Unsafe.Int64ToDouble(Misc.BytesToLong(
+                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little));
+                    readSize = 8;
+                    break;
                 case FieldType.Int16:
                     value.Value = (short)Misc.BytesToUShort(
                         IOProvider.ReadBytes(offset, 2), Misc.Endianness.Little);
@@ -167,6 +172,11 @@ namespace ProcessHacker.Structs
                 case FieldType.Int8:
                     value.Value = (sbyte)IOProvider.ReadBytes(offset, 1)[0];
                     readSize = 1;
+                    break;
+                case FieldType.Single:
+                    value.Value = Win32.Unsafe.Int32ToSingle(Misc.BytesToInt(
+                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little));
+                    readSize = 4;
                     break;
                 case FieldType.StringASCII:
                     {

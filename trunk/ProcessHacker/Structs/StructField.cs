@@ -74,6 +74,9 @@ namespace ProcessHacker.Structs
                         case FieldType.CharUTF16:
                             size = 2; // UCS-2 
                             break;
+                        case FieldType.Double:
+                            size = 8;
+                            break;
                         case FieldType.Int16:
                             size = 2;
                             break;
@@ -87,6 +90,9 @@ namespace ProcessHacker.Structs
                             size = 1;
                             break;
                         case FieldType.PVoid:
+                            size = 4;
+                            break;
+                        case FieldType.Single:
                             size = 4;
                             break;
                         case FieldType.StringASCII:

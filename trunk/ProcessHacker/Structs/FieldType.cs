@@ -37,6 +37,8 @@ namespace ProcessHacker.Structs
         UInt16,
         UInt32,
         UInt64,
+        Single,
+        Double,
         StringASCII,
         StringUTF16,
         Struct,

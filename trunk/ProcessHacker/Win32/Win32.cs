@@ -74,6 +74,26 @@ namespace ProcessHacker
 
                 return list.ToArray();
             }
+
+            public static int SingleToInt32(float f)
+            {
+                return *(int*)&f;
+            }
+
+            public static long DoubleToInt64(double d)
+            {
+                return *(long*)&d;
+            }
+
+            public static float Int32ToSingle(int i)
+            {
+                return *(float*)&i;
+            }
+
+            public static double Int64ToDouble(long l)
+            {
+                return *(double*)&l;
+            }
         }
 
         public delegate int EnumWindowsProc(int hwnd, int param);

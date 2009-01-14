@@ -26,6 +26,9 @@ typedef int64 longlong;
 typedef int64 qword;
 typedef uint64 ulonglong;
 
+typedef single float;
+/* typedef double double; */ /* double is already called double */
+
 typedef stringascii str;
 typedef stringascii string;
 typedef stringutf16 wstr;

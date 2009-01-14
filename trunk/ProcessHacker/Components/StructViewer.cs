@@ -169,6 +169,9 @@ namespace ProcessHacker
                     case FieldType.CharASCII:
                     case FieldType.CharUTF16:
                         return ((char)_value.Value).ToString();
+                    case FieldType.Double:
+                    case FieldType.Single:
+                        return ((double)_value.Value).ToString();
                     case FieldType.Int16:
                     case FieldType.Int32:
                     case FieldType.Int64:
