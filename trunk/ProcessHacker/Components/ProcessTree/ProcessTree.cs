@@ -192,10 +192,10 @@ namespace ProcessHacker
         {
             if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
-            else if (p.IsPacked)
-                return Properties.Settings.Default.ColorPackedProcesses;
             else if (p.IsDotNet)
                 return Properties.Settings.Default.ColorDotNetProcesses;
+            else if (p.IsPacked)
+                return Properties.Settings.Default.ColorPackedProcesses;
             else if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
                 Program.HackerWindow.ProcessServices[p.PID].Count > 0)
                 return Properties.Settings.Default.ColorServiceProcesses;
