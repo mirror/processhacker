@@ -281,6 +281,21 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the process' exit code.
+            /// </summary>
+            /// <returns>A number.</returns>
+            public int GetExitCode()
+            {
+                int exitCode;
+
+                if (!GetExitCodeProcess(this, out exitCode))
+                    ThrowLastWin32Error();
+
+                return exitCode;
+            }
+            
+
+            /// <summary>
             /// Gets the file name of the process' image. This requires the
             /// PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>

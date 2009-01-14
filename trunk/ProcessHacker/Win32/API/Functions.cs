@@ -205,6 +205,9 @@ namespace ProcessHacker
 
         #region Processes
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetExitCodeProcess(int ProcessHandle, out int ExitCode);
+
         // Vista and higher
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool QueryFullProcessImageName(int ProcessHandle, bool UseNativeName,

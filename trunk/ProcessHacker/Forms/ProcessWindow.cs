@@ -910,6 +910,23 @@ namespace ProcessHacker
 
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
+            if (_process.HasExited)
+            {
+                timerUpdate.Enabled = false;
+
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        this.Text += " (exited with code " + phandle.GetExitCode() + ")";
+                    }
+                }
+                catch
+                { }
+
+                return;
+            }
+
             try
             {
                 using (Win32.ProcessHandle phandle
