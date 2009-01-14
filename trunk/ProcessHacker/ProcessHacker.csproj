@@ -645,6 +645,7 @@
     </Content>
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />
+    <None Include="Resources\report.png" />
     <Content Include="structs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

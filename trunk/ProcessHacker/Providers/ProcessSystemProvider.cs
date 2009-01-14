@@ -131,9 +131,6 @@ namespace ProcessHacker
 
         public void UpdatePerformance()
         {
-            if (!this.PerformanceEnabled)
-                return;
-
             int retLen;
             Win32.SYSTEM_PERFORMANCE_INFORMATION performance = new Win32.SYSTEM_PERFORMANCE_INFORMATION();
 
@@ -144,7 +141,8 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            this.UpdatePerformance();
+            if (this.PerformanceEnabled)
+                this.UpdatePerformance();
             this.UpdateProcessorPerf();
 
             Dictionary<int, int> tsProcesses = new Dictionary<int,int>();

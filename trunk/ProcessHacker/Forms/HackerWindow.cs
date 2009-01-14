@@ -1312,6 +1312,11 @@ namespace ProcessHacker
         private void UpdateStatusInfo()
         {
             statusGeneral.Text = string.Format("{0} processes", processP.Dictionary.Count);
+            statusCPU.Text = "CPU: " + (processP.CurrentCPUUsage * 100).ToString("N2") + "%";
+            processP.UpdatePerformance();
+            statusMemory.Text = "Phys. Memory: " +
+                ((float)(processP.System.NumberOfPhysicalPages - processP.Performance.AvailablePages) * 100 /
+                processP.System.NumberOfPhysicalPages).ToString("N2") + "%";
         }
 
         #endregion
@@ -1416,6 +1421,15 @@ namespace ProcessHacker
             {
                 QueueMessage("Error loading structure definitions: " + ex.Message);
             }
+
+            try
+            {
+                this.Text +=
+                    " [" + Win32.ProcessHandle.FromHandle(Program.CurrentProcess).
+                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) + "]";
+            }
+            catch
+            { }
         }
 
         private void CheckedMenuItem_Click(object sender, EventArgs e)
@@ -1436,14 +1450,6 @@ namespace ProcessHacker
             timerFire.Interval = RefreshInterval;
             timerFire.Enabled = true;
             timerFire_Tick(null, null);
-
-            //listProcesses_SelectionChanged(null, null);
-
-            //newResultsWindowMenuItem.Click += new EventHandler(PerformSearch);
-            //literalSearchMenuItem.Click += new EventHandler(PerformSearch);
-            //regexSearchMenuItem.Click += new EventHandler(PerformSearch);
-            //stringScanMenuItem.Click += new EventHandler(PerformSearch);
-            //heapScanMenuItem.Click += new EventHandler(PerformSearch);
 
             listControls.Add(treeProcesses.Tree);
             listControls.Add(listServices);

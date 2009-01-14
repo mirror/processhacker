@@ -11,6 +11,7 @@ Process Hacker
    * Added module file name info for thread start addresses 
      and stack traces
    * Highlighting for .NET processes and packed executables
+   * Shows CPU usage and physical memory usage in the status bar
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions
