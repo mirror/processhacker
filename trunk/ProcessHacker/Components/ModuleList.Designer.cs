@@ -48,6 +48,7 @@
             this.copyFileNameMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllModuleMenuItem = new System.Windows.Forms.MenuItem();
+            this.unloadMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -98,7 +99,7 @@
             // changeMemoryProtectionModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.changeMemoryProtectionModuleMenuItem, global::ProcessHacker.Properties.Resources.lock_edit);
-            this.changeMemoryProtectionModuleMenuItem.Index = 1;
+            this.changeMemoryProtectionModuleMenuItem.Index = 0;
             this.changeMemoryProtectionModuleMenuItem.Text = "Change &Memory Protection...";
             this.changeMemoryProtectionModuleMenuItem.Click += new System.EventHandler(this.changeMemoryProtectionModuleMenuItem_Click);
             // 
@@ -112,38 +113,39 @@
             // inspectModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.inspectModuleMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.inspectModuleMenuItem.Index = 3;
+            this.inspectModuleMenuItem.Index = 5;
             this.inspectModuleMenuItem.Text = "&Inspect...";
             this.inspectModuleMenuItem.Click += new System.EventHandler(this.inspectModuleMenuItem_Click);
             // 
             // copyModuleMenuItem
             // 
             this.vistaMenu.SetImage(this.copyModuleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyModuleMenuItem.Index = 7;
+            this.copyModuleMenuItem.Index = 8;
             this.copyModuleMenuItem.Text = "Copy";
             // 
             // openContainingFolderMenuItem
             // 
             this.vistaMenu.SetImage(this.openContainingFolderMenuItem, global::ProcessHacker.Properties.Resources.folder_explore);
-            this.openContainingFolderMenuItem.Index = 8;
+            this.openContainingFolderMenuItem.Index = 9;
             this.openContainingFolderMenuItem.Text = "&Open Containing Folder";
             this.openContainingFolderMenuItem.Click += new System.EventHandler(this.openContainingFolderMenuItem_Click);
             // 
             // propertiesMenuItem
             // 
             this.vistaMenu.SetImage(this.propertiesMenuItem, global::ProcessHacker.Properties.Resources.application_view_detail);
-            this.propertiesMenuItem.Index = 9;
+            this.propertiesMenuItem.Index = 10;
             this.propertiesMenuItem.Text = "Prope&rties...";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
             // menuModule
             // 
             this.menuModule.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.getFuncAddressMenuItem,
             this.changeMemoryProtectionModuleMenuItem,
+            this.getFuncAddressMenuItem,
             this.readMemoryModuleMenuItem,
-            this.inspectModuleMenuItem,
+            this.unloadMenuItem,
             this.menuItem3,
+            this.inspectModuleMenuItem,
             this.searchModuleMenuItem,
             this.copyFileNameMenuItem,
             this.copyModuleMenuItem,
@@ -155,7 +157,7 @@
             // 
             // getFuncAddressMenuItem
             // 
-            this.getFuncAddressMenuItem.Index = 0;
+            this.getFuncAddressMenuItem.Index = 1;
             this.getFuncAddressMenuItem.Text = "Get &Function Address...";
             this.getFuncAddressMenuItem.Click += new System.EventHandler(this.getFuncAddressMenuItem_Click);
             // 
@@ -166,26 +168,33 @@
             // 
             // searchModuleMenuItem
             // 
-            this.searchModuleMenuItem.Index = 5;
+            this.searchModuleMenuItem.Index = 6;
             this.searchModuleMenuItem.Text = "&Search Online...";
             this.searchModuleMenuItem.Click += new System.EventHandler(this.searchModuleMenuItem_Click);
             // 
             // copyFileNameMenuItem
             // 
-            this.copyFileNameMenuItem.Index = 6;
+            this.copyFileNameMenuItem.Index = 7;
             this.copyFileNameMenuItem.Text = "&Copy File Name(s)";
             this.copyFileNameMenuItem.Click += new System.EventHandler(this.copyFileNameMenuItem_Click);
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 10;
+            this.menuItem6.Index = 11;
             this.menuItem6.Text = "-";
             // 
             // selectAllModuleMenuItem
             // 
-            this.selectAllModuleMenuItem.Index = 11;
+            this.selectAllModuleMenuItem.Index = 12;
             this.selectAllModuleMenuItem.Text = "Select &All";
             this.selectAllModuleMenuItem.Click += new System.EventHandler(this.selectAllModuleMenuItem_Click);
+            // 
+            // unloadMenuItem
+            // 
+            this.vistaMenu.SetImage(this.unloadMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.unloadMenuItem.Index = 3;
+            this.unloadMenuItem.Text = "&Unload";
+            this.unloadMenuItem.Click += new System.EventHandler(this.unloadMenuItem_Click);
             // 
             // ModuleList
             // 
@@ -221,5 +230,6 @@
         private System.Windows.Forms.MenuItem propertiesMenuItem;
         private System.Windows.Forms.MenuItem menuItem6;
         private System.Windows.Forms.MenuItem selectAllModuleMenuItem;
+        private System.Windows.Forms.MenuItem unloadMenuItem;
     }
 }

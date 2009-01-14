@@ -98,6 +98,20 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the thread's exit code.
+            /// </summary>
+            /// <returns>A number.</returns>
+            public int GetExitCode()
+            {
+                int exitCode;
+
+                if (!GetExitCodeThread(this, out exitCode))
+                    ThrowLastWin32Error();
+
+                return exitCode;
+            }
+
+            /// <summary>
             /// Gets the thread's priority level.
             /// </summary>
             /// <returns>A ThreadPriorityLevel enum.</returns>

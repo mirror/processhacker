@@ -606,6 +606,9 @@ namespace ProcessHacker
         #region Threads
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetExitCodeThread(int ThreadHandle, out int ExitCode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetThreadPriority(int ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]

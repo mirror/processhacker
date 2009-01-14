@@ -195,6 +195,22 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Creates a remote thread in the process, returning a handle to the new thread.
+            /// </summary>
+            /// <param name="startAddress">The address at which to begin execution (e.g. a function). The 
+            /// function must be accessible from the remote process; that is, it must be in its 
+            /// virtual address space, either copied using AllocMemory or loaded as module using 
+            /// LoadLibrary.
+            /// </param>
+            /// <param name="parameter">The parameter to pass to the function.</param>
+            /// <param name="access">The desired access to the new thread.</param>
+            /// <returns>A handle to the new thread.</returns>
+            public ThreadHandle CreateThread(int startAddress, int parameter, PROCESS_RIGHTS access)
+            {
+                return new ThreadHandle(this.CreateThread(startAddress, parameter));
+            }
+
+            /// <summary>
             /// Frees a memory region in the process' virtual memory.
             /// </summary>
             /// <param name="address">The address of the region to free.</param>

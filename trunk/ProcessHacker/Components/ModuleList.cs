@@ -364,6 +364,41 @@ namespace ProcessHacker
         {
             Misc.SelectAll(listModules.Items);
         }
+
+        private void unloadMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to unload this library?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                return;
+
+            try
+            {
+                int kernel32 = Win32.GetModuleHandle("kernel32.dll");
+                int freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
+
+                if (freeLibrary == 0)
+                    throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
+
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+                {
+                    var thread = phandle.CreateThread(freeLibrary, ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+
+                    thread.Wait(1000);
+
+                    int exitCode = thread.GetExitCode();
+
+                    if (exitCode == 0)
+                    {
+                        throw new Exception("Error unloading the library.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
     public class ModuleListComparer : System.Collections.IComparer

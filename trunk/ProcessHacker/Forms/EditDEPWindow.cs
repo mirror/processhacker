@@ -95,7 +95,19 @@ namespace ProcessHacker
                     throw new Exception("This feature is not supported on your version of Windows.");
 
                 using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
-                    phandle.CreateThread(setProcessDEPPolicy, (int)flags);
+                {
+                    var thread = phandle.CreateThread(setProcessDEPPolicy, (int)flags,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+
+                    thread.Wait(1000);
+
+                    int exitCode = thread.GetExitCode();
+
+                    if (exitCode == 0)
+                    {
+                        throw new Exception("Error setting the DEP policy.");
+                    }
+                }
 
                 this.DialogResult = DialogResult.OK;
             }
