@@ -371,18 +371,32 @@ namespace ProcessHacker
                     }
 
                     item.IsPacked = false;
-                    // find out if it's packed - if it has less than 3 referenced DLLs and 5 function imports
+                    // find out if it's packed
+                    // an image is packed if:
+                    // 1. it references less than 3 libraries
+                    // 2. it imports less than 5 functions
+                    // or:
+                    // 1. the function-to-library ratio is lower than 4
+                    //   (on average less than 4 functions are imported from each library)
+                    // 2. it references more than 3 libraries
                     try
                     {
                         var peFile = new PE.PEFile(item.FileName);
-                        int funcTotal = 0;
 
-                        foreach (var i in peFile.ImportData.ImportLookupTable)
-                            funcTotal += i.Count;
+                        if (peFile.ImportData != null)
+                        {
+                            int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
+                            int funcTotal = 0;
 
-                        if (peFile.ImportData.ImportDirectoryTable.Count < 3 &&
-                            funcTotal < 5)
-                            item.IsPacked = true;
+                            foreach (var i in peFile.ImportData.ImportLookupTable)
+                                funcTotal += i.Count;
+
+                            if (
+                                libraryTotal < 3 && funcTotal < 5 || 
+                                ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
+                                )
+                                item.IsPacked = true;
+                        }
                     }
                     catch
                     {
