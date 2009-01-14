@@ -30,6 +30,7 @@
         {
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabLiteral = new System.Windows.Forms.TabPage();
+            this.checkNoOverlap = new System.Windows.Forms.CheckBox();
             this.utilitiesButtonLiteral = new ProcessHacker.UtilitiesButton();
             this.hexBoxSearch = new Be.Windows.Forms.HexBox();
             this.tabRegex = new System.Windows.Forms.TabPage();
@@ -47,12 +48,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.checkNoOverlap = new System.Windows.Forms.CheckBox();
+            this.tabStruct = new System.Windows.Forms.TabPage();
+            this.listStructName = new System.Windows.Forms.ListBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textStructAlign = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabLiteral.SuspendLayout();
             this.tabRegex.SuspendLayout();
             this.tabString.SuspendLayout();
             this.tabHeap.SuspendLayout();
+            this.tabStruct.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -64,6 +70,7 @@
             this.tabControl.Controls.Add(this.tabRegex);
             this.tabControl.Controls.Add(this.tabString);
             this.tabControl.Controls.Add(this.tabHeap);
+            this.tabControl.Controls.Add(this.tabStruct);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -83,6 +90,17 @@
             this.tabLiteral.TabIndex = 0;
             this.tabLiteral.Text = "Literal Search";
             this.tabLiteral.UseVisualStyleBackColor = true;
+            // 
+            // checkNoOverlap
+            // 
+            this.checkNoOverlap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkNoOverlap.AutoSize = true;
+            this.checkNoOverlap.Location = new System.Drawing.Point(6, 262);
+            this.checkNoOverlap.Name = "checkNoOverlap";
+            this.checkNoOverlap.Size = new System.Drawing.Size(154, 17);
+            this.checkNoOverlap.TabIndex = 11;
+            this.checkNoOverlap.Text = "Prevent overlapping results";
+            this.checkNoOverlap.UseVisualStyleBackColor = true;
             // 
             // utilitiesButtonLiteral
             // 
@@ -275,16 +293,56 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
-            // checkNoOverlap
+            // tabStruct
             // 
-            this.checkNoOverlap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkNoOverlap.AutoSize = true;
-            this.checkNoOverlap.Location = new System.Drawing.Point(6, 262);
-            this.checkNoOverlap.Name = "checkNoOverlap";
-            this.checkNoOverlap.Size = new System.Drawing.Size(154, 17);
-            this.checkNoOverlap.TabIndex = 11;
-            this.checkNoOverlap.Text = "Prevent overlapping results";
-            this.checkNoOverlap.UseVisualStyleBackColor = true;
+            this.tabStruct.Controls.Add(this.textStructAlign);
+            this.tabStruct.Controls.Add(this.label5);
+            this.tabStruct.Controls.Add(this.label3);
+            this.tabStruct.Controls.Add(this.listStructName);
+            this.tabStruct.Location = new System.Drawing.Point(4, 22);
+            this.tabStruct.Name = "tabStruct";
+            this.tabStruct.Padding = new System.Windows.Forms.Padding(3);
+            this.tabStruct.Size = new System.Drawing.Size(485, 285);
+            this.tabStruct.TabIndex = 4;
+            this.tabStruct.Text = "Struct Search";
+            this.tabStruct.UseVisualStyleBackColor = true;
+            // 
+            // listStructName
+            // 
+            this.listStructName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listStructName.FormattingEnabled = true;
+            this.listStructName.IntegralHeight = false;
+            this.listStructName.Location = new System.Drawing.Point(50, 6);
+            this.listStructName.Name = "listStructName";
+            this.listStructName.Size = new System.Drawing.Size(429, 247);
+            this.listStructName.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Struct:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 262);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Alignment:";
+            // 
+            // textStructAlign
+            // 
+            this.textStructAlign.Location = new System.Drawing.Point(68, 259);
+            this.textStructAlign.Name = "textStructAlign";
+            this.textStructAlign.Size = new System.Drawing.Size(100, 20);
+            this.textStructAlign.TabIndex = 3;
             // 
             // SearchWindow
             // 
@@ -315,6 +373,8 @@
             this.tabString.PerformLayout();
             this.tabHeap.ResumeLayout(false);
             this.tabHeap.PerformLayout();
+            this.tabStruct.ResumeLayout(false);
+            this.tabStruct.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,5 +402,10 @@
         private System.Windows.Forms.TextBox textHeapMS;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox checkNoOverlap;
+        private System.Windows.Forms.TabPage tabStruct;
+        private System.Windows.Forms.TextBox textStructAlign;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ListBox listStructName;
     }
 }

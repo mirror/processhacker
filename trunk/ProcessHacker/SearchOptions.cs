@@ -28,7 +28,7 @@ namespace ProcessHacker
     /// </summary>
     public enum SearchType
     {
-        Literal, Regex, String, Heap  
+        Literal, Regex, String, Heap, Struct  
     }
 
     /// <summary>
@@ -61,6 +61,8 @@ namespace ProcessHacker
             _searcher.Params.Add("private", true);
             _searcher.Params.Add("image", false);
             _searcher.Params.Add("mapped", false);
+            _searcher.Params.Add("struct", "");
+            _searcher.Params.Add("struct_align", "4");
 
             Type = type;  
         }  
@@ -102,6 +104,10 @@ namespace ProcessHacker
 
                     case SearchType.Heap:
                         _searcher = new HeapSearcher(PID);
+                        break;
+
+                    case SearchType.Struct:
+                        _searcher = new StructSearcher(PID);
                         break;
 
                     default:

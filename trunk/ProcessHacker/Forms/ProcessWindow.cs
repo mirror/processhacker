@@ -450,6 +450,18 @@ namespace ProcessHacker
                     f.Show();
                     f.StartSearch();
                 }
+                else if (text == "S&truct...")
+                {
+                    if (f.EditSearch(SearchType.Struct, location, size) == DialogResult.OK)
+                    {
+                        f.Show();
+                        f.StartSearch();
+                    }
+                    else
+                    {
+                        f.Close();
+                    }
+                }
             }));
 
             buttonSearch.Text = text;
@@ -864,6 +876,11 @@ namespace ProcessHacker
         private void heapScanMenuItem_Click(object sender, EventArgs e)
         {
             PerformSearch(heapScanMenuItem.Text);
+        }
+
+        private void structSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformSearch(structSearchMenuItem.Text);
         }
 
         #endregion      

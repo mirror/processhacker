@@ -86,6 +86,9 @@ namespace ProcessHacker
                     labelPriority.Text = process.Threads[tid].Priority.ToString();
                     labelBasePriority.Text = process.Threads[tid].BasePriority.ToString();
                     labelContextSwitches.Text = process.Threads[tid].ContextSwitchCount.ToString("N0");
+
+                    using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(tid))
+                        labelTEBAddress.Text = "0x" + thandle.GetBasicInformation().TebBaseAddress.ToString("x8");
                 }
                 catch
                 { }
@@ -98,6 +101,7 @@ namespace ProcessHacker
                 labelKernelTime.Text = "";
                 labelUserTime.Text = "";
                 labelTotalTime.Text = "";
+                labelTEBAddress.Text = "";
                 labelPriority.Text = "";
                 labelBasePriority.Text = "";
                 labelContextSwitches.Text = "";
@@ -584,6 +588,13 @@ namespace ProcessHacker
 
         private void inspectTEBMenuItem_Click(object sender, EventArgs e)
         {
+            if (!Program.Structs.ContainsKey("TEB"))
+            {
+                MessageBox.Show("The struct 'TEB' has not been loaded. Make sure structs.txt was loaded successfully.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
                 using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text)))

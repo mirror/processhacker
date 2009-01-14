@@ -70,6 +70,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.labelTEBAddress = new System.Windows.Forms.Label();
             this.tableInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
@@ -90,7 +92,7 @@
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.ShowItemToolTips = true;
-            this.listThreads.Size = new System.Drawing.Size(450, 307);
+            this.listThreads.Size = new System.Drawing.Size(450, 345);
             this.listThreads.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listThreads.TabIndex = 3;
             this.listThreads.UseCompatibleStateImageBehavior = false;
@@ -253,42 +255,45 @@
             // 
             // tableInformation
             // 
-            this.tableInformation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableInformation.ColumnCount = 2;
-            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableInformation.Controls.Add(this.label1, 0, 6);
+            this.tableInformation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableInformation.ColumnCount = 4;
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableInformation.Controls.Add(this.label6, 0, 0);
             this.tableInformation.Controls.Add(this.label8, 0, 1);
             this.tableInformation.Controls.Add(this.label9, 0, 2);
-            this.tableInformation.Controls.Add(this.label10, 0, 3);
             this.tableInformation.Controls.Add(this.labelState, 1, 0);
             this.tableInformation.Controls.Add(this.labelKernelTime, 1, 1);
             this.tableInformation.Controls.Add(this.labelUserTime, 1, 2);
             this.tableInformation.Controls.Add(this.labelTotalTime, 1, 3);
-            this.tableInformation.Controls.Add(this.labelContextSwitches, 1, 6);
-            this.tableInformation.Controls.Add(this.labelBasePriority, 1, 5);
-            this.tableInformation.Controls.Add(this.label2, 0, 5);
-            this.tableInformation.Controls.Add(this.labelPriority, 1, 4);
-            this.tableInformation.Controls.Add(this.label3, 0, 4);
-            this.tableInformation.Location = new System.Drawing.Point(0, 343);
+            this.tableInformation.Controls.Add(this.label1, 2, 3);
+            this.tableInformation.Controls.Add(this.label2, 2, 2);
+            this.tableInformation.Controls.Add(this.label3, 2, 1);
+            this.tableInformation.Controls.Add(this.labelContextSwitches, 3, 3);
+            this.tableInformation.Controls.Add(this.labelBasePriority, 3, 2);
+            this.tableInformation.Controls.Add(this.labelPriority, 3, 1);
+            this.tableInformation.Controls.Add(this.label10, 0, 3);
+            this.tableInformation.Controls.Add(this.label4, 2, 0);
+            this.tableInformation.Controls.Add(this.labelTEBAddress, 3, 0);
+            this.tableInformation.Location = new System.Drawing.Point(0, 381);
             this.tableInformation.Name = "tableInformation";
-            this.tableInformation.RowCount = 7;
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableInformation.Size = new System.Drawing.Size(297, 129);
+            this.tableInformation.RowCount = 4;
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableInformation.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableInformation.Size = new System.Drawing.Size(450, 79);
             this.tableInformation.TabIndex = 4;
             // 
             // label1
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 112);
+            this.label1.Location = new System.Drawing.Point(227, 61);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(89, 13);
             this.label1.TabIndex = 6;
@@ -298,7 +303,7 @@
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 2);
+            this.label6.Location = new System.Drawing.Point(3, 3);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(32, 13);
             this.label6.TabIndex = 1;
@@ -308,7 +313,7 @@
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 20);
+            this.label8.Location = new System.Drawing.Point(3, 22);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(63, 13);
             this.label8.TabIndex = 1;
@@ -318,7 +323,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 38);
+            this.label9.Location = new System.Drawing.Point(3, 41);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(55, 13);
             this.label9.TabIndex = 1;
@@ -328,7 +333,7 @@
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 56);
+            this.label10.Location = new System.Drawing.Point(3, 61);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 1;
@@ -338,7 +343,7 @@
             // 
             this.labelState.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelState.AutoSize = true;
-            this.labelState.Location = new System.Drawing.Point(261, 2);
+            this.labelState.Location = new System.Drawing.Point(188, 3);
             this.labelState.Name = "labelState";
             this.labelState.Size = new System.Drawing.Size(33, 13);
             this.labelState.TabIndex = 1;
@@ -348,7 +353,7 @@
             // 
             this.labelKernelTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelKernelTime.AutoSize = true;
-            this.labelKernelTime.Location = new System.Drawing.Point(261, 20);
+            this.labelKernelTime.Location = new System.Drawing.Point(188, 22);
             this.labelKernelTime.Name = "labelKernelTime";
             this.labelKernelTime.Size = new System.Drawing.Size(33, 13);
             this.labelKernelTime.TabIndex = 1;
@@ -358,7 +363,7 @@
             // 
             this.labelUserTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelUserTime.AutoSize = true;
-            this.labelUserTime.Location = new System.Drawing.Point(261, 38);
+            this.labelUserTime.Location = new System.Drawing.Point(188, 41);
             this.labelUserTime.Name = "labelUserTime";
             this.labelUserTime.Size = new System.Drawing.Size(33, 13);
             this.labelUserTime.TabIndex = 1;
@@ -368,7 +373,7 @@
             // 
             this.labelTotalTime.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelTotalTime.AutoSize = true;
-            this.labelTotalTime.Location = new System.Drawing.Point(261, 56);
+            this.labelTotalTime.Location = new System.Drawing.Point(188, 61);
             this.labelTotalTime.Name = "labelTotalTime";
             this.labelTotalTime.Size = new System.Drawing.Size(33, 13);
             this.labelTotalTime.TabIndex = 1;
@@ -378,7 +383,7 @@
             // 
             this.labelContextSwitches.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelContextSwitches.AutoSize = true;
-            this.labelContextSwitches.Location = new System.Drawing.Point(261, 112);
+            this.labelContextSwitches.Location = new System.Drawing.Point(414, 61);
             this.labelContextSwitches.Name = "labelContextSwitches";
             this.labelContextSwitches.Size = new System.Drawing.Size(33, 13);
             this.labelContextSwitches.TabIndex = 7;
@@ -388,7 +393,7 @@
             // 
             this.labelBasePriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelBasePriority.AutoSize = true;
-            this.labelBasePriority.Location = new System.Drawing.Point(261, 92);
+            this.labelBasePriority.Location = new System.Drawing.Point(414, 41);
             this.labelBasePriority.Name = "labelBasePriority";
             this.labelBasePriority.Size = new System.Drawing.Size(33, 13);
             this.labelBasePriority.TabIndex = 4;
@@ -398,7 +403,7 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 92);
+            this.label2.Location = new System.Drawing.Point(227, 41);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 2;
@@ -408,7 +413,7 @@
             // 
             this.labelPriority.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelPriority.AutoSize = true;
-            this.labelPriority.Location = new System.Drawing.Point(261, 74);
+            this.labelPriority.Location = new System.Drawing.Point(414, 22);
             this.labelPriority.Name = "labelPriority";
             this.labelPriority.Size = new System.Drawing.Size(33, 13);
             this.labelPriority.TabIndex = 3;
@@ -418,7 +423,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 74);
+            this.label3.Location = new System.Drawing.Point(227, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 5;
@@ -428,7 +433,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 318);
+            this.label7.Location = new System.Drawing.Point(3, 356);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(70, 13);
             this.label7.TabIndex = 5;
@@ -442,11 +447,31 @@
             // 
             this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileModule.Location = new System.Drawing.Point(79, 313);
+            this.fileModule.Location = new System.Drawing.Point(79, 351);
             this.fileModule.Name = "fileModule";
             this.fileModule.ReadOnly = false;
             this.fileModule.Size = new System.Drawing.Size(368, 24);
             this.fileModule.TabIndex = 6;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(227, 3);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(69, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "TEB Address";
+            // 
+            // labelTEBAddress
+            // 
+            this.labelTEBAddress.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelTEBAddress.AutoSize = true;
+            this.labelTEBAddress.Location = new System.Drawing.Point(414, 3);
+            this.labelTEBAddress.Name = "labelTEBAddress";
+            this.labelTEBAddress.Size = new System.Drawing.Size(33, 13);
+            this.labelTEBAddress.TabIndex = 3;
+            this.labelTEBAddress.Text = "value";
             // 
             // ThreadList
             // 
@@ -458,7 +483,7 @@
             this.Controls.Add(this.listThreads);
             this.DoubleBuffered = true;
             this.Name = "ThreadList";
-            this.Size = new System.Drawing.Size(450, 472);
+            this.Size = new System.Drawing.Size(450, 460);
             this.tableInformation.ResumeLayout(false);
             this.tableInformation.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
@@ -510,5 +535,7 @@
         private System.Windows.Forms.Label labelContextSwitches;
         private System.Windows.Forms.Label label7;
         private ProcessHacker.Components.FileNameBox fileModule;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelTEBAddress;
     }
 }

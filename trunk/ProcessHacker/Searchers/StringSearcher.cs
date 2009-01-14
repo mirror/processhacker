@@ -66,8 +66,6 @@ namespace ProcessHacker
                     // skip unreadable areas
                     if (info.Protect == Win32.MEMORY_PROTECTION.PAGE_ACCESS_DENIED)
                         continue;
-                    if (info.Protect == Win32.MEMORY_PROTECTION.PAGE_ACCESS_DENIED)
-                        continue;
                     if (info.State != Win32.MEMORY_STATE.MEM_COMMIT)
                         continue;
 

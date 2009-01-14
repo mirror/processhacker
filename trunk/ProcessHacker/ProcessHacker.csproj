@@ -546,6 +546,7 @@
     <Compile Include="Misc\Misc.cs" />
     <Compile Include="Misc\ParseInfix.cs" />
     <Compile Include="Providers\Provider.cs" />
+    <Compile Include="Searchers\StructSearcher.cs" />
     <Compile Include="Searchers\HeapSearcher.cs" />
     <Compile Include="Searchers\RegexSearcher.cs" />
     <Compile Include="Searchers\StringSearcher.cs" />

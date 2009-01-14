@@ -12,6 +12,9 @@ Process Hacker
      and stack traces
    * Highlighting for .NET processes and packed executables
    * Shows CPU usage and physical memory usage in the status bar
+   * Added "Reload Struct Definitions" menu item
+   * Struct Searcher - displays addresses which match the specified 
+     struct definition
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

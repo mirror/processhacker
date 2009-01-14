@@ -36,6 +36,12 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            foreach (string s in Program.Structs.Keys)
+                listStructName.Items.Add(s);
+
+            if (listStructName.Items.Count > 0)
+                listStructName.SelectedItem = listStructName.Items[0];
+
             _pid = PID;
 
             hexBoxSearch.ByteProvider = new Be.Windows.Forms.DynamicByteProvider((byte[])so.Searcher.Params["text"]);
@@ -47,6 +53,8 @@ namespace ProcessHacker
             checkPrivate.Checked = (bool)so.Searcher.Params["private"];
             checkImage.Checked = (bool)so.Searcher.Params["image"];
             checkMapped.Checked = (bool)so.Searcher.Params["mapped"];
+            listStructName.SelectedItem = so.Searcher.Params["struct"];
+            textStructAlign.Text = (string)so.Searcher.Params["struct_align"];
 
             switch (so.Type)
             {
@@ -61,6 +69,9 @@ namespace ProcessHacker
                     break;
                 case SearchType.Heap:
                     tabControl.SelectedTab = tabHeap;
+                    break;
+                case SearchType.Struct:
+                    tabControl.SelectedTab = tabStruct;
                     break;
             }
 
@@ -97,6 +108,10 @@ namespace ProcessHacker
             {
                 _so = new SearchOptions(_pid, SearchType.Heap);
             }
+            else if (tabControl.SelectedTab == tabStruct)
+            {
+                _so = new SearchOptions(_pid, SearchType.Struct);
+            }
                              
             _so.Searcher.Params["text"] = text;
             _so.Searcher.Params["regex"] = textRegex.Text;
@@ -107,6 +122,8 @@ namespace ProcessHacker
             _so.Searcher.Params["private"] = checkPrivate.Checked;
             _so.Searcher.Params["image"] = checkImage.Checked;
             _so.Searcher.Params["mapped"] = checkMapped.Checked;
+            _so.Searcher.Params["struct"] = listStructName.SelectedItem.ToString();
+            _so.Searcher.Params["struct_align"] = textStructAlign.Text;
 
             _so.Searcher.Results = _oldresults;
 

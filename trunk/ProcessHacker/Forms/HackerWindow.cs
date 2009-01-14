@@ -223,6 +223,21 @@ namespace ProcessHacker
             }
         }
 
+        private void reloadStructsMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Program.Structs.Clear();
+                Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+
+                parser.Parse(Application.StartupPath + "\\structs.txt");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void logMenuItem_Click(object sender, EventArgs e)
         {
             string str = "";
