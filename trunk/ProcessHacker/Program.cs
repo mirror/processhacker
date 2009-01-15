@@ -106,7 +106,11 @@ namespace ProcessHacker
                 Win32.WriteTokenPrivilege(
                     (new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
                         Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION)).GetToken(),
-                        "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                        "SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);  
+                Win32.WriteTokenPrivilege(
+                    (new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION)).GetToken(),
+                        "SeLoadDriverPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
             }
             catch
             { }

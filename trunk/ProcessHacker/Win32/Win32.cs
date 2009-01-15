@@ -612,9 +612,11 @@ namespace ProcessHacker
                 laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
                 laci.ModuleName.MaximumLength = laci.ModuleName.Length;
 
-                if (ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS.SystemLoadAndCallImage,
-                    ref laci, Marshal.SizeOf(laci)) != 0)
-                    throw new Exception("Failed to load the kernel image");
+                uint ret;
+
+                if ((ret = ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS.SystemLoadAndCallImage,
+                    ref laci, Marshal.SizeOf(laci))) != 0)
+                    throw new Exception("Failed to load the kernel image - error " + ret.ToString());
             }
         }
 
