@@ -192,25 +192,28 @@ namespace ProcessHacker
                 try { pictureIcon.Image = Win32.GetFileIcon(fileName, true).ToBitmap(); }
                 catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
 
-                // verify signature
-                var verifyResult = Win32.VerifyFile(fileName);
+                if (Properties.Settings.Default.VerifySignatures)
+                {
+                    // verify signature
+                    var verifyResult = Win32.VerifyFile(fileName);
 
-                if (verifyResult == Win32.VerifyResult.Trusted)
-                    textFileCompany.Text += " (verified)";
-                else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
-                    textFileCompany.Text += " (verified, Windows component)";
-                else if (verifyResult == Win32.VerifyResult.NoSignature)
-                    textFileCompany.Text += " (not verified, no signature)";
-                else if (verifyResult == Win32.VerifyResult.Distrust)
-                    textFileCompany.Text += " (not verified, distrusted)";
-                else if (verifyResult == Win32.VerifyResult.Expired)
-                    textFileCompany.Text += " (not verified, expired)";
-                else if (verifyResult == Win32.VerifyResult.Revoked)
-                    textFileCompany.Text += " (not verified, revoked)";
-                else if (verifyResult == Win32.VerifyResult.SecuritySettings)
-                    textFileCompany.Text += " (not verified, security settings)";
-                else
-                    textFileCompany.Text += " (not verified)";
+                    if (verifyResult == Win32.VerifyResult.Trusted)
+                        textFileCompany.Text += " (verified)";
+                    else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                        textFileCompany.Text += " (verified, Windows component)";
+                    else if (verifyResult == Win32.VerifyResult.NoSignature)
+                        textFileCompany.Text += " (not verified, no signature)";
+                    else if (verifyResult == Win32.VerifyResult.Distrust)
+                        textFileCompany.Text += " (not verified, distrusted)";
+                    else if (verifyResult == Win32.VerifyResult.Expired)
+                        textFileCompany.Text += " (not verified, expired)";
+                    else if (verifyResult == Win32.VerifyResult.Revoked)
+                        textFileCompany.Text += " (not verified, revoked)";
+                    else if (verifyResult == Win32.VerifyResult.SecuritySettings)
+                        textFileCompany.Text += " (not verified, security settings)";
+                    else
+                        textFileCompany.Text += " (not verified)";
+                }
             }
             catch (Exception ex)
             {

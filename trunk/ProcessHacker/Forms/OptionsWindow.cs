@@ -46,6 +46,7 @@ namespace ProcessHacker
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
+            checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
@@ -90,8 +91,9 @@ namespace ProcessHacker
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
-            Properties.Settings.Default.UnitSpecifier = 
+            Properties.Settings.Default.UnitSpecifier =
                 Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
+            Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;

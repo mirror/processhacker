@@ -42,7 +42,11 @@
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.colorPackedProcesses = new ProcessHacker.Components.ColorModifier();
+            this.colorDotNetProcesses = new ProcessHacker.Components.ColorModifier();
             this.colorJobProcesses = new ProcessHacker.Components.ColorModifier();
             this.label10 = new System.Windows.Forms.Label();
             this.colorElevatedProcesses = new ProcessHacker.Components.ColorModifier();
@@ -74,10 +78,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.colorDotNetProcesses = new ProcessHacker.Components.ColorModifier();
-            this.label19 = new System.Windows.Forms.Label();
-            this.colorPackedProcesses = new ProcessHacker.Components.ColorModifier();
-            this.label20 = new System.Windows.Forms.Label();
+            this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -127,7 +128,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 243);
+            this.buttonClose.Location = new System.Drawing.Point(362, 257);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -186,7 +187,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 225);
+            this.tabControl.Size = new System.Drawing.Size(425, 239);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -199,12 +200,13 @@
             this.tabGeneral.Controls.Add(this.textSearchEngine);
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
+            this.tabGeneral.Controls.Add(this.checkVerifySignatures);
             this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
             this.tabGeneral.Controls.Add(this.checkWarnDangerous);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 199);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 213);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -290,6 +292,24 @@
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(214, 139);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(99, 13);
+            this.label20.TabIndex = 9;
+            this.label20.Text = "Packed Processes:";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(214, 113);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(87, 13);
+            this.label19.TabIndex = 9;
+            this.label19.Text = ".NET Processes:";
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -298,6 +318,22 @@
             this.label11.Size = new System.Drawing.Size(79, 13);
             this.label11.TabIndex = 9;
             this.label11.Text = "Job Processes:";
+            // 
+            // colorPackedProcesses
+            // 
+            this.colorPackedProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorPackedProcesses.Location = new System.Drawing.Point(335, 137);
+            this.colorPackedProcesses.Name = "colorPackedProcesses";
+            this.colorPackedProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorPackedProcesses.TabIndex = 8;
+            // 
+            // colorDotNetProcesses
+            // 
+            this.colorDotNetProcesses.Color = System.Drawing.Color.Transparent;
+            this.colorDotNetProcesses.Location = new System.Drawing.Point(335, 111);
+            this.colorDotNetProcesses.Name = "colorDotNetProcesses";
+            this.colorDotNetProcesses.Size = new System.Drawing.Size(40, 20);
+            this.colorDotNetProcesses.TabIndex = 8;
             // 
             // colorJobProcesses
             // 
@@ -588,46 +624,23 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // colorDotNetProcesses
+            // checkVerifySignatures
             // 
-            this.colorDotNetProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorDotNetProcesses.Location = new System.Drawing.Point(335, 111);
-            this.colorDotNetProcesses.Name = "colorDotNetProcesses";
-            this.colorDotNetProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorDotNetProcesses.TabIndex = 8;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(214, 113);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(87, 13);
-            this.label19.TabIndex = 9;
-            this.label19.Text = ".NET Processes:";
-            // 
-            // colorPackedProcesses
-            // 
-            this.colorPackedProcesses.Color = System.Drawing.Color.Transparent;
-            this.colorPackedProcesses.Location = new System.Drawing.Point(335, 137);
-            this.colorPackedProcesses.Name = "colorPackedProcesses";
-            this.colorPackedProcesses.Size = new System.Drawing.Size(40, 20);
-            this.colorPackedProcesses.TabIndex = 8;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(214, 139);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(99, 13);
-            this.label20.TabIndex = 9;
-            this.label20.Text = "Packed Processes:";
+            this.checkVerifySignatures.AutoSize = true;
+            this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 183);
+            this.checkVerifySignatures.Name = "checkVerifySignatures";
+            this.checkVerifySignatures.Size = new System.Drawing.Size(109, 18);
+            this.checkVerifySignatures.TabIndex = 3;
+            this.checkVerifySignatures.Text = "Verify signatures";
+            this.checkVerifySignatures.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 278);
+            this.ClientSize = new System.Drawing.Size(449, 292);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -703,5 +716,6 @@
         private System.Windows.Forms.Label label19;
         private ProcessHacker.Components.ColorModifier colorPackedProcesses;
         private ProcessHacker.Components.ColorModifier colorDotNetProcesses;
+        private System.Windows.Forms.CheckBox checkVerifySignatures;
     }
 }

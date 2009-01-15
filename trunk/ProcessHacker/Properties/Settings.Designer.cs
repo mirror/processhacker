@@ -862,5 +862,17 @@ namespace ProcessHacker.Properties {
                 this["ColorPackedProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool VerifySignatures {
+            get {
+                return ((bool)(this["VerifySignatures"]));
+            }
+            set {
+                this["VerifySignatures"] = value;
+            }
+        }
     }
 }

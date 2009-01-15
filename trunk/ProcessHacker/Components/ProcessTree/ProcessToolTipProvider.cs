@@ -123,14 +123,17 @@ namespace ProcessHacker
                 else if (pNode.ProcessItem.IsPacked)
                     otherNotes += "\n    Image is probably packed - error reading PE file.";
 
-                var verifyResult = Win32.VerifyFile(pNode.ProcessItem.FileName);
+                if (Properties.Settings.Default.VerifySignatures)
+                {
+                    var verifyResult = Win32.VerifyFile(pNode.ProcessItem.FileName);
 
-                if (verifyResult == Win32.VerifyResult.Trusted)
-                    otherNotes += "\n    Signature present and verified.";
-                else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
-                    otherNotes += "\n    File is a Windows component.";
-                else if (verifyResult != Win32.VerifyResult.NoSignature)
-                    otherNotes += "\n    Signature present but invalid.";
+                    if (verifyResult == Win32.VerifyResult.Trusted)
+                        otherNotes += "\n    Signature present and verified.";
+                    else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                        otherNotes += "\n    File is a Windows component.";
+                    else if (verifyResult != Win32.VerifyResult.NoSignature)
+                        otherNotes += "\n    Signature present but invalid.";
+                }
 
                 if (otherNotes != "")
                     otherNotes = "\nNotes:" + otherNotes;
