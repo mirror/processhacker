@@ -142,7 +142,7 @@ namespace ProcessHacker
                 if (otherNotes != "")
                     otherNotes = "\nNotes:" + otherNotes;
 
-                return (cmdText + fileText + runDllText + servicesText + otherNotes).Trim(' ', '\n', '\r');
+                return (cmdText + fileText + otherNotes + runDllText + servicesText).Trim(' ', '\n', '\r');
             }
             catch
             { }
