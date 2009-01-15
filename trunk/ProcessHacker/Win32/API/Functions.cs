@@ -42,6 +42,26 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Files
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int CreateFile(string FileName, FILE_RIGHTS DesiredAccess, FILE_SHARE_MODE ShareMode,
+            int SecurityAttributes, FILE_CREATION_DISPOSITION CreationDisposition, int FlagsAndAttributes,
+            int TemplateFile);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool ReadFile(int FileHandle, byte[] Buffer, int Bytes, out int ReadBytes, int Overlapped);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool WriteFile(int FileHandle, byte[] Buffer, int Bytes, out int WrittenBytes, int Overlapped);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool DeviceIoControl(int FileHandle, int IoControlCode,
+            byte[] InBuffer, int InBufferLength, byte[] OutBuffer, int OutBufferLength,
+            out int BytesReturned, int Overlapped);
+
+        #endregion
+
         #region Kernel
 
         [DllImport("psapi.dll", SetLastError = true)]

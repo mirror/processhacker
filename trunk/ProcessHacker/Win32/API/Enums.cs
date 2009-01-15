@@ -84,6 +84,15 @@ namespace ProcessHacker
             SynchronizationEvent
         }
 
+        public enum FILE_CREATION_DISPOSITION : uint
+        {
+            CreateNew = 1,
+            CreateAlways = 2,
+            OpenExisting = 3,
+            OpenAlways = 4,
+            TruncateExisting
+        }
+
         [Flags]
         public enum FILE_OBJECT_FLAGS : int
         {
@@ -115,6 +124,42 @@ namespace ProcessHacker
             FO_SKIP_COMPLETION_PORT = 0x02000000,
             FO_SKIP_SET_EVENT = 0x04000000,
             FO_SKIP_SET_FAST_IO = 0x08000000
+        }
+
+        [Flags]
+        public enum FILE_RIGHTS : uint
+        {
+            FILE_READ_DATA = 0x0001,
+            FILE_LIST_DIRECTORY = 0x0001,
+            FILE_WRITE_DATA = 0x0002,
+            FILE_ADD_FILE = 0x0002,
+            FILE_APPEND_DATA = 0x0004,
+            FILE_ADD_SUBDIRECTORY = 0x0004,
+            FILE_CREATE_PIPE_INSTANCE = 0x0004,
+            FILE_READ_EA = 0x0008,
+            FILE_WRITE_EA = 0x0010,
+            FILE_EXECUTE = 0x0020,
+            FILE_TRAVERSE = 0x0020,
+            FILE_DELETE_CHILD = 0x0040,
+            FILE_READ_ATTRIBUTES = 0x0080,
+            FILE_WRITE_ATTRIBUTES = 0x0100,
+            FILE_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | STANDARD_RIGHTS.SYNCHRONIZE | 0x1ff,
+            FILE_GENERIC_READ = STANDARD_RIGHTS.STANDARD_RIGHTS_READ | FILE_READ_DATA |
+                FILE_READ_ATTRIBUTES | FILE_READ_EA | STANDARD_RIGHTS.SYNCHRONIZE,
+            FILE_GENERIC_WRITE = STANDARD_RIGHTS.STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA |
+                FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA |
+                STANDARD_RIGHTS.SYNCHRONIZE,
+            FILE_GENERIC_EXECUTE = STANDARD_RIGHTS.STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES |
+                FILE_EXECUTE | STANDARD_RIGHTS.SYNCHRONIZE
+        }
+
+        [Flags]
+        public enum FILE_SHARE_MODE : uint
+        {
+            Exclusive = 0,
+            Read = 1,
+            Write = 2,
+            Delete = 4
         }
 
         [Flags]

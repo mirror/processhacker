@@ -410,29 +410,31 @@ namespace ProcessHacker
                     }
                 }
 
-                if (info.TypeName == "File")
+                // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
+                // is guaranteed to work, but filters out useful files as well.
+                if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
                 {
-                    // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
-                    // is guaranteed to work, but filters out useful files as well.
-                    if ((int)handle.GrantedAccess == 0x0012019f)
-                        throw new Exception("0x0012019f access is banned");
+                    // FIXME: get KProcessHacker working
+                    //info.OrigName = Program.KPH.GetObjectName(handle);
                 }
-
-                ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    IntPtr.Zero, 0, out retLength);
-                
-                if (retLength > 0)
+                else
                 {
-                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                    ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                        IntPtr.Zero, 0, out retLength);
+
+                    if (retLength > 0)
                     {
-                        if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                            oniMem.Memory, oniMem.Size, out retLength) != 0)
-                            throw new Exception("ZwQueryObject failed");
+                        using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                        {
+                            if (ZwQueryObject(object_handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                                oniMem.Memory, oniMem.Size, out retLength) != 0)
+                                throw new Exception("ZwQueryObject failed");
 
-                        OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
+                            OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
 
-                        info.OrigName = ReadUnicodeString(oni.Name);
-                        info.Name = oni;
+                            info.OrigName = ReadUnicodeString(oni.Name);
+                            info.Name = oni;
+                        }
                     }
                 }
 

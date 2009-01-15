@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   source file
+ *   main driver code
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -33,12 +33,15 @@
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     UNICODE_STRING dosDeviceName;
+    int i;
     
-    RtlInitUnicodeString(&dosDeviceName, KPROCESSHACKER_DEVICE_DOS_NAME);
+    RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     IoDeleteSymbolicLink(&dosDeviceName);
     IoDeleteDevice(DriverObject->DeviceObject);
     
-    DbgPrint("KProcessHacker: Driver unloaded");
+    ZwClose(Handle);
+    
+    dprintf("KProcessHacker: Driver unloaded\n");
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
@@ -48,8 +51,8 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
     
-    RtlInitUnicodeString(&deviceName, KPROCESSHACKER_DEVICE_NAME);
-    RtlInitUnicodeString(&dosDeviceName, KPROCESSHACKER_DEVICE_DOS_NAME);
+    RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
+    RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     
     status = IoCreateDevice(DriverObject, 0, &deviceName, 
         FILE_DEVICE_UNKNOWN, FILE_DEVICE_SECURE_OPEN, TRUE, &deviceObject);
@@ -60,8 +63,6 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = KPHClose;
     DriverObject->MajorFunction[IRP_MJ_CREATE] = KPHCreate;
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KPHIoControl;
-    DriverObject->MajorFunction[IRP_MJ_READ] = KPHRead;
-    DriverObject->MajorFunction[IRP_MJ_WRITE] = KPHWrite;
     
     DriverObject->DriverUnload = DriverUnload;
     
@@ -70,7 +71,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     IoCreateSymbolicLink(&dosDeviceName, &deviceName);
 	
-    DbgPrint("KProcessHacker: Driver loaded");
+    dprintf("KProcessHacker: Driver loaded\n");
 	
     return STATUS_SUCCESS;
 }
@@ -89,17 +90,194 @@ NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return status;
 }
 
+/* from YAPM */
+NTSTATUS GetObjectName(PFILE_OBJECT lpObject, PVOID lpBuffer, ULONG nBufferLength, PULONG lpReturnLength)
+{
+	ULONG nObjectName=0;
+	PFILE_OBJECT lpRelated;
+	PVOID lpName = lpBuffer;
+	ULONG* lpLength = lpBuffer;
+    
+	if (lpObject->DeviceObject)
+	{
+		ObQueryNameString((PVOID)lpObject->DeviceObject,lpName,nBufferLength,lpReturnLength);
+		(PCHAR)lpName += *lpReturnLength - 2;
+		nBufferLength -= *lpReturnLength - 2;
+	}
+	else
+	{
+		(PCHAR)lpName = (PCHAR)lpName + 4;
+		nBufferLength -= 4;
+	}
+	
+	if (!lpObject->FileName.Buffer)
+		return STATUS_SUCCESS;
+    
+	lpRelated = lpObject;
+    
+	do
+	{
+		nObjectName += lpRelated->FileName.Length;
+		lpRelated = lpRelated->RelatedFileObject;
+	}
+	while (lpRelated);
+	
+	*lpReturnLength += nObjectName;
+	*lpLength = *lpReturnLength;
+    
+	if (nObjectName > nBufferLength)
+	{
+		return STATUS_BUFFER_TOO_SMALL;
+	}
+    
+	(PCHAR)lpName += nObjectName;
+	*(unsigned short*)lpName = 0;
+    
+	lpRelated = lpObject;
+	do
+	{
+		(PCHAR)lpName -= lpRelated->FileName.Length;
+		RtlCopyMemory(lpName,lpRelated->FileName.Buffer,lpRelated->FileName.Length);
+		lpRelated = lpRelated->RelatedFileObject;
+	}
+	while (lpRelated);
+	
+	dprintf("%ws", (WCHAR*)lpBuffer);
+    
+	return STATUS_SUCCESS;
+}
+
 NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
-
+    PIO_STACK_LOCATION ioStackIrp = NULL;
+    PCHAR dataBuffer;
+    int controlCode;
+    unsigned int inLength, outLength;
+    
+    Irp->IoStatus.Status = STATUS_SUCCESS;
+    Irp->IoStatus.Information = 0;
+    
+    ioStackIrp = IoGetCurrentIrpStackLocation(Irp);
+    
+    if (ioStackIrp == NULL)
+    {
+        status = STATUS_INTERNAL_ERROR;
+        goto IoControlEnd;
+    }
+    
+    dataBuffer = (PCHAR)Irp->AssociatedIrp.SystemBuffer;
+    
+    if (dataBuffer == NULL)
+    {
+        status = STATUS_INTERNAL_ERROR;
+        goto IoControlEnd;
+    }
+    
+    inLength = ioStackIrp->Parameters.DeviceIoControl.InputBufferLength;
+    outLength = ioStackIrp->Parameters.DeviceIoControl.OutputBufferLength;
+    controlCode = ioStackIrp->Parameters.DeviceIoControl.IoControlCode;
+    
+    dprintf("KProcessHacker: IoControl %d!\n", controlCode);
+    
+    switch (controlCode)
+    {
+        case KPH_GETOBJECTNAME:
+        {
+            HANDLE inHandle;
+            int inObject;
+            int inProcessId;
+            HANDLE processHandle;
+            HANDLE dupHandle;
+            PVOID object;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            inHandle = *(HANDLE *)dataBuffer;
+            inObject = *(int *)(dataBuffer + 4);
+            inProcessId = *(int *)(dataBuffer + 8);
+            
+            {
+                OBJECT_ATTRIBUTES objAttr = { 0 };
+                CLIENT_ID clientId;
+                
+                objAttr.Length = sizeof(objAttr);
+                clientId.UniqueThread = 0;
+                clientId.UniqueProcess = inProcessId;
+                
+                ZwOpenProcess(&processHandle, 0x40, &objAttr, &clientId);
+            }
+            
+            dprintf("KProcessHacker: KPH_GETOBJECTNAME\n");
+            
+            __try
+            {
+                ZwDuplicateObject(processHandle, inHandle, (HANDLE)-1, &dupHandle, 0, 0, 0);
+				ObReferenceObjectByHandle(dupHandle, 0x80000000, 0, 0, &object, 0);
+                
+                if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
+                {
+                    ObDereferenceObject(object);
+                    ZwClose(dupHandle);
+                    status = GetObjectName(
+                        (PFILE_OBJECT)inObject, dataBuffer, outLength, &Irp->IoStatus.Information);
+                }
+                else
+                {
+                    status = ObQueryNameString(
+                        object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &Irp->IoStatus.Information);
+                    ObDereferenceObject(object);
+                    ZwClose(dupHandle);
+                }
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = STATUS_ACCESS_VIOLATION;
+            }
+            
+            ZwClose(processHandle);
+        }
+    }
+    
+IoControlEnd:
+    Irp->IoStatus.Status = status;
+    IoCompleteRequest(Irp, IO_NO_INCREMENT);
+    
     return status;
 }
 
 NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
-
+    PIO_STACK_LOCATION ioStackIrp = NULL;
+    PCHAR readDataBuffer;
+    
+    ioStackIrp = IoGetCurrentIrpStackLocation(Irp);
+    
+    if (ioStackIrp != NULL)
+    {
+        readDataBuffer = (PCHAR)Irp->AssociatedIrp.SystemBuffer;
+    
+        if (readDataBuffer != NULL)
+        {
+            int i;
+            
+            dprintf("KProcessHacker: Client wrote %d bytes!\n", ioStackIrp->Parameters.Read.Length);
+            
+            for (i = 0; i < ioStackIrp->Parameters.Read.Length; i++)
+                readDataBuffer[i] = 'A';
+            
+            Irp->IoStatus.Status = STATUS_SUCCESS;
+            Irp->IoStatus.Information = ioStackIrp->Parameters.Read.Length;
+        }
+    }
+    
+    IoCompleteRequest(Irp, IO_NO_INCREMENT);
+    
     return status;
 }
 
@@ -117,30 +295,26 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
         if (writeDataBuffer != NULL)
         {
-           if (IsStringNullTerminated(writeDataBuffer, ioStackIrp->Parameters.Write.Length))
-           {
-                DbgPrint(writeDataBuffer);
-           }
+            int i;
+            
+            DbgPrint("KProcessHacker: Client wrote %d bytes!\n", ioStackIrp->Parameters.Write.Length);
+            DbgPrint("KProcessHacker: Client wrote \"");
+            
+            for (i = 0; i < ioStackIrp->Parameters.Write.Length; i++)
+                DbgPrint("%c", writeDataBuffer[i]);
+            
+            DbgPrint("\"\n");
         }
     }
+    
+    IoCompleteRequest(Irp, IO_NO_INCREMENT);
 
     return status;
 }
 
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
-    DbgPrint("KProcessHacker: Unsupported function called");
+    DbgPrint("KProcessHacker: Unsupported function called\n");
     
     return STATUS_NOT_IMPLEMENTED;
-}
-
-BOOLEAN IsStringNullTerminated(PCHAR String, int Length)
-{
-    int i;
-    
-    for (i = 0; i < Length; i++)
-        if (String[i] == 0)
-            return TRUE;
-
-    return FALSE;
 }

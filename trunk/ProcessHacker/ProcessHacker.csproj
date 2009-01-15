@@ -485,6 +485,7 @@
     <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="KProcessHacker.cs" />
     <Compile Include="Misc\ColumnSettings.cs" />
     <Compile Include="Misc\DeltaManager.cs" />
     <Compile Include="Misc\UsageIcon.cs" />
@@ -583,6 +584,7 @@
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
+    <Compile Include="Win32\Handles\FileHandle.cs" />
     <Compile Include="Win32\Handles\TokenWithLinkedToken.cs" />
     <Compile Include="Win32\Memory\LsaMemoryAlloc.cs" />
     <Compile Include="Win32\Memory\WtsMemoryAlloc.cs" />

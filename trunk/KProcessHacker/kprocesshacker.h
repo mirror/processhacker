@@ -23,10 +23,33 @@
 #ifndef KPROCESSHACKER_H
 #define KPROCESSHACKER_H
 
-#include <ntddk.h>
+#define DEBUG
 
-#define KPROCESSHACKER_DEVICE_NAME L"\\Device\\KProcessHacker"
-#define KPROCESSHACKER_DEVICE_DOS_NAME L"\\DosDevices\\KProcessHacker"
+#ifdef DEBUG
+#define dprintf DbgPrint
+#else
+#define dprintf
+#endif
+
+#include <ntifs.h>
+
+/* I like 0x9999. */
+#define KPH_DEVICE_TYPE 0x9999
+#define KPH_DEVICE_NAME L"\\Device\\KProcessHacker"
+#define KPH_DEVICE_DOS_NAME L"\\DosDevices\\KProcessHacker"
+
+#define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
+#define KPH_GETOBJECTNAME KPH_CTL_CODE(0)
+
+typedef struct _SYSTEM_HANDLE_INFORMATION
+{
+    ULONG ProcessId;
+    UCHAR ObjectTypeNumber;
+    UCHAR Flags;
+    USHORT Handle;
+    PVOID Object;
+    ACCESS_MASK GrantedAccess;
+} SYSTEM_HANDLE_INFORMATION, *PSYSTEM_HANDLE_INFORMATION;
 
 NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
