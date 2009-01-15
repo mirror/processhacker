@@ -261,12 +261,19 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    try
+                    if (pid != 4)
                     {
-                        item.FileName = Misc.GetRealPath(p.MainModule.FileName);
+                        try
+                        {
+                            item.FileName = Misc.GetRealPath(p.MainModule.FileName);
+                        }
+                        catch
+                        { }
                     }
-                    catch
-                    { }
+                    else
+                    {
+                        item.FileName = Misc.GetKernelFileName();
+                    }
 
                     try
                     {

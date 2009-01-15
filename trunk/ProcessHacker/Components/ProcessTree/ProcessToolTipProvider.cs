@@ -128,7 +128,7 @@ namespace ProcessHacker
                     if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.Trusted)
                         otherNotes += "\n    Signature present and verified.";
                     else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.TrustedInstaller)
-                        otherNotes += "\n    File is a Windows component.";
+                        otherNotes += "\n    Verified Windows component.";
                     else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
                         otherNotes += "\n    Signature present but invalid.";
 

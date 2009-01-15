@@ -37,16 +37,23 @@ namespace ProcessHacker
 
         public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
 
-        public static string[] ImposterNames = { "csrss.exe", "lsass.exe", "lsm.exe", "services.exe",
-                                                        "smss.exe", "wininit.exe", "winlogon.exe", "ntoskrnl.exe",
-                                                        "ntkrnlpa.exe", "explorer.exe", "cmd.exe" };
+        public static string[] ImposterNames =
+        { 
+            "csrss.exe", "lsass.exe", "lsm.exe", "services.exe",
+            "smss.exe", "wininit.exe", "winlogon.exe", "ntoskrnl.exe",
+            "ntkrnlpa.exe", "rundll32.exe", "cmd.exe", "svchost.exe" 
+        };
 
-        public static string[] DangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
-                                      "smss.exe", "wininit.exe", "winlogon.exe" };
+        public static string[] DangerousNames = 
+        {
+            "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
+            "smss.exe", "wininit.exe", "winlogon.exe"
+        };
 
         public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
 
-        public static string[] PrivilegeNames = {
+        public static string[] PrivilegeNames =
+        {
             "SeCreateTokenPrivilege",
             "SeAssignPrimaryTokenPrivilege",
             "SeLockMemoryPrivilege",
@@ -82,7 +89,7 @@ namespace ProcessHacker
             "SeIncreaseWorkingSetPrivilege",
             "SeTimeZonePrivilege",
             "SeCreateSymbolicLinkPrivilege"
-            };
+        };
 
         #endregion
 
