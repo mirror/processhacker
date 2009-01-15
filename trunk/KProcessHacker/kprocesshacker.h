@@ -25,4 +25,15 @@
 
 #include <ntddk.h>
 
+#define KPROCESSHACKER_DEVICE_NAME L"\\Device\\KProcessHacker"
+#define KPROCESSHACKER_DEVICE_DOS_NAME L"\\DosDevices\\KProcessHacker"
+
+NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
+
 #endif
