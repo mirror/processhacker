@@ -136,7 +136,7 @@ namespace ProcessHacker
                         pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
                         pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller && 
                         Program.WindowsVersion != "XP")
-                        otherNotes += "\n    Process is using the name of a known Windows component but could be verified to be one.";
+                        otherNotes += "\n    Process is using the name of a known Windows component but could not be verified to be one.";
                 }
 
                 if (otherNotes != "")
