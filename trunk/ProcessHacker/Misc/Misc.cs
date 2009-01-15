@@ -37,6 +37,10 @@ namespace ProcessHacker
 
         public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
 
+        public static string[] ImposterNames = { "csrss.exe", "lsass.exe", "lsm.exe", "services.exe",
+                                                        "smss.exe", "wininit.exe", "winlogon.exe", "ntoskrnl.exe",
+                                                        "ntkrnlpa.exe", "explorer.exe", "cmd.exe" };
+
         public static string[] DangerousNames = { "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
                                       "smss.exe", "wininit.exe", "winlogon.exe" };
 

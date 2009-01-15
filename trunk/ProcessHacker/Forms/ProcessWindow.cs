@@ -194,8 +194,7 @@ namespace ProcessHacker
 
                 if (Properties.Settings.Default.VerifySignatures)
                 {
-                    // verify signature
-                    var verifyResult = Win32.VerifyFile(fileName);
+                    var verifyResult = _processItem.VerifyResult;
 
                     if (verifyResult == Win32.VerifyResult.Trusted)
                         textFileCompany.Text += " (verified)";

@@ -57,6 +57,7 @@ namespace ProcessHacker
         public int ParentPID;
         public int IconAttempts;
 
+        public Win32.VerifyResult VerifyResult;
         public int ImportFunctions;
         public int ImportModules;
 
@@ -410,6 +411,12 @@ namespace ProcessHacker
                         // we can't read it, so...
                         if (pid > 4)
                             item.IsPacked = true;
+                    }
+
+                    if (Properties.Settings.Default.VerifySignatures)
+                    {
+                        try { item.VerifyResult = Win32.VerifyFile(item.FileName); }
+                        catch { }
                     }
 
                     // find out if it's a .NET process (we'll just see if it has loaded mscoree.dll)

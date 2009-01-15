@@ -21,6 +21,8 @@ Process Hacker
    * Special tooltip info for rundll32.exe
    * Verifies file signatures (and detects Windows components by 
      checking the files' owners and ACLs)
+   * Highlights processes which have invalid signatures or are 
+     pretending to be system processes
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

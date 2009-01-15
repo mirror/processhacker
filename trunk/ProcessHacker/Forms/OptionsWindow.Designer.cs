@@ -41,6 +41,7 @@
             this.label18 = new System.Windows.Forms.Label();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
+            this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
@@ -78,7 +79,6 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -260,6 +260,17 @@
             this.checkShowTrayIcon.UseVisualStyleBackColor = true;
             this.checkShowTrayIcon.CheckedChanged += new System.EventHandler(this.checkShowTrayIcon_CheckedChanged);
             // 
+            // checkVerifySignatures
+            // 
+            this.checkVerifySignatures.AutoSize = true;
+            this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 183);
+            this.checkVerifySignatures.Name = "checkVerifySignatures";
+            this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
+            this.checkVerifySignatures.TabIndex = 3;
+            this.checkVerifySignatures.Text = "Verify signatures and perform additional checks";
+            this.checkVerifySignatures.UseVisualStyleBackColor = true;
+            // 
             // tabHighlighting
             // 
             this.tabHighlighting.Controls.Add(this.label20);
@@ -287,19 +298,18 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 199);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 213);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
             // 
             // label20
             // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(214, 139);
+            this.label20.Location = new System.Drawing.Point(214, 133);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(99, 13);
+            this.label20.Size = new System.Drawing.Size(110, 29);
             this.label20.TabIndex = 9;
-            this.label20.Text = "Packed Processes:";
+            this.label20.Text = "Packed/Dangerous Processes:";
             // 
             // label19
             // 
@@ -506,7 +516,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 199);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 213);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -623,17 +633,6 @@
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
-            // 
-            // checkVerifySignatures
-            // 
-            this.checkVerifySignatures.AutoSize = true;
-            this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 183);
-            this.checkVerifySignatures.Name = "checkVerifySignatures";
-            this.checkVerifySignatures.Size = new System.Drawing.Size(109, 18);
-            this.checkVerifySignatures.TabIndex = 3;
-            this.checkVerifySignatures.Text = "Verify signatures";
-            this.checkVerifySignatures.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 

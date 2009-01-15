@@ -125,14 +125,18 @@ namespace ProcessHacker
 
                 if (Properties.Settings.Default.VerifySignatures)
                 {
-                    var verifyResult = Win32.VerifyFile(pNode.ProcessItem.FileName);
-
-                    if (verifyResult == Win32.VerifyResult.Trusted)
+                    if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.Trusted)
                         otherNotes += "\n    Signature present and verified.";
-                    else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                    else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.TrustedInstaller)
                         otherNotes += "\n    File is a Windows component.";
-                    else if (verifyResult != Win32.VerifyResult.NoSignature)
+                    else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
                         otherNotes += "\n    Signature present but invalid.";
+
+                    if (Misc.ArrayContains<string>(Misc.ImposterNames, pNode.Name.ToLower()) &&
+                        pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
+                        pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller && 
+                        Program.WindowsVersion != "XP")
+                        otherNotes += "\n    Process is using the name of a known Windows component but could be verified to be one.";
                 }
 
                 if (otherNotes != "")
