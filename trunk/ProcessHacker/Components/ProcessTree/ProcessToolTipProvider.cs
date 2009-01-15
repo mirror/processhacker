@@ -114,7 +114,28 @@ namespace ProcessHacker
                 catch
                 { }
 
-                return (cmdText + fileText + runDllText + servicesText).Trim(' ', '\n', '\r');
+                string otherNotes = "";
+
+                if (pNode.ProcessItem.IsPacked && pNode.ProcessItem.ImportModules > 0)
+                    otherNotes += "\n    Image is probably packed - has " +
+                        pNode.ProcessItem.ImportFunctions.ToString() + " imports over " +
+                        pNode.ProcessItem.ImportModules.ToString() + " modules.";
+                else if (pNode.ProcessItem.IsPacked)
+                    otherNotes += "\n    Image is probably packed - error reading PE file.";
+
+                var verifyResult = Win32.VerifyFile(pNode.ProcessItem.FileName);
+
+                if (verifyResult == Win32.VerifyResult.Trusted)
+                    otherNotes += "\n    Signature present and verified.";
+                else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                    otherNotes += "\n    File is a Windows component.";
+                else if (verifyResult != Win32.VerifyResult.NoSignature)
+                    otherNotes += "\n    Signature present but invalid.";
+
+                if (otherNotes != "")
+                    otherNotes = "\nNotes:" + otherNotes;
+
+                return (cmdText + fileText + runDllText + servicesText + otherNotes).Trim(' ', '\n', '\r');
             }
             catch
             { }

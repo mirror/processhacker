@@ -35,6 +35,13 @@ namespace ProcessHacker
 {
     public partial class Win32
     {
+        #region Cryptography
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern uint WinVerifyTrust(int WindowHandle, ref GUID Action, ref WINTRUST_DATA Data);
+
+        #endregion
+
         #region Kernel
 
         [DllImport("psapi.dll", SetLastError = true)]

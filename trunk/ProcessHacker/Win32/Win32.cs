@@ -132,6 +132,125 @@ namespace ProcessHacker
 
         #endregion    
 
+        #region Cryptography
+
+        public enum VerifyResult
+        {
+            Trusted = 0,
+            TrustedInstaller,
+            NoSignature,
+            Expired,
+            Revoked,
+            Distrust,
+            SecuritySettings
+        }
+
+        public static VerifyResult VerifyFile(string filePath)
+        {
+            VerifyResult result = VerifyResult.NoSignature;
+
+            using (MemoryAlloc strMem = new MemoryAlloc(filePath.Length * 2 + 2))
+            {
+                WINTRUST_FILE_INFO fileInfo = new WINTRUST_FILE_INFO();
+                GUID verifyGuid = new GUID()
+                {
+                    Data1 = 0xaac56b,
+                    Data2 = 0xcd44,
+                    Data3 = 0x11d0,
+                    Data4 = new byte[] { 0x8c, 0xc2, 0x0, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
+                };
+
+                strMem.WriteUnicodeString(0, filePath);
+                strMem.WriteByte(filePath.Length * 2, 0);
+                strMem.WriteByte(filePath.Length * 2 + 1, 0);
+
+                fileInfo.Size = Marshal.SizeOf(fileInfo);
+                fileInfo.FilePath = strMem;
+
+                WINTRUST_DATA trustData = new WINTRUST_DATA();
+
+                trustData.Size = 12 * 4;
+                trustData.UIChoice = 2; // WTD_UI_NONE
+                trustData.UnionChoice = 1; // WTD_CHOICE_FILE
+                trustData.ProvFlags = 0x100; // WTD_SAFER_FLAG
+
+                using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
+                {
+                    Marshal.StructureToPtr(fileInfo, mem, false);
+                    trustData.File = mem;
+
+                    uint winTrustResult = WinVerifyTrust(0, ref verifyGuid, ref trustData);
+
+                    if (winTrustResult == 0)
+                        result = VerifyResult.Trusted;
+                    else if (winTrustResult == 0x800b0100)
+                        result = VerifyResult.NoSignature;
+                    else if (winTrustResult == 0x800b0101)
+                        result = VerifyResult.Expired;
+                    else if (winTrustResult == 0x800b010c)
+                        result = VerifyResult.Revoked;
+                    else if (winTrustResult == 0x800b0111)
+                        result = VerifyResult.Distrust;
+                    else if (winTrustResult == 0x80092026)
+                        result = VerifyResult.SecuritySettings;
+                }
+            }
+
+            if (result == VerifyResult.NoSignature)
+            {
+                // check the file's permissions
+                try
+                {
+                    System.IO.FileInfo info = new System.IO.FileInfo(filePath);
+                    bool othersCanWrite = false; // if accounts other than TrustedInstaller can write 
+
+                    // TrustedInstaller must own the file
+                    if (info.GetAccessControl().GetOwner(typeof(System.Security.Principal.NTAccount)).Value !=
+                        "NT SERVICE\\TrustedInstaller")
+                    {
+                        result = VerifyResult.NoSignature;
+                    }
+                    else
+                    {
+                        foreach (System.Security.AccessControl.FileSystemAccessRule rule in
+                            info.GetAccessControl().GetAccessRules(true, true,
+                            typeof(System.Security.Principal.NTAccount)))
+                        {
+                            if (rule.IdentityReference.Value == "NT SERVICE\\TrustedInstaller")
+                            {
+                                result = VerifyResult.TrustedInstaller;
+                            }
+                            else
+                            {
+                                // if any accounts other than TrustedInstaller can write to the file, then it's
+                                // not a real Windows component.
+                                if (rule.AccessControlType == System.Security.AccessControl.AccessControlType.Allow &&
+                                    (rule.FileSystemRights & (
+                                    System.Security.AccessControl.FileSystemRights.ChangePermissions |
+                                    System.Security.AccessControl.FileSystemRights.Delete |
+                                    System.Security.AccessControl.FileSystemRights.DeleteSubdirectoriesAndFiles |
+                                    System.Security.AccessControl.FileSystemRights.TakeOwnership |
+                                    System.Security.AccessControl.FileSystemRights.Write)) != 0)
+                                {
+                                    othersCanWrite = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (othersCanWrite)
+                            result = VerifyResult.NoSignature;
+                    }
+                }
+                catch
+                { }
+            }
+
+            return result;
+        }
+
+        #endregion
+
         #region Errors
 
         /// <summary>

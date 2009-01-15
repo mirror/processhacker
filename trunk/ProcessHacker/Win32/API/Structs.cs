@@ -161,6 +161,17 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct GUID
+        {
+            public uint Data1;
+            public ushort Data2;
+            public ushort Data3;
+
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+            public byte[] Data4;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct HEAPENTRY32
         {
             public int dwSize;
@@ -1329,6 +1340,32 @@ namespace ProcessHacker
             public int PagefileUsage;
             public int PeakPagefileUsage;
             public int PrivateBytes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WINTRUST_DATA
+        {
+            public int Size;
+            public int PolicyCallbackData;
+            public int SIPClientData;
+            public int UIChoice;
+            public int RevocationChecks;
+            public int UnionChoice;
+            public IntPtr File;
+            public int StateAction;
+            public int StateData;
+            public int URLReference;
+            public int ProvFlags;
+            public int UIContext;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WINTRUST_FILE_INFO
+        {
+            public int Size;
+            public IntPtr FilePath;
+            public int FileHandle;
+            public int KnownSubject;
         }
 
         [StructLayout(LayoutKind.Sequential)]

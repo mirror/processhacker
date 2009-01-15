@@ -19,6 +19,8 @@ Process Hacker
      injection)
    * New float and double types for structs
    * Special tooltip info for rundll32.exe
+   * Verifies file signatures (and detects Windows components by 
+     checking the files' owners and ACLs)
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

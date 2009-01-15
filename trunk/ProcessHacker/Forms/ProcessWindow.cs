@@ -191,6 +191,26 @@ namespace ProcessHacker
 
                 try { pictureIcon.Image = Win32.GetFileIcon(fileName, true).ToBitmap(); }
                 catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
+
+                // verify signature
+                var verifyResult = Win32.VerifyFile(fileName);
+
+                if (verifyResult == Win32.VerifyResult.Trusted)
+                    textFileCompany.Text += " (verified)";
+                else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                    textFileCompany.Text += " (verified, Windows component)";
+                else if (verifyResult == Win32.VerifyResult.NoSignature)
+                    textFileCompany.Text += " (not verified, no signature)";
+                else if (verifyResult == Win32.VerifyResult.Distrust)
+                    textFileCompany.Text += " (not verified, distrusted)";
+                else if (verifyResult == Win32.VerifyResult.Expired)
+                    textFileCompany.Text += " (not verified, expired)";
+                else if (verifyResult == Win32.VerifyResult.Revoked)
+                    textFileCompany.Text += " (not verified, revoked)";
+                else if (verifyResult == Win32.VerifyResult.SecuritySettings)
+                    textFileCompany.Text += " (not verified, security settings)";
+                else
+                    textFileCompany.Text += " (not verified)";
             }
             catch (Exception ex)
             {
@@ -912,22 +932,27 @@ namespace ProcessHacker
 
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
-            if (_process.HasExited)
+            try
             {
-                timerUpdate.Enabled = false;
-
-                try
+                if (_process.HasExited)
                 {
-                    using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    {
-                        this.Text += " (exited with code " + phandle.GetExitCode() + ")";
-                    }
-                }
-                catch
-                { }
+                    timerUpdate.Enabled = false;
 
-                return;
+                    try
+                    {
+                        using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                        {
+                            this.Text += " (exited with code " + phandle.GetExitCode() + ")";
+                        }
+                    }
+                    catch
+                    { }
+
+                    return;
+                }
             }
+            catch
+            { }
 
             try
             {

@@ -164,6 +164,16 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Writes a single byte to the memory allocation.
+        /// </summary>
+        /// <param name="offset">The offset at which to write.</param>
+        /// <param name="b">The value of the byte.</param>
+        public void WriteByte(int offset, byte b)
+        {
+            Marshal.WriteByte(this, offset, b);
+        }
+
+        /// <summary>
         /// Writes a Unicode string to the allocated memory.
         /// </summary>
         /// <param name="offset">The offset to add.</param>

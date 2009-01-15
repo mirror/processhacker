@@ -57,6 +57,9 @@ namespace ProcessHacker
         public int ParentPID;
         public int IconAttempts;
 
+        public int ImportFunctions;
+        public int ImportModules;
+
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
         public Win32.ProcessHandle ProcessQueryLimitedHandle;
@@ -391,6 +394,9 @@ namespace ProcessHacker
 
                             foreach (var i in peFile.ImportData.ImportLookupTable)
                                 funcTotal += i.Count;
+
+                            item.ImportModules = libraryTotal;
+                            item.ImportFunctions = funcTotal;
 
                             if (
                                 libraryTotal < 3 && funcTotal < 5 || 
