@@ -196,10 +196,10 @@ namespace ProcessHacker
             if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
             else if (Properties.Settings.Default.VerifySignatures &&
-                Misc.ArrayContains<string>(Misc.ImposterNames, p.Name.ToLower()) &&
+                Misc.ArrayContains<string>(Misc.ImposterNames, p.Name.Trim().ToLower()) &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
                 p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
-                        Program.WindowsVersion != "XP")
+                Program.WindowsVersion != "XP")
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Properties.Settings.Default.VerifySignatures &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
@@ -208,11 +208,7 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (p.IsDotNet)
                 return Properties.Settings.Default.ColorDotNetProcesses;
-            else if (p.IsPacked ||
-                (Properties.Settings.Default.VerifySignatures &&
-                Misc.ArrayContains<string>(Misc.ImposterNames, p.Name.ToLower()) &&
-                p.VerifyResult != Win32.VerifyResult.Trusted &&
-                p.VerifyResult != Win32.VerifyResult.TrustedInstaller))
+            else if (p.IsPacked)
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
                 Program.HackerWindow.ProcessServices[p.PID].Count > 0)
