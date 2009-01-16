@@ -26,6 +26,7 @@ Process Hacker
      checking the files' owners and ACLs)
    * Highlights processes which have invalid signatures or are 
      pretending to be system processes
+   * Better method for suspending/resuming processes
  * FIXED:
    * System information window resizing
    * "Overflow error" exceptions

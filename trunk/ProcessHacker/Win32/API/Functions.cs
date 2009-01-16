@@ -147,6 +147,12 @@ namespace ProcessHacker
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwResumeProcess(int ProcessHandle);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwSuspendProcess(int ProcessHandle);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQuerySection(int SectionHandle, SECTION_INFORMATION_CLASS SectionInformationClass,
             ref SECTION_BASIC_INFORMATION SectionInformation, int SectionInformationLength, out int ReturnLength);
 

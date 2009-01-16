@@ -296,7 +296,6 @@ namespace ProcessHacker
 
                 return exitCode;
             }
-            
 
             /// <summary>
             /// Gets the file name of the process' image. This requires the
@@ -428,6 +427,43 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Resumes the process. This requries the PROCESS_SUSPEND_RESUME permission.
+            /// </summary>
+            public void Resume()
+            {
+                if (ZwResumeProcess(this) != 0)
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Suspends the process. This requries the PROCESS_SUSPEND_RESUME permission.
+            /// </summary>
+            public void Suspend()
+            {
+                if (ZwSuspendProcess(this) != 0)
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Terminates the process. This requires the PROCESS_TERMINATE permission.
+            /// </summary>
+            public void Terminate()
+            {
+                this.Terminate(0);
+            }
+
+            /// <summary>
+            /// Terminates the process, specifying the exit code. This requires the 
+            /// PROCESS_TERMINATE permission.
+            /// </summary>
+            /// <param name="ExitCode">The exit code.</param>
+            public void Terminate(int ExitCode)
+            {
+                if (!TerminateProcess(this, ExitCode))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
             /// Waits for the process to terminate.
             /// </summary>
             /// <param name="Timeout">The timeout of the wait.</param>
@@ -451,25 +487,6 @@ namespace ProcessHacker
                     ThrowLastWin32Error();
 
                 return writLen;
-            }
-
-            /// <summary>
-            /// Terminates the process. This requires the PROCESS_TERMINATE permission.
-            /// </summary>
-            public void Terminate()
-            {
-                this.Terminate(0);
-            }
-
-            /// <summary>
-            /// Terminates the process, specifying the exit code. This requires the 
-            /// PROCESS_TERMINATE permission.
-            /// </summary>
-            /// <param name="ExitCode">The exit code.</param>
-            public void Terminate(int ExitCode)
-            {
-                if (!TerminateProcess(this, ExitCode))
-                    ThrowLastWin32Error();
             }
 
             /// <summary>
