@@ -1,0 +1,219 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ProcessHacker.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="RefreshInterval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">820, 549</Value>
+    </Setting>
+    <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">200, 200</Value>
+    </Setting>
+    <Setting Name="SplitterDistance" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">355</Value>
+    </Setting>
+    <Setting Name="WindowState" Type="System.Windows.Forms.FormWindowState" Scope="User">
+      <Value Profile="(Default)">Normal</Value>
+    </Setting>
+    <Setting Name="DebugMem" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SearchType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&amp;String Scan...</Value>
+    </Setting>
+    <Setting Name="ShowAccountDomains" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WarnDangerous" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ProcessTreeColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ThreadListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ResultsWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">504, 482</Value>
+    </Setting>
+    <Setting Name="ModuleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MemoryListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MemoryWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">791, 503</Value>
+    </Setting>
+    <Setting Name="ResultsListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ProcessWindowSelectedTab" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tabGeneral</Value>
+    </Setting>
+    <Setting Name="PrivilegeListColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="GroupListColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TokenWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">481, 468</Value>
+    </Setting>
+    <Setting Name="PEWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">439, 413</Value>
+    </Setting>
+    <Setting Name="PECOFFHColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PECOFFOHColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PEImageDataColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PESectionsColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PEExportsColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PEImportsColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SearchEngine" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.google.com/search?q=%s</Value>
+    </Setting>
+    <Setting Name="ColorNewProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Chartreuse</Value>
+    </Setting>
+    <Setting Name="ColorRemovedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 60, 40</Value>
+    </Setting>
+    <Setting Name="ColorOwnProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 255, 170</Value>
+    </Setting>
+    <Setting Name="ColorElevatedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 170, 102</Value>
+    </Setting>
+    <Setting Name="ColorSystemProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">170, 204, 255</Value>
+    </Setting>
+    <Setting Name="HighlightingDuration" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="AlwaysOnTop" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ThreadWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">415, 503</Value>
+    </Setting>
+    <Setting Name="CallStackColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UseToolhelpModules" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="NewProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TerminatedProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="NewServices" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="StartedServices" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="StoppedServices" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DeletedServices" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ShowIcon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="HideHandlesNoName" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ServiceListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="HandleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FilterHandleListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FilterHandleWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">554, 463</Value>
+    </Setting>
+    <Setting Name="ColorBeingDebugged" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">204, 187, 255</Value>
+    </Setting>
+    <Setting Name="ColorServiceProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">204, 255, 255</Value>
+    </Setting>
+    <Setting Name="PromptBoxText" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RunAsUsername" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RunAsCommand" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TokenWindowTab" Type="System.String" Scope="User">
+      <Value Profile="(Default)">tabPrivileges</Value>
+    </Setting>
+    <Setting Name="HideWhenMinimized" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ProcessWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">493, 465</Value>
+    </Setting>
+    <Setting Name="PlotterAntialias" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PlotterCPUKernelColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Lime</Value>
+    </Setting>
+    <Setting Name="PlotterCPUUserColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="PlotterMemoryPrivateColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Orange</Value>
+    </Setting>
+    <Setting Name="PlotterMemoryWSColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Cyan</Value>
+    </Setting>
+    <Setting Name="PlotterIOROColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Yellow</Value>
+    </Setting>
+    <Setting Name="PlotterIOWColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DarkViolet</Value>
+    </Setting>
+    <Setting Name="ColorJobProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Peru</Value>
+    </Setting>
+    <Setting Name="ShowOneGraphPerCPU" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UnitSpecifier" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="ColorDotNetProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">222, 255, 0</Value>
+    </Setting>
+    <Setting Name="ColorPackedProcesses" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">DeepPink</Value>
+    </Setting>
+    <Setting Name="VerifySignatures" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

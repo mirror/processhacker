@@ -1,0 +1,237 @@
+Process Hacker
+
+1.3.1.0
+ * SUMMARY: This version adds many small but useful features. It is 
+   also more useful when trying to fight malware, thanks to 
+   digital signature verification and packed executable detection.
+ * NEW:
+   * "Free" and "Decommit" actions for memory regions
+   * "Description" column for processes
+   * Current Directory for processes automatically updates
+   * Can now display the file names of DRM-protected 
+     processes (like audiodg.exe)
+   * Now displays thread information under the thread list
+   * Module file name info for thread start addresses 
+     and stack traces
+   * Highlighting for .NET processes and packed executables
+   * Shows CPU usage and physical memory usage in the status bar
+   * "Reload Struct Definitions" menu item
+   * Struct Searcher - displays addresses which match the specified 
+     struct definition
+   * Ability to unload remote modules (by remote thread 
+     injection)
+   * New float and double types for structs
+   * Special tooltip info for rundll32.exe
+   * Verifies file signatures (and detects Windows components by 
+     checking the files' owners and ACLs)
+   * Highlights processes which have invalid signatures or are 
+     pretending to be system processes
+   * Better method for suspending/resuming processes
+ * FIXED:
+   * System information window resizing
+   * "Overflow error" exceptions
+   * Problems with the search button
+   * Process properties for DPCs and Interrupts
+   * Disabled expanding of processes when double-clicking 
+     them
+   * Now shows non-existent parent PIDs
+   * build-and-clean script is now XP compatible
+   * Redrawing problems with the lists in the process window
+
+1.3.0.0
+ * NEW:
+   * Process tree using TreeViewAdv
+   * Process properties window with statistics and graphs
+   * System Information Window with statistics and graphs
+   * Detailed token information, including source, owner and primary group
+   * Information about remote handles to events, mutants, sections and tokens
+   * Terminator tool - tries many techniques to terminate processes
+   * Highlighting for UAC elevated processes and processes in job objects
+   * Struct reader for examining PEBs and TEBs - note that this can be 
+     extended by writing your own definitions
+   * Better tray icon - displays a graph, and the tooltip contains the current 
+     CPU usage and the process using most of the CPU
+ * FIXED:
+   * Shows SIDs without names (like Logon IDs) in SDDL format
+   * Uses PROCESS_QUERY_LIMITED_INFORMATION on Windows Vista - e.g. on audiodg.exe
+   * Symbols are now bound to each process - no more weird stack traces/symbols
+   * Handle filtering is now much faster - uses a cache for session ID checking
+
+1.2.6.5
+ * A new member of the project - Dean
+ * Can view thread usernames, groups and privileges
+ * The handle filter window is now faster
+ * Added thread start addresses in thread list
+ * The process list now has less CPU usage
+ * Fixed some processes not having icons
+
+1.2.6.0
+ * Fixed the fix for the huge regression - the cause was a double "free" of the same handle
+ * Added Assistant - can start processes as any user, including SYSTEM, 
+   LOCAL SERVICE and NETWORK SERVICE. Injector's create process item is 
+   now deprecated.
+ * Fixed service handle leaks which caused service deletions to be 
+   undetected.
+ * Fixed service list in process tooltips when new own-process services are started and when 
+   shared-process services are stopped.
+
+1.2.5.1
+ * Fixed huge regression caused by revision #250 in Win32.ProcessHandle.~ProcessHandle()
+
+1.2.5.0
+ * Fixed wrong usernames when Process Hacker is running as a non-admin user
+ * Gets command line of processes without using Injector
+ * Added highlighting for debugged processes
+ * Added viewing/setting of process affinity
+ * Fixed all handle leaks
+ * Added I/O counters to misc. info
+ * Added CPU usage column
+ * Fixed services in tooltips
+ * Added highlighting for processes with services
+ * System and System Idle Processes now have usernames (hardcoded in)
+ * Handle finder now only searches in processes with same session ID (faster, 
+   avoids hangs)
+ * Fixed window activation when showing Process Hacker from the tray icon
+ * Fixed highlighting
+ * Fixed various memory corruption issues
+
+1.2.3.5
+ * Added handle viewing/closing support
+ * Fixed random crashes
+ * Doesn't update threads/handles unless viewing them
+ * Fixed most handle leaks
+ * Fixed randomly changing process usernames
+ * Added WaitReason column in thread list
+ * Highlights suspended threads in thread list
+ * Only require highestAvailable elevation for UAC
+
+1.2.3.0
+ * Fixed incorrect messages about "new services" (actually fixed this time)
+ * Fixed Injector - now uses MinGW instead of Visual C++
+ * "Create Process..." feature of Injector works on XP now
+ * Added StartType column in services list
+
+1.2.2.5
+ * Now shows function parameters in call stack
+ * Added Injector
+ * Added "Get Symbol Name From Address..." and "Find SYSTEM processes with same Session ID"
+ * Services list now displays a blank space when there is no PID
+ * Fixed services with own process and interactive type
+ * Fixed random crashes with the process list and services list
+ * Added copyright information (to comply with VistaMenu and SplitButton licensing)
+ * Now displays user names of most processes using the Terminal Server APIs
+ * Fixed incorrect messages about "new services"
+ * Added tray icon
+
+1.2.1.5
+ * Fixed disassemblies from PE window - they disassemble the right function now
+ * Fixed UI inconsistencies
+ * Allow Toolhelp module listings
+ * Updated help
+ * Fixed service start/stop buttons in service window
+
+1.2.1.0
+ * Can now display services
+ * Displays services in process tooltips
+
+1.2.0.5
+ * Updated credits
+ * Fixed crash when opening two thread inspectors with the same process and thread
+ * Disassembler window can now display backward short jumps (>0x7fffffff)
+ * Now unloads symbols for all other EXEs before opening the thread inspector
+ * Improvements in symbol loading
+
+1.2.0.0
+ * Added PE Inspector (can read exe/dll/sys files and their properties)
+ * Added "Search Online" menu item
+ * Added highlighting of processes and threads
+ * Added "Always on Top" menu item
+ * Added status bar messages and log
+ * Added "Go to Parent" menu item
+ * Removed "Close Active Window" menu item - practically same as "Terminate Process"
+ * Added disassembler
+ * Added Thread Inspector - shows call stack of threads
+
+1.1.5.0
+ * Fixed memory leak with process icons
+ * Removed useless starting "\" in account names
+ * Fixed group menu item enabling and disabling
+ * Added filtering of search results
+
+1.1.4.5
+ * Fixed crash when attempting to open privileges for System on XP
+ * Added Groups Window (to view process groups)
+ * Fixed Search window startup position
+
+1.1.4.0
+ * Enabled Select All for all lists on the main window
+ * Added Privileges Window (to enable, disable and remove privileges)
+ * Fixed error messages - they now have the correct Win32 error descriptions
+
+1.1.3.5
+ * Now saves column settings
+ * Now saves results and memory window settings
+ * Now saves selected tab
+
+1.1.3.0
+ * Completely rewrote thread list code
+ * Can now display kernel threads on Vista
+ * Disables thread priority menu item when there is an error
+ * Now displays process 0 as System Idle Process
+ * Fixed thread list for System Idle Process
+ * Now displays description for System
+ * Now has a good system of copying list items (currently in every ListView)
+
+1.1.2.0
+ * Completely rewrote process list code
+ * Added lots of information to process tooltips
+
+1.1.1.0
+ * Memory editor is now properly activated from the Hacker Window
+ * Fixed obscure bug where the process list disables itself
+ * Added my email address
+ * Added CONTEXT code
+ * Now bolds the kernel name when the System process is selected
+ * Fixed opening Memory Editor from Results Window
+ * Changed Search button to a SplitButton
+ * Added username column
+ * Now shows process description and filename in tooltip
+ * Added more "options"
+ * Added keyboard shortcuts for terminating process(es) (Del) and refreshing (F5)
+ * Added some menu items - Select All and Refresh
+
+1.1.0.5
+ * Upgraded messageboxes when performing operations on processes and threads to OKCancel
+ * Fixed checking for dangerous PIDs on XP
+ * Fixed getting icons for certain processes on XP
+ * Fixed crashes when attempting to read from invalid memory locations
+ * Fixed crash when opening help window after closing it
+ * Fixed default menu item text drawing
+
+1.1.0.0
+ * Fixed certain programs' modules not having a description
+ * Major refactoring in code
+ * Moved memory editor panel into its own form
+ * Moved search into its own form
+ * Merged string scanning and heap scanning into the Search form
+ * Removed debug programs option
+ * Now has proper main menu
+ * Search results window is now on its own thread
+ * Search results list now uses VirtualMode - huge speed increase
+ * Added "prevent overlapping results" option
+ * Made memory editor windows spawn in separate threads
+ * Removed all Application.DoEvents() calls
+ * Fixed cursor problems
+ * Now displays busy cursor on startup
+ * Intersect menu is now sorted
+ * Fixed form focusing
+ * Added Window menu items in all forms
+
+1.0.1.0
+ * Fixed occasional "Object not set to an instance of object" error
+ * Added link to SourceForge project page
+ * Fixed FlatStyle inconsistencies
+ * Fixed "invalid characters in path name" problem on Windows XP
+
+1.0.0.0
+ * Initial release

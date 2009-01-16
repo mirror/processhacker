@@ -1,0 +1,213 @@
+/*
+ * Process Hacker's Structs file - contains 
+ * common structures used in Windows
+ *
+ * wj32.
+ */
+
+include "base.txt";
+
+typedef int handle;
+typedef int NTSTATUS; /* no enum support *yet* */
+typedef pvoid ppvoid;
+
+/* A counted UTF-16 string. Same as LSA_UNICODE_STRING. */
+struct UNICODE_STRING
+{
+    ushort Length;
+    ushort MaximumLength;
+    wstr* Buffer[Length / 2]; /* Length is in bytes, and each wchar is 2 bytes */
+}
+
+/* A doubly-linked list.  */
+struct LIST_ENTRY
+{
+    LIST_ENTRY* Flink;
+    LIST_ENTRY* Blink;
+}
+
+struct CLIENT_ID
+{
+    pvoid UniqueProcess;
+    pvoid UniqueThread;
+}
+
+struct RTL_DRIVE_LETTER_CURDIR
+{
+    ushort Flags;
+    ushort Length;
+    ulong TimeStamp;
+    UNICODE_STRING DosPath;
+}
+
+/* Lots of useful stuff like current directory and command line */
+struct RTL_USER_PROCESS_PARAMETERS
+{
+    ulong MaximumLength;
+    ulong Length;
+    ulong Flags;
+    ulong DebugFlags;
+    pvoid ConsoleHandle;
+    ulong ConsoleFlags;
+    handle StdInputHandle;
+    handle StdOutputHandle;
+    handle StdErrorHandle;
+    UNICODE_STRING CurrentDirectoryPath;
+    handle CurrentDirectoryHandle;
+    UNICODE_STRING DllPath;
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+    pvoid Environment;
+    ulong StartingPositionLeft;
+    ulong StartingPositionTop;
+    ulong Width;
+    ulong Height;
+    ulong CharWidth;
+    ulong CharHeight;
+    ulong ConsoleTextAttributes;
+    ulong WindowFlags;
+    ulong ShowWindowFlags;
+    UNICODE_STRING WindowTitle;
+    UNICODE_STRING DesktopName;
+    UNICODE_STRING ShellInfo;
+    UNICODE_STRING RuntimeData;
+    RTL_DRIVE_LETTER_CURDIR DLCurrentDirectory[0x20];
+}
+
+/* Contains the address of a fast-locking routine for the PEB */
+struct PEBLOCKROUTINE
+{
+    pvoid PebLock;
+}
+
+/* Process Environment Block */
+struct PEB
+{
+    boolean InheritedAddressSpace;
+    boolean ReadImageFileExecOptions;
+    boolean BeingDebugged;
+    boolean Spare;
+    handle Mutant;
+    pvoid ImageBaseAddress;
+    pvoid LoaderData; /* should be PEB_LDR_DATA* */
+    RTL_USER_PROCESS_PARAMETERS* ProcessParameters; 
+    pvoid SubSystemData;
+    pvoid ProcessHeap;
+    pvoid FastPebLock;
+    PEBLOCKROUTINE* FastPebLockRoutine;
+    PEBLOCKROUTINE* FastPebUnlockRoutine;
+    ulong EnvironmentUpdateCount;
+    ppvoid KernelCallbackTable;
+    pvoid EventLogSection;
+    pvoid EventLog;
+    pvoid FreeList; /* should be PEB_FREE_BLOCK* */
+    ulong TlsExpansionCounter;
+    pvoid TlsBitmap;
+    ulong TlsBitmapBits[0x2];
+    pvoid ReadOnlySharedMemoryBase;
+    pvoid ReadOnlySharedMemoryHeap;
+    ppvoid ReadOnlyStaticServerData;
+    pvoid AnsiCodePageData;
+    pvoid OemCodePageData;
+    pvoid UnicodeCaseTableData;
+    ulong NumberOfProcessors;
+    ulong NtGlobalFlag;
+    byte Spare2[0x4];
+    large_integer CriticalSectionTimeout;
+    ulong HeapSegmentReserve;
+    ulong HeapSegmentCommit;
+    ulong HeapDeCommitTotalFreeThreshold;
+    ulong HeapDeCommitFreeBlockThreshold;
+    ulong NumberOfHeaps;
+    ulong MaximumNumberOfHeaps;
+    ppvoid ProcessHeaps;
+    pvoid GdiSharedHandleTable;
+    pvoid ProcessStarterHelper;
+    pvoid GdiDCAttributeList;
+    pvoid LoaderLock;
+    ulong OSMajorVersion;
+    ulong OSMinorVersion;
+    ulong OSBuildNumber;
+    ulong OSPlatformId;
+    ulong ImageSubSystem;
+    ulong ImageSubSystemMajorVersion;
+    ulong ImageSubSystemMinorVersion;
+    ulong GdiHandleBuffer[0x22];
+    ulong PostProcessInitRoutine;
+    ulong TlsExpansionBitmap;
+    byte TlsExpansionBitmapBits[0x80];
+    ulong SessionId;
+}
+
+struct NT_TIB
+{
+    pvoid ExceptionList; /* EXCEPTION_REGISTRATION_RECORD* */
+    pvoid StackBase;
+    pvoid StackLimit;
+    pvoid SubSystemTib;
+    ulong FiberData_Version_Union;
+    pvoid ArbitraryUserPointer;
+    pvoid Self; /* NT_TIB* */
+}
+
+/* Thread Environment Block */
+struct TEB
+{
+    NT_TIB Tib;
+    pvoid EnvironmentPointer;
+    CLIENT_ID Cid;
+    pvoid ActiveRpcInfo;
+    pvoid ThreadLocalStoragePointer;
+    PEB* Peb;
+    ulong LastErrorValue;
+    ulong CountOfOwnedCriticalSections;
+    pvoid CsrClientThread;
+    pvoid Win32ThreadInfo;
+    ulong Win32ClientInfo[0x1f];
+    pvoid WOW32Reserved;
+    ulong CurrentLocale;
+    ulong FpSoftwareStatusRegister;
+    pvoid SystemReserved1[0x36];
+    pvoid Spare1;
+    ulong ExceptionCode;
+    ulong SpareBytes1[0x28];
+    pvoid SystemReserved2[0xa];
+    ulong GdiRgn;
+    ulong GdiPen;
+    ulong GdiBrush;
+    CLIENT_ID RealClientId;
+    pvoid GdiCachedProcessHandle;
+    ulong GdiClientPID;
+    ulong GdiClientTID;
+    pvoid GdiThreadLocaleInfo;
+    pvoid UserReserved[5];
+    pvoid GlDispatchTable[0x118];
+    ulong GlReserved1[0x1a];
+    pvoid GlReserved2;
+    pvoid GlSectionInfo;
+    pvoid GlSection;
+    pvoid GlTable;
+    pvoid GlCurrentRC;
+    pvoid GlContext;
+    NTSTATUS LastStatusValue;
+    UNICODE_STRING StaticUnicodeString;
+    wchar StaticUnicodeBuffer[0x105];
+    pvoid DeallocationStack;
+    pvoid TlsSlots[0x40];
+    LIST_ENTRY TlsLinks;
+    pvoid Vdm;
+    pvoid ReservedForNtRpc;
+    pvoid DbgSsReserved[0x2];
+    ulong HardErrorDisabled;
+    pvoid Instrumentation[0x10];
+    pvoid WinSockData;
+    ulong GdiBatchCount;
+    ulong Spare2;
+    ulong Spare3;
+    ulong Spare4;
+    pvoid ReservedForOle;
+    ulong WaitingOnLoaderLock;
+    pvoid StackCommit;
+    pvoid StackCommitMax;
+    pvoid StackReserved;
+}
