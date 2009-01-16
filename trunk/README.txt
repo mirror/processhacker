@@ -36,4 +36,5 @@ Process Hacker is brought to you by the small Process Hacker team:
    * Plotter
    * System Information Window
    * Speed improvements in handle filter
+   * Networking information
  * Paul Pacheco (Developer)
