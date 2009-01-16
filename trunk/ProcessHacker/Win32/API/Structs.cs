@@ -347,7 +347,7 @@ namespace ProcessHacker
 
         //UDPRowTable And OwnerPID     
         [StructLayout(LayoutKind.Sequential)]
-        public struct MIB_UDPROWTABLE_OWNER_PID
+        public struct MIB_UDPTABLE_OWNER_PID
         {
             public int NumEntries;
             public MIB_UDPROW_OWNER_PID[] Table;

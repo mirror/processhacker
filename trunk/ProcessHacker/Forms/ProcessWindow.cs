@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
  *   process properties window
- * 
+ *   
+ * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -41,6 +42,7 @@ namespace ProcessHacker
         private ModuleProvider _moduleP;
         private MemoryProvider _memoryP;
         private HandleProvider _handleP;
+        private TcpUdpProvider _tcpUdpP;
 
         private TokenProperties _tokenProps;
         private ServiceProperties _serviceProps;
@@ -120,7 +122,7 @@ namespace ProcessHacker
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
             checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
-
+            checkResolveAddresses.Checked = Properties.Settings.Default.ResolveAddresses;           
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
 
@@ -348,6 +350,15 @@ namespace ProcessHacker
             _handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
+
+            listTcpUdp.BeginUpdate();
+            listHandles.Highlight = false;
+            _tcpUdpP = new TcpUdpProvider(_pid);
+            _tcpUdpP.Interval = Properties.Settings.Default.RefreshInterval;
+            _tcpUdpP.Updated += new Provider<int, TcpUdpItem>.ProviderUpdateOnce(_tcpUdpP_Updated);
+            _tcpUdpP.RunOnceAsync();
+            listTcpUdp.Provider = _tcpUdpP;
+            _tcpUdpP.Enabled = true;
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -846,6 +857,18 @@ namespace ProcessHacker
                 _handleP.Updated -= new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
             }
         }
+        private void _tcpUdpP_Updated()
+        {
+            if (_tcpUdpP.RunCount > 1)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    listTcpUdp.EndUpdate();
+                    listTcpUdp.Highlight = true;
+                }));
+                _tcpUdpP.Updated -= new Provider<int, TcpUdpItem>.ProviderUpdateOnce(_tcpUdpP_Updated);
+            }
+        }
 
         private void _moduleP_Updated()
         {
@@ -921,11 +944,14 @@ namespace ProcessHacker
                 _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
             if (_handleP != null)
                 _handleP.Enabled = tabControl.SelectedTab == tabHandles;
+            if (_tcpUdpP != null)
+                _tcpUdpP.Enabled = tabControl.SelectedTab == tabTcpIp;
 
             listThreads.EndUpdate();
             listModules.EndUpdate();
             listMemory.EndUpdate();
             listHandles.EndUpdate();
+            listTcpUdp.EndUpdate();
         }
 
         #endregion

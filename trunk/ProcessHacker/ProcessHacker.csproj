@@ -124,6 +124,10 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\TcpUdpList.resx">
+      <DependentUpon>TcpUdpList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\FileNameBox.resx">
       <DependentUpon>FileNameBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -294,6 +298,12 @@
     </Compile>
     <Compile Include="Components\ColorModifier.Designer.cs">
       <DependentUpon>ColorModifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TcpUdpList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TcpUdpList.Designer.cs">
+      <DependentUpon>TcpUdpList.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\FileNameBox.cs">
       <SubType>UserControl</SubType>
@@ -502,6 +512,7 @@
     <Compile Include="PE\ImageSubsystem.cs" />
     <Compile Include="PE\MachineType.cs" />
     <Compile Include="PE\PEFile.cs" />
+    <Compile Include="Providers\TcpUdpProvider.cs" />
     <Compile Include="Providers\ProcessSystemProvider.cs" />
     <Compile Include="Providers\MemoryProvider.cs" />
     <Compile Include="Providers\ModuleProvider.cs" />

@@ -574,7 +574,22 @@ namespace ProcessHacker.Properties {
                 this["HideHandlesNoName"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ResolveAddresses
+        {
+            get
+            {
+                return ((bool)(this["ResolveAddresses"]));
+            }
+            set
+            {
+                this["ResolveAddresses"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -598,7 +613,22 @@ namespace ProcessHacker.Properties {
                 this["HandleListViewColumns"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TcpUdpListViewColumns
+        {
+            get
+            {
+                return ((string)(this["TcpUdpListViewColumns"]));
+            }
+            set
+            {
+                this["TcpUdpListViewColumns"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
