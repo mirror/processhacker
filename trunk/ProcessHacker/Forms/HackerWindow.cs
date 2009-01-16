@@ -50,6 +50,7 @@ namespace ProcessHacker
 
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
+        NetworkProvider networkP = new NetworkProvider();
 
         UsageIcon cpuUsageIcon = new UsageIcon(16, 16);
 
@@ -91,6 +92,11 @@ namespace ProcessHacker
         public ServiceProvider ServiceProvider
         {
             get { return serviceP; }
+        }
+
+        public NetworkProvider NetworkProvider
+        {
+            get { return networkP; }
         }
 
         public ProcessTree ProcessList
@@ -1176,6 +1182,22 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Tab Controls
+
+        private void tabControlBig_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControlBig.SelectedTab == tabNetwork)
+            {
+                networkP.Enabled = true;
+            }
+            else
+            {
+                networkP.Enabled = false;
+            }
+        }
+
+        #endregion
+
         #region Timers
 
         private void timerFire_Tick(object sender, EventArgs e)
@@ -1267,6 +1289,7 @@ namespace ProcessHacker
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.NetworkListViewColumns, listNetwork.List);
         }
 
         public void QueueMessage(string message)
@@ -1297,6 +1320,7 @@ namespace ProcessHacker
 
             Properties.Settings.Default.ProcessTreeColumns = ColumnSettings.SaveSettings(treeProcesses.Tree);
             Properties.Settings.Default.ServiceListViewColumns = ColumnSettings.SaveSettings(listServices.List);
+            Properties.Settings.Default.NetworkListViewColumns = ColumnSettings.SaveSettings(listNetwork.List);
 
             Properties.Settings.Default.NewProcesses = NPMenuItem.Checked;
             Properties.Settings.Default.TerminatedProcesses = TPMenuItem.Checked;
@@ -1469,9 +1493,11 @@ namespace ProcessHacker
 
             treeProcesses.ContextMenu = menuProcess;
             listServices.ContextMenu = menuService;
+            listNetwork.ContextMenu = GenericViewMenu.GetMenu(listNetwork.List);
 
             processP.Interval = RefreshInterval;
             treeProcesses.Provider = processP;
+            processP.RunOnceAsync();
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_IconUpdater);
             processP.Enabled = true;
@@ -1484,11 +1510,17 @@ namespace ProcessHacker
             listServices.List.BeginUpdate();
             serviceP.Interval = RefreshInterval;
             listServices.Provider = serviceP;
+            serviceP.RunOnceAsync();
             serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
             serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
             serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
             serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
+
+            networkP.Interval = RefreshInterval;
+            listNetwork.Provider = networkP;
+            networkP.RunOnceAsync();
+            networkP.Enabled = true;
 
             statusText.Text = "Waiting...";
 
@@ -1525,6 +1557,8 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
+
+            tabControlBig_SelectedIndexChanged(null, null);
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)

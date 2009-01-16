@@ -272,16 +272,20 @@ namespace ProcessHacker
         public struct MIB_TCPROW
         {
             public MIB_TCP_STATE State;
-            public System.Net.IPEndPoint Local;
-            public System.Net.IPEndPoint Remote;
+            public uint LocalAddress;
+            public int LocalPort;
+            public uint RemoteAddress;
+            public int RemotePort;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MIB_TCPROW_OWNER_PID
         {
             public MIB_TCP_STATE State;
-            public System.Net.IPEndPoint Local;
-            public System.Net.IPEndPoint Remote;
+            public uint LocalAddress;
+            public int LocalPort;
+            public uint RemoteAddress;
+            public int RemotePort;
             public int OwningProcessId;
         }
 
@@ -324,9 +328,8 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct MIB_UDPROW
         {
-            //public int LocalAddress;
-            //public int PortPort;
-            public System.Net.IPEndPoint Local;
+            public uint LocalAddress;
+            public int LocalPort;
         }
 
         //UDPTable   
@@ -341,16 +344,9 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct MIB_UDPROW_OWNER_PID
         {
-            public System.Net.IPEndPoint Local;
+            public uint LocalAddress;
+            public int LocalPort;
             public int OwningProcessId;
-        }
-
-        //UDPRowTable And OwnerPID     
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MIB_UDPTABLE_OWNER_PID
-        {
-            public int NumEntries;
-            public MIB_UDPROW_OWNER_PID[] Table;
         }
 
         //UDPStats
@@ -364,7 +360,15 @@ namespace ProcessHacker
             public int NumAddrs;
         }
         //later
-        //MIB_UDP6ROW,MIB_UDP6TABLE,MIB_UDP6ROW_OWNER_PID,MIB_UDP6TABLE_OWNER_PID...
+        //MIB_UDP6ROW,MIB_UDP6TABLE,MIB_UDP6ROW_OWNER_PID,MIB_UDP6TABLE_OWNER_PID...  
+
+        //UDPRowTable And OwnerPID     
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIB_UDPTABLE_OWNER_PID
+        {
+            public int NumEntries;
+            public MIB_UDPROW_OWNER_PID[] Table;
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MODULEENTRY32

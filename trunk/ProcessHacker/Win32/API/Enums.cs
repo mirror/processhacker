@@ -276,18 +276,18 @@ namespace ProcessHacker
 
         public enum MIB_TCP_STATE : int
         {
-            MIB_TCP_STATE_CLOSED = 1,
-            MIB_TCP_STATE_LISTEN,
-            MIB_TCP_STATE_SYN_SENT,
-            MIB_TCP_STATE_SYN_RCVD,
-            MIB_TCP_STATE_ESTAB,
-            MIB_TCP_STATE_FIN_WAIT1,
-            MIB_TCP_STATE_FIN_WAIT2,
-            MIB_TCP_STATE_CLOSE_WAIT,
-            MIB_TCP_STATE_CLOSING,
-            MIB_TCP_STATE_LAST_ACK,
-            MIB_TCP_STATE_TIME_WAIT,
-            MIB_TCP_STATE_DELETE_TCB
+            Closed = 1,
+            Listening,
+            SynSent,
+            SynReceived,
+            Established,
+            FinWait1,
+            FinWait2,
+            CloseWait,
+            Closing,
+            LastAck,
+            TimeWait,
+            DeleteTcb
         }
 
         public enum MUTANT_INFORMATION_CLASS : int
@@ -740,6 +740,19 @@ namespace ProcessHacker
             SystemSessionProcessesInformation
         }
 
+        public enum TCP_TABLE_CLASS : int
+        {
+            TCP_TABLE_BASIC_LISTENER,
+            TCP_TABLE_BASIC_CONNECTIONS,
+            TCP_TABLE_BASIC_ALL,
+            TCP_TABLE_OWNER_PID_LISTENER,
+            TCP_TABLE_OWNER_PID_CONNECTIONS,
+            TCP_TABLE_OWNER_PID_ALL,
+            TCP_TABLE_OWNER_MODULE_LISTENER,
+            TCP_TABLE_OWNER_MODULE_CONNECTIONS,
+            TCP_TABLE_OWNER_MODULE_ALL
+        }
+
         public enum THREAD_INFORMATION_CLASS
         {
             ThreadBasicInformation,
@@ -852,6 +865,13 @@ namespace ProcessHacker
         {
             TokenPrimary = 1,
             TokenImpersonation
+        }
+
+        public enum UDP_TABLE_CLASS : int
+        {
+            UDP_TABLE_BASIC,
+            UDP_TABLE_OWNER_PID,
+            UDP_TABLE_OWNER_MODULE 
         }
 
         public enum WTS_CONNECTSTATE_CLASS : int

@@ -201,6 +201,7 @@ namespace ProcessHacker
         public virtual int Size
         {
             get { return _size; }
+            protected set { _size = value; }
         }
 
         protected virtual void Free()

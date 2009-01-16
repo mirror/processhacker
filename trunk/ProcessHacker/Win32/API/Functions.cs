@@ -99,8 +99,14 @@ namespace ProcessHacker
 
         #region Memory
 
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern IntPtr GetProcessHeap();
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int HeapFree(int Heap, int Flags, IntPtr Memory);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr HeapAlloc(int Heap, int Flags, int Bytes);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessHeap();
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualQueryEx(int Process, int Address,
@@ -579,6 +585,11 @@ namespace ProcessHacker
         #region TCP
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int GetExtendedTcpTable(IntPtr Table, ref int Size,
+            bool Order, int IpVersion, // 2 for IPv4
+            TCP_TABLE_CLASS TableClass, int Reserved);
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int GetTcpStatistics(ref MIB_TCPSTATS pStats);
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
@@ -732,6 +743,11 @@ namespace ProcessHacker
         #endregion
 
         #region UDP
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int GetExtendedUdpTable(IntPtr Table, ref int Size,
+            bool Order, int IpVersion, // 2 for IPv4
+            UDP_TABLE_CLASS TableClass, int Reserved);
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public static extern int GetUdpStatistics(ref MIB_UDPSTATS pStats);

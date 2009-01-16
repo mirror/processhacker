@@ -98,6 +98,7 @@ namespace ProcessHacker
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
             Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
             Properties.Settings.Default.ColorNewProcesses = colorNewProcesses.Color;

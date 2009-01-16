@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Net;
 
 namespace ProcessHacker
 {
@@ -652,6 +653,86 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Network
+
+        public enum NetworkProtocol
+        {
+            Tcp, Udp
+        }
+
+        public struct NetworkConnection
+        {
+            public string ID;
+            public int PID;
+            public NetworkProtocol Protocol;
+            public string LocalString;
+            public IPEndPoint Local;
+            public string RemoteString;
+            public IPEndPoint Remote;
+            public MIB_TCP_STATE State;
+        }
+
+        public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()
+        {
+            var retDict = new Dictionary<int, List<NetworkConnection>>();
+            int length = 0;
+
+            GetExtendedTcpTable(IntPtr.Zero, ref length, false, 2, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, 0);
+
+            using (var mem = new MemoryAlloc(length))
+            {
+                GetExtendedTcpTable(mem, ref length, false, 2, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, 0);
+
+                int count = mem.ReadInt32(0);
+
+                for (int i = 0; i < count; i++)
+                {
+                    var struc = mem.ReadStruct<MIB_TCPROW_OWNER_PID>(4, i);
+
+                    if (!retDict.ContainsKey(struc.OwningProcessId))
+                        retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
+
+                    retDict[struc.OwningProcessId].Add(new NetworkConnection()
+                        {
+                            Protocol = NetworkProtocol.Tcp,
+                            Local = new IPEndPoint(struc.LocalAddress, Misc.ByteSwap((ushort)struc.LocalPort)),
+                            Remote = new IPEndPoint(struc.RemoteAddress, Misc.ByteSwap((ushort)struc.RemotePort)),
+                            State = struc.State,
+                            PID = struc.OwningProcessId
+                        });
+                }
+            }
+
+            GetExtendedUdpTable(IntPtr.Zero, ref length, false, 2, UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, 0);
+
+            using (var mem = new MemoryAlloc(length))
+            {
+                GetExtendedUdpTable(mem, ref length, false, 2, UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, 0);
+
+                int count = mem.ReadInt32(0);
+
+                for (int i = 0; i < count; i++)
+                {
+                    var struc = mem.ReadStruct<MIB_UDPROW_OWNER_PID>(4, i);
+
+                    if (!retDict.ContainsKey(struc.OwningProcessId))
+                        retDict.Add(struc.OwningProcessId, new List<NetworkConnection>());
+
+                    retDict[struc.OwningProcessId].Add(
+                        new NetworkConnection()
+                        {
+                            Protocol = NetworkProtocol.Udp,
+                            Local = new IPEndPoint(struc.LocalAddress, Misc.ByteSwap((ushort)struc.LocalPort)),
+                            PID = struc.OwningProcessId
+                        });
+                }
+            }
+
+            return retDict;
+        }
+
+        #endregion
+
         #region Processes
 
         public struct SystemProcess
@@ -775,7 +856,12 @@ namespace ProcessHacker
             do
             {
                 if (proc.th32ProcessID == pid)
-                    return proc.szExeFile;
+                {
+                    if (proc.szExeFile != "[System Process]")
+                        return proc.szExeFile;
+                    else
+                        return "System Idle Process";
+                }
             } while (Process32Next(snapshot, ref proc) != 0);
 
             return "(unknown)";
@@ -1055,61 +1141,27 @@ namespace ProcessHacker
             return tcpStats;
         }
 
-        public static MIB_TCPTABLE_OWNER_PID GetExTcpConnexions()
+        public static MIB_TCPTABLE_OWNER_PID GetTcpTable()
         {
-            MIB_TCPTABLE_OWNER_PID returnTcpExConnexions;
+            MIB_TCPTABLE_OWNER_PID table = new MIB_TCPTABLE_OWNER_PID();
+            int length = 0;
 
-            int bufferSize = 100000;
-            IntPtr lpTable = Marshal.AllocHGlobal(bufferSize); 
-            if (AllocateAndGetTcpExTableFromStack(ref lpTable, true, GetProcessHeap(), 0, 2) != 0)
-            {
-                throw new Exception("AllocateAndGetTcpExTableFromStack failed");
-            }
-            int numEntries = (int)Marshal.ReadIntPtr(lpTable);
-            lpTable = IntPtr.Zero;
-            Marshal.FreeHGlobal(lpTable);
+            GetExtendedTcpTable(IntPtr.Zero, ref length, false, 2, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, 0);
 
-            int rowsize = 24;
-            bufferSize = (numEntries * rowsize) + 4;
-            returnTcpExConnexions = new MIB_TCPTABLE_OWNER_PID();          
-            lpTable = Marshal.AllocHGlobal(bufferSize);           
-            if (AllocateAndGetTcpExTableFromStack(ref lpTable, true, GetProcessHeap(), 0, 2) != 0)
+            using (MemoryAlloc mem = new MemoryAlloc(length))
             {
-                throw new Exception("AllocateAndGetTcpExTableFromStack failed");
+                GetExtendedTcpTable(mem, ref length, false, 2, TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, 0);
+
+                int count = mem.ReadInt32(0);
+
+                table.NumEntries = count;
+                table.Table = new MIB_TCPROW_OWNER_PID[count];
+
+                for (int i = 0; i < count; i++)
+                    table.Table[i] = mem.ReadStruct<MIB_TCPROW_OWNER_PID>(4, i);
             }
-            IntPtr current = lpTable;
-            int currentIndex = 0;
-            numEntries = (int)Marshal.ReadIntPtr(current);
-            returnTcpExConnexions.NumEntries = numEntries;
-            returnTcpExConnexions.Table = new MIB_TCPROW_OWNER_PID[numEntries];
-            currentIndex += 4;
-            current = (IntPtr)((int)current + currentIndex);           
-            for (int i = 0; i < numEntries; i++)
-            {
-                returnTcpExConnexions.Table[i].State = (MIB_TCP_STATE)((int)Marshal.ReadIntPtr(current));             
-                current = (IntPtr)((int)current + 4);
-                uint localAddr = (uint)Marshal.ReadIntPtr(current);               
-                current = (IntPtr)((int)current + 4);
-                uint localPort = (uint)Marshal.ReadIntPtr(current);
-                current = (IntPtr)((int)current + 4);
-                returnTcpExConnexions.Table[i].Local = new System.Net.IPEndPoint(localAddr, (int)ConvertPort(localPort));
-               
-                uint remoteAddr = (uint)Marshal.ReadIntPtr(current);              
-                current = (IntPtr)((int)current + 4);
-                uint remotePort = 0;
-                if (remoteAddr != 0)
-                {
-                    remotePort = (uint)Marshal.ReadIntPtr(current);
-                    remotePort = (uint)ConvertPort(remotePort);
-                }
-                current = (IntPtr)((int)current + 4);
-                returnTcpExConnexions.Table[i].Remote = new System.Net.IPEndPoint(remoteAddr, (int)remotePort);               
-                returnTcpExConnexions.Table[i].OwningProcessId = (int)Marshal.ReadIntPtr(current);                
-                current = (IntPtr)((int)current + 4);
-            }
-            Marshal.FreeHGlobal(lpTable);
-            current = IntPtr.Zero;
-            return returnTcpExConnexions;
+
+            return table;
         }
 
         #endregion
@@ -1213,59 +1265,36 @@ namespace ProcessHacker
             MIB_UDPSTATS udpStats = new MIB_UDPSTATS();
             GetUdpStatistics(ref udpStats);
             return udpStats;
-        }        
-
-        public static MIB_UDPTABLE_OWNER_PID GetExUdpConnexions()
-        {   
-            MIB_UDPTABLE_OWNER_PID returnUdpExConnexions;   
-        
-            int bufferSize = 100000;
-            IntPtr lpTable = Marshal.AllocHGlobal(bufferSize);
-            if (AllocateAndGetUdpExTableFromStack(ref lpTable, true, GetProcessHeap(), 0, 2) != 0)
-            {
-                throw new Exception("AllocateAndGetUdpExTableFromStack failed");               
-            }
-            int numEntries = (int)Marshal.ReadIntPtr(lpTable);
-            lpTable = IntPtr.Zero;
-            Marshal.FreeHGlobal(lpTable);
-            int rowSize = 12;
-            bufferSize = (numEntries * rowSize) + 4;
-            returnUdpExConnexions = new MIB_UDPTABLE_OWNER_PID();
-            lpTable = Marshal.AllocHGlobal(bufferSize);         
-            if (AllocateAndGetUdpExTableFromStack(ref lpTable, true, GetProcessHeap(), 0, 2) != 0)
-            {
-                throw new Exception("AllocateAndGetUdpExTableFromStack failed");  
-            }
-            IntPtr current = lpTable;
-            int currentIndex = 0;
-            numEntries = (int)Marshal.ReadIntPtr(current);
-            returnUdpExConnexions.NumEntries = numEntries;
-            returnUdpExConnexions.Table = new MIB_UDPROW_OWNER_PID[numEntries];
-            currentIndex += 4;
-            current = (IntPtr)((int)current + currentIndex);
-            for (int i = 0; i < numEntries; i++)
-            {
-                uint localAddr = (uint)Marshal.ReadIntPtr(current);               
-                current = (IntPtr)((int)current + 4);
-                uint localPort = (uint)Marshal.ReadIntPtr(current);                
-                current = (IntPtr)((int)current + 4);
-                returnUdpExConnexions.Table[i].Local = new System.Net.IPEndPoint(localAddr, (int)ConvertPort(localPort));
-                returnUdpExConnexions.Table[i].OwningProcessId = (int)Marshal.ReadIntPtr(current);              
-                current = (IntPtr)((int)current + 4);
-            }
-            Marshal.FreeHGlobal(lpTable);
-            current = IntPtr.Zero;
-
-            return returnUdpExConnexions;
         }
 
-        private static ushort ConvertPort(uint port)
+        public static MIB_UDPTABLE_OWNER_PID GetUdpTable()
         {
-            byte[] b = new Byte[2];
-            b[0] = byte.Parse((port >> 8).ToString());           
-            b[1] = byte.Parse((port & 0xFF).ToString());
-            return BitConverter.ToUInt16(b, 0);
+            MIB_UDPTABLE_OWNER_PID table = new MIB_UDPTABLE_OWNER_PID();
+            int length = 0;
+
+            GetExtendedUdpTable(IntPtr.Zero, ref length, false, 2, UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, 0);
+
+            using (MemoryAlloc mem = new MemoryAlloc(length))
+            {
+                GetExtendedUdpTable(mem, ref length, false, 2, UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, 0);
+                        
+                int count = mem.ReadInt32(0);
+
+                table.NumEntries = count;
+                table.Table = new MIB_UDPROW_OWNER_PID[count];
+
+                for (int i = 0; i < count; i++)
+                    table.Table[i] = mem.ReadStruct<MIB_UDPROW_OWNER_PID>(4, i);
+            }
+
+            return table;
         }
+
+        //GetUdpConnexions()
+        //todo 
+        //GetExUdpConnexions()
+        //todo
+
         #endregion
     }
 }

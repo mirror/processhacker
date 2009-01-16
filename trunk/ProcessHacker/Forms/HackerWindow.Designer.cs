@@ -68,6 +68,7 @@
             this.runAsMenuItem = new System.Windows.Forms.MenuItem();
             this.findHandlesMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
+            this.reloadStructsMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
@@ -89,6 +90,8 @@
             this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.listServices = new ProcessHacker.ServiceList();
+            this.tabNetwork = new System.Windows.Forms.TabPage();
+            this.listNetwork = new ProcessHacker.NetworkList();
             this.menuService = new System.Windows.Forms.ContextMenu();
             this.goToProcessServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.startServiceMenuItem = new System.Windows.Forms.MenuItem();
@@ -112,7 +115,6 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.reloadStructsMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -121,6 +123,7 @@
             this.tabControlBig.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
+            this.tabNetwork.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -398,6 +401,13 @@
             this.inspectPEFileMenuItem.Text = "Inspect &PE File...";
             this.inspectPEFileMenuItem.Click += new System.EventHandler(this.inspectPEFileMenuItem_Click);
             // 
+            // reloadStructsMenuItem
+            // 
+            this.vistaMenu.SetImage(this.reloadStructsMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
+            this.reloadStructsMenuItem.Index = 5;
+            this.reloadStructsMenuItem.Text = "Reload Struct Definitions";
+            this.reloadStructsMenuItem.Click += new System.EventHandler(this.reloadStructsMenuItem_Click);
+            // 
             // sysInfoMenuItem
             // 
             this.sysInfoMenuItem.Index = 6;
@@ -457,7 +467,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 321);
+            this.statusBar.Location = new System.Drawing.Point(0, 300);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -511,12 +521,14 @@
             // 
             this.tabControlBig.Controls.Add(this.tabProcesses);
             this.tabControlBig.Controls.Add(this.tabServices);
+            this.tabControlBig.Controls.Add(this.tabNetwork);
             this.tabControlBig.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 321);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 300);
             this.tabControlBig.TabIndex = 6;
+            this.tabControlBig.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
             // tabProcesses
             // 
@@ -524,7 +536,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 295);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 274);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -535,7 +547,7 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 289);
+            this.treeProcesses.Size = new System.Drawing.Size(790, 268);
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.DoubleClick += new System.EventHandler(this.treeProcesses_DoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
@@ -547,7 +559,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 295);
+            this.tabServices.Size = new System.Drawing.Size(796, 274);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -559,9 +571,30 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 289);
+            this.listServices.Size = new System.Drawing.Size(790, 268);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            // 
+            // tabNetwork
+            // 
+            this.tabNetwork.Controls.Add(this.listNetwork);
+            this.tabNetwork.Location = new System.Drawing.Point(4, 22);
+            this.tabNetwork.Name = "tabNetwork";
+            this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
+            this.tabNetwork.Size = new System.Drawing.Size(796, 274);
+            this.tabNetwork.TabIndex = 2;
+            this.tabNetwork.Text = "Network";
+            this.tabNetwork.UseVisualStyleBackColor = true;
+            // 
+            // listNetwork
+            // 
+            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listNetwork.DoubleBuffered = true;
+            this.listNetwork.Location = new System.Drawing.Point(3, 3);
+            this.listNetwork.Name = "listNetwork";
+            this.listNetwork.Provider = null;
+            this.listNetwork.Size = new System.Drawing.Size(790, 268);
+            this.listNetwork.TabIndex = 0;
             // 
             // menuService
             // 
@@ -717,18 +750,11 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // reloadStructsMenuItem
-            // 
-            this.vistaMenu.SetImage(this.reloadStructsMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
-            this.reloadStructsMenuItem.Index = 5;
-            this.reloadStructsMenuItem.Text = "Reload Struct Definitions";
-            this.reloadStructsMenuItem.Click += new System.EventHandler(this.reloadStructsMenuItem_Click);
-            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 343);
+            this.ClientSize = new System.Drawing.Size(804, 322);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;
@@ -748,6 +774,7 @@
             this.tabControlBig.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
+            this.tabNetwork.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
 
@@ -838,6 +865,8 @@
         private System.Windows.Forms.StatusBarPanel statusCPU;
         private System.Windows.Forms.StatusBarPanel statusMemory;
         private System.Windows.Forms.MenuItem reloadStructsMenuItem;
+        private System.Windows.Forms.TabPage tabNetwork;
+        private NetworkList listNetwork;
     }
 }
 

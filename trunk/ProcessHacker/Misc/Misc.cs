@@ -94,6 +94,49 @@ namespace ProcessHacker
         #endregion
 
         /// <summary>
+        /// Swaps the order of the bytes in the argument.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static int ByteSwap(int v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+            byte b3 = (byte)(v >> 16);
+            byte b4 = (byte)(v >> 24);
+
+            return b4 | (b3 << 8) | (b2 << 16) | (b1 << 24);
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes in the argument.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static uint ByteSwap(uint v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+            byte b3 = (byte)(v >> 16);
+            byte b4 = (byte)(v >> 24);
+
+            return (uint)(b4 | (b3 << 8) | (b2 << 16) | (b1 << 24));
+        }
+
+        /// <summary>
+        /// Swaps the order of the bytes in the argument.
+        /// </summary>
+        /// <param name="v">The number to change.</param>
+        /// <returns>A number.</returns>
+        public static ushort ByteSwap(ushort v)
+        {
+            byte b1 = (byte)v;
+            byte b2 = (byte)(v >> 8);
+
+            return (ushort)(b2 | (b1 << 8));
+        }
+
+        /// <summary>
         /// Converts a 32-bit Unix time value into a DateTime object.
         /// </summary>
         /// <param name="time">The Unix time value.</param>
