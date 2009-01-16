@@ -20,6 +20,9 @@ GUIDE TO DIRECTORY ORGANIZATION
   and forcing other processes to start programs of your choosing.
   * The build script (build.cmd) assumes that you have MinGW installed and 
     have added it to the PATH environment variable.
+* KProcessHacker - the kernel-mode component of Process Hacker. Doesn't do 
+  anything useful yet except protect Process Hacker from termination (but 
+  not suspension or remote thread injection).
 * ProcessHacker - contains all of Process Hacker's source code.
   * Asm - this contains the assembler and disassembler, converted to unsafe 
     C# code from Oleh Yuschuk's Free Disassembler and Assembler.
