@@ -6,4 +6,5 @@ INCLUDES=$(DDK_INC_PATH)
 LIBS=%BUILD%\lib
 
 SOURCES= \
-    kprocesshacker.c
+    kprocesshacker.c \
+    ssdt.c

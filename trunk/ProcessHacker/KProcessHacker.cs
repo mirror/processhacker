@@ -29,11 +29,14 @@ namespace ProcessHacker
 {
     public class KProcessHacker
     {
-        public const uint BaseControlNumber = 0x9999e006;
+        private uint _baseControlNumber;
 
         public enum Control : uint
         {
-            GetObjectName = BaseControlNumber
+            Read = 0,
+            Write,
+            GetObjectName,
+            TerminateProcess
         }
 
         private Win32.FileHandle _fileHandle;
@@ -42,6 +45,12 @@ namespace ProcessHacker
         {
             _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker", 
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
+            _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
+        }
+
+        private uint CtlCode(Control ctl)
+        {
+            return _baseControlNumber + (uint)ctl;
         }
 
         public string GetObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)
@@ -55,7 +64,7 @@ namespace ProcessHacker
 
             try
             {
-                int len = _fileHandle.IoControl((uint)Control.GetObjectName, buffer, outBuffer);
+                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName), buffer, outBuffer);
 
                 return UnicodeEncoding.Unicode.GetString(outBuffer, 0, outBuffer.Length / 2);
             }
@@ -63,6 +72,25 @@ namespace ProcessHacker
             { }
 
             return null;
+        }
+
+        public byte[] Read(int address, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
+
+            return buffer;
+        }
+
+        public int Write(int address, byte[] data)
+        {
+            byte[] newData = new byte[data.Length + 4];
+
+            Array.Copy(Misc.IntToBytes(address, Misc.Endianness.Little), newData, 4);
+            Array.Copy(data, 0, newData, 4, data.Length);
+
+            return _fileHandle.IoControl(CtlCode(Control.Write), newData, new byte[0]);
         }
     }
 }

@@ -72,8 +72,6 @@ namespace ProcessHacker
         public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
-        //public static KProcessHacker KPH = new KProcessHacker();
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

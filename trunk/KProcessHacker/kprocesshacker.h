@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   header file
+ *   main header file
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -33,14 +33,6 @@
 
 #include <ntifs.h>
 
-/* I like 0x9999. */
-#define KPH_DEVICE_TYPE 0x9999
-#define KPH_DEVICE_NAME L"\\Device\\KProcessHacker"
-#define KPH_DEVICE_DOS_NAME L"\\DosDevices\\KProcessHacker"
-
-#define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_READ_DATA | FILE_WRITE_DATA)
-#define KPH_GETOBJECTNAME KPH_CTL_CODE(0)
-
 typedef struct _SYSTEM_HANDLE_INFORMATION
 {
     ULONG ProcessId;
@@ -50,6 +42,17 @@ typedef struct _SYSTEM_HANDLE_INFORMATION
     PVOID Object;
     ACCESS_MASK GrantedAccess;
 } SYSTEM_HANDLE_INFORMATION, *PSYSTEM_HANDLE_INFORMATION;
+
+/* I like 0x9999. */
+#define KPH_DEVICE_TYPE (0x9999)
+#define KPH_DEVICE_NAME (L"\\Device\\KProcessHacker")
+#define KPH_DEVICE_DOS_NAME (L"\\DosDevices\\KProcessHacker")
+
+#define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define KPH_READ KPH_CTL_CODE(0)
+#define KPH_WRITE KPH_CTL_CODE(1)
+#define KPH_GETOBJECTNAME KPH_CTL_CODE(2)
+#define KPH_TERMINATEPROCESS KPH_CTL_CODE(3)
 
 NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
