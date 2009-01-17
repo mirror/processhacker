@@ -146,6 +146,30 @@ namespace ProcessHacker
             SecuritySettings
         }
 
+        public static readonly GUID WINTRUST_ACTION_GENERIC_VERIFY_V2 = new GUID()
+        {
+            Data1 = 0xaac56b,
+            Data2 = 0xcd44,
+            Data3 = 0x11d0,
+            Data4 = new byte[] { 0x8c, 0xc2, 0x0, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
+        };
+
+        public static readonly GUID WINTRUST_ACTION_GENERIC_CHAIN_VERIFY = new GUID()
+        {
+            Data1 = 0xfc451c16,
+            Data2 = 0xac75,
+            Data3 = 0x11d1,
+            Data4 = new byte[] { 0xb4, 0xb8, 0x00, 0xc0, 0x4f, 0xb6, 0x6e, 0xa0 }
+        };
+
+        public static readonly GUID DRIVER_ACTION_VERIFY = new GUID()
+        {
+            Data1 = 0xf750e6c3,
+            Data2 = 0x38ee,
+            Data3 = 0x11d1,
+            Data4 = new byte[] { 0x85, 0xe5, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
+        };
+
         public static VerifyResult VerifyFile(string filePath)
         {
             VerifyResult result = VerifyResult.NoSignature;
@@ -153,13 +177,6 @@ namespace ProcessHacker
             using (MemoryAlloc strMem = new MemoryAlloc(filePath.Length * 2 + 2))
             {
                 WINTRUST_FILE_INFO fileInfo = new WINTRUST_FILE_INFO();
-                GUID verifyGuid = new GUID()
-                {
-                    Data1 = 0xaac56b,
-                    Data2 = 0xcd44,
-                    Data3 = 0x11d0,
-                    Data4 = new byte[] { 0x8c, 0xc2, 0x0, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
-                };
 
                 strMem.WriteUnicodeString(0, filePath);
                 strMem.WriteByte(filePath.Length * 2, 0);
@@ -180,7 +197,8 @@ namespace ProcessHacker
                     Marshal.StructureToPtr(fileInfo, mem, false);
                     trustData.File = mem;
 
-                    uint winTrustResult = WinVerifyTrust(0, ref verifyGuid, ref trustData);
+                    GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+                    uint winTrustResult = WinVerifyTrust(0, ref action, ref trustData);
 
                     if (winTrustResult == 0)
                         result = VerifyResult.Trusted;
@@ -411,12 +429,14 @@ namespace ProcessHacker
                     }
                 }
 
-                // This hack is needed because certain NamedPipes block ZwQueryObject forever. The hack 
-                // is guaranteed to work, but filters out useful files as well.
-                if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
+                if (Program.KPH != null && info.TypeName == "File")
                 {
-                    // FIXME: get KProcessHacker working
-                    //info.OrigName = Program.KPH.GetObjectName(handle);
+                    // use KProcessHacker for files
+                    info.OrigName = Program.KPH.GetObjectName(handle);
+                }
+                else if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
+                {
+                    // KProcessHacker not available, fall back to using hack
                 }
                 else
                 {

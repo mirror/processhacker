@@ -500,6 +500,8 @@
     <Compile Include="Misc\DeltaManager.cs" />
     <Compile Include="Misc\UsageIcon.cs" />
     <Compile Include="Misc\GenericViewMenu.cs" />
+    <Compile Include="PE\ImageRelocationType.cs" />
+    <Compile Include="PE\RelocData.cs" />
     <Compile Include="PE\ImportData.cs" />
     <Compile Include="PE\ExportData.cs" />
     <Compile Include="PE\SectionFlags.cs" />

@@ -72,12 +72,22 @@ namespace ProcessHacker
         public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
+        public static KProcessHacker KPH;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         public static void Main()
         {
+            try
+            {
+                KPH = new KProcessHacker();
+                KPH.SendKiServiceTable();
+            }
+            catch
+            { }
+
             Asm.LockedBus = 1;
             Asm.Lowercase = true;
             Asm.ExtraSpace = true;

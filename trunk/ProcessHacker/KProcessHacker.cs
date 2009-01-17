@@ -24,6 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
+using ProcessHacker.PE;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace ProcessHacker
 {
@@ -36,7 +39,10 @@ namespace ProcessHacker
             Read = 0,
             Write,
             GetObjectName,
-            TerminateProcess
+            TerminateProcess,
+            GetKiServiceTable,
+            GiveKiServiceTable,
+            SetKiServiceTableEntry
         }
 
         private Win32.FileHandle _fileHandle;
@@ -50,7 +56,124 @@ namespace ProcessHacker
 
         private uint CtlCode(Control ctl)
         {
-            return _baseControlNumber + (uint)ctl;
+            return _baseControlNumber + ((uint)ctl * 4);
+        }
+
+        /// <summary>
+        /// Tries to find an original copy of KiServiceTable.
+        /// </summary>
+        /// <returns>The contents of the original KiServiceTable.</returns>
+        /// <remarks>
+        /// Technique from http://www.rootkit.com/newsread.php?newsid=176
+        /// </remarks>
+        public int[] DumpKiServiceTable()
+        {
+            // initialization
+            string kernelFileName = Misc.GetKernelFileName();
+            int kernelBase = Misc.GetKernelBase();
+            int kernelModule = Win32.LoadLibraryEx(kernelFileName, 0, Win32.DONT_RESOLVE_DLL_REFERENCES);
+            PEFile kernelPE = new PEFile(kernelFileName);
+            int keServiceDescriptorTable = Win32.GetProcAddress(kernelModule, "KeServiceDescriptorTable");
+
+            if (keServiceDescriptorTable == 0)
+                throw new Exception("Can't find the address of KeServiceDescriptorTable.");
+
+            // find KiServiceTable
+            int kiServiceTable = 0;
+
+            foreach (var block in kernelPE.RelocData.RelocBlocks)
+            {
+                foreach (var entry in block.Entries)
+                {
+                    if (entry.Type == ImageRelocationType.HighLow)
+                    {
+                        // the instruction we're looking for is:
+                        // mov ds:KeServiceDescriptorTable, offset KiServiceTable
+                        // c7 05 [KeServiceDescriptorTable] [KiServiceTable]
+
+                        // instr will be set to the address of the instruction.
+                        // Note that this is a VA from the start of the kernel file. We must
+                        // add kernelMode to it before attempting to read its contents.
+                        int instr = block.PageRVA + entry.Offset - 2;
+                        int thisKsdt = 
+                            Marshal.ReadInt32(new IntPtr(kernelModule + instr + 2)); // read (what we think is) the dest operand
+
+                        // thisKsdt will be an unaltered and un-relocated address; we must subtract
+                        // the presumed image base from it and then compare.
+                        if (thisKsdt - (int)kernelPE.COFFOptionalHeader.ImageBase == 
+                            keServiceDescriptorTable - kernelModule)
+                        {
+                            // We must now make sure it *is* actually a mov instruction.
+                            if (Marshal.ReadInt16(new IntPtr(kernelModule + instr)) == 0x05c7)
+                            {
+                                kiServiceTable = Marshal.ReadInt32(new IntPtr(kernelModule + instr + 6));
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (kiServiceTable == 0)
+                throw new Exception("Could not find the address of KiServiceTable.");
+
+            // find KiServiceLimit
+            // the Limit is stored 8 bytes after the address of the Table is stored
+            int kiServiceLimit = 0;
+            int keServiceDescriptorTableCount = keServiceDescriptorTable + 8;
+
+            // search again...      
+            foreach (var block in kernelPE.RelocData.RelocBlocks)
+            {
+                foreach (var entry in block.Entries)
+                {
+                    if (entry.Type == ImageRelocationType.HighLow)
+                    {
+                        // this time we're looking for:
+                        // asm: mov ds:KeServiceDescriptorTable+8, ecx
+                        // hex: 89 0d [KeServiceDescriptorTable+8]
+                        // KiServiceLimit is referenced in the instruction right above it:
+                        // asm: mov ecx, ds:KiServiceLimit
+                        // hex: 8b 0d [KiServiceLimit]
+                        int instr1 = block.PageRVA + entry.Offset - 2;
+                        int instr1operand =
+                            Marshal.ReadInt32(new 
+                                IntPtr(kernelModule + instr1 + 2)); // read KeServiceDescriptorTable+8 so we can check it
+
+                        if (instr1operand - (int)kernelPE.COFFOptionalHeader.ImageBase ==
+                            keServiceDescriptorTableCount - kernelModule && // check the value
+                            Marshal.ReadInt16(new IntPtr(kernelModule + instr1)) == 0x0d89
+                            ) // check that the instruction is indeed mov [mem], ecxs
+                        {
+                            // start of the instruction before the first one
+                            int instr2 = instr1 - 6;
+
+                            if (Marshal.ReadInt16(new IntPtr(kernelModule + instr2)) == 0x0d8b
+                                ) // check that the instruction is mov ecx, [mem]
+                            {
+                                int kiServiceLimitAddr = Marshal.ReadInt32(new IntPtr(kernelModule + instr2 + 2));
+
+                                // we need to convert address
+                                kiServiceLimit = Marshal.ReadInt32(new IntPtr(kernelModule + kiServiceLimitAddr -
+                                    (int)kernelPE.COFFOptionalHeader.ImageBase));
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            int[] kiServiceTableContents = new int[kiServiceLimit];
+
+            // read and correct the function pointers!
+            for (int i = 0; i < kiServiceLimit; i++)
+                kiServiceTableContents[i] =
+                    Marshal.ReadInt32(new IntPtr(kernelModule + kiServiceTable -
+                        (int)kernelPE.COFFOptionalHeader.ImageBase + i * 4)) - // read the original address
+                        (int)kernelPE.COFFOptionalHeader.ImageBase + kernelBase; // correct the value for this system
+
+            return kiServiceTableContents;
         }
 
         public string GetObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)
@@ -66,7 +189,7 @@ namespace ProcessHacker
             {
                 int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName), buffer, outBuffer);
 
-                return UnicodeEncoding.Unicode.GetString(outBuffer, 0, outBuffer.Length / 2);
+                return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8);
             }
             catch
             { }
@@ -81,6 +204,19 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
 
             return buffer;
+        }
+
+        public void SendKiServiceTable()
+        {
+            int[] kiServiceTable = this.DumpKiServiceTable();
+
+            _fileHandle.IoControl(CtlCode(Control.GiveKiServiceTable), kiServiceTable, new byte[0]);
+        }
+
+        public void TerminateProcess(int pid)
+        {
+            _fileHandle.IoControl(CtlCode(Control.TerminateProcess), 
+                Misc.IntToBytes(pid, Misc.Endianness.Little), new byte[0]);
         }
 
         public int Write(int address, byte[] data)

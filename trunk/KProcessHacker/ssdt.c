@@ -50,9 +50,19 @@ void SsdtDeinit()
     }
 }
 
+ULONG SsdtGetCount()
+{
+    return KeServiceDescriptorTable.NumberOfServices;
+}
+
 PVOID SsdtGetEntry(PVOID zwFunction)
 {
     return SYSCALL_NT(zwFunction);
+}
+
+PVOID *SsdtGetServiceTable()
+{
+    return KeServiceDescriptorTable.ServiceTableBase;
 }
 
 PVOID SsdtModifyEntry(PVOID zwFunction, PVOID ntFunction)
@@ -60,6 +70,15 @@ PVOID SsdtModifyEntry(PVOID zwFunction, PVOID ntFunction)
     PVOID oldValue = SYSCALL_NT(zwFunction);
     
     InterlockedExchange(&mappedSsdtCallTable[SYSCALL_INDEX(zwFunction)], ntFunction);
+    
+    return oldValue;
+}
+
+PVOID SsdtSetEntry(int index, PVOID ntFunction)
+{
+    PVOID oldValue = KeServiceDescriptorTable.ServiceTableBase[index];
+    
+    InterlockedExchange(&mappedSsdtCallTable[index], ntFunction);
     
     return oldValue;
 }

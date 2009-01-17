@@ -38,6 +38,7 @@ namespace ProcessHacker.PE
 
         public ExportData ExportData;
         public ImportData ImportData;
+        public RelocData RelocData;
 
         public PEFile(string path)
         {
@@ -120,6 +121,19 @@ namespace ProcessHacker.PE
                     s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
 
                     this.ImportData = new ImportData(br, this);
+                }
+            }
+
+            // read relocations
+            if (_imageData.ContainsKey(ImageDataType.BaseRelocationTable))
+            {
+                ImageData iD = _imageData[ImageDataType.BaseRelocationTable];
+
+                if (iD.VirtualAddress != 0)
+                {
+                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
+
+                    this.RelocData = new RelocData(br, this);
                 }
             }
         }

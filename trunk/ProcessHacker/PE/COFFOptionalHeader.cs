@@ -48,14 +48,14 @@ namespace ProcessHacker.PE
             this.AddressOfEntryPoint = br.ReadUInt32();
             this.BaseOfCode = br.ReadUInt32();
 
-            if (this.Magic == COFFOptionalHeader.PE32PlusMagic)
+            if (this.Magic == COFFOptionalHeader.PE32Magic)
                 this.BaseOfData = br.ReadUInt32();
             else
                 this.BaseOfData = 0;
 
             // windows-specific fields
             if (this.Magic == COFFOptionalHeader.PE32Magic)
-                this.ImageBase = br.ReadUInt64() & 0xffffffff; // the specs are wrong...
+                this.ImageBase = br.ReadUInt32();
             else if (this.Magic == COFFOptionalHeader.PE32PlusMagic)
                 this.ImageBase = br.ReadUInt64();
             else

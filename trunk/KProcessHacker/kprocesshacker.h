@@ -43,6 +43,7 @@ typedef struct _SYSTEM_HANDLE_INFORMATION
     ACCESS_MASK GrantedAccess;
 } SYSTEM_HANDLE_INFORMATION, *PSYSTEM_HANDLE_INFORMATION;
 
+#define KPH_TAG 'KPHT'
 /* I like 0x9999. */
 #define KPH_DEVICE_TYPE (0x9999)
 #define KPH_DEVICE_NAME (L"\\Device\\KProcessHacker")
@@ -53,6 +54,9 @@ typedef struct _SYSTEM_HANDLE_INFORMATION
 #define KPH_WRITE KPH_CTL_CODE(1)
 #define KPH_GETOBJECTNAME KPH_CTL_CODE(2)
 #define KPH_TERMINATEPROCESS KPH_CTL_CODE(3)
+#define KPH_GETKISERVICETABLE KPH_CTL_CODE(4)
+#define KPH_GIVEKISERVICETABLE KPH_CTL_CODE(5)
+#define KPH_SETKISERVICETABLEENTRY KPH_CTL_CODE(6)
 
 NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
@@ -61,5 +65,28 @@ NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
+
+typedef NTSTATUS (*_ZwTerminateProcess)(HANDLE Process, int ExitCode);
+
+#define PROCESS_TERMINATE                  (0x0001)  
+#define PROCESS_CREATE_THREAD              (0x0002)  
+#define PROCESS_SET_SESSIONID              (0x0004)  
+#define PROCESS_VM_OPERATION               (0x0008)  
+#define PROCESS_VM_READ                    (0x0010)  
+#define PROCESS_VM_WRITE                   (0x0020)  
+#define PROCESS_DUP_HANDLE                 (0x0040)  
+#define PROCESS_CREATE_PROCESS             (0x0080)  
+#define PROCESS_SET_QUOTA                  (0x0100)  
+#define PROCESS_SET_INFORMATION            (0x0200)  
+#define PROCESS_QUERY_INFORMATION          (0x0400)  
+#define PROCESS_SUSPEND_RESUME             (0x0800)  
+#define PROCESS_QUERY_LIMITED_INFORMATION  (0x1000)  
+#if (NTDDI_VERSION >= NTDDI_LONGHORN)
+#define PROCESS_ALL_ACCESS        (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | \
+                                   0xFFFF)
+#else
+#define PROCESS_ALL_ACCESS        (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | \
+                                   0xFFF)
+#endif
 
 #endif

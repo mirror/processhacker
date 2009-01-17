@@ -98,12 +98,16 @@ namespace ProcessHacker
                                 {
                                     lock (Dictionary)
                                     {
-                                        var dnsResult = Dns.EndGetHostEntry(result);
-                                        var modConnection = Dictionary[id];
+                                        try
+                                        {
+                                            var dnsResult = Dns.EndGetHostEntry(result);
+                                            var modConnection = Dictionary[id];
 
-                                        modConnection.LocalString = dnsResult.HostName;
-                                        CallDictionaryModified(Dictionary[id], modConnection);
-                                        Dictionary[id] = modConnection;
+                                            modConnection.LocalString = dnsResult.HostName;
+                                            CallDictionaryModified(Dictionary[id], modConnection);
+                                            Dictionary[id] = modConnection;
+                                        }
+                                        catch { }
                                     }
                                 }
                             }, connection.ID);
@@ -123,12 +127,17 @@ namespace ProcessHacker
                                 {
                                     lock (Dictionary)
                                     {
-                                        var dnsResult = Dns.EndGetHostEntry(result);
-                                        var modConnection = Dictionary[id];
+                                        try
+                                        {
+                                            var dnsResult = Dns.EndGetHostEntry(result);
+                                            var modConnection = Dictionary[id];
 
-                                        modConnection.RemoteString = dnsResult.HostName;
-                                        CallDictionaryModified(Dictionary[id], modConnection);
-                                        Dictionary[id] = modConnection;
+                                            modConnection.RemoteString = dnsResult.HostName;
+                                            CallDictionaryModified(Dictionary[id], modConnection);
+                                            Dictionary[id] = modConnection;
+                                        }
+                                        catch
+                                        { }
                                     }
                                 }
                             }, connection.ID);

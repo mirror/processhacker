@@ -60,6 +60,11 @@ namespace ProcessHacker
             byte[] InBuffer, int InBufferLength, byte[] OutBuffer, int OutBufferLength,
             out int BytesReturned, int Overlapped);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool DeviceIoControl(int FileHandle, int IoControlCode,
+            int[] InBuffer, int InBufferLength, byte[] OutBuffer, int OutBufferLength,
+            out int BytesReturned, int Overlapped);
+
         #endregion
 
         #region Kernel

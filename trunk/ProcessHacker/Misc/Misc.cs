@@ -179,6 +179,58 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the base address of the currently running kernel.
+        /// </summary>
+        /// <returns>The kernel's base address.</returns>
+        public static int GetKernelBase()
+        {
+            int RequiredSize = 0;
+            int[] ImageBases;
+
+            Win32.EnumDeviceDrivers(null, 0, out RequiredSize);
+            ImageBases = new int[RequiredSize];
+            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), out RequiredSize);
+
+            for (int i = 0; i < RequiredSize; i++)
+            {
+                if (ImageBases[i] == 0)
+                    continue;
+
+                StringBuilder name = new StringBuilder(256);
+                StringBuilder filename = new StringBuilder(256);
+                string realname = "";
+
+                Win32.GetDeviceDriverBaseName(ImageBases[i], name, 255);
+                Win32.GetDeviceDriverFileName(ImageBases[i], filename, 255);
+
+                try
+                {
+                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(filename.ToString()));
+                    bool kernel = false;
+
+                    realname = fi.FullName;
+
+                    foreach (string k in Misc.KernelNames)
+                    {
+                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        {
+                            kernel = true;
+
+                            break;
+                        }
+                    }
+
+                    if (kernel)
+                        return ImageBases[i];
+                }
+                catch
+                { }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
         /// Gets the file name of the currently running kernel.
         /// </summary>
         /// <returns>The kernel file name.</returns>
