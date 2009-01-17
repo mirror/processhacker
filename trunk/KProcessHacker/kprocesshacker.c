@@ -31,6 +31,8 @@
 #include "kprocesshacker.h"
 #include "ssdt.h"
 
+#define PROTECT_CLIENT
+
 #pragma alloc_text(PAGE, KPHCreate) 
 #pragma alloc_text(PAGE, KPHClose) 
 #pragma alloc_text(PAGE, KPHIoControl) 
@@ -79,6 +81,22 @@ NTSTATUS NewNtOpenProcess(
     PCLIENT_ID ClientId
     )
 {
+#ifdef PROTECT_CLIENT
+    __try
+    {
+        ProbeForRead(ClientId, sizeof(CLIENT_ID), 0);
+        
+        if (ClientId->UniqueProcess == ClientPID && 
+            PsGetProcessId(PsGetCurrentProcess()) != ClientPID && 
+            !PsIsSystemThread(PsGetCurrentThread()))
+            return STATUS_NOT_IMPLEMENTED; /* ;) */
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return STATUS_ACCESS_VIOLATION;
+    }
+#endif
+
     if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
     {
         return CallOrig(ZwOpenProcess, ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);

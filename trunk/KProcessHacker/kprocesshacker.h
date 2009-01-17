@@ -65,18 +65,37 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
 
-typedef NTSTATUS (*_ZwOpenThread)(
-    PHANDLE ThreadHandle,
+typedef NTSTATUS (*_ZwCreateFile)(
+    PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PLARGE_INTEGER AllocationSize,
+    ULONG FileAttributes,
+    ULONG ShareAccess,
+    ULONG CreateDisposition,
+    ULONG CreateOptions,
+    PVOID EaBuffer,
+    ULONG EaLength
     );
 
-typedef NTSTATUS (*_ZwOpenProcess)(
-    PHANDLE ProcessHandle,
+typedef NTSTATUS (*_ZwCreateKey)(
+    PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
+    ULONG TitleIndex,
+    PUNICODE_STRING Class,
+    ULONG CreateOptions,
+    PULONG Disposition
+    );
+
+typedef NTSTATUS (*_ZwDeleteKey)(
+    HANDLE KeyHandle
+    );
+
+typedef NTSTATUS (*_ZwDeleteValueKey)(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName
     );
 
 typedef NTSTATUS (*_ZwDuplicateObject)(
@@ -87,14 +106,124 @@ typedef NTSTATUS (*_ZwDuplicateObject)(
     ACCESS_MASK DesiredAccess,
     int Attributes,
     int Options);
-    
-typedef NTSTATUS (*_ZwTerminateProcess)(HANDLE Process, int ExitCode);
 
-typedef NTSTATUS (*_ZwQuerySystemInformation)(
-    int SystemInformationClass,
-    PVOID SystemInformation,
-    int SystemInformationLength,
-    int *ReturnLength);
+typedef NTSTATUS (*_ZwEnumerateKey)(
+    HANDLE KeyHandle,
+    ULONG Index,
+    KEY_INFORMATION_CLASS KeyInformationClass,
+    PVOID KeyInformation,
+    ULONG Length,
+    PULONG ResultLength
+    );
+
+typedef NTSTATUS (*_ZwEnumerateValueKey)(
+    HANDLE KeyHandle,
+    ULONG Index,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength
+    );
+
+typedef NTSTATUS (*_ZwOpenFile)(
+    PHANDLE FileHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    ULONG ShareAccess,
+    ULONG OpenOptions
+    );
+
+typedef NTSTATUS (*_ZwOpenKey)(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes
+    );
+
+typedef NTSTATUS (*_ZwOpenProcess)(
+    PHANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    );
+
+typedef NTSTATUS (*_ZwQueryInformationFile)(
+    HANDLE FileHandle,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass
+    );
+
+typedef NTSTATUS (*_ZwQueryKey)(
+    HANDLE KeyHandle,
+    KEY_INFORMATION_CLASS KeyInformationClass,
+    PVOID KeyInformation,
+    ULONG Length,
+    PULONG ResultLength
+    );
+
+typedef NTSTATUS (*_ZwQueryValueKey)(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength
+    );
+
+typedef NTSTATUS (*_ZwReadFile)(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID Buffer,
+    ULONG Length,
+    PLARGE_INTEGER ByteOffset,
+    PULONG Key
+    );
+
+typedef NTSTATUS (*_ZwSetInformationFile)(
+    HANDLE FileHandle,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass
+    );
+
+typedef NTSTATUS (*_ZwSetInformationThread)(
+    HANDLE ThreadHandle,
+    THREADINFOCLASS ThreadInformationClass,
+    PVOID ThreadInformation,
+    ULONG ThreadInformationLength
+    );
+
+typedef NTSTATUS (*_ZwSetValueKey)(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName,
+    ULONG TitleIndex OPTIONAL,
+    ULONG Type,
+    PVOID Data,
+    ULONG DataSize
+    );
+
+typedef NTSTATUS (*_ZwTerminateProcess)(
+    HANDLE Process,
+    ULONG ExitCode
+    );
+
+typedef NTSTATUS (*_ZwWriteFile)(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID Buffer,
+    ULONG Length,
+    PLARGE_INTEGER ByteOffset,
+    PULONG Key
+    );
 
 #define PROCESS_TERMINATE                  (0x0001)  
 #define PROCESS_CREATE_THREAD              (0x0002)  
