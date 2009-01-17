@@ -53,10 +53,9 @@ typedef struct _SYSTEM_HANDLE_INFORMATION
 #define KPH_READ KPH_CTL_CODE(0)
 #define KPH_WRITE KPH_CTL_CODE(1)
 #define KPH_GETOBJECTNAME KPH_CTL_CODE(2)
-#define KPH_TERMINATEPROCESS KPH_CTL_CODE(3)
-#define KPH_GETKISERVICETABLE KPH_CTL_CODE(4)
-#define KPH_GIVEKISERVICETABLE KPH_CTL_CODE(5)
-#define KPH_SETKISERVICETABLEENTRY KPH_CTL_CODE(6)
+#define KPH_GETKISERVICETABLE KPH_CTL_CODE(3)
+#define KPH_GIVEKISERVICETABLE KPH_CTL_CODE(4)
+#define KPH_SETKISERVICETABLEENTRY KPH_CTL_CODE(5)
 
 NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
@@ -65,6 +64,13 @@ NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
+
+typedef NTSTATUS (*_ZwOpenThread)(
+    PHANDLE ThreadHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    );
 
 typedef NTSTATUS (*_ZwOpenProcess)(
     PHANDLE ProcessHandle,
@@ -83,6 +89,12 @@ typedef NTSTATUS (*_ZwDuplicateObject)(
     int Options);
     
 typedef NTSTATUS (*_ZwTerminateProcess)(HANDLE Process, int ExitCode);
+
+typedef NTSTATUS (*_ZwQuerySystemInformation)(
+    int SystemInformationClass,
+    PVOID SystemInformation,
+    int SystemInformationLength,
+    int *ReturnLength);
 
 #define PROCESS_TERMINATE                  (0x0001)  
 #define PROCESS_CREATE_THREAD              (0x0002)  

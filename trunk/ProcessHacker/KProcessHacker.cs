@@ -41,7 +41,6 @@ namespace ProcessHacker
             Read = 0,
             Write,
             GetObjectName,
-            TerminateProcess,
             GetKiServiceTable,
             GiveKiServiceTable,
             SetKiServiceTableEntry
@@ -243,12 +242,6 @@ namespace ProcessHacker
 
             _fileHandle.IoControl(CtlCode(Control.GiveKiServiceTable), kiServiceTable, new byte[0]);
         }     
-
-        public void TerminateProcess(int pid)
-        {
-            _fileHandle.IoControl(CtlCode(Control.TerminateProcess), 
-                Misc.IntToBytes(pid, Misc.Endianness.Little), new byte[0]);
-        }
 
         public int Write(int address, byte[] data)
         {

@@ -42,10 +42,6 @@ namespace ProcessHacker
 
             this.AddTest("TP1", "Terminates the process using TerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
-
-            if (Program.KPH != null)
-                this.AddTest("TP3", "Uses a kernel-mode driver to terminate the process");
-
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with invalid contexts");
             this.AddTest("M1", "Writes garbage to the process' memory regions"); 
@@ -133,11 +129,6 @@ namespace ProcessHacker
             using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
                 if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
                     Win32.ThrowLastWin32Error();
-        }
-
-        private void TP3()
-        {
-            Program.KPH.TerminateProcess(_pid);
         }
 
         private void TT1()

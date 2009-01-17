@@ -20,6 +20,14 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ * This driver has two main purposes:
+ * 
+ * 1. To enable Process Hacker to (transparently) do anything without the 
+ *    restriction of hooked calls, and 
+ * 2. To enable Process Hacker to retrieve handle names for any file object.
+ */
+
 #include "kprocesshacker.h"
 #include "ssdt.h"
 
@@ -36,9 +44,12 @@ PVOID *OrigKiServiceTable = NULL;
 
 #define OrigEmpty (OrigKiServiceTable == NULL)
 #define CallOrig(f, ...) (((_##f)OrigKiServiceTable[SYSCALL_INDEX(f)])(__VA_ARGS__))
+#define HOOK_CALL(f) OldNt##f = SsdtModifyEntry(Zw##f, NewNt##f)
+#define UNHOOK_CALL(f) SsdtModifyEntry(Zw##f, OldNt##f)
 
 _ZwDuplicateObject OldNtDuplicateObject;
 _ZwOpenProcess OldNtOpenProcess;
+_ZwTerminateProcess OldNtTerminateProcess;
 
 NTSTATUS NewNtDuplicateObject(
     HANDLE SourceProcessHandle,
@@ -68,10 +79,8 @@ NTSTATUS NewNtOpenProcess(
     PCLIENT_ID ClientId
     )
 {
-    /* allow our client to bypass any hooks */
     if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
     {
-        dprintf("KProcessHacker: Client opened process\n");
         return CallOrig(ZwOpenProcess, ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
     }
     else
@@ -80,13 +89,37 @@ NTSTATUS NewNtOpenProcess(
     }
 }
 
+NTSTATUS NewNtTerminateProcess(
+    HANDLE ProcessHandle,
+    int ExitCode)
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwTerminateProcess, ProcessHandle, ExitCode);
+    }
+    else
+    {
+        return OldNtTerminateProcess(ProcessHandle, ExitCode);
+    }
+}
+
+PVOID GetSystemRoutineAddress(WCHAR *Name)
+{
+    UNICODE_STRING unicodeName;
+    
+    RtlInitUnicodeString(&unicodeName, Name);
+    
+    return MmGetSystemRoutineAddress(&unicodeName);
+}
+
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     UNICODE_STRING dosDeviceName;
     int i;
     
-    SsdtModifyEntry(ZwDuplicateObject, OldNtDuplicateObject);
-    SsdtModifyEntry(ZwOpenProcess, OldNtOpenProcess);
+    UNHOOK_CALL(DuplicateObject);
+    UNHOOK_CALL(OpenProcess);
+    UNHOOK_CALL(TerminateProcess);
     SsdtDeinit();
     
     if (OrigKiServiceTable != NULL)
@@ -114,8 +147,9 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (status != STATUS_SUCCESS)
         return status;
     
-    OldNtDuplicateObject = SsdtModifyEntry(ZwDuplicateObject, NewNtDuplicateObject);
-    OldNtOpenProcess = SsdtModifyEntry(ZwOpenProcess, NewNtOpenProcess);
+    HOOK_CALL(DuplicateObject);
+    HOOK_CALL(OpenProcess);
+    HOOK_CALL(TerminateProcess);
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -149,13 +183,7 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     ClientPID = PsGetProcessId(PsGetCurrentProcess());
     dprintf("KProcessHacker: Client (PID %d) connected\n", ClientPID);
-    dprintf("KProcessHacker: KPH_READ is 0x%08x\n", KPH_READ);
-    dprintf("KProcessHacker: KPH_WRITE is 0x%08x\n", KPH_WRITE);
-    dprintf("KProcessHacker: KPH_GETOBJECTNAME is 0x%08x\n", KPH_GETOBJECTNAME);
-    dprintf("KProcessHacker: KPH_TERMINATEPROCESS is 0x%08x\n", KPH_TERMINATEPROCESS);
-    dprintf("KProcessHacker: KPH_GETKISERVICETABLE is 0x%08x\n", KPH_GETKISERVICETABLE);
-    dprintf("KProcessHacker: KPH_GIVEKISERVICETABLE is 0x%08x\n", KPH_GIVEKISERVICETABLE);
-    dprintf("KProcessHacker: KPH_SETKISERVICETABLEENTRY is 0x%08x\n", KPH_SETKISERVICETABLEENTRY);
+    dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
     return status;
 }
@@ -383,44 +411,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 status = STATUS_ACCESS_VIOLATION;
             }
             
-            ZwClose(processHandle);
-        }
-        break;
-        
-        case KPH_TERMINATEPROCESS:
-        {
-            int processId;
-            HANDLE processHandle;
-            
-            if (inLength < 4)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            if (OrigEmpty)
-            {
-                status = STATUS_INTERNAL_ERROR;
-                goto IoControlEnd;
-            }
-            
-            processId = *(int *)dataBuffer;
-            
-            {
-                OBJECT_ATTRIBUTES objAttr = { 0 };
-                CLIENT_ID clientId;
-                
-                objAttr.Length = sizeof(objAttr);
-                clientId.UniqueThread = 0;
-                clientId.UniqueProcess = processId;
-                
-                status = ZwOpenProcess(&processHandle, PROCESS_TERMINATE, &objAttr, &clientId);
-                
-                if (status != STATUS_SUCCESS)
-                    goto IoControlEnd;
-            }
-            
-            status = CallOrig(ZwTerminateProcess, processHandle, 0);
             ZwClose(processHandle);
         }
         break;
