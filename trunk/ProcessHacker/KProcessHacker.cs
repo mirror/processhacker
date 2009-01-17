@@ -27,12 +27,14 @@ using System.ComponentModel;
 using ProcessHacker.PE;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ProcessHacker
 {
     public class KProcessHacker
     {
         private uint _baseControlNumber;
+        private Win32.ServiceHandle _service;
 
         public enum Control : uint
         {
@@ -49,9 +51,32 @@ namespace ProcessHacker
 
         public KProcessHacker()
         {
+            Win32.ServiceManagerHandle scm = 
+                new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
+
+            // delete the service if it exists
+            try
+            {
+                (new Win32.ServiceHandle("KProcessHacker")).Delete();
+            }
+            catch
+            { }
+
+            _service = scm.CreateService("KProcessHacker", "KProcessHacker", Win32.SERVICE_TYPE.KernelDriver,
+                Application.StartupPath + "\\kprocesshacker.sys");
+
+            _service.Start();
+            _service.Delete(); // the service will automatically get deleted once it stops :)
+
             _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker", 
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
+        }
+
+        public void Close()
+        {
+            _fileHandle.Dispose();
+            _service.Control(Win32.SERVICE_CONTROL.Stop);
         }
 
         private uint CtlCode(Control ctl)
@@ -211,7 +236,7 @@ namespace ProcessHacker
             int[] kiServiceTable = this.DumpKiServiceTable();
 
             _fileHandle.IoControl(CtlCode(Control.GiveKiServiceTable), kiServiceTable, new byte[0]);
-        }
+        }     
 
         public void TerminateProcess(int pid)
         {

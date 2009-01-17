@@ -42,7 +42,10 @@ namespace ProcessHacker
 
             this.AddTest("TP1", "Terminates the process using TerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
-            this.AddTest("TP3", "Uses a kernel-mode driver to terminate the process");
+
+            if (Program.KPH != null)
+                this.AddTest("TP3", "Uses a kernel-mode driver to terminate the process");
+
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with invalid contexts");
             this.AddTest("M1", "Writes garbage to the process' memory regions"); 

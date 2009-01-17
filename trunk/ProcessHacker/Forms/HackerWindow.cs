@@ -1399,13 +1399,14 @@ namespace ProcessHacker
 
             processP.Kill();
             serviceP.Kill();
+            networkP.Kill();
 
             notifyIcon.Visible = false;
 
             SaveSettings();
 
-            // kill, just in case we are performing an operation we don't want random .net errors about disposed objects.
-            Process.GetCurrentProcess().Kill();
+            if (Program.KPH != null)
+                Program.KPH.Close();
         }
 
         public HackerWindow()
