@@ -37,7 +37,29 @@ PVOID *OrigKiServiceTable = NULL;
 #define OrigEmpty (OrigKiServiceTable == NULL)
 #define CallOrig(f, ...) (((_##f)OrigKiServiceTable[SYSCALL_INDEX(f)])(__VA_ARGS__))
 
+_ZwDuplicateObject OldNtDuplicateObject;
 _ZwOpenProcess OldNtOpenProcess;
+
+NTSTATUS NewNtDuplicateObject(
+    HANDLE SourceProcessHandle,
+    HANDLE SourceHandle,
+    HANDLE DestinationProcessHandle,
+    PHANDLE DestinationHandle,
+    ACCESS_MASK DesiredAccess,
+    int Attributes,
+    int Options)
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwDuplicateObject, SourceProcessHandle, SourceHandle, 
+            DestinationProcessHandle, DestinationHandle, DesiredAccess, Attributes, Options);
+    }
+    else
+    {
+        return OldNtDuplicateObject(SourceProcessHandle, SourceHandle, 
+            DestinationProcessHandle, DestinationHandle, DesiredAccess, Attributes, Options);
+    }
+}
 
 NTSTATUS NewNtOpenProcess(
     PHANDLE ProcessHandle,
@@ -48,9 +70,14 @@ NTSTATUS NewNtOpenProcess(
 {
     /* allow our client to bypass any hooks */
     if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        dprintf("KProcessHacker: Client opened process\n");
         return CallOrig(ZwOpenProcess, ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
+    }
     else
+    {
         return OldNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
+    }
 }
 
 void DriverUnload(PDRIVER_OBJECT DriverObject)
@@ -58,6 +85,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     UNICODE_STRING dosDeviceName;
     int i;
     
+    SsdtModifyEntry(ZwDuplicateObject, OldNtDuplicateObject);
     SsdtModifyEntry(ZwOpenProcess, OldNtOpenProcess);
     SsdtDeinit();
     
@@ -86,6 +114,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (status != STATUS_SUCCESS)
         return status;
     
+    OldNtDuplicateObject = SsdtModifyEntry(ZwDuplicateObject, NewNtDuplicateObject);
     OldNtOpenProcess = SsdtModifyEntry(ZwOpenProcess, NewNtOpenProcess);
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
@@ -383,9 +412,9 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 
                 objAttr.Length = sizeof(objAttr);
                 clientId.UniqueThread = 0;
-                clientId.UniqueProcess = processId;;
+                clientId.UniqueProcess = processId;
                 
-                status = CallOrig(ZwOpenProcess, &processHandle, PROCESS_TERMINATE, &objAttr, &clientId);
+                status = ZwOpenProcess(&processHandle, PROCESS_TERMINATE, &objAttr, &clientId);
                 
                 if (status != STATUS_SUCCESS)
                     goto IoControlEnd;

@@ -73,6 +73,15 @@ typedef NTSTATUS (*_ZwOpenProcess)(
     PCLIENT_ID ClientId
     );
 
+typedef NTSTATUS (*_ZwDuplicateObject)(
+    HANDLE SourceProcessHandle,
+    HANDLE SourceHandle,
+    HANDLE DestinationProcessHandle,
+    PHANDLE DestinationHandle,
+    ACCESS_MASK DesiredAccess,
+    int Attributes,
+    int Options);
+    
 typedef NTSTATUS (*_ZwTerminateProcess)(HANDLE Process, int ExitCode);
 
 #define PROCESS_TERMINATE                  (0x0001)  
