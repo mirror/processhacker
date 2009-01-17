@@ -57,7 +57,13 @@ namespace ProcessHacker
             // delete the service if it exists
             try
             {
-                (new Win32.ServiceHandle("KProcessHacker")).Delete();
+                using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
+                {
+                    try { shandle.Control(Win32.SERVICE_CONTROL.Stop); }
+                    catch { }
+
+                    shandle.Delete();
+                }
             }
             catch
             { }
