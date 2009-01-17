@@ -66,6 +66,13 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
 
+typedef NTSTATUS (*_ZwOpenProcess)(
+    PHANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    );
+
 typedef NTSTATUS (*_ZwTerminateProcess)(HANDLE Process, int ExitCode);
 
 #define PROCESS_TERMINATE                  (0x0001)  

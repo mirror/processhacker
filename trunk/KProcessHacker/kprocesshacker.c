@@ -37,12 +37,35 @@ PVOID *OrigKiServiceTable = NULL;
 #define OrigEmpty (OrigKiServiceTable == NULL)
 #define CallOrig(f, ...) (((_##f)OrigKiServiceTable[SYSCALL_INDEX(f)])(__VA_ARGS__))
 
+_ZwOpenProcess OldNtOpenProcess;
+
+NTSTATUS NewNtOpenProcess(
+    PHANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    )
+{
+    /* allow our client to bypass any hooks */
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+        return CallOrig(ZwOpenProcess, ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
+    else
+        return OldNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
+}
+
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     UNICODE_STRING dosDeviceName;
     int i;
     
+    SsdtModifyEntry(ZwOpenProcess, OldNtOpenProcess);
     SsdtDeinit();
+    
+    if (OrigKiServiceTable != NULL)
+    {
+        ExFreePool(OrigKiServiceTable);
+        OrigKiServiceTable = NULL;
+    }
     
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     IoDeleteSymbolicLink(&dosDeviceName);
@@ -62,6 +85,8 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     if (status != STATUS_SUCCESS)
         return status;
+    
+    OldNtOpenProcess = SsdtModifyEntry(ZwOpenProcess, NewNtOpenProcess);
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -360,7 +385,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 clientId.UniqueThread = 0;
                 clientId.UniqueProcess = processId;;
                 
-                status = ZwOpenProcess(&processHandle, PROCESS_TERMINATE, &objAttr, &clientId);
+                status = CallOrig(ZwOpenProcess, &processHandle, PROCESS_TERMINATE, &objAttr, &clientId);
                 
                 if (status != STATUS_SUCCESS)
                     goto IoControlEnd;
@@ -394,7 +419,10 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             if (OrigKiServiceTable != NULL)
+            {
                 ExFreePool(OrigKiServiceTable);
+                OrigKiServiceTable = NULL;
+            }
             
             OrigKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
             
