@@ -55,9 +55,14 @@ ULONG SsdtGetCount()
     return KeServiceDescriptorTable.NumberOfServices;
 }
 
-PVOID SsdtGetEntry(PVOID zwFunction)
+PVOID SsdtGetEntryByCall(PVOID zwFunction)
 {
     return SYSCALL_NT(zwFunction);
+}
+
+PVOID SsdtGetEntryByIndex(int index)
+{
+    return KeServiceDescriptorTable.ServiceTableBase[index];
 }
 
 PVOID *SsdtGetServiceTable()
@@ -65,20 +70,42 @@ PVOID *SsdtGetServiceTable()
     return KeServiceDescriptorTable.ServiceTableBase;
 }
 
-PVOID SsdtModifyEntry(PVOID zwFunction, PVOID ntFunction)
+PVOID SsdtModifyEntryByCall(PVOID zwFunction, PVOID ntFunction)
 {
-    PVOID oldValue = SYSCALL_NT(zwFunction);
+    PVOID oldValue = SsdtGetEntryByCall(zwFunction);
     
     InterlockedExchange(&mappedSsdtCallTable[SYSCALL_INDEX(zwFunction)], ntFunction);
     
     return oldValue;
 }
 
-PVOID SsdtSetEntry(int index, PVOID ntFunction)
+PVOID SsdtModifyEntryByIndex(int index, PVOID ntFunction)
 {
-    PVOID oldValue = KeServiceDescriptorTable.ServiceTableBase[index];
+    PVOID oldValue = SsdtGetEntryByIndex(index);
     
     InterlockedExchange(&mappedSsdtCallTable[index], ntFunction);
+    
+    return oldValue;
+}
+
+void SsdtRestoreEntryByCall(PVOID zwFunction, PVOID oldNtFunction, PVOID newNtFunction)
+{
+    PVOID oldValue = SsdtGetEntryByCall(zwFunction);
+    
+    /* make sure the SSDT hasn't been modified since we got here */
+    if (oldValue == newNtFunction)
+        InterlockedExchange(&mappedSsdtCallTable[SYSCALL_INDEX(zwFunction)], oldNtFunction);
+    
+    return oldValue;
+}
+
+void SsdtRestoreEntryByIndex(int index, PVOID oldNtFunction, PVOID newNtFunction)
+{
+    PVOID oldValue = SsdtGetEntryByIndex(index);
+    
+    /* make sure the SSDT hasn't been modified since we got here */
+    if (oldValue == newNtFunction)
+        InterlockedExchange(&mappedSsdtCallTable[index], oldNtFunction);
     
     return oldValue;
 }

@@ -30,8 +30,7 @@
 
 #include "kprocesshacker.h"
 #include "ssdt.h"
-
-#define PROTECT_CLIENT
+#include "hooks.h"
 
 #pragma alloc_text(PAGE, KPHCreate) 
 #pragma alloc_text(PAGE, KPHClose) 
@@ -43,83 +42,6 @@
 
 int ClientPID = -1;
 PVOID *OrigKiServiceTable = NULL;
-
-#define OrigEmpty (OrigKiServiceTable == NULL)
-#define CallOrig(f, ...) (((_##f)OrigKiServiceTable[SYSCALL_INDEX(f)])(__VA_ARGS__))
-#define HOOK_CALL(f) OldNt##f = SsdtModifyEntry(Zw##f, NewNt##f)
-#define UNHOOK_CALL(f) SsdtModifyEntry(Zw##f, OldNt##f)
-
-_ZwDuplicateObject OldNtDuplicateObject;
-_ZwOpenProcess OldNtOpenProcess;
-_ZwTerminateProcess OldNtTerminateProcess;
-
-NTSTATUS NewNtDuplicateObject(
-    HANDLE SourceProcessHandle,
-    HANDLE SourceHandle,
-    HANDLE DestinationProcessHandle,
-    PHANDLE DestinationHandle,
-    ACCESS_MASK DesiredAccess,
-    int Attributes,
-    int Options)
-{
-    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
-    {
-        return CallOrig(ZwDuplicateObject, SourceProcessHandle, SourceHandle, 
-            DestinationProcessHandle, DestinationHandle, DesiredAccess, Attributes, Options);
-    }
-    else
-    {
-        return OldNtDuplicateObject(SourceProcessHandle, SourceHandle, 
-            DestinationProcessHandle, DestinationHandle, DesiredAccess, Attributes, Options);
-    }
-}
-
-NTSTATUS NewNtOpenProcess(
-    PHANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
-    )
-{
-#ifdef PROTECT_CLIENT
-    __try
-    {
-        ProbeForRead(ClientId, sizeof(CLIENT_ID), 0);
-        
-        if (ClientId->UniqueProcess == ClientPID && 
-            PsGetProcessId(PsGetCurrentProcess()) != ClientPID && 
-            !PsIsSystemThread(PsGetCurrentThread()))
-            return STATUS_NOT_IMPLEMENTED; /* ;) */
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        return STATUS_ACCESS_VIOLATION;
-    }
-#endif
-
-    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
-    {
-        return CallOrig(ZwOpenProcess, ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
-    }
-    else
-    {
-        return OldNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
-    }
-}
-
-NTSTATUS NewNtTerminateProcess(
-    HANDLE ProcessHandle,
-    int ExitCode)
-{
-    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
-    {
-        return CallOrig(ZwTerminateProcess, ProcessHandle, ExitCode);
-    }
-    else
-    {
-        return OldNtTerminateProcess(ProcessHandle, ExitCode);
-    }
-}
 
 PVOID GetSystemRoutineAddress(WCHAR *Name)
 {
@@ -135,9 +57,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     UNICODE_STRING dosDeviceName;
     int i;
     
-    UNHOOK_CALL(DuplicateObject);
-    UNHOOK_CALL(OpenProcess);
-    UNHOOK_CALL(TerminateProcess);
+    KPHUnhook();
     SsdtDeinit();
     
     if (OrigKiServiceTable != NULL)
@@ -165,9 +85,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (status != STATUS_SUCCESS)
         return status;
     
-    HOOK_CALL(DuplicateObject);
-    HOOK_CALL(OpenProcess);
-    HOOK_CALL(TerminateProcess);
+    KPHHook();
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -473,7 +391,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             dprintf("KProcessHacker: Got %d service table entries\n", SsdtGetCount());
             dprintf("KProcessHacker: ZwTerminateProcess points to 0x%08x\n",
-                SsdtGetEntry(ZwTerminateProcess));
+                SsdtGetEntryByCall(ZwTerminateProcess));
             dprintf("KProcessHacker: NtTerminateProcess is 0x%08x\n", 
                 OrigKiServiceTable[SYSCALL_INDEX(ZwTerminateProcess)]);
         }
@@ -493,7 +411,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             index = *(int *)dataBuffer;
             function = *(PVOID *)(dataBuffer + 4);
             
-            SsdtSetEntry(index, function);
+            SsdtModifyEntryByIndex(index, function);
         }
         break;
         

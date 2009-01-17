@@ -71,17 +71,17 @@ namespace ProcessHacker
                 Application.StartupPath + "\\kprocesshacker.sys");
 
             _service.Start();
-            _service.Delete(); // the service will automatically get deleted once it stops :)
 
-            _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker", 
+            _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker",
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
+            _service.Control(Win32.SERVICE_CONTROL.Stop);
+            _service.Delete(); // the service will automatically get deleted once it stops :)
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
         }
 
         public void Close()
         {
             _fileHandle.Dispose();
-            _service.Control(Win32.SERVICE_CONTROL.Stop);
         }
 
         private uint CtlCode(Control ctl)

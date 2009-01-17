@@ -57,9 +57,11 @@ typedef struct _SSDT
 NTSTATUS SsdtInit();
 void SsdtDeinit();
 ULONG SsdtGetCount();
-PVOID SsdtGetEntry(PVOID zwFunction);
+PVOID SsdtGetEntryByCall(PVOID zwFunction);
 PVOID *SsdtGetServiceTable();
-PVOID SsdtModifyEntry(PVOID zwFunction, PVOID ntFunction);
-PVOID SsdtSetEntry(int index, PVOID ntFunction);
+PVOID SsdtModifyEntryByCall(PVOID zwFunction, PVOID ntFunction);
+PVOID SsdtModifyEntryByIndex(int index, PVOID ntFunction);
+void SsdtRestoreEntryByCall(PVOID zwFunction, PVOID oldNtFunction, PVOID newNtFunction);
+void SsdtRestoreEntryByIndex(int index, PVOID oldNtFunction, PVOID newNtFunction);
 
 #endif

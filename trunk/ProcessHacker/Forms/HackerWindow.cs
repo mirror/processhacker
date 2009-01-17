@@ -1407,6 +1407,13 @@ namespace ProcessHacker
 
             if (Program.KPH != null)
                 Program.KPH.Close();
+
+            try
+            {
+                Process.GetCurrentProcess().Kill();
+            }
+            catch
+            { }
         }
 
         public HackerWindow()

@@ -7,4 +7,5 @@ LIBS=%BUILD%\lib
 
 SOURCES= \
     kprocesshacker.c \
-    ssdt.c
+    ssdt.c \
+    hooks.c
