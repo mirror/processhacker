@@ -35,7 +35,7 @@
 /* It's never safe to allow a hook driver to unload, but it should be 
  * used when debugging to save time.
  */
-//#define ALLOW_UNLOAD
+#define ALLOW_UNLOAD
 
 #pragma alloc_text(PAGE, KPHCreate) 
 #pragma alloc_text(PAGE, KPHClose) 
@@ -55,9 +55,6 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     LARGE_INTEGER waitTime;
     UNICODE_STRING dosDeviceName;
     int i;
-    
-    if (Hooked)
-        KPHUnhook();
     
     SsdtDeinit();
     
@@ -89,8 +86,6 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     if (status != STATUS_SUCCESS)
         return status;
-    
-    Hooked = KPHHook() == STATUS_SUCCESS;
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -128,9 +123,7 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     dprintf("KProcessHacker: Client (PID %d) connected\n", ClientPID);
     dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
-    /* hook again to make sure our hooks work for this new client */
-    KPHUnhook();
-    KPHHook();
+    Hooked = KPHHook() == STATUS_SUCCESS;
     
     return status;
 }
@@ -141,6 +134,9 @@ NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     ClientPID = -1;
     dprintf("KProcessHacker: Client disconnected\n");
+    
+    if (Hooked)
+        KPHUnhook();
     
     return status;
 }
@@ -423,6 +419,19 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             function = *(PVOID *)(dataBuffer + 4);
             
             SsdtModifyEntryByIndex(index, function);
+        }
+        break;
+        
+        case KPH_GETSERVICELIMIT:
+        {
+            if (outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            *(int *)dataBuffer = SsdtGetCount();
+            retLength = 4;
         }
         break;
         

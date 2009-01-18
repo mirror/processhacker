@@ -54,42 +54,42 @@ extern PVOID *OrigKiServiceTable;
 
 /* Hooks a call by a hardcoded index. Not very safe, but it works... */
 #define HOOK_INDEX(f) OldNt##f = SsdtModifyEntryByIndex(Zw##f##Index, NewNt##f)
+
 #define UNHOOK_CALL(f) SsdtRestoreEntryByCall(Zw##f, OldNt##f, NewNt##f)
 #define UNHOOK_INDEX(f) SsdtRestoreEntryByIndex(Zw##f##Index, OldNt##f, NewNt##f)
 
-/* Values for Vista */
-int ZwOpenThreadIndex;
-int ZwQueryInformationProcessIndex;
-int ZwQueryInformationThreadIndex;
-int ZwQuerySystemInformationIndex;
-int ZwSetInformationProcessIndex;
-int ZwTerminateThreadIndex;
+int ZwOpenThreadIndex = -1;
+int ZwQueryInformationProcessIndex = -1;
+int ZwQueryInformationThreadIndex = -1;
+int ZwQuerySystemInformationIndex = -1;
+int ZwSetInformationProcessIndex = -1;
+int ZwTerminateThreadIndex = -1;
 
-_ZwCreateFile OldNtCreateFile;
-_ZwCreateKey OldNtCreateKey;
-_ZwDeleteKey OldNtDeleteKey;
-_ZwDeleteValueKey OldNtDeleteValueKey;
-_ZwDuplicateObject OldNtDuplicateObject;
-_ZwEnumerateKey OldNtEnumerateKey;
-_ZwEnumerateValueKey OldNtEnumerateValueKey;
-_ZwOpenFile OldNtOpenFile;
-_ZwOpenKey OldNtOpenKey;
-_ZwOpenProcess OldNtOpenProcess;
-_ZwOpenThread OldNtOpenThread;
-_ZwQueryInformationFile OldNtQueryInformationFile;
-_ZwQueryInformationProcess OldNtQueryInformationProcess;
-_ZwQueryInformationThread OldNtQueryInformationThread;
-_ZwQueryKey OldNtQueryKey;
-_ZwQuerySystemInformation OldNtQuerySystemInformation;
-_ZwQueryValueKey OldNtQueryValueKey;
-_ZwReadFile OldNtReadFile;
-_ZwSetInformationFile OldNtSetInformationFile;
-_ZwSetInformationProcess OldNtSetInformationProcess;
-_ZwSetInformationThread OldNtSetInformationThread;
-_ZwSetValueKey OldNtSetValueKey;
-_ZwTerminateProcess OldNtTerminateProcess;
-_ZwTerminateThread OldNtTerminateThread;
-_ZwWriteFile OldNtWriteFile;
+_ZwCreateFile OldNtCreateFile = NULL;
+_ZwCreateKey OldNtCreateKey = NULL;
+_ZwDeleteKey OldNtDeleteKey = NULL;
+_ZwDeleteValueKey OldNtDeleteValueKey = NULL;
+_ZwDuplicateObject OldNtDuplicateObject = NULL;
+_ZwEnumerateKey OldNtEnumerateKey = NULL;
+_ZwEnumerateValueKey OldNtEnumerateValueKey = NULL;
+_ZwOpenFile OldNtOpenFile = NULL;
+_ZwOpenKey OldNtOpenKey = NULL;
+_ZwOpenProcess OldNtOpenProcess = NULL;
+_ZwOpenThread OldNtOpenThread = NULL;
+_ZwQueryInformationFile OldNtQueryInformationFile = NULL;
+_ZwQueryInformationProcess OldNtQueryInformationProcess = NULL;
+_ZwQueryInformationThread OldNtQueryInformationThread = NULL;
+_ZwQueryKey OldNtQueryKey = NULL;
+_ZwQuerySystemInformation OldNtQuerySystemInformation = NULL;
+_ZwQueryValueKey OldNtQueryValueKey = NULL;
+_ZwReadFile OldNtReadFile = NULL;
+_ZwSetInformationFile OldNtSetInformationFile = NULL;
+_ZwSetInformationProcess OldNtSetInformationProcess = NULL;
+_ZwSetInformationThread OldNtSetInformationThread = NULL;
+_ZwSetValueKey OldNtSetValueKey = NULL;
+_ZwTerminateProcess OldNtTerminateProcess = NULL;
+_ZwTerminateThread OldNtTerminateThread = NULL;
+_ZwWriteFile OldNtWriteFile = NULL;
 
 PVOID GetSystemRoutineAddress(WCHAR *Name)
 {

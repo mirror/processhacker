@@ -58,6 +58,7 @@ NTSTATUS SsdtInit();
 void SsdtDeinit();
 ULONG SsdtGetCount();
 PVOID SsdtGetEntryByCall(PVOID zwFunction);
+PVOID SsdtGetEntryByIndex(int index);
 PVOID *SsdtGetServiceTable();
 PVOID SsdtModifyEntryByCall(PVOID zwFunction, PVOID ntFunction);
 PVOID SsdtModifyEntryByIndex(int index, PVOID ntFunction);

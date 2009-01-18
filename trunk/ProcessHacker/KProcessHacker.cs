@@ -43,7 +43,8 @@ namespace ProcessHacker
             GetObjectName,
             GetKiServiceTable,
             GiveKiServiceTable,
-            SetKiServiceTableEntry
+            SetKiServiceTableEntry,
+            GetServiceLimit
         }
 
         private Win32.FileHandle _fileHandle;
@@ -54,32 +55,39 @@ namespace ProcessHacker
                 new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
 
             // delete the service if it exists
-            try
-            {
-                using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
-                {
-                    try { shandle.Control(Win32.SERVICE_CONTROL.Stop); }
-                    catch { }
+            //try
+            //{
+            //    using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
+            //    {
+            //        try { shandle.Control(Win32.SERVICE_CONTROL.Stop); }
+            //        catch { }
 
-                    shandle.Delete();
-                }
-            }
-            catch
-            { }
+            //        shandle.Delete();
+            //    }
+            //}
+            //catch
+            //{ }
 
             try
             {
                 _service = scm.CreateService("KProcessHacker", "KProcessHacker", Win32.SERVICE_TYPE.KernelDriver,
                     Application.StartupPath + "\\kprocesshacker.sys");
                 _service.Start();
-                _service.Control(Win32.SERVICE_CONTROL.Stop);
-                _service.Delete(); // the service will automatically get deleted once it stops
             }
             catch
             { }
 
             _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker",
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
+
+            //try
+            //{
+            //    _service.Control(Win32.SERVICE_CONTROL.Stop);
+            //    _service.Delete(); // the service will automatically get deleted once it stops     }
+            //}
+            //catch
+            //{ }
+
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
         }
 
@@ -147,10 +155,10 @@ namespace ProcessHacker
                     }
                 }
             }
-
+            
             if (kiServiceTable == 0)
                 throw new Exception("Could not find the address of KiServiceTable.");
-
+            /*
             // find KiServiceLimit
             // the Limit is stored 8 bytes after the address of the Table is stored
             int kiServiceLimit = 0;
@@ -200,8 +208,9 @@ namespace ProcessHacker
 
             // if we couldn't get the actual value, make a guess
             if (kiServiceLimit == 0)
-                kiServiceLimit = 0x200;
+                kiServiceLimit = 0x200; */
 
+            int kiServiceLimit = this.GetServiceLimit();
             int[] kiServiceTableContents = new int[kiServiceLimit];
 
             // read and correct the function pointers!
@@ -210,6 +219,8 @@ namespace ProcessHacker
                     Marshal.ReadInt32(new IntPtr(kernelModule + kiServiceTable -
                         (int)kernelPE.COFFOptionalHeader.ImageBase + i * 4)) - // read the original address
                         (int)kernelPE.COFFOptionalHeader.ImageBase + kernelBase; // correct the value for this system
+
+            Win32.FreeLibrary(kernelModule);
 
             return kiServiceTableContents;
         }
@@ -233,6 +244,15 @@ namespace ProcessHacker
             { }
 
             return null;
+        }
+
+        public int GetServiceLimit()
+        {
+            byte[] buffer = new byte[4];
+
+            _fileHandle.IoControl(CtlCode(Control.GetServiceLimit), new byte[0], buffer);
+
+            return Misc.BytesToInt(buffer, Misc.Endianness.Little);
         }
 
         public byte[] Read(int address, int length)
