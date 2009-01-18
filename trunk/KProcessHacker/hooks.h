@@ -365,6 +365,12 @@ typedef NTSTATUS (*_ZwTerminateProcess)(
     ULONG ExitCode
     );
 
+#define ZwTerminateThreadIndex 0x14f
+typedef NTSTATUS (*_ZwTerminateThread)(
+    HANDLE Thread,
+    ULONG ExitCode
+    );
+
 typedef NTSTATUS (*_ZwWriteFile)(
     HANDLE FileHandle,
     HANDLE Event,

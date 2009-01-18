@@ -23,7 +23,22 @@
 #include "ssdt.h"
 #include "hooks.h"
 
+/* If enabled, user-mode processes other than the client 
+ * cannot open the client's process or its threads.
+ */
 #define PROTECT_CLIENT
+
+/* File hooks - ZwCreateFile, ZwOpenFile, ReadFile, WriteFile, etc. */
+#define HOOK_FILE
+
+/* Key hooks - ZwCreateKey, ZwDeleteKey, etc. */
+#define HOOK_KEY
+
+/* Process hooks - ZwOpenProcess, ZwOpenThread, etc. */
+#define HOOK_PROCESS
+
+/* Information hooks - ZwDuplicateObject, ZwQuery*, ZwSet* */
+#define HOOK_INFORMATION
 
 extern int ClientPID;
 extern PVOID *OrigKiServiceTable;
@@ -31,15 +46,87 @@ extern PVOID *OrigKiServiceTable;
 #define OrigEmpty (OrigKiServiceTable == NULL)
 #define CallOrig(f, ...) (((_##f)OrigKiServiceTable[SYSCALL_INDEX(f)])(__VA_ARGS__))
 #define CallOrigByIndex(f, ...) (((_##f)OrigKiServiceTable[f##Index])(__VA_ARGS__))
+
+/* Hooks a call by reading its index from memory. This is only available for 
+ * certain functions that MS allows us to use :(.
+ */
 #define HOOK_CALL(f) OldNt##f = SsdtModifyEntryByCall(Zw##f, NewNt##f)
+
+/* Hooks a call by a hardcoded index. Not very safe, but it works... */
 #define HOOK_INDEX(f) OldNt##f = SsdtModifyEntryByIndex(Zw##f##Index, NewNt##f)
 #define UNHOOK_CALL(f) SsdtRestoreEntryByCall(Zw##f, OldNt##f, NewNt##f)
 #define UNHOOK_INDEX(f) SsdtRestoreEntryByIndex(Zw##f##Index, OldNt##f, NewNt##f)
 
+_ZwCreateFile OldNtCreateFile;
+_ZwCreateKey OldNtCreateKey;
+_ZwDeleteKey OldNtDeleteKey;
 _ZwDuplicateObject OldNtDuplicateObject;
 _ZwOpenProcess OldNtOpenProcess;
 _ZwOpenThread OldNtOpenThread;
 _ZwTerminateProcess OldNtTerminateProcess;
+_ZwTerminateThread OldNtTerminateThread;
+
+NTSTATUS NewNtCreateFile(
+    PHANDLE FileHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PLARGE_INTEGER AllocationSize,
+    ULONG FileAttributes,
+    ULONG ShareAccess,
+    ULONG CreateDisposition,
+    ULONG CreateOptions,
+    PVOID EaBuffer,
+    ULONG EaLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwCreateFile, FileHandle, DesiredAccess, ObjectAttributes, 
+            IoStatusBlock, AllocationSize, FileAttributes, ShareAccess, 
+            CreateDisposition, CreateOptions, EaBuffer, EaLength);
+    }
+    else
+    {
+        return OldNtCreateFile(FileHandle, DesiredAccess, ObjectAttributes, 
+            IoStatusBlock, AllocationSize, FileAttributes, ShareAccess, 
+            CreateDisposition, CreateOptions, EaBuffer, EaLength);
+    }
+}
+
+NTSTATUS NewNtCreateKey(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    ULONG TitleIndex,
+    PUNICODE_STRING Class,
+    ULONG CreateOptions,
+    PULONG Disposition
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwCreateKey, KeyHandle, DesiredAccess, 
+            ObjectAttributes, TitleIndex, Class, CreateOptions, Disposition);
+    }
+    else
+    {
+        return OldNtCreateKey(KeyHandle, DesiredAccess, 
+            ObjectAttributes, TitleIndex, Class, CreateOptions, Disposition);
+    }
+}
+
+NTSTATUS NewNtDeleteKey(HANDLE KeyHandle)
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwDeleteKey, KeyHandle);
+    }
+    else
+    {
+        return OldNtDeleteKey(KeyHandle);
+    }
+}
 
 NTSTATUS NewNtDuplicateObject(
     HANDLE SourceProcessHandle,
@@ -157,44 +244,66 @@ NTSTATUS NewNtTerminateProcess(
     }
     else
     {
-#ifdef PROTECT_CLIENT
-        if (PsGetProcessId(PsGetCurrentProcess()) != ClientPID && 
-            !PsIsSystemThread(PsGetCurrentThread()))
-        {
-            NTSTATUS status;
-            PEPROCESS eProcess;
-            
-            status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, 0, &eProcess, 0);
-            
-            if (status != STATUS_SUCCESS)
-                return status;
-            
-            if (PsGetProcessId(eProcess) == ClientPID)
-            {
-                ObDereferenceObject(eProcess);
-                return STATUS_NOT_IMPLEMENTED;
-            }
-            
-            ObDereferenceObject(eProcess);
-        }
-#endif
-
         return OldNtTerminateProcess(ProcessHandle, ExitCode);
+    }
+}
+
+NTSTATUS NewNtTerminateThread(
+    HANDLE ThreadHandle,
+    int ExitCode)
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrigByIndex(ZwTerminateThread, ThreadHandle, ExitCode);
+    }
+    else
+    {
+        return OldNtTerminateThread(ThreadHandle, ExitCode);
     }
 }
 
 void KPHHook()
 {
-    HOOK_CALL(DuplicateObject);
+#ifdef HOOK_FILE
+    HOOK_CALL(CreateFile);
+#endif
+
+#ifdef HOOK_KEY
+    HOOK_CALL(CreateKey);
+    HOOK_CALL(DeleteKey);
+#endif
+
+#ifdef HOOK_PROCESS
     HOOK_CALL(OpenProcess);
     HOOK_INDEX(OpenThread);
     HOOK_CALL(TerminateProcess);
+    HOOK_INDEX(TerminateThread);
+#endif
+
+#ifdef HOOK_INFORMATION
+    HOOK_CALL(DuplicateObject);
+#endif
 }
 
 void KPHUnhook()
 {
-    UNHOOK_CALL(DuplicateObject);
+#ifdef HOOK_FILE
+    UNHOOK_CALL(CreateFile);
+#endif
+
+#ifdef HOOK_KEY
+    UNHOOK_CALL(CreateKey);
+    UNHOOK_CALL(DeleteKey);
+#endif
+
+#ifdef HOOK_PROCESS
     UNHOOK_CALL(OpenProcess);
     UNHOOK_INDEX(OpenThread);
     UNHOOK_CALL(TerminateProcess);
+    UNHOOK_INDEX(TerminateThread);
+#endif
+
+#ifdef HOOK_INFORMATION
+    UNHOOK_CALL(DuplicateObject);
+#endif
 }
