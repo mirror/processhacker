@@ -50,10 +50,23 @@ extern PVOID *OrigKiServiceTable;
 /* Hooks a call by reading its index from memory. This is only available for 
  * certain functions that MS allows us to use :(.
  */
-#define HOOK_CALL(f) OldNt##f = SsdtModifyEntryByCall(Zw##f, NewNt##f)
+#define HOOK_CALL(f) temp = SsdtModifyEntryByCall(Zw##f, NewNt##f); \
+    if (temp != NewNt##f) \
+        OldNt##f = temp; \
+    else \
+        DbgPrint("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
+/* The reason for the above check is that if the entry was set to NewNt##f and we 
+ * overwrote OldNt##f, we would BSOD because NewNt##f would call OldNt##f which is 
+ * actually NewNt##f itself - infinite recursion ending in a stack fault.
+ * If you see this warning, DO NOT unload this driver unless you have restored the 
+ * appropriate SSDT entry! */
 
 /* Hooks a call by a hardcoded index. Not very safe, but it works... */
-#define HOOK_INDEX(f) OldNt##f = SsdtModifyEntryByIndex(Zw##f##Index, NewNt##f)
+#define HOOK_INDEX(f) temp = SsdtModifyEntryByIndex(Zw##f##Index, NewNt##f); \
+    if (temp != NewNt##f) \
+        OldNt##f = temp; \
+    else \
+        DbgPrint("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
 
 #define UNHOOK_CALL(f) SsdtRestoreEntryByCall(Zw##f, OldNt##f, NewNt##f)
 #define UNHOOK_INDEX(f) SsdtRestoreEntryByIndex(Zw##f##Index, OldNt##f, NewNt##f)
@@ -653,6 +666,7 @@ NTSTATUS NewNtWriteFile(
 
 NTSTATUS KPHHook()
 {
+    PVOID temp = NULL; // for the HOOK macros
     RTL_OSVERSIONINFOW version;
     
     version.dwOSVersionInfoSize = sizeof(version);
