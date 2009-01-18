@@ -37,7 +37,7 @@
 /* Process hooks - ZwOpenProcess, ZwOpenThread, etc. */
 #define HOOK_PROCESS
 
-/* Information hooks - ZwDuplicateObject, ZwQuery*, ZwSet* */
+/* Information hooks - ZwDuplicateObject, ZwQuerySystem*, ZwSetSystem* */
 #define HOOK_INFORMATION
 
 extern int ClientPID;
@@ -60,11 +60,24 @@ extern PVOID *OrigKiServiceTable;
 _ZwCreateFile OldNtCreateFile;
 _ZwCreateKey OldNtCreateKey;
 _ZwDeleteKey OldNtDeleteKey;
+_ZwDeleteValueKey OldNtDeleteValueKey;
 _ZwDuplicateObject OldNtDuplicateObject;
+_ZwEnumerateKey OldNtEnumerateKey;
+_ZwEnumerateValueKey OldNtEnumerateValueKey;
+_ZwOpenFile OldNtOpenFile;
+_ZwOpenKey OldNtOpenKey;
 _ZwOpenProcess OldNtOpenProcess;
 _ZwOpenThread OldNtOpenThread;
+_ZwQueryInformationFile OldNtQueryInformationFile;
+_ZwQueryKey OldNtQueryKey;
+_ZwQueryValueKey OldNtQueryValueKey;
+_ZwReadFile OldNtReadFile;
+_ZwSetInformationFile OldNtSetInformationFile;
+_ZwSetInformationThread OldNtSetInformationThread;
+_ZwSetValueKey OldNtSetValueKey;
 _ZwTerminateProcess OldNtTerminateProcess;
 _ZwTerminateThread OldNtTerminateThread;
+_ZwWriteFile OldNtWriteFile;
 
 NTSTATUS NewNtCreateFile(
     PHANDLE FileHandle,
@@ -128,6 +141,21 @@ NTSTATUS NewNtDeleteKey(HANDLE KeyHandle)
     }
 }
 
+NTSTATUS NewNtDeleteValueKey(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwDeleteValueKey, KeyHandle, ValueName);
+    }
+    else
+    {
+        return OldNtDeleteValueKey(KeyHandle, ValueName);
+    }
+}
+
 NTSTATUS NewNtDuplicateObject(
     HANDLE SourceProcessHandle,
     HANDLE SourceHandle,
@@ -146,6 +174,85 @@ NTSTATUS NewNtDuplicateObject(
     {
         return OldNtDuplicateObject(SourceProcessHandle, SourceHandle, 
             DestinationProcessHandle, DestinationHandle, DesiredAccess, Attributes, Options);
+    }
+}
+
+NTSTATUS NewNtEnumerateKey(
+    HANDLE KeyHandle,
+    ULONG Index,
+    KEY_INFORMATION_CLASS KeyInformationClass,
+    PVOID KeyInformation,
+    ULONG Length,
+    PULONG ResultLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwEnumerateKey, KeyHandle, Index, KeyInformationClass,
+            KeyInformation, Length, ResultLength);
+    }
+    else
+    {
+        return OldNtEnumerateKey(KeyHandle, Index, KeyInformationClass,
+            KeyInformation, Length, ResultLength);
+    }
+}
+
+NTSTATUS NewNtEnumerateValueKey(
+    HANDLE KeyHandle,
+    ULONG Index,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwEnumerateValueKey, KeyHandle, Index, KeyValueInformationClass,
+            KeyValueInformation, Length, ResultLength);
+    }
+    else
+    {
+        return OldNtEnumerateValueKey(KeyHandle, Index, KeyValueInformationClass,
+            KeyValueInformation, Length, ResultLength);
+    }
+}
+
+NTSTATUS NewNtOpenFile(
+    PHANDLE FileHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    ULONG ShareAccess,
+    ULONG OpenOptions
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwOpenFile, FileHandle, DesiredAccess, ObjectAttributes,
+            IoStatusBlock, ShareAccess, OpenOptions);
+    }
+    else
+    {
+        return OldNtOpenFile(FileHandle, DesiredAccess, ObjectAttributes,
+            IoStatusBlock, ShareAccess, OpenOptions);
+    }
+}
+
+NTSTATUS NewNtOpenKey(
+    PHANDLE KeyHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwOpenKey, KeyHandle, DesiredAccess, ObjectAttributes);
+    }
+    else
+    {
+        return OldNtOpenKey(KeyHandle, DesiredAccess, ObjectAttributes);
     }
 }
 
@@ -234,6 +341,151 @@ NTSTATUS NewNtOpenThread(
     }
 }
 
+NTSTATUS NewNtQueryInformationFile(
+    HANDLE FileHandle,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwQueryInformationFile, FileHandle, IoStatusBlock,
+            FileInformation, Length, FileInformationClass);
+    }
+    else
+    {
+        return OldNtQueryInformationFile(FileHandle, IoStatusBlock,
+            FileInformation, Length, FileInformationClass);
+    }
+}
+
+NTSTATUS NewNtQueryKey(
+    HANDLE KeyHandle,
+    KEY_INFORMATION_CLASS KeyInformationClass,
+    PVOID KeyInformation,
+    ULONG Length,
+    PULONG ResultLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwQueryKey, KeyHandle, KeyInformationClass, KeyInformation,
+            Length, ResultLength);
+    }
+    else
+    {
+        return OldNtQueryKey(KeyHandle, KeyInformationClass, KeyInformation,
+            Length, ResultLength);
+    }
+}
+
+NTSTATUS NewNtQueryValueKey(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName,
+    KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+    PVOID KeyValueInformation,
+    ULONG Length,
+    PULONG ResultLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwQueryValueKey, KeyHandle, ValueName,
+            KeyValueInformationClass, KeyValueInformation, Length, ResultLength);
+    }
+    else
+    {
+        return OldNtQueryValueKey(KeyHandle, ValueName,
+            KeyValueInformationClass, KeyValueInformation, Length, ResultLength);
+    }
+}
+
+NTSTATUS NewNtReadFile(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID Buffer,
+    ULONG Length,
+    PLARGE_INTEGER ByteOffset,
+    PULONG Key
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwReadFile, FileHandle, Event, ApcRoutine, ApcContext,
+            IoStatusBlock, Buffer, Length, ByteOffset, Key);
+    }
+    else
+    {
+        return OldNtReadFile(FileHandle, Event, ApcRoutine, ApcContext,
+            IoStatusBlock, Buffer, Length, ByteOffset, Key);
+    }
+}
+
+NTSTATUS NewNtSetInformationFile(
+    HANDLE FileHandle,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    FILE_INFORMATION_CLASS FileInformationClass
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwSetInformationFile, FileHandle, IoStatusBlock,
+            FileInformation, Length, FileInformationClass);
+    }
+    else
+    {
+        return OldNtSetInformationFile(FileHandle, IoStatusBlock,
+            FileInformation, Length, FileInformationClass);
+    }
+}
+
+NTSTATUS NewNtSetInformationThread(
+    HANDLE ThreadHandle,
+    THREADINFOCLASS ThreadInformationClass,
+    PVOID ThreadInformation,
+    ULONG ThreadInformationLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwSetInformationThread, ThreadHandle, 
+            ThreadInformationClass, ThreadInformation, ThreadInformationLength);
+    }
+    else
+    {
+        return OldNtSetInformationThread(ThreadHandle, 
+            ThreadInformationClass, ThreadInformation, ThreadInformationLength);
+    }
+}
+
+NTSTATUS NewNtSetValueKey(
+    HANDLE KeyHandle,
+    PUNICODE_STRING ValueName,
+    ULONG TitleIndex,
+    ULONG Type,
+    PVOID Data,
+    ULONG DataSize
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwSetValueKey, KeyHandle, ValueName, TitleIndex,
+            Type, Data, DataSize);
+    }
+    else
+    {
+        return OldNtSetValueKey(KeyHandle, ValueName, TitleIndex,
+            Type, Data, DataSize);
+    }
+}
+
 NTSTATUS NewNtTerminateProcess(
     HANDLE ProcessHandle,
     int ExitCode)
@@ -262,15 +514,51 @@ NTSTATUS NewNtTerminateThread(
     }
 }
 
+NTSTATUS NewNtWriteFile(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PIO_APC_ROUTINE ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID Buffer,
+    ULONG Length,
+    PLARGE_INTEGER ByteOffset,
+    PULONG Key
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrig(ZwWriteFile, FileHandle, Event, ApcRoutine,
+            ApcContext, IoStatusBlock, Buffer, Length, ByteOffset, Key);
+    }
+    else
+    {
+        return OldNtWriteFile(FileHandle, Event, ApcRoutine,
+            ApcContext, IoStatusBlock, Buffer, Length, ByteOffset, Key);
+    }
+}
+
 void KPHHook()
 {
 #ifdef HOOK_FILE
     HOOK_CALL(CreateFile);
+    HOOK_CALL(OpenFile);
+    HOOK_CALL(QueryInformationFile);
+    HOOK_CALL(ReadFile);
+    HOOK_CALL(SetInformationFile);
+    HOOK_CALL(WriteFile);
 #endif
 
 #ifdef HOOK_KEY
     HOOK_CALL(CreateKey);
     HOOK_CALL(DeleteKey);
+    HOOK_CALL(DeleteValueKey);
+    HOOK_CALL(EnumerateKey);
+    HOOK_CALL(EnumerateValueKey);
+    HOOK_CALL(OpenKey);
+    HOOK_CALL(QueryKey);
+    HOOK_CALL(QueryValueKey);
+    HOOK_CALL(SetValueKey);
 #endif
 
 #ifdef HOOK_PROCESS
@@ -289,11 +577,23 @@ void KPHUnhook()
 {
 #ifdef HOOK_FILE
     UNHOOK_CALL(CreateFile);
+    UNHOOK_CALL(OpenFile);
+    UNHOOK_CALL(QueryInformationFile);
+    UNHOOK_CALL(ReadFile);
+    UNHOOK_CALL(SetInformationFile);
+    UNHOOK_CALL(WriteFile);
 #endif
 
 #ifdef HOOK_KEY
     UNHOOK_CALL(CreateKey);
     UNHOOK_CALL(DeleteKey);
+    UNHOOK_CALL(DeleteValueKey);
+    UNHOOK_CALL(EnumerateKey);
+    UNHOOK_CALL(EnumerateValueKey);
+    UNHOOK_CALL(OpenKey);
+    UNHOOK_CALL(QueryKey);
+    UNHOOK_CALL(QueryValueKey);
+    UNHOOK_CALL(SetValueKey);
 #endif
 
 #ifdef HOOK_PROCESS

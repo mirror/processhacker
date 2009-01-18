@@ -67,15 +67,19 @@ namespace ProcessHacker
             catch
             { }
 
-            _service = scm.CreateService("KProcessHacker", "KProcessHacker", Win32.SERVICE_TYPE.KernelDriver,
-                Application.StartupPath + "\\kprocesshacker.sys");
-
-            _service.Start();
+            try
+            {
+                _service = scm.CreateService("KProcessHacker", "KProcessHacker", Win32.SERVICE_TYPE.KernelDriver,
+                    Application.StartupPath + "\\kprocesshacker.sys");
+                _service.Start();
+                _service.Control(Win32.SERVICE_CONTROL.Stop);
+                _service.Delete(); // the service will automatically get deleted once it stops
+            }
+            catch
+            { }
 
             _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker",
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
-            _service.Control(Win32.SERVICE_CONTROL.Stop);
-            _service.Delete(); // the service will automatically get deleted once it stops :)
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
         }
 

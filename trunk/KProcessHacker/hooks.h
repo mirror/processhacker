@@ -354,7 +354,7 @@ typedef NTSTATUS (*_ZwSetInformationThread)(
 typedef NTSTATUS (*_ZwSetValueKey)(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName,
-    ULONG TitleIndex OPTIONAL,
+    ULONG TitleIndex,
     ULONG Type,
     PVOID Data,
     ULONG DataSize

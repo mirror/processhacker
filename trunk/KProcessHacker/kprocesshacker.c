@@ -32,6 +32,11 @@
 #include "ssdt.h"
 #include "hooks.h"
 
+/* It's never safe to allow a hook driver to unload, but it should be 
+ * used when debugging to save time.
+ */
+//#define ALLOW_UNLOAD
+
 #pragma alloc_text(PAGE, KPHCreate) 
 #pragma alloc_text(PAGE, KPHClose) 
 #pragma alloc_text(PAGE, KPHIoControl) 
@@ -42,6 +47,7 @@
 
 int ClientPID = -1;
 PVOID *OrigKiServiceTable = NULL;
+extern int CurrentCallCount;
 
 PVOID GetSystemRoutineAddress(WCHAR *Name)
 {
@@ -54,11 +60,16 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
 
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
+    LARGE_INTEGER waitTime;
     UNICODE_STRING dosDeviceName;
     int i;
     
     KPHUnhook();
     SsdtDeinit();
+    
+    /* wait for any syscalls to complete, otherwise it's a BSOD. */
+    waitTime.QuadPart = -((signed __int64)20000000); /* 2 seconds */
+    KeDelayExecutionThread(KernelMode, FALSE, &waitTime);
     
     if (OrigKiServiceTable != NULL)
     {
@@ -101,7 +112,9 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     DriverObject->MajorFunction[IRP_MJ_READ] = KPHRead;
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KPHIoControl;
     
+#ifdef ALLOW_UNLOAD
     DriverObject->DriverUnload = DriverUnload;
+#endif
     
     deviceObject->Flags |= DO_BUFFERED_IO;
     deviceObject->Flags &= ~DO_DEVICE_INITIALIZING;
