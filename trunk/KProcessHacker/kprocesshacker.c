@@ -29,6 +29,7 @@
  */
 
 #include "kprocesshacker.h"
+#include "debug.h"
 #include "ssdt.h"
 #include "hooks.h"
 

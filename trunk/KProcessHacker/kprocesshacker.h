@@ -23,14 +23,6 @@
 #ifndef KPROCESSHACKER_H
 #define KPROCESSHACKER_H
 
-#define DEBUG
-
-#ifdef DEBUG
-#define dprintf DbgPrint
-#else
-#define dprintf
-#endif
-
 #include <ntifs.h>
 
 typedef struct _SYSTEM_HANDLE_INFORMATION

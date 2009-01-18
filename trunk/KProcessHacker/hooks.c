@@ -21,6 +21,7 @@
  */
 
 #include "ssdt.h"
+#include "debug.h"
 #include "hooks.h"
 
 /* If enabled, user-mode processes other than the client 
@@ -54,7 +55,7 @@ extern PVOID *OrigKiServiceTable;
     if (temp != NewNt##f) \
         OldNt##f = temp; \
     else \
-        DbgPrint("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
+        dwprintf("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
 /* The scenario:
  * 
  * 1. This driver hooks ZwOpenThread. It saves the old value, NtOpenThread.
@@ -82,17 +83,17 @@ extern PVOID *OrigKiServiceTable;
     if (temp != NewNt##f) \
         OldNt##f = temp; \
     else \
-        DbgPrint("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
+        dwprintf("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
 
 #define UNHOOK_CALL(f) SsdtRestoreEntryByCall(Zw##f, OldNt##f, NewNt##f)
 #define UNHOOK_INDEX(f) SsdtRestoreEntryByIndex(Zw##f##Index, OldNt##f, NewNt##f)
 
-int ZwOpenThreadIndex = -1;
-int ZwQueryInformationProcessIndex = -1;
-int ZwQueryInformationThreadIndex = -1;
-int ZwQuerySystemInformationIndex = -1;
-int ZwSetInformationProcessIndex = -1;
-int ZwTerminateThreadIndex = -1;
+int ZwOpenThreadIndex = 0;
+int ZwQueryInformationProcessIndex = 0;
+int ZwQueryInformationThreadIndex = 0;
+int ZwQuerySystemInformationIndex = 0;
+int ZwSetInformationProcessIndex = 0;
+int ZwTerminateThreadIndex = 0;
 
 _ZwCreateFile OldNtCreateFile = NULL;
 _ZwCreateKey OldNtCreateKey = NULL;
@@ -133,6 +134,7 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
+        dwprintf("KProcessHacker: Access violation at GetSystemRoutineAddress!\n");
         address = NULL;
     }
     
@@ -682,11 +684,15 @@ NTSTATUS NewNtWriteFile(
 
 NTSTATUS KPHHook()
 {
+    NTSTATUS status = STATUS_SUCCESS;
     PVOID temp = NULL; // for the HOOK macros
     RTL_OSVERSIONINFOW version;
     
     version.dwOSVersionInfoSize = sizeof(version);
-    RtlGetVersion(&version);
+    status = RtlGetVersion(&version);
+    
+    if (status != STATUS_SUCCESS)
+        return status;
     
     if (version.dwMajorVersion == 5 && version.dwMinorVersion == 1)
     {
@@ -710,7 +716,8 @@ NTSTATUS KPHHook()
     }
     else
     {
-        return STATUS_UNSUCCESSFUL;
+        dprintf("KProcessHacker: Couldn't use suitable SSDT indices for OS version %d.%d\n",
+            version.dwMajorVersion, version.dwMinorVersion);
     }
     
 #ifdef HOOK_FILE
@@ -736,18 +743,25 @@ NTSTATUS KPHHook()
 
 #ifdef HOOK_PROCESS
     HOOK_CALL(OpenProcess);
-    HOOK_INDEX(OpenThread);
-    HOOK_INDEX(QueryInformationProcess);
-    HOOK_INDEX(QueryInformationThread);
-    HOOK_INDEX(SetInformationProcess);
+    
+    if (ZwOpenThreadIndex != 0)
+        HOOK_INDEX(OpenThread);
+    if (ZwQueryInformationProcessIndex != 0)
+        HOOK_INDEX(QueryInformationProcess);
+    if (ZwQueryInformationThreadIndex != 0)
+        HOOK_INDEX(QueryInformationThread);
+    if (ZwSetInformationProcessIndex != 0)
+        HOOK_INDEX(SetInformationProcess);
     HOOK_CALL(SetInformationThread);
     HOOK_CALL(TerminateProcess);
-    HOOK_INDEX(TerminateThread);
+    if (ZwTerminateThreadIndex != 0)
+        HOOK_INDEX(TerminateThread);
 #endif
 
 #ifdef HOOK_INFORMATION
     HOOK_CALL(DuplicateObject);
-    HOOK_INDEX(QuerySystemInformation);
+    if (ZwQuerySystemInformationIndex != 0)
+        HOOK_INDEX(QuerySystemInformation);
 #endif
     
     return STATUS_SUCCESS;
@@ -778,17 +792,24 @@ void KPHUnhook()
 
 #ifdef HOOK_PROCESS
     UNHOOK_CALL(OpenProcess);
-    UNHOOK_INDEX(OpenThread);
-    UNHOOK_INDEX(QueryInformationProcess);
-    UNHOOK_INDEX(QueryInformationThread);
-    UNHOOK_INDEX(SetInformationProcess);
+    
+    if (ZwOpenThreadIndex != 0)
+        UNHOOK_INDEX(OpenThread);
+    if (ZwQueryInformationProcessIndex != 0)
+        UNHOOK_INDEX(QueryInformationProcess);
+    if (ZwQueryInformationThreadIndex != 0)
+        UNHOOK_INDEX(QueryInformationThread);
+    if (ZwSetInformationProcessIndex != 0)
+        UNHOOK_INDEX(SetInformationProcess);
     UNHOOK_CALL(SetInformationThread);
     UNHOOK_CALL(TerminateProcess);
-    UNHOOK_INDEX(TerminateThread);
+    if (ZwTerminateThreadIndex != 0)
+        UNHOOK_INDEX(TerminateThread);
 #endif
 
 #ifdef HOOK_INFORMATION
     UNHOOK_CALL(DuplicateObject);
-    UNHOOK_INDEX(QuerySystemInformation);
+    if (ZwQuerySystemInformationIndex != 0)
+        UNHOOK_INDEX(QuerySystemInformation);
 #endif
 }
