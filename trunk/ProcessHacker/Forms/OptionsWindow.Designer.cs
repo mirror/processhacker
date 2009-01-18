@@ -79,6 +79,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
+            this.checkEnableKPH = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -128,7 +129,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 257);
+            this.buttonClose.Location = new System.Drawing.Point(362, 276);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -187,11 +188,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 239);
+            this.tabControl.Size = new System.Drawing.Size(425, 258);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkEnableKPH);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
             this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
@@ -206,7 +208,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 213);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 232);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -634,12 +636,23 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
+            // checkEnableKPH
+            // 
+            this.checkEnableKPH.AutoSize = true;
+            this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 207);
+            this.checkEnableKPH.Name = "checkEnableKPH";
+            this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
+            this.checkEnableKPH.TabIndex = 12;
+            this.checkEnableKPH.Text = "Enable experimental kernel-mode driver";
+            this.checkEnableKPH.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 292);
+            this.ClientSize = new System.Drawing.Size(449, 311);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -716,5 +729,6 @@
         private ProcessHacker.Components.ColorModifier colorPackedProcesses;
         private ProcessHacker.Components.ColorModifier colorDotNetProcesses;
         private System.Windows.Forms.CheckBox checkVerifySignatures;
+        private System.Windows.Forms.CheckBox checkEnableKPH;
     }
 }

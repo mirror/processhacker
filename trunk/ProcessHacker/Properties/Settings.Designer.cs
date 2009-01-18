@@ -886,5 +886,17 @@ namespace ProcessHacker.Properties {
                 this["NetworkListViewColumns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableKPH {
+            get {
+                return ((bool)(this["EnableKPH"]));
+            }
+            set {
+                this["EnableKPH"] = value;
+            }
+        }
     }
 }

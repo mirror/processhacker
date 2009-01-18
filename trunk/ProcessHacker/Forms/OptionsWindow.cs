@@ -47,6 +47,7 @@ namespace ProcessHacker
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
             checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
+            checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
@@ -94,6 +95,21 @@ namespace ProcessHacker
             Properties.Settings.Default.UnitSpecifier =
                 Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
+
+            if (checkEnableKPH.Checked && !Properties.Settings.Default.EnableKPH)
+            {
+                checkEnableKPH.Checked = MessageBox.Show("You have chosen to enable ProcessHacker's experimental kernel-mode driver, " +
+                    "KProcessHacker. This is HIGHLY EXPERIMENTAL and MAY CAUSE YOUR COMPUTER TO CRASH.\n\n" +
+                    "KProcessHacker allows Process Hacker to display more types of handles and bypass " +
+                    "certain types of rootkits and security software. If you do not need these features " +
+                    "or do not wish to use KProcessHacker, click No.\n\nIf you do wish to use this feature, " +
+                    "KProcessHacker will be loaded the next time Process Hacker is started. If your computer " +
+                    "crashes, the next time Process Hacker is started KProcessHacker will be disabled.",
+                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes;
+            }     
+
+            Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;

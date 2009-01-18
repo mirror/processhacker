@@ -51,6 +51,18 @@ namespace ProcessHacker
 
         public KProcessHacker()
         {
+            if (!Properties.Settings.Default.EnableKPH)
+                throw new Exception("KProcessHacker is not enabled.");
+
+            // in case the computer crashes, KPH will be disabled the next time 
+            // PH is started.
+            Properties.Settings.Default.EnableKPH = false;
+
+            try { Properties.Settings.Default.Save(); }
+            catch { }
+
+            Properties.Settings.Default.EnableKPH = true; // if the computer crashes, this won't actually be saved
+
             Win32.ServiceManagerHandle scm = 
                 new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
 
