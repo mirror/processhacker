@@ -57,6 +57,14 @@ extern PVOID *OrigKiServiceTable;
 #define UNHOOK_CALL(f) SsdtRestoreEntryByCall(Zw##f, OldNt##f, NewNt##f)
 #define UNHOOK_INDEX(f) SsdtRestoreEntryByIndex(Zw##f##Index, OldNt##f, NewNt##f)
 
+/* Values for Vista */
+int ZwOpenThreadIndex;
+int ZwQueryInformationProcessIndex;
+int ZwQueryInformationThreadIndex;
+int ZwQuerySystemInformationIndex;
+int ZwSetInformationProcessIndex;
+int ZwTerminateThreadIndex;
+
 _ZwCreateFile OldNtCreateFile;
 _ZwCreateKey OldNtCreateKey;
 _ZwDeleteKey OldNtDeleteKey;
@@ -82,6 +90,25 @@ _ZwSetValueKey OldNtSetValueKey;
 _ZwTerminateProcess OldNtTerminateProcess;
 _ZwTerminateThread OldNtTerminateThread;
 _ZwWriteFile OldNtWriteFile;
+
+PVOID GetSystemRoutineAddress(WCHAR *Name)
+{
+    PVOID address = NULL;
+    UNICODE_STRING unicodeName;
+    
+    RtlInitUnicodeString(&unicodeName, Name);
+    
+    __try
+    {
+        address = MmGetSystemRoutineAddress(&unicodeName);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        address = NULL;
+    }
+    
+    return address;
+}
 
 NTSTATUS NewNtCreateFile(
     PHANDLE FileHandle,
@@ -624,8 +651,38 @@ NTSTATUS NewNtWriteFile(
     }
 }
 
-void KPHHook()
+NTSTATUS KPHHook()
 {
+    RTL_OSVERSIONINFOW version;
+    
+    version.dwOSVersionInfoSize = sizeof(version);
+    RtlGetVersion(&version);
+    
+    if (version.dwMajorVersion == 5 && version.dwMinorVersion == 1)
+    {
+        // XP
+        ZwOpenThreadIndex = 0x80;
+        ZwQueryInformationProcessIndex = 0x9a;
+        ZwQueryInformationThreadIndex = 0x9b;
+        ZwQuerySystemInformationIndex = 0xad;
+        ZwSetInformationProcessIndex = 0xe4;
+        ZwTerminateThreadIndex = 0x102;
+    }
+    else if (version.dwMajorVersion == 6 && version.dwMinorVersion == 0)
+    {
+        // Vista
+        ZwOpenThreadIndex = 0xc9;
+        ZwQueryInformationProcessIndex = 0xe4;
+        ZwQueryInformationThreadIndex = 0xe5;
+        ZwQuerySystemInformationIndex = 0xf8;
+        ZwSetInformationProcessIndex = 0x131;
+        ZwTerminateThreadIndex = 0x14f;
+    }
+    else
+    {
+        return STATUS_UNSUCCESSFUL;
+    }
+    
 #ifdef HOOK_FILE
     HOOK_CALL(CreateFile);
     HOOK_CALL(OpenFile);
@@ -662,6 +719,8 @@ void KPHHook()
     HOOK_CALL(DuplicateObject);
     HOOK_INDEX(QuerySystemInformation);
 #endif
+    
+    return STATUS_SUCCESS;
 }
 
 void KPHUnhook()

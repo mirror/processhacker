@@ -25,7 +25,7 @@
 
 #include <ntifs.h>
 
-void KPHHook();
+NTSTATUS KPHHook();
 void KPHUnhook();
 
 typedef struct _KTHREAD
@@ -291,7 +291,6 @@ typedef NTSTATUS (*_ZwOpenProcess)(
     PCLIENT_ID ClientId
     );
 
-#define ZwOpenThreadIndex 0xc9
 typedef NTSTATUS (*_ZwOpenThread)(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
@@ -307,7 +306,6 @@ typedef NTSTATUS (*_ZwQueryInformationFile)(
     FILE_INFORMATION_CLASS FileInformationClass
     );
 
-#define ZwQueryInformationProcessIndex 0xe4
 typedef NTSTATUS (*_ZwQueryInformationProcess)(
     HANDLE ProcessHandle,
     int ProcessInformationClass,
@@ -316,7 +314,6 @@ typedef NTSTATUS (*_ZwQueryInformationProcess)(
     int *ReturnLength
     );
 
-#define ZwQueryInformationThreadIndex 0xe5
 typedef NTSTATUS (*_ZwQueryInformationThread)(
     HANDLE ThreadHandle,
     int ThreadInformationClass,
@@ -333,7 +330,6 @@ typedef NTSTATUS (*_ZwQueryKey)(
     PULONG ResultLength
     );
 
-#define ZwQuerySystemInformationIndex 0xf8
 typedef NTSTATUS (*_ZwQuerySystemInformation)(
     int SystemInformationClass,
     PVOID SystemInformation,
@@ -370,7 +366,6 @@ typedef NTSTATUS (*_ZwSetInformationFile)(
     FILE_INFORMATION_CLASS FileInformationClass
     );
 
-#define ZwSetInformationProcessIndex 0x131
 typedef NTSTATUS (*_ZwSetInformationProcess)(
     HANDLE ProcessHandle,
     int ProcessInformationClass,
@@ -399,7 +394,6 @@ typedef NTSTATUS (*_ZwTerminateProcess)(
     ULONG ExitCode
     );
 
-#define ZwTerminateThreadIndex 0x14f
 typedef NTSTATUS (*_ZwTerminateThread)(
     HANDLE Thread,
     ULONG ExitCode

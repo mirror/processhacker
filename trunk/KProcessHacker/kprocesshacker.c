@@ -48,15 +48,7 @@
 int ClientPID = -1;
 PVOID *OrigKiServiceTable = NULL;
 extern int CurrentCallCount;
-
-PVOID GetSystemRoutineAddress(WCHAR *Name)
-{
-    UNICODE_STRING unicodeName;
-    
-    RtlInitUnicodeString(&unicodeName, Name);
-    
-    return MmGetSystemRoutineAddress(&unicodeName);
-}
+int Hooked = FALSE;
 
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
@@ -64,11 +56,13 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     UNICODE_STRING dosDeviceName;
     int i;
     
-    KPHUnhook();
+    if (Hooked)
+        KPHUnhook();
+    
     SsdtDeinit();
     
     /* wait for any syscalls to complete, otherwise it's a BSOD. */
-    waitTime.QuadPart = -((signed __int64)20000000); /* 2 seconds */
+    waitTime.QuadPart = -((signed __int64)50000000); /* 5 seconds */
     KeDelayExecutionThread(KernelMode, FALSE, &waitTime);
     
     if (OrigKiServiceTable != NULL)
@@ -96,7 +90,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     if (status != STATUS_SUCCESS)
         return status;
     
-    KPHHook();
+    Hooked = KPHHook() == STATUS_SUCCESS;
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -133,6 +127,10 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     ClientPID = PsGetProcessId(PsGetCurrentProcess());
     dprintf("KProcessHacker: Client (PID %d) connected\n", ClientPID);
     dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
+    
+    /* hook again to make sure our hooks work for this new client */
+    KPHUnhook();
+    KPHHook();
     
     return status;
 }
