@@ -55,9 +55,25 @@ extern PVOID *OrigKiServiceTable;
         OldNt##f = temp; \
     else \
         DbgPrint("KProcessHacker: WARNING: entry for Zw%s was already set to target!\n", #f)
-/* The reason for the above check is that if the entry was set to NewNt##f and we 
- * overwrote OldNt##f, we would BSOD because NewNt##f would call OldNt##f which is 
- * actually NewNt##f itself - infinite recursion ending in a stack fault.
+/* The scenario:
+ * 
+ * 1. This driver hooks ZwOpenThread. It saves the old value, NtOpenThread.
+ * 2. Another driver hooks ZwOpenThread. It saves the old value, our NewNtOpenThread.
+ * 3. Our client disconnects and this driver unhooks ZwOpenThread, restoring the 
+ *    old value, NtOpenThread.
+ * 4. The other driver unhooks ZwOpenThread, restoring the old value, our NewNtOpenThread!
+ *    Note that this is currently NOT dangerous unless this driver unloads while that 
+ *    entry is still pointing to NewNtOpenThread.
+ * 5. Time passes, and later a client connects/reconnects.
+ * 6. This driver hooks ZwOpenThread. It saves the old value, our NewNtOpenThread (from
+ *    step 4)
+ * 7. Some program calls ZwOpenThread. It turns out it isn't our client, so we 
+ *    pass it along to the old ZwOpenThread, which is the value we saved - 
+ *    NewNtOpenThread! NewNtOpenThread runs and calls itself, and so on... until 
+ *    a stack fault.
+ * 
+ * This fix takes place at step 6 - if the old value we are about to save is equal to 
+ * the NewNt* function, we keep our old value from last time. However...
  * If you see this warning, DO NOT unload this driver unless you have restored the 
  * appropriate SSDT entry! */
 
