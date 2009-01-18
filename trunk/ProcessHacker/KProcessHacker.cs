@@ -198,6 +198,10 @@ namespace ProcessHacker
                 }
             }
 
+            // if we couldn't get the actual value, make a guess
+            if (kiServiceLimit == 0)
+                kiServiceLimit = 0x200;
+
             int[] kiServiceTableContents = new int[kiServiceLimit];
 
             // read and correct the function pointers!
