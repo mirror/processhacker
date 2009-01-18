@@ -397,10 +397,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             RtlCopyMemory(OrigKiServiceTable, dataBuffer, SsdtGetCount() * 4);
             
             dprintf("KProcessHacker: Got %d service table entries\n", SsdtGetCount());
-            dprintf("KProcessHacker: ZwTerminateProcess points to 0x%08x\n",
-                SsdtGetEntryByCall(ZwTerminateProcess));
-            dprintf("KProcessHacker: NtTerminateProcess is 0x%08x\n", 
-                OrigKiServiceTable[SYSCALL_INDEX(ZwTerminateProcess)]);
         }
         break;
         
@@ -431,6 +427,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             *(int *)dataBuffer = SsdtGetCount();
+            dprintf("KProcessHacker: GetServiceLimit: returned %d SSDT entries\n", *(int *)dataBuffer);
             retLength = 4;
         }
         break;

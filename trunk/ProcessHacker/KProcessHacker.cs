@@ -55,18 +55,15 @@ namespace ProcessHacker
                 new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
 
             // delete the service if it exists
-            //try
-            //{
-            //    using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
-            //    {
-            //        try { shandle.Control(Win32.SERVICE_CONTROL.Stop); }
-            //        catch { }
-
-            //        shandle.Delete();
-            //    }
-            //}
-            //catch
-            //{ }
+            try
+            {
+                using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
+                {
+                    shandle.Delete();
+                }
+            }
+            catch
+            { }
 
             try
             {
@@ -250,7 +247,7 @@ namespace ProcessHacker
         {
             byte[] buffer = new byte[4];
 
-            _fileHandle.IoControl(CtlCode(Control.GetServiceLimit), new byte[0], buffer);
+            _fileHandle.IoControl(CtlCode(Control.GetServiceLimit), null, buffer);
 
             return Misc.BytesToInt(buffer, Misc.Endianness.Little);
         }
@@ -267,8 +264,13 @@ namespace ProcessHacker
         public void SendKiServiceTable()
         {
             int[] kiServiceTable = this.DumpKiServiceTable();
+            byte[] equivArray = new byte[kiServiceTable.Length * 4];
 
-            _fileHandle.IoControl(CtlCode(Control.GiveKiServiceTable), kiServiceTable, new byte[0]);
+            for (int i = 0; i < kiServiceTable.Length; i++)
+                Array.Copy(Misc.IntToBytes(kiServiceTable[i], Misc.Endianness.Little),
+                    0, equivArray, i * 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.GiveKiServiceTable), equivArray, null);
         }     
 
         public int Write(int address, byte[] data)
@@ -278,7 +280,7 @@ namespace ProcessHacker
             Array.Copy(Misc.IntToBytes(address, Misc.Endianness.Little), newData, 4);
             Array.Copy(data, 0, newData, 4, data.Length);
 
-            return _fileHandle.IoControl(CtlCode(Control.Write), newData, new byte[0]);
+            return _fileHandle.IoControl(CtlCode(Control.Write), newData, null);
         }
     }
 }

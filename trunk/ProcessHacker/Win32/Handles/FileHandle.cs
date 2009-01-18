@@ -59,27 +59,12 @@ namespace ProcessHacker
             public int IoControl(uint controlCode, byte[] inBuffer, byte[] outBuffer)
             {
                 int returnBytes;
+                byte[] inArr = inBuffer;
+                int inLen = inArr != null ? inBuffer.Length : 0;
+                byte[] outArr = outBuffer;
+                int outLen = outArr != null ?outBuffer.Length : 0;
 
-                if (!DeviceIoControl(this, (int)controlCode, inBuffer, inBuffer.Length,
-                    outBuffer, outBuffer.Length, out returnBytes, 0))
-                    ThrowLastWin32Error();
-
-                return returnBytes;
-            }
-
-            /// <summary>
-            /// Sends an I/O control message to the device's associated driver.
-            /// </summary>
-            /// <param name="controlCode">The device-specific control code.</param>
-            /// <param name="inBuffer">The input.</param>
-            /// <param name="outBuffer">The output buffer.</param>
-            /// <returns>The bytes returned in the output buffer.</returns>
-            public int IoControl(uint controlCode, int[] inBuffer, byte[] outBuffer)
-            {
-                int returnBytes;
-
-                if (!DeviceIoControl(this, (int)controlCode, inBuffer, inBuffer.Length * 4,
-                    outBuffer, outBuffer.Length, out returnBytes, 0))
+                if (!DeviceIoControl(this, (int)controlCode, inArr, inLen, outArr, outLen, out returnBytes, 0))
                     ThrowLastWin32Error();
 
                 return returnBytes;
