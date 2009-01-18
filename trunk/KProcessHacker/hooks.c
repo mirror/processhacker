@@ -26,7 +26,7 @@
 /* If enabled, user-mode processes other than the client 
  * cannot open the client's process or its threads.
  */
-#define PROTECT_CLIENT
+//#define PROTECT_CLIENT
 
 /* File hooks - ZwCreateFile, ZwOpenFile, ReadFile, WriteFile, etc. */
 #define HOOK_FILE
