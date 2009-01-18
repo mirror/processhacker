@@ -307,12 +307,38 @@ typedef NTSTATUS (*_ZwQueryInformationFile)(
     FILE_INFORMATION_CLASS FileInformationClass
     );
 
+#define ZwQueryInformationProcessIndex 0xe4
+typedef NTSTATUS (*_ZwQueryInformationProcess)(
+    HANDLE ProcessHandle,
+    int ProcessInformationClass,
+    PVOID ProcessInformation,
+    int ProcessInformationLength,
+    int *ReturnLength
+    );
+
+#define ZwQueryInformationThreadIndex 0xe5
+typedef NTSTATUS (*_ZwQueryInformationThread)(
+    HANDLE ThreadHandle,
+    int ThreadInformationClass,
+    PVOID ThreadInformation,
+    int ThreadInformationLength,
+    int *ReturnLength
+    );
+
 typedef NTSTATUS (*_ZwQueryKey)(
     HANDLE KeyHandle,
     KEY_INFORMATION_CLASS KeyInformationClass,
     PVOID KeyInformation,
     ULONG Length,
     PULONG ResultLength
+    );
+
+#define ZwQuerySystemInformationIndex 0xf8
+typedef NTSTATUS (*_ZwQuerySystemInformation)(
+    int SystemInformationClass,
+    PVOID SystemInformation,
+    int SystemInformationLength,
+    int *ReturnLength
     );
 
 typedef NTSTATUS (*_ZwQueryValueKey)(
@@ -342,6 +368,14 @@ typedef NTSTATUS (*_ZwSetInformationFile)(
     PVOID FileInformation,
     ULONG Length,
     FILE_INFORMATION_CLASS FileInformationClass
+    );
+
+#define ZwSetInformationProcessIndex 0x131
+typedef NTSTATUS (*_ZwSetInformationProcess)(
+    HANDLE ProcessHandle,
+    int ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength
     );
 
 typedef NTSTATUS (*_ZwSetInformationThread)(

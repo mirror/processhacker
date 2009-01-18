@@ -69,10 +69,14 @@ _ZwOpenKey OldNtOpenKey;
 _ZwOpenProcess OldNtOpenProcess;
 _ZwOpenThread OldNtOpenThread;
 _ZwQueryInformationFile OldNtQueryInformationFile;
+_ZwQueryInformationProcess OldNtQueryInformationProcess;
+_ZwQueryInformationThread OldNtQueryInformationThread;
 _ZwQueryKey OldNtQueryKey;
+_ZwQuerySystemInformation OldNtQuerySystemInformation;
 _ZwQueryValueKey OldNtQueryValueKey;
 _ZwReadFile OldNtReadFile;
 _ZwSetInformationFile OldNtSetInformationFile;
+_ZwSetInformationProcess OldNtSetInformationProcess;
 _ZwSetInformationThread OldNtSetInformationThread;
 _ZwSetValueKey OldNtSetValueKey;
 _ZwTerminateProcess OldNtTerminateProcess;
@@ -361,6 +365,50 @@ NTSTATUS NewNtQueryInformationFile(
     }
 }
 
+NTSTATUS NewNtQueryInformationProcess(
+    HANDLE ProcessHandle,
+    int ProcessInformationClass,
+    PVOID ProcessInformation,
+    int ProcessInformationLength,
+    int *ReturnLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrigByIndex(ZwQueryInformationProcess, ProcessHandle,
+            ProcessInformationClass, ProcessInformation, ProcessInformationLength,
+            ReturnLength);
+    }
+    else
+    {
+        return OldNtQueryInformationProcess(ProcessHandle,
+            ProcessInformationClass, ProcessInformation, ProcessInformationLength,
+            ReturnLength);
+    }
+}
+
+NTSTATUS NewNtQueryInformationThread(
+    HANDLE ThreadHandle,
+    int ThreadInformationClass,
+    PVOID ThreadInformation,
+    int ThreadInformationLength,
+    int *ReturnLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrigByIndex(ZwQueryInformationThread, ThreadHandle,
+            ThreadInformationClass, ThreadInformation, ThreadInformationLength,
+            ReturnLength);
+    }
+    else
+    {
+        return OldNtQueryInformationThread(ThreadHandle,
+            ThreadInformationClass, ThreadInformation, ThreadInformationLength,
+            ReturnLength);
+    }
+}
+
 NTSTATUS NewNtQueryKey(
     HANDLE KeyHandle,
     KEY_INFORMATION_CLASS KeyInformationClass,
@@ -378,6 +426,25 @@ NTSTATUS NewNtQueryKey(
     {
         return OldNtQueryKey(KeyHandle, KeyInformationClass, KeyInformation,
             Length, ResultLength);
+    }
+}
+
+NTSTATUS NewNtQuerySystemInformation(
+    int SystemInformationClass,
+    PVOID SystemInformation,
+    int SystemInformationLength,
+    int *ReturnLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrigByIndex(ZwQuerySystemInformation, SystemInformationClass,
+            SystemInformation, SystemInformationLength, ReturnLength);
+    }
+    else
+    {
+        return OldNtQuerySystemInformation(SystemInformationClass,
+            SystemInformation, SystemInformationLength, ReturnLength);
     }
 }
 
@@ -443,6 +510,25 @@ NTSTATUS NewNtSetInformationFile(
     {
         return OldNtSetInformationFile(FileHandle, IoStatusBlock,
             FileInformation, Length, FileInformationClass);
+    }
+}
+
+NTSTATUS NewNtSetInformationProcess(
+    HANDLE ProcessHandle,
+    int ProcessInformationClass,
+    PVOID ProcessInformation,
+    int ProcessInformationLength
+    )
+{
+    if (PsGetProcessId(PsGetCurrentProcess()) == ClientPID && !OrigEmpty)
+    {
+        return CallOrigByIndex(ZwSetInformationProcess, ProcessHandle, 
+            ProcessInformationClass, ProcessInformation, ProcessInformationLength);
+    }
+    else
+    {
+        return OldNtSetInformationProcess(ProcessHandle, 
+            ProcessInformationClass, ProcessInformation, ProcessInformationLength);
     }
 }
 
@@ -564,12 +650,17 @@ void KPHHook()
 #ifdef HOOK_PROCESS
     HOOK_CALL(OpenProcess);
     HOOK_INDEX(OpenThread);
+    HOOK_INDEX(QueryInformationProcess);
+    HOOK_INDEX(QueryInformationThread);
+    HOOK_INDEX(SetInformationProcess);
+    HOOK_CALL(SetInformationThread);
     HOOK_CALL(TerminateProcess);
     HOOK_INDEX(TerminateThread);
 #endif
 
 #ifdef HOOK_INFORMATION
     HOOK_CALL(DuplicateObject);
+    HOOK_INDEX(QuerySystemInformation);
 #endif
 }
 
@@ -599,11 +690,16 @@ void KPHUnhook()
 #ifdef HOOK_PROCESS
     UNHOOK_CALL(OpenProcess);
     UNHOOK_INDEX(OpenThread);
+    UNHOOK_INDEX(QueryInformationProcess);
+    UNHOOK_INDEX(QueryInformationThread);
+    UNHOOK_INDEX(SetInformationProcess);
+    UNHOOK_CALL(SetInformationThread);
     UNHOOK_CALL(TerminateProcess);
     UNHOOK_INDEX(TerminateThread);
 #endif
 
 #ifdef HOOK_INFORMATION
     UNHOOK_CALL(DuplicateObject);
+    UNHOOK_INDEX(QuerySystemInformation);
 #endif
 }
