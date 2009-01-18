@@ -37,6 +37,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.checkEnableKPH = new System.Windows.Forms.CheckBox();
             this.comboSizeUnits = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
@@ -79,7 +80,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.checkEnableKPH = new System.Windows.Forms.CheckBox();
+            this.checkStartHidden = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -129,7 +130,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 276);
+            this.buttonClose.Location = new System.Drawing.Point(362, 304);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -141,7 +142,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 159);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 182);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -152,7 +153,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 135);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 158);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -188,7 +189,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 258);
+            this.tabControl.Size = new System.Drawing.Size(425, 286);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -196,6 +197,7 @@
             this.tabGeneral.Controls.Add(this.checkEnableKPH);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
+            this.tabGeneral.Controls.Add(this.checkStartHidden);
             this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label1);
@@ -208,10 +210,21 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 232);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 260);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // checkEnableKPH
+            // 
+            this.checkEnableKPH.AutoSize = true;
+            this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 230);
+            this.checkEnableKPH.Name = "checkEnableKPH";
+            this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
+            this.checkEnableKPH.TabIndex = 12;
+            this.checkEnableKPH.Text = "Enable experimental kernel-mode driver";
+            this.checkEnableKPH.UseVisualStyleBackColor = true;
             // 
             // comboSizeUnits
             // 
@@ -243,7 +256,7 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 110);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 110);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 9;
@@ -266,7 +279,7 @@
             // 
             this.checkVerifySignatures.AutoSize = true;
             this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 183);
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 206);
             this.checkVerifySignatures.Name = "checkVerifySignatures";
             this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
             this.checkVerifySignatures.TabIndex = 3;
@@ -300,7 +313,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 213);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 232);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -518,7 +531,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 213);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 232);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -636,23 +649,23 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // checkEnableKPH
+            // checkStartHidden
             // 
-            this.checkEnableKPH.AutoSize = true;
-            this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 207);
-            this.checkEnableKPH.Name = "checkEnableKPH";
-            this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
-            this.checkEnableKPH.TabIndex = 12;
-            this.checkEnableKPH.Text = "Enable experimental kernel-mode driver";
-            this.checkEnableKPH.UseVisualStyleBackColor = true;
+            this.checkStartHidden.AutoSize = true;
+            this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkStartHidden.Location = new System.Drawing.Point(21, 134);
+            this.checkStartHidden.Name = "checkStartHidden";
+            this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
+            this.checkStartHidden.TabIndex = 9;
+            this.checkStartHidden.Text = "Start hidden";
+            this.checkStartHidden.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 311);
+            this.ClientSize = new System.Drawing.Size(449, 339);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -730,5 +743,6 @@
         private ProcessHacker.Components.ColorModifier colorDotNetProcesses;
         private System.Windows.Forms.CheckBox checkVerifySignatures;
         private System.Windows.Forms.CheckBox checkEnableKPH;
+        private System.Windows.Forms.CheckBox checkStartHidden;
     }
 }

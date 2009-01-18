@@ -106,6 +106,7 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.menuIcon = new System.Windows.Forms.ContextMenu();
             this.showHideMenuItem = new System.Windows.Forms.MenuItem();
+            this.sysInformationIconMenuItem = new System.Windows.Forms.MenuItem();
             this.notificationsMenuItem = new System.Windows.Forms.MenuItem();
             this.NPMenuItem = new System.Windows.Forms.MenuItem();
             this.TPMenuItem = new System.Windows.Forms.MenuItem();
@@ -688,6 +689,7 @@
             // 
             this.menuIcon.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.showHideMenuItem,
+            this.sysInformationIconMenuItem,
             this.notificationsMenuItem,
             this.exitTrayMenuItem});
             // 
@@ -697,9 +699,15 @@
             this.showHideMenuItem.Text = "&Show/Hide Process Hacker";
             this.showHideMenuItem.Click += new System.EventHandler(this.showHideMenuItem_Click);
             // 
+            // sysInformationIconMenuItem
+            // 
+            this.sysInformationIconMenuItem.Index = 1;
+            this.sysInformationIconMenuItem.Text = "System &Information...";
+            this.sysInformationIconMenuItem.Click += new System.EventHandler(this.sysInformationIconMenuItem_Click);
+            // 
             // notificationsMenuItem
             // 
-            this.notificationsMenuItem.Index = 1;
+            this.notificationsMenuItem.Index = 2;
             this.notificationsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.NPMenuItem,
             this.TPMenuItem,
@@ -742,7 +750,7 @@
             // exitTrayMenuItem
             // 
             this.vistaMenu.SetImage(this.exitTrayMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitTrayMenuItem.Index = 2;
+            this.exitTrayMenuItem.Index = 3;
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
@@ -867,6 +875,7 @@
         private System.Windows.Forms.MenuItem reloadStructsMenuItem;
         private System.Windows.Forms.TabPage tabNetwork;
         private NetworkList listNetwork;
+        private System.Windows.Forms.MenuItem sysInformationIconMenuItem;
     }
 }
 

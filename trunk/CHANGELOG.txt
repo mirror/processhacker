@@ -3,10 +3,12 @@ Process Hacker
 1.3.2.0
  * NEW:
    * Network tab - shows current network connections
-   * KProcessHacker - a kernel-mode driver for Process Hacker which 
+   * KProcessHacker - an experimental kernel-mode driver for Process Hacker which 
      finally enables Process Hacker to display all file handles and 
      have full control over the system. Note that this will NOT 
      bypass user-mode rootkits like HackerDefender!
+   * System Information menu item in the tray icon menu
+   * Hide when minimized option
  * FIXED:
    * Now the process tree and service list update instantly after 
      starting Process Hacker instead of waiting

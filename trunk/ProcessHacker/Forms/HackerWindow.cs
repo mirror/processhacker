@@ -318,6 +318,11 @@ namespace ProcessHacker
             this.Activate();
         }
 
+        private void sysInformationIconMenuItem_Click(object sender, EventArgs e)
+        {
+            sysInfoMenuItem_Click(sender, e);
+        }
+
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -1567,6 +1572,18 @@ namespace ProcessHacker
             t.Start();
 
             tabControlBig_SelectedIndexChanged(null, null);
+
+            if (Properties.Settings.Default.StartHidden)
+            {
+                // HACK: I can't seem to be able to hide the window here, so I have to use a timer!
+                System.Windows.Forms.Timer t2 =
+                    new System.Windows.Forms.Timer();
+
+                t2.Interval = 10; 
+                t2.Tick +=
+                    (sender_, e_) => { this.Hide(); t2.Enabled = false; };
+                t2.Enabled = true;
+            }
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)

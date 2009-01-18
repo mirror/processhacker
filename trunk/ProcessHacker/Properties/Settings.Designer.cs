@@ -898,5 +898,17 @@ namespace ProcessHacker.Properties {
                 this["EnableKPH"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool StartHidden {
+            get {
+                return ((bool)(this["StartHidden"]));
+            }
+            set {
+                this["StartHidden"] = value;
+            }
+        }
     }
 }
