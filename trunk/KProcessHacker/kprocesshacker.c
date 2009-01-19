@@ -488,6 +488,17 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
+            if (OldKiServiceTable != NULL)
+            {
+                ExFreePool(OldKiServiceTable);
+                OldKiServiceTable = NULL;
+            }
+            
+            OldKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
+            
+            if (OldKiServiceTable == NULL)
+                return STATUS_NO_MEMORY;
+            
             if (Hooked)
                 KPHUnhook();
             
@@ -495,6 +506,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 SsdtModifyEntryByIndex(i, OrigKiServiceTable[i]);
             }
+            
+            RtlCopyMemory(OldKiServiceTable, SsdtGetServiceTable(), SsdtGetCount() * 4);
             
             /* so we don't try to "restore" the entries later */
             Hooked = FALSE;
