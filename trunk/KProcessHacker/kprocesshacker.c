@@ -157,7 +157,10 @@ NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     }
     
     if (Hooked)
+    {
         KPHUnhook();
+        Hooked = FALSE;
+    }
     
     return status;
 }
@@ -485,12 +488,15 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
+            if (Hooked)
+                KPHUnhook();
+            
             for (i = 0; i < SsdtGetCount(); i++)
             {
                 SsdtModifyEntryByIndex(i, OrigKiServiceTable[i]);
             }
             
-            /* so we don't try and "restore" the entries later */
+            /* so we don't try to "restore" the entries later */
             Hooked = FALSE;
             
             dprintf("KProcessHacker: successfully restored %d SSDT entries\n", SsdtGetCount());
