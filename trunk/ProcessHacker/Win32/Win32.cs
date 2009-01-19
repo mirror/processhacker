@@ -503,6 +503,9 @@ namespace ProcessHacker
                                 foreach (var pair in DriveDevicePrefixes)
                                     if (info.OrigName.StartsWith(pair.Key))
                                         info.BestName = pair.Value + info.OrigName.Substring(pair.Key.Length);
+
+                                if (info.BestName == null)
+                                    info.BestName = info.OrigName;
                             }
 
                             break;
