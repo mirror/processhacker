@@ -47,6 +47,7 @@
 #pragma alloc_text(PAGE, IsStringNullTerminated)
 
 int ClientPID = -1;
+PVOID *OldKiServiceTable = NULL;
 PVOID *OrigKiServiceTable = NULL;
 extern int CurrentCallCount;
 int Hooked = FALSE;
@@ -59,7 +60,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     
     SsdtDeinit();
     
-    /* wait for any syscalls to complete, otherwise it's a BSOD. */
+    /* wait for a while to lessen the chance of a BSOD */
     waitTime.QuadPart = -((signed __int64)50000000); /* 5 seconds */
     KeDelayExecutionThread(KernelMode, FALSE, &waitTime);
     
@@ -124,6 +125,19 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     dprintf("KProcessHacker: Client (PID %d) connected\n", ClientPID);
     dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
+    if (OldKiServiceTable != NULL)
+    {
+        ExFreePool(OldKiServiceTable);
+        OldKiServiceTable = NULL;
+    }
+    
+    OldKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
+    
+    if (OldKiServiceTable == NULL)
+        return STATUS_NO_MEMORY;
+    
+    RtlCopyMemory(OldKiServiceTable, SsdtGetServiceTable(), SsdtGetCount() * 4);
+    
     Hooked = KPHHook() == STATUS_SUCCESS;
     
     return status;
@@ -135,6 +149,12 @@ NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     ClientPID = -1;
     dprintf("KProcessHacker: Client disconnected\n");
+    
+    if (OldKiServiceTable != NULL)
+    {
+        ExFreePool(OldKiServiceTable);
+        OldKiServiceTable = NULL;
+    }
     
     if (Hooked)
         KPHUnhook();
@@ -197,6 +217,28 @@ NTSTATUS GetObjectName(PFILE_OBJECT lpObject, PVOID lpBuffer, ULONG nBufferLengt
     return STATUS_SUCCESS;
 }
 
+WCHAR *GetIoControlName(ULONG ControlCode)
+{
+    if (ControlCode == KPH_READ)
+        return "Read";
+    else if (ControlCode == KPH_WRITE)
+        return "Write";
+    else if (ControlCode == KPH_GETOBJECTNAME)
+        return "Get Object Name";
+    else if (ControlCode == KPH_GETKISERVICETABLE)
+        return "Get KiServiceTable";
+    else if (ControlCode == KPH_GIVEKISERVICETABLE)
+        return "Give KiServiceTable";
+    else if (ControlCode == KPH_SETKISERVICETABLEENTRY)
+        return "Set KiServiceTable Entry";
+    else if (ControlCode == KPH_GETSERVICELIMIT)
+        return "Get KiServiceLimit";
+    else if (ControlCode == KPH_RESTOREKISERVICETABLE)
+        return "Restore KiServiceTable";
+    else
+        return "Unknown";
+}
+
 NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -229,7 +271,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     outLength = ioStackIrp->Parameters.DeviceIoControl.OutputBufferLength;
     controlCode = ioStackIrp->Parameters.DeviceIoControl.IoControlCode;
     
-    dprintf("KProcessHacker: IoControl 0x%08x\n", controlCode);
+    dprintf("KProcessHacker: IoControl 0x%08x (%s)\n", controlCode, GetIoControlName(controlCode));
     
     switch (controlCode)
     {
@@ -367,7 +409,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            RtlCopyMemory(dataBuffer, SsdtGetServiceTable(), SsdtGetCount() * 4);
+            RtlCopyMemory(dataBuffer, OldKiServiceTable, SsdtGetCount() * 4);
             retLength = SsdtGetCount() * 4;
         }
         break;
@@ -430,6 +472,28 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             *(int *)dataBuffer = SsdtGetCount();
             dprintf("KProcessHacker: GetServiceLimit: returned %d SSDT entries\n", *(int *)dataBuffer);
             retLength = 4;
+        }
+        break;
+        
+        case KPH_RESTOREKISERVICETABLE:
+        {
+            int i;
+            
+            if (OrigKiServiceTable == NULL)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            for (i = 0; i < SsdtGetCount(); i++)
+            {
+                SsdtModifyEntryByIndex(i, OrigKiServiceTable[i]);
+            }
+            
+            /* so we don't try and "restore" the entries later */
+            Hooked = FALSE;
+            
+            dprintf("KProcessHacker: successfully restored %d SSDT entries\n", SsdtGetCount());
         }
         break;
         

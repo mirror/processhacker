@@ -24,23 +24,6 @@
 #include "debug.h"
 #include "hooks.h"
 
-/* If enabled, user-mode processes other than the client 
- * cannot open the client's process or its threads.
- */
-//#define PROTECT_CLIENT
-
-/* File hooks - ZwCreateFile, ZwOpenFile, ReadFile, WriteFile, etc. */
-#define HOOK_FILE
-
-/* Key hooks - ZwCreateKey, ZwDeleteKey, etc. */
-#define HOOK_KEY
-
-/* Process hooks - ZwOpenProcess, ZwOpenThread, etc. */
-#define HOOK_PROCESS
-
-/* Information hooks - ZwDuplicateObject, ZwQuerySystem*, ZwSetSystem* */
-#define HOOK_INFORMATION
-
 extern int ClientPID;
 extern PVOID *OrigKiServiceTable;
 
@@ -721,6 +704,7 @@ NTSTATUS KPHHook()
     }
     
 #ifdef HOOK_FILE
+    dprintf("KProcessHacker: Hooking file functions\n");
     HOOK_CALL(CreateFile);
     HOOK_CALL(OpenFile);
     HOOK_CALL(QueryInformationFile);
@@ -730,6 +714,7 @@ NTSTATUS KPHHook()
 #endif
 
 #ifdef HOOK_KEY
+    dprintf("KProcessHacker: Hooking key functions\n");
     HOOK_CALL(CreateKey);
     HOOK_CALL(DeleteKey);
     HOOK_CALL(DeleteValueKey);
@@ -742,6 +727,7 @@ NTSTATUS KPHHook()
 #endif
 
 #ifdef HOOK_PROCESS
+    dprintf("KProcessHacker: Hooking process and thread functions\n");
     HOOK_CALL(OpenProcess);
     
     if (ZwOpenThreadIndex != 0)
@@ -759,10 +745,13 @@ NTSTATUS KPHHook()
 #endif
 
 #ifdef HOOK_INFORMATION
+    dprintf("KProcessHacker: Hooking information functions\n");
     HOOK_CALL(DuplicateObject);
     if (ZwQuerySystemInformationIndex != 0)
         HOOK_INDEX(QuerySystemInformation);
 #endif
+    
+    dprintf("KProcessHacker: Hooked successfully\n");
     
     return STATUS_SUCCESS;
 }
@@ -770,6 +759,7 @@ NTSTATUS KPHHook()
 void KPHUnhook()
 {
 #ifdef HOOK_FILE
+    dprintf("KProcessHacker: Unhooking file functions\n");
     UNHOOK_CALL(CreateFile);
     UNHOOK_CALL(OpenFile);
     UNHOOK_CALL(QueryInformationFile);
@@ -779,6 +769,7 @@ void KPHUnhook()
 #endif
 
 #ifdef HOOK_KEY
+    dprintf("KProcessHacker: Unhooking key functions\n");
     UNHOOK_CALL(CreateKey);
     UNHOOK_CALL(DeleteKey);
     UNHOOK_CALL(DeleteValueKey);
@@ -791,6 +782,7 @@ void KPHUnhook()
 #endif
 
 #ifdef HOOK_PROCESS
+    dprintf("KProcessHacker: Unhooking process and thread functions\n");
     UNHOOK_CALL(OpenProcess);
     
     if (ZwOpenThreadIndex != 0)
@@ -808,8 +800,11 @@ void KPHUnhook()
 #endif
 
 #ifdef HOOK_INFORMATION
+    dprintf("KProcessHacker: Unhooking information functions\n");
     UNHOOK_CALL(DuplicateObject);
     if (ZwQuerySystemInformationIndex != 0)
         UNHOOK_INDEX(QuerySystemInformation);
 #endif
+    
+    dprintf("KProcessHacker: Unhooked successfully\n");
 }

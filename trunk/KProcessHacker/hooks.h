@@ -25,6 +25,25 @@
 
 #include <ntifs.h>
 
+/* ---- CONFIGURATION ---- */
+/* If enabled, user-mode processes other than the client 
+ * cannot open the client's process or its threads.
+ */
+//#define PROTECT_CLIENT
+
+/* File hooks - ZwCreateFile, ZwOpenFile, ReadFile, WriteFile, etc. */
+//#define HOOK_FILE
+
+/* Key hooks - ZwCreateKey, ZwDeleteKey, etc. */
+//#define HOOK_KEY
+
+/* Process hooks - ZwOpenProcess, ZwOpenThread, etc. */
+#define HOOK_PROCESS
+
+/* Information hooks - ZwDuplicateObject, ZwQuerySystem*, ZwSetSystem* */
+#define HOOK_INFORMATION
+/* -------- */
+
 NTSTATUS KPHHook();
 void KPHUnhook();
 

@@ -38,3 +38,5 @@ Process Hacker is brought to you by the small Process Hacker team:
    * Speed improvements in handle filter
    * Networking information
  * Paul Pacheco (Developer)
+
+See http://processhacker.sourceforge.net for more details.

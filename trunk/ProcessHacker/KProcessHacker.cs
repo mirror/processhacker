@@ -33,6 +33,8 @@ namespace ProcessHacker
 {
     public class KProcessHacker
     {
+        public const string DeviceName = "KProcessHacker";
+
         private uint _baseControlNumber;
         private Win32.ServiceHandle _service;
 
@@ -44,7 +46,8 @@ namespace ProcessHacker
             GetKiServiceTable,
             GiveKiServiceTable,
             SetKiServiceTableEntry,
-            GetServiceLimit
+            GetServiceLimit,
+            RestoreKiServiceTable
         }
 
         private Win32.FileHandle _fileHandle;
@@ -69,7 +72,7 @@ namespace ProcessHacker
             // delete the service if it exists
             try
             {
-                using (var shandle = new Win32.ServiceHandle("KProcessHacker"))
+                using (var shandle = new Win32.ServiceHandle(DeviceName))
                 {
                     shandle.Delete();
                 }
@@ -79,23 +82,22 @@ namespace ProcessHacker
 
             try
             {
-                _service = scm.CreateService("KProcessHacker", "KProcessHacker", Win32.SERVICE_TYPE.KernelDriver,
+                _service = scm.CreateService(DeviceName, DeviceName, Win32.SERVICE_TYPE.KernelDriver,
                     Application.StartupPath + "\\kprocesshacker.sys");
                 _service.Start();
             }
             catch
             { }
 
-            _fileHandle = new Win32.FileHandle("\\\\.\\KProcessHacker",
+            _fileHandle = new Win32.FileHandle("\\\\.\\" + DeviceName,
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
 
-            //try
-            //{
-            //    _service.Control(Win32.SERVICE_CONTROL.Stop);
-            //    _service.Delete(); // the service will automatically get deleted once it stops     }
-            //}
-            //catch
-            //{ }
+            try
+            {
+                _service.Delete(); // the service will automatically get deleted once it stops
+            }
+            catch
+            { }
 
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
         }
@@ -234,6 +236,24 @@ namespace ProcessHacker
             return kiServiceTableContents;
         }
 
+        public int[] GetKiServiceTable()
+        {
+            // this isn't exactly high-performance...
+            byte[] temp = new byte[4];
+            byte[] data = new byte[GetServiceLimit() * 4];
+            int[] table = new int[GetServiceLimit()];
+
+            _fileHandle.IoControl(CtlCode(Control.GetKiServiceTable), null, data);
+
+            for (int i = 0; i < table.Length; i++)
+            {
+                Array.Copy(data, i * 4, temp, 0, 4);
+                table[i] = Misc.BytesToInt(temp, Misc.Endianness.Little);
+            }
+
+            return table;
+        }
+
         public string GetObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)
         {
             byte[] buffer = new byte[12];
@@ -271,6 +291,11 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
 
             return buffer;
+        }
+
+        public void RestoreKiServiceTable()
+        {
+            _fileHandle.IoControl(CtlCode(Control.RestoreKiServiceTable), null, null);
         }
 
         public void SendKiServiceTable()
