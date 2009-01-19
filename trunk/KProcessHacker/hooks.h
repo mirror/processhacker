@@ -38,10 +38,10 @@
 //#define HOOK_KEY
 
 /* Process hooks - ZwOpenProcess, ZwOpenThread, etc. */
-#define HOOK_PROCESS
+//#define HOOK_PROCESS
 
 /* Information hooks - ZwDuplicateObject, ZwQuerySystem*, ZwSetSystem* */
-#define HOOK_INFORMATION
+//#define HOOK_INFORMATION
 /* -------- */
 
 NTSTATUS KPHHook();
