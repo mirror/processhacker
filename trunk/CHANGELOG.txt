@@ -9,6 +9,8 @@ Process Hacker
      bypass user-mode rootkits like HackerDefender!
    * System Information menu item in the tray icon menu
    * Hide when minimized option
+   * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 
+     "C:\FileName".
  * FIXED:
    * Now the process tree and service list update instantly after 
      starting Process Hacker instead of waiting

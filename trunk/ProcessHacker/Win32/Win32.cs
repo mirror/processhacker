@@ -37,6 +37,11 @@ namespace ProcessHacker
     /// </summary>
     public partial class Win32
     {
+        static Win32()
+        {
+            RefreshDriveDevicePrefixes();
+        }
+
         /// <summary>
         /// Contains code which uses pointers.
         /// </summary>
@@ -110,6 +115,11 @@ namespace ProcessHacker
         /// reason. The dictionary relates object type numbers to their names.
         /// </summary>
         public static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
+
+        /// <summary>
+        /// Used to resolve device prefixes (\Device\Harddisk1) into DOS drive names.
+        /// </summary>
+        public static Dictionary<string, string> DriveDevicePrefixes = new Dictionary<string, string>();
 
         #region Consts
 
@@ -321,6 +331,28 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Files
+
+        public static void RefreshDriveDevicePrefixes()
+        {
+            lock (DriveDevicePrefixes)
+            {
+                DriveDevicePrefixes.Clear();
+
+                for (char c = 'A'; c <= 'Z'; c++)
+                {
+                    StringBuilder target = new StringBuilder(1024);
+
+                    if (QueryDosDevice(c.ToString() + ":", target, 1024) != 0)
+                    {
+                        DriveDevicePrefixes.Add(target.ToString(), c.ToString() + ":");
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region Handles
 
         public struct ObjectInformation
@@ -464,6 +496,17 @@ namespace ProcessHacker
                 {
                     switch (info.TypeName)
                     {
+                        case "File":
+                            // resolves \Device\Harddisk1 into C:, for example
+                            lock (DriveDevicePrefixes)
+                            {
+                                foreach (var pair in DriveDevicePrefixes)
+                                    if (info.OrigName.StartsWith(pair.Key))
+                                        info.BestName = pair.Value + info.OrigName.Substring(pair.Key.Length);
+                            }
+
+                            break;
+
                         case "Key":
                             string hklmString = "\\registry\\machine";
                             string hkcrString = "\\registry\\machine\\software\\classes";

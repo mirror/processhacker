@@ -243,7 +243,7 @@ namespace ProcessHacker
 
                 string type = listHandles.SelectedItems[0].SubItems[0].Text;
 
-                if (type == "Token" || type == "Event" || type == "Mutant" || type == "Section")
+                if (type == "Token" || type == "File" || type == "Event" || type == "Mutant" || type == "Section")
                     propertiesHandleMenuItem.Enabled = true;
             }
             else
@@ -297,6 +297,10 @@ namespace ProcessHacker
                             Program.HackerWindow.ProcessProvider.Dictionary[_pid].Name,
                             _pid);
                         tokForm.ShowDialog();
+                    }
+                    else if (type == "File")
+                    {
+                        Win32.ShowProperties(listHandles.SelectedItems[0].SubItems[1].Text);
                     }
                     else if (type == "Event")
                     {

@@ -44,6 +44,9 @@ namespace ProcessHacker
 
         #region Files
 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int QueryDosDevice(string DeviceName, StringBuilder TargetPath, int MaxLength);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int CreateFile(string FileName, FILE_RIGHTS DesiredAccess, FILE_SHARE_MODE ShareMode,
             int SecurityAttributes, FILE_CREATION_DISPOSITION CreationDisposition, int FlagsAndAttributes,
@@ -151,6 +154,14 @@ namespace ProcessHacker
         #endregion
 
         #region Native API
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwOpenSymbolicLinkObject(out int LinkHandle, int DesiredAccess,
+            ref OBJECT_ATTRIBUTES ObjectAttributes);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwQuerySymbolicLinkObject(int LinkHandle, ref UNICODE_STRING LinkName,
+            out int DataWritten);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwResumeProcess(int ProcessHandle);
@@ -329,7 +340,7 @@ namespace ProcessHacker
             LSA_UNICODE_STRING[] UserRights, uint CountOfRights);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaOpenPolicy(int SystemName, ref LSA_OBJECT_ATTRIBUTES ObjectAttributes,
+        public static extern int LsaOpenPolicy(int SystemName, ref OBJECT_ATTRIBUTES ObjectAttributes,
             POLICY_RIGHTS DesiredAccess, out int PolicyHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]

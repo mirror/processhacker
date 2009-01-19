@@ -38,7 +38,7 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the policy.</param>
             public LsaPolicyHandle(POLICY_RIGHTS access)
             {
-                LSA_OBJECT_ATTRIBUTES attributes = new LSA_OBJECT_ATTRIBUTES();
+                OBJECT_ATTRIBUTES attributes = new OBJECT_ATTRIBUTES();
                 int handle = 0;
 
                 if (LsaOpenPolicy(0, ref attributes, access, out handle) != 0)

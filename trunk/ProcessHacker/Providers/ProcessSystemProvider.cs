@@ -150,7 +150,11 @@ namespace ProcessHacker
         {
             if (this.PerformanceEnabled)
                 this.UpdatePerformance();
+
             this.UpdateProcessorPerf();
+
+            if (this.RunCount % 3 == 0)
+                Win32.RefreshDriveDevicePrefixes();
 
             Dictionary<int, int> tsProcesses = new Dictionary<int,int>();
             Dictionary<int, Win32.SystemProcess> procs = Win32.EnumProcesses();

@@ -222,17 +222,6 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct LSA_OBJECT_ATTRIBUTES
-        {
-            uint Length;
-            int RootDirectory;
-            int ObjectName;
-            uint Attributes;
-            int SecurityDescriptor;
-            int SecurityQualityOfService;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
         public struct LSA_UNICODE_STRING
         {
             public ushort Length;
@@ -395,6 +384,17 @@ namespace ProcessHacker
             public int CurrentCount;
             public byte OwnedByCaller;
             public byte AbandonedState;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct OBJECT_ATTRIBUTES
+        {
+            public int Length;
+            public int RootDirectory;
+            public IntPtr ObjectName;
+            public uint Attributes;
+            public int SecurityDescriptor;
+            public int SecurityQualityOfService;
         }
 
         [StructLayout(LayoutKind.Sequential)]
