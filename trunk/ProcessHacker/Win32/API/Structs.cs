@@ -40,6 +40,15 @@ namespace ProcessHacker
             public short Segment;
             public ADDRESS_MODE Mode;
         }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct CATALOG_INFO
+        {
+            public int Size;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+            public string CatalogFile;
+        }
         
         [StructLayout(LayoutKind.Sequential)]
         public struct CLIENT_ID
@@ -1346,6 +1355,20 @@ namespace ProcessHacker
             public int PrivateBytes;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WINTRUST_CATALOG_INFO
+        {
+            public int Size;
+            public int CatalogVersion;
+            public string CatalogFilePath;
+            public string MemberTag;
+            public string MemberFilePath;
+            public int MemberFile;
+            public byte[] CalculatedFileHash;
+            public int CalculatedFileHashSize;
+            public int CatalogContext;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct WINTRUST_DATA
         {
@@ -1355,7 +1378,7 @@ namespace ProcessHacker
             public int UIChoice;
             public int RevocationChecks;
             public int UnionChoice;
-            public IntPtr File;
+            public IntPtr UnionData;
             public int StateAction;
             public int StateData;
             public int URLReference;

@@ -196,10 +196,9 @@ namespace ProcessHacker
             if (p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorBeingDebugged;
             else if (Properties.Settings.Default.VerifySignatures &&
-                Misc.ArrayContains<string>(Misc.ImposterNames, p.Name.Trim().ToLower()) &&
+                Properties.Settings.Default.ImposterNames.Contains(p.Name.ToLower()) &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
-                p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
-                Program.WindowsVersion != "XP")
+                p.VerifyResult != Win32.VerifyResult.TrustedInstaller)
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Properties.Settings.Default.VerifySignatures &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&

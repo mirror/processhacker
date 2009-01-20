@@ -910,5 +910,37 @@ namespace ProcessHacker.Properties {
                 this["StartHidden"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>audiodg.exe</string>
+  <string>csrss.exe</string>
+  <string>dwm.exe</string>
+  <string>explorer.exe</string>
+  <string>lsass.exe</string>
+  <string>lsm.exe</string>
+  <string>ntkrnlpa.exe</string>
+  <string>ntoskrnl.exe</string>
+  <string>procexp.exe</string>
+  <string>rundll32.exe</string>
+  <string>services.exe</string>
+  <string>smss.exe</string>
+  <string>spoolsv.exe</string>
+  <string>svchost.exe</string>
+  <string>taskeng.exe</string>
+  <string>taskmgr.exe</string>
+  <string>wininit.exe</string>
+  <string>winlogon.exe</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection ImposterNames {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["ImposterNames"]));
+            }
+            set {
+                this["ImposterNames"] = value;
+            }
+        }
     }
 }

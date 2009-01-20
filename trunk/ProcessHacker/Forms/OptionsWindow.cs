@@ -50,6 +50,12 @@ namespace ProcessHacker
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
             checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
 
+            foreach (string s in Properties.Settings.Default.ImposterNames)
+                textImposterNames.Text += s + ", ";
+
+            if (textImposterNames.Text.EndsWith(", "))
+                textImposterNames.Text = textImposterNames.Text.Remove(textImposterNames.Text.Length - 2, 2);
+
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
             colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemovedProcesses;
@@ -97,6 +103,15 @@ namespace ProcessHacker
                 Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
+            Properties.Settings.Default.ImposterNames.Clear();
+
+            foreach (string s in textImposterNames.Text.Split(new string[] { ", " }, StringSplitOptions.None))
+            {
+                if (s.Trim() == "")
+                    continue;
+
+                Properties.Settings.Default.ImposterNames.Add(s.Trim());
+            }
 
             if (checkEnableKPH.Checked && !Properties.Settings.Default.EnableKPH)
             {

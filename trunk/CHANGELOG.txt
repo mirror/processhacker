@@ -11,6 +11,8 @@ Process Hacker
    * Hide when minimized option
    * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 
      "C:\FileName".
+   * Properly verifies system components instead of just checking file permissions
+   * Configurable dangerous-process-names highlighting
  * FIXED:
    * Now the process tree and service list update instantly after 
      starting Process Hacker instead of waiting

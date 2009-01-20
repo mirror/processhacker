@@ -38,6 +38,29 @@ namespace ProcessHacker
         #region Cryptography
 
         [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern bool CryptCATCatalogInfoFromContext(int CatInfoHandle,
+            ref CATALOG_INFO CatInfo, int Flags);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern int CryptCATAdminEnumCatalogFromHash(int CatAdminHandle,
+            byte[] Hash, int HashSize, int Flags, int PrevCatInfoHandle);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern bool CryptCATAdminAcquireContext(out int CatAdminHandle, ref GUID Subsystem,
+            int Flags);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern bool CryptCATAdminCalcHashFromFileHandle(int FileHandle, ref int HashSize,
+            byte[] Hash, int Flags);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern bool CryptCATAdminReleaseContext(int CatAdminHandle, int Flags);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
+        public static extern bool CryptCATAdminReleaseCatalogContext(int CatAdminHandle, 
+            int CatInfoHandle, int Flags);
+
+        [DllImport("wintrust.dll", SetLastError = true)]
         public static extern uint WinVerifyTrust(int WindowHandle, ref GUID Action, ref WINTRUST_DATA Data);
 
         #endregion

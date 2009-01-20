@@ -156,12 +156,20 @@ namespace ProcessHacker
             SecuritySettings
         }
 
+        public static readonly GUID WINTRUST_ACTION_GENERIC_CERT_VERIFY = new GUID()
+        {
+            Data1 = 0x189a3842,
+            Data2 = 0x3041,
+            Data3 = 0x11d1,
+            Data4 = new byte[] { 0x85, 0xe1, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
+        };
+
         public static readonly GUID WINTRUST_ACTION_GENERIC_VERIFY_V2 = new GUID()
         {
             Data1 = 0xaac56b,
             Data2 = 0xcd44,
             Data3 = 0x11d0,
-            Data4 = new byte[] { 0x8c, 0xc2, 0x0, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
+            Data4 = new byte[] { 0x8c, 0xc2, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
         };
 
         public static readonly GUID WINTRUST_ACTION_GENERIC_CHAIN_VERIFY = new GUID()
@@ -179,6 +187,24 @@ namespace ProcessHacker
             Data3 = 0x11d1,
             Data4 = new byte[] { 0x85, 0xe5, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
         };
+
+        public static VerifyResult StatusToVerifyResult(uint status)
+        {
+            if (status == 0)
+                return VerifyResult.Trusted;
+            else if (status == 0x800b0100)
+                return VerifyResult.NoSignature;
+            else if (status == 0x800b0101)
+                return VerifyResult.Expired;
+            else if (status == 0x800b010c)
+                return VerifyResult.Revoked;
+            else if (status == 0x800b0111)
+                return VerifyResult.Distrust;
+            else if (status == 0x80092026)
+                return VerifyResult.SecuritySettings;
+            else
+                return VerifyResult.SecuritySettings;
+        }
 
         public static VerifyResult VerifyFile(string filePath)
         {
@@ -205,74 +231,120 @@ namespace ProcessHacker
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
                     Marshal.StructureToPtr(fileInfo, mem, false);
-                    trustData.File = mem;
+                    trustData.UnionData = mem;
 
                     GUID action = WINTRUST_ACTION_GENERIC_VERIFY_V2;
                     uint winTrustResult = WinVerifyTrust(0, ref action, ref trustData);
 
-                    if (winTrustResult == 0)
-                        result = VerifyResult.Trusted;
-                    else if (winTrustResult == 0x800b0100)
-                        result = VerifyResult.NoSignature;
-                    else if (winTrustResult == 0x800b0101)
-                        result = VerifyResult.Expired;
-                    else if (winTrustResult == 0x800b010c)
-                        result = VerifyResult.Revoked;
-                    else if (winTrustResult == 0x800b0111)
-                        result = VerifyResult.Distrust;
-                    else if (winTrustResult == 0x80092026)
-                        result = VerifyResult.SecuritySettings;
+                    result = StatusToVerifyResult(winTrustResult);
                 }
             }
 
             if (result == VerifyResult.NoSignature)
             {
+                #region Old Code
                 // check the file's permissions
-                try
+                //try
+                //{
+                //    System.IO.FileInfo info = new System.IO.FileInfo(filePath);
+                //    bool othersCanWrite = false; // if accounts other than TrustedInstaller can write 
+
+                //    // TrustedInstaller must own the file
+                //    if (info.GetAccessControl().GetOwner(typeof(System.Security.Principal.NTAccount)).Value !=
+                //        "NT SERVICE\\TrustedInstaller")
+                //    {
+                //        result = VerifyResult.NoSignature;
+                //    }
+                //    else
+                //    {
+                //        foreach (System.Security.AccessControl.FileSystemAccessRule rule in
+                //            info.GetAccessControl().GetAccessRules(true, true,
+                //            typeof(System.Security.Principal.NTAccount)))
+                //        {
+                //            if (rule.IdentityReference.Value == "NT SERVICE\\TrustedInstaller")
+                //            {
+                //                result = VerifyResult.TrustedInstaller;
+                //            }
+                //            else
+                //            {
+                //                // if any accounts other than TrustedInstaller can write to the file, then it's
+                //                // not a real Windows component.
+                //                if (rule.AccessControlType == System.Security.AccessControl.AccessControlType.Allow &&
+                //                    (rule.FileSystemRights & (
+                //                    System.Security.AccessControl.FileSystemRights.ChangePermissions |
+                //                    System.Security.AccessControl.FileSystemRights.Delete |
+                //                    System.Security.AccessControl.FileSystemRights.DeleteSubdirectoriesAndFiles |
+                //                    System.Security.AccessControl.FileSystemRights.TakeOwnership |
+                //                    System.Security.AccessControl.FileSystemRights.Write)) != 0)
+                //                {
+                //                    othersCanWrite = true;
+                //                    break;
+                //                }
+                //            }
+                //        }
+
+                //        if (othersCanWrite)
+                //            result = VerifyResult.NoSignature;
+                //    }
+                //}
+                //catch
+                //{ }
+                #endregion
+
+                FileHandle sourceFile = new FileHandle(filePath, FILE_RIGHTS.FILE_GENERIC_READ, FILE_SHARE_MODE.Read,
+                    FILE_CREATION_DISPOSITION.OpenExisting);
+                byte[] hash = new byte[256];
+                int hashLength = 256;
+
+                if (!CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
+                    return VerifyResult.NoSignature;
+
+                StringBuilder memberTag = new StringBuilder();
+
+                for (int i = 0; i < hashLength; i++)
+                    memberTag.Append(hash[i].ToString("X2"));
+
+                int catAdmin;
+                GUID action = DRIVER_ACTION_VERIFY;
+
+                if (!CryptCATAdminAcquireContext(out catAdmin, ref action, 0))
+                    return VerifyResult.NoSignature;
+
+                int catInfo = CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, 0);
+
+                if (catInfo == 0)
                 {
-                    System.IO.FileInfo info = new System.IO.FileInfo(filePath);
-                    bool othersCanWrite = false; // if accounts other than TrustedInstaller can write 
-
-                    // TrustedInstaller must own the file
-                    if (info.GetAccessControl().GetOwner(typeof(System.Security.Principal.NTAccount)).Value !=
-                        "NT SERVICE\\TrustedInstaller")
-                    {
-                        result = VerifyResult.NoSignature;
-                    }
-                    else
-                    {
-                        foreach (System.Security.AccessControl.FileSystemAccessRule rule in
-                            info.GetAccessControl().GetAccessRules(true, true,
-                            typeof(System.Security.Principal.NTAccount)))
-                        {
-                            if (rule.IdentityReference.Value == "NT SERVICE\\TrustedInstaller")
-                            {
-                                result = VerifyResult.TrustedInstaller;
-                            }
-                            else
-                            {
-                                // if any accounts other than TrustedInstaller can write to the file, then it's
-                                // not a real Windows component.
-                                if (rule.AccessControlType == System.Security.AccessControl.AccessControlType.Allow &&
-                                    (rule.FileSystemRights & (
-                                    System.Security.AccessControl.FileSystemRights.ChangePermissions |
-                                    System.Security.AccessControl.FileSystemRights.Delete |
-                                    System.Security.AccessControl.FileSystemRights.DeleteSubdirectoriesAndFiles |
-                                    System.Security.AccessControl.FileSystemRights.TakeOwnership |
-                                    System.Security.AccessControl.FileSystemRights.Write)) != 0)
-                                {
-                                    othersCanWrite = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (othersCanWrite)
-                            result = VerifyResult.NoSignature;
-                    }
+                    CryptCATAdminReleaseContext(catAdmin, 0);
+                    return VerifyResult.NoSignature;
                 }
-                catch
-                { }
+
+                CATALOG_INFO ci = new CATALOG_INFO();
+                CryptCATCatalogInfoFromContext(catInfo, ref ci, 0);
+
+                WINTRUST_CATALOG_INFO wci = new WINTRUST_CATALOG_INFO();
+
+                wci.Size = Marshal.SizeOf(wci);
+                wci.CatalogFilePath = ci.CatalogFile;
+                wci.MemberFilePath = filePath;
+                wci.MemberTag = memberTag.ToString();
+
+                WINTRUST_DATA trustData = new WINTRUST_DATA();
+
+                trustData.Size = 12 * 4;
+                trustData.UIChoice = 1;
+                trustData.UnionChoice = 2;
+
+                using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
+                {
+                    Marshal.StructureToPtr(wci, mem, false);
+                    trustData.UnionData = mem;
+
+                    GUID action2 = DRIVER_ACTION_VERIFY;
+                    uint winTrustResult = WinVerifyTrust(0, ref action2, ref trustData);
+
+                    result = StatusToVerifyResult(winTrustResult);
+                    CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                }
             }
 
             return result;

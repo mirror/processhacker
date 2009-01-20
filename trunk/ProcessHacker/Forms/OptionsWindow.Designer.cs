@@ -37,9 +37,12 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.textImposterNames = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
             this.checkEnableKPH = new System.Windows.Forms.CheckBox();
             this.comboSizeUnits = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
+            this.checkStartHidden = new System.Windows.Forms.CheckBox();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
@@ -80,7 +83,6 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.checkStartHidden = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -105,7 +107,7 @@
             0,
             0,
             0});
-            this.textUpdateInterval.Location = new System.Drawing.Point(95, 7);
+            this.textUpdateInterval.Location = new System.Drawing.Point(112, 6);
             this.textUpdateInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -130,7 +132,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 304);
+            this.buttonClose.Location = new System.Drawing.Point(362, 330);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -142,7 +144,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 182);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 209);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -153,7 +155,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 158);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 185);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -173,9 +175,9 @@
             // 
             this.textSearchEngine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textSearchEngine.Location = new System.Drawing.Point(95, 33);
+            this.textSearchEngine.Location = new System.Drawing.Point(112, 32);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(316, 20);
+            this.textSearchEngine.Size = new System.Drawing.Size(299, 20);
             this.textSearchEngine.TabIndex = 6;
             // 
             // tabControl
@@ -189,11 +191,13 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 286);
+            this.tabControl.Size = new System.Drawing.Size(425, 312);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.textImposterNames);
+            this.tabGeneral.Controls.Add(this.label21);
             this.tabGeneral.Controls.Add(this.checkEnableKPH);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
@@ -210,16 +214,32 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 260);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 286);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // textImposterNames
+            // 
+            this.textImposterNames.Location = new System.Drawing.Point(112, 58);
+            this.textImposterNames.Name = "textImposterNames";
+            this.textImposterNames.Size = new System.Drawing.Size(299, 20);
+            this.textImposterNames.TabIndex = 14;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(6, 61);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(100, 13);
+            this.label21.TabIndex = 13;
+            this.label21.Text = "Require Signatures:";
             // 
             // checkEnableKPH
             // 
             this.checkEnableKPH.AutoSize = true;
             this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 230);
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 257);
             this.checkEnableKPH.Name = "checkEnableKPH";
             this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
             this.checkEnableKPH.TabIndex = 12;
@@ -238,7 +258,7 @@
             "TB",
             "PB",
             "EB"});
-            this.comboSizeUnits.Location = new System.Drawing.Point(95, 59);
+            this.comboSizeUnits.Location = new System.Drawing.Point(112, 84);
             this.comboSizeUnits.Name = "comboSizeUnits";
             this.comboSizeUnits.Size = new System.Drawing.Size(67, 21);
             this.comboSizeUnits.TabIndex = 11;
@@ -246,17 +266,28 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 62);
+            this.label18.Location = new System.Drawing.Point(6, 87);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(78, 13);
             this.label18.TabIndex = 10;
             this.label18.Text = "Max. Size Unit:";
             // 
+            // checkStartHidden
+            // 
+            this.checkStartHidden.AutoSize = true;
+            this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkStartHidden.Location = new System.Drawing.Point(21, 161);
+            this.checkStartHidden.Name = "checkStartHidden";
+            this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
+            this.checkStartHidden.TabIndex = 9;
+            this.checkStartHidden.Text = "Start hidden";
+            this.checkStartHidden.UseVisualStyleBackColor = true;
+            // 
             // checkHideWhenMinimized
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 110);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 137);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 9;
@@ -267,7 +298,7 @@
             // 
             this.checkShowTrayIcon.AutoSize = true;
             this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 86);
+            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 113);
             this.checkShowTrayIcon.Name = "checkShowTrayIcon";
             this.checkShowTrayIcon.Size = new System.Drawing.Size(102, 18);
             this.checkShowTrayIcon.TabIndex = 7;
@@ -279,7 +310,7 @@
             // 
             this.checkVerifySignatures.AutoSize = true;
             this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 206);
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 233);
             this.checkVerifySignatures.Name = "checkVerifySignatures";
             this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
             this.checkVerifySignatures.TabIndex = 3;
@@ -313,7 +344,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 232);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 286);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -531,7 +562,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 232);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 286);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -649,23 +680,12 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // checkStartHidden
-            // 
-            this.checkStartHidden.AutoSize = true;
-            this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(21, 134);
-            this.checkStartHidden.Name = "checkStartHidden";
-            this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
-            this.checkStartHidden.TabIndex = 9;
-            this.checkStartHidden.Text = "Start hidden";
-            this.checkStartHidden.UseVisualStyleBackColor = true;
-            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 339);
+            this.ClientSize = new System.Drawing.Size(449, 365);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -744,5 +764,7 @@
         private System.Windows.Forms.CheckBox checkVerifySignatures;
         private System.Windows.Forms.CheckBox checkEnableKPH;
         private System.Windows.Forms.CheckBox checkStartHidden;
+        private System.Windows.Forms.TextBox textImposterNames;
+        private System.Windows.Forms.Label label21;
     }
 }
