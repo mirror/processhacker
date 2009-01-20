@@ -63,6 +63,12 @@ pre {
       <dd>This is used by the <strong>Search Online...</strong> menu item in the process and module 
       context menus. <code>%s</code> is replaced by the name of the selected process or module.</dd>
       
+      <dt>Require Signatures</dt>
+      <dd>If <strong>Verify signatures and perform additional checks</strong> is enabled, this 
+      specifies the processes that must have a valid signature. Processes with a <em>name</em> 
+      that is specified in this field that do not have a valid signature will be highlighted 
+      as a <em>Packed/Dangerous Process</em> (see Higlighting options).</dd>
+      
       <dt>Max. Size Unit</dt>
       <dd>Specifies the maximum unit of size; sizes which can be displayed as 1024 or less in a 
       smaller unit will be displayed in that smaller unit, while sizes requiring a larger unit will 
@@ -84,6 +90,18 @@ pre {
       <dt>Show user/group domains</dt>
       <dd>When this option is enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
       would be shown as <code>machine-name\user</code>.</dd>
+      
+      <dt>Verify signatures and perform additional checks</dt>
+      <dd>This option affects newly created processes, and controls whether Process Hacker will 
+      attempt to verify the digital signatures of processes.</dd>
+      
+      <dt>Enable experimental kernel-mode driver</dt>
+      <dd>Some handles cannot be displayed by a user-mode program like Process Hacker; this 
+      option enables the experimental driver <em>KProcessHacker</em> which allows Process Hacker 
+      to display all handles. If enabled, it will be loaded the next time Process Hacker is 
+      started. Note that your computer may crash or become unstable.<br />
+      Future versions of <em>KProcessHacker</em> will allow Process Hacker to bypass 
+      rootkits and security software.</dd>
     </dl>
     
     <h2>Highlighting</h2>

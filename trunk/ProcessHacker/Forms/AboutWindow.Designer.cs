@@ -41,14 +41,18 @@
             this.linkAsm = new System.Windows.Forms.LinkLabel();
             this.buttonLicenses = new System.Windows.Forms.Button();
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
+            this.flowThanks = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            this.flowThanks.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(333, 226);
+            this.buttonClose.Location = new System.Drawing.Point(333, 250);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 0;
@@ -97,7 +101,7 @@
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(174, 143);
+            this.linkFamFamFam.Location = new System.Drawing.Point(6, 16);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -108,7 +112,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(174, 127);
+            this.linkVistaMenu.Location = new System.Drawing.Point(6, 29);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -119,7 +123,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(174, 111);
+            this.linkHexBox.Location = new System.Drawing.Point(6, 3);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -139,7 +143,7 @@
             // 
             this.linkSourceforge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkSourceforge.AutoSize = true;
-            this.linkSourceforge.Location = new System.Drawing.Point(12, 231);
+            this.linkSourceforge.Location = new System.Drawing.Point(12, 255);
             this.linkSourceforge.Name = "linkSourceforge";
             this.linkSourceforge.Size = new System.Drawing.Size(229, 13);
             this.linkSourceforge.TabIndex = 9;
@@ -151,7 +155,7 @@
             // 
             this.linkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkEmail.AutoSize = true;
-            this.linkEmail.Location = new System.Drawing.Point(12, 213);
+            this.linkEmail.Location = new System.Drawing.Point(12, 237);
             this.linkEmail.Name = "linkEmail";
             this.linkEmail.Size = new System.Drawing.Size(190, 13);
             this.linkEmail.TabIndex = 10;
@@ -162,7 +166,7 @@
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
-            this.linkAsm.Location = new System.Drawing.Point(174, 159);
+            this.linkAsm.Location = new System.Drawing.Point(6, 42);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;
@@ -174,7 +178,7 @@
             // 
             this.buttonLicenses.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonLicenses.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonLicenses.Location = new System.Drawing.Point(252, 226);
+            this.buttonLicenses.Location = new System.Drawing.Point(252, 250);
             this.buttonLicenses.Name = "buttonLicenses";
             this.buttonLicenses.Size = new System.Drawing.Size(75, 23);
             this.buttonLicenses.TabIndex = 13;
@@ -185,7 +189,7 @@
             // linkTreeViewAdv
             // 
             this.linkTreeViewAdv.AutoSize = true;
-            this.linkTreeViewAdv.Location = new System.Drawing.Point(174, 175);
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 55);
             this.linkTreeViewAdv.Name = "linkTreeViewAdv";
             this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
             this.linkTreeViewAdv.TabIndex = 12;
@@ -193,20 +197,54 @@
             this.linkTreeViewAdv.Text = "Andrey Gliznetsov - TreeViewAdv";
             this.linkTreeViewAdv.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTreeViewAdv_LinkClicked);
             // 
+            // flowThanks
+            // 
+            this.flowThanks.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowThanks.AutoScroll = true;
+            this.flowThanks.Controls.Add(this.linkHexBox);
+            this.flowThanks.Controls.Add(this.linkFamFamFam);
+            this.flowThanks.Controls.Add(this.linkVistaMenu);
+            this.flowThanks.Controls.Add(this.linkAsm);
+            this.flowThanks.Controls.Add(this.linkTreeViewAdv);
+            this.flowThanks.Controls.Add(this.label1);
+            this.flowThanks.Controls.Add(this.label2);
+            this.flowThanks.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowThanks.Location = new System.Drawing.Point(177, 103);
+            this.flowThanks.Name = "flowThanks";
+            this.flowThanks.Padding = new System.Windows.Forms.Padding(3);
+            this.flowThanks.Size = new System.Drawing.Size(231, 113);
+            this.flowThanks.TabIndex = 14;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 68);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(199, 13);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Xhmikos XhmikoS - Installer, suggestions";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 81);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(193, 26);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(420, 261);
+            this.ClientSize = new System.Drawing.Size(420, 285);
+            this.Controls.Add(this.flowThanks);
             this.Controls.Add(this.buttonLicenses);
-            this.Controls.Add(this.linkTreeViewAdv);
-            this.Controls.Add(this.linkAsm);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
-            this.Controls.Add(this.linkHexBox);
-            this.Controls.Add(this.linkVistaMenu);
-            this.Controls.Add(this.linkFamFamFam);
             this.Controls.Add(this.labelCredits);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.labelAppName);
@@ -222,6 +260,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            this.flowThanks.ResumeLayout(false);
+            this.flowThanks.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,6 +283,9 @@
         private System.Windows.Forms.LinkLabel linkAsm;
         private System.Windows.Forms.Button buttonLicenses;
         private System.Windows.Forms.LinkLabel linkTreeViewAdv;
+        private System.Windows.Forms.FlowLayoutPanel flowThanks;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
 
     }
 }
