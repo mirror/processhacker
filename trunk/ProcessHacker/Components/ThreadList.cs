@@ -65,12 +65,12 @@ namespace ProcessHacker
         {
             if (listThreads.SelectedItems.Count == 1)
             {
-                int tid = int.Parse(listThreads.SelectedItems[0].Name);
-                ProcessItem process = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
-                ProcessThread thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
-
                 try
                 {
+                    int tid = int.Parse(listThreads.SelectedItems[0].Name);
+                    ProcessItem process = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+                    ProcessThread thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
+
                     fileModule.Text = _provider.Symbols.GetModuleFromAddress(_provider.Dictionary[tid].StartAddressI);
                     fileModule.Enabled = true;
 
