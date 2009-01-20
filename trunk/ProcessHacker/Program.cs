@@ -471,7 +471,7 @@ namespace ProcessHacker
                         windowMenuItem.MenuItems.Add(item);
 
                         // don't add icon on XP - doesn't work for some reason
-                        if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 6)
+                        if (Program.WindowsVersion == "Vista")
                         {
                             using (Graphics g = Graphics.FromImage(image))
                             {

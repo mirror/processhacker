@@ -78,16 +78,7 @@ namespace ProcessHacker
                         g.DrawLine(new Pen(this.Color), new Point(x, _height), new Point(x, _height - height));
                     }
 
-                    try
-                    {
-                        // HACK
-                        // Seems to throw "generic GDI+ errors". Very helpful...
-                        return Icon.FromHandle(bm.GetHicon());
-                    }
-                    catch
-                    {
-                        return Program.HackerWindow.Icon;
-                    }
+                    return Icon.FromHandle(bm.GetHicon());
                 }
             }
         }

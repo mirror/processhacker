@@ -225,6 +225,8 @@ namespace ProcessHacker
                     if (item.TokenQueryHandle != null)
                         item.TokenQueryHandle.Dispose();
 
+                    Win32.DestroyIcon(item.Icon.Handle);
+
                     newdictionary.Remove(pid);
                 }
             }
@@ -350,7 +352,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.Icon = (Icon)Win32.GetFileIcon(item.FileName).Clone();
+                        item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
                     }
                     catch
                     { }
@@ -517,7 +519,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            newitem.Icon = (Icon)Win32.GetFileIcon(newitem.FileName).Clone();
+                            newitem.Icon = (Icon)Win32.GetFileIcon(newitem.FileName);
                         }
                         catch
                         { }

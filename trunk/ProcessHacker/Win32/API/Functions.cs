@@ -797,6 +797,9 @@ namespace ProcessHacker
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool DestroyIcon(IntPtr Handle);
+
+        [DllImport("user32.dll")]
         public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
 
         [DllImport("user32.dll")]
