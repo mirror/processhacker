@@ -617,6 +617,7 @@
     <Compile Include="Win32\Handles\ThreadHandle.cs" />
     <Compile Include="Win32\Handles\ProcessHandle.cs" />
     <Compile Include="Win32\Handles\Win32Handle.cs" />
+    <Compile Include="Win32\WindowsException.cs" />
     <Compile Include="Win32\WindowsSID.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />

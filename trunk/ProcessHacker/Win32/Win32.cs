@@ -398,7 +398,7 @@ namespace ProcessHacker
             int error = Marshal.GetLastWin32Error();
 
             if (error != 0)
-                throw new Win32Exception(error);
+                throw new WindowsException(error);
         }
 
         #endregion

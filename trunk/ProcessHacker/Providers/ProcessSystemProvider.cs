@@ -237,8 +237,11 @@ namespace ProcessHacker
                 Win32.SYSTEM_PROCESS_INFORMATION processInfo = procs[pid].Process;
                 Process p = null;
 
-                try { p = Process.GetProcessById(pid); }
-                catch { }
+                if (pid >= 0)
+                {
+                    try { p = Process.GetProcessById(pid); }
+                    catch { }
+                }
 
                 if (!Dictionary.ContainsKey(pid))
                 {
