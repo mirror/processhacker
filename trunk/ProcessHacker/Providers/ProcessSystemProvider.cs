@@ -537,7 +537,7 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (item.ProcessQueryHandle != null)
+                    if (item.TokenQueryHandle != null)
                     {
                         try
                         {
