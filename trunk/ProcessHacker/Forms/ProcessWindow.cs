@@ -169,6 +169,31 @@ namespace ProcessHacker
 
             // disable providers which aren't in use
             tabControl_SelectedIndexChanged(null, null);
+        } 
+
+        private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // don't try to save settings if we're inspecting DPCs or Interrupts
+            if (_pid >= 0)
+            {
+                _threadP.Kill();
+                _moduleP.Kill();
+                _memoryP.Kill();
+                _handleP.Kill();
+
+                listThreads.SaveSettings();
+                listModules.SaveSettings();
+                listMemory.SaveSettings();
+                listHandles.SaveSettings();
+                _tokenProps.SaveSettings();
+            }
+
+            Program.HackerWindow.ProcessProvider.Updated -=
+                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+
+            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
+            Properties.Settings.Default.SearchType = buttonSearch.Text;
+            Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
         private void UpdateProcessProperties()
@@ -348,31 +373,6 @@ namespace ProcessHacker
             _handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
-        }
-
-        private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // don't try to save settings if we're inspecting DPCs or Interrupts
-            if (_pid >= 0)
-            {
-                _threadP.Kill();
-                _moduleP.Kill();
-                _memoryP.Kill();
-                _handleP.Kill();
-
-                listThreads.SaveSettings();
-                listModules.SaveSettings();
-                listMemory.SaveSettings();
-                listHandles.SaveSettings();
-                _tokenProps.SaveSettings();
-            }
-
-            Program.HackerWindow.ProcessProvider.Updated -=
-                new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
-
-            Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
-            Properties.Settings.Default.SearchType = buttonSearch.Text;
-            Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
         public void UpdateDEPStatus()

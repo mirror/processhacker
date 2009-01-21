@@ -320,7 +320,10 @@ namespace ProcessHacker
 
         public TreeNodeAdv FindTreeNode(int PID)
         {
-            return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[PID]));
+            if (_treeModel.Nodes.ContainsKey(PID))
+                return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[PID]));
+            else
+                return null;
         }
 
         public TreeNodeAdv FindTreeNode(ProcessNode node)
