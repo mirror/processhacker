@@ -29,6 +29,7 @@ using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.FormHelper;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -70,12 +71,19 @@ namespace ProcessHacker
             else if (listHandles.SelectedItems.Count == 1)
             {
                 Misc.EnableAllMenuItems(menuHandle);
+
+                propertiesMenuItem.Enabled = false;
+
+                string type = listHandles.SelectedItems[0].SubItems[1].Text;
+
+                if (type == "Token" || type == "File" || type == "Event" || type == "Mutant" || type == "Section")
+                    propertiesMenuItem.Enabled = true;
             }
             else
             {
-                Misc.DisableAllMenuItems(menuHandle);
-
-                copyMenuItem.Enabled = true;
+                Misc.EnableAllMenuItems(menuHandle);
+                closeMenuItem.Enabled = false;
+                propertiesMenuItem.Enabled = false;
             }
         }
 
@@ -105,86 +113,6 @@ namespace ProcessHacker
             }
         }
 
-        #region  buttonFind_ClickOld
-        //private void buttonFind_Click(object sender, EventArgs e)
-        //{
-        //    buttonFind.Enabled = false;
-        //    this.UseWaitCursor = true;
-        //    progress.Visible = true;
-        //    Application.DoEvents();
-        //    listHandles.BeginUpdate();
-        //    listHandles.Items.Clear();
-                                       
-        //    Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
-
-        //    try
-        //    {
-        //        handles = Win32.EnumHandles();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-
-        //    Dictionary<int, Win32.ProcessHandle> processHandles = new Dictionary<int, Win32.ProcessHandle>();
-
-            
-
-        //    for (int i = 0; i < handles.Length; i++)
-        //    {
-        //        Win32.SYSTEM_HANDLE_INFORMATION handle = handles[i];
-
-        //        progress.Value = i;
-
-        //        try
-        //        {
-        //            try
-        //            {
-        //                if (Win32.GetProcessSessionId(handle.ProcessId) != Program.CurrentSessionId)
-        //                    continue;
-        //            }
-        //            catch
-        //            {
-        //                continue;
-        //            }
-
-        //            if (!processHandles.ContainsKey(handle.ProcessId))
-        //                processHandles.Add(handle.ProcessId, 
-        //                    new Win32.ProcessHandle(handle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
-
-        //            Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[handle.ProcessId], handle);
-
-        //            if (!info.BestName.ToLower().Contains(textFilter.Text.ToLower()))
-        //                continue;
-
-        //            ListViewItem item = new ListViewItem();
-
-        //            item.Name = handle.Handle.ToString();
-        //            item.Text = Program.HackerWindow.ProcessList.Items[handle.ProcessId.ToString()].Text +
-        //                " (" + handle.ProcessId.ToString() + ")";
-        //            item.Tag = handle.ProcessId;
-        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
-        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
-        //            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
-
-        //            listHandles.Items.Add(item);
-        //            Application.DoEvents();
-        //        }
-        //        catch
-        //        {
-        //            continue;
-        //        }
-        //    }
-
-        //    foreach (Win32.ProcessHandle phandle in processHandles.Values)
-        //        phandle.Dispose();
-
-        //    listHandles.EndUpdate();
-        //    progress.Visible = false;
-        //    this.UseWaitCursor = false;
-        //    buttonFind.Enabled = true;
-        //}
-        #endregion 
         private void buttonFind_Click(object sender, EventArgs e)
         {
             if (currWorker == null)
@@ -246,6 +174,104 @@ namespace ProcessHacker
             progress.Value = currentValue;
             progress.Maximum = count;
         }
-       
+
+        private void propertiesMenuItem_Click(object sender, EventArgs e)
+        {
+            string type = listHandles.SelectedItems[0].SubItems[1].Text;
+
+            try
+            {
+                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text);
+                int pid = (int)listHandles.SelectedItems[0].Tag;
+
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
+                    pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                {
+                    if (type == "Token")
+                    {
+                        TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle, handle));
+
+                        tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
+                            short.Parse(listHandles.SelectedItems[0].Tag.ToString()),
+                            Program.HackerWindow.ProcessProvider.Dictionary[pid].Name,
+                            pid);
+                        tokForm.ShowDialog();
+                    }
+                    else if (type == "File")
+                    {
+                        Win32.ShowProperties(listHandles.SelectedItems[0].SubItems[2].Text);
+                    }
+                    else if (type == "Event")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int event_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.EVENT_QUERY_STATE);
+                        Win32.EVENT_BASIC_INFORMATION ebi = new Win32.EVENT_BASIC_INFORMATION();
+                        int retLen;
+
+                        Win32.ZwQueryEvent(event_handle, Win32.EVENT_INFORMATION_CLASS.EventBasicInformation,
+                            ref ebi, Marshal.SizeOf(ebi), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Type: " + ebi.EventType.ToString().Replace("Event", "") +
+                            "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(event_handle);
+                    }
+                    else if (type == "Mutant")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int mutant_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.MUTEX_MODIFY_STATE);
+                        Win32.MUTANT_BASIC_INFORMATION mbi = new Win32.MUTANT_BASIC_INFORMATION();
+                        int retLen;
+
+                        Win32.ZwQueryMutant(mutant_handle, Win32.MUTANT_INFORMATION_CLASS.MutantBasicInformation,
+                            ref mbi, Marshal.SizeOf(mbi), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Count: " + mbi.CurrentCount +
+                            "\r\nOwned by Caller: " + (mbi.OwnedByCaller != 0 ? "True" : "False") +
+                            "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(mutant_handle);
+                    }
+                    else if (type == "Section")
+                    {
+                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
+                        int section_handle = rhandle.GetHandle((int)Win32.SECTION_RIGHTS.SECTION_QUERY);
+                        Win32.SECTION_BASIC_INFORMATION sbi = new Win32.SECTION_BASIC_INFORMATION();
+                        Win32.SECTION_IMAGE_INFORMATION sii = new Win32.SECTION_IMAGE_INFORMATION();
+                        int retLen;
+                        int retVal;
+
+                        Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionBasicInformation,
+                            ref sbi, Marshal.SizeOf(sbi), out retLen);
+                        retVal = Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionImageInformation,
+                            ref sii, Marshal.SizeOf(sii), out retLen);
+
+                        InformationBox info = new InformationBox(
+                            "Attributes: " + Misc.FlagsToString(typeof(Win32.SECTION_ATTRIBUTES), (long)sbi.SectionAttributes) +
+                            "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" +
+
+                            (retVal == 0 ? ("\r\n\r\nImage Entry Point: 0x" + sii.EntryPoint.ToString("x8") +
+                            "\r\nImage Machine Type: " + ((PE.MachineType)sii.ImageMachineType).ToString() +
+                            "\r\nImage Characteristics: " + ((PE.ImageCharacteristics)sii.ImageCharacteristics).ToString() +
+                            "\r\nImage Subsystem: " + ((PE.ImageSubsystem)sii.ImageSubsystem).ToString() +
+                            "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
+
+                        info.ShowDialog();
+
+                        Win32.CloseHandle(section_handle);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        } 
     }
 }

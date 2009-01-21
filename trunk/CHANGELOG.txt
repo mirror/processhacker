@@ -4,9 +4,7 @@ Process Hacker
  * NEW:
    * Network tab - shows current network connections
    * KProcessHacker - an experimental kernel-mode driver for Process Hacker which 
-     finally enables Process Hacker to display all file handles and 
-     have full control over the system. Note that this will NOT 
-     bypass user-mode rootkits like HackerDefender!
+     finally enables Process Hacker to display all file handles without freezing
    * System Information menu item in the tray icon menu
    * Hide when minimized option
    * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 
@@ -14,11 +12,13 @@ Process Hacker
    * Properly verifies system components instead of just checking file permissions
    * Configurable dangerous-process-names highlighting
  * FIXED:
+   * Small UI enabling/disabling fixes
    * Now the process tree and service list update instantly after 
      starting Process Hacker instead of waiting
    * Random "Generic GDI+ Error" exceptions
    * Small performance improvements
    * Now shows proper command lines of programs where they contain null characters
+   * Handle filter actually works now
 
 1.3.1.0
  * SUMMARY: This version adds many small but useful features. It is 

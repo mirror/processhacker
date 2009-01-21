@@ -250,6 +250,7 @@ namespace ProcessHacker
             {
                 Misc.EnableAllMenuItems(menuHandle);
                 closeHandleMenuItem.Enabled = false;
+                propertiesHandleMenuItem.Enabled = false;
             }
         }
 

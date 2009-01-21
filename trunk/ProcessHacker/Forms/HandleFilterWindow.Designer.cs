@@ -43,6 +43,7 @@
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.progress = new System.Windows.Forms.ProgressBar();
+            this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,6 +122,7 @@
             // 
             this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.closeMenuItem,
+            this.propertiesMenuItem,
             this.copyMenuItem});
             this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
             // 
@@ -134,7 +136,7 @@
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 1;
+            this.copyMenuItem.Index = 2;
             this.copyMenuItem.Text = "&Copy";
             // 
             // vistaMenu
@@ -150,6 +152,12 @@
             this.progress.Size = new System.Drawing.Size(395, 23);
             this.progress.TabIndex = 4;
             this.progress.Visible = false;
+            // 
+            // propertiesMenuItem
+            // 
+            this.propertiesMenuItem.Index = 1;
+            this.propertiesMenuItem.Text = "&Properties...";
+            this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
             // HandleFilterWindow
             // 
@@ -191,5 +199,6 @@
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.ProgressBar progress;
+        private System.Windows.Forms.MenuItem propertiesMenuItem;
     }
 }

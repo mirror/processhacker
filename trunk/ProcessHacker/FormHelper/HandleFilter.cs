@@ -32,12 +32,14 @@ namespace ProcessHacker.FormHelper
 {
     public sealed class HandleFilter : AsyncOperation
     {
+        private const int BufferSize = 100;
+
         public delegate void MatchListViewEvent(List<ListViewItem> item);
         public delegate void MatchProgressEvent(int currentValue,int count);
         public event MatchListViewEvent MatchListView;
         public event MatchProgressEvent MatchProgress;
         private string strFilter;
-        private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(100);
+        private List<ListViewItem> listViewItemContainer = new List<ListViewItem>(BufferSize);
         private Dictionary<int, bool> isCurrentSessionIdCache = new Dictionary<int, bool>();
 
         public HandleFilter(ISynchronizeInvoke isi, string strFilter)
@@ -89,26 +91,29 @@ namespace ProcessHacker.FormHelper
         {
             try
             {
-                try
+                if (Program.KPH == null)
                 {
-                    if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
+                    try
                     {
-                        if (!isCurrentSessionIdCache[currhandle.ProcessId])
-                            return;
+                        if (isCurrentSessionIdCache.ContainsKey(currhandle.ProcessId))
+                        {
+                            if (!isCurrentSessionIdCache[currhandle.ProcessId])
+                                return;
+                        }
+                        else
+                        {
+                            bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
+
+                            isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
+
+                            if (!isCurrentSessionId)
+                                return;
+                        }
                     }
-                    else
+                    catch
                     {
-                        bool isCurrentSessionId = Win32.GetProcessSessionId(currhandle.ProcessId) == Program.CurrentSessionId;
-
-                        isCurrentSessionIdCache.Add(currhandle.ProcessId, isCurrentSessionId);
-
-                        if (!isCurrentSessionId)
-                            return;
+                        return;
                     }
-                }
-                catch
-                {
-                    return;
                 }
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
@@ -131,7 +136,7 @@ namespace ProcessHacker.FormHelper
         private void CallMatchListView(Win32.SYSTEM_HANDLE_INFORMATION handle, Win32.ObjectInformation info)
         {
             ListViewItem item = new ListViewItem();
-            item.Name = handle.Handle.ToString();
+            item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();
             item.Text = Program.HackerWindow.ProcessProvider.Dictionary[handle.ProcessId].Name +
                 " (" + handle.ProcessId.ToString() + ")";
             item.Tag = handle.ProcessId;
@@ -151,15 +156,15 @@ namespace ProcessHacker.FormHelper
                         FireAsync(MatchListView, listViewItemContainer);
                     return;
                 }
-                                
+
                 listViewItemContainer.Add(item);
 
-                if (listViewItemContainer.Count > 99)
+                if (listViewItemContainer.Count >= BufferSize)
                 {
                     List<ListViewItem> items = listViewItemContainer;
-                    // has error?
+
                     FireAsync(MatchListView, items);
-                    listViewItemContainer.Clear();
+                    listViewItemContainer = new List<ListViewItem>(BufferSize);
                 }
             }
         }
