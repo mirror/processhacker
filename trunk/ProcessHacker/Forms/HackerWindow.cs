@@ -815,7 +815,7 @@ namespace ProcessHacker
 
         public void processP_DictionaryRemoved(ProcessItem item)
         {
-            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.PID.ToString() + ")", item.Icon);
+            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.PID.ToString() + ")", null);
 
             if (processServices.ContainsKey(item.PID))
                 processServices.Remove(item.PID);
