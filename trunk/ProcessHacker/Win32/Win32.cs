@@ -423,6 +423,18 @@ namespace ProcessHacker
             }
         }
 
+        public static string DeviceFileNameToDos(string fileName)
+        {
+            lock (DriveDevicePrefixes)
+            {
+                foreach (var pair in DriveDevicePrefixes)
+                    if (fileName.StartsWith(pair.Key))
+                        return pair.Value + fileName.Substring(pair.Key.Length);
+            }
+
+            return fileName;
+        }
+
         #endregion
 
         #region Handles
@@ -572,12 +584,7 @@ namespace ProcessHacker
                             // resolves \Device\Harddisk1 into C:, for example
                             lock (DriveDevicePrefixes)
                             {
-                                foreach (var pair in DriveDevicePrefixes)
-                                    if (info.OrigName.StartsWith(pair.Key))
-                                        info.BestName = pair.Value + info.OrigName.Substring(pair.Key.Length);
-
-                                if (info.BestName == null)
-                                    info.BestName = info.OrigName;
+                                info.BestName = DeviceFileNameToDos(info.OrigName);
                             }
 
                             break;

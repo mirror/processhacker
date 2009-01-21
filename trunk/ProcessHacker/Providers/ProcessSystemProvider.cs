@@ -274,20 +274,6 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (pid != 4 && pid != 0)
-                    {
-                        try
-                        {
-                            item.FileName = Misc.GetRealPath(p.MainModule.FileName);
-                        }
-                        catch
-                        { }
-                    }
-                    else
-                    {
-                        item.FileName = Misc.GetKernelFileName();
-                    }
-
                     if (pid != 0)
                     {
                         try
@@ -309,16 +295,6 @@ namespace ProcessHacker
                             }
                             catch
                             { }
-
-                            if (item.FileName == null)
-                            {
-                                try
-                                {
-                                    item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
-                                }
-                                catch
-                                { }
-                            }
 
                             try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
                             catch { }
@@ -358,13 +334,62 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
 
-                        try
+                    if (pid != 0)
+                    {
+                        if (pid != 4)
                         {
-                            item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
+                            if (item.ProcessQueryLimitedHandle != null)
+                            {
+                                // first try to get the native file name, to prevent PEB
+                                // file name spoofing.
+                                try
+                                {
+                                    item.FileName =
+                                        Win32.DeviceFileNameToDos(item.ProcessQueryLimitedHandle.GetNativeImageFileName());
+                                }
+                                catch
+                                { }
+
+                                // if we couldn't get it or we couldn't resolve the \Device prefix,
+                                // we'll just use the normal method.
+                                if (item.FileName == null || item.FileName.StartsWith("\\Device\\"))
+                                {
+                                    try
+                                    {
+                                        item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
+                                    }
+                                    catch
+                                    { }
+                                }
+                            }
+
+                            // if all else failed, we go for the .NET method.
+                            if (item.FileName == null || item.FileName.StartsWith("\\Device\\"))
+                            {
+                                try
+                                {
+                                    item.FileName = Misc.GetRealPath(p.MainModule.FileName);
+                                }
+                                catch
+                                { }
+                            }
                         }
-                        catch
-                        { }
+                        else
+                        {
+                            item.FileName = Misc.GetKernelFileName();
+                        }
+
+                        if (item.FileName != null)
+                        {
+                            try
+                            {
+                                item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
+                            }
+                            catch
+                            { }
+                        }
                     }
 
                     if (pid == 0)

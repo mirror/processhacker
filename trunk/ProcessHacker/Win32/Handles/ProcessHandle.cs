@@ -314,6 +314,30 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the file name of the process' image, in device name format. This 
+            /// requires the PROCESS_QUERY_LIMITED_INFORMATION permission.
+            /// </summary>
+            /// <returns>A file name, in device/native format.</returns>
+            public string GetNativeImageFileName()
+            {
+                int retLen;
+
+                ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessImageFileName,
+                    IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessImageFileName,
+                        data, retLen, out retLen) != 0)
+                        ThrowLastWin32Error();
+
+                    UNICODE_STRING str = data.ReadStruct<UNICODE_STRING>();
+
+                    return ReadUnicodeString(str);
+                }
+            }
+
+            /// <summary>
             /// Gets the process' parent's process ID. This requires 
             /// the PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
