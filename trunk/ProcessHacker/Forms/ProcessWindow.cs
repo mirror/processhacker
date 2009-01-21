@@ -145,7 +145,10 @@ namespace ProcessHacker
                 buttonInspectParent.Enabled = false;
                 buttonInspectPEB.Enabled = false;
                 fileCurrentDirectory.Enabled = false;
-                fileImage.Enabled = false;
+
+                if (_pid != 4)
+                    fileImage.Enabled = false;
+
                 buttonSearch.Enabled = false;
                 buttonTerminate.Enabled = false;
 
