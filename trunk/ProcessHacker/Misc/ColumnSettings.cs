@@ -88,18 +88,19 @@ namespace ProcessHacker
         {
             string[] list = settings.Split('|');
 
-            try
-            {
-                for (int i = 0; i < list.Length; i++)
-                {
-                    string[] s = list[i].Split(',');
+            if (settings == "")
+                return;
 
-                    lv.Columns[i].DisplayIndex = Int32.Parse(s[0]);
-                    lv.Columns[i].Width = Int32.Parse(s[1]);
-                }
+            for (int i = 0; i < list.Length; i++)
+            {
+                string[] s = list[i].Split(',');
+
+                if (s.Length == 1)
+                    break;
+
+                lv.Columns[i].DisplayIndex = Int32.Parse(s[0]);
+                lv.Columns[i].Width = Int32.Parse(s[1]);
             }
-            catch
-            { }
         }
 
         /// <summary>

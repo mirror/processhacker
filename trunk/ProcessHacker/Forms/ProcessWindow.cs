@@ -245,7 +245,7 @@ namespace ProcessHacker
                 textFileCompany.Text = "";
             }
 
-            textCmdLine.Text = _processItem.CmdLine;
+            textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
 
             try
             {

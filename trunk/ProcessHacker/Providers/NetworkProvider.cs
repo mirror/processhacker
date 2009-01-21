@@ -88,7 +88,7 @@ namespace ProcessHacker
 
                     // resolve the IP addresses
 
-                    try
+                    if (connection.Local.Address.ToString() != "0.0.0.0")
                     {
                         Dns.BeginGetHostEntry(connection.Local.Address, result =>
                             {
@@ -112,39 +112,32 @@ namespace ProcessHacker
                                 }
                             }, connection.ID);
                     }
-                    catch
-                    { }
 
-                    try
+                    if (connection.Remote != null && connection.Remote.Address.ToString() != "0.0.0.0")
                     {
-                        if (connection.Remote != null)
+                        Dns.BeginGetHostEntry(connection.Remote.Address, result =>
                         {
-                            Dns.BeginGetHostEntry(connection.Remote.Address, result =>
+                            string id = (string)result.AsyncState;
+
+                            if (Dictionary.ContainsKey(id))
                             {
-                                string id = (string)result.AsyncState;
-
-                                if (Dictionary.ContainsKey(id))
+                                lock (Dictionary)
                                 {
-                                    lock (Dictionary)
+                                    try
                                     {
-                                        try
-                                        {
-                                            var dnsResult = Dns.EndGetHostEntry(result);
-                                            var modConnection = Dictionary[id];
+                                        var dnsResult = Dns.EndGetHostEntry(result);
+                                        var modConnection = Dictionary[id];
 
-                                            modConnection.RemoteString = dnsResult.HostName;
-                                            CallDictionaryModified(Dictionary[id], modConnection);
-                                            Dictionary[id] = modConnection;
-                                        }
-                                        catch
-                                        { }
+                                        modConnection.RemoteString = dnsResult.HostName;
+                                        CallDictionaryModified(Dictionary[id], modConnection);
+                                        Dictionary[id] = modConnection;
                                     }
+                                    catch
+                                    { }
                                 }
-                            }, connection.ID);
-                        }
+                            }
+                        }, connection.ID);
                     }
-                    catch
-                    { }
                 }
                 else
                 {

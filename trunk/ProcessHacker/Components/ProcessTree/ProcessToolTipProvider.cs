@@ -42,14 +42,14 @@ namespace ProcessHacker
                 ProcessNode pNode = _tree.FindNode(node);
 
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
-                        (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine, 100) + "\n") : "");
+                        (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
 
                 string fileText = "";
 
                 try
                 {
                     string filename = "";
-
+                                                                                          
                     if (pNode.PID == 4)
                     {
                         filename = Misc.GetRealPath(Misc.GetKernelFileName());

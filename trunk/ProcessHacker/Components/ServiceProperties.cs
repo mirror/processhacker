@@ -148,20 +148,19 @@ namespace ProcessHacker
 
         private void UpdateInformation()
         {
-            try
+            if (listServices.SelectedItems.Count == 0)
             {
-                if (listServices.SelectedItems.Count == 0)
-                {
-                    buttonApply.Enabled = false;
-                    buttonStart.Enabled = false;
-                    buttonStop.Enabled = false;
-                    comboType.Enabled = false;
-                    comboStartType.Enabled = false;
-                    comboErrorControl.Enabled = false;
-
-                    throw new Exception("N/A");
-                }
-                else
+                buttonApply.Enabled = false;
+                buttonStart.Enabled = false;
+                buttonStop.Enabled = false;
+                comboType.Enabled = false;
+                comboStartType.Enabled = false;
+                comboErrorControl.Enabled = false;
+                this.ClearControls();
+            }
+            else
+            {
+                try
                 {
                     buttonApply.Enabled = true;
                     buttonStart.Enabled = true;
@@ -169,45 +168,50 @@ namespace ProcessHacker
                     comboType.Enabled = true;
                     comboStartType.Enabled = true;
                     comboErrorControl.Enabled = true;
+
+                    ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
+
+                    buttonStart.Enabled = true;
+                    buttonStop.Enabled = true;
+
+                    if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                        buttonStart.Enabled = false;
+                    else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                        buttonStop.Enabled = false;
+
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.Stop) == 0)
+                        buttonStop.Enabled = false;
+
+                    labelServiceName.Text = item.Status.ServiceName;
+                    labelServiceDisplayName.Text = item.Status.DisplayName;
+                    comboType.SelectedItem = item.Config.ServiceType.ToString();
+
+                    if (item.Config.ServiceType == (Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess))
+                        comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
+
+                    comboStartType.SelectedItem = item.Config.StartType.ToString();
+                    comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
+                    textServiceBinaryPath.Text = item.Config.BinaryPathName;
+                    textUserAccount.Text = item.Config.ServiceStartName;
+                    textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
                 }
-
-                ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
-
-                buttonStart.Enabled = true;
-                buttonStop.Enabled = true;
-
-                if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
-                    buttonStart.Enabled = false;
-                else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
-                    buttonStop.Enabled = false;
-
-                if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.Stop) == 0)
-                    buttonStop.Enabled = false;
-
-                labelServiceName.Text = item.Status.ServiceName;
-                labelServiceDisplayName.Text = item.Status.DisplayName;
-                comboType.SelectedItem = item.Config.ServiceType.ToString();
-
-                if (item.Config.ServiceType == (Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess))
-                    comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
-
-                comboStartType.SelectedItem = item.Config.StartType.ToString();
-                comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
-                textServiceBinaryPath.Text = item.Config.BinaryPathName;
-                textUserAccount.Text = item.Config.ServiceStartName;
-                textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
+                catch (Exception ex)
+                {
+                    labelServiceName.Text = ex.Message;
+                    this.ClearControls();
+                }
             }
-            catch (Exception ex)
-            {
-                labelServiceName.Text = ex.Message;
-                labelServiceDisplayName.Text = "N/A";
-                comboType.Text = "";
-                comboStartType.Text = "";
-                comboErrorControl.Text = "";
-                textServiceBinaryPath.Text = "";
-                textUserAccount.Text = "";
-                textLoadOrderGroup.Text = "";
-            }
+        }
+
+        private void ClearControls()
+        {
+            labelServiceDisplayName.Text = "N/A";
+            comboType.Text = "";
+            comboStartType.Text = "";
+            comboErrorControl.Text = "";
+            textServiceBinaryPath.Text = "";
+            textUserAccount.Text = "";
+            textLoadOrderGroup.Text = "";
         }
 
         private void buttonApply_Click(object sender, EventArgs e)

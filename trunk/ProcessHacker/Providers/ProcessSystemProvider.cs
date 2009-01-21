@@ -225,7 +225,8 @@ namespace ProcessHacker
                     if (item.TokenQueryHandle != null)
                         item.TokenQueryHandle.Dispose();
 
-                    Win32.DestroyIcon(item.Icon.Handle);
+                    if (item.Icon != null)
+                        Win32.DestroyIcon(item.Icon.Handle);
 
                     newdictionary.Remove(pid);
                 }
@@ -256,21 +257,24 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
-                    try
+                    if (pid != 0)
                     {
-                        item.ProcessQueryHandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
-                        
                         try
                         {
-                            item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            item.ProcessQueryHandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+
+                            try
+                            {
+                                item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            }
+                            catch
+                            { }
                         }
                         catch
                         { }
                     }
-                    catch
-                    { }
 
-                    if (pid != 4)
+                    if (pid != 4 && pid != 0)
                     {
                         try
                         {
@@ -284,81 +288,84 @@ namespace ProcessHacker
                         item.FileName = Misc.GetKernelFileName();
                     }
 
-                    try
+                    if (pid != 0)
                     {
-                        item.ProcessQueryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
-
                         try
                         {
-                            item.TokenQueryHandle = item.ProcessQueryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+                            item.ProcessQueryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
 
-                            try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
+                            try
+                            {
+                                item.TokenQueryHandle = item.ProcessQueryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+
+                                try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
+                                catch { }
+                                try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
+                                catch { }
+                                try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
+                                catch { }
+                                try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
+                                catch { }
+                            }
+                            catch
+                            { }
+
+                            if (item.FileName == null)
+                            {
+                                try
+                                {
+                                    item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
+                                }
+                                catch
+                                { }
+                            }
+
+                            try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
                             catch { }
-                            try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
-                            catch { }
-                            try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
-                            catch { }
-                            try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
-                            catch { }
+
+                            try
+                            {
+                                item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
+                                item.HasParent = true;
+
+                                if (!procs.ContainsKey(item.ParentPID))
+                                {
+                                    item.HasParent = false;
+                                }
+                                else if (pid > 4 && item.ParentPID == 0)
+                                {
+                                    // the PID is 0 for processes we got Access Denied on, 
+                                    // but they don't really have System Idle Process 
+                                    // as their parent.
+                                    item.ParentPID = -1;
+                                    item.HasParent = false;
+                                }
+                                else
+                                {
+                                    // check the parent's creation time to see if it's actually the parent
+                                    long parentStartTime = procs[item.ParentPID].Process.CreateTime;
+                                    long thisStartTime = processInfo.CreateTime;
+
+                                    if (parentStartTime > thisStartTime)
+                                        item.HasParent = false;
+                                }
+                            }
+                            catch
+                            {
+                                item.ParentPID = -1;
+                                item.HasParent = false;
+                            }
                         }
                         catch
                         { }
 
-                        if (item.FileName == null)
-                        {
-                            try
-                            {
-                                item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
-                            }
-                            catch
-                            { }
-                        }
-
-                        try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
-                        catch { }
-
                         try
                         {
-                            item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
-                            item.HasParent = true;
-
-                            if (!procs.ContainsKey(item.ParentPID))
-                            {
-                                item.HasParent = false;
-                            }
-                            else if (pid > 4 && item.ParentPID == 0)
-                            {
-                                // the PID is 0 for processes we got Access Denied on, 
-                                // but they don't really have System Idle Process 
-                                // as their parent.
-                                item.ParentPID = -1;
-                                item.HasParent = false;
-                            }
-                            else
-                            {
-                                // check the parent's creation time to see if it's actually the parent
-                                long parentStartTime = procs[item.ParentPID].Process.CreateTime;
-                                long thisStartTime = processInfo.CreateTime;
-
-                                if (parentStartTime > thisStartTime)
-                                    item.HasParent = false;
-                            }
+                            item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
                         }
                         catch
-                        {
-                            item.ParentPID = -1;
-                            item.HasParent = false;
-                        }
+                        { }
                     }
-                    catch
-                    { }
-
-                    try
-                    {
-                        item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
-                    }
-                    catch
-                    { }
 
                     if (pid == 0)
                     {
@@ -518,7 +525,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (newitem.Icon == null && newitem.IconAttempts < 5)
+                    if (newitem.FileName != null && newitem.Icon == null && newitem.IconAttempts < 5)
                     {
                         try
                         {
