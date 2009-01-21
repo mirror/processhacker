@@ -17,7 +17,7 @@ Process Hacker
    * Now the process tree and service list update instantly after 
      starting Process Hacker instead of waiting
    * Random "Generic GDI+ Error" exceptions
-   * Fixed exceptions being consistently thrown every update interval
+   * Small performance improvements
    * Now shows proper command lines of programs where they contain null characters
 
 1.3.1.0
