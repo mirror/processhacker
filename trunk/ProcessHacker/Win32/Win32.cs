@@ -407,30 +407,30 @@ namespace ProcessHacker
 
         public static void RefreshDriveDevicePrefixes()
         {
-            lock (DriveDevicePrefixes)
+            // just create a new dictionary to avoid having to lock the existing one
+            var newPrefixes = new Dictionary<string, string>();
+          
+            for (char c = 'A'; c <= 'Z'; c++)
             {
-                DriveDevicePrefixes.Clear();
+                StringBuilder target = new StringBuilder(1024);
 
-                for (char c = 'A'; c <= 'Z'; c++)
+                if (QueryDosDevice(c.ToString() + ":", target, 1024) != 0)
                 {
-                    StringBuilder target = new StringBuilder(1024);
-
-                    if (QueryDosDevice(c.ToString() + ":", target, 1024) != 0)
-                    {
-                        DriveDevicePrefixes.Add(target.ToString(), c.ToString() + ":");
-                    }
+                    newPrefixes.Add(target.ToString(), c.ToString() + ":");
                 }
             }
+
+            DriveDevicePrefixes = newPrefixes;
         }
 
         public static string DeviceFileNameToDos(string fileName)
         {
-            lock (DriveDevicePrefixes)
-            {
-                foreach (var pair in DriveDevicePrefixes)
-                    if (fileName.StartsWith(pair.Key))
-                        return pair.Value + fileName.Substring(pair.Key.Length);
-            }
+            // don't know if this is really necessary...
+            var prefixes = DriveDevicePrefixes;
+
+            foreach (var pair in prefixes)
+                if (fileName.StartsWith(pair.Key))
+                    return pair.Value + fileName.Substring(pair.Key.Length);
 
             return fileName;
         }

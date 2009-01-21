@@ -75,8 +75,14 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(
-                            pNode.ProcessItem.CmdLine.Split(new char[] { ' ' }, 2)[1].Split(',')[0]); // TODO: fix crappy method
+                        // TODO: fix crappy method
+                        string targetFile = pNode.ProcessItem.CmdLine.Split(new char[] { ' ' }, 2)[1].Split(',')[0];
+
+                        // if it doesn't specify an absolute path, assume it's in system32.
+                        if (!targetFile.Contains(":"))
+                            targetFile = Environment.SystemDirectory + "\\" + targetFile;
+
+                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(targetFile); 
 
                         runDllText = "\nRunDLL target:\n    " + info.FileName + "\n    " +
                             info.FileDescription + " " + info.FileVersion + "\n    " +
