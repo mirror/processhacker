@@ -144,7 +144,7 @@ namespace ProcessHacker
             /// </summary>
             public void Suspend()
             {
-                if (SuspendThread(this.Handle) == -1)
+                if (SuspendThread(this) == -1)
                     ThrowLastWin32Error();
             }
 
@@ -153,7 +153,7 @@ namespace ProcessHacker
             /// </summary>
             public void Resume()
             {
-                if (ResumeThread(this.Handle) == -1)
+                if (ResumeThread(this) == -1)
                     ThrowLastWin32Error();
             }
 
@@ -171,7 +171,7 @@ namespace ProcessHacker
             /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
             {
-                if (!TerminateThread(this.Handle, ExitCode))
+                if (!TerminateThread(this, ExitCode))
                     ThrowLastWin32Error();
             }
 
@@ -182,7 +182,7 @@ namespace ProcessHacker
             /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
             public int Wait(int Timeout)
             {
-                return WaitForSingleObject(this.Handle, Timeout);
+                return WaitForSingleObject(this, Timeout);
             }
 
             /// <summary>
