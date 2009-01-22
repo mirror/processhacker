@@ -217,12 +217,9 @@ namespace Aga.Controls.Tree
 
 		#region Draw
 
-		private static VisualStyleRenderer _normalRenderer
-            = new VisualStyleRenderer(VisualStyleElement.Header.Item.Normal);
-		private static VisualStyleRenderer _pressedRenderer
-            = new VisualStyleRenderer(VisualStyleElement.Header.Item.Pressed);
-		private static VisualStyleRenderer _hotRenderer
-            = new VisualStyleRenderer(VisualStyleElement.Header.Item.Hot);
+        private static VisualStyleRenderer _normalRenderer;
+        private static VisualStyleRenderer _hotRenderer;
+		private static VisualStyleRenderer _pressedRenderer;
 
 		internal Bitmap CreateGhostImage(Rectangle bounds, Font font)
 		{
@@ -299,6 +296,13 @@ namespace Aga.Controls.Tree
         {
 			if (Application.RenderWithVisualStyles)
 			{
+                if (_normalRenderer == null)
+                    _normalRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Normal);
+                if (_hotRenderer == null)
+                    _hotRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Hot);
+                if (_pressedRenderer == null)
+                    _pressedRenderer = new VisualStyleRenderer(VisualStyleElement.Header.Item.Pressed);
+
 				if (pressed)
 					_pressedRenderer.DrawBackground(gr, bounds);
 				else if (hot)
