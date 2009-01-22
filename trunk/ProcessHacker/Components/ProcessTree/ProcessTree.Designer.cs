@@ -34,13 +34,13 @@
             this.columnMemory = new Aga.Controls.Tree.TreeColumn();
             this.columnCPU = new Aga.Controls.Tree.TreeColumn();
             this.columnUsername = new Aga.Controls.Tree.TreeColumn();
+            this.columnDescription = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
             this.nodeMemory = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCPU = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnDescription = new Aga.Controls.Tree.TreeColumn();
             this.nodeDescription = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
@@ -122,6 +122,14 @@
             this.columnUsername.TooltipText = null;
             this.columnUsername.Width = 100;
             // 
+            // columnDescription
+            // 
+            this.columnDescription.Header = "Description";
+            this.columnDescription.Sortable = true;
+            this.columnDescription.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnDescription.TooltipText = null;
+            this.columnDescription.Width = 140;
+            // 
             // nodeIcon
             // 
             this.nodeIcon.DataPropertyName = "Icon";
@@ -175,14 +183,6 @@
             this.nodeUsername.LeftMargin = 3;
             this.nodeUsername.ParentColumn = this.columnUsername;
             this.nodeUsername.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // columnDescription
-            // 
-            this.columnDescription.Header = "Description";
-            this.columnDescription.Sortable = true;
-            this.columnDescription.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnDescription.TooltipText = null;
-            this.columnDescription.Width = 140;
             // 
             // nodeDescription
             // 

@@ -152,6 +152,16 @@ namespace ProcessHacker
             Application.Run(HackerWindow = new HackerWindow());
         }
 
+        public static void ApplyFont(Font font)
+        {
+            HackerWindow.BeginInvoke(new MethodInvoker(() => { HackerWindow.ApplyFont(font); }));
+
+            foreach (var processWindow in PWindows.Values)
+            {
+                processWindow.BeginInvoke(new MethodInvoker(() => { processWindow.ApplyFont(font); }));
+            }
+        }
+
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             if (e.ExceptionObject is OutOfMemoryException)

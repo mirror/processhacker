@@ -114,6 +114,31 @@ namespace ProcessHacker
             get { return vistaMenu; }
         }
 
+        public ListView ThreadListView
+        {
+            get { return listThreads.List; }
+        }
+
+        public ListView ModuleListView
+        {
+            get { return listModules.List; }
+        }
+
+        public ListView MemoryListView
+        {
+            get { return listMemory.List; }
+        }
+
+        public ListView HandleListView
+        {
+            get { return listHandles.List; }
+        }
+
+        public ListView ServiceListView
+        {
+            get { return _serviceProps.List; }
+        }
+
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
             // load settings
@@ -126,6 +151,7 @@ namespace ProcessHacker
 
             // update the Window menu
             Program.UpdateWindows();
+            this.ApplyFont(Properties.Settings.Default.Font);
 
             this.InitializeSubControls();
             this.ClearStatistics();
@@ -197,6 +223,17 @@ namespace ProcessHacker
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.ProcessWindowSize = this.Size;
+        }
+
+        public void ApplyFont(Font f)
+        {
+            listThreads.Font = f;
+            listModules.Font = f;
+            listMemory.Font = f;
+            listHandles.Font = f;
+
+            if (_serviceProps != null)
+                _serviceProps.List.Font = f;
         }
 
         private void UpdateProcessProperties()

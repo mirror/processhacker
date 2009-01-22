@@ -80,6 +80,11 @@ namespace ProcessHacker
 
         public int PID { get; set; }
 
+        public ListView List
+        {
+            get { return listServices; }
+        }
+
         private void Close()
         {
             if (this.NeedsClose != null)

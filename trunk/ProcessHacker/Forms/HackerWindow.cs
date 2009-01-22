@@ -87,6 +87,11 @@ namespace ProcessHacker
         public ProcessSystemProvider ProcessProvider
         {
             get { return processP; }
+        } 
+
+        public ProcessTree ProcessTree
+        {
+            get { return treeProcesses; }
         }
 
         public ServiceProvider ServiceProvider
@@ -94,14 +99,19 @@ namespace ProcessHacker
             get { return serviceP; }
         }
 
+        public ListView ServiceList
+        {
+            get { return listServices.List; }
+        }
+
         public NetworkProvider NetworkProvider
         {
             get { return networkP; }
         }
 
-        public ProcessTree ProcessList
+        public ListView NetworkList
         {
-            get { return treeProcesses; }
+            get { return listNetwork.List; }
         }
 
         public Dictionary<int, List<string>> ProcessServices
@@ -1274,6 +1284,19 @@ namespace ProcessHacker
             }
         }
 
+        public void ApplyFont(Font f)
+        {
+            treeProcesses.Tree.Font = f;
+
+            if (f.Height > 16)
+                treeProcesses.Tree.RowHeight = f.Height;
+            else
+                treeProcesses.Tree.RowHeight = 16;
+
+            listServices.List.Font = f;
+            listNetwork.List.Font = f;
+        }
+
         public void DeselectAll(ListView list)
         {
             foreach (ListViewItem item in list.SelectedItems)
@@ -1495,6 +1518,7 @@ namespace ProcessHacker
         private void HackerWindow_Load(object sender, EventArgs e)
         {
             Program.UpdateWindows();
+            this.ApplyFont(Properties.Settings.Default.Font);
 
             timerFire.Interval = RefreshInterval;
             timerFire.Enabled = true;

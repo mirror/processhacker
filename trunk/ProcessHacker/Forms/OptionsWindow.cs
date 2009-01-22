@@ -34,10 +34,14 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
+        private Font _font;
+
         public OptionsWindow()
         {
             InitializeComponent();
 
+            _font = Properties.Settings.Default.Font;
+            buttonFont.Font = _font;
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             comboSizeUnits.SelectedItem =
@@ -94,6 +98,7 @@ namespace ProcessHacker
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
+            Properties.Settings.Default.Font = _font;
             Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
@@ -161,7 +166,8 @@ namespace ProcessHacker
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
             Properties.Settings.Default.Save();
-            Program.HackerWindow.ProcessList.RefreshItems();
+            Program.HackerWindow.ProcessTree.RefreshItems();
+            Program.ApplyFont(Properties.Settings.Default.Font);
             this.Close();
         }
 
@@ -178,6 +184,22 @@ namespace ProcessHacker
                 checkHideWhenMinimized.Checked = false;
                 checkStartHidden.Enabled = false;
                 checkStartHidden.Checked = false;
+            }
+        }
+
+        private void buttonFont_Click(object sender, EventArgs e)
+        {
+            FontDialog fd = new FontDialog();
+
+            fd.Font = _font;
+            fd.FontMustExist = true;
+            fd.ShowColor = true;
+            fd.ShowEffects = true;
+
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                _font = fd.Font;
+                buttonFont.Font = _font;
             }
         }
     }
