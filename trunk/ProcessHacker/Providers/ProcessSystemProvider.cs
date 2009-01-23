@@ -72,6 +72,8 @@ namespace ProcessHacker
         private long _lastOtherTime;
         private long _lastSysTime;
 
+        private delegate Win32.VerifyResult VerifyDelegate(int pid);
+
         public ProcessSystemProvider()
             : base()
         {      
@@ -463,7 +465,10 @@ namespace ProcessHacker
 
                     if (Properties.Settings.Default.VerifySignatures)
                     {
-                        try { item.VerifyResult = Win32.VerifyFile(item.FileName); }
+                        try
+                        {
+                            item.VerifyResult = Win32.VerifyFile(item.FileName);
+                        }
                         catch { }
                     }
 

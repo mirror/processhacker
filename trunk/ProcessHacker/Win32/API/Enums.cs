@@ -512,6 +512,19 @@ namespace ProcessHacker
             RunsInSystemProcess = 0x1
         }
 
+        public enum SERVICE_INFO_LEVEL : int
+        {
+            Description = 1,
+            FailureActions = 2,
+            DelayedAutoStartInfo = 3,
+            FailureActionsFlag = 4,
+            SidInfo = 5,
+            RequiredPrivilegesInfo = 6,
+            PreShutdownInfo = 7,
+            TriggerInfo = 8,
+            PreferredNode = 9
+        }
+
         public enum SERVICE_QUERY_STATE : int
         {
             Active = 1,

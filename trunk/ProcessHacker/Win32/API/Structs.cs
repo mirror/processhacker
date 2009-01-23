@@ -594,6 +594,13 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct SERVICE_DESCRIPTION
+        {
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Description;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct SERVICE_STATUS
         {
             public SERVICE_TYPE ServiceType;

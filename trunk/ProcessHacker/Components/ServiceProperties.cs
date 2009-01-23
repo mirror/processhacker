@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.ServiceProcess;
 
 namespace ProcessHacker
 {
@@ -158,6 +159,8 @@ namespace ProcessHacker
                 buttonApply.Enabled = false;
                 buttonStart.Enabled = false;
                 buttonStop.Enabled = false;
+                buttonDependents.Enabled = false;
+                buttonDependencies.Enabled = false;
                 comboType.Enabled = false;
                 comboStartType.Enabled = false;
                 comboErrorControl.Enabled = false;
@@ -170,6 +173,8 @@ namespace ProcessHacker
                     buttonApply.Enabled = true;
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
+                    buttonDependents.Enabled = true;
+                    buttonDependencies.Enabled = true;
                     comboType.Enabled = true;
                     comboStartType.Enabled = true;
                     comboErrorControl.Enabled = true;
@@ -199,6 +204,17 @@ namespace ProcessHacker
                     textServiceBinaryPath.Text = item.Config.BinaryPathName;
                     textUserAccount.Text = item.Config.ServiceStartName;
                     textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
+
+                    try
+                    {
+                        using (Win32.ServiceHandle shandle
+                            = new Win32.ServiceHandle(item.Status.ServiceName))
+                            textDescription.Text = shandle.GetDescription();
+                    }
+                    catch
+                    {
+                        textDescription.Text = "";
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -217,6 +233,7 @@ namespace ProcessHacker
             textServiceBinaryPath.Text = "";
             textUserAccount.Text = "";
             textLoadOrderGroup.Text = "";
+            textDescription.Text = "";
         }
 
         private void buttonApply_Click(object sender, EventArgs e)
@@ -285,6 +302,52 @@ namespace ProcessHacker
             {
                 MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonDependents_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (ServiceController controller = new ServiceController(
+                    listServices.SelectedItems[0].Name))
+                {
+                    List<string> dependents = new List<string>();
+
+                    foreach (var service in controller.DependentServices)
+                        dependents.Add(service.ServiceName);
+
+                    ServiceWindow sw = new ServiceWindow(dependents.ToArray());
+
+                    sw.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonDependencies_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (ServiceController controller = new ServiceController(
+                    listServices.SelectedItems[0].Name))
+                {
+                    List<string> dependencies = new List<string>();
+
+                    foreach (var service in controller.ServicesDependedOn)
+                        dependencies.Add(service.ServiceName);
+
+                    ServiceWindow sw = new ServiceWindow(dependencies.ToArray());
+
+                    sw.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

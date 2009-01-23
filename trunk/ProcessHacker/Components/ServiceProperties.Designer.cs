@@ -33,6 +33,7 @@
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.panelService = new System.Windows.Forms.Panel();
+            this.textDescription = new System.Windows.Forms.TextBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonStop = new System.Windows.Forms.Button();
             this.textLoadOrderGroup = new System.Windows.Forms.TextBox();
@@ -50,6 +51,8 @@
             this.textServiceBinaryPath = new System.Windows.Forms.TextBox();
             this.labelServiceDisplayName = new System.Windows.Forms.Label();
             this.labelServiceName = new System.Windows.Forms.Label();
+            this.buttonDependencies = new System.Windows.Forms.Button();
+            this.buttonDependents = new System.Windows.Forms.Button();
             this.panelService.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -68,7 +71,7 @@
             this.listServices.MultiSelect = false;
             this.listServices.Name = "listServices";
             this.listServices.ShowItemToolTips = true;
-            this.listServices.Size = new System.Drawing.Size(387, 133);
+            this.listServices.Size = new System.Drawing.Size(387, 141);
             this.listServices.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listServices.TabIndex = 3;
             this.listServices.UseCompatibleStateImageBehavior = false;
@@ -94,6 +97,9 @@
             // 
             this.panelService.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelService.Controls.Add(this.buttonDependents);
+            this.panelService.Controls.Add(this.buttonDependencies);
+            this.panelService.Controls.Add(this.textDescription);
             this.panelService.Controls.Add(this.buttonStart);
             this.panelService.Controls.Add(this.buttonStop);
             this.panelService.Controls.Add(this.textLoadOrderGroup);
@@ -111,17 +117,31 @@
             this.panelService.Controls.Add(this.textServiceBinaryPath);
             this.panelService.Controls.Add(this.labelServiceDisplayName);
             this.panelService.Controls.Add(this.labelServiceName);
-            this.panelService.Location = new System.Drawing.Point(3, 142);
+            this.panelService.Location = new System.Drawing.Point(3, 150);
             this.panelService.Name = "panelService";
             this.panelService.Padding = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.panelService.Size = new System.Drawing.Size(387, 212);
+            this.panelService.Size = new System.Drawing.Size(387, 286);
             this.panelService.TabIndex = 2;
+            // 
+            // textDescription
+            // 
+            this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textDescription.Location = new System.Drawing.Point(6, 47);
+            this.textDescription.Multiline = true;
+            this.textDescription.Name = "textDescription";
+            this.textDescription.ReadOnly = true;
+            this.textDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textDescription.Size = new System.Drawing.Size(375, 71);
+            this.textDescription.TabIndex = 17;
             // 
             // buttonStart
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonStart.Image = global::ProcessHacker.Properties.Resources.control_play_blue;
-            this.buttonStart.Location = new System.Drawing.Point(36, 182);
+            this.buttonStart.Location = new System.Drawing.Point(36, 256);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(24, 24);
             this.buttonStart.TabIndex = 16;
@@ -132,7 +152,7 @@
             // 
             this.buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonStop.Image = global::ProcessHacker.Properties.Resources.control_stop_blue;
-            this.buttonStop.Location = new System.Drawing.Point(6, 182);
+            this.buttonStop.Location = new System.Drawing.Point(6, 256);
             this.buttonStop.Name = "buttonStop";
             this.buttonStop.Size = new System.Drawing.Size(24, 24);
             this.buttonStop.TabIndex = 16;
@@ -143,7 +163,7 @@
             // 
             this.textLoadOrderGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textLoadOrderGroup.Location = new System.Drawing.Point(107, 103);
+            this.textLoadOrderGroup.Location = new System.Drawing.Point(107, 178);
             this.textLoadOrderGroup.Name = "textLoadOrderGroup";
             this.textLoadOrderGroup.Size = new System.Drawing.Size(274, 20);
             this.textLoadOrderGroup.TabIndex = 15;
@@ -152,7 +172,7 @@
             // 
             this.comboErrorControl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboErrorControl.FormattingEnabled = true;
-            this.comboErrorControl.Location = new System.Drawing.Point(80, 76);
+            this.comboErrorControl.Location = new System.Drawing.Point(80, 151);
             this.comboErrorControl.Name = "comboErrorControl";
             this.comboErrorControl.Size = new System.Drawing.Size(121, 21);
             this.comboErrorControl.TabIndex = 14;
@@ -161,7 +181,7 @@
             // 
             this.comboStartType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboStartType.FormattingEnabled = true;
-            this.comboStartType.Location = new System.Drawing.Point(238, 49);
+            this.comboStartType.Location = new System.Drawing.Point(260, 124);
             this.comboStartType.Name = "comboStartType";
             this.comboStartType.Size = new System.Drawing.Size(121, 21);
             this.comboStartType.TabIndex = 13;
@@ -170,15 +190,15 @@
             // 
             this.comboType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboType.FormattingEnabled = true;
-            this.comboType.Location = new System.Drawing.Point(46, 49);
+            this.comboType.Location = new System.Drawing.Point(46, 124);
             this.comboType.Name = "comboType";
-            this.comboType.Size = new System.Drawing.Size(121, 21);
+            this.comboType.Size = new System.Drawing.Size(143, 21);
             this.comboType.TabIndex = 12;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(173, 52);
+            this.label6.Location = new System.Drawing.Point(195, 127);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 13);
             this.label6.TabIndex = 11;
@@ -187,7 +207,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 79);
+            this.label5.Location = new System.Drawing.Point(6, 154);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 10;
@@ -196,7 +216,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 52);
+            this.label4.Location = new System.Drawing.Point(6, 127);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 9;
@@ -205,7 +225,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 106);
+            this.label3.Location = new System.Drawing.Point(6, 181);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(95, 13);
             this.label3.TabIndex = 8;
@@ -215,7 +235,7 @@
             // 
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(306, 183);
+            this.buttonApply.Location = new System.Drawing.Point(306, 257);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 7;
@@ -226,7 +246,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 132);
+            this.label2.Location = new System.Drawing.Point(6, 207);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 13);
             this.label2.TabIndex = 5;
@@ -236,7 +256,7 @@
             // 
             this.textUserAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textUserAccount.Location = new System.Drawing.Point(87, 155);
+            this.textUserAccount.Location = new System.Drawing.Point(87, 230);
             this.textUserAccount.Name = "textUserAccount";
             this.textUserAccount.Size = new System.Drawing.Size(294, 20);
             this.textUserAccount.TabIndex = 4;
@@ -244,7 +264,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 158);
+            this.label1.Location = new System.Drawing.Point(6, 233);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 3;
@@ -254,7 +274,7 @@
             // 
             this.textServiceBinaryPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textServiceBinaryPath.Location = new System.Drawing.Point(76, 129);
+            this.textServiceBinaryPath.Location = new System.Drawing.Point(76, 204);
             this.textServiceBinaryPath.Name = "textServiceBinaryPath";
             this.textServiceBinaryPath.Size = new System.Drawing.Size(305, 20);
             this.textServiceBinaryPath.TabIndex = 2;
@@ -278,6 +298,30 @@
             this.labelServiceName.TabIndex = 0;
             this.labelServiceName.Text = "Service Name";
             // 
+            // buttonDependencies
+            // 
+            this.buttonDependencies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDependencies.Location = new System.Drawing.Point(198, 257);
+            this.buttonDependencies.Name = "buttonDependencies";
+            this.buttonDependencies.Size = new System.Drawing.Size(102, 23);
+            this.buttonDependencies.TabIndex = 18;
+            this.buttonDependencies.Text = "Dependencies...";
+            this.buttonDependencies.UseVisualStyleBackColor = true;
+            this.buttonDependencies.Click += new System.EventHandler(this.buttonDependencies_Click);
+            // 
+            // buttonDependents
+            // 
+            this.buttonDependents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDependents.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDependents.Location = new System.Drawing.Point(107, 257);
+            this.buttonDependents.Name = "buttonDependents";
+            this.buttonDependents.Size = new System.Drawing.Size(85, 23);
+            this.buttonDependents.TabIndex = 18;
+            this.buttonDependents.Text = "Dependents...";
+            this.buttonDependents.UseVisualStyleBackColor = true;
+            this.buttonDependents.Click += new System.EventHandler(this.buttonDependents_Click);
+            // 
             // ServiceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,7 +329,7 @@
             this.Controls.Add(this.listServices);
             this.Controls.Add(this.panelService);
             this.Name = "ServiceProperties";
-            this.Size = new System.Drawing.Size(393, 357);
+            this.Size = new System.Drawing.Size(393, 439);
             this.panelService.ResumeLayout(false);
             this.panelService.PerformLayout();
             this.ResumeLayout(false);
@@ -301,6 +345,9 @@
         private System.Windows.Forms.Panel panelService;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.Button buttonApply;
+        private System.Windows.Forms.Label labelServiceDisplayName;
+        private System.Windows.Forms.Label labelServiceName;
         private System.Windows.Forms.TextBox textLoadOrderGroup;
         private System.Windows.Forms.ComboBox comboErrorControl;
         private System.Windows.Forms.ComboBox comboStartType;
@@ -309,12 +356,12 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textUserAccount;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textServiceBinaryPath;
-        private System.Windows.Forms.Label labelServiceDisplayName;
-        private System.Windows.Forms.Label labelServiceName;
+        private System.Windows.Forms.TextBox textDescription;
+        private System.Windows.Forms.Button buttonDependents;
+        private System.Windows.Forms.Button buttonDependencies;
     }
 }

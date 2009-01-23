@@ -82,6 +82,34 @@ namespace ProcessHacker
 
                 if (!ControlService(this.Handle, control, ref status))
                     ThrowLastWin32Error();
+            }        
+
+            /// <summary>
+            /// Deletes the service.
+            /// </summary>
+            public void Delete()
+            {
+                if (!DeleteService(this.Handle))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Gets the service's description.
+            /// </summary>
+            /// <returns>A string.</returns>
+            public string GetDescription()
+            {
+                int retLen;
+
+                QueryServiceConfig2(this, SERVICE_INFO_LEVEL.Description, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!QueryServiceConfig2(this, SERVICE_INFO_LEVEL.Description, data, retLen, out retLen))
+                        ThrowLastWin32Error();
+
+                    return data.ReadStruct<SERVICE_DESCRIPTION>().Description;
+                }
             }
 
             /// <summary>
@@ -90,15 +118,6 @@ namespace ProcessHacker
             public void Start()
             {
                 if (!StartService(this.Handle, 0, 0))
-                    ThrowLastWin32Error();
-            }
-
-            /// <summary>
-            /// Deletes the service.
-            /// </summary>
-            public void Delete()
-            {
-                if (!DeleteService(this.Handle))
                     ThrowLastWin32Error();
             }
         }

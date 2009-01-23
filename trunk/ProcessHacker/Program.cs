@@ -116,9 +116,9 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
-            if (Environment.OSVersion.Version.Major == 5)
+            if (Environment.OSVersion.Version.Major <= 5)
                 WindowsVersion = "XP";
-            else if (Environment.OSVersion.Version.Major == 6)
+            else if (Environment.OSVersion.Version.Major >= 6)
                 WindowsVersion = "Vista";
 
             if (WindowsVersion == "Vista")

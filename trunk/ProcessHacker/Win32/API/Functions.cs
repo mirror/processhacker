@@ -503,6 +503,10 @@ namespace ProcessHacker
             int BufSize, ref int BytesNeeded);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool QueryServiceConfig2(int Service,
+            SERVICE_INFO_LEVEL InfoLevel, IntPtr Buffer, int BufferSize, out int ReturnLength);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int OpenService(int SCManager,
             string ServiceName, SERVICE_RIGHTS DesiredAccess);
 
