@@ -193,7 +193,6 @@ namespace ProcessHacker
 
             fd.Font = _font;
             fd.FontMustExist = true;
-            fd.ShowColor = true;
             fd.ShowEffects = true;
 
             if (fd.ShowDialog() == DialogResult.OK)
