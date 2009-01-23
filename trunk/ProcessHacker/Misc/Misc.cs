@@ -286,6 +286,65 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the relative time in nice English.
+        /// </summary>
+        /// <param name="time">A DateTime.</param>
+        /// <returns>A string.</returns>
+        public static string GetNiceRelativeDateTime(DateTime time)
+        {
+            TimeSpan span = DateTime.Now.Subtract(time);
+            double weeks = span.TotalDays / 7;
+            double fortnights = weeks / 2;
+            double months = span.TotalDays * 12 / 365;
+            double years = months / 12;
+            double centuries = years / 100;
+            string str = "";
+
+            if (centuries >= 1)
+                str = (int)centuries + " " + ((int)centuries == 1 ? "century" : "centuries");
+            else if (years >= 1)
+                str = (int)years + " " + ((int)years == 1 ? "year" : "years");
+            else if (months >= 1)
+                str = (int)months + " " + ((int)months == 1 ? "month" : "months");
+            else if (fortnights >= 1)
+                str = (int)fortnights + " " + ((int)fortnights == 1 ? "fortnight" : "fortnights");
+            else if (weeks >= 1)
+                str = (int)weeks + " " + ((int)weeks == 1 ? "week" : "weeks");
+            else if (span.TotalDays >= 2)
+                str = (int)span.TotalDays + " " + ((int)span.TotalDays == 1 ? "day" : "days");
+            else if (span.TotalDays >= 1 && span.TotalDays < 2)
+                str = "yesterday";
+            else if (span.Hours >= 1)
+            {
+                str = span.Hours + " " + (span.Hours == 1 ? "hour" : "hours");
+
+                if (span.Minutes >= 1)
+                    str += " and " + span.Minutes + " " +
+                        (span.Minutes == 1 ? "minute" : "minutes");
+            }
+            else if (span.Minutes >= 1)
+            {
+                str = span.Minutes + " " + (span.Minutes == 1 ? "minute" : "minutes");
+
+                if (span.Seconds >= 1)
+                    str += " and " + span.Seconds + " " +
+                        (span.Seconds == 1 ? "second" : "seconds");
+            }
+            else if (span.Seconds >= 1)
+                str = span.Seconds + " " + (span.Seconds == 1 ? "second" : "seconds");
+            else if (span.Milliseconds >= 1)
+                str = span.Milliseconds + " " + (span.Milliseconds == 1 ? "millisecond" : "milliseconds");
+            else
+                str = "a very short time";
+
+            // 1 minute -> a minute
+            if (str.StartsWith("1 "))
+                str = "a " + str.Substring(2);
+
+            return str + " ago";
+        }
+
+        /// <summary>
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>

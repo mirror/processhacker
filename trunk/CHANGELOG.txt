@@ -16,6 +16,7 @@ Process Hacker
    * Added protection against PEB file name spoofing
    * Customizable fonts
    * Command line switch: -m to hide Process Hacker
+   * Nice relative times - "2 seconds ago", "14 minutes and 33 seconds ago", etc.
  * FIXED:
    * Small UI enabling/disabling fixes
    * Now the process tree and service list update instantly after 
