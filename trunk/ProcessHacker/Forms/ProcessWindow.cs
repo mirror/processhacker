@@ -227,10 +227,10 @@ namespace ProcessHacker
 
         public void ApplyFont(Font f)
         {
-            listThreads.Font = f;
-            listModules.Font = f;
-            listMemory.Font = f;
-            listHandles.Font = f;
+            listThreads.List.Font = f;
+            listModules.List.Font = f;
+            listMemory.List.Font = f;
+            listHandles.List.Font = f;
 
             if (_serviceProps != null)
                 _serviceProps.List.Font = f;
