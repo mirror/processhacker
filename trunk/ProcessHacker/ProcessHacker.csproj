@@ -283,6 +283,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Help.htm">
       <SubType>Form</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Include="Resources\information.png" />
     <None Include="Resources\page_save.png" />

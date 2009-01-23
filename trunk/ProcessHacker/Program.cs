@@ -72,14 +72,30 @@ namespace ProcessHacker
         public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
+        public static bool StartMinimized = false;
         public static KProcessHacker KPH;
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static void Main()
+        public static void Main(string[] args)
         {
+            try
+            {
+                var pArgs = ParseArgs(args);
+
+                if (pArgs.ContainsKey("-m"))
+                    StartMinimized = true;
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Usage: processhacker [-m]\n" + 
+                    "\t-m\tStarts Process Hacker hidden.", 
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             try
             {
                 KPH = new KProcessHacker();
@@ -150,6 +166,41 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow());
+        }
+
+        private static Dictionary<string, string> ParseArgs(string[] args)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            string argPending = null;
+
+            foreach (string s in args)
+            {
+                if (s.StartsWith("-"))
+                {
+                    if (dict.ContainsKey(s))
+                        throw new Exception("Option already specified.");
+
+                    dict.Add(s, "");
+                    argPending = s;
+                }
+                else
+                {
+                    if (argPending != null)
+                    {
+                        dict[argPending] = s;
+                        argPending = null;
+                    }
+                    else
+                    {
+                        if (dict.ContainsKey(""))
+                            throw new Exception("Input file already specified.");
+
+                        dict.Add("", s);
+                    }
+                }
+            }
+
+            return dict;
         }
 
         public static void ApplyFont(Font font)

@@ -1599,7 +1599,7 @@ namespace ProcessHacker
 
             tabControlBig_SelectedIndexChanged(null, null);
 
-            if (Properties.Settings.Default.StartHidden)
+            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
             {
                 // HACK: I can't seem to be able to hide the window here, so I have to use a timer!
                 System.Windows.Forms.Timer t2 =
