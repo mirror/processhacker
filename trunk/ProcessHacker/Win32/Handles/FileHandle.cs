@@ -74,7 +74,7 @@ namespace ProcessHacker
             /// Reads data from the file.
             /// </summary>
             /// <param name="buffer">The buffer to store the data in.</param>
-            /// <returns>THe number of bytes read from the file.</returns>
+            /// <returns>The number of bytes read from the file.</returns>
             public int Read(byte[] buffer)
             {
                 int bytesRead;
