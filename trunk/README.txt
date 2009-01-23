@@ -28,7 +28,12 @@ Process Hacker has an embedded help file (accessible through
 Hacker > Help).
 
 KNOWN ISSUES
- * Process Hacker does not display File handles on Windows XP
+ * Process Hacker does not display File handles on Windows XP 
+   without the experimental kernel driver. You must enable the 
+   driver in Hacker > Options if you want to view file handles.
+ * Process Hacker appears to use around 150MB of memory on 
+   Windows XP, as reported by Windows Task Manager. Process 
+   Hacker only uses around 50MB of physical memory.
 
 Process Hacker is brought to you by the small Process Hacker team:
  * wj32 (Project Manager)
