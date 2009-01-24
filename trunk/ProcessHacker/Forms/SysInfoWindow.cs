@@ -199,7 +199,7 @@ namespace ProcessHacker
             Win32.SYSTEM_CACHE_INFORMATION cacheInfo = new Win32.SYSTEM_CACHE_INFORMATION();
             int retLen;
 
-            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemCacheInformation,
+            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemFileCacheInformation,
                 ref cacheInfo, System.Runtime.InteropServices.Marshal.SizeOf(cacheInfo), out retLen);
 
             labelTotalsProcesses.Text = info.ProcessCount.ToString("N0");

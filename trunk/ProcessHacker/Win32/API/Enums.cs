@@ -379,7 +379,16 @@ namespace ProcessHacker
             ProcessExecuteFlags,
             ProcessResourceManagement,
             ProcessCookie,
-            ProcessImageInformation, 
+            ProcessImageInformation,
+            ProcessCycleTime,
+            ProcessPagePriority,
+            ProcessInstrumentationCallback,
+            ProcessThreadStackAllocation,
+            ProcessWorkingSetWatchEx,
+            ProcessImageFileNameWin32,
+            ProcessImageFileMapping,
+            ProcessAffinityUpdateMode,
+            ProcessMemoryAllocationMode,
             MaxProcessInfoClass
         }
 
@@ -718,7 +727,7 @@ namespace ProcessHacker
             SystemPagefileInformation,
             SystemInstructionEmulationCounts,
             SystemInvalidInfoClass1,
-            SystemCacheInformation,
+            SystemFileCacheInformation,
             SystemPoolTagInformation,
             SystemProcessorStatistics,
             SystemDpcInformation,
@@ -785,7 +794,18 @@ namespace ProcessHacker
             ThreadPriorityBoost,
             ThreadSetTlsArrayAddress,
             ThreadIsIoPending,
-            ThreadHideFromDebugger
+            ThreadHideFromDebugger,
+            ThreadBreakOnTermination,
+            ThreadSwitchLegacyState,
+            ThreadIsTerminated,
+            ThreadLastSystemCall,
+            ThreadIoPriority,
+            ThreadCycleTime,
+            ThreadPagePriority,
+            ThreadActualBasePriority,
+            ThreadTebInformation,
+            ThreadCSwitchMon,
+            MaxThreadInfoClass
         }
 
         [Flags]

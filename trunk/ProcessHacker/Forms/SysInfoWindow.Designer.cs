@@ -567,7 +567,7 @@
             this.groupBox6.Size = new System.Drawing.Size(195, 84);
             this.groupBox6.TabIndex = 4;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Cache";
+            this.groupBox6.Text = "File Cache";
             // 
             // tableLayoutPanel4
             // 
