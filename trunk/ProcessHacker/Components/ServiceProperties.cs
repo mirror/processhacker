@@ -215,6 +215,23 @@ namespace ProcessHacker
                     {
                         textDescription.Text = "";
                     }
+
+                    try
+                    {
+                        using (ServiceController controller = new ServiceController(
+                            listServices.SelectedItems[0].Name))
+                        {
+                            if (controller.DependentServices.Length == 0)
+                                buttonDependents.Enabled = false;
+                            if (controller.ServicesDependedOn.Length == 0)
+                                buttonDependencies.Enabled = false;
+                        }
+                    }
+                    catch
+                    {
+                        buttonDependents.Enabled = false;
+                        buttonDependencies.Enabled = false;
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -126,8 +126,16 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class.
         /// </summary>
         public Provider()
+            : this(null)
+        { }
+
+        /// <summary>
+        /// Creates a new instance of the Provider class, specifying a 
+        /// custom equality comparer.
+        /// </summary>
+        public Provider(IEqualityComparer<TKey> comparer)
         {
-            _dictionary = new Dictionary<TKey, TValue>();
+            _dictionary = new Dictionary<TKey, TValue>(comparer);
 
             _thread = new Thread(new ThreadStart(Update));
             _thread.SetApartmentState(ApartmentState.STA);
