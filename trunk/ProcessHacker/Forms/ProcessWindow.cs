@@ -168,9 +168,12 @@ namespace ProcessHacker
             {
                 // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
                 buttonEditDEP.Enabled = false;
+                buttonEditProtected.Enabled = false;
                 buttonInspectParent.Enabled = false;
                 buttonInspectPEB.Enabled = false;
-                fileCurrentDirectory.Enabled = false;
+
+                if (fileCurrentDirectory.Text != "")
+                    fileCurrentDirectory.Enabled = false;
 
                 if (_pid != 4)
                     fileImage.Enabled = false;
@@ -285,7 +288,8 @@ namespace ProcessHacker
                 textFileCompany.Text = "";
             }
 
-            textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
+            if (_processItem.CmdLine != null)
+                textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
 
             try
             {
@@ -358,6 +362,7 @@ namespace ProcessHacker
                 buttonInspectParent.Enabled = false;
             }
 
+            this.UpdateProtected();
             this.UpdateDEPStatus();
         }
 
@@ -414,6 +419,32 @@ namespace ProcessHacker
             _handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
+        }
+
+        public void UpdateProtected()
+        {
+            labelProtected.Enabled = true;
+            textProtected.Enabled = true;
+            buttonEditProtected.Enabled = true;
+
+            if (Program.KPH != null && Program.WindowsVersion == "Vista")
+            {
+                try
+                {
+                    textProtected.Text = Program.KPH.GetProcessProtected(_pid) ? "True" : "False";
+                }
+                catch (Exception ex)
+                {
+                    textProtected.Text = "(" + ex.Message + ")";
+                    buttonEditProtected.Enabled = false;
+                }
+            }
+            else
+            {
+                labelProtected.Enabled = false;
+                textProtected.Enabled = false;
+                buttonEditProtected.Enabled = false;
+            }
         }
 
         public void UpdateDEPStatus()
@@ -711,6 +742,26 @@ namespace ProcessHacker
             w.ShowDialog();
 
             this.UpdateDEPStatus();
+        }
+
+        private void buttonEditProtected_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "True", "False" });
+
+                picker.SelectedItem = textProtected.Text;
+
+                if (picker.ShowDialog() == DialogResult.OK)
+                {
+                    Program.KPH.SetProcessProtected(_pid, picker.SelectedItem == "True");
+                    this.UpdateProtected();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void buttonInspectPEB_Click(object sender, EventArgs e)

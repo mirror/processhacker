@@ -187,6 +187,9 @@
       <DependentUpon>AboutWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ComboBoxPickerWindow.resx">
+      <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditDEPWindow.resx">
       <DependentUpon>EditDEPWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -396,6 +399,12 @@
     </Compile>
     <Compile Include="FormHelper\HandleFilter.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ComboBoxPickerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ComboBoxPickerWindow.Designer.cs">
+      <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\EditDEPWindow.cs">
       <SubType>Form</SubType>

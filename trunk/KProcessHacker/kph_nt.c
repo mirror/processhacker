@@ -21,6 +21,7 @@
  */
 
 /* All reverse-engineering done in IDA Pro with that X-ray thingy... */
+/* Parts taken from ReactOS */
 
 #include "kph_nt.h"
 #include "debug.h"

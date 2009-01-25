@@ -7,6 +7,7 @@ Process Hacker
    * Network tab - shows current network connections
    * KProcessHacker - an experimental kernel-mode driver for Process Hacker which 
      finally enables Process Hacker to display all file handles without freezing
+   * Can protect and unprotect processes
    * System Information menu item in the tray icon menu
    * Hide when minimized option
    * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 

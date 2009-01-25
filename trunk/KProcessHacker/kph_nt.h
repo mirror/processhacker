@@ -33,6 +33,11 @@ NTSTATUS KphOpenProcess(
     int ProcessId
     );
 
+NTSTATUS KphTerminateProcess(
+    HANDLE ProcessHandle,
+    NTSTATUS ExitStatus
+    );
+
 NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
     PACCESS_STATE AccessState,
     PAUX_ACCESS_DATA AuxData,

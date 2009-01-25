@@ -242,6 +242,10 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "Restore KiServiceTable";
     else if (ControlCode == KPH_OPENPROCESS)
         return "KphOpenProcess";
+    else if (ControlCode == KPH_GETPROCESSPROTECTED)
+        return "Get Process Protected";
+    else if (ControlCode == KPH_SETPROCESSPROTECTED)
+        return "Set Process Protected";
     else
         return "Unknown";
 }
@@ -542,6 +546,73 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             retLength = 4;
+        }
+        break;
+        
+        case KPH_GETPROCESSPROTECTED:
+        {
+            int processId;
+            HANDLE processHandle;
+            PEPROCESS2 processObject;
+            
+            if (inLength < 4 || outLength < 1)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processId = *(HANDLE *)dataBuffer;
+            status = ZwOpenProcess2(&processHandle, 0, processId);
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
+            
+            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
+            
+            if (status != STATUS_SUCCESS)
+            {
+                ZwClose(processHandle);
+                goto IoControlEnd;
+            }
+            
+            *(PCHAR)dataBuffer = processObject->ProtectedProcess;
+            ObDereferenceObject(processObject);
+            ZwClose(processHandle);
+            retLength = 1;
+        }
+        break;
+        
+        case KPH_SETPROCESSPROTECTED:
+        {
+            int processId;
+            HANDLE processHandle;
+            CHAR protected;
+            PEPROCESS2 processObject;
+            
+            if (inLength < 5)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processId = *(HANDLE *)dataBuffer;
+            protected = *(CHAR *)(dataBuffer + 4);
+            status = ZwOpenProcess2(&processHandle, 0, processId);
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
+            
+            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
+            
+            if (status != STATUS_SUCCESS)
+            {
+                ZwClose(processHandle);
+                goto IoControlEnd;
+            }
+            
+            processObject->ProtectedProcess = protected;
+            ObDereferenceObject(processObject);
+            ZwClose(processHandle);
         }
         break;
         

@@ -440,8 +440,9 @@ typedef struct _EPROCESS2
     PVOID AweInfo;
     SE_AUDIT_PROCESS_CREATION_INFO SeAuditProcessCreationInfo;
     MMSUPPORT Vm;
-    LIST_ENTRY MmProcessLinks;
-    ULONG ModifiedPageCount;
+    /* to make ProtectedProcess the right offset... */
+    /* LIST_ENTRY MmProcessLinks;
+    ULONG ModifiedPageCount; */
     ULONG Flags2;
     ULONG JobNotReallyActive: 1;
     ULONG AccountingFolded: 1;
@@ -555,5 +556,408 @@ typedef struct _AUX_ACCESS_DATA
     GENERIC_MAPPING GenericMapping;
     ULONG Reserved;
 } AUX_ACCESS_DATA, *PAUX_ACCESS_DATA;
+
+typedef struct _EXCEPTION_REGISTRATION_RECORD
+{
+    struct _EXCEPTION_REGISTRATION_RECORD *Next;
+    EXCEPTION_DISPOSITION *Handler;
+} EXCEPTION_REGISTRATION_RECORD, *PEXCEPTION_REGISTRATION_RECORD;
+
+typedef struct _KTRAP_FRAME
+{
+    ULONG DbgEbp;
+    ULONG DbgEip;
+    ULONG DbgArgMark;
+    ULONG DbgArgPointer;
+    USHORT TempSegCs;
+    UCHAR Logging;
+    UCHAR Reserved;
+    ULONG TempEsp;
+    ULONG Dr0;
+    ULONG Dr1;
+    ULONG Dr2;
+    ULONG Dr3;
+    ULONG Dr6;
+    ULONG Dr7;
+    ULONG SegGs;
+    ULONG SegEs;
+    ULONG SegDs;
+    ULONG Edx;
+    ULONG Ecx;
+    ULONG Eax;
+    ULONG PreviousPreviousMode;
+    PEXCEPTION_REGISTRATION_RECORD ExceptionList;
+    ULONG SegFs;
+    ULONG Edi;
+    ULONG Esi;
+    ULONG Ebx;
+    ULONG Ebp;
+    ULONG ErrCode;
+    ULONG Eip;
+    ULONG SegCs;
+    ULONG EFlags;
+    ULONG HardwareEsp;
+    ULONG HardwareSegSs;
+    ULONG V86Es;
+    ULONG V86Ds;
+    ULONG V86Fs;
+    ULONG V86Gs;
+} KTRAP_FRAME, *PKTRAP_FRAME;
+
+typedef struct _KTHREAD2
+{
+    DISPATCHER_HEADER Header;
+    UINT64 CycleTime;
+    ULONG HighCycleTime;
+    UINT64 QuantumTarget;
+    PVOID InitialStack;
+    PVOID StackLimit;
+    PVOID KernelStack;
+    ULONG ThreadLock;
+    union
+    {
+        KAPC_STATE ApcState;
+        UCHAR ApcStateFill[23];
+    };
+    CHAR Priority;
+    USHORT NextProcessor;
+    USHORT DeferredProcessor;
+    ULONG ApcQueueLock;
+    ULONG ContextSwitches;
+    UCHAR State;
+    UCHAR NpxState;
+    UCHAR WaitIrql;
+    CHAR WaitMode;
+    LONG WaitStatus;
+    union
+    {
+        PKWAIT_BLOCK WaitBlockList;
+        PKGATE GateObject;
+    };
+    union
+    {
+      ULONG KernelStackResident: 1;
+      ULONG ReadyTransition: 1;
+      ULONG ProcessReadyQueue: 1;
+      ULONG WaitNext: 1;
+      ULONG SystemAffinityActive: 1;
+      ULONG Alertable: 1;
+      ULONG GdiFlushActive: 1;
+      ULONG Reserved: 25;
+      LONG MiscFlags;
+    };
+    UCHAR WaitReason;
+    UCHAR SwapBusy;
+    UCHAR Alerted[2];
+    union
+    {
+        LIST_ENTRY WaitListEntry;
+        SINGLE_LIST_ENTRY SwapListEntry;
+    };
+    PKQUEUE Queue;
+    ULONG WaitTime;
+    union
+    {
+        struct
+        {
+            SHORT KernelApcDisable;
+            SHORT SpecialApcDisable;
+        };
+        ULONG CombinedApcDisable;
+    };
+    PVOID Teb;
+    union
+    {
+        KTIMER Timer;
+        UCHAR TimerFill[40];
+    };
+    union
+    {
+        ULONG AutoAlignment: 1;
+        ULONG DisableBoost: 1;
+        ULONG EtwStackTraceApc1Inserted: 1;
+        ULONG EtwStackTraceApc2Inserted: 1;
+        ULONG CycleChargePending: 1;
+        ULONG CalloutActive: 1;
+        ULONG ApcQueueable: 1;
+        ULONG EnableStackSwap: 1;
+        ULONG GuiThread: 1;
+        ULONG ReservedFlags: 23;
+        LONG ThreadFlags;
+    };
+    union
+    {
+        KWAIT_BLOCK WaitBlock[4];
+        struct
+        {
+            UCHAR WaitBlockFill0[23];
+            UCHAR IdealProcessor;
+        };
+        struct
+        {
+            UCHAR WaitBlockFill1[47];
+            CHAR PreviousMode;
+        };
+        struct
+        {
+            UCHAR WaitBlockFill2[71];
+            UCHAR ResourceIndex;
+        };
+        UCHAR WaitBlockFill3[95];
+    };
+    UCHAR LargeStack;
+    LIST_ENTRY QueueListEntry;
+    PKTRAP_FRAME TrapFrame;
+    PVOID FirstArgument;
+    union
+    {
+        PVOID CallbackStack;
+        ULONG CallbackDepth;
+    };
+    PVOID ServiceTable;
+    UCHAR ApcStateIndex;
+    CHAR BasePriority;
+    CHAR PriorityDecrement;
+    UCHAR Preempted;
+    UCHAR AdjustReason;
+    CHAR AdjustIncrement;
+    UCHAR Spare01;
+    CHAR Saturation;
+    ULONG SystemCallNumber;
+    ULONG Spare02;
+    ULONG UserAffinity;
+    PKPROCESS Process;
+    ULONG Affinity;
+    PKAPC_STATE ApcStatePointer[2];
+    union
+    {
+        KAPC_STATE SavedApcState;
+        UCHAR SavedApcStateFill[23];
+    };
+    CHAR FreezeCount;
+    CHAR SuspendCount;
+    UCHAR UserIdealProcessor;
+    UCHAR Spare03;
+    UCHAR Iopl;
+    PVOID Win32Thread;
+    PVOID StackBase;
+    union
+    {
+        KAPC SuspendApc;
+        struct
+        {
+            UCHAR SuspendApcFill0[1];
+            CHAR Spare04;
+        };
+        struct
+        {
+            UCHAR SuspendApcFill1[3];
+            UCHAR QuantumReset;
+        };
+        struct
+        {
+            UCHAR SuspendApcFill2[4];
+            ULONG KernelTime;
+        };
+        struct
+        {
+            UCHAR SuspendApcFill3[36];
+            /* PKPRCB WaitPrcb; */
+            PVOID WaitPrcb;
+        };
+        struct
+        {
+            UCHAR SuspendApcFill4[40];
+            PVOID LegoData;
+        };
+        UCHAR SuspendApcFill5[47];
+    };
+    UCHAR PowerState;
+    ULONG UserTime;
+    union
+    {
+        KSEMAPHORE SuspendSemaphore;
+        UCHAR SuspendSemaphorefill[20];
+    };
+    ULONG SListFaultCount;
+    LIST_ENTRY ThreadListEntry;
+    LIST_ENTRY MutantListHead;
+    PVOID SListFaultAddress;
+    PVOID MdlForLockedTeb;
+} KTHREAD2, *PKTHREAD2;
+
+typedef struct _TERMINATION_PORT
+{
+    struct _TERMINATION_PORT *Next;
+    PVOID Port;
+} TERMINATION_PORT, *PTERMINATION_PORT;
+
+typedef struct _PS_CLIENT_SECURITY_CONTEXT
+{
+    union
+    {
+        ULONG ImpersonationData;
+        PVOID ImpersonationToken;
+        ULONG ImpersonationLevel: 2;
+        ULONG EffectiveOnly: 1;
+    };
+} PS_CLIENT_SECURITY_CONTEXT, *PPS_CLIENT_SECURITY_CONTEXT;
+
+typedef struct _ETHREAD2
+{
+    KTHREAD2 Tcb;
+    LARGE_INTEGER CreateTime;
+    union
+    {
+        LARGE_INTEGER ExitTime;
+        LIST_ENTRY KeyedWaitChain;
+    };
+    union
+    {
+        LONG ExitStatus;
+        PVOID OfsChain;
+    };
+    union
+    {
+        LIST_ENTRY PostBlockList;
+        struct
+        {
+            PVOID ForwardLinkShadow;
+            PVOID StartAddress;
+        };
+    };
+    union
+    {
+        PTERMINATION_PORT TerminationPort;
+        PETHREAD ReaperLink;
+        PVOID KeyedWaitValue;
+        PVOID Win32StartParameter;
+    };
+    ULONG ActiveTimerListLock;
+    LIST_ENTRY ActiveTimerListHead;
+    CLIENT_ID Cid;
+    union
+    {
+        KSEMAPHORE KeyedWaitSemaphore;
+        KSEMAPHORE AlpcWaitSemaphore;
+    };
+    PS_CLIENT_SECURITY_CONTEXT ClientSecurity;
+    LIST_ENTRY IrpList;
+    ULONG TopLevelIrp;
+    PDEVICE_OBJECT DeviceToVerify;
+    /* _PSP_RATE_APC *RateControlApc; */
+    PVOID RateControlApc;
+    PVOID Win32StartAddress;
+    PVOID SparePtr0;
+    LIST_ENTRY ThreadListEntry;
+    EX_RUNDOWN_REF RundownProtect;
+    EX_PUSH_LOCK ThreadLock;
+    ULONG ReadClusterSize;
+    LONG MmLockOrdering;
+    ULONG CrossThreadFlags;
+    ULONG Terminated: 1;
+    ULONG ThreadInserted: 1;
+    ULONG HideFromDebugger: 1;
+    ULONG ActiveImpersonationInfo: 1;
+    ULONG SystemThread: 1;
+    ULONG HardErrorsAreDisabled: 1;
+    ULONG BreakOnTermination: 1;
+    ULONG SkipCreationMsg: 1;
+    ULONG SkipTerminationMsg: 1;
+    ULONG CopyTokenOnOpen: 1;
+    ULONG ThreadIoPriority: 3;
+    ULONG ThreadPagePriority: 3;
+    ULONG RundownFail: 1;
+    ULONG SameThreadPassiveFlags;
+    ULONG ActiveExWorker: 1;
+    ULONG ExWorkerCanWaitUser: 1;
+    ULONG MemoryMaker: 1;
+    ULONG ClonedThread: 1;
+    ULONG KeyedEventInUse: 1;
+    ULONG RateApcState: 2;
+    ULONG SelfTerminate: 1;
+    ULONG SameThreadApcFlags;
+    ULONG Spare: 1;
+    ULONG StartAddressInvalid: 1;
+    ULONG EtwPageFaultCalloutActive: 1;
+    ULONG OwnsProcessWorkingSetExclusive: 1;
+    ULONG OwnsProcessWorkingSetShared: 1;
+    ULONG OwnsSystemWorkingSetExclusive: 1;
+    ULONG OwnsSystemWorkingSetShared: 1;
+    ULONG OwnsSessionWorkingSetExclusive: 1;
+    ULONG OwnsSessionWorkingSetShared: 1;
+    ULONG OwnsProcessAddressSpaceExclusive: 1;
+    ULONG OwnsProcessAddressSpaceShared: 1;
+    ULONG SuppressSymbolLoad: 1;
+    ULONG Prefetching: 1;
+    ULONG OwnsDynamicMemoryShared: 1;
+    ULONG OwnsChangeControlAreaExclusive: 1;
+    ULONG OwnsChangeControlAreaShared: 1;
+    ULONG PriorityRegionActive: 4;
+    UCHAR CacheManagerActive;
+    UCHAR DisablePageFaultClustering;
+    UCHAR ActiveFaultCount;
+    ULONG AlpcMessageId;
+    union
+    {
+        PVOID AlpcMessage;
+        ULONG AlpcReceiveAttributeSet;
+    };
+    LIST_ENTRY AlpcWaitListEntry;
+    ULONG CacheManagerCount;
+} ETHREAD2, *PETHREAD2;
+
+typedef struct _EX_PUSH_LOCK2
+{
+    union
+    {
+        struct
+        {
+            ULONG_PTR Locked:1;
+            ULONG_PTR Waiting:1;
+            ULONG_PTR Waking:1;
+            ULONG_PTR MultipleShared:1;
+            ULONG_PTR Shared: sizeof(ULONG_PTR) * 8 - 4;
+        };
+        ULONG_PTR Value;
+        PVOID Ptr;
+    };
+} EX_PUSH_LOCK2, *PEX_PUSH_LOCK2;
+
+typedef struct _OBJECT_CREATE_INFORMATION
+{
+    ULONG Attributes;
+    PVOID RootDirectory;
+    PVOID ParseContext;
+    CHAR ProbeMode;
+    ULONG PagedPoolCharge;
+    ULONG NonPagedPoolCharge;
+    ULONG SecurityDescriptorCharge;
+    PVOID SecurityDescriptor;
+    PSECURITY_QUALITY_OF_SERVICE SecurityQos;
+    SECURITY_QUALITY_OF_SERVICE SecurityQualityOfService;
+} OBJECT_CREATE_INFORMATION, *POBJECT_CREATE_INFORMATION;
+
+typedef struct _OBJECT_HEADER
+{
+    LONG PointerCount;
+    union
+    {
+        LONG HandleCount;
+        PVOID NextToFree;
+    };
+    POBJECT_TYPE Type;
+    UCHAR NameInfoOffset;
+    UCHAR HandleInfoOffset;
+    UCHAR QuotaInfoOffset;
+    UCHAR Flags;
+    union
+    {
+        POBJECT_CREATE_INFORMATION ObjectCreateInfo;
+        PVOID QuotaBlockCharged;
+    };
+    PVOID SecurityDescriptor;
+    QUAD Body;
+} OBJECT_HEADER, *POBJECT_HEADER;
 
 #endif

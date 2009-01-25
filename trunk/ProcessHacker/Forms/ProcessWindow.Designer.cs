@@ -44,10 +44,13 @@
             this.fileCurrentDirectory = new ProcessHacker.Components.FileNameBox();
             this.label26 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.textProtected = new System.Windows.Forms.TextBox();
+            this.labelProtected = new System.Windows.Forms.Label();
             this.textDEP = new System.Windows.Forms.TextBox();
             this.labelDEP = new System.Windows.Forms.Label();
             this.buttonTerminate = new System.Windows.Forms.Button();
             this.buttonInspectPEB = new System.Windows.Forms.Button();
+            this.buttonEditProtected = new System.Windows.Forms.Button();
             this.buttonInspectParent = new System.Windows.Forms.Button();
             this.buttonEditDEP = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -240,10 +243,13 @@
             this.groupProcess.Controls.Add(this.fileCurrentDirectory);
             this.groupProcess.Controls.Add(this.label26);
             this.groupProcess.Controls.Add(this.label7);
+            this.groupProcess.Controls.Add(this.textProtected);
+            this.groupProcess.Controls.Add(this.labelProtected);
             this.groupProcess.Controls.Add(this.textDEP);
             this.groupProcess.Controls.Add(this.labelDEP);
             this.groupProcess.Controls.Add(this.buttonTerminate);
             this.groupProcess.Controls.Add(this.buttonInspectPEB);
+            this.groupProcess.Controls.Add(this.buttonEditProtected);
             this.groupProcess.Controls.Add(this.buttonInspectParent);
             this.groupProcess.Controls.Add(this.buttonEditDEP);
             this.groupProcess.Controls.Add(this.label5);
@@ -288,6 +294,26 @@
             this.label7.TabIndex = 8;
             this.label7.Text = "PEB Address:";
             // 
+            // textProtected
+            // 
+            this.textProtected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textProtected.BackColor = System.Drawing.SystemColors.Control;
+            this.textProtected.Location = new System.Drawing.Point(101, 181);
+            this.textProtected.Name = "textProtected";
+            this.textProtected.ReadOnly = true;
+            this.textProtected.Size = new System.Drawing.Size(279, 20);
+            this.textProtected.TabIndex = 7;
+            // 
+            // labelProtected
+            // 
+            this.labelProtected.AutoSize = true;
+            this.labelProtected.Location = new System.Drawing.Point(6, 184);
+            this.labelProtected.Name = "labelProtected";
+            this.labelProtected.Size = new System.Drawing.Size(56, 13);
+            this.labelProtected.TabIndex = 6;
+            this.labelProtected.Text = "Protected:";
+            // 
             // textDEP
             // 
             this.textDEP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -330,6 +356,17 @@
             this.buttonInspectPEB.TabIndex = 4;
             this.buttonInspectPEB.UseVisualStyleBackColor = true;
             this.buttonInspectPEB.Click += new System.EventHandler(this.buttonInspectPEB_Click);
+            // 
+            // buttonEditProtected
+            // 
+            this.buttonEditProtected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEditProtected.Image = global::ProcessHacker.Properties.Resources.cog_edit;
+            this.buttonEditProtected.Location = new System.Drawing.Point(386, 178);
+            this.buttonEditProtected.Name = "buttonEditProtected";
+            this.buttonEditProtected.Size = new System.Drawing.Size(24, 24);
+            this.buttonEditProtected.TabIndex = 4;
+            this.buttonEditProtected.UseVisualStyleBackColor = true;
+            this.buttonEditProtected.Click += new System.EventHandler(this.buttonEditProtected_Click);
             // 
             // buttonInspectParent
             // 
@@ -1586,5 +1623,8 @@
         private ProcessHacker.Components.FileNameBox fileCurrentDirectory;
         private ProcessHacker.Components.FileNameBox fileImage;
         private System.Windows.Forms.MenuItem structSearchMenuItem;
+        private System.Windows.Forms.TextBox textProtected;
+        private System.Windows.Forms.Label labelProtected;
+        private System.Windows.Forms.Button buttonEditProtected;
     }
 }

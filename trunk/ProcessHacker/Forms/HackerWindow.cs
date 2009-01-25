@@ -1227,10 +1227,11 @@ namespace ProcessHacker
                 "CPU Usage: " + (processP.CurrentCPUUsage * 100).ToString("F2") + "%";
 
             if (processP.Dictionary.ContainsKey(processP.PIDWithMostCPUUsage))
-                if (notifyIcon.Text.Length + 
-                    processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 63)
-                    notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
-                        ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
+                if (processP.Dictionary[processP.PIDWithMostCPUUsage].Name != null)
+                    if (notifyIcon.Text.Length + 
+                        processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 63)
+                        notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
+                            ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
         }
 
         private void timerMessages_Tick(object sender, EventArgs e)
