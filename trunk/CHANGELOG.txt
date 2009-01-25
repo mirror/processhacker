@@ -1,13 +1,11 @@
 Process Hacker
 
 1.3.2.0
- * SUMMARY: This version introduces a network connections list and an 
-   experimental kernel-mode driver.
  * NEW:
    * Network tab - shows current network connections
    * KProcessHacker - an experimental kernel-mode driver for Process Hacker which 
      finally enables Process Hacker to display all file handles without freezing
-   * Can protect and unprotect processes
+   * Can protect and unprotect processes (Vista's DRM protection)
    * System Information menu item in the tray icon menu
    * Hide when minimized option
    * Now resolves device names into drive letters - e.g. "\Device\Harddisk1\FileName" into 
@@ -33,9 +31,6 @@ Process Hacker
    * Handle leaks with threads
 
 1.3.1.0
- * SUMMARY: This version adds many small but useful features. It is 
-   also more useful when trying to fight malware, thanks to 
-   digital signature verification and packed executable detection.
  * NEW:
    * "Free" and "Decommit" actions for memory regions
    * "Description" column for processes
