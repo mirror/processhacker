@@ -99,8 +99,9 @@ pre {
       <dd>Some handles cannot be displayed by a user-mode program like Process Hacker; this 
       option enables the experimental driver <em>KProcessHacker</em> which allows Process Hacker 
       to display all handles and bypass rootkits/security software. If enabled, it will be 
-      loaded the next time Process Hacker is started. WARNING: Your computer may crash or 
-      become unstable. Specifically, it provides Process Hacker will the following features:<br />
+      loaded the next time Process Hacker is started.<br />
+      Specifically, it provides Process Hacker 
+      with the following features:<br />
       The ability to display all file handles,<br />
       The ability to open any process or thread without being intercepted by rootkits/security 
       software,<br />
@@ -117,7 +118,8 @@ pre {
       <dd>Highlighting for new processes, services, threads, modules, memory regions, and handles.</dd>
       
       <dt>Removed Objects</dt>
-      <dd>Highlighting for the above objects.</dd>
+      <dd>Highlighting for terminated/deleted processes, services, threads, modules, memory regions and 
+      handles.</dd>
       
       <dt>Own Processes</dt>
       <dd>Highlighting for processes running under the same user account as Process Hacker.</dd>
@@ -143,8 +145,9 @@ pre {
       highlights pure CLR executables - mixed code executables and processes hosting 
       .NET code will not be highlighted.</dd>
       
-      <dt>Packed Processes</dt>
-      <dd>Highlighting for packed images. These processes often malicious.</dd>
+      <dt>Packed/Dangerous Processes</dt>
+      <dd>Highlighting for packed images and images with invalid signatures. These processes 
+      are often malicious.</dd>
     </dl>
     
     <h2>Plotting</h2>
@@ -191,21 +194,23 @@ pre {
 
     <dl>
       <dt>Terminate Process(es)</dt>
-      <dd>Uses the standard .NET method <code>process.Kill()</code> to terminate a process.</dd>
+      <dd>Uses the <code>TerminateProcess()</code> API function to terminate the selected 
+      process(es).</dd>
 
       <dt>Suspend Process(es)</dt>
-      <dd>Windows does not have a built-in method of suspending processes, so this will suspend each
-      of the process's threads using the Windows API function <code>SuspendThread()</code>.</dd>
+      <dd>Uses the <code>NtSuspendProcess()</code> API function to suspend the selected
+      process(es).</dd>
 
       <dt>Resume Process(es)</dt>
-      <dd>Resumes the process by resuming each of its threads using <code>ResumeThread()</code>.</dd>
+      <dd>Uses the <code>NtResumeProcess()</code> API function to resume the selected 
+      process(es).</dd>
       
       <dt>Affinity...</dt>
       <dd>Allows you to view and modify the process' CPU affinity (the CPUs on which it is allowed 
       to run).</dd>
       
       <dt>Terminator...</dt>
-      <dd>A tool to try to terminate the selected process using many different techniques.</dd>
+      <dd>A tool which tries to terminate the selected process using many different techniques.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.
@@ -229,8 +234,9 @@ pre {
     <dl>
       <dt>General</dt>
       <dd>Displays basic information about the process and its image file. You can also view the 
-      process' PEB contents and view/change its DEP status (requires Windows XP SP3 or higher, and 
-      changing DEP status uses remote thread injection).</dd>
+      process' PEB contents, view/change its DEP status (requires Windows XP SP3 or higher, and 
+      changing DEP status uses remote thread injection), and protect/unprotect it (requires 
+      Windows Vista).</dd>
       
       <dt>Statistics</dt>
       <dd>Displays statistics and performance information.</dd>
@@ -281,7 +287,10 @@ pre {
       <dd>Scans for strings inside the process' memory.</dd>
       
       <dt>Heap Scan</dt>
-      <dd>Displays a list of heap items.</dd>
+      <dd>Displays a list of heap blocks.</dd>
+      
+      <dt>Struct Search</dt>
+      <dd>Allows you to search for addresses which match the selected struct.</dd>
     </dl>
     
     <p>In the <strong>Literal</strong> tab, there is a small button in the bottom-right 
