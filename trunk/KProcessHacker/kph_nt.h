@@ -30,12 +30,37 @@ NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     KPROCESSOR_MODE AccessMode,
-    int ProcessId
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    );
+
+NTSTATUS KphOpenThread(
+    PHANDLE ThreadHandle,
+    ACCESS_MASK DesiredAccess,
+    KPROCESSOR_MODE AccessMode,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
     );
 
 NTSTATUS KphTerminateProcess(
     HANDLE ProcessHandle,
     NTSTATUS ExitStatus
+    );
+
+NTSTATUS NTAPI ObOpenObjectByName(
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    POBJECT_TYPE ObjectType,
+    KPROCESSOR_MODE AccessMode,
+    PACCESS_STATE AccessState,
+    ACCESS_MASK DesiredAccess,
+    PVOID ParseContext,
+    PHANDLE Handle
+    );
+
+NTSTATUS NTAPI PsLookupProcessThreadByCid(
+    PCLIENT_ID ClientId,
+    PEPROCESS *Process,
+    PETHREAD *Thread
     );
 
 NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
@@ -47,6 +72,11 @@ NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
 
 NTKERNELAPI VOID NTAPI SeDeleteAccessState(
     PACCESS_STATE AccessState
+    );
+
+NTSTATUS PsTerminateProcess(
+    PEPROCESS Process,
+    NTSTATUS ExitStatus
     );
 
 #endif

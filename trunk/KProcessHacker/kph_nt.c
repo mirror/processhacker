@@ -26,28 +26,40 @@
 #include "kph_nt.h"
 #include "debug.h"
 
+extern ACCESS_MASK ProcessAllAccess;
+extern ACCESS_MASK ThreadAllAccess;
+
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     KPROCESSOR_MODE AccessMode,
-    int ProcessId
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
     )
 {
+    BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
+    ULONG attributes = ObjectAttributes->Attributes;
     NTSTATUS status = STATUS_SUCCESS;
     ACCESS_STATE accessState;
-    AUX_ACCESS_DATA auxData;
-    PEPROCESS processObject;
-    HANDLE processHandle;
     
-    if (ProcessHandle == NULL)
-    {
-        return STATUS_INVALID_PARAMETER;
-    }
+    /* No one seems to know what the format of AUX_ACCESS_DATA is.
+     * ReactOS' definition is wrong because there is supposed to be 
+     * some sort of security descriptor at +11. Weird. I've inferred 
+     * from the stack frame of PsOpenProcess that AUX_ACCESS_DATA has 
+     * a size of 0x34 bytes.
+     */
+    char auxData[0x34];
+    PEPROCESS processObject = NULL;
+    PETHREAD threadObject = NULL;
+    HANDLE processHandle = NULL;
+    
+    if (hasObjectName && ClientId)
+        return STATUS_INVALID_PARAMETER_MIX;
     
     /* ReactOS code cleared this bit up for me :) */
     status = SeCreateAccessState(
         &accessState,
-        &auxData,
+        (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
         (PGENERIC_MAPPING)((char *)PsProcessType + 52)
         );
@@ -57,36 +69,192 @@ NTSTATUS KphOpenProcess(
         return status;
     }
     
-    /* just give our client full access. */
-    /* hopefully our client isn't a virus... */
-    accessState.PreviouslyGrantedAccess |= PROCESS_ALL_ACCESS;
+    /* let's hope our client isn't a virus... */
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= ProcessAllAccess;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
     accessState.RemainingDesiredAccess = 0;
     
-    status = PsLookupProcessByProcessId((HANDLE)ProcessId, &processObject);
-    
-    if (status != STATUS_SUCCESS)
+    if (hasObjectName)
+    {
+        status = ObOpenObjectByName(
+            ObjectAttributes,
+            *PsProcessType,
+            AccessMode,
+            &accessState,
+            0,
+            NULL,
+            &processHandle
+            );
+        SeDeleteAccessState(&accessState);
+    }
+    else if (ClientId)
+    {
+        if (ClientId->UniqueThread)
+        {
+            status = PsLookupProcessThreadByCid(ClientId, &processObject, &threadObject);
+        }
+        else
+        {
+            status = PsLookupProcessByProcessId(ClientId->UniqueProcess, &processObject);
+        }
+        
+        if (status != STATUS_SUCCESS)
+        {
+            SeDeleteAccessState(&accessState);
+            return status;
+        }
+        
+        status = ObOpenObjectByPointer(
+            processObject,
+            attributes,
+            &accessState,
+            0,
+            *PsProcessType,
+            AccessMode,
+            &processHandle
+            );
+        
+        SeDeleteAccessState(&accessState);
+        ObDereferenceObject(processObject);
+        
+        if (threadObject)
+            ObDereferenceObject(threadObject);
+    }
+    else
     {
         SeDeleteAccessState(&accessState);
-        return status;
+        return STATUS_INVALID_PARAMETER_MIX;
     }
-    
-    status = ObOpenObjectByPointer(
-        processObject,
-        0,
-        &accessState,
-        0,
-        *PsProcessType,
-        AccessMode,
-        &processHandle
-        );
-    
-    SeDeleteAccessState(&accessState);
-    ObDereferenceObject(processObject);
     
     if (status == STATUS_SUCCESS)
     {
         *ProcessHandle = processHandle;
     }
+    
+    return status;
+}
+
+NTSTATUS KphOpenThread(
+    PHANDLE ThreadHandle,
+    ACCESS_MASK DesiredAccess,
+    KPROCESSOR_MODE AccessMode,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId
+    )
+{
+    BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
+    ULONG attributes = ObjectAttributes->Attributes;
+    NTSTATUS status = STATUS_SUCCESS;
+    ACCESS_STATE accessState;
+    
+    /* No one seems to know what the format of AUX_ACCESS_DATA is.
+     * ReactOS' definition is wrong because there is supposed to be 
+     * some sort of security descriptor at +11. Weird. I've inferred 
+     * from the stack frame of PsOpenProcess that AUX_ACCESS_DATA has 
+     * a size of 0x34 bytes.
+     */
+    char auxData[0x34];
+    PETHREAD threadObject = NULL;
+    HANDLE threadHandle = NULL;
+    
+    if (hasObjectName && ClientId)
+        return STATUS_INVALID_PARAMETER_MIX;
+    
+    /* ReactOS code cleared this bit up for me :) */
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)((char *)PsThreadType + 52)
+        );
+    
+    if (status != STATUS_SUCCESS)
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= ThreadAllAccess;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
+    
+    if (hasObjectName)
+    {
+        status = ObOpenObjectByName(
+            ObjectAttributes,
+            *PsThreadType,
+            AccessMode,
+            &accessState,
+            0,
+            NULL,
+            &threadHandle
+            );
+        SeDeleteAccessState(&accessState);
+    }
+    else if (ClientId)
+    {
+        if (ClientId->UniqueProcess)
+        {
+            status = PsLookupProcessThreadByCid(ClientId, NULL, &threadObject);
+        }
+        else
+        {
+            status = PsLookupThreadByThreadId(ClientId->UniqueThread, &threadObject);
+        }
+        
+        if (status != STATUS_SUCCESS)
+        {
+            SeDeleteAccessState(&accessState);
+            return status;
+        }
+        
+        status = ObOpenObjectByPointer(
+            threadObject,
+            attributes,
+            &accessState,
+            0,
+            *PsThreadType,
+            AccessMode,
+            &threadHandle
+            );
+        
+        SeDeleteAccessState(&accessState);
+        ObDereferenceObject(threadObject);
+    }
+    else
+    {
+        SeDeleteAccessState(&accessState);
+        return STATUS_INVALID_PARAMETER_MIX;
+    }
+    
+    if (status == STATUS_SUCCESS)
+    {
+        *ThreadHandle = threadHandle;
+    }
+    
+    return status;
+}
+
+NTSTATUS KphTerminateProcess(
+    HANDLE ProcessHandle,
+    NTSTATUS ExitStatus
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (status != STATUS_SUCCESS)
+        return status;
+    
+    /* status = PsTerminateProcess(processObject, ExitStatus); */
+    ObDereferenceObject(processObject);
     
     return status;
 }

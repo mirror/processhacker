@@ -62,7 +62,10 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the thread.</param>
             public ThreadHandle(int TID, THREAD_RIGHTS access)
             {
-                this.Handle = OpenThread(access, 0, TID);
+                if (Program.KPH != null)
+                    this.Handle = Program.KPH.KphOpenThread(TID, access);
+                else
+                    this.Handle = OpenThread(access, 0, TID);
 
                 if (this.Handle == 0)
                     ThrowLastWin32Error();

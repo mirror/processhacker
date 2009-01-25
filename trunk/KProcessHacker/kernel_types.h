@@ -549,14 +549,6 @@ typedef struct _OBJECT_TYPE
     EX_PUSH_LOCK ObjectLocks[32];
 } OBJECT_TYPE;
 
-typedef struct _AUX_ACCESS_DATA
-{
-    /* PPRIVILEGE_SET PrivilegeSet; */
-    PVOID PrivilegeSet;
-    GENERIC_MAPPING GenericMapping;
-    ULONG Reserved;
-} AUX_ACCESS_DATA, *PAUX_ACCESS_DATA;
-
 typedef struct _EXCEPTION_REGISTRATION_RECORD
 {
     struct _EXCEPTION_REGISTRATION_RECORD *Next;
@@ -959,5 +951,13 @@ typedef struct _OBJECT_HEADER
     PVOID SecurityDescriptor;
     QUAD Body;
 } OBJECT_HEADER, *POBJECT_HEADER;
+
+typedef struct _AUX_ACCESS_DATA
+{
+    /* PPRIVILEGE_SET PrivilegeSet; */
+    PVOID PrivilegeSet;
+    GENERIC_MAPPING GenericMapping;
+    ULONG Reserved;
+} AUX_ACCESS_DATA, *PAUX_ACCESS_DATA;
 
 #endif

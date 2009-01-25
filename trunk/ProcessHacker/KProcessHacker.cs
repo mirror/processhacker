@@ -50,7 +50,8 @@ namespace ProcessHacker
             RestoreKiServiceTable,
             KphOpenProcess,
             GetProcessProtected,
-            SetProcessProtected
+            SetProcessProtected,
+            KphOpenThread
         }
 
         private Win32.FileHandle _fileHandle;
@@ -306,6 +307,19 @@ namespace ProcessHacker
             Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
 
             _fileHandle.IoControl(CtlCode(Control.KphOpenProcess), inData, outData);
+
+            return Misc.BytesToInt(outData, Misc.Endianness.Little);
+        }
+
+        public int KphOpenThread(int tid, Win32.THREAD_RIGHTS desiredAccess)
+        {
+            byte[] inData = new byte[8];
+            byte[] outData = new byte[4];
+
+            Array.Copy(Misc.IntToBytes(tid, Misc.Endianness.Little), 0, inData, 0, 4);
+            Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenThread), inData, outData);
 
             return Misc.BytesToInt(outData, Misc.Endianness.Little);
         }

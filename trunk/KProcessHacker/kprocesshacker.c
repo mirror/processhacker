@@ -48,6 +48,9 @@
 #pragma alloc_text(PAGE, KPHUnsupported)
 #pragma alloc_text(PAGE, IsStringNullTerminated)
 
+RTL_OSVERSIONINFOW WindowsVersion;
+ACCESS_MASK ProcessAllAccess;
+ACCESS_MASK ThreadAllAccess;
 int ClientPID = -1;
 PVOID *OldKiServiceTable = NULL;
 PVOID *OrigKiServiceTable = NULL;
@@ -85,6 +88,29 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     int i;
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
+    
+    WindowsVersion.dwOSVersionInfoSize = sizeof(WindowsVersion);
+    status = RtlGetVersion(&WindowsVersion);
+    
+    if (status != STATUS_SUCCESS)
+        return status;
+    
+    /* Windows XP */
+    if (WindowsVersion.dwMajorVersion == 5 && WindowsVersion.dwMinorVersion == 1)
+    {
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
+    }
+    /* Windows Vista */
+    else if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
+    {
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+    }
+    else
+    {
+        return STATUS_NOT_IMPLEMENTED;
+    }
     
     status = SsdtInit();
     
@@ -246,6 +272,8 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "Get Process Protected";
     else if (ControlCode == KPH_SETPROCESSPROTECTED)
         return "Set Process Protected";
+    else if (ControlCode == KPH_OPENTHREAD)
+        return "KphOpenThread";
     else
         return "Unknown";
 }
@@ -531,6 +559,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         {
             int processId;
             int desiredAccess;
+            OBJECT_ATTRIBUTES objectAttributes = { 0 };
+            CLIENT_ID clientId;
             
             if (inLength < 8)
             {
@@ -540,7 +570,15 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             processId = *(int *)dataBuffer;
             desiredAccess = *(int *)(dataBuffer + 4);
-            status = KphOpenProcess((PHANDLE)dataBuffer, desiredAccess, UserMode, processId);
+            clientId.UniqueThread = 0;
+            clientId.UniqueProcess = processId;
+            status = KphOpenProcess(
+                (PHANDLE)dataBuffer,
+                desiredAccess,
+                UserMode,
+                &objectAttributes,
+                &clientId
+                );
             
             if (status != STATUS_SUCCESS)
                 goto IoControlEnd;
@@ -552,7 +590,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         case KPH_GETPROCESSPROTECTED:
         {
             int processId;
-            HANDLE processHandle;
             PEPROCESS2 processObject;
             
             if (inLength < 4 || outLength < 1)
@@ -562,22 +599,14 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             processId = *(HANDLE *)dataBuffer;
-            status = ZwOpenProcess2(&processHandle, 0, processId);
+            
+            status = PsLookupProcessByProcessId(processId, &processObject);
             
             if (status != STATUS_SUCCESS)
                 goto IoControlEnd;
-            
-            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
-            
-            if (status != STATUS_SUCCESS)
-            {
-                ZwClose(processHandle);
-                goto IoControlEnd;
-            }
             
             *(PCHAR)dataBuffer = processObject->ProtectedProcess;
             ObDereferenceObject(processObject);
-            ZwClose(processHandle);
             retLength = 1;
         }
         break;
@@ -585,7 +614,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         case KPH_SETPROCESSPROTECTED:
         {
             int processId;
-            HANDLE processHandle;
             CHAR protected;
             PEPROCESS2 processObject;
             
@@ -597,22 +625,46 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             processId = *(HANDLE *)dataBuffer;
             protected = *(CHAR *)(dataBuffer + 4);
-            status = ZwOpenProcess2(&processHandle, 0, processId);
+            
+            status = PsLookupProcessByProcessId(processId, &processObject);
             
             if (status != STATUS_SUCCESS)
                 goto IoControlEnd;
-            
-            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
-            
-            if (status != STATUS_SUCCESS)
-            {
-                ZwClose(processHandle);
-                goto IoControlEnd;
-            }
             
             processObject->ProtectedProcess = protected;
             ObDereferenceObject(processObject);
-            ZwClose(processHandle);
+        }
+        break;
+        
+        case KPH_OPENTHREAD:
+        {
+            int threadId;
+            int desiredAccess;
+            OBJECT_ATTRIBUTES objectAttributes = { 0 };
+            CLIENT_ID clientId;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadId = *(int *)dataBuffer;
+            desiredAccess = *(int *)(dataBuffer + 4);
+            clientId.UniqueThread = threadId;
+            clientId.UniqueProcess = 0;
+            status = KphOpenThread(
+                (PHANDLE)dataBuffer,
+                desiredAccess,
+                UserMode,
+                &objectAttributes,
+                &clientId
+                );
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
+            
+            retLength = 4;
         }
         break;
         
