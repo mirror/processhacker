@@ -29,6 +29,8 @@
  */
 
 #include "kprocesshacker.h"
+#include "kph_nt.h"
+#include "kernel_types.h"
 #include "debug.h"
 #include "ssdt.h"
 #include "hooks.h"
@@ -61,7 +63,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     SsdtDeinit();
     
     /* wait for a while to lessen the chance of a BSOD */
-    waitTime.QuadPart = -((signed __int64)50000000); /* 5 seconds */
+    waitTime.QuadPart = -((signed __int64)20000000); /* 2 seconds */
     KeDelayExecutionThread(KernelMode, FALSE, &waitTime);
     
     if (OrigKiServiceTable != NULL)
@@ -238,8 +240,22 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "Get KiServiceLimit";
     else if (ControlCode == KPH_RESTOREKISERVICETABLE)
         return "Restore KiServiceTable";
+    else if (ControlCode == KPH_OPENPROCESS)
+        return "KphOpenProcess";
     else
         return "Unknown";
+}
+
+NTSTATUS ZwOpenProcess2(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
+{
+    OBJECT_ATTRIBUTES objAttr = { 0 };
+    CLIENT_ID clientId;
+    
+    objAttr.Length = sizeof(objAttr);
+    clientId.UniqueThread = 0;
+    clientId.UniqueProcess = ProcessId;
+    
+    return ZwOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId);
 }
 
 NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
@@ -353,19 +369,10 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             inObject = *(int *)(dataBuffer + 4);
             inProcessId = *(int *)(dataBuffer + 8);
             
-            {
-                OBJECT_ATTRIBUTES objAttr = { 0 };
-                CLIENT_ID clientId;
-                
-                objAttr.Length = sizeof(objAttr);
-                clientId.UniqueThread = 0;
-                clientId.UniqueProcess = inProcessId;
-                
-                status = ZwOpenProcess(&processHandle, 0x40, &objAttr, &clientId);
-                
-                if (status != STATUS_SUCCESS)
-                    goto IoControlEnd;
-            }
+            status = ZwOpenProcess2(&processHandle, PROCESS_DUP_HANDLE, inProcessId);
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
             
             __try
             {
@@ -380,7 +387,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                         (PFILE_OBJECT)inObject, dataBuffer, outLength, &retLength);
                     
                     if (status == STATUS_SUCCESS)
-                        dprintf("KProcessHacker: Resolved object name (indirect): %ws", 
+                        dprintf("KProcessHacker: Resolved object name (indirect): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
                 else
@@ -391,7 +398,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     ZwClose(dupHandle);
                     
                     if (status == STATUS_SUCCESS)
-                        dprintf("KProcessHacker: Resolved object name (direct): %ws", 
+                        dprintf("KProcessHacker: Resolved object name (direct): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
             }
@@ -513,6 +520,28 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             Hooked = FALSE;
             
             dprintf("KProcessHacker: successfully restored %d SSDT entries\n", SsdtGetCount());
+        }
+        break;
+        
+        case KPH_OPENPROCESS:
+        {
+            int processId;
+            int desiredAccess;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processId = *(int *)dataBuffer;
+            desiredAccess = *(int *)(dataBuffer + 4);
+            status = KphOpenProcess((PHANDLE)dataBuffer, desiredAccess, UserMode, processId);
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
+            
+            retLength = 4;
         }
         break;
         

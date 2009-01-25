@@ -141,7 +141,10 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the process.</param>
             public ProcessHandle(int PID, PROCESS_RIGHTS access)
             {
-                this.Handle = OpenProcess(access, 0, PID);
+                if (Program.KPH != null)
+                    this.Handle = Program.KPH.KphOpenProcess(PID, access);
+                else
+                    this.Handle = OpenProcess(access, 0, PID);
 
                 if (this.Handle == 0)
                     ThrowLastWin32Error();

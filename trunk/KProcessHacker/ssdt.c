@@ -93,8 +93,6 @@ void SsdtRestoreEntryByCall(PVOID zwFunction, PVOID oldNtFunction, PVOID newNtFu
     PVOID oldValue = SsdtGetEntryByCall(zwFunction);
     
     InterlockedExchange(&mappedSsdtCallTable[SYSCALL_INDEX(zwFunction)], oldNtFunction);
-    
-    return oldValue;
 }
 
 void SsdtRestoreEntryByIndex(int index, PVOID oldNtFunction, PVOID newNtFunction)
@@ -102,6 +100,4 @@ void SsdtRestoreEntryByIndex(int index, PVOID oldNtFunction, PVOID newNtFunction
     PVOID oldValue = SsdtGetEntryByIndex(index);
     
     InterlockedExchange(&mappedSsdtCallTable[index], oldNtFunction);
-    
-    return oldValue;
 }

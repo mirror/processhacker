@@ -48,7 +48,7 @@ typedef struct _SSDT
     PVOID *ServiceCounterTableBase;
     ULONG NumberOfServices;
     UCHAR *ParamTableBase;
-} SSDT;
+} SSDT, *PSSDT;
 #pragma pack()
 
 #define SYSCALL_INDEX(f) (*(ULONG *)((UCHAR *)(f) + 1))

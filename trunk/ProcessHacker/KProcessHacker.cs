@@ -47,7 +47,8 @@ namespace ProcessHacker
             GiveKiServiceTable,
             SetKiServiceTableEntry,
             GetServiceLimit,
-            RestoreKiServiceTable
+            RestoreKiServiceTable,
+            KphOpenProcess
         }
 
         private Win32.FileHandle _fileHandle;
@@ -282,6 +283,19 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.GetServiceLimit), null, buffer);
 
             return Misc.BytesToInt(buffer, Misc.Endianness.Little);
+        }
+
+        public int KphOpenProcess(int pid, Win32.PROCESS_RIGHTS desiredAccess)
+        {
+            byte[] inData = new byte[8];
+            byte[] outData = new byte[4];
+
+            Array.Copy(Misc.IntToBytes(pid, Misc.Endianness.Little), 0, inData, 0, 4);
+            Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenProcess), inData, outData);
+
+            return Misc.BytesToInt(outData, Misc.Endianness.Little);
         }
 
         public byte[] Read(int address, int length)
