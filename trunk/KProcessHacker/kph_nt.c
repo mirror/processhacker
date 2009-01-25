@@ -149,13 +149,6 @@ NTSTATUS KphOpenThread(
     ULONG attributes = ObjectAttributes->Attributes;
     NTSTATUS status = STATUS_SUCCESS;
     ACCESS_STATE accessState;
-    
-    /* No one seems to know what the format of AUX_ACCESS_DATA is.
-     * ReactOS' definition is wrong because there is supposed to be 
-     * some sort of security descriptor at +11. Weird. I've inferred 
-     * from the stack frame of PsOpenProcess that AUX_ACCESS_DATA has 
-     * a size of 0x34 bytes.
-     */
     char auxData[0x34];
     PETHREAD threadObject = NULL;
     HANDLE threadHandle = NULL;
@@ -163,7 +156,6 @@ NTSTATUS KphOpenThread(
     if (hasObjectName && ClientId)
         return STATUS_INVALID_PARAMETER_MIX;
     
-    /* ReactOS code cleared this bit up for me :) */
     status = SeCreateAccessState(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
