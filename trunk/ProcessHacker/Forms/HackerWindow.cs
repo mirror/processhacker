@@ -1298,6 +1298,33 @@ namespace ProcessHacker
             listNetwork.List.Font = f;
         }
 
+        private void DeleteSettings()
+        {
+            //Type localFileSettingsProviderType = typeof(System.Configuration.LocalFileSettingsProvider);
+            //PropertyInfo storeType = 
+            //    localFileSettingsProviderType.GetProperty("Store", BindingFlags.NonPublic);
+            //object store = storeType.GetValue(Properties.Settings.Default.Properties["AlwaysOnTop"].Provider, null);
+            //MethodInfo getUserConfig =
+            //    store.GetType().GetMethod("GetUserConfig", BindingFlags.NonPublic);
+
+            //object localConfig = getUserConfig.Invoke(store, new object[] { false });
+            //object roamingConfig = getUserConfig.Invoke(store, new object[] { true });
+            //PropertyInfo filePath = localConfig.GetType().GetProperty("FilePath", BindingFlags.NonPublic);
+
+            //try { System.IO.File.Delete(filePath.GetValue(localConfig, null) as string); }
+            //catch { }
+            //try { System.IO.File.Delete(filePath.GetValue(roamingConfig, null) as string); }
+            //catch { }
+            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                + "\\wj32"))
+                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                    + "\\wj32", true);
+            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                + "\\wj32"))
+                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + "\\wj32", true); 
+        }
+
         public void DeselectAll(ListView list)
         {
             foreach (ListViewItem item in list.SelectedItems)
@@ -1450,6 +1477,35 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
+
+            // Try to get a setting. If the file is corrupt, we can reset the settings.
+            try
+            {
+                var a = Properties.Settings.Default.AlwaysOnTop;
+            }
+            catch
+            {
+                if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
+                    "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    try
+                    {
+                        this.DeleteSettings();
+                        MessageBox.Show("Process Hacker has reset your settings and will now restart.", "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Process.Start(Application.ExecutablePath);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
+                            "'wj32' in your Application Data/Local Application Data directories.",
+                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
+
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            }
 
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
