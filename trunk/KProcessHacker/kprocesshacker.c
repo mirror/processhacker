@@ -57,6 +57,18 @@ PVOID *OrigKiServiceTable = NULL;
 extern int CurrentCallCount;
 int Hooked = FALSE;
 
+NTSTATUS ZwOpenProcess2(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
+{
+    OBJECT_ATTRIBUTES objAttr = { 0 };
+    CLIENT_ID clientId;
+    
+    objAttr.Length = sizeof(objAttr);
+    clientId.UniqueThread = 0;
+    clientId.UniqueProcess = ProcessId;
+    
+    return ZwOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId);
+}
+
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     LARGE_INTEGER waitTime;
@@ -145,6 +157,61 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return STATUS_SUCCESS;
 }
 
+/* Gives our client the token of SYSTEM. If you've seen Hacker Defender's source code,
+ * this may look familiar...
+ * Note that this isn't actually used because it would break some highlighting 
+ * functionality.
+ */
+NTSTATUS GiveClientFullToken()
+{
+    NTSTATUS status;
+    int queryAccess = 
+        WindowsVersion.dwMajorVersion == 6 ? 
+        PROCESS_QUERY_LIMITED_INFORMATION : 
+        PROCESS_QUERY_INFORMATION;
+    HANDLE system;
+    
+    if (status = ZwOpenProcess2(&system, queryAccess, 4) == STATUS_SUCCESS)
+    {
+        HANDLE client;
+        
+        if (status = ZwOpenProcess2(&client, queryAccess | 
+            PROCESS_SET_INFORMATION, ClientPID) == STATUS_SUCCESS)
+        {
+            HANDLE systemToken;
+            
+            if (status = ZwOpenProcessToken(system, TOKEN_DUPLICATE, &systemToken) == STATUS_SUCCESS)
+            {
+                HANDLE dupSystemToken;
+                OBJECT_ATTRIBUTES objectAttributes = { 0 };
+                
+                objectAttributes.Length = sizeof(objectAttributes);
+                
+                if (status = ZwDuplicateToken(systemToken, TOKEN_ASSIGN_PRIMARY, &objectAttributes,
+                    FALSE, TokenPrimary, &dupSystemToken) == STATUS_SUCCESS)
+                {
+                    PROCESS_ACCESS_TOKEN token;
+                    
+                    token.Token = dupSystemToken;
+                    token.Thread = 0;
+                    
+                    status = ZwSetInformationProcess(client, ProcessAccessToken, &token, sizeof(token));
+                }
+                
+                ZwClose(dupSystemToken);
+            }
+            
+            ZwClose(systemToken);
+        }
+        
+        ZwClose(client);
+    }
+    
+    ZwClose(system);
+    
+    return status;
+}
+
 NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -167,6 +234,8 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     RtlCopyMemory(OldKiServiceTable, SsdtGetServiceTable(), SsdtGetCount() * 4);
     
     Hooked = KPHHook() == STATUS_SUCCESS;
+    
+    /* GiveClientFullToken(); */
     
     return status;
 }
@@ -276,18 +345,6 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "KphOpenThread";
     else
         return "Unknown";
-}
-
-NTSTATUS ZwOpenProcess2(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
-{
-    OBJECT_ATTRIBUTES objAttr = { 0 };
-    CLIENT_ID clientId;
-    
-    objAttr.Length = sizeof(objAttr);
-    clientId.UniqueThread = 0;
-    clientId.UniqueProcess = ProcessId;
-    
-    return ZwOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId);
 }
 
 NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)

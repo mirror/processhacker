@@ -63,4 +63,17 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
 
+NTSTATUS NTAPI ZwOpenProcessToken(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    PHANDLE TokenHandle
+    );
+
+NTSTATUS NTAPI ZwSetInformationProcess(
+    HANDLE ProcessHandle,
+    PROCESSINFOCLASS ProcessInformationClass,
+    PVOID ProcessInformation,
+    ULONG ProcessInformationLength
+    );
+
 #endif
