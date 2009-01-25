@@ -86,6 +86,14 @@ namespace ProcessHacker
         {
             if (Win32.ProcessesWithThreads.ContainsKey(_pid))
                 Win32.ProcessesWithThreads.Remove(_pid);
+
+            foreach (int tid in this.Dictionary.Keys)
+            {
+                ThreadItem item = this.Dictionary[tid];
+
+                if (item.ThreadQueryLimitedHandle != null)
+                    item.ThreadQueryLimitedHandle.Dispose();
+            }
         }
 
         private void UpdateOnce()

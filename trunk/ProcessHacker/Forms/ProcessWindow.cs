@@ -208,16 +208,16 @@ namespace ProcessHacker
             // don't try to save settings if we're inspecting DPCs or Interrupts
             if (_pid >= 0)
             {
-                _threadP.Kill();
-                _moduleP.Kill();
-                _memoryP.Kill();
-                _handleP.Kill();
-
                 listThreads.SaveSettings();
                 listModules.SaveSettings();
                 listMemory.SaveSettings();
                 listHandles.SaveSettings();
                 _tokenProps.SaveSettings();
+
+                _threadP.Kill();
+                _moduleP.Kill();
+                _memoryP.Kill();
+                _handleP.Kill();
             }
 
             Program.HackerWindow.ProcessProvider.Updated -=
