@@ -43,9 +43,10 @@
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
             this.flowThanks = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.labelFiller = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowThanks.SuspendLayout();
             this.SuspendLayout();
@@ -214,6 +215,7 @@
             this.flowThanks.Controls.Add(this.label4);
             this.flowThanks.Controls.Add(this.label3);
             this.flowThanks.Controls.Add(this.label2);
+            this.flowThanks.Controls.Add(this.labelFiller);
             this.flowThanks.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowThanks.Location = new System.Drawing.Point(177, 103);
             this.flowThanks.Name = "flowThanks";
@@ -230,6 +232,15 @@
             this.label1.Size = new System.Drawing.Size(162, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "XhmikosR - Installer, suggestions";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(199, 26);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "NTinternals - a great guide to the Native API";
             // 
             // label3
             // 
@@ -249,14 +260,14 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
             // 
-            // label4
+            // labelFiller
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 81);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(199, 26);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "NTinternals - a great guide to the Native API";
+            this.labelFiller.AutoSize = true;
+            this.labelFiller.Location = new System.Drawing.Point(6, 159);
+            this.labelFiller.Name = "labelFiller";
+            this.labelFiller.Size = new System.Drawing.Size(31, 13);
+            this.labelFiller.TabIndex = 17;
+            this.labelFiller.Text = "        ";
             // 
             // AboutWindow
             // 
@@ -311,6 +322,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelFiller;
 
     }
 }
