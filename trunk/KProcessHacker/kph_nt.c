@@ -28,13 +28,14 @@
 
 extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
+extern POBJECT_TYPE *SeTokenObjectType;
 
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
-    KPROCESSOR_MODE AccessMode,
     POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
+    PCLIENT_ID ClientId,
+    KPROCESSOR_MODE AccessMode
     )
 {
     BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
@@ -140,9 +141,9 @@ NTSTATUS KphOpenProcess(
 NTSTATUS KphOpenThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
-    KPROCESSOR_MODE AccessMode,
     POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
+    PCLIENT_ID ClientId,
+    KPROCESSOR_MODE AccessMode
     )
 {
     BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
@@ -228,6 +229,44 @@ NTSTATUS KphOpenThread(
     {
         *ThreadHandle = threadHandle;
     }
+    
+    return status;
+}
+
+NTSTATUS KphOpenProcessTokenEx(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    ULONG ObjectAttributes,
+    PHANDLE TokenHandle,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    PVOID tokenObject;
+    HANDLE tokenHandle;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (status != STATUS_SUCCESS)
+        return status;
+    
+    tokenObject = PsReferencePrimaryToken(processObject);
+    ObDereferenceObject(processObject);
+    
+    status = ObOpenObjectByPointer(
+        tokenObject,
+        ObjectAttributes,
+        0,
+        DesiredAccess,
+        *SeTokenObjectType,
+        AccessMode,
+        &tokenHandle
+        );
+    ObDereferenceObject(tokenObject);
+    
+    if (status == STATUS_SUCCESS)
+        *TokenHandle = tokenHandle;
     
     return status;
 }

@@ -26,27 +26,7 @@
 #include "kprocesshacker.h"
 #include "kernel_types.h"
 
-NTSTATUS KphOpenProcess(
-    PHANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    KPROCESSOR_MODE AccessMode,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
-    );
-
-NTSTATUS KphOpenThread(
-    PHANDLE ThreadHandle,
-    ACCESS_MASK DesiredAccess,
-    KPROCESSOR_MODE AccessMode,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
-    );
-
-NTSTATUS KphTerminateProcess(
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
-    );
-
+/* Kernel API */
 NTSTATUS NTAPI ObOpenObjectByName(
     POBJECT_ATTRIBUTES ObjectAttributes,
     POBJECT_TYPE ObjectType,
@@ -74,8 +54,33 @@ NTKERNELAPI VOID NTAPI SeDeleteAccessState(
     PACCESS_STATE AccessState
     );
 
-NTSTATUS PsTerminateProcess(
-    PEPROCESS Process,
+/* KProcessHacker versions */
+NTSTATUS KphOpenProcess(
+    PHANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenThread(
+    PHANDLE ThreadHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenProcessTokenEx(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    ULONG ObjectAttributes,
+    PHANDLE TokenHandle,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphTerminateProcess(
+    HANDLE ProcessHandle,
     NTSTATUS ExitStatus
     );
 

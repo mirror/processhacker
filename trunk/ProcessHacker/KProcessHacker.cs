@@ -51,7 +51,8 @@ namespace ProcessHacker
             KphOpenProcess,
             GetProcessProtected,
             SetProcessProtected,
-            KphOpenThread
+            KphOpenThread,
+            KphOpenProcessToken
         }
 
         private Win32.FileHandle _fileHandle;
@@ -307,6 +308,19 @@ namespace ProcessHacker
             Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
 
             _fileHandle.IoControl(CtlCode(Control.KphOpenProcess), inData, outData);
+
+            return Misc.BytesToInt(outData, Misc.Endianness.Little);
+        }
+
+        public int KphOpenProcessToken(Win32.ProcessHandle processHandle, Win32.TOKEN_RIGHTS desiredAccess)
+        {
+            byte[] inData = new byte[8];
+            byte[] outData = new byte[4];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inData, 0, 4);
+            Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenProcessToken), inData, outData);
 
             return Misc.BytesToInt(outData, Misc.Endianness.Little);
         }

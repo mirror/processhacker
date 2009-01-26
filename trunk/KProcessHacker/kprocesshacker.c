@@ -343,6 +343,8 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "Set Process Protected";
     else if (ControlCode == KPH_OPENTHREAD)
         return "KphOpenThread";
+    else if (ControlCode == KPH_OPENPROCESSTOKEN)
+        return "KphOpenProcessTokenEx";
     else
         return "Unknown";
 }
@@ -619,7 +621,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
             
-            if (inLength < 8)
+            if (inLength < 8 || outLength < 4)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -632,9 +634,9 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             status = KphOpenProcess(
                 (PHANDLE)dataBuffer,
                 desiredAccess,
-                UserMode,
                 &objectAttributes,
-                &clientId
+                &clientId,
+                UserMode
                 );
             
             if (status != STATUS_SUCCESS)
@@ -700,7 +702,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
             
-            if (inLength < 8)
+            if (inLength < 8 || outLength < 4)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -713,9 +715,38 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             status = KphOpenThread(
                 (PHANDLE)dataBuffer,
                 desiredAccess,
-                UserMode,
                 &objectAttributes,
-                &clientId
+                &clientId,
+                UserMode
+                );
+            
+            if (status != STATUS_SUCCESS)
+                goto IoControlEnd;
+            
+            retLength = 4;
+        }
+        break;
+        
+        case KPH_OPENPROCESSTOKEN:
+        {
+            HANDLE processHandle;
+            int desiredAccess;
+            
+            if (inLength < 8 || outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            desiredAccess = *(int *)(dataBuffer + 4);
+            
+            status = KphOpenProcessTokenEx(
+                processHandle,
+                desiredAccess,
+                0,
+                (PHANDLE)dataBuffer,
+                UserMode
                 );
             
             if (status != STATUS_SUCCESS)

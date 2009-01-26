@@ -63,8 +63,15 @@ namespace ProcessHacker
             {
                 int h;
 
-                if (!OpenProcessToken(handle.Handle, access, out h))
-                    ThrowLastWin32Error();
+                if (Program.KPH != null)
+                {
+                    h = Program.KPH.KphOpenProcessToken(handle, access);
+                }
+                else
+                {
+                    if (!OpenProcessToken(handle, access, out h))
+                        ThrowLastWin32Error();
+                }
 
                 this.Handle = h;
             }
@@ -78,7 +85,7 @@ namespace ProcessHacker
             {
                 int h;
 
-                if (!OpenThreadToken(handle.Handle, access, false, out h))
+                if (!OpenThreadToken(handle, access, false, out h))
                     ThrowLastWin32Error();
 
                 this.Handle = h;
