@@ -77,6 +77,9 @@ namespace ProcessHacker
             tableCPUs.Visible = true;
             tableCPUs.Visible = false;
             checkShowOneGraphPerCPU.Checked = Properties.Settings.Default.ShowOneGraphPerCPU;
+
+            if (_noOfCPUs == 1)
+                checkShowOneGraphPerCPU.Enabled = false;
         }
 
         public void Start()
