@@ -54,6 +54,14 @@ NTKERNELAPI VOID NTAPI SeDeleteAccessState(
     PACCESS_STATE AccessState
     );
 
+NTSTATUS PsSuspendProcess(
+    PEPROCESS Process
+    );
+
+NTSTATUS PsResumeProcess(
+    PEPROCESS Process
+    );
+
 /* KProcessHacker versions */
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
@@ -77,6 +85,14 @@ NTSTATUS KphOpenProcessTokenEx(
     ULONG ObjectAttributes,
     PHANDLE TokenHandle,
     KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphSuspendProcess(
+    HANDLE ProcessHandle
+    );
+
+NTSTATUS KphResumeProcess(
+    HANDLE ProcessHandle
     );
 
 NTSTATUS KphTerminateProcess(

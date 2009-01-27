@@ -62,10 +62,10 @@ NTSTATUS KphOpenProcess(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((char *)PsProcessType + 52)
+        (PGENERIC_MAPPING)((PCHAR)*PsProcessType + 52)
         );
     
-    if (status != STATUS_SUCCESS)
+    if (!NT_SUCCESS(status))
     {
         return status;
     }
@@ -102,7 +102,7 @@ NTSTATUS KphOpenProcess(
             status = PsLookupProcessByProcessId(ClientId->UniqueProcess, &processObject);
         }
         
-        if (status != STATUS_SUCCESS)
+        if (!NT_SUCCESS(status))
         {
             SeDeleteAccessState(&accessState);
             return status;
@@ -130,7 +130,7 @@ NTSTATUS KphOpenProcess(
         return STATUS_INVALID_PARAMETER_MIX;
     }
     
-    if (status == STATUS_SUCCESS)
+    if (NT_SUCCESS(status))
     {
         *ProcessHandle = processHandle;
     }
@@ -161,10 +161,10 @@ NTSTATUS KphOpenThread(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((char *)PsThreadType + 52)
+        (PGENERIC_MAPPING)((PCHAR)*PsThreadType + 52)
         );
     
-    if (status != STATUS_SUCCESS)
+    if (!NT_SUCCESS(status))
     {
         return status;
     }
@@ -200,7 +200,7 @@ NTSTATUS KphOpenThread(
             status = PsLookupThreadByThreadId(ClientId->UniqueThread, &threadObject);
         }
         
-        if (status != STATUS_SUCCESS)
+        if (!NT_SUCCESS(status))
         {
             SeDeleteAccessState(&accessState);
             return status;
@@ -225,7 +225,7 @@ NTSTATUS KphOpenThread(
         return STATUS_INVALID_PARAMETER_MIX;
     }
     
-    if (status == STATUS_SUCCESS)
+    if (NT_SUCCESS(status))
     {
         *ThreadHandle = threadHandle;
     }
@@ -248,7 +248,7 @@ NTSTATUS KphOpenProcessTokenEx(
     
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
-    if (status != STATUS_SUCCESS)
+    if (!NT_SUCCESS(status))
         return status;
     
     tokenObject = PsReferencePrimaryToken(processObject);
@@ -265,8 +265,44 @@ NTSTATUS KphOpenProcessTokenEx(
         );
     ObDereferenceObject(tokenObject);
     
-    if (status == STATUS_SUCCESS)
+    if (NT_SUCCESS(status))
         *TokenHandle = tokenHandle;
+    
+    return status;
+}
+
+NTSTATUS KphSuspendProcess(
+    HANDLE ProcessHandle
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsSuspendProcess(processObject);
+    ObDereferenceObject(processObject);
+    
+    return status;
+}
+
+NTSTATUS KphResumeProcess(
+    HANDLE ProcessHandle
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsResumeProcess(processObject);
+    ObDereferenceObject(processObject);
     
     return status;
 }
@@ -281,7 +317,7 @@ NTSTATUS KphTerminateProcess(
     
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
-    if (status != STATUS_SUCCESS)
+    if (!NT_SUCCESS(status))
         return status;
     
     /* status = PsTerminateProcess(processObject, ExitStatus); */
