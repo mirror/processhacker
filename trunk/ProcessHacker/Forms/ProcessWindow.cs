@@ -282,9 +282,9 @@ namespace ProcessHacker
                         textFileCompany.Text += " (not verified)";
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                textFileDescription.Text = "(" + ex.Message + ")";
+                textFileDescription.Text = "";
                 textFileCompany.Text = "";
             }
 

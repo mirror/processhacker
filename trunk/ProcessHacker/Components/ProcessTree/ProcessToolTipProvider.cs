@@ -70,7 +70,8 @@ namespace ProcessHacker
 
                 string runDllText = "";
 
-                if (pNode.ProcessItem.FileName.ToLower() == (Environment.SystemDirectory + "\\rundll32.exe").ToLower() && 
+                if (pNode.ProcessItem.FileName != null && 
+                    pNode.ProcessItem.FileName.ToLower() == (Environment.SystemDirectory + "\\rundll32.exe").ToLower() && 
                     pNode.ProcessItem.CmdLine != null)
                 {
                     try
@@ -122,30 +123,35 @@ namespace ProcessHacker
 
                 string otherNotes = "";
 
-                if (pNode.ProcessItem.IsPacked && pNode.ProcessItem.ImportModules > 0)
-                    otherNotes += "\n    Image is probably packed - has " +
-                        pNode.ProcessItem.ImportFunctions.ToString() + " imports over " +
-                        pNode.ProcessItem.ImportModules.ToString() + " modules.";
-                else if (pNode.ProcessItem.IsPacked)
-                    otherNotes += "\n    Image is probably packed - error reading PE file.";
-
-                if (Properties.Settings.Default.VerifySignatures)
+                try
                 {
-                    if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.Trusted)
-                        otherNotes += "\n    Signature present and verified.";
-                    else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.TrustedInstaller)
-                        otherNotes += "\n    Verified Windows component.";
-                    else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
-                        otherNotes += "\n    Signature present but invalid.";
+                    if (pNode.ProcessItem.IsPacked && pNode.ProcessItem.ImportModules > 0)
+                        otherNotes += "\n    Image is probably packed - has " +
+                            pNode.ProcessItem.ImportFunctions.ToString() + " imports over " +
+                            pNode.ProcessItem.ImportModules.ToString() + " modules.";
+                    else if (pNode.ProcessItem.IsPacked)
+                        otherNotes += "\n    Image is probably packed - error reading PE file.";
 
-                    if (Properties.Settings.Default.ImposterNames.Contains(pNode.Name.ToLower()) &&
-                        pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
-                        pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller)
-                        otherNotes += "\n    Process is using the name of a known process but its signature could not be verified.";
+                    if (Properties.Settings.Default.VerifySignatures && pNode.ProcessItem.FileName != null)
+                    {
+                        if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.Trusted)
+                            otherNotes += "\n    Signature present and verified.";
+                        else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.TrustedInstaller)
+                            otherNotes += "\n    Verified Windows component.";
+                        else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
+                            otherNotes += "\n    Signature present but invalid.";
+
+                        if (Properties.Settings.Default.ImposterNames.Contains(pNode.Name.ToLower()) &&
+                            pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
+                            pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller)
+                            otherNotes += "\n    Process is using the name of a known process but its signature could not be verified.";
+                    }
+
+                    if (otherNotes != "")
+                        otherNotes = "\nNotes:" + otherNotes;
                 }
-
-                if (otherNotes != "")
-                    otherNotes = "\nNotes:" + otherNotes;
+                catch
+                { }
 
                 return (cmdText + fileText + otherNotes + runDllText + servicesText).Trim(' ', '\n', '\r');
             }

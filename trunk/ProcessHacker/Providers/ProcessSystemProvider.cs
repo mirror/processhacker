@@ -259,8 +259,25 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
-                    if (pid != 0)
+                    if (pid > 0)
                     {
+                        item.ParentPID = processInfo.InheritedFromProcessId;
+                        item.HasParent = true;
+
+                        if (!procs.ContainsKey(item.ParentPID))
+                        {
+                            item.HasParent = false;
+                        }
+                        else if (procs.ContainsKey(item.ParentPID))
+                        {
+                            // check the parent's creation time to see if it's actually the parent
+                            long parentStartTime = procs[item.ParentPID].Process.CreateTime;
+                            long thisStartTime = processInfo.CreateTime;
+
+                            if (parentStartTime > thisStartTime)
+                                item.HasParent = false;
+                        }
+
                         try
                         {
                             item.ProcessQueryHandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
@@ -274,10 +291,7 @@ namespace ProcessHacker
                         }
                         catch
                         { }
-                    }
 
-                    if (pid != 0)
-                    {
                         try
                         {
                             item.ProcessQueryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
@@ -300,45 +314,12 @@ namespace ProcessHacker
 
                             try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
                             catch { }
-
-                            try
-                            {
-                                item.ParentPID = item.ProcessQueryLimitedHandle.GetParentPID();
-                                item.HasParent = true;
-
-                                if (!procs.ContainsKey(item.ParentPID))
-                                {
-                                    item.HasParent = false;
-                                }
-                                else if (pid > 4 && item.ParentPID == 0)
-                                {
-                                    // the PID is 0 for processes we got Access Denied on, 
-                                    // but they don't really have System Idle Process 
-                                    // as their parent.
-                                    item.ParentPID = -1;
-                                    item.HasParent = false;
-                                }
-                                else
-                                {
-                                    // check the parent's creation time to see if it's actually the parent
-                                    long parentStartTime = procs[item.ParentPID].Process.CreateTime;
-                                    long thisStartTime = processInfo.CreateTime;
-
-                                    if (parentStartTime > thisStartTime)
-                                        item.HasParent = false;
-                                }
-                            }
-                            catch
-                            {
-                                item.ParentPID = -1;
-                                item.HasParent = false;
-                            }
                         }
                         catch
                         { }
                     }
 
-                    if (pid != 0)
+                    if (pid > 0)
                     {
                         if (pid != 4)
                         {
@@ -434,34 +415,39 @@ namespace ProcessHacker
                     // 1. the function-to-library ratio is lower than 4
                     //   (on average less than 4 functions are imported from each library)
                     // 2. it references more than 3 libraries
-                    try
+                    if (item.FileName != null)
                     {
-                        var peFile = new PE.PEFile(item.FileName);
-
-                        if (peFile.ImportData != null)
+                        try
                         {
-                            int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
-                            int funcTotal = 0;
+                            var peFile = new PE.PEFile(item.FileName);
 
-                            foreach (var i in peFile.ImportData.ImportLookupTable)
-                                funcTotal += i.Count;
+                            if (peFile.ImportData != null)
+                            {
+                                int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
+                                int funcTotal = 0;
 
-                            item.ImportModules = libraryTotal;
-                            item.ImportFunctions = funcTotal;
+                                foreach (var i in peFile.ImportData.ImportLookupTable)
+                                    funcTotal += i.Count;
 
-                            if (
-                                libraryTotal < 3 && funcTotal < 5 || 
-                                ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
-                                )
+                                item.ImportModules = libraryTotal;
+                                item.ImportFunctions = funcTotal;
+
+                                if (
+                                    libraryTotal < 3 && funcTotal < 5 ||
+                                    ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
+                                    )
+                                    item.IsPacked = true;
+                            }
+                        }
+                        catch
+                        {
+                            // we can't read it, so...
+                            if (pid > 4)
                                 item.IsPacked = true;
                         }
                     }
-                    catch
-                    {
-                        // we can't read it, so...
-                        if (pid > 4)
-                            item.IsPacked = true;
-                    }
+
+                    item.VerifyResult = Win32.VerifyResult.NoSignature;
 
                     if (Properties.Settings.Default.VerifySignatures)
                     {
