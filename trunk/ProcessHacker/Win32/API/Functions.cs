@@ -179,6 +179,9 @@ namespace ProcessHacker
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int ZwAlertThread(int ThreadHandle);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwOpenSymbolicLinkObject(out int LinkHandle, int DesiredAccess,
             ref OBJECT_ATTRIBUTES ObjectAttributes);
 
@@ -696,6 +699,9 @@ namespace ProcessHacker
         #endregion
 
         #region Threads
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool QueueUserAPC(int APC, int ThreadHandle, int Data);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetExitCodeThread(int ThreadHandle, out int ExitCode);

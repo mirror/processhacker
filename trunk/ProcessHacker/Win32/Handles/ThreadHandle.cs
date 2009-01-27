@@ -72,6 +72,15 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Puts the thread in an alerted state.
+            /// </summary>
+            public void Alert()
+            {
+                if (ZwAlertThread(this) != 0)
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
             /// Gets the thread's basic information.
             /// </summary>
             /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
@@ -130,6 +139,18 @@ namespace ProcessHacker
                     ThrowLastWin32Error();
 
                 return (System.Diagnostics.ThreadPriorityLevel)priority;
+            }
+
+            /// <summary>
+            /// Adds an user-mode asynchronous procedure call (APC) to the thread's APC queue.
+            /// This requires the THREAD_SET_CONTEXT permission.
+            /// </summary>
+            /// <param name="address">The address of the APC procedure.</param>
+            /// <param name="parameter">The parameter to pass to the procedure.</param>
+            public void QueueAPC(int address, int parameter)
+            {
+                if (!QueueUserAPC(address, this, parameter))
+                    ThrowLastWin32Error();
             }
 
             /// <summary>
