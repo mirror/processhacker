@@ -4,6 +4,7 @@ Process Hacker
  * FIXED:
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges
+   * "Require signatures for" names are now forced to be lower-case
 
 1.3.2.0
  * NEW:

@@ -115,7 +115,7 @@ namespace ProcessHacker
                 if (s.Trim() == "")
                     continue;
 
-                Properties.Settings.Default.ImposterNames.Add(s.Trim());
+                Properties.Settings.Default.ImposterNames.Add(s.Trim().ToLower());
             }
 
             if (checkEnableKPH.Checked && !Properties.Settings.Default.EnableKPH)
