@@ -108,7 +108,7 @@ namespace ProcessHacker
                 return true;
             }
 
-            // bad
+            // HACK
             Application.DoEvents();
 
             return false;
