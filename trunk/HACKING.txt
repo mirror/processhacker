@@ -21,8 +21,8 @@ GUIDE TO DIRECTORY ORGANIZATION
   * The build script (build.cmd) assumes that you have MinGW installed and 
     have added it to the PATH environment variable.
 * KProcessHacker - the kernel-mode component of Process Hacker. Provides 
-  Process Hacker with handle names and (optionally) can unhook syscalls 
-  just for Process Hacker. Only one client can connect at a time, though.
+  Process Hacker with handle names and provides custom versions of Nt* 
+  API functions. Only one client can connect at a time, though.
 * ProcessHacker - contains all of Process Hacker's source code.
   * Asm - this contains the assembler and disassembler, converted to unsafe 
     C# code from Oleh Yuschuk's Free Disassembler and Assembler.
@@ -58,4 +58,5 @@ GUIDE TO DIRECTORY ORGANIZATION
 
 TODO:
  * Clean up state highlighting - have one master class with ONE timer controlling 
-   multiple providers
+   multiple providers.
+ * Make ComboBoxPickerWindow more flexible and get rid of EditDEPWindow.
