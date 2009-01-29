@@ -37,6 +37,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.buttonFont = new System.Windows.Forms.Button();
             this.textImposterNames = new System.Windows.Forms.TextBox();
             this.label21 = new System.Windows.Forms.Label();
             this.checkEnableKPH = new System.Windows.Forms.CheckBox();
@@ -83,7 +84,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label17 = new System.Windows.Forms.Label();
-            this.buttonFont = new System.Windows.Forms.Button();
+            this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -133,7 +134,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 362);
+            this.buttonClose.Location = new System.Drawing.Point(362, 382);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -192,7 +193,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 344);
+            this.tabControl.Size = new System.Drawing.Size(425, 364);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -200,6 +201,7 @@
             this.tabGeneral.Controls.Add(this.buttonFont);
             this.tabGeneral.Controls.Add(this.textImposterNames);
             this.tabGeneral.Controls.Add(this.label21);
+            this.tabGeneral.Controls.Add(this.checkHideHandlesWithNoName);
             this.tabGeneral.Controls.Add(this.checkEnableKPH);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
@@ -216,10 +218,21 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 318);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 338);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // buttonFont
+            // 
+            this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonFont.Location = new System.Drawing.Point(6, 110);
+            this.buttonFont.Name = "buttonFont";
+            this.buttonFont.Size = new System.Drawing.Size(75, 23);
+            this.buttonFont.TabIndex = 15;
+            this.buttonFont.Text = "Font...";
+            this.buttonFont.UseVisualStyleBackColor = true;
+            this.buttonFont.Click += new System.EventHandler(this.buttonFont_Click);
             // 
             // textImposterNames
             // 
@@ -241,7 +254,7 @@
             // 
             this.checkEnableKPH.AutoSize = true;
             this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 283);
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 307);
             this.checkEnableKPH.Name = "checkEnableKPH";
             this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
             this.checkEnableKPH.TabIndex = 12;
@@ -346,7 +359,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 286);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 318);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -564,7 +577,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 286);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 318);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -682,23 +695,23 @@
             this.label17.TabIndex = 10;
             this.label17.Text = "CPU Kernel Time:";
             // 
-            // buttonFont
+            // checkHideHandlesWithNoName
             // 
-            this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFont.Location = new System.Drawing.Point(6, 110);
-            this.buttonFont.Name = "buttonFont";
-            this.buttonFont.Size = new System.Drawing.Size(75, 23);
-            this.buttonFont.TabIndex = 15;
-            this.buttonFont.Text = "Font...";
-            this.buttonFont.UseVisualStyleBackColor = true;
-            this.buttonFont.Click += new System.EventHandler(this.buttonFont_Click);
+            this.checkHideHandlesWithNoName.AutoSize = true;
+            this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 283);
+            this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
+            this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
+            this.checkHideHandlesWithNoName.TabIndex = 12;
+            this.checkHideHandlesWithNoName.Text = "Hide handles with no name";
+            this.checkHideHandlesWithNoName.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 397);
+            this.ClientSize = new System.Drawing.Size(449, 417);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -780,5 +793,6 @@
         private System.Windows.Forms.TextBox textImposterNames;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button buttonFont;
+        private System.Windows.Forms.CheckBox checkHideHandlesWithNoName;
     }
 }

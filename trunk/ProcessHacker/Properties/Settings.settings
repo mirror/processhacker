@@ -137,9 +137,6 @@
     <Setting Name="ShowIcon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="HideHandlesNoName" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="ServiceListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -249,6 +246,9 @@
     </Setting>
     <Setting Name="Font" Type="System.Drawing.Font" Scope="User">
       <Value Profile="(Default)">Microsoft Sans Serif, 8.25pt</Value>
+    </Setting>
+    <Setting Name="HideHandlesWithNoName" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

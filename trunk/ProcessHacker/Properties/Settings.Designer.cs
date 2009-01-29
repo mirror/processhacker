@@ -565,18 +565,6 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool HideHandlesNoName {
-            get {
-                return ((bool)(this["HideHandlesNoName"]));
-            }
-            set {
-                this["HideHandlesNoName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ServiceListViewColumns {
             get {
@@ -952,6 +940,18 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["Font"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HideHandlesWithNoName {
+            get {
+                return ((bool)(this["HideHandlesWithNoName"]));
+            }
+            set {
+                this["HideHandlesWithNoName"] = value;
             }
         }
     }

@@ -84,7 +84,7 @@ namespace ProcessHacker
                         info = Win32.GetHandleInfo(processHandle, processHandles[h]);
 
                         if ((info.BestName == null || info.BestName == "") &&
-                            Properties.Settings.Default.HideHandlesNoName)
+                            HideHandlesWithNoName)
                             continue;
                     }
                     catch
@@ -104,6 +104,8 @@ namespace ProcessHacker
             processHandle.Dispose();
             Dictionary = newdictionary;
         }
+
+        public bool HideHandlesWithNoName { get; set; }
 
         public int PID
         {

@@ -5,6 +5,9 @@ Process Hacker
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges
    * "Require signatures for" names are now forced to be lower-case
+   * "Hide handles with no name" is now unique to each process window - 
+     changing it in one window does not affect others
+   * Dialog/input boxes are now more consistent
 
 1.3.2.0
  * NEW:

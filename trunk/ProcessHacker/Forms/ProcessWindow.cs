@@ -144,7 +144,7 @@ namespace ProcessHacker
             // load settings
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
-            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesNoName;
+            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
 
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
@@ -414,6 +414,7 @@ namespace ProcessHacker
             listHandles.BeginUpdate();
             listHandles.Highlight = false;
             _handleP = new HandleProvider(_pid);
+            _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
             _handleP.Interval = Properties.Settings.Default.RefreshInterval;
             _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
             _handleP.RunOnceAsync();
@@ -831,19 +832,23 @@ namespace ProcessHacker
 
         private void checkHideFreeRegions_CheckedChanged(object sender, EventArgs e)
         {
-            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
+            checkHideFreeRegions.Enabled = false;
+            this.Cursor = Cursors.WaitCursor;
+            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;  
+            _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
         }
 
         private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.HideHandlesNoName = checkHideHandlesNoName.Checked;
-
             if (_handleP != null)
             {
+                checkHideHandlesNoName.Enabled = false;
+                this.Cursor = Cursors.WaitCursor;
                 _handleP.Kill();
                 listHandles.BeginUpdate();
                 listHandles.Highlight = false;
                 _handleP = new HandleProvider(_pid);
+                _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
                 _handleP.Interval = Properties.Settings.Default.RefreshInterval;
                 _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
                 _handleP.RunOnceAsync();
@@ -921,6 +926,8 @@ namespace ProcessHacker
                 {
                     listMemory.EndUpdate();
                     listMemory.Highlight = true;
+                    checkHideFreeRegions.Enabled = true;
+                    this.Cursor = Cursors.Default;
                 }));
                 _memoryP.Updated -= new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
             }
@@ -934,8 +941,10 @@ namespace ProcessHacker
                 {
                     listHandles.EndUpdate();
                     listHandles.Highlight = true;
+                    checkHideHandlesNoName.Enabled = true;
+                    this.Cursor = Cursors.Default;
                 }));
-                _handleP.Updated -= new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+                _handleP.Updated -= new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
             }
         }
 
