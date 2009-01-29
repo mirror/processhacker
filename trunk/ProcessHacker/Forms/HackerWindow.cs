@@ -42,8 +42,6 @@ namespace ProcessHacker
 
         #region Variables
 
-        public int RefreshInterval = 1000;
-
         public HelpWindow HelpForm = new HelpWindow();
         public SysInfoWindow SysInfoWindow = null;
         public HandleFilterWindow HandleFilterForm = new HandleFilterWindow();
@@ -285,8 +283,10 @@ namespace ProcessHacker
             options.TopMost = this.TopMost;
             options.ShowDialog();
 
-            RefreshInterval = Properties.Settings.Default.RefreshInterval;
-            timerFire.Interval = RefreshInterval;
+            processP.Interval = Properties.Settings.Default.RefreshInterval;
+            serviceP.Interval = Properties.Settings.Default.RefreshInterval;
+            networkP.Interval = Properties.Settings.Default.RefreshInterval;
+            timerFire.Interval = Properties.Settings.Default.RefreshInterval;
         }
 
         private void helpMenuItem_Click(object sender, EventArgs e)
@@ -1339,7 +1339,6 @@ namespace ProcessHacker
 
         private void LoadSettings()
         {
-            RefreshInterval = Properties.Settings.Default.RefreshInterval;
             this.Location = Properties.Settings.Default.WindowLocation;
             this.Size = Properties.Settings.Default.WindowSize;
             this.WindowState = Properties.Settings.Default.WindowState;
@@ -1363,8 +1362,6 @@ namespace ProcessHacker
 
         private void SaveSettings()
         {
-            Properties.Settings.Default.RefreshInterval = RefreshInterval;
-
             if (this.WindowState == FormWindowState.Normal && this.Visible)
             {
                 Properties.Settings.Default.WindowLocation = this.Location;
@@ -1577,7 +1574,7 @@ namespace ProcessHacker
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
 
-            timerFire.Interval = RefreshInterval;
+            timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             timerFire.Enabled = true;
             timerFire_Tick(null, null);
 
@@ -1591,7 +1588,7 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = GenericViewMenu.GetMenu(listNetwork.List);
 
-            processP.Interval = RefreshInterval;
+            processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
             processP.RunOnceAsync();
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
@@ -1604,7 +1601,7 @@ namespace ProcessHacker
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightedListViewItem.StateHighlighting = false;
             listServices.List.BeginUpdate();
-            serviceP.Interval = RefreshInterval;
+            serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             listServices.Provider = serviceP;
             serviceP.RunOnceAsync();
             serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
@@ -1613,7 +1610,7 @@ namespace ProcessHacker
             serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
 
-            networkP.Interval = RefreshInterval;
+            networkP.Interval = Properties.Settings.Default.RefreshInterval;
             listNetwork.Provider = networkP;
             networkP.RunOnceAsync();
             networkP.Enabled = true;

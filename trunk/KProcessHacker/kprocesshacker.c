@@ -345,6 +345,10 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "KphOpenThread";
     else if (ControlCode == KPH_OPENPROCESSTOKEN)
         return "KphOpenProcessTokenEx";
+    else if (ControlCode == KPH_SUSPENDPROCESS)
+        return "KphSuspendProcess";
+    else if (ControlCode == KPH_RESUMEPROCESS)
+        return "KphResumeProcess";
     else
         return "Unknown";
 }
@@ -753,6 +757,38 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             retLength = 4;
+        }
+        break;
+        
+        case KPH_SUSPENDPROCESS:
+        {
+            HANDLE processHandle;
+            
+            if (inLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            
+            status = KphSuspendProcess(processHandle);
+        }
+        break;
+        
+        case KPH_RESUMEPROCESS:
+        {
+            HANDLE processHandle;
+            
+            if (inLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            
+            status = KphResumeProcess(processHandle);
         }
         break;
         

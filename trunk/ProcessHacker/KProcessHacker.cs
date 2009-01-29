@@ -52,7 +52,9 @@ namespace ProcessHacker
             GetProcessProtected,
             SetProcessProtected,
             KphOpenThread,
-            KphOpenProcessToken
+            KphOpenProcessToken,
+            KphSuspendProcess,
+            KphResumeProcess
         }
 
         private Win32.FileHandle _fileHandle;
@@ -336,6 +338,18 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.KphOpenThread), inData, outData);
 
             return Misc.BytesToInt(outData, Misc.Endianness.Little);
+        }
+
+        public void KphResumeProcess(Win32.ProcessHandle processHandle)
+        {
+            _fileHandle.IoControl(CtlCode(Control.KphResumeProcess),
+                Misc.IntToBytes(processHandle, Misc.Endianness.Little), null);
+        }
+
+        public void KphSuspendProcess(Win32.ProcessHandle processHandle)
+        {
+            _fileHandle.IoControl(CtlCode(Control.KphSuspendProcess), 
+                Misc.IntToBytes(processHandle, Misc.Endianness.Little), null);
         }
 
         public byte[] Read(int address, int length)
