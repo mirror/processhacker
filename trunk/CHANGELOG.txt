@@ -2,7 +2,8 @@ Process Hacker
 
 1.3.2.5
  * NEW:
-   * Suspend and Resume functions for processes now use KProcessHacker
+   * CSR Processes tool - displays hidden processes (this does not detect Hacker 
+     Defender but does detect simple kernel-mode rootkits)
  * FIXED:
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges

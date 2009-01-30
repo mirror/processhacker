@@ -35,6 +35,8 @@ namespace ProcessHacker
         public CSRProcessesWindow()
         {
             InitializeComponent();
+
+            listProcesses.ContextMenu = GenericViewMenu.GetMenu(listProcesses);
         }
 
         private void CSRProcessesWindow_Load(object sender, EventArgs e)
@@ -105,7 +107,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION);
+                    var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
                     var item = listProcesses.Items.Add(new ListViewItem(new string[]
                     {
                         Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName()),
