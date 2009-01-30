@@ -190,6 +190,9 @@
     <EmbeddedResource Include="Forms\ComboBoxPickerWindow.resx">
       <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CSRProcesses.resx">
+      <DependentUpon>CSRProcesses.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditDEPWindow.resx">
       <DependentUpon>EditDEPWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -405,6 +408,12 @@
     </Compile>
     <Compile Include="Forms\ComboBoxPickerWindow.Designer.cs">
       <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CSRProcesses.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CSRProcesses.Designer.cs">
+      <DependentUpon>CSRProcesses.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\EditDEPWindow.cs">
       <SubType>Form</SubType>

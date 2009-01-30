@@ -116,6 +116,7 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.csrProcessesMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -458,8 +459,9 @@
             // toolsMenuItem
             // 
             this.toolsMenuItem.Index = 1;
+            this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.csrProcessesMenuItem});
             this.toolsMenuItem.Text = "&Tools";
-            this.toolsMenuItem.Visible = false;
             // 
             // windowMenuItem
             // 
@@ -468,7 +470,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 300);
+            this.statusBar.Location = new System.Drawing.Point(0, 352);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -527,7 +529,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 300);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 352);
             this.tabControlBig.TabIndex = 6;
             this.tabControlBig.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -537,7 +539,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 274);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 326);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -548,7 +550,7 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 268);
+            this.treeProcesses.Size = new System.Drawing.Size(790, 320);
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.DoubleClick += new System.EventHandler(this.treeProcesses_DoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
@@ -758,11 +760,17 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // csrProcessesMenuItem
+            // 
+            this.csrProcessesMenuItem.Index = 0;
+            this.csrProcessesMenuItem.Text = "&CSR Processes...";
+            this.csrProcessesMenuItem.Click += new System.EventHandler(this.csrProcessesMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 322);
+            this.ClientSize = new System.Drawing.Size(804, 374);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;
@@ -876,6 +884,7 @@
         private System.Windows.Forms.TabPage tabNetwork;
         private NetworkList listNetwork;
         private System.Windows.Forms.MenuItem sysInformationIconMenuItem;
+        private System.Windows.Forms.MenuItem csrProcessesMenuItem;
     }
 }
 

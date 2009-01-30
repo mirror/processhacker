@@ -44,7 +44,8 @@ namespace ProcessHacker
 
         public HelpWindow HelpForm = new HelpWindow();
         public SysInfoWindow SysInfoWindow = null;
-        public HandleFilterWindow HandleFilterForm = new HandleFilterWindow();
+        public HandleFilterWindow HandleFilterWindow = new HandleFilterWindow();
+        public CSRProcessesWindow CSRProcessesWindow = new CSRProcessesWindow();
 
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
@@ -218,8 +219,8 @@ namespace ProcessHacker
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
-            HandleFilterForm.Show();
-            HandleFilterForm.Activate();
+            HandleFilterWindow.Show();
+            HandleFilterWindow.Activate();
         }
 
         private void inspectPEFileMenuItem_Click(object sender, EventArgs e)
@@ -253,6 +254,18 @@ namespace ProcessHacker
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }    
+
+        private void sysInfoMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SysInfoWindow == null)
+            {
+                SysInfoWindow = new SysInfoWindow();
+            }
+
+            SysInfoWindow.Show();
+            SysInfoWindow.Activate();
+            SysInfoWindow.Start();
         }
 
         private void logMenuItem_Click(object sender, EventArgs e)
@@ -300,16 +313,10 @@ namespace ProcessHacker
             this.Close();
         }     
 
-        private void sysInfoMenuItem_Click(object sender, EventArgs e)
+        private void csrProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            if (SysInfoWindow == null)
-            {
-                SysInfoWindow = new SysInfoWindow();
-            }
-
-            SysInfoWindow.Show();
-            SysInfoWindow.Activate();
-            SysInfoWindow.Start();
+            CSRProcessesWindow.Show();
+            CSRProcessesWindow.Activate();
         }
 
         #endregion
@@ -1400,7 +1407,11 @@ namespace ProcessHacker
 
         private void UpdateStatusInfo()
         {
-            statusGeneral.Text = string.Format("{0} processes", processP.Dictionary.Count);
+            if (processP.RunCount >= 1)
+                statusGeneral.Text = string.Format("{0} processes", processP.Dictionary.Count - 2);
+            else
+                statusGeneral.Text = "Loading...";
+
             statusCPU.Text = "CPU: " + (processP.CurrentCPUUsage * 100).ToString("N2") + "%";
             processP.UpdatePerformance();
             statusMemory.Text = "Phys. Memory: " +
@@ -1509,6 +1520,9 @@ namespace ProcessHacker
                 runAsMenuItem.Enabled = false;
                 runAsProcessMenuItem.Visible = false;
             }
+
+            if (Program.KPH == null)
+                toolsMenuItem.Visible = false;
 
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
