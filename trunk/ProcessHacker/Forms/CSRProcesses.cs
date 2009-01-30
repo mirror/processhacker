@@ -40,10 +40,12 @@ namespace ProcessHacker
         private void CSRProcessesWindow_Load(object sender, EventArgs e)
         {
             buttonScan.Select();
+            ColumnSettings.LoadSettings(Properties.Settings.Default.CSRProcessesColumns, listProcesses);
         }
 
         private void CSRProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Properties.Settings.Default.CSRProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
             e.Cancel = true;
             this.Hide();
         }
@@ -56,18 +58,16 @@ namespace ProcessHacker
             var handles = Win32.EnumHandles();
 
             // Step 1: Get the PIDs of csrss.exe processes and open them. There is one server for each session.   
-            var csrPIDs = new List<int>();
-            var csrProcesses = new List<Win32.ProcessHandle>();
+            var csrProcesses = new Dictionary<int, Win32.ProcessHandle>();
 
             foreach (var process in processes.Values)
             {
-                if (process.Name.ToLower() == "csrss.exe")
+                if (process.Name != null && process.Name.ToLower() == "csrss.exe")
                 {
                     try
                     {
-                        csrProcesses.Add(new Win32.ProcessHandle(process.Process.ProcessId,
-                            Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
-                        csrPIDs.Add(process.Process.ProcessId);
+                        csrProcesses.Add(process.Process.ProcessId, 
+                            new Win32.ProcessHandle(process.Process.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
                     }
                     catch
                     { }
@@ -79,17 +79,68 @@ namespace ProcessHacker
 
             foreach (var handle in handles)
             {
-                if (csrPIDs.Contains(handle.ProcessId))
+                if (csrProcesses.ContainsKey(handle.ProcessId))
                 {
                     int dupHandle;
 
-                    if (Win32.ZwDuplicateObject(csrProcesses[csrPIDs.IndexOf(handle.ProcessId)], handle.Handle,
+                    if (Win32.ZwDuplicateObject(csrProcesses[handle.ProcessId], handle.Handle,
                         -1, out dupHandle, (Win32.STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
                         continue;
 
+                    // get a Win32Handle instance to own the duplicated handle so we don't have to close it 
+                    // ourselves
+                    Win32.Win32Handle dupHandleAuto = new Win32.Win32Handle(dupHandle);
 
+                    int processId = Win32.GetProcessId(dupHandle);
+
+                    if (processId == 0)
+                        continue;
+
+                    processIds.Add(processId);
                 }
             }
+
+            // Step 3: Add the processes to the list while highlighting hidden processes.
+            foreach (var pid in processIds)
+            {
+                try
+                {
+                    var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION);
+                    var item = listProcesses.Items.Add(new ListViewItem(new string[]
+                    {
+                        Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName()),
+                        pid.ToString()
+                    }));
+
+                    if (!processes.ContainsKey(pid))
+                    {
+                        item.BackColor = Color.Red;
+                        item.ForeColor = Color.White;
+                    }
+
+                    phandle.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    var item = listProcesses.Items.Add(new ListViewItem(new string[]
+                    {
+                        "(" + ex.Message + ")",
+                        pid.ToString()
+                    }));
+
+                    item.BackColor = Color.Red;
+                    item.ForeColor = Color.White;
+                }
+            }
+
+            // Step 4: Clean up
+            foreach (var phandle in csrProcesses.Values)
+                phandle.Dispose();
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -954,5 +954,17 @@ namespace ProcessHacker.Properties {
                 this["HideHandlesWithNoName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CSRProcessesColumns {
+            get {
+                return ((string)(this["CSRProcessesColumns"]));
+            }
+            set {
+                this["CSRProcessesColumns"] = value;
+            }
+        }
     }
 }

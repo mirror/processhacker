@@ -30,11 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CSRProcessesWindow));
             this.listProcesses = new System.Windows.Forms.ListView();
-            this.columnName = new System.Windows.Forms.ColumnHeader();
+            this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.buttonClose = new System.Windows.Forms.Button();
             this.buttonScan = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listProcesses
@@ -43,23 +44,24 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnName,
+            this.columnProcess,
             this.columnPID});
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
-            this.listProcesses.Location = new System.Drawing.Point(12, 12);
+            this.listProcesses.Location = new System.Drawing.Point(12, 42);
             this.listProcesses.MultiSelect = false;
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(487, 327);
+            this.listProcesses.Size = new System.Drawing.Size(487, 297);
+            this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
             this.listProcesses.View = System.Windows.Forms.View.Details;
             // 
-            // columnName
+            // columnProcess
             // 
-            this.columnName.Text = "Name";
-            this.columnName.Width = 220;
+            this.columnProcess.Text = "Process";
+            this.columnProcess.Width = 340;
             // 
             // columnPID
             // 
@@ -75,6 +77,7 @@
             this.buttonClose.TabIndex = 1;
             this.buttonClose.Text = "&Close";
             this.buttonClose.UseVisualStyleBackColor = true;
+            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
             // 
             // buttonScan
             // 
@@ -100,11 +103,25 @@
             this.label1.Text = "IMPORTANT: If you start any processes during the scan, Process Hacker may report " +
                 "them as hidden!";
             // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoEllipsis = true;
+            this.label2.Location = new System.Drawing.Point(12, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(487, 30);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "This tool displays the processes running on your computer by scanning the handles" +
+                " of the Client Server Runtime processes. This can be used to identify hidden pro" +
+                "cesses.";
+            // 
             // CSRProcessesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(511, 393);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonScan);
             this.Controls.Add(this.buttonClose);
@@ -121,10 +138,11 @@
         #endregion
 
         private System.Windows.Forms.ListView listProcesses;
-        private System.Windows.Forms.ColumnHeader columnName;
+        private System.Windows.Forms.ColumnHeader columnProcess;
         private System.Windows.Forms.ColumnHeader columnPID;
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.Button buttonScan;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }

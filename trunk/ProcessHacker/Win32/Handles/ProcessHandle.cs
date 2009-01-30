@@ -458,15 +458,15 @@ namespace ProcessHacker
             /// </summary>
             public void Resume()
             {
-                if (Program.KPH != null)
-                {
-                    Program.KPH.KphResumeProcess(this);
-                }
-                else
-                {
+                //if (Program.KPH != null)
+                //{
+                //    Program.KPH.KphResumeProcess(this);
+                //}
+                //else
+                //{
                     if (ZwResumeProcess(this) != 0)
                         ThrowLastWin32Error();
-                }
+                //}
             }
 
             /// <summary>
@@ -474,15 +474,15 @@ namespace ProcessHacker
             /// </summary>
             public void Suspend()
             {
-                if (Program.KPH != null)
-                {
-                    Program.KPH.KphSuspendProcess(this);
-                }
-                else
-                {
+                //if (Program.KPH != null)
+                //{
+                //    Program.KPH.KphSuspendProcess(this);
+                //}
+                //else
+                //{
                     if (ZwSuspendProcess(this) != 0)
                         ThrowLastWin32Error();
-                }
+                //}
             }
 
             /// <summary>

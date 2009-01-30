@@ -60,6 +60,13 @@ namespace ProcessHacker
 
         private void buttonQuit_Click(object sender, EventArgs e)
         {
+            try
+            {
+                Properties.Settings.Default.Save();
+            }
+            catch
+            { }
+
             Process.GetCurrentProcess().Kill();
         }
     }

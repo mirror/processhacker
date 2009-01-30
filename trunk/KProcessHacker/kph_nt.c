@@ -283,7 +283,8 @@ NTSTATUS KphSuspendProcess(
     if (!NT_SUCCESS(status))
         return status;
     
-    status = PsSuspendProcess(processObject);
+    /* XP ntoskrnl does NOT export this - loading the driver fails because of this */
+    /* status = PsSuspendProcess(processObject); */
     ObDereferenceObject(processObject);
     
     return status;
@@ -301,7 +302,7 @@ NTSTATUS KphResumeProcess(
     if (!NT_SUCCESS(status))
         return status;
     
-    status = PsResumeProcess(processObject);
+    /* status = PsResumeProcess(processObject); */
     ObDereferenceObject(processObject);
     
     return status;

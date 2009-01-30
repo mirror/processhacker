@@ -371,7 +371,10 @@ namespace ProcessHacker
 
             while (i < buffer.Length)
             {
-                if (buffer[i] == '\0')
+                if (!char.IsLetterOrDigit(buffer[i]) && 
+                    !char.IsPunctuation(buffer[i]) && 
+                    !char.IsSymbol(buffer[i]) && 
+                    !char.IsWhiteSpace(buffer[i]))
                     break;
 
                 result.Append(buffer[i]);
@@ -582,10 +585,7 @@ namespace ProcessHacker
                     {
                         case "File":
                             // resolves \Device\Harddisk1 into C:, for example
-                            lock (DriveDevicePrefixes)
-                            {
-                                info.BestName = DeviceFileNameToDos(info.OrigName);
-                            }
+                            info.BestName = DeviceFileNameToDos(info.OrigName);
 
                             break;
 
