@@ -258,14 +258,11 @@ namespace ProcessHacker
 
         private void sysInfoMenuItem_Click(object sender, EventArgs e)
         {
-            if (SysInfoWindow == null)
-            {
-                SysInfoWindow = new SysInfoWindow();
-            }
-
             SysInfoWindow.Show();
             SysInfoWindow.Activate();
-            SysInfoWindow.Start();
+
+            if (!SysInfoWindow.Started)
+                SysInfoWindow.Start();
         }
 
         private void logMenuItem_Click(object sender, EventArgs e)
@@ -1664,6 +1661,8 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
+
+            SysInfoWindow = new SysInfoWindow();
 
             tabControlBig_SelectedIndexChanged(null, null);
 

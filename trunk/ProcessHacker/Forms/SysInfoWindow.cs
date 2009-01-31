@@ -82,20 +82,34 @@ namespace ProcessHacker
                 checkShowOneGraphPerCPU.Enabled = false;
         }
 
+        public bool Started { get; private set; }
+
         public void Start()
         {
+            if (this.Started)
+                throw new Exception("Already started");
+
+            this.Started = true;
             _runCount = 0;
             Program.HackerWindow.ProcessProvider.PerformanceEnabled = true;
             Program.HackerWindow.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
 
-        private void SysInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
+        public void Stop()
         {
+            if (!this.Started)
+                throw new Exception("Not started");
+
             Program.HackerWindow.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
             Program.HackerWindow.ProcessProvider.PerformanceEnabled = false;
+            this.Started = false;
+        }
 
+        private void SysInfoWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Stop();
             Properties.Settings.Default.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;
             e.Cancel = true;
             this.Hide();        

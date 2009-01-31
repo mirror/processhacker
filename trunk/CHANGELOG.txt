@@ -13,6 +13,8 @@ Process Hacker
    * Dialog/input boxes are now more consistent
    * Very old bug where the refresh interval isn't applied at startup
    * Displays-2-more-processes-than-actual-number bug
+   * System Information screwing up when the user tries to open it when it's 
+     already open
 
 1.3.2.0
  * NEW:
