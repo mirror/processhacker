@@ -49,7 +49,6 @@
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
             this.listProcesses.Location = new System.Drawing.Point(12, 42);
-            this.listProcesses.MultiSelect = false;
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
             this.listProcesses.Size = new System.Drawing.Size(487, 297);
