@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * CSR Processes tool - displays hidden processes (this does not detect Hacker 
      Defender but does detect simple kernel-mode rootkits)
+   * Options window has a detailed description for each setting
  * FIXED:
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges
