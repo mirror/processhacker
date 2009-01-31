@@ -266,7 +266,7 @@ namespace ProcessHacker
             /// Gets the process' DEP policy.
             /// </summary>
             /// <returns>A DEPStatus enum.</returns>
-            /// <remarks>This funciton does not work on 
+            /// <remarks>This function does not work on 
             /// Windows XP SP2 or lower, since they do not 
             /// have the GetProcessDEPPolicy function. It is possible 
             /// to use ZwQueryInformationProcess with ProcessExecuteFlags, 
@@ -454,7 +454,7 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Resumes the process. This requries the PROCESS_SUSPEND_RESUME permission.
+            /// Resumes the process. This requires the PROCESS_SUSPEND_RESUME permission.
             /// </summary>
             public void Resume()
             {
@@ -470,7 +470,7 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Suspends the process. This requries the PROCESS_SUSPEND_RESUME permission.
+            /// Suspends the process. This requires the PROCESS_SUSPEND_RESUME permission.
             /// </summary>
             public void Suspend()
             {
