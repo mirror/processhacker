@@ -39,7 +39,6 @@
             this.linkSourceforge = new System.Windows.Forms.LinkLabel();
             this.linkEmail = new System.Windows.Forms.LinkLabel();
             this.linkAsm = new System.Windows.Forms.LinkLabel();
-            this.buttonLicenses = new System.Windows.Forms.Button();
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
             this.flowThanks = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -177,18 +176,6 @@
             this.linkAsm.Text = "Oleh Yuschuk - Disassembler/Assembler";
             this.linkAsm.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkAsm_LinkClicked);
             // 
-            // buttonLicenses
-            // 
-            this.buttonLicenses.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonLicenses.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonLicenses.Location = new System.Drawing.Point(252, 250);
-            this.buttonLicenses.Name = "buttonLicenses";
-            this.buttonLicenses.Size = new System.Drawing.Size(75, 23);
-            this.buttonLicenses.TabIndex = 13;
-            this.buttonLicenses.Text = "Licenses...";
-            this.buttonLicenses.UseVisualStyleBackColor = true;
-            this.buttonLicenses.Click += new System.EventHandler(this.buttonLicenses_Click);
-            // 
             // linkTreeViewAdv
             // 
             this.linkTreeViewAdv.AutoSize = true;
@@ -275,7 +262,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 285);
             this.Controls.Add(this.flowThanks);
-            this.Controls.Add(this.buttonLicenses);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
@@ -315,7 +301,6 @@
         private System.Windows.Forms.LinkLabel linkSourceforge;
         private System.Windows.Forms.LinkLabel linkEmail;
         private System.Windows.Forms.LinkLabel linkAsm;
-        private System.Windows.Forms.Button buttonLicenses;
         private System.Windows.Forms.LinkLabel linkTreeViewAdv;
         private System.Windows.Forms.FlowLayoutPanel flowThanks;
         private System.Windows.Forms.Label label1;

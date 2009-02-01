@@ -42,10 +42,10 @@ namespace ProcessHacker
 
         #region Variables
 
-        public HelpWindow HelpForm = new HelpWindow();
-        public SysInfoWindow SysInfoWindow = null;
-        public HandleFilterWindow HandleFilterWindow = new HandleFilterWindow();
-        public CSRProcessesWindow CSRProcessesWindow = new CSRProcessesWindow();
+        public HelpWindow HelpForm;
+        public SysInfoWindow SysInfoWindow;
+        public HandleFilterWindow HandleFilterWindow;
+        public CSRProcessesWindow CSRProcessesWindow;
 
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
@@ -211,7 +211,7 @@ namespace ProcessHacker
 
         private void runAsMenuItem_Click(object sender, EventArgs e)
         {
-             RunWindow run = new RunWindow();
+            RunWindow run = new RunWindow();
 
             run.TopMost = this.TopMost;
             run.ShowDialog();
@@ -219,6 +219,9 @@ namespace ProcessHacker
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
+            if (HandleFilterWindow == null)
+                HandleFilterWindow = new HandleFilterWindow();
+
             HandleFilterWindow.Show();
             HandleFilterWindow.Activate();
         }
@@ -258,6 +261,9 @@ namespace ProcessHacker
 
         private void sysInfoMenuItem_Click(object sender, EventArgs e)
         {
+            if (SysInfoWindow == null)
+                SysInfoWindow = new SysInfoWindow();
+
             SysInfoWindow.Show();
             SysInfoWindow.Activate();
 
@@ -301,6 +307,9 @@ namespace ProcessHacker
 
         private void helpMenuItem_Click(object sender, EventArgs e)
         {
+            if (HelpForm == null)
+                HelpForm = new HelpWindow();
+
             HelpForm.Show();
             HelpForm.Activate();
         }
@@ -312,6 +321,9 @@ namespace ProcessHacker
 
         private void csrProcessesMenuItem_Click(object sender, EventArgs e)
         {
+            if (CSRProcessesWindow == null)
+                CSRProcessesWindow = new CSRProcessesWindow();
+
             CSRProcessesWindow.Show();
             CSRProcessesWindow.Activate();
         }
@@ -1661,8 +1673,6 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
-
-            SysInfoWindow = new SysInfoWindow();
 
             tabControlBig_SelectedIndexChanged(null, null);
 
