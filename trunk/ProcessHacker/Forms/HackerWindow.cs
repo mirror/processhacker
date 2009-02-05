@@ -1645,24 +1645,29 @@ namespace ProcessHacker
             // load symbols on a separate thread
             Thread t = new Thread(new ThreadStart(delegate
             {
-                foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
+                try
                 {
-                    this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            statusIcon.Icon = null;
-                            statusText.Text = "Loading symbols for " + module.ModuleName + "...";
-                        }));
+                    foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
+                    {
+                        this.BeginInvoke(new MethodInvoker(delegate
+                            {
+                                statusIcon.Icon = null;
+                                statusText.Text = "Loading symbols for " + module.ModuleName + "...";
+                            }));
 
-                    try
-                    {
-                        if (!module.FileName.ToLower().EndsWith(".exe"))
-                            SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
-                    }
-                    catch (Exception ex)
-                    {
-                        QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
+                        try
+                        {
+                            if (!module.FileName.ToLower().EndsWith(".exe"))
+                                SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                        }
+                        catch (Exception ex)
+                        {
+                            QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
+                        }
                     }
                 }
+                catch
+                { }
 
                 this.BeginInvoke(new MethodInvoker(delegate
                 {

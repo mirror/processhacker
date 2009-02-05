@@ -17,6 +17,7 @@ Process Hacker
    * System Information screwing up when the user tries to open it when it's 
      already open
    * Workaround for Bug #2553406 - "COMException: Class not registered"
+   * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
 
 1.3.2.0
  * NEW:

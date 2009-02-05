@@ -310,10 +310,14 @@ namespace ProcessHacker
                 str = (int)fortnights + " " + ((int)fortnights == 1 ? "fortnight" : "fortnights");
             else if (weeks >= 1)
                 str = (int)weeks + " " + ((int)weeks == 1 ? "week" : "weeks");
-            else if (span.TotalDays >= 2)
+            else if (span.TotalDays >= 1)
+            {
                 str = (int)span.TotalDays + " " + ((int)span.TotalDays == 1 ? "day" : "days");
-            else if (span.TotalDays >= 1 && span.TotalDays < 2)
-                str = "yesterday";
+
+                if (span.Hours >= 1)
+                    str += " and " + span.Hours + " " +
+                        (span.Hours == 1 ? "hour" : "hours");
+            }
             else if (span.Hours >= 1)
             {
                 str = span.Hours + " " + (span.Hours == 1 ? "hour" : "hours");
@@ -339,7 +343,13 @@ namespace ProcessHacker
 
             // 1 minute -> a minute
             if (str.StartsWith("1 "))
-                str = "a " + str.Substring(2);
+            {
+                // a hour -> an hour
+                if (str[2] != 'h')
+                    str = "a " + str.Substring(2);
+                else
+                    str = "an " + str.Substring(2);
+            }
 
             return str + " ago";
         }
