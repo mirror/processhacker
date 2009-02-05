@@ -243,7 +243,8 @@ namespace ProcessHacker
 
         private void ClearControls()
         {
-            labelServiceDisplayName.Text = "N/A";
+            labelServiceName.Text = "";
+            labelServiceDisplayName.Text = "";
             comboType.Text = "";
             comboStartType.Text = "";
             comboErrorControl.Text = "";
