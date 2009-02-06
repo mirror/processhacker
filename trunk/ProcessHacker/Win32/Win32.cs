@@ -1114,57 +1114,6 @@ namespace ProcessHacker
             return sb.ToString();
         }
 
-        public static TOKEN_PRIVILEGES ReadTokenPrivileges(TokenHandle TokenHandle)
-        {
-            int retLen = 0;
-
-            GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenPrivileges, IntPtr.Zero, 0, out retLen);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLen))
-            {
-                if (!GetTokenInformation(TokenHandle.Handle, TOKEN_INFORMATION_CLASS.TokenPrivileges, data.Memory,
-                    data.Size, out retLen))
-                    ThrowLastWin32Error();
-
-                uint number = data.ReadUInt32(0);
-                TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
-
-                privileges.PrivilegeCount = number;
-                privileges.Privileges = new LUID_AND_ATTRIBUTES[number];
-
-                for (int i = 0; i < number; i++)
-                {
-                    privileges.Privileges[i] = data.ReadStruct<LUID_AND_ATTRIBUTES>(4, i);
-                }
-
-                return privileges;
-            }
-        }
-
-        public static void WriteTokenPrivilege(string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
-        {
-            WriteTokenPrivilege(
-                ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(), PrivilegeName, Attributes);
-        }
-
-        public static void WriteTokenPrivilege(TokenHandle TokenHandle, string PrivilegeName, SE_PRIVILEGE_ATTRIBUTES Attributes)
-        {
-            TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
-
-            tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
-
-            if (!LookupPrivilegeValue(null, PrivilegeName, ref tkp.Privileges[0].Luid))
-                throw new Exception("Invalid privilege name '" + PrivilegeName + "'.");
-
-            tkp.PrivilegeCount = 1;
-            tkp.Privileges[0].Attributes = Attributes;
-
-            AdjustTokenPrivileges(TokenHandle.Handle, 0, ref tkp, 0, 0, 0);
-
-            if (Marshal.GetLastWin32Error() != 0)
-                ThrowLastWin32Error();
-        }
-
         #endregion
 
         #region Services

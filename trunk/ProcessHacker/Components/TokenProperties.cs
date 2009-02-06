@@ -154,7 +154,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.TOKEN_PRIVILEGES privileges = Win32.ReadTokenPrivileges(token);
+                        Win32.TOKEN_PRIVILEGES privileges = token.GetPrivileges();
 
                         for (int i = 0; i < privileges.PrivilegeCount; i++)
                         {
@@ -262,8 +262,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    Win32.WriteTokenPrivilege(
-                        _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES),
+                    _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
                         item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
 
                     if (item.SubItems[1].Text != "Default Enabled")
@@ -296,8 +295,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    Win32.WriteTokenPrivilege(
-                        _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES),
+                    _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
                         item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
 
                     item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
@@ -321,8 +319,7 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        Win32.WriteTokenPrivilege(
-                            _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES),
+                        _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
                             item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
 
                         item.Remove();

@@ -182,6 +182,37 @@ namespace ProcessHacker
                     return new WindowsSID(data.ReadInt32(0));
                 }
             }
+            
+            /// <summary>
+            /// Gets the token's privileges.
+            /// </summary>
+            /// <returns>A TOKEN_PRIVILEGES structure.</returns>
+            public TOKEN_PRIVILEGES GetPrivileges()
+            {
+                int retLen;
+
+                GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenPrivileges, IntPtr.Zero, 0, out retLen);
+
+                using (MemoryAlloc data = new MemoryAlloc(retLen))
+                {
+                    if (!GetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenPrivileges, data.Memory,
+                        data.Size, out retLen))
+                        ThrowLastWin32Error();
+
+                    uint number = data.ReadUInt32(0);
+                    TOKEN_PRIVILEGES privileges = new TOKEN_PRIVILEGES();
+
+                    privileges.PrivilegeCount = number;
+                    privileges.Privileges = new LUID_AND_ATTRIBUTES[number];
+
+                    for (int i = 0; i < number; i++)
+                    {
+                        privileges.Privileges[i] = data.ReadStruct<LUID_AND_ATTRIBUTES>(4, i);
+                    }
+
+                    return privileges;
+                }
+            }
 
             /// <summary>
             /// Gets the restricted token's restricting SIDs.
@@ -302,6 +333,29 @@ namespace ProcessHacker
                     ThrowLastWin32Error();
 
                 return value != 0;
+            }
+
+            /// <summary>
+            /// Sets a privilege's attributes.
+            /// </summary>
+            /// <param name="privilegeName">The name of the privilege.</param>
+            /// <param name="attributes">The new attributes of the privilege.</param>
+            public void SetPrivilege(string privilegeName, SE_PRIVILEGE_ATTRIBUTES attributes)
+            {
+                TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
+
+                tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
+
+                if (!LookupPrivilegeValue(null, privilegeName, ref tkp.Privileges[0].Luid))
+                    throw new Exception("Invalid privilege name '" + privilegeName + "'.");
+
+                tkp.PrivilegeCount = 1;
+                tkp.Privileges[0].Attributes = attributes;
+
+                AdjustTokenPrivileges(this, 0, ref tkp, 0, 0, 0);
+
+                if (Marshal.GetLastWin32Error() != 0)
+                    ThrowLastWin32Error();
             }
         }
     }

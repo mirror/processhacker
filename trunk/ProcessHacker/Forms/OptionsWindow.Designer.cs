@@ -50,7 +50,6 @@
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
-            this.label22 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -87,6 +86,7 @@
             this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
             this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -397,16 +397,6 @@
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
-            // 
-            // label22
-            // 
-            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 387);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(300, 13);
-            this.label22.TabIndex = 10;
-            this.label22.Text = "Tip: Hover over an item to get a more detailed description of it.";
             // 
             // label20
             // 
@@ -760,6 +750,16 @@
             this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
             this.colorCPUKT.TabIndex = 11;
             // 
+            // label22
+            // 
+            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(12, 387);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(300, 13);
+            this.label22.TabIndex = 10;
+            this.label22.Text = "Tip: Hover over an item to get a more detailed description of it.";
+            // 
             // toolTipProvider
             // 
             this.toolTipProvider.AutomaticDelay = 250;
@@ -767,8 +767,6 @@
             this.toolTipProvider.InitialDelay = 250;
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
-            this.toolTipProvider.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.toolTipProvider.ToolTipTitle = "Description";
             // 
             // OptionsWindow
             // 
