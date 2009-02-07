@@ -1618,7 +1618,7 @@ namespace ProcessHacker
             processP.Enabled = true;
 
             cpuUsageIcon.BackColor = Color.Black;
-            cpuUsageIcon.Color = Color.Red;
+            cpuUsageIcon.Color = Color.FromArgb(0, 255, 0);
 
             HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightedListViewItem.StateHighlighting = false;

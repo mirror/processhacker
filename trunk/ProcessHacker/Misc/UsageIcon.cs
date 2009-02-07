@@ -69,13 +69,16 @@ namespace ProcessHacker
             {
                 using (Graphics g = Graphics.FromImage(bm))
                 {
-                    g.FillRectangle(new SolidBrush(this.BackColor), new Rectangle(0, 0, _width, _height));
+                    g.FillRectangle(new SolidBrush(this.BackColor), new Rectangle(0, 0, _width, _height));   
+                    g.DrawLine(new Pen(Color.Red), new Point(0, _height - 1), new Point(_width - 1, _height - 1));
 
                     for (int x = 0; x < _width; x++)
                     {
                         int height = (int)(_values[x] * _height);
 
-                        g.DrawLine(new Pen(this.Color), new Point(x, _height), new Point(x, _height - height));
+                        g.DrawLine(new Pen(this.Color),
+                            new Point(x, _height - 1),
+                            new Point(x, _height - height - 1));
                     }
 
                     return Icon.FromHandle(bm.GetHicon());

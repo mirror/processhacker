@@ -1370,11 +1370,6 @@ namespace ProcessHacker
             return table;
         }
 
-        //GetUdpConnexions()
-        //todo 
-        //GetExUdpConnexions()
-        //todo
-
         #endregion
     }
 }
