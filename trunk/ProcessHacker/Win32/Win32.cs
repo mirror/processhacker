@@ -147,9 +147,10 @@ namespace ProcessHacker
 
         public enum VerifyResult
         {
-            Trusted = 0,
-            TrustedInstaller,
+            Unknown = 0,
             NoSignature,
+            Trusted,
+            TrustedInstaller,
             Expired,
             Revoked,
             Distrust,

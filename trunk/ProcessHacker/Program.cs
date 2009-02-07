@@ -96,6 +96,18 @@ namespace ProcessHacker
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
+            if (Environment.Version.Major < 2)
+            {
+                MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Application.Exit();
+            }
+
+            Asm.LockedBus = 1;
+            Asm.Lowercase = true;
+            Asm.ExtraSpace = true;
+
             try
             {
                 KPH = new KProcessHacker();
@@ -104,17 +116,7 @@ namespace ProcessHacker
             catch
             { }
 
-            Asm.LockedBus = 1;
-            Asm.Lowercase = true;
-            Asm.ExtraSpace = true;
-
-            if (Environment.Version.Major < 2)
-            {
-                MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Application.Exit();
-            }
+            ThreadPool.SetMaxThreads(32, 64);
 
             if (Environment.OSVersion.Version.Major <= 5)
                 WindowsVersion = "XP";

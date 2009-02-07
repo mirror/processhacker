@@ -138,12 +138,15 @@ namespace ProcessHacker
                             otherNotes += "\n    Signature present and verified.";
                         else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.TrustedInstaller)
                             otherNotes += "\n    Verified Windows component.";
+                        else if (pNode.ProcessItem.VerifyResult == Win32.VerifyResult.Unknown)
+                            otherNotes += "\n    File has not been processed yet. Please wait...";
                         else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
                             otherNotes += "\n    Signature present but invalid.";
 
                         if (Properties.Settings.Default.ImposterNames.Contains(pNode.Name.ToLower()) &&
                             pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
-                            pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller)
+                            pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
+                            pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Unknown)
                             otherNotes += "\n    Process is using the name of a known process but its signature could not be verified.";
                     }
 

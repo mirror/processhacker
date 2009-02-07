@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -61,6 +62,8 @@ namespace ProcessHacker
         public int ImportFunctions;
         public int ImportModules;
 
+        public bool JustProcessed;
+
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
         public Win32.ProcessHandle ProcessQueryLimitedHandle;
@@ -69,10 +72,22 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
+        struct FileProcessResult
+        {
+            public int PID;
+            public bool IsDotNet;
+            public bool IsPacked;
+            public Win32.VerifyResult VerifyResult;
+            public int ImportFunctions;
+            public int ImportModules;
+        }
+
+        private Dictionary<string, Win32.VerifyResult> _fileResults = new Dictionary<string, Win32.VerifyResult>();
+        private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private long _lastOtherTime;
         private long _lastSysTime;
 
-        private delegate Win32.VerifyResult VerifyDelegate(int pid);
+        private delegate void ProcessFileDelegate(int pid, string fileName);
 
         public ProcessSystemProvider()
             : base()
@@ -98,8 +113,6 @@ namespace ProcessHacker
         public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] ProcessorPerfArray { get; private set; }
         public float CurrentCPUUsage { get; private set; }
         public int PIDWithMostCPUUsage { get; private set; }
-
-        public bool PerformanceEnabled { get; set; }
 
         private void UpdateProcessorPerf()
         {
@@ -138,7 +151,7 @@ namespace ProcessHacker
             }
         }
 
-        public void UpdatePerformance()
+        private void UpdatePerformance()
         {
             int retLen;
             Win32.SYSTEM_PERFORMANCE_INFORMATION performance = new Win32.SYSTEM_PERFORMANCE_INFORMATION();
@@ -148,11 +161,122 @@ namespace ProcessHacker
             this.Performance = performance;
         }
 
+        private void ProcessFile(int pid, string fileName)
+        {
+            Debugger.Log(1, "ProcessSystemProvider.ProcessFile", "Processing PID " + pid.ToString() + ": " + fileName + "\n");
+            FileProcessResult fpResult = new FileProcessResult();
+
+            fpResult.PID = pid;
+            fpResult.IsPacked = false;
+
+            // find out if it's packed
+            // an image is packed if:
+            // 1. it references less than 3 libraries
+            // 2. it imports less than 5 functions
+            // or:
+            // 1. the function-to-library ratio is lower than 4
+            //   (on average less than 4 functions are imported from each library)
+            // 2. it references more than 3 libraries
+            if (fileName != null)
+            {
+                try
+                {
+                    var peFile = new PE.PEFile(fileName);
+
+                    if (peFile.ImportData != null)
+                    {
+                        int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
+                        int funcTotal = 0;
+
+                        foreach (var i in peFile.ImportData.ImportLookupTable)
+                            funcTotal += i.Count;
+
+                        fpResult.ImportModules = libraryTotal;
+                        fpResult.ImportFunctions = funcTotal;
+
+                        if (
+                            libraryTotal < 3 && funcTotal < 5 ||
+                            ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
+                            )
+                            fpResult.IsPacked = true;
+                    }
+                }
+                catch
+                {
+                    // we can't read it, so...
+                    if (pid > 4)
+                        fpResult.IsPacked = true;
+                }
+            }
+
+            try
+            {
+                if (Properties.Settings.Default.VerifySignatures)
+                {
+                    if (fileName != null)
+                    {
+                        string uniName = (new System.IO.FileInfo(fileName)).FullName.ToLower();
+
+                        lock (_fileResults)
+                        {
+                            if (_fileResults.ContainsKey(uniName))
+                            {
+                                fpResult.VerifyResult = _fileResults[uniName];
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    fpResult.VerifyResult = Win32.VerifyFile(fileName);
+                                }
+                                catch
+                                {
+                                    fpResult.VerifyResult = Win32.VerifyResult.NoSignature;
+                                }
+
+                                _fileResults.Add(uniName, fpResult.VerifyResult);
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            { }
+
+            // find out if it's a .NET process (we'll just see if it has loaded mscoree.dll)
+            if (fpResult.IsPacked)
+            {
+                try
+                {
+                    var modDict = new Dictionary<string, string>();
+
+                    foreach (ProcessModule m in Process.GetProcessById(pid).Modules)
+                    {
+                        if (!modDict.ContainsKey(m.ModuleName.ToLower()))
+                            modDict.Add(m.ModuleName.ToLower(), m.FileName);
+                    }
+
+                    if (modDict.ContainsKey("mscoree.dll") &&
+                        modDict["mscoree.dll"].ToLower() == (Environment.SystemDirectory + "\\mscoree.dll").ToLower())
+                    {
+                        fpResult.IsDotNet = true;
+                        // .NET processes also look like they're packed
+                        fpResult.IsPacked = false;
+                    }
+                }
+                catch
+                { }
+            }
+
+            Debugger.Log(1, "ProcessSystemProvider.ProcessFile", "Finished PID " + pid.ToString() + ": " + fileName + "\n");
+            
+            lock (_fpResults)
+                _fpResults.Enqueue(fpResult);
+        }
+
         private void UpdateOnce()
         {
-            if (this.PerformanceEnabled)
-                this.UpdatePerformance();
-
+            this.UpdatePerformance();
             this.UpdateProcessorPerf();
 
             if (this.RunCount % 3 == 0)
@@ -231,6 +355,33 @@ namespace ProcessHacker
                         Win32.DestroyIcon(item.Icon.Handle);
 
                     newdictionary.Remove(pid);
+                }
+            }
+
+            lock (_fpResults)
+            {
+                while (_fpResults.Count > 0)
+                {
+                    var result = _fpResults.Dequeue();
+
+                    Debugger.Log(1, "ProcessSystemProvider.UpdateOnce", "Dequeued PID " + result.PID.ToString() + "\n");
+
+                    // Dictionary may contain items newdictionary doesn't contain, 
+                    // because we just removed terminated processes. However, 
+                    // the look-for-modified-processes section relies on Dictionary!
+                    if (Dictionary.ContainsKey(result.PID))
+                    {
+                        var item = Dictionary[result.PID];
+
+                        item.IsDotNet = result.IsDotNet;
+                        item.IsPacked = result.IsPacked;
+                        item.VerifyResult = result.VerifyResult;
+                        item.ImportFunctions = result.ImportFunctions;
+                        item.ImportModules = result.ImportModules;
+                        item.JustProcessed = true;
+
+                        Dictionary[result.PID] = item;
+                    }
                 }
             }
 
@@ -406,78 +557,12 @@ namespace ProcessHacker
                         { }
                     }
 
-                    item.IsPacked = false;
-                    // find out if it's packed
-                    // an image is packed if:
-                    // 1. it references less than 3 libraries
-                    // 2. it imports less than 5 functions
-                    // or:
-                    // 1. the function-to-library ratio is lower than 4
-                    //   (on average less than 4 functions are imported from each library)
-                    // 2. it references more than 3 libraries
-                    if (item.FileName != null)
+                    if (pid > 0)
                     {
-                        try
-                        {
-                            var peFile = new PE.PEFile(item.FileName);
-
-                            if (peFile.ImportData != null)
-                            {
-                                int libraryTotal = peFile.ImportData.ImportLookupTable.Count;
-                                int funcTotal = 0;
-
-                                foreach (var i in peFile.ImportData.ImportLookupTable)
-                                    funcTotal += i.Count;
-
-                                item.ImportModules = libraryTotal;
-                                item.ImportFunctions = funcTotal;
-
-                                if (
-                                    libraryTotal < 3 && funcTotal < 5 ||
-                                    ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
-                                    )
-                                    item.IsPacked = true;
-                            }
-                        }
-                        catch
-                        {
-                            // we can't read it, so...
-                            if (pid > 4)
-                                item.IsPacked = true;
-                        }
-                    }
-
-                    item.VerifyResult = Win32.VerifyResult.NoSignature;
-
-                    if (Properties.Settings.Default.VerifySignatures)
-                    {
-                        try
-                        {
-                            item.VerifyResult = Win32.VerifyFile(item.FileName);
-                        }
-                        catch { }
-                    }
-
-                    // find out if it's a .NET process (we'll just see if it has loaded mscoree.dll)
-                    if (item.IsPacked)
-                    {
-                        var modDict = new Dictionary<string, string>();
-
-                        try
-                        {
-                            foreach (ProcessModule m in p.Modules)
-                                modDict.Add(m.ModuleName.ToLower(), m.FileName);
-                        }
-                        catch
-                        { }
-
-                        if (modDict.ContainsKey("mscoree.dll") &&
-                            modDict["mscoree.dll"].ToLower() == (Environment.SystemDirectory + "\\mscoree.dll").ToLower())
-                        {
-                            item.IsDotNet = true;
-                            // .NET processes also look like they're packed
-                            item.IsPacked = false;
-                        }
+                        Debugger.Log(1, "ProcessSystemProvider.UpdateOnce", "Invoking file processing for PID " +
+                            pid.ToString() + ": " + item.FileName + "\n");
+                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
+                            r => { }, null);
                     }
 
                     if (pid == 0 || pid == 4)
@@ -576,8 +661,11 @@ namespace ProcessHacker
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged ||
-                        newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled)
-                    {                                           
+                        newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled ||
+                        newitem.JustProcessed
+                        )
+                    {
+                        newitem.JustProcessed = false;
                         newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);
                     }

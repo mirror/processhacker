@@ -1422,7 +1422,6 @@ namespace ProcessHacker
                 statusGeneral.Text = "Loading...";
 
             statusCPU.Text = "CPU: " + (processP.CurrentCPUUsage * 100).ToString("N2") + "%";
-            processP.UpdatePerformance();
             statusMemory.Text = "Phys. Memory: " +
                 ((float)(processP.System.NumberOfPhysicalPages - processP.Performance.AvailablePages) * 100 /
                 processP.System.NumberOfPhysicalPages).ToString("N2") + "%";

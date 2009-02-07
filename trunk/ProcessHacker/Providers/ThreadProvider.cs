@@ -102,6 +102,9 @@ namespace ProcessHacker
                 Program.HackerWindow.ProcessProvider.Dictionary[_pid].Threads;
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
+            if (threads == null)
+                threads = new Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION>();
+
             // look for dead threads
             foreach (int tid in Dictionary.Keys)
             {

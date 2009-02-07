@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   PE file reader
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -68,13 +68,13 @@ namespace ProcessHacker.PE
             }
             catch
             {
-                throw new Exception("Could not seek to location 0x" + peSigLoc.ToString("x") + ".");
+                throw new PEException("Could not seek to location 0x" + peSigLoc.ToString("x") + ".");
             }
 
             byte[] peSig = br.ReadBytes(4);
 
             if (!Misc.BytesEqual(peSig, PEFile.PESignature))
-                throw new Exception("Invalid PE signature.");
+                throw new PEException("Invalid PE signature.");
 
             // read COFF header
             _coffHeader = new COFFHeader(br);

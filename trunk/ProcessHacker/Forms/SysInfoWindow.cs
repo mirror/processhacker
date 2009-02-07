@@ -91,7 +91,6 @@ namespace ProcessHacker
 
             this.Started = true;
             _runCount = 0;
-            Program.HackerWindow.ProcessProvider.PerformanceEnabled = true;
             Program.HackerWindow.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
@@ -103,7 +102,6 @@ namespace ProcessHacker
 
             Program.HackerWindow.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
-            Program.HackerWindow.ProcessProvider.PerformanceEnabled = false;
             this.Started = false;
         }
 
