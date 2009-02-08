@@ -348,6 +348,9 @@ namespace ProcessHacker
                     if (item.ProcessQueryLimitedHandle != null)
                         item.ProcessQueryLimitedHandle.Dispose();
 
+                    if (item.ProcessQueryLimitedVmReadHandle != null)
+                        item.ProcessQueryLimitedVmReadHandle.Dispose();
+
                     if (item.TokenQueryHandle != null)
                         item.TokenQueryHandle.Dispose();
 
