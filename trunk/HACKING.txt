@@ -60,3 +60,4 @@ TODO:
  * Clean up state highlighting - have one master class with ONE timer controlling 
    multiple providers.
  * Make ComboBoxPickerWindow more flexible and get rid of EditDEPWindow.
+ * Get dbghelp working so we can use Microsoft's own symbols.
