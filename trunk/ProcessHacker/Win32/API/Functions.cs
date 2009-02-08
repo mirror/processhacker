@@ -808,7 +808,10 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Windows
+        #region Windows  
+
+        [DllImport("user32.dll")]
+        public static extern int GetGuiResources(int ProcessHandle, bool UserObjects);
 
         [DllImport("user32.dll")]
         public static extern bool DestroyIcon(IntPtr Handle);

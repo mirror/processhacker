@@ -9,6 +9,7 @@ Process Hacker
      asynchronous. This means that there are no more delays when starting 
      certain programs.
    * Slightly different notification icon
+   * GDI and USER handle counts
  * FIXED:
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges

@@ -148,6 +148,10 @@
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.labelOtherGDIHandles = new System.Windows.Forms.Label();
+            this.labelOtherUSERHandles = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -1059,7 +1063,7 @@
             this.groupBox6.Controls.Add(this.tableLayoutPanel4);
             this.groupBox6.Location = new System.Drawing.Point(204, 155);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(195, 42);
+            this.groupBox6.Size = new System.Drawing.Size(195, 80);
             this.groupBox6.TabIndex = 0;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Other";
@@ -1071,19 +1075,25 @@
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel4.Controls.Add(this.label27, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.labelOtherHandles, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.label28, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.label29, 0, 2);
+            this.tableLayoutPanel4.Controls.Add(this.labelOtherGDIHandles, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.labelOtherUSERHandles, 1, 2);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 23);
+            this.tableLayoutPanel4.RowCount = 3;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(189, 61);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // label27
             // 
             this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(3, 5);
+            this.label27.Location = new System.Drawing.Point(3, 3);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(46, 13);
             this.label27.TabIndex = 1;
@@ -1093,7 +1103,7 @@
             // 
             this.labelOtherHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelOtherHandles.AutoSize = true;
-            this.labelOtherHandles.Location = new System.Drawing.Point(153, 5);
+            this.labelOtherHandles.Location = new System.Drawing.Point(153, 3);
             this.labelOtherHandles.Name = "labelOtherHandles";
             this.labelOtherHandles.Size = new System.Drawing.Size(33, 13);
             this.labelOtherHandles.TabIndex = 1;
@@ -1460,6 +1470,46 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // label28
+            // 
+            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(3, 23);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(68, 13);
+            this.label28.TabIndex = 1;
+            this.label28.Text = "GDI Handles";
+            // 
+            // label29
+            // 
+            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(3, 44);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(79, 13);
+            this.label29.TabIndex = 1;
+            this.label29.Text = "USER Handles";
+            // 
+            // labelOtherGDIHandles
+            // 
+            this.labelOtherGDIHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelOtherGDIHandles.AutoSize = true;
+            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 23);
+            this.labelOtherGDIHandles.Name = "labelOtherGDIHandles";
+            this.labelOtherGDIHandles.Size = new System.Drawing.Size(33, 13);
+            this.labelOtherGDIHandles.TabIndex = 1;
+            this.labelOtherGDIHandles.Text = "value";
+            // 
+            // labelOtherUSERHandles
+            // 
+            this.labelOtherUSERHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelOtherUSERHandles.AutoSize = true;
+            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 44);
+            this.labelOtherUSERHandles.Name = "labelOtherUSERHandles";
+            this.labelOtherUSERHandles.Size = new System.Drawing.Size(33, 13);
+            this.labelOtherUSERHandles.TabIndex = 1;
+            this.labelOtherUSERHandles.Text = "value";
+            // 
             // ProcessWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1626,5 +1676,9 @@
         private System.Windows.Forms.TextBox textProtected;
         private System.Windows.Forms.Label labelProtected;
         private System.Windows.Forms.Button buttonEditProtected;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label labelOtherGDIHandles;
+        private System.Windows.Forms.Label labelOtherUSERHandles;
     }
 }

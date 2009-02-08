@@ -307,7 +307,7 @@ namespace ProcessHacker
                     = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                 {
                     fileCurrentDirectory.Text =
-                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
+                        phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
                 }
 
                 fileCurrentDirectory.Enabled = true;
@@ -457,10 +457,10 @@ namespace ProcessHacker
                 using (Win32.ProcessHandle phandle
                     = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                 {
-                    var depStatus = phandle.GetDEPStatus();
+                    var depStatus = phandle.GetDepStatus();
                     string str;
 
-                    if ((depStatus & Win32.ProcessHandle.DEPStatus.Enabled) != 0)
+                    if ((depStatus & Win32.ProcessHandle.DepStatus.Enabled) != 0)
                     {
                         str = "Enabled";
                     }
@@ -469,13 +469,13 @@ namespace ProcessHacker
                         str = "Disabled";
                     }
 
-                    if ((depStatus & Win32.ProcessHandle.DEPStatus.Permanent) != 0)
+                    if ((depStatus & Win32.ProcessHandle.DepStatus.Permanent) != 0)
                     {
                         buttonEditDEP.Enabled = false;
                         str += ", Permanent";
                     }
 
-                    if ((depStatus & Win32.ProcessHandle.DEPStatus.ATLThunkEmulationDisabled) != 0)
+                    if ((depStatus & Win32.ProcessHandle.DepStatus.AtlThunkEmulationDisabled) != 0)
                         str += ", DEP-ATL thunk emulation disabled";
 
                     textDEP.Text = str;
@@ -588,6 +588,8 @@ namespace ProcessHacker
             labelIOOtherBytes.Text = "";
 
             labelOtherHandles.Text = "";
+            labelOtherGDIHandles.Text = "";
+            labelOtherUSERHandles.Text = "";
         }
 
         private void UpdateDeltas()
@@ -668,6 +670,12 @@ namespace ProcessHacker
                 labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
 
                 labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
+
+                if (item.ProcessQueryLimitedHandle != null)
+                {
+                    labelOtherGDIHandles.Text = item.ProcessQueryLimitedHandle.GetGuiResources(false).ToString("N0");
+                    labelOtherUSERHandles.Text = item.ProcessQueryLimitedHandle.GetGuiResources(true).ToString("N0");
+                }
             }
         }
 
@@ -689,21 +697,21 @@ namespace ProcessHacker
                     = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                 {
                     list.Add(new KeyValuePair<string, string>("Command Line",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.CommandLine)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.CommandLine)));
                     list.Add(new KeyValuePair<string, string>("Current Directory Path",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath)));
                     list.Add(new KeyValuePair<string, string>("Desktop Name",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.DesktopName)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.DesktopName)));
                     list.Add(new KeyValuePair<string, string>("Path",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.DllPath)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.DllPath)));
                     list.Add(new KeyValuePair<string, string>("Image File Name",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.ImagePathName)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.ImagePathName)));
                     list.Add(new KeyValuePair<string, string>("Runtime Data",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.RuntimeData)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.RuntimeData)));
                     list.Add(new KeyValuePair<string, string>("Shell Info",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.ShellInfo)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.ShellInfo)));
                     list.Add(new KeyValuePair<string, string>("Window Title",
-                        ph.GetPEBString(Win32.ProcessHandle.PEBOffset.WindowTitle)));
+                        ph.GetPebString(Win32.ProcessHandle.PebOffset.WindowTitle)));
                 }
 
                 ListWindow window = new ListWindow(list);
@@ -1063,7 +1071,7 @@ namespace ProcessHacker
                     = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                 {
                     _realCurrentDirectory  =
-                        phandle.GetPEBString(Win32.ProcessHandle.PEBOffset.CurrentDirectoryPath);
+                        phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
 
                     // we don't want to set the text if the user is selecting something in the textbox!
                     if (!fileCurrentDirectory.TextBoxFocused)

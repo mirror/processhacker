@@ -45,14 +45,14 @@ namespace ProcessHacker
                 using (Win32.ProcessHandle phandle
                   = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                 {
-                    var depStatus = phandle.GetDEPStatus();
+                    var depStatus = phandle.GetDepStatus();
                     string str;
 
-                    if ((depStatus & Win32.ProcessHandle.DEPStatus.Enabled) != 0)
+                    if ((depStatus & Win32.ProcessHandle.DepStatus.Enabled) != 0)
                     {
                         str = "Enabled";
 
-                        if ((depStatus & Win32.ProcessHandle.DEPStatus.ATLThunkEmulationDisabled) != 0)
+                        if ((depStatus & Win32.ProcessHandle.DepStatus.AtlThunkEmulationDisabled) != 0)
                             str += ", DEP-ATL thunk emulation disabled";
                     }
                     else

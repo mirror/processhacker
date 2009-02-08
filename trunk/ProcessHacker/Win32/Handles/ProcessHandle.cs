@@ -41,7 +41,7 @@ namespace ProcessHacker
             /// <summary>
             /// Specifies an offset in a process' process environment block (PEB).
             /// </summary>
-            public enum PEBOffset
+            public enum PebOffset
             {
                 /// <summary>
                 /// The current directory of the process. This may, as the name 
@@ -92,7 +92,7 @@ namespace ProcessHacker
             /// Specifies the DEP status of a process.
             /// </summary>
             [Flags]
-            public enum DEPStatus
+            public enum DepStatus
             {
                 /// <summary>
                 /// DEP is enabled.
@@ -108,7 +108,7 @@ namespace ProcessHacker
                 /// <summary>
                 /// DEP is enabled with DEP-ATL thunk emulation disabled.
                 /// </summary>
-                ATLThunkEmulationDisabled = 0x4
+                AtlThunkEmulationDisabled = 0x4
             }
 
             /// <summary>
@@ -130,8 +130,8 @@ namespace ProcessHacker
             /// Creates a new process handle.
             /// </summary>
             /// <param name="PID">The ID of the process to open.</param>
-            public ProcessHandle(int PID)
-                : this(PID, PROCESS_RIGHTS.PROCESS_ALL_ACCESS)
+            public ProcessHandle(int pid)
+                : this(pid, PROCESS_RIGHTS.PROCESS_ALL_ACCESS)
             { }
 
             /// <summary>
@@ -139,12 +139,12 @@ namespace ProcessHacker
             /// </summary>
             /// <param name="PID">The ID of the process to open.</param>
             /// <param name="access">The desired access to the process.</param>
-            public ProcessHandle(int PID, PROCESS_RIGHTS access)
+            public ProcessHandle(int pid, PROCESS_RIGHTS access)
             {
                 if (Program.KPH != null)
-                    this.Handle = Program.KPH.KphOpenProcess(PID, access);
+                    this.Handle = Program.KPH.KphOpenProcess(pid, access);
                 else
-                    this.Handle = OpenProcess(access, 0, PID);
+                    this.Handle = OpenProcess(access, 0, pid);
 
                 if (this.Handle == 0)
                     ThrowLastWin32Error();
@@ -259,7 +259,7 @@ namespace ProcessHacker
             /// <returns>A string.</returns>
             public string GetCommandLine()
             {
-                return this.GetPEBString(PEBOffset.CommandLine);
+                return this.GetPebString(PebOffset.CommandLine);
             }
 
             /// <summary>
@@ -271,7 +271,7 @@ namespace ProcessHacker
             /// have the GetProcessDEPPolicy function. It is possible 
             /// to use ZwQueryInformationProcess with ProcessExecuteFlags, 
             /// but it doesn't seem to work.</remarks>
-            public DEPStatus GetDEPStatus()
+            public DepStatus GetDepStatus()
             {
                 DEPFLAGS flags;
                 int perm;
@@ -280,10 +280,10 @@ namespace ProcessHacker
                     ThrowLastWin32Error();
 
                 return
-                    ((flags & DEPFLAGS.PROCESS_DEP_ENABLE) != 0 ? DEPStatus.Enabled : 0) |
+                    ((flags & DEPFLAGS.PROCESS_DEP_ENABLE) != 0 ? DepStatus.Enabled : 0) |
                     ((flags & DEPFLAGS.PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION) != 0 ? 
-                    (DEPStatus.Enabled | DEPStatus.ATLThunkEmulationDisabled) : 0) |
-                    ((perm != 0) ? DEPStatus.Permanent : 0);
+                    (DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled) : 0) |
+                    ((perm != 0) ? DepStatus.Permanent : 0);
             }
 
             /// <summary>
@@ -298,6 +298,17 @@ namespace ProcessHacker
                     ThrowLastWin32Error();
 
                 return exitCode;
+            }
+
+            /// <summary>
+            /// Gets a GUI handle count.
+            /// </summary>
+            /// <param name="userObjects">If true, returns the number of USER handles. Otherwise, returns 
+            /// the number of GDI handles.</param>
+            /// <returns>A handle count.</returns>
+            public int GetGuiResources(bool userObjects)
+            {
+                return Win32.GetGuiResources(this, userObjects);
             }
 
             /// <summary>
@@ -355,7 +366,7 @@ namespace ProcessHacker
             /// </summary>
             /// <param name="offset">The offset to the UNICODE_STRING structure.</param>
             /// <returns>A string.</returns>
-            public string GetPEBString(PEBOffset offset)
+            public string GetPebString(PebOffset offset)
             {
                 int pebBaseAddress = 0x7ffd7000;
 
