@@ -18,6 +18,11 @@
                 components.Dispose();
             }
 
+            if (_phandle != null)
+                _phandle.Dispose();
+            if (_thandle != null)
+                _thandle.Dispose();
+
             Program.ThreadWindows.Remove(Id);
             Program.UpdateWindows();
 

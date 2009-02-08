@@ -89,16 +89,15 @@ namespace ProcessHacker
                         -1, out dupHandle, (Win32.STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
                         continue;
 
-                    // get a Win32Handle instance to own the duplicated handle so we don't have to close it 
-                    // ourselves
-                    Win32.Win32Handle dupHandleAuto = new Win32.Win32Handle(dupHandle);
+                    using (Win32.Win32Handle dupHandleAuto = new Win32.Win32Handle(dupHandle))
+                    {
+                        int processId = Win32.GetProcessId(dupHandle);
 
-                    int processId = Win32.GetProcessId(dupHandle);
+                        if (processId == 0)
+                            continue;
 
-                    if (processId == 0)
-                        continue;
-
-                    processIds.Add(processId);
+                        processIds.Add(processId);
+                    }
                 }
             }
 

@@ -503,222 +503,217 @@ namespace ProcessHacker
                 Program.CurrentProcess, out objectHandle, 0, 0, 0) != 0)
                 throw new Exception("Could not duplicate object!");
 
-            // automatically closes the handle
-            Win32Handle objectHandleAuto = new Win32Handle(objectHandle);
-
-            ObjectInformation info = new ObjectInformation();
-
-            ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                IntPtr.Zero, 0, out retLength);
-
-            if (retLength > 0)
+            using (Win32Handle objectHandleAuto = new Win32Handle(objectHandle))
             {
-                using (MemoryAlloc obiMem = new MemoryAlloc(retLength))
-                {
-                    ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
-                        obiMem.Memory, obiMem.Size, out retLength);
+                ObjectInformation info = new ObjectInformation();
 
-                    OBJECT_BASIC_INFORMATION obi = obiMem.ReadStruct<OBJECT_BASIC_INFORMATION>();
-                    info.Basic = obi;
-                }
-            }
-
-            // If the cache contains the object type's name, use it. Otherwise, query the type 
-            // for its name.
-            if (ObjectTypes.ContainsKey(handle.ObjectTypeNumber))
-            {
-                info.TypeName = ObjectTypes[handle.ObjectTypeNumber];
-            }
-            else
-            {
-                ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
                     IntPtr.Zero, 0, out retLength);
 
                 if (retLength > 0)
                 {
-                    using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
+                    using (MemoryAlloc obiMem = new MemoryAlloc(retLength))
                     {
-                        if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                            otiMem.Memory, otiMem.Size, out retLength) != 0)
-                            throw new Exception("ZwQueryObject failed");
+                        ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectBasicInformation,
+                            obiMem.Memory, obiMem.Size, out retLength);
 
-                        OBJECT_TYPE_INFORMATION oti = otiMem.ReadStruct<OBJECT_TYPE_INFORMATION>();
-
-                        info.TypeName = ReadUnicodeString(oti.Name);
-                        ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
+                        OBJECT_BASIC_INFORMATION obi = obiMem.ReadStruct<OBJECT_BASIC_INFORMATION>();
+                        info.Basic = obi;
                     }
                 }
-            }
 
-            if (Program.KPH != null && info.TypeName == "File")
-            {
-                // use KProcessHacker for files
-                info.OrigName = Program.KPH.GetObjectName(handle);
-            }
-            else if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
-            {
-                // KProcessHacker not available, fall back to using hack
-            }
-            else
-            {
-                ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    IntPtr.Zero, 0, out retLength);
-
-                if (retLength > 0)
+                // If the cache contains the object type's name, use it. Otherwise, query the type 
+                // for its name.
+                if (ObjectTypes.ContainsKey(handle.ObjectTypeNumber))
                 {
-                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
-                    {
-                        if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                            oniMem.Memory, oniMem.Size, out retLength) != 0)
-                            throw new Exception("ZwQueryObject failed");
-
-                        OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
-
-                        info.OrigName = ReadUnicodeString(oni.Name);
-                        info.Name = oni;
-                    }
-                }
-            }
-
-            // get a better name for the handle
-            try
-            {
-                switch (info.TypeName)
-                {
-                    case "File":
-                        // resolves \Device\Harddisk1 into C:, for example
-                        info.BestName = DeviceFileNameToDos(info.OrigName);
-
-                        break;
-
-                    case "Key":
-                        string hklmString = "\\registry\\machine";
-                        string hkcrString = "\\registry\\machine\\software\\classes";
-                        string hkcuString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
-                        string hkcucrString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-                        string hkuString = "\\registry\\user";
-
-                        if (info.OrigName.ToLower().StartsWith(hkcrString))
-                            info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hklmString))
-                            info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcucrString))
-                            info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcuString))
-                            info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkuString))
-                            info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
-                        else
-                            info.BestName = info.OrigName;
-
-                        break;
-
-                    case "Process":
-                        {
-                            int processHandle;
-                            int processId;
-
-                            if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                Program.CurrentProcess, out processHandle,
-                                (STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
-                                throw new Exception("Could not duplicate process handle!");
-
-                            Win32Handle processHandleAuto = new Win32Handle(processHandle);
-
-                            if ((processId = GetProcessId(processHandle)) == 0)
-                                ThrowLastWin32Error();
-
-                            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
-                                info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
-                                    " (" + processId.ToString() + ")";
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + ")";
-
-                            processHandleAuto.Dispose();
-                        }
-
-                        break;
-
-                    case "Thread":
-                        {
-                            int threadHandle;
-                            int processId;
-                            int threadId;
-
-                            if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                Program.CurrentProcess, out threadHandle,
-                                (STANDARD_RIGHTS)Program.MinThreadQueryRights, 0, 0) != 0)
-                                throw new Exception("Could not duplicate thread handle!");
-
-                            Win32Handle threadHandleAuto = new Win32Handle(threadHandle);
-
-                            if ((threadId = GetThreadId(threadHandle)) == 0)
-                                ThrowLastWin32Error();
-
-                            if ((processId = GetProcessIdOfThread(threadHandle)) == 0)
-                                ThrowLastWin32Error();
-
-                            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
-                                info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
-                                    " (" + processId.ToString() + "): " + threadId.ToString();
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + "): " +
-                                    threadId.ToString();
-
-                            threadHandleAuto.Dispose();
-                        }
-
-                        break;
-
-                    case "Token":
-                        {
-                            int tokenHandle;
-
-                            if (ZwDuplicateObject(process.Handle, handle.Handle,
-                                Program.CurrentProcess, out tokenHandle,
-                                (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0, 0) != 0)
-                                throw new Exception("Could not duplicate token handle!");
-
-                            Win32Handle tokenHandleAuto = new Win32Handle(tokenHandle);
-
-                            info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
-                            
-                            tokenHandleAuto.Dispose();
-                        }
-
-                        break;
-
-                    default:
-                        if (info.OrigName != null &&
-                            info.OrigName != "")
-                        {
-                            info.BestName = info.OrigName;
-                        }
-                        else
-                        {
-                            info.BestName = null;
-                        }
-
-                        break;
-                }
-            }
-            catch
-            {
-                if (info.OrigName != null && info.OrigName != "")
-                {
-                    info.BestName = info.OrigName;
+                    info.TypeName = ObjectTypes[handle.ObjectTypeNumber];
                 }
                 else
                 {
-                    info.BestName = null;
+                    ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                        IntPtr.Zero, 0, out retLength);
+
+                    if (retLength > 0)
+                    {
+                        using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
+                        {
+                            if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                                otiMem.Memory, otiMem.Size, out retLength) != 0)
+                                throw new Exception("ZwQueryObject failed");
+
+                            OBJECT_TYPE_INFORMATION oti = otiMem.ReadStruct<OBJECT_TYPE_INFORMATION>();
+
+                            info.TypeName = ReadUnicodeString(oti.Name);
+                            ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
+                        }
+                    }
                 }
+
+                if (Program.KPH != null && info.TypeName == "File")
+                {
+                    // use KProcessHacker for files
+                    info.OrigName = Program.KPH.GetObjectName(handle);
+                }
+                else if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
+                {
+                    // KProcessHacker not available, fall back to using hack
+                }
+                else
+                {
+                    ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                        IntPtr.Zero, 0, out retLength);
+
+                    if (retLength > 0)
+                    {
+                        using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                        {
+                            if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                                oniMem.Memory, oniMem.Size, out retLength) != 0)
+                                throw new Exception("ZwQueryObject failed");
+
+                            OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
+
+                            info.OrigName = ReadUnicodeString(oni.Name);
+                            info.Name = oni;
+                        }
+                    }
+                }
+
+                // get a better name for the handle
+                try
+                {
+                    switch (info.TypeName)
+                    {
+                        case "File":
+                            // resolves \Device\Harddisk1 into C:, for example
+                            info.BestName = DeviceFileNameToDos(info.OrigName);
+
+                            break;
+
+                        case "Key":
+                            string hklmString = "\\registry\\machine";
+                            string hkcrString = "\\registry\\machine\\software\\classes";
+                            string hkcuString = "\\registry\\user\\" +
+                                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
+                            string hkcucrString = "\\registry\\user\\" +
+                                System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
+                            string hkuString = "\\registry\\user";
+
+                            if (info.OrigName.ToLower().StartsWith(hkcrString))
+                                info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hklmString))
+                                info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkcucrString))
+                                info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkcuString))
+                                info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
+                            else if (info.OrigName.ToLower().StartsWith(hkuString))
+                                info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
+                            else
+                                info.BestName = info.OrigName;
+
+                            break;
+
+                        case "Process":
+                            {
+                                int processHandle;
+                                int processId;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess, out processHandle,
+                                    (STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
+                                    throw new Exception("Could not duplicate process handle!");
+
+                                using (Win32Handle processHandleAuto = new Win32Handle(processHandle))
+                                {
+                                    if ((processId = GetProcessId(processHandle)) == 0)
+                                        ThrowLastWin32Error();
+
+                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                            " (" + processId.ToString() + ")";
+                                    else
+                                        info.BestName = "Non-existent process (" + processId.ToString() + ")";
+                                }
+                            }
+
+                            break;
+
+                        case "Thread":
+                            {
+                                int threadHandle;
+                                int processId;
+                                int threadId;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess, out threadHandle,
+                                    (STANDARD_RIGHTS)Program.MinThreadQueryRights, 0, 0) != 0)
+                                    throw new Exception("Could not duplicate thread handle!");
+
+                                using (Win32Handle threadHandleAuto = new Win32Handle(threadHandle))
+                                {
+                                    if ((threadId = GetThreadId(threadHandle)) == 0)
+                                        ThrowLastWin32Error();
+
+                                    if ((processId = GetProcessIdOfThread(threadHandle)) == 0)
+                                        ThrowLastWin32Error();
+
+                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                            " (" + processId.ToString() + "): " + threadId.ToString();
+                                    else
+                                        info.BestName = "Non-existent process (" + processId.ToString() + "): " +
+                                            threadId.ToString();
+                                }
+                            }
+
+                            break;
+
+                        case "Token":
+                            {
+                                int tokenHandle;
+
+                                if (ZwDuplicateObject(process.Handle, handle.Handle,
+                                    Program.CurrentProcess, out tokenHandle,
+                                    (STANDARD_RIGHTS)TOKEN_RIGHTS.TOKEN_QUERY, 0, 0) != 0)
+                                    throw new Exception("Could not duplicate token handle!");
+
+                                using (Win32Handle tokenHandleAuto = new Win32Handle(tokenHandle))
+                                {
+                                    info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
+                                }
+                            }
+
+                            break;
+
+                        default:
+                            if (info.OrigName != null &&
+                                info.OrigName != "")
+                            {
+                                info.BestName = info.OrigName;
+                            }
+                            else
+                            {
+                                info.BestName = null;
+                            }
+
+                            break;
+                    }
+                }
+                catch
+                {
+                    if (info.OrigName != null && info.OrigName != "")
+                    {
+                        info.BestName = info.OrigName;
+                    }
+                    else
+                    {
+                        info.BestName = null;
+                    }
+                }
+
+                return info;
             }
-
-            objectHandleAuto.Dispose();
-
-            return info;
         }
 
         #endregion
