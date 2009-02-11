@@ -317,7 +317,25 @@ namespace ProcessHacker
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        }     
+        }
+
+        private void updateNowMenuItem_Click(object sender, EventArgs e)
+        {
+            processP.RunOnceAsync();
+            serviceP.RunOnceAsync();
+        }
+
+        private void updateProcessesMenuItem_Click(object sender, EventArgs e)
+        {
+            updateProcessesMenuItem.Checked = !updateProcessesMenuItem.Checked;
+            processP.Enabled = updateProcessesMenuItem.Checked;
+        }
+
+        private void updateServicesMenuItem_Click(object sender, EventArgs e)
+        {
+            updateServicesMenuItem.Checked = !updateServicesMenuItem.Checked;
+            serviceP.Enabled = updateServicesMenuItem.Checked;
+        }   
 
         private void csrProcessesMenuItem_Click(object sender, EventArgs e)
         {
@@ -1616,6 +1634,7 @@ namespace ProcessHacker
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_IconUpdater);
             processP.Enabled = true;
+            updateProcessesMenuItem.Checked = true;
 
             cpuUsageIcon.BackColor = Color.Black;
             cpuUsageIcon.Color = Color.FromArgb(0, 255, 0);
@@ -1631,6 +1650,7 @@ namespace ProcessHacker
             serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
             serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
             serviceP.Enabled = true;
+            updateServicesMenuItem.Checked = true;
 
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
             listNetwork.Provider = networkP;

@@ -5,6 +5,7 @@ Process Hacker
    * CSR Processes tool - displays hidden processes (this does not detect Hacker 
      Defender but does detect simple kernel-mode rootkits)
    * Options window has a detailed description for each setting
+   * Process window has descriptions for each field
    * File processing (signature verification, checks for packed images) is now 
      asynchronous. This means that there are no more delays when starting 
      certain programs.

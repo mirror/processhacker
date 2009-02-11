@@ -76,6 +76,9 @@
             this.optionsMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
+            this.viewMenuItem = new System.Windows.Forms.MenuItem();
+            this.updateNowMenuItem = new System.Windows.Forms.MenuItem();
+            this.updateProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
             this.csrProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
@@ -117,6 +120,7 @@
             this.DSMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.updateServicesMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -349,6 +353,7 @@
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.hackerMenuItem,
+            this.viewMenuItem,
             this.toolsMenuItem,
             this.windowMenuItem});
             // 
@@ -386,6 +391,7 @@
             // runAsMenuItem
             // 
             this.runAsMenuItem.Index = 2;
+            this.runAsMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
             this.runAsMenuItem.Text = "&Run As...";
             this.runAsMenuItem.Click += new System.EventHandler(this.runAsMenuItem_Click);
             // 
@@ -393,6 +399,7 @@
             // 
             this.vistaMenu.SetImage(this.findHandlesMenuItem, global::ProcessHacker.Properties.Resources.find);
             this.findHandlesMenuItem.Index = 3;
+            this.findHandlesMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlF;
             this.findHandlesMenuItem.Text = "&Find Handles...";
             this.findHandlesMenuItem.Click += new System.EventHandler(this.findHandlesMenuItem_Click);
             // 
@@ -413,6 +420,7 @@
             // sysInfoMenuItem
             // 
             this.sysInfoMenuItem.Index = 6;
+            this.sysInfoMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlI;
             this.sysInfoMenuItem.Text = "System &Information...";
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
@@ -439,6 +447,7 @@
             // 
             this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
             this.optionsMenuItem.Index = 10;
+            this.optionsMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
             this.optionsMenuItem.Text = "&Options...";
             this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
             // 
@@ -456,9 +465,32 @@
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
+            // viewMenuItem
+            // 
+            this.viewMenuItem.Index = 1;
+            this.viewMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.updateNowMenuItem,
+            this.updateProcessesMenuItem,
+            this.updateServicesMenuItem});
+            this.viewMenuItem.Text = "&View";
+            // 
+            // updateNowMenuItem
+            // 
+            this.vistaMenu.SetImage(this.updateNowMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
+            this.updateNowMenuItem.Index = 0;
+            this.updateNowMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
+            this.updateNowMenuItem.Text = "Update &Now";
+            this.updateNowMenuItem.Click += new System.EventHandler(this.updateNowMenuItem_Click);
+            // 
+            // updateProcessesMenuItem
+            // 
+            this.updateProcessesMenuItem.Index = 1;
+            this.updateProcessesMenuItem.Text = "Update &Processes";
+            this.updateProcessesMenuItem.Click += new System.EventHandler(this.updateProcessesMenuItem_Click);
+            // 
             // toolsMenuItem
             // 
-            this.toolsMenuItem.Index = 1;
+            this.toolsMenuItem.Index = 2;
             this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.csrProcessesMenuItem});
             this.toolsMenuItem.Text = "&Tools";
@@ -471,7 +503,7 @@
             // 
             // windowMenuItem
             // 
-            this.windowMenuItem.Index = 2;
+            this.windowMenuItem.Index = 3;
             this.windowMenuItem.Text = "&Window";
             // 
             // statusBar
@@ -766,6 +798,12 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // updateServicesMenuItem
+            // 
+            this.updateServicesMenuItem.Index = 2;
+            this.updateServicesMenuItem.Text = "Update &Services";
+            this.updateServicesMenuItem.Click += new System.EventHandler(this.updateServicesMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -885,6 +923,10 @@
         private NetworkList listNetwork;
         private System.Windows.Forms.MenuItem sysInformationIconMenuItem;
         private System.Windows.Forms.MenuItem csrProcessesMenuItem;
+        private System.Windows.Forms.MenuItem viewMenuItem;
+        private System.Windows.Forms.MenuItem updateNowMenuItem;
+        private System.Windows.Forms.MenuItem updateProcessesMenuItem;
+        private System.Windows.Forms.MenuItem updateServicesMenuItem;
     }
 }
 

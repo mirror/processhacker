@@ -134,17 +134,16 @@ namespace ProcessHacker
                 // This is why I love free software.
                 for (int i = 0; i < this.ProcessorPerfArray.Length; i++)
                 {
-                    this.ProcessorPerfArray[i] = 
-                        data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(i);
-
-                    this.ProcessorPerfArray[i].KernelTime -= this.ProcessorPerfArray[i].IdleTime + 
-                        this.ProcessorPerfArray[i].DpcTime + this.ProcessorPerfArray[i].InterruptTime;
-                    newSums.DpcTime += this.ProcessorPerfArray[i].DpcTime;
-                    newSums.IdleTime += this.ProcessorPerfArray[i].IdleTime;
-                    newSums.InterruptCount += this.ProcessorPerfArray[i].InterruptCount;
-                    newSums.InterruptTime += this.ProcessorPerfArray[i].InterruptTime;
-                    newSums.KernelTime += this.ProcessorPerfArray[i].KernelTime;
-                    newSums.UserTime += this.ProcessorPerfArray[i].UserTime;
+                    var cpuPerf = data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(i);
+                    
+                    cpuPerf.KernelTime -= cpuPerf.IdleTime + cpuPerf.DpcTime + cpuPerf.InterruptTime;
+                    newSums.DpcTime += cpuPerf.DpcTime;
+                    newSums.IdleTime += cpuPerf.IdleTime;
+                    newSums.InterruptCount += cpuPerf.InterruptCount;
+                    newSums.InterruptTime += cpuPerf.InterruptTime;
+                    newSums.KernelTime += cpuPerf.KernelTime;
+                    newSums.UserTime += cpuPerf.UserTime;
+                    this.ProcessorPerfArray[i] = cpuPerf;
                 }
 
                 this.ProcessorPerf = newSums;
@@ -285,7 +284,7 @@ namespace ProcessHacker
             Dictionary<int, int> tsProcesses = new Dictionary<int,int>();
             Dictionary<int, Win32.SystemProcess> procs = Win32.EnumProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
-            Win32.WtsEnumProcessesFastData wtsEnumData = Win32.TSEnumProcessesFast();
+            Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
 
             long thisSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
             long sysTime = thisSysTime - _lastSysTime;
@@ -578,6 +577,8 @@ namespace ProcessHacker
                         if (tsProcesses.Count == 0)
                         {
                             // delay loading until this point
+                            wtsEnumData = Win32.TSEnumProcessesFast();
+
                             for (int i = 0; i < wtsEnumData.PIDs.Length; i++)
                                 tsProcesses.Add(wtsEnumData.PIDs[i], wtsEnumData.SIDs[i]);
                         }
@@ -614,7 +615,9 @@ namespace ProcessHacker
                     newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
                     newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivateBytes;
                     newitem.Process = processInfo;
-                    newitem.Threads = procs[pid].Threads;
+
+                    if (Win32.ProcessesWithThreads.ContainsKey(pid))
+                        newitem.Threads = procs[pid].Threads;
 
                     try
                     {
@@ -629,7 +632,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (newitem.FileName != null && newitem.Icon == null && newitem.IconAttempts < 5)
+                    if (newitem.FileName != null && newitem.Icon == null && newitem.IconAttempts < 3)
                     {
                         try
                         {
@@ -651,20 +654,20 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (item.TokenQueryHandle != null)
-                    {
-                        try
-                        {
-                            newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
-                        }
-                        catch
-                        { }
-                    }
+                    //if (item.TokenQueryHandle != null)
+                    //{
+                    //    try
+                    //    {
+                    //        newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
+                    //    }
+                    //    catch
+                    //    { }
+                    //}
 
                     if (newitem.MemoryUsage != item.MemoryUsage ||
                         newitem.CPUUsage != item.CPUUsage || 
                         newitem.IsBeingDebugged != item.IsBeingDebugged ||
-                        newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled ||
+                        //newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled ||
                         newitem.JustProcessed
                         )
                     {
@@ -684,7 +687,8 @@ namespace ProcessHacker
 
             Dictionary = newdictionary;
 
-            wtsEnumData.Memory.Dispose();
+            if (wtsEnumData.Memory != null)
+                wtsEnumData.Memory.Dispose();
         }
     }
 }

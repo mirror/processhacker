@@ -116,6 +116,10 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label27 = new System.Windows.Forms.Label();
             this.labelOtherHandles = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.labelOtherGDIHandles = new System.Windows.Forms.Label();
+            this.labelOtherUSERHandles = new System.Windows.Forms.Label();
             this.tabPerformance = new System.Windows.Forms.TabPage();
             this.tablePerformance = new System.Windows.Forms.TableLayoutPanel();
             this.groupCPUUsage = new System.Windows.Forms.GroupBox();
@@ -148,10 +152,7 @@
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.label28 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.labelOtherGDIHandles = new System.Windows.Forms.Label();
-            this.labelOtherUSERHandles = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -288,6 +289,7 @@
             this.label26.Size = new System.Drawing.Size(44, 13);
             this.label26.TabIndex = 9;
             this.label26.Text = "Started:";
+            this.toolTip.SetToolTip(this.label26, "The time at which the program was started.");
             // 
             // label7
             // 
@@ -297,6 +299,7 @@
             this.label7.Size = new System.Drawing.Size(72, 13);
             this.label7.TabIndex = 8;
             this.label7.Text = "PEB Address:";
+            this.toolTip.SetToolTip(this.label7, "The address of the Process Environment Block (PEB).");
             // 
             // textProtected
             // 
@@ -317,6 +320,7 @@
             this.labelProtected.Size = new System.Drawing.Size(56, 13);
             this.labelProtected.TabIndex = 6;
             this.labelProtected.Text = "Protected:";
+            this.toolTip.SetToolTip(this.labelProtected, "Whether the process is DRM-protected.");
             // 
             // textDEP
             // 
@@ -337,6 +341,7 @@
             this.labelDEP.Size = new System.Drawing.Size(32, 13);
             this.labelDEP.TabIndex = 6;
             this.labelDEP.Text = "DEP:";
+            this.toolTip.SetToolTip(this.labelDEP, "The status of Data Execution Prevention (DEP) for this process.");
             // 
             // buttonTerminate
             // 
@@ -358,6 +363,7 @@
             this.buttonInspectPEB.Name = "buttonInspectPEB";
             this.buttonInspectPEB.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectPEB.TabIndex = 4;
+            this.toolTip.SetToolTip(this.buttonInspectPEB, "Inspects the PEB.");
             this.buttonInspectPEB.UseVisualStyleBackColor = true;
             this.buttonInspectPEB.Click += new System.EventHandler(this.buttonInspectPEB_Click);
             // 
@@ -369,6 +375,7 @@
             this.buttonEditProtected.Name = "buttonEditProtected";
             this.buttonEditProtected.Size = new System.Drawing.Size(24, 24);
             this.buttonEditProtected.TabIndex = 4;
+            this.toolTip.SetToolTip(this.buttonEditProtected, "Allows you to protect or unprotect the process.");
             this.buttonEditProtected.UseVisualStyleBackColor = true;
             this.buttonEditProtected.Click += new System.EventHandler(this.buttonEditProtected_Click);
             // 
@@ -380,6 +387,7 @@
             this.buttonInspectParent.Name = "buttonInspectParent";
             this.buttonInspectParent.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectParent.TabIndex = 4;
+            this.toolTip.SetToolTip(this.buttonInspectParent, "Inspects the parent process.");
             this.buttonInspectParent.UseVisualStyleBackColor = true;
             this.buttonInspectParent.Click += new System.EventHandler(this.buttonInspectParent_Click);
             // 
@@ -391,6 +399,7 @@
             this.buttonEditDEP.Name = "buttonEditDEP";
             this.buttonEditDEP.Size = new System.Drawing.Size(24, 24);
             this.buttonEditDEP.TabIndex = 4;
+            this.toolTip.SetToolTip(this.buttonEditDEP, "Allows you to change the process\' DEP policy.");
             this.buttonEditDEP.UseVisualStyleBackColor = true;
             this.buttonEditDEP.Click += new System.EventHandler(this.buttonEditDEP_Click);
             // 
@@ -402,6 +411,7 @@
             this.label5.Size = new System.Drawing.Size(41, 13);
             this.label5.TabIndex = 0;
             this.label5.Text = "Parent:";
+            this.toolTip.SetToolTip(this.label5, "The name and ID of the process which started this process.");
             // 
             // textParent
             // 
@@ -422,6 +432,7 @@
             this.label4.Size = new System.Drawing.Size(89, 13);
             this.label4.TabIndex = 0;
             this.label4.Text = "Current Directory:";
+            this.toolTip.SetToolTip(this.label4, "The program\'s current directory.");
             // 
             // textPEBAddress
             // 
@@ -441,6 +452,7 @@
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 0;
             this.label2.Text = "Command Line:";
+            this.toolTip.SetToolTip(this.label2, "The command used to start the program.");
             // 
             // textStartTime
             // 
@@ -533,6 +545,7 @@
             this.label1.Size = new System.Drawing.Size(77, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Image Version:";
+            this.toolTip.SetToolTip(this.label1, "The version of the program.");
             // 
             // label3
             // 
@@ -542,6 +555,7 @@
             this.label3.Size = new System.Drawing.Size(89, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Image File Name:";
+            this.toolTip.SetToolTip(this.label3, "The file name of the program.");
             // 
             // textFileVersion
             // 
@@ -1109,6 +1123,46 @@
             this.labelOtherHandles.TabIndex = 1;
             this.labelOtherHandles.Text = "value";
             // 
+            // label28
+            // 
+            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(3, 23);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(68, 13);
+            this.label28.TabIndex = 1;
+            this.label28.Text = "GDI Handles";
+            // 
+            // label29
+            // 
+            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(3, 44);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(79, 13);
+            this.label29.TabIndex = 1;
+            this.label29.Text = "USER Handles";
+            // 
+            // labelOtherGDIHandles
+            // 
+            this.labelOtherGDIHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelOtherGDIHandles.AutoSize = true;
+            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 23);
+            this.labelOtherGDIHandles.Name = "labelOtherGDIHandles";
+            this.labelOtherGDIHandles.Size = new System.Drawing.Size(33, 13);
+            this.labelOtherGDIHandles.TabIndex = 1;
+            this.labelOtherGDIHandles.Text = "value";
+            // 
+            // labelOtherUSERHandles
+            // 
+            this.labelOtherUSERHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelOtherUSERHandles.AutoSize = true;
+            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 44);
+            this.labelOtherUSERHandles.Name = "labelOtherUSERHandles";
+            this.labelOtherUSERHandles.Size = new System.Drawing.Size(33, 13);
+            this.labelOtherUSERHandles.TabIndex = 1;
+            this.labelOtherUSERHandles.Text = "value";
+            // 
             // tabPerformance
             // 
             this.tabPerformance.Controls.Add(this.tablePerformance);
@@ -1470,46 +1524,6 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // label28
-            // 
-            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 23);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(68, 13);
-            this.label28.TabIndex = 1;
-            this.label28.Text = "GDI Handles";
-            // 
-            // label29
-            // 
-            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(3, 44);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(79, 13);
-            this.label29.TabIndex = 1;
-            this.label29.Text = "USER Handles";
-            // 
-            // labelOtherGDIHandles
-            // 
-            this.labelOtherGDIHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.labelOtherGDIHandles.AutoSize = true;
-            this.labelOtherGDIHandles.Location = new System.Drawing.Point(153, 23);
-            this.labelOtherGDIHandles.Name = "labelOtherGDIHandles";
-            this.labelOtherGDIHandles.Size = new System.Drawing.Size(33, 13);
-            this.labelOtherGDIHandles.TabIndex = 1;
-            this.labelOtherGDIHandles.Text = "value";
-            // 
-            // labelOtherUSERHandles
-            // 
-            this.labelOtherUSERHandles.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.labelOtherUSERHandles.AutoSize = true;
-            this.labelOtherUSERHandles.Location = new System.Drawing.Point(153, 44);
-            this.labelOtherUSERHandles.Name = "labelOtherUSERHandles";
-            this.labelOtherUSERHandles.Size = new System.Drawing.Size(33, 13);
-            this.labelOtherUSERHandles.TabIndex = 1;
-            this.labelOtherUSERHandles.Text = "value";
-            // 
             // ProcessWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1680,5 +1694,6 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label labelOtherGDIHandles;
         private System.Windows.Forms.Label labelOtherUSERHandles;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

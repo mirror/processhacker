@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.textFileName = new System.Windows.Forms.TextBox();
             this.buttonProperties = new System.Windows.Forms.Button();
             this.buttonExplore = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // textFileName
@@ -53,6 +55,7 @@
             this.buttonProperties.Name = "buttonProperties";
             this.buttonProperties.Size = new System.Drawing.Size(24, 24);
             this.buttonProperties.TabIndex = 1;
+            this.toolTip.SetToolTip(this.buttonProperties, "Properties");
             this.buttonProperties.UseVisualStyleBackColor = true;
             this.buttonProperties.Click += new System.EventHandler(this.buttonProperties_Click);
             // 
@@ -65,6 +68,7 @@
             this.buttonExplore.Name = "buttonExplore";
             this.buttonExplore.Size = new System.Drawing.Size(24, 24);
             this.buttonExplore.TabIndex = 1;
+            this.toolTip.SetToolTip(this.buttonExplore, "Open File Location");
             this.buttonExplore.UseVisualStyleBackColor = true;
             this.buttonExplore.Click += new System.EventHandler(this.buttonExplore_Click);
             // 
@@ -87,5 +91,6 @@
         private System.Windows.Forms.TextBox textFileName;
         private System.Windows.Forms.Button buttonProperties;
         private System.Windows.Forms.Button buttonExplore;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
