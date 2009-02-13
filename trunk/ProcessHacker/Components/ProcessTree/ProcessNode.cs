@@ -20,13 +20,14 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Aga.Controls.Tree;
 
 namespace ProcessHacker
 {
-    public class ProcessNode : Node
+    public class ProcessNode : Node, IDisposable
     {
         private List<ProcessNode> _children = new List<ProcessNode>();
         private ProcessItem _pitem;
@@ -49,6 +50,12 @@ namespace ProcessHacker
             }
         }
 
+        public void Dispose()
+        {
+            if (_icon != null)
+                _icon.Dispose();
+        }
+
         public ProcessItem ProcessItem
         {
             get { return _pitem; }
@@ -58,7 +65,14 @@ namespace ProcessHacker
 
                 if (_wasNoIcon && _pitem.Icon != null)
                 {
-                    _icon = _pitem.Icon.ToBitmap();
+                    if (_icon != null)
+                        _icon.Dispose();
+
+                    _icon = new Bitmap(16, 16);
+
+                    using (Graphics g = Graphics.FromImage(_icon))
+                        g.DrawIcon(_pitem.Icon, new Rectangle(0, 0, 16, 16));
+
                     _wasNoIcon = false;
                 }
             }

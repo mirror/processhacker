@@ -83,6 +83,8 @@ namespace ProcessHacker
             ProcessNode[] nodes = _roots.ToArray();
             ProcessNode[] targetChildren = null;
 
+            targetNode.Dispose();
+
             foreach (ProcessNode node in nodes)
             {
                 if (node.PID == item.PID)

@@ -143,5 +143,33 @@ namespace ProcessHacker
         {
             this.Close();
         }
+
+        private void buttonTerminate_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to terminate the selected process?",
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                try
+                {
+                    (new Win32.ProcessHandle(
+                        int.Parse(listProcesses.SelectedItems[0].SubItems[1].Text),
+                        Win32.PROCESS_RIGHTS.PROCESS_TERMINATE)).Terminate();
+
+                    listProcesses.SelectedItems[0].Remove();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listProcesses.SelectedItems.Count == 1)
+                buttonTerminate.Enabled = true;
+            else
+                buttonTerminate.Enabled = false;
+        }
     }
 }

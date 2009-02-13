@@ -2,32 +2,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 
-//VistaMenu 1.1, created by Wyatt O'Day
-//Visit: http://wyday.com/blog/2008/vista-menu-with-icons-in-c-sharp/
+//VistaMenu v1.2, created by Wyatt O'Day
+//Visit: http://wyday.com/vistamenu/
 
 namespace wyDay.Controls
 {
-    [ProvideProperty("Image", typeof(MenuItem))]
-    public partial class VistaMenu : System.ComponentModel.Component, IExtenderProvider, ISupportInitialize
+    //Properties for the MenuItem
+    internal class Properties
     {
-        private IContainer components = null;
-        private Hashtable properties = new Hashtable();
-        private Hashtable menuParents = new Hashtable();
+        public Image Image;
+        public IntPtr renderBmpHbitmap = IntPtr.Zero;
+    }
 
-        private bool formHasBeenIntialized = false;
-        private bool isVistaOrLater = false;
+    //enum WindowsType { VistaOrLater, XP, PreXP }
+
+    [ProvideProperty("Image", typeof(MenuItem))]
+    public partial class VistaMenu : Component, IExtenderProvider, ISupportInitialize
+    {
+        private Container components;
+        private readonly Hashtable properties = new Hashtable();
+        private readonly Hashtable menuParents = new Hashtable();
+
+        private bool formHasBeenIntialized;
+        private bool isVistaOrLater;
 
         #region Imports
-
-        public const int MIIM_BITMAP = 0x00000080;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern bool SetMenuItemInfo(HandleRef hMenu, int uItem, bool fByPosition, MENUITEMINFO_T_RW lpmii);
@@ -48,7 +53,7 @@ namespace wyDay.Controls
             InitializeComponent();
         }
 
-        public VistaMenu(System.ComponentModel.IContainer container)
+        public VistaMenu(IContainer container)
             : this()
         {
             container.Add(this);
@@ -60,7 +65,7 @@ namespace wyDay.Controls
         /// </summary>
         private void InitializeComponent()
         {
-
+            components = new Container();
         }
 
         /// <summary> 
@@ -88,10 +93,20 @@ namespace wyDay.Controls
 
         bool IExtenderProvider.CanExtend(object o)
         {
-            if (o is MenuItem || o is Form)
+            if (o is MenuItem)
+            {
+                // reject the menuitem if it's a top level element on a MainMenu bar
+                if (((MenuItem)o).Parent != null)
+                    return ((MenuItem)o).Parent.GetType() != typeof(MainMenu);
+
+                // parent is null - meaning it's a context menu
                 return true;
-            else
-                return false;
+            }
+
+            if (o is Form)
+                return true;
+
+            return false;
         }
 
         private Properties EnsurePropertiesExists(MenuItem key)
@@ -111,7 +126,7 @@ namespace wyDay.Controls
 
         #region MenuItem.Image
 
-
+        [DefaultValue(null)]
         [Description("The Image for the MenuItem")]
         [Category("Appearance")]
         public Image GetImage(MenuItem mnuItem)
@@ -119,12 +134,12 @@ namespace wyDay.Controls
             return EnsurePropertiesExists(mnuItem).Image;
         }
 
+        [DefaultValue(null)]
         public void SetImage(MenuItem mnuItem, Image value)
         {
             Properties prop = EnsurePropertiesExists(mnuItem);
-            
-            prop.Image = value;
 
+            prop.Image = value;
 
             if (!DesignMode && isVistaOrLater)
             {
@@ -163,21 +178,6 @@ namespace wyDay.Controls
             }
         }
 
-        private bool ShouldSerializeImage(MenuItem mnuItem)
-        {
-            if (GetImage(mnuItem) != null)
-                return true;
-            else
-                return false;
-        }
-
-        private void ResetImage(MenuItem mnuItem)
-        {
-            SetImage(mnuItem, null);
-        }
-
-
-
         #endregion
 
 
@@ -186,7 +186,7 @@ namespace wyDay.Controls
         {
         }
 
-        MENUINFO mnuInfo = new MENUINFO();
+        readonly MENUINFO mnuInfo = new MENUINFO();
 
         void AddVistaMenuItem(MenuItem mnuItem)
         {
@@ -197,17 +197,15 @@ namespace wyDay.Controls
             if (mnuBitmapChildren == null)
             {
                 if (mnuItem.Parent.GetType() == typeof(ContextMenu))
-                    ((ContextMenu)mnuItem.Parent).Popup += new EventHandler(MenuItem_Popup);
+                    ((ContextMenu)mnuItem.Parent).Popup += MenuItem_Popup;
                 else
-                    ((MenuItem)mnuItem.Parent).Popup += new EventHandler(MenuItem_Popup);
+                    ((MenuItem)mnuItem.Parent).Popup += MenuItem_Popup;
 
                 //intialize all the topmost menus to be of type "MNS_CHECKORBMP" (for Vista classic theme)
                 SetMenuInfo(new HandleRef(null, mnuItem.Parent.Handle), mnuInfo);
 
 
-                mnuBitmapChildren = new List<MenuItem>();
-
-                mnuBitmapChildren.Add(mnuItem);
+                mnuBitmapChildren = new List<MenuItem> { mnuItem };
 
                 //set the new children list to the corresponding parent
                 menuParents[mnuItem.Parent.Handle] = mnuBitmapChildren;
@@ -223,9 +221,9 @@ namespace wyDay.Controls
             if (menuParents[mnuItem.Parent] == null)
             {
                 if (mnuItem.Parent.GetType() == typeof(ContextMenu))
-                    ((ContextMenu)mnuItem.Parent).Popup += new EventHandler(PreVistaMenuItem_Popup);
+                    ((ContextMenu)mnuItem.Parent).Popup += PreVistaMenuItem_Popup;
                 else
-                    ((MenuItem)mnuItem.Parent).Popup += new EventHandler(PreVistaMenuItem_Popup);
+                    ((MenuItem)mnuItem.Parent).Popup += PreVistaMenuItem_Popup;
 
 
                 menuParents[mnuItem.Parent] = true;
@@ -235,8 +233,8 @@ namespace wyDay.Controls
                     //add all the menu items with custom paint events
                     foreach (MenuItem menu in mnuItem.Parent.MenuItems)
                     {
-                        menu.DrawItem += new DrawItemEventHandler(MenuItem_DrawItem);
-                        menu.MeasureItem += new MeasureItemEventHandler(MenuItem_MeasureItem);
+                        menu.DrawItem += MenuItem_DrawItem;
+                        menu.MeasureItem += MenuItem_MeasureItem;
                         menu.OwnerDraw = true;
                     }
                 }
@@ -266,8 +264,8 @@ namespace wyDay.Controls
                     {
                         foreach (MenuItem mnuItem in ((Menu)parent.Key).MenuItems)
                         {
-                            mnuItem.DrawItem += new DrawItemEventHandler(MenuItem_DrawItem);
-                            mnuItem.MeasureItem += new MeasureItemEventHandler(MenuItem_MeasureItem);
+                            mnuItem.DrawItem += MenuItem_DrawItem;
+                            mnuItem.MeasureItem += MenuItem_MeasureItem;
                             mnuItem.OwnerDraw = true;
                         }
                     }
@@ -287,7 +285,6 @@ namespace wyDay.Controls
             List<MenuItem> mnuBitmapChildren = (List<MenuItem>)menuParents[parentHandle];
 
             MENUITEMINFO_T_RW menuItemInfo = new MENUITEMINFO_T_RW();
-            menuItemInfo.fMask = MIIM_BITMAP;
 
             foreach (MenuItem menuItem in mnuBitmapChildren)
             {
@@ -303,18 +300,11 @@ namespace wyDay.Controls
         }
     }
 
-    //Properties for the MenuItem
-    internal class Properties
-    {
-        public Image Image = null;
-        public IntPtr renderBmpHbitmap = IntPtr.Zero;
-    }
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public class MENUITEMINFO_T_RW
     {
         public int cbSize = Marshal.SizeOf(typeof(MENUITEMINFO_T_RW));
-        public int fMask;
+        public int fMask = 0x00000080; //MIIM_BITMAP = 0x00000080
         public int fType;
         public int fState;
         public int wID;

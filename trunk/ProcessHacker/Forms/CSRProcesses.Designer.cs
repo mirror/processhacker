@@ -36,6 +36,7 @@
             this.buttonScan = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.buttonTerminate = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listProcesses
@@ -56,6 +57,7 @@
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
             this.listProcesses.View = System.Windows.Forms.View.Details;
+            this.listProcesses.SelectedIndexChanged += new System.EventHandler(this.listProcesses_SelectedIndexChanged);
             // 
             // columnProcess
             // 
@@ -115,11 +117,25 @@
                 " of the Client Server Runtime processes. This can be used to identify hidden pro" +
                 "cesses.";
             // 
+            // buttonTerminate
+            // 
+            this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonTerminate.Enabled = false;
+            this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonTerminate.Location = new System.Drawing.Point(262, 358);
+            this.buttonTerminate.Name = "buttonTerminate";
+            this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
+            this.buttonTerminate.TabIndex = 4;
+            this.buttonTerminate.Text = "T&erminate";
+            this.buttonTerminate.UseVisualStyleBackColor = true;
+            this.buttonTerminate.Click += new System.EventHandler(this.buttonTerminate_Click);
+            // 
             // CSRProcessesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(511, 393);
+            this.Controls.Add(this.buttonTerminate);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonScan);
@@ -143,5 +159,6 @@
         private System.Windows.Forms.Button buttonScan;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button buttonTerminate;
     }
 }

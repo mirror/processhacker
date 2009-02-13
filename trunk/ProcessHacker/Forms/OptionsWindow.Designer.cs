@@ -48,6 +48,7 @@
             this.checkStartHidden = new System.Windows.Forms.CheckBox();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
+            this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
             this.label20 = new System.Windows.Forms.Label();
@@ -88,9 +89,11 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
+            this.label23 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
@@ -114,7 +117,7 @@
             0,
             0,
             0});
-            this.textUpdateInterval.Location = new System.Drawing.Point(112, 6);
+            this.textUpdateInterval.Location = new System.Drawing.Point(134, 6);
             this.textUpdateInterval.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -139,7 +142,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 382);
+            this.buttonClose.Location = new System.Drawing.Point(362, 405);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -151,7 +154,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 235);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 261);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -164,7 +167,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 211);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 237);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -176,7 +179,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 35);
+            this.label2.Location = new System.Drawing.Point(6, 61);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(80, 13);
             this.label2.TabIndex = 5;
@@ -188,9 +191,9 @@
             // 
             this.textSearchEngine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textSearchEngine.Location = new System.Drawing.Point(112, 32);
+            this.textSearchEngine.Location = new System.Drawing.Point(134, 58);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(299, 20);
+            this.textSearchEngine.Size = new System.Drawing.Size(277, 20);
             this.textSearchEngine.TabIndex = 6;
             // 
             // tabControl
@@ -204,7 +207,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 364);
+            this.tabControl.Size = new System.Drawing.Size(425, 387);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -219,8 +222,10 @@
             this.tabGeneral.Controls.Add(this.checkStartHidden);
             this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
             this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
+            this.tabGeneral.Controls.Add(this.label23);
             this.tabGeneral.Controls.Add(this.label1);
             this.tabGeneral.Controls.Add(this.textSearchEngine);
+            this.tabGeneral.Controls.Add(this.textIconMenuProcesses);
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
             this.tabGeneral.Controls.Add(this.checkVerifySignatures);
@@ -229,7 +234,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 338);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 361);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -237,7 +242,7 @@
             // buttonFont
             // 
             this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFont.Location = new System.Drawing.Point(6, 110);
+            this.buttonFont.Location = new System.Drawing.Point(6, 136);
             this.buttonFont.Name = "buttonFont";
             this.buttonFont.Size = new System.Drawing.Size(75, 23);
             this.buttonFont.TabIndex = 15;
@@ -248,15 +253,15 @@
             // 
             // textImposterNames
             // 
-            this.textImposterNames.Location = new System.Drawing.Point(112, 58);
+            this.textImposterNames.Location = new System.Drawing.Point(134, 84);
             this.textImposterNames.Name = "textImposterNames";
-            this.textImposterNames.Size = new System.Drawing.Size(299, 20);
+            this.textImposterNames.Size = new System.Drawing.Size(277, 20);
             this.textImposterNames.TabIndex = 14;
             // 
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 61);
+            this.label21.Location = new System.Drawing.Point(6, 87);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(100, 13);
             this.label21.TabIndex = 13;
@@ -267,7 +272,7 @@
             // 
             this.checkHideHandlesWithNoName.AutoSize = true;
             this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 283);
+            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 309);
             this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
             this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
             this.checkHideHandlesWithNoName.TabIndex = 12;
@@ -279,7 +284,7 @@
             // 
             this.checkEnableKPH.AutoSize = true;
             this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 307);
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 333);
             this.checkEnableKPH.Name = "checkEnableKPH";
             this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
             this.checkEnableKPH.TabIndex = 12;
@@ -300,7 +305,7 @@
             "TB",
             "PB",
             "EB"});
-            this.comboSizeUnits.Location = new System.Drawing.Point(112, 84);
+            this.comboSizeUnits.Location = new System.Drawing.Point(134, 110);
             this.comboSizeUnits.Name = "comboSizeUnits";
             this.comboSizeUnits.Size = new System.Drawing.Size(67, 21);
             this.comboSizeUnits.TabIndex = 11;
@@ -308,7 +313,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 87);
+            this.label18.Location = new System.Drawing.Point(6, 113);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(78, 13);
             this.label18.TabIndex = 10;
@@ -319,7 +324,7 @@
             // 
             this.checkStartHidden.AutoSize = true;
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(21, 187);
+            this.checkStartHidden.Location = new System.Drawing.Point(21, 213);
             this.checkStartHidden.Name = "checkStartHidden";
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 9;
@@ -332,7 +337,7 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 163);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 189);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 9;
@@ -344,7 +349,7 @@
             // 
             this.checkShowTrayIcon.AutoSize = true;
             this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 139);
+            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 165);
             this.checkShowTrayIcon.Name = "checkShowTrayIcon";
             this.checkShowTrayIcon.Size = new System.Drawing.Size(136, 18);
             this.checkShowTrayIcon.TabIndex = 7;
@@ -353,11 +358,29 @@
             this.checkShowTrayIcon.UseVisualStyleBackColor = true;
             this.checkShowTrayIcon.CheckedChanged += new System.EventHandler(this.checkShowTrayIcon_CheckedChanged);
             // 
+            // textIconMenuProcesses
+            // 
+            this.textIconMenuProcesses.Location = new System.Drawing.Point(134, 32);
+            this.textIconMenuProcesses.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textIconMenuProcesses.Name = "textIconMenuProcesses";
+            this.textIconMenuProcesses.Size = new System.Drawing.Size(66, 20);
+            this.textIconMenuProcesses.TabIndex = 1;
+            this.textIconMenuProcesses.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.textIconMenuProcesses.Leave += new System.EventHandler(this.textIconMenuProcesses_Leave);
+            // 
             // checkVerifySignatures
             // 
             this.checkVerifySignatures.AutoSize = true;
             this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 259);
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 285);
             this.checkVerifySignatures.Name = "checkVerifySignatures";
             this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
             this.checkVerifySignatures.TabIndex = 3;
@@ -393,7 +416,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 338);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 355);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -624,7 +647,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 338);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 355);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -754,7 +777,7 @@
             // 
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 387);
+            this.label22.Location = new System.Drawing.Point(12, 410);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(300, 13);
             this.label22.TabIndex = 10;
@@ -768,12 +791,21 @@
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
             // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(6, 34);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(122, 13);
+            this.label23.TabIndex = 0;
+            this.label23.Text = "Processes in icon menu:";
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 417);
+            this.ClientSize = new System.Drawing.Size(449, 440);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
@@ -789,6 +821,7 @@
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabHighlighting.ResumeLayout(false);
             this.tabHighlighting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
@@ -860,5 +893,7 @@
         private System.Windows.Forms.CheckBox checkHideHandlesWithNoName;
         private System.Windows.Forms.ToolTip toolTipProvider;
         private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.NumericUpDown textIconMenuProcesses;
+        private System.Windows.Forms.Label label23;
     }
 }

@@ -1,35 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
 
 namespace wyDay.Controls
 {
-    public partial class VistaMenu : System.ComponentModel.Component, IExtenderProvider, ISupportInitialize
+    public partial class VistaMenu
     {
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int SendMessage(HandleRef hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
 
-        ContainerControl ownerForm = null;
+        ContainerControl ownerForm;
 
         //conditionally draw the little lines under menu items with keyboard accelators on Win 2000+
-        private bool isUsingKeyboardAccel = false;
+        private bool isUsingKeyboardAccel;
 
 
         public VistaMenu(ContainerControl parentControl)
             : this()
         {
-            this.ownerForm = parentControl;
+            ownerForm = parentControl;
         }
         public ContainerControl ContainerControl
         {
-            get { return this.ownerForm; }
-            set { this.ownerForm = value; }
+            get { return ownerForm; }
+            set { ownerForm = value; }
         }
         public override ISite Site
         {
@@ -41,7 +41,7 @@ namespace wyDay.Controls
                 IDesignerHost service = value.GetService(typeof(IDesignerHost)) as IDesignerHost;
                 if (service == null) return;
                 IComponent rootComponent = service.RootComponent;
-                this.ContainerControl = rootComponent as ContainerControl;
+                ContainerControl = rootComponent as ContainerControl;
             }
         }
 
@@ -58,7 +58,7 @@ namespace wyDay.Controls
             //#define WM_QUERYUISTATE                 0x0129
             //int ret = SendMessage(new HandleRef(((Menu)sender).GetMainMenu().GetForm(), ((Menu)sender).GetMainMenu().GetForm().Handle), 0x0129, IntPtr.Zero, IntPtr.Zero);
             int ret = SendMessage(new HandleRef(ownerForm, ownerForm.Handle), 0x0129, IntPtr.Zero, IntPtr.Zero);
-            
+
 
             /*
              The return value is NULL if the focus indicators and the keyboard accelerators are visible.
@@ -71,15 +71,12 @@ namespace wyDay.Controls
 
             //#define UISF_HIDEACCEL                  0x2
 
-            if ((ret & 0x2) != 0)
-                isUsingKeyboardAccel = false;
-            else
-                isUsingKeyboardAccel = true;
+            isUsingKeyboardAccel = (ret & 0x2) == 0;
         }
 
 
-        const int SEPARATOR_HEIGHT = 8;
-        const int BORDER_VERTICAL = 2;
+        const int SEPARATOR_HEIGHT = 9;
+        const int BORDER_VERTICAL = 4;
         const int LEFT_MARGIN = 4;
         const int RIGHT_MARGIN = 6;
         const int SHORTCUT_MARGIN = 20;
@@ -87,52 +84,52 @@ namespace wyDay.Controls
         const int ICON_SIZE = 16;
 
 
-        void MenuItem_MeasureItem(object sender, MeasureItemEventArgs e)
+        static void MenuItem_MeasureItem(object sender, MeasureItemEventArgs e)
         {
+            Font font = ((MenuItem)sender).DefaultItem
+                            ? new Font(SystemFonts.MenuFont, FontStyle.Bold)
+                            : SystemFonts.MenuFont;
+
             if (((MenuItem)sender).Text == "-")
                 e.ItemHeight = SEPARATOR_HEIGHT;
             else
             {
-                e.ItemHeight = (SystemFonts.MenuFont.Height > ICON_SIZE) ? SystemFonts.MenuFont.Height : ICON_SIZE;
-                e.ItemHeight += BORDER_VERTICAL;
+                e.ItemHeight = ((SystemFonts.MenuFont.Height > ICON_SIZE) ? SystemFonts.MenuFont.Height : ICON_SIZE)
+                                + BORDER_VERTICAL;
+
+                e.ItemWidth = LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN
+
+                    //item text width
+                    + TextRenderer.MeasureText(((MenuItem)sender).Text, font, new Size(0, 0), TextFormatFlags.SingleLine).Width
+                    + SHORTCUT_MARGIN
+
+                    //shortcut text width
+                    + TextRenderer.MeasureText(ShortcutToString(((MenuItem)sender).Shortcut), font, new Size(0, 0), TextFormatFlags.SingleLine).Width
+
+                    //arrow width
+                    + ((((MenuItem)sender).IsParent) ? ARROW_MARGIN : 0);
             }
-
-            e.ItemWidth = LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN 
-                
-                //item text width
-                //edit by wj32 - fix for default items on XP
-                + ((((MenuItem)sender).DefaultItem) ? (
-                TextRenderer.MeasureText(((MenuItem)sender).Text, 
-                new Font(SystemFonts.MenuFont, FontStyle.Bold), new Size(0, 0), TextFormatFlags.SingleLine).Width
-                ) : (
-                TextRenderer.MeasureText(((MenuItem)sender).Text, SystemFonts.MenuFont, new Size(0, 0), TextFormatFlags.SingleLine).Width 
-                ))
-                + SHORTCUT_MARGIN
-                
-                //shortcut text width
-                + TextRenderer.MeasureText(ShortcutToString(((MenuItem)sender).Shortcut), SystemFonts.MenuFont, new Size(0, 0), TextFormatFlags.SingleLine).Width 
-
-                //arrow width
-                + ((((MenuItem)sender).IsParent) ? ARROW_MARGIN : 0);
         }
 
         void MenuItem_DrawItem(object sender, DrawItemEventArgs e)
         {
-            //MenuItem menuItem = (MenuItem)sender;
-            //MenuHelper menuHelper = new MenuHelper(menuItem, e.Graphics, this);
+            e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
+            e.Graphics.InterpolationMode = InterpolationMode.Low;
+
             bool menuSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
 
             if (menuSelected)
                 e.Graphics.FillRectangle(SystemBrushes.Highlight, e.Bounds);
             else
                 e.Graphics.FillRectangle(SystemBrushes.Menu, e.Bounds);
-                                       
+
             if (((MenuItem)sender).Text == "-")
             {
                 //draw the separator
-                int yCenter = e.Bounds.Top + (e.Bounds.Height / 2);
+                int yCenter = e.Bounds.Top + (e.Bounds.Height / 2) - 1;
 
-                e.Graphics.DrawLine(SystemPens.ControlDark, e.Bounds.Left, yCenter, (e.Bounds.Left + e.Bounds.Width), yCenter);
+                e.Graphics.DrawLine(SystemPens.ControlDark, e.Bounds.Left + 1, yCenter, (e.Bounds.Left + e.Bounds.Width - 2), yCenter);
+                e.Graphics.DrawLine(SystemPens.ControlLightLight, e.Bounds.Left + 1, yCenter + 1, (e.Bounds.Left + e.Bounds.Width - 2), yCenter + 1);
             }
             else //regular menu items
             {
@@ -188,12 +185,12 @@ namespace wyDay.Controls
         }
 
 
-        private string ShortcutToString(Shortcut shortcut)
+        private static string ShortcutToString(Shortcut shortcut)
         {
             if (shortcut != Shortcut.None)
             {
                 Keys keys = (Keys)shortcut;
-                return System.ComponentModel.TypeDescriptor.GetConverter(keys.GetType()).ConvertToString(keys);
+                return TypeDescriptor.GetConverter(keys.GetType()).ConvertToString(keys);
             }
 
             return null;
@@ -204,46 +201,55 @@ namespace wyDay.Controls
             string shortcutText = ShortcutToString(((MenuItem)sender).Shortcut);
 
             int yPos = e.Bounds.Top + (e.Bounds.Height - SystemFonts.MenuFont.Height) / 2;
-            Size textSize;
 
-            // fixed by wj32 for DefaultItems on XP
-            textSize = (((MenuItem)sender).DefaultItem) ? (
-                TextRenderer.MeasureText(((MenuItem)sender).Text,
-                new Font(SystemFonts.MenuFont, FontStyle.Bold), new Size(0, 0), TextFormatFlags.SingleLine)) : 
-                TextRenderer.MeasureText(((MenuItem)sender).Text, SystemFonts.MenuFont, new Size(0, 0), TextFormatFlags.SingleLine);
+            Size textSize = TextRenderer.MeasureText(((MenuItem)sender).Text, e.Font, new Size(0, 0), TextFormatFlags.SingleLine);
+
+            Rectangle textRect = new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos,
+                                   textSize.Width, textSize.Height);
+
+            if (!((MenuItem)sender).Enabled && !isSelected) // disabled and not selected
+            {
+                textRect.Offset(1, 1);
+
+                TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, e.Font,
+                    textRect,
+                    SystemColors.ControlLightLight,
+                    TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+
+                textRect.Offset(-1, -1);
+            }
 
             //Draw the menu item text
-            if (((MenuItem)sender).Enabled)
-            {
-                TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, SystemFonts.MenuFont,
-                    new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos, textSize.Width, textSize.Height),
-                    isSelected ? SystemColors.HighlightText : SystemColors.MenuText,
-                    TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
-            }
-            else
-            {
-                ControlPaint.DrawStringDisabled(e.Graphics, ((MenuItem)sender).Text, SystemFonts.MenuFont, isSelected ? SystemColors.Highlight : SystemColors.Menu,
-                    new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos, textSize.Width, textSize.Height),
-                    TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
-            }
+            TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, e.Font,
+                textRect,
+                ((MenuItem)sender).Enabled ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText) : SystemColors.GrayText,
+                TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+
+
 
             //Draw the shortcut text
             if (shortcutText != null)
             {
-                textSize = TextRenderer.MeasureText(shortcutText, SystemFonts.MenuFont, Size.Empty, TextFormatFlags.SingleLine);
+                textSize = TextRenderer.MeasureText(shortcutText, e.Font, Size.Empty, TextFormatFlags.SingleLine);
+                textRect = new Rectangle(e.Bounds.Width - textSize.Width - ARROW_MARGIN, yPos, textSize.Width,
+                                         textSize.Height);
 
-                if (((MenuItem)sender).Enabled)
+                if (!((MenuItem)sender).Enabled && !isSelected) // disabled and not selected
                 {
-                    TextRenderer.DrawText(e.Graphics, shortcutText, SystemFonts.MenuFont,
-                        new Rectangle(e.Bounds.Width - textSize.Width - ARROW_MARGIN, yPos, textSize.Width, textSize.Height),
-                        isSelected ? SystemColors.HighlightText : SystemColors.MenuText,
-                        TextFormatFlags.SingleLine);
+                    textRect.Offset(1, 1);
+
+                    TextRenderer.DrawText(e.Graphics, shortcutText, e.Font,
+                        textRect,
+                        SystemColors.ControlLightLight,
+                        TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+
+                    textRect.Offset(-1, -1);
                 }
-                else
-                {
-                    ControlPaint.DrawStringDisabled(e.Graphics, shortcutText, SystemFonts.MenuFont, isSelected ? SystemColors.Highlight : SystemColors.Menu,
-                        new Rectangle(e.Bounds.Width - textSize.Width - ARROW_MARGIN, yPos, textSize.Width, textSize.Height), TextFormatFlags.SingleLine);
-                }
+
+                TextRenderer.DrawText(e.Graphics, shortcutText, e.Font,
+                    textRect,
+                    ((MenuItem)sender).Enabled ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText) : SystemColors.GrayText,
+                    TextFormatFlags.SingleLine);
             }
         }
     }

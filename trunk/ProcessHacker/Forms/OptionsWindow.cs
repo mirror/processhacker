@@ -43,6 +43,7 @@ namespace ProcessHacker
             _font = Properties.Settings.Default.Font;
             buttonFont.Font = _font;
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
+            textIconMenuProcesses.Value = Properties.Settings.Default.IconMenuProcessCount;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             comboSizeUnits.SelectedItem =
                 Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
@@ -91,9 +92,24 @@ namespace ProcessHacker
             catch
             {
                 MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
-                 MessageBoxIcon.Error);
+                    MessageBoxIcon.Error);
 
                 textUpdateInterval.Focus();
+            }
+        }
+
+        private void textIconMenuProcesses_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                Properties.Settings.Default.IconMenuProcessCount = Int32.Parse(textIconMenuProcesses.Value.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                textIconMenuProcesses.Focus();
             }
         }
 
