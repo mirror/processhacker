@@ -40,10 +40,10 @@
             this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
-            this.copyMenuItem = new System.Windows.Forms.MenuItem();
-            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.progress = new System.Windows.Forms.ProgressBar();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyMenuItem = new System.Windows.Forms.MenuItem();
+            this.progress = new System.Windows.Forms.ProgressBar();
+            this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,10 +64,12 @@
             this.textFilter.Name = "textFilter";
             this.textFilter.Size = new System.Drawing.Size(395, 20);
             this.textFilter.TabIndex = 1;
+            this.textFilter.TextChanged += new System.EventHandler(this.textFilter_TextChanged);
             // 
             // buttonFind
             // 
             this.buttonFind.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonFind.Enabled = false;
             this.buttonFind.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonFind.Location = new System.Drawing.Point(451, 12);
             this.buttonFind.Name = "buttonFind";
@@ -133,15 +135,17 @@
             this.closeMenuItem.Text = "Close";
             this.closeMenuItem.Click += new System.EventHandler(this.closeMenuItem_Click);
             // 
+            // propertiesMenuItem
+            // 
+            this.propertiesMenuItem.Index = 1;
+            this.propertiesMenuItem.Text = "&Properties...";
+            this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
+            // 
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
             this.copyMenuItem.Index = 2;
             this.copyMenuItem.Text = "&Copy";
-            // 
-            // vistaMenu
-            // 
-            this.vistaMenu.ContainerControl = this;
             // 
             // progress
             // 
@@ -153,11 +157,9 @@
             this.progress.TabIndex = 4;
             this.progress.Visible = false;
             // 
-            // propertiesMenuItem
+            // vistaMenu
             // 
-            this.propertiesMenuItem.Index = 1;
-            this.propertiesMenuItem.Text = "&Properties...";
-            this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
+            this.vistaMenu.ContainerControl = this;
             // 
             // HandleFilterWindow
             // 

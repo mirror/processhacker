@@ -272,6 +272,14 @@ namespace ProcessHacker
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void textFilter_TextChanged(object sender, EventArgs e)
+        {
+            if (textFilter.Text == "")
+                buttonFind.Enabled = false;
+            else
+                buttonFind.Enabled = true;
         } 
     }
 }
