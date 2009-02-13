@@ -11,6 +11,7 @@ Process Hacker
      certain programs.
    * Slightly different notification icon
    * GDI and USER handle counts
+   * Process termination now uses KProcessHacker
  * FIXED:
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges

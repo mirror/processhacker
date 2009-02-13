@@ -511,8 +511,15 @@ namespace ProcessHacker
             /// <param name="ExitCode">The exit code.</param>
             public void Terminate(int ExitCode)
             {
-                if (!TerminateProcess(this, ExitCode))
-                    ThrowLastWin32Error();
+                if (Program.KPH != null)
+                {
+                    Program.KPH.KphTerminateProcess(this, ExitCode);
+                }
+                else
+                {
+                    if (!TerminateProcess(this, ExitCode))
+                        ThrowLastWin32Error();
+                }
             }
 
             /// <summary>

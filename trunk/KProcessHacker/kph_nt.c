@@ -315,13 +315,25 @@ NTSTATUS KphTerminateProcess(
 {
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
+    OBJECT_ATTRIBUTES objectAttributes = { 0 };
+    CLIENT_ID clientId;
+    HANDLE newProcessHandle;
     
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;
     
-    /* status = PsTerminateProcess(processObject, ExitStatus); */
+    clientId.UniqueThread = 0;
+    clientId.UniqueProcess = PsGetProcessId(processObject);
+    status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
+    
+    if (NT_SUCCESS(status))
+    {
+        status = ZwTerminateProcess(newProcessHandle, ExitStatus);
+        ZwClose(newProcessHandle);
+    }
+    
     ObDereferenceObject(processObject);
     
     return status;

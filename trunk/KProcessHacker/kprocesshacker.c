@@ -349,6 +349,8 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "KphSuspendProcess";
     else if (ControlCode == KPH_RESUMEPROCESS)
         return "KphResumeProcess";
+    else if (ControlCode == KPH_TERMINATEPROCESS)
+        return "KphTerminateProcess";
     else
         return "Unknown";
 }
@@ -789,6 +791,24 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processHandle = *(HANDLE *)dataBuffer;
             
             status = KphResumeProcess(processHandle);
+        }
+        break;
+        
+        case KPH_TERMINATEPROCESS:
+        {
+            HANDLE processHandle;
+            NTSTATUS exitStatus;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
+            
+            status = KphTerminateProcess(processHandle, exitStatus);
         }
         break;
         
