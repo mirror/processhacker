@@ -412,6 +412,19 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
+                    // HACK: Shouldn't happen, but it does.
+                    if (item.Name == null)
+                    {
+                        try
+                        {
+                            item.Name = p.MainModule.ModuleName;
+                        }
+                        catch
+                        {
+                            item.Name = "";
+                        }
+                    }
+
                     if (pid > 0)
                     {
                         item.ParentPID = processInfo.InheritedFromProcessId;
