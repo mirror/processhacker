@@ -293,8 +293,10 @@ namespace ProcessHacker
 
             try
             {
-                textStartTime.Text = Misc.GetNiceRelativeDateTime(_process.StartTime) + 
-                    " (" + _process.StartTime.ToString() + ")";
+                DateTime startTime = DateTime.FromFileTime(_processItem.Process.CreateTime);
+
+                textStartTime.Text = Misc.GetNiceRelativeDateTime(startTime) +
+                    " (" + startTime.ToString() + ")";
             }
             catch (Exception ex)
             {

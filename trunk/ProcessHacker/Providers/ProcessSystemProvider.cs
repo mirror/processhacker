@@ -248,10 +248,10 @@ namespace ProcessHacker
                 {
                     var modDict = new Dictionary<string, string>();
 
-                    foreach (ProcessModule m in Process.GetProcessById(pid).Modules)
+                    foreach (var m in Dictionary[pid].ProcessQueryLimitedVmReadHandle.GetModules())
                     {
-                        if (!modDict.ContainsKey(m.ModuleName.ToLower()))
-                            modDict.Add(m.ModuleName.ToLower(), m.FileName);
+                        if (!modDict.ContainsKey(m.BaseName.ToLower()))
+                            modDict.Add(m.BaseName.ToLower(), m.FileName);
                     }
 
                     if (modDict.ContainsKey("mscoree.dll") &&
@@ -497,8 +497,9 @@ namespace ProcessHacker
                                 { }
 
                                 // if we couldn't get it or we couldn't resolve the \Device prefix,
-                                // we'll just use the normal method.
-                                if (item.FileName == null || item.FileName.StartsWith("\\Device\\"))
+                                // we'll just use the normal method (which only works on Vista).
+                                if ((item.FileName == null || item.FileName.StartsWith("\\Device\\")) && 
+                                    Program.WindowsVersion == "Vista")
                                 {
                                     try
                                     {

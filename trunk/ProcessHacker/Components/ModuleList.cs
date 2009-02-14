@@ -157,9 +157,16 @@ namespace ProcessHacker
                     try
                     {
                         if (_pid == 4)
+                        {
                             _mainModule = Misc.GetRealPath(Misc.GetKernelFileName());
+                        }
                         else
-                            _mainModule = Misc.GetRealPath(Process.GetProcessById(_pid).MainModule.FileName);
+                        {
+                            using (var phandle =
+                                new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights |
+                                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                                _mainModule = Misc.GetRealPath(phandle.GetMainModule().FileName);
+                        }
 
                         _mainModule = _mainModule.ToLower();
                         listModules.ListViewItemSorter = new ModuleListComparer(_mainModule);

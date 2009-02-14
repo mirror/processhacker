@@ -66,14 +66,19 @@ namespace ProcessHacker
                 {
                     if (_pid != 4)
                     {
-                        foreach (ProcessModule module in Process.GetProcessById(_pid).Modules)
+                        using (var phandle =
+                            new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights |
+                                Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                         {
-                            try
+                            foreach (var module in phandle.GetModules())
                             {
-                                _symbols.LoadSymbolsFromLibrary(module.FileName, (uint)module.BaseAddress.ToInt32());
+                                try
+                                {
+                                    _symbols.LoadSymbolsFromLibrary(module.FileName, (uint)module.BaseAddress.ToInt32());
+                                }
+                                catch
+                                { }
                             }
-                            catch
-                            { }
                         }
                     }
                     else

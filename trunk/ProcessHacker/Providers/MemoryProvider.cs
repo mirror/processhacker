@@ -41,22 +41,33 @@ namespace ProcessHacker
 
     public class MemoryProvider : Provider<int, MemoryItem>
     {
+        private Win32.ProcessHandle _processHandle;
         private int _pid;
 
         public MemoryProvider(int PID)
             : base()
         {
             _pid = PID;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
+
+            try
+            {
+                _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+            }
+            catch
+            { }
+
+            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+            this.Killed += () => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         private void UpdateOnce()
         {
-            Dictionary<int, ProcessModule> modules = new Dictionary<int, ProcessModule>();
+            var modules = new Dictionary<int, Win32.ProcessModule>();
 
             try
             {
-                foreach (ProcessModule m in Process.GetProcessById(_pid).Modules)
+                foreach (var m in _processHandle.GetModules())
                     modules.Add(m.BaseAddress.ToInt32(), m);
             }
             catch
@@ -117,9 +128,9 @@ namespace ProcessHacker
 
                     if (modules.ContainsKey(item.Address))
                     {
-                        lastModuleName = modules[item.Address].ModuleName; 
+                        lastModuleName = modules[item.Address].BaseName; 
                         lastModuleAddress = modules[item.Address].BaseAddress.ToInt32();
-                        lastModuleSize = modules[item.Address].ModuleMemorySize;
+                        lastModuleSize = modules[item.Address].Size;
                     }
 
                     if (item.Address >= lastModuleAddress && item.Address < lastModuleAddress + lastModuleSize)

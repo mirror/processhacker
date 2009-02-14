@@ -330,10 +330,43 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the main module of the process. This requires the 
+            /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
+            /// </summary>
+            /// <returns>A ProcessModule.</returns>
+            public ProcessModule GetMainModule()
+            {
+                IntPtr[] moduleHandles;
+                int requiredSize;
+
+                EnumProcessModules(this, null, 0, out requiredSize);
+                moduleHandles = new IntPtr[requiredSize / 4];
+
+                if (!EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
+                    ThrowLastWin32Error();
+
+                MODULEINFO moduleInfo = new MODULEINFO();
+                StringBuilder baseName = new StringBuilder(0x400);
+                StringBuilder fileName = new StringBuilder(0x400);
+
+                if (!GetModuleInformation(this, moduleHandles[0], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
+                    ThrowLastWin32Error();
+                if (GetModuleBaseName(this, moduleHandles[0], baseName, baseName.Capacity * 2) == 0)
+                    ThrowLastWin32Error();
+                if (GetModuleFileNameEx(this, moduleHandles[0], fileName, fileName.Capacity * 2) == 0)
+                    ThrowLastWin32Error();
+
+                return new ProcessModule(
+                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
+                    baseName.ToString(), Misc.GetRealPath(fileName.ToString())
+                    );
+            }
+
+            /// <summary>
             /// Gets the modules loaded by the process. This requires the 
             /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>An array of ProcessModule objects.</returns>
             public ProcessModule[] GetModules()
             {
                 IntPtr[] moduleHandles;

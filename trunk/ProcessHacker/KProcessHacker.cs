@@ -75,9 +75,6 @@ namespace ProcessHacker
 
             Properties.Settings.Default.EnableKPH = true; // if the computer crashes, this won't actually be saved
 
-            Win32.ServiceManagerHandle scm = 
-                new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
-
             // delete the service if it exists
             try
             {
@@ -91,6 +88,9 @@ namespace ProcessHacker
 
             try
             {
+                Win32.ServiceManagerHandle scm =
+                    new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
+
                 _service = scm.CreateService(DeviceName, DeviceName, Win32.SERVICE_TYPE.KernelDriver,
                     Application.StartupPath + "\\kprocesshacker.sys");
                 _service.Start();
