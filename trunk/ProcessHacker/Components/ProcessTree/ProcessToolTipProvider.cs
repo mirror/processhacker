@@ -66,7 +66,10 @@ namespace ProcessHacker
                         info.CompanyName;
                 }
                 catch
-                { }
+                {
+                    if (pNode.ProcessItem.FileName != null)
+                        fileText = "File:\n    " + pNode.ProcessItem.FileName;
+                }
 
                 string runDllText = "";
 

@@ -100,4 +100,10 @@ NTSTATUS KphTerminateProcess(
     NTSTATUS ExitStatus
     );
 
+NTSTATUS OpenProcess(
+    PHANDLE ProcessHandle,
+    int DesiredAccess,
+    int ProcessId
+    );
+
 #endif

@@ -530,10 +530,10 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct PROCESS_INFORMATION
         {
-            int hProcess;
-            int hThread;
-            int dwProcessId;
-            int dwThreadId;
+            public int hProcess;
+            public int hThread;
+            public int dwProcessId;
+            public int dwThreadId;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -702,27 +702,31 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct STARTUPINFO
         {
-            int cb;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            string lpReserved;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            string lpDesktop;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            string lpTitle;
-            int dwX;
-            int dwY;
-            int dwXSize;
-            int dwYSize;
-            int dwXCountChars;
-            int dwYCountChars;
-            int dwFillAttribute;
-            int dwFlags;
-            short wShowWindow;
-            short cbReserved2;
-            byte lpReserved2;
-            int hStdInput;
-            int hStdOutput;
-            int hStdError;
+            public int Size;
+            public int Reserved;
+
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Desktop;
+
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Title;
+
+            public int X;
+            public int Y;
+            public int XSize;
+            public int YSize;
+            public int XCountChars;
+            public int YCountChars;
+            public int FillAttribute;
+            public StartupFlags Flags;
+
+            public ShowWindowType ShowWindow;
+            public short Reserved2;
+            public int Reserved3;
+
+            public int StdInputHandle;
+            public int StdOutputHandle;
+            public int StdErrorHandle;
         }
 
         [StructLayout(LayoutKind.Sequential)]

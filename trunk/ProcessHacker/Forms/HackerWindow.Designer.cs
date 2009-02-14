@@ -36,6 +36,7 @@
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
+            this.restartProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -122,6 +123,7 @@
             this.processesMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.setTokenProcessMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -151,8 +153,10 @@
             this.terminateMenuItem,
             this.suspendMenuItem,
             this.resumeMenuItem,
+            this.restartProcessMenuItem,
             this.menuItem5,
             this.affinityProcessMenuItem,
+            this.setTokenProcessMenuItem,
             this.terminatorProcessMenuItem,
             this.priorityMenuItem,
             this.runAsProcessMenuItem,
@@ -185,27 +189,33 @@
             this.resumeMenuItem.Text = "&Resume";
             this.resumeMenuItem.Click += new System.EventHandler(this.resumeMenuItem_Click);
             // 
+            // restartProcessMenuItem
+            // 
+            this.restartProcessMenuItem.Index = 3;
+            this.restartProcessMenuItem.Text = "Restart";
+            this.restartProcessMenuItem.Click += new System.EventHandler(this.restartProcessMenuItem_Click);
+            // 
             // menuItem5
             // 
-            this.menuItem5.Index = 3;
+            this.menuItem5.Index = 4;
             this.menuItem5.Text = "-";
             // 
             // affinityProcessMenuItem
             // 
-            this.affinityProcessMenuItem.Index = 4;
+            this.affinityProcessMenuItem.Index = 5;
             this.affinityProcessMenuItem.Text = "Affinity...";
             this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
             // 
             // terminatorProcessMenuItem
             // 
-            this.terminatorProcessMenuItem.Index = 5;
+            this.terminatorProcessMenuItem.Index = 7;
             this.terminatorProcessMenuItem.Text = "Terminator...";
             this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 6;
+            this.priorityMenuItem.Index = 8;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -259,7 +269,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 7;
+            this.runAsProcessMenuItem.Index = 9;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -281,30 +291,30 @@
             // 
             this.propertiesProcessMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesProcessMenuItem.Index = 8;
+            this.propertiesProcessMenuItem.Index = 10;
             this.propertiesProcessMenuItem.Text = "&Properties...";
             this.propertiesProcessMenuItem.Click += new System.EventHandler(this.inspectProcessMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 9;
+            this.menuItem7.Index = 11;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 10;
+            this.searchProcessMenuItem.Index = 12;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 11;
+            this.copyProcessMenuItem.Index = 13;
             this.copyProcessMenuItem.Text = "&Copy";
             // 
             // selectAllProcessMenuItem
             // 
-            this.selectAllProcessMenuItem.Index = 12;
+            this.selectAllProcessMenuItem.Index = 14;
             this.selectAllProcessMenuItem.Text = "Select &All";
             this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
             // 
@@ -515,7 +525,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 310);
+            this.statusBar.Location = new System.Drawing.Point(0, 390);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -574,7 +584,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 310);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 390);
             this.tabControlBig.TabIndex = 6;
             this.tabControlBig.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -584,7 +594,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 284);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 364);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -595,7 +605,7 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 278);
+            this.treeProcesses.Size = new System.Drawing.Size(790, 358);
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.DoubleClick += new System.EventHandler(this.treeProcesses_DoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
@@ -607,7 +617,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 284);
+            this.tabServices.Size = new System.Drawing.Size(796, 364);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -619,7 +629,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 278);
+            this.listServices.Size = new System.Drawing.Size(790, 358);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -629,7 +639,7 @@
             this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(796, 284);
+            this.tabNetwork.Size = new System.Drawing.Size(796, 364);
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
@@ -641,7 +651,7 @@
             this.listNetwork.Location = new System.Drawing.Point(3, 3);
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 278);
+            this.listNetwork.Size = new System.Drawing.Size(790, 358);
             this.listNetwork.TabIndex = 0;
             // 
             // menuService
@@ -812,11 +822,17 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // setTokenProcessMenuItem
+            // 
+            this.setTokenProcessMenuItem.Index = 6;
+            this.setTokenProcessMenuItem.Text = "Set Token...";
+            this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 332);
+            this.ClientSize = new System.Drawing.Size(804, 412);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;
@@ -936,6 +952,8 @@
         private System.Windows.Forms.MenuItem updateProcessesMenuItem;
         private System.Windows.Forms.MenuItem updateServicesMenuItem;
         private System.Windows.Forms.MenuItem processesMenuItem;
+        private System.Windows.Forms.MenuItem restartProcessMenuItem;
+        private System.Windows.Forms.MenuItem setTokenProcessMenuItem;
     }
 }
 

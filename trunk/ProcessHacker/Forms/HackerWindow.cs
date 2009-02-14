@@ -680,6 +680,58 @@ namespace ProcessHacker
             }
         }
 
+        private void restartProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to restart the process?", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                try
+                {
+                    string currentDirectory =
+                        processP.Dictionary[processSelectedPID].ProcessQueryLimitedVmReadHandle.GetPebString(
+                        Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
+                    string cmdLine = processP.Dictionary[processSelectedPID].CmdLine;
+
+                    try
+                    {
+                        using (var phandle = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                            phandle.Terminate();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Could not terminate the process: " + ex.Message, "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    try
+                    {
+                        Win32.STARTUPINFO startupInfo = new Win32.STARTUPINFO();
+                        Win32.PROCESS_INFORMATION procInfo = new Win32.PROCESS_INFORMATION();
+
+                        startupInfo.Size = Marshal.SizeOf(startupInfo);
+
+                        if (!Win32.CreateProcess(null, cmdLine, 0, 0, false, 0, 0, currentDirectory,
+                            ref startupInfo, ref procInfo))
+                            Win32.ThrowLastWin32Error();
+
+                        Win32.CloseHandle(procInfo.hProcess);
+                        Win32.CloseHandle(procInfo.hThread);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Could not start the command '" + cmdLine + "': " + ex.Message, "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not restart the process: " + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         private void inspectProcessMenuItem_Click(object sender, EventArgs e)
         {
             // user hasn't got any processes selected
@@ -715,37 +767,22 @@ namespace ProcessHacker
             { }
         }
 
-        private void servicesProcessMenuItem_Click(object sender, EventArgs e)
+        private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                ServiceWindow sw = new ServiceWindow(processServices[processSelectedPID].ToArray());
+            ProcessPickerWindow picker = new ProcessPickerWindow();
 
-                sw.TopMost = this.TopMost;
-                sw.ShowDialog();
-            }
-            catch
-            { }
-        }
+            picker.Label = "Select the source of the token:";
 
-        private void tokenMenuItem_Click(object sender, EventArgs e)
-        {
-            try
+            if (picker.ShowDialog() == DialogResult.OK)
             {
-                using (Win32.ProcessHandle process = new Win32.ProcessHandle(processSelectedPID,
-                        Program.MinProcessQueryRights))
+                try
                 {
-                    TokenWindow tokForm = new TokenWindow(process);
-
-                    tokForm.TopMost = this.TopMost;
-                    tokForm.Text = "Token - " + processP.Dictionary[processSelectedPID].Name +
-                        " (PID " + processSelectedPID.ToString() + ")";
-                    tokForm.ShowDialog();
+                    Program.KPH.SetProcessToken(picker.SelectedPid, processSelectedPID);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -1670,6 +1707,9 @@ namespace ProcessHacker
             if (Program.KPH == null)
                 toolsMenuItem.Visible = false;
 
+            if (Program.KPH == null || Program.WindowsVersion != "XP")
+                setTokenProcessMenuItem.Visible = false;
+
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
@@ -1712,7 +1752,8 @@ namespace ProcessHacker
             {
                 this.Text +=
                     " [" + Win32.ProcessHandle.FromHandle(Program.CurrentProcess).
-                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) + "]";
+                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) + 
+                    (Program.KPH != null ? "+" : "") + "]";
             }
             catch
             { }

@@ -58,6 +58,41 @@ namespace ProcessHacker
                 CONTEXT_EXTENDED_REGISTERS
         }
 
+        [Flags]
+        public enum CreationFlags : uint
+        {
+            DebugProcess = 0x1,
+            DebugOnlyThisProcess = 0x2,
+            CreateSuspended = 0x4,
+            DetachedProcess = 0x8,
+            CreateNewConsole = 0x10,
+            NormalPriorityClass = 0x20,
+            IdlePriorityClass = 0x40,
+            HighPriorityClass = 0x80,
+            RealtimePriorityClass = 0x100,
+            CreateNewProcessGroup = 0x200,
+            CreateUnicodeEnvironment = 0x400,
+            CreateSeparateWowVdm = 0x800,
+            CreateSharedWowVdm = 0x1000,
+            CreateForceDos = 0x2000,
+            BelowNormalPriorityClass = 0x4000,
+            AboveNormalPriorityClass = 0x8000,
+            StackSizeParamIsAReservation = 0x10000,
+            InheritCallerPriority = 0x20000,
+            CreateProtectedProcess = 0x40000,
+            ExtendedStartupInfoPresent = 0x80000,
+            ProcessModeBackgroundBegin = 0x100000,
+            ProcessModeBackgroundEnd = 0x200000,
+            CreateBreakawayFromJob = 0x1000000,
+            CreatePreserveCodeAuthzLevel = 0x2000000,
+            CreateDefaultErrorMode = 0x4000000,
+            CreateNoWindow = 0x8000000,
+            ProfileUser = 0x10000000,
+            ProfileKernel = 0x20000000,
+            ProfileServer = 0x40000000,
+            CreateIgnoreSystemDefault = 0x80000000
+        }
+
         public enum DEPFLAGS : int
         {
             PROCESS_DEP_DISABLE = 0x00000000,
@@ -595,6 +630,25 @@ namespace ProcessHacker
             InteractiveProcess = 0x100
         }
 
+        public enum ShowWindowType : short
+        {
+            Hide = 0,
+            ShowNormal = 1,
+            Normal = 1,
+            ShowMinimized = 2,
+            ShowMaximized = 3,
+            Maximize = 3,
+            ShowNoActivate = 4,
+            Show = 5,
+            Minimize = 6,
+            ShowMinNoActive = 7,
+            ShowNa = 8,
+            Restore = 9,
+            ShowDefault = 10,
+            ForceMinimize = 11,
+            Max = 11
+        }
+
         public enum SID_ATTRIBUTES : uint
         {
             SE_GROUP_MANDATORY = 0x00000001,
@@ -658,6 +712,21 @@ namespace ProcessHacker
             GENERIC_WRITE = 0x40000000,
             GENERIC_EXECUTE = 0x20000000,
             GENERIC_ALL = 0x10000000
+        }
+
+        [Flags]
+        public enum StartupFlags : uint
+        {
+            UseShowWindow = 0x1,
+            UseSize = 0x2,
+            UsePosition = 0x4,
+            UseCountChars = 0x8,
+            UseFillAttribute = 0x10,
+            RunFullScreen = 0x20,
+            ForceOnFeedback = 0x40,
+            ForceOffFeedback = 0x80,
+            UseStdHandles = 0x100,
+            UseHotkey = 0x200
         }
 
         [Flags]

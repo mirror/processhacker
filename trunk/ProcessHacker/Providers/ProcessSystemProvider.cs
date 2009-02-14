@@ -199,12 +199,18 @@ namespace ProcessHacker
                             fpResult.IsPacked = true;
                     }
                 }
-                catch
+                catch (System.IO.EndOfStreamException)
                 {
-                    // we can't read it, so...
                     if (pid > 4)
                         fpResult.IsPacked = true;
                 }
+                catch (PE.PEException)
+                {
+                    if (pid > 4)
+                        fpResult.IsPacked = true;
+                }
+                catch
+                { }
             }
 
             try

@@ -139,12 +139,11 @@ namespace ProcessHacker
             if (checkEnableKPH.Checked && !Properties.Settings.Default.EnableKPH)
             {
                 checkEnableKPH.Checked = MessageBox.Show("You have chosen to enable ProcessHacker's experimental kernel-mode driver, " +
-                    "KProcessHacker. This is HIGHLY EXPERIMENTAL and MAY CAUSE YOUR COMPUTER TO CRASH.\n\n" +
+                    "KProcessHacker. This is EXPERIMENTAL and MAY CAUSE YOUR COMPUTER TO CRASH.\n\n" +
                     "KProcessHacker allows Process Hacker to display more types of handles and bypass rootkits/security software. " + 
                     "If you do not need these features " +
                     "or do not wish to use KProcessHacker, click No.\n\nIf you do wish to use this feature, " +
-                    "KProcessHacker will be loaded the next time Process Hacker is started. If your computer " +
-                    "crashes, the next time Process Hacker is started KProcessHacker will be disabled.",
+                    "KProcessHacker will be loaded the next time Process Hacker is started.",
                     "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes;
             }     

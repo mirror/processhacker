@@ -284,6 +284,7 @@ namespace ProcessHacker
             }
             catch
             {
+                fileImage.Text = _processItem.FileName;
                 textFileDescription.Text = "";
                 textFileCompany.Text = "";
             }

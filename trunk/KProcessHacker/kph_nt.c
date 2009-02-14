@@ -30,6 +30,18 @@ extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
 extern POBJECT_TYPE *SeTokenObjectType;
 
+NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
+{
+    OBJECT_ATTRIBUTES objAttr = { 0 };
+    CLIENT_ID clientId;
+    
+    objAttr.Length = sizeof(objAttr);
+    clientId.UniqueThread = 0;
+    clientId.UniqueProcess = (HANDLE)ProcessId;
+    
+    return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
+}
+
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
@@ -245,6 +257,27 @@ NTSTATUS KphOpenProcessTokenEx(
     PEPROCESS processObject;
     PVOID tokenObject;
     HANDLE tokenHandle;
+    ACCESS_STATE accessState;
+    char auxData[0x34];
+    
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)((PCHAR)*SeTokenObjectType + 52)
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= TOKEN_ALL_ACCESS;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
     
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
@@ -257,12 +290,13 @@ NTSTATUS KphOpenProcessTokenEx(
     status = ObOpenObjectByPointer(
         tokenObject,
         ObjectAttributes,
+        &accessState,
         0,
-        DesiredAccess,
         *SeTokenObjectType,
         AccessMode,
         &tokenHandle
         );
+    SeDeleteAccessState(&accessState);
     ObDereferenceObject(tokenObject);
     
     if (NT_SUCCESS(status))

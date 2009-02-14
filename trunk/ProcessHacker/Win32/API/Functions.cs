@@ -288,6 +288,20 @@ namespace ProcessHacker
 
         #region Processes
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern bool CreateProcess(
+            [MarshalAs(UnmanagedType.LPWStr)] string ApplicationName,
+            [MarshalAs(UnmanagedType.LPWStr)] string CommandLine,
+            int ProcessAttributes,
+            int ThreadAttributes,
+            [MarshalAs(UnmanagedType.Bool)] bool InheritHandles,
+            CreationFlags CreationFlags,
+            int Environment,
+            [MarshalAs(UnmanagedType.LPWStr)] string CurrentDirectory,
+            [MarshalAs(UnmanagedType.Struct)] ref STARTUPINFO StartupInfo,
+            [MarshalAs(UnmanagedType.Struct)] ref PROCESS_INFORMATION ProcessInformation
+            );
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetExitCodeProcess(int ProcessHandle, out int ExitCode);
 

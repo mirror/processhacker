@@ -32,8 +32,6 @@
 #include "kph_nt.h"
 #include "kernel_types.h"
 #include "debug.h"
-#include "ssdt.h"
-#include "hooks.h"
 
 /* It's never safe to allow a hook driver to unload, but it should be 
  * used when debugging to save time.
@@ -51,41 +49,10 @@
 RTL_OSVERSIONINFOW WindowsVersion;
 ACCESS_MASK ProcessAllAccess;
 ACCESS_MASK ThreadAllAccess;
-int ClientPID = -1;
-PVOID *OldKiServiceTable = NULL;
-PVOID *OrigKiServiceTable = NULL;
-extern int CurrentCallCount;
-int Hooked = FALSE;
-
-NTSTATUS ZwOpenProcess2(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
-{
-    OBJECT_ATTRIBUTES objAttr = { 0 };
-    CLIENT_ID clientId;
-    
-    objAttr.Length = sizeof(objAttr);
-    clientId.UniqueThread = 0;
-    clientId.UniqueProcess = ProcessId;
-    
-    return ZwOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId);
-}
 
 void DriverUnload(PDRIVER_OBJECT DriverObject)
 {
-    LARGE_INTEGER waitTime;
     UNICODE_STRING dosDeviceName;
-    int i;
-    
-    SsdtDeinit();
-    
-    /* wait for a while to lessen the chance of a BSOD */
-    waitTime.QuadPart = -((signed __int64)20000000); /* 2 seconds */
-    KeDelayExecutionThread(KernelMode, FALSE, &waitTime);
-    
-    if (OrigKiServiceTable != NULL)
-    {
-        ExFreePool(OrigKiServiceTable);
-        OrigKiServiceTable = NULL;
-    }
     
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     IoDeleteSymbolicLink(&dosDeviceName);
@@ -104,7 +71,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     WindowsVersion.dwOSVersionInfoSize = sizeof(WindowsVersion);
     status = RtlGetVersion(&WindowsVersion);
     
-    if (status != STATUS_SUCCESS)
+    if (!NT_SUCCESS(status))
         return status;
     
     /* Windows XP */
@@ -124,16 +91,11 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         return STATUS_NOT_IMPLEMENTED;
     }
     
-    status = SsdtInit();
-    
-    if (status != STATUS_SUCCESS)
-        return status;
-    
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     
     status = IoCreateDevice(DriverObject, 0, &deviceName, 
-        FILE_DEVICE_UNKNOWN, FILE_DEVICE_SECURE_OPEN, TRUE, &deviceObject);
+        FILE_DEVICE_UNKNOWN, FILE_DEVICE_SECURE_OPEN, FALSE, &deviceObject);
     
     for (i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
         DriverObject->MajorFunction[i] = NULL;
@@ -157,57 +119,56 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return STATUS_SUCCESS;
 }
 
-/* Gives our client the token of SYSTEM. If you've seen Hacker Defender's source code,
+/* If you've seen Hacker Defender's source code,
  * this may look familiar...
- * Note that this isn't actually used because it would break some highlighting 
- * functionality.
  */
-NTSTATUS GiveClientFullToken()
+NTSTATUS SetProcessToken(int sourcePid, int targetPid)
 {
     NTSTATUS status;
     int queryAccess = 
         WindowsVersion.dwMajorVersion == 6 ? 
         PROCESS_QUERY_LIMITED_INFORMATION : 
         PROCESS_QUERY_INFORMATION;
-    HANDLE system;
+    HANDLE source;
     
-    if (status = ZwOpenProcess2(&system, queryAccess, 4) == STATUS_SUCCESS)
+    if (NT_SUCCESS(status = OpenProcess(&source, queryAccess, sourcePid)))
     {
-        HANDLE client;
+        HANDLE target;
         
-        if (status = ZwOpenProcess2(&client, queryAccess | 
-            PROCESS_SET_INFORMATION, ClientPID) == STATUS_SUCCESS)
+        if (NT_SUCCESS(status = OpenProcess(&target, queryAccess | 
+            PROCESS_SET_INFORMATION, targetPid)))
         {
-            HANDLE systemToken;
+            HANDLE sourceToken;
             
-            if (status = ZwOpenProcessToken(system, TOKEN_DUPLICATE, &systemToken) == STATUS_SUCCESS)
+            if (NT_SUCCESS(status = KphOpenProcessTokenEx(source, TOKEN_DUPLICATE, 0, 
+                &sourceToken, UserMode)))
             {
-                HANDLE dupSystemToken;
+                HANDLE dupSourceToken;
                 OBJECT_ATTRIBUTES objectAttributes = { 0 };
                 
                 objectAttributes.Length = sizeof(objectAttributes);
                 
-                if (status = ZwDuplicateToken(systemToken, TOKEN_ASSIGN_PRIMARY, &objectAttributes,
-                    FALSE, TokenPrimary, &dupSystemToken) == STATUS_SUCCESS)
+                if (NT_SUCCESS(status = ZwDuplicateToken(sourceToken, TOKEN_ASSIGN_PRIMARY, &objectAttributes,
+                    FALSE, TokenPrimary, &dupSourceToken)))
                 {
                     PROCESS_ACCESS_TOKEN token;
                     
-                    token.Token = dupSystemToken;
+                    token.Token = dupSourceToken;
                     token.Thread = 0;
                     
-                    status = ZwSetInformationProcess(client, ProcessAccessToken, &token, sizeof(token));
+                    status = ZwSetInformationProcess(target, ProcessAccessToken, &token, sizeof(token));
                 }
                 
-                ZwClose(dupSystemToken);
+                ZwClose(dupSourceToken);
             }
             
-            ZwClose(systemToken);
+            ZwClose(sourceToken);
         }
         
-        ZwClose(client);
+        ZwClose(target);
     }
     
-    ZwClose(system);
+    ZwClose(source);
     
     return status;
 }
@@ -216,26 +177,8 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    ClientPID = PsGetProcessId(PsGetCurrentProcess());
-    dprintf("KProcessHacker: Client (PID %d) connected\n", ClientPID);
+    dprintf("KProcessHacker: Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
-    
-    if (OldKiServiceTable != NULL)
-    {
-        ExFreePool(OldKiServiceTable);
-        OldKiServiceTable = NULL;
-    }
-    
-    OldKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
-    
-    if (OldKiServiceTable == NULL)
-        return STATUS_NO_MEMORY;
-    
-    RtlCopyMemory(OldKiServiceTable, SsdtGetServiceTable(), SsdtGetCount() * 4);
-    
-    Hooked = KPHHook() == STATUS_SUCCESS;
-    
-    /* GiveClientFullToken(); */
     
     return status;
 }
@@ -244,20 +187,7 @@ NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    ClientPID = -1;
     dprintf("KProcessHacker: Client disconnected\n");
-    
-    if (OldKiServiceTable != NULL)
-    {
-        ExFreePool(OldKiServiceTable);
-        OldKiServiceTable = NULL;
-    }
-    
-    if (Hooked)
-    {
-        KPHUnhook();
-        Hooked = FALSE;
-    }
     
     return status;
 }
@@ -325,34 +255,26 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "Write";
     else if (ControlCode == KPH_GETOBJECTNAME)
         return "Get Object Name";
-    else if (ControlCode == KPH_GETKISERVICETABLE)
-        return "Get KiServiceTable";
-    else if (ControlCode == KPH_GIVEKISERVICETABLE)
-        return "Give KiServiceTable";
-    else if (ControlCode == KPH_SETKISERVICETABLEENTRY)
-        return "Set KiServiceTable Entry";
-    else if (ControlCode == KPH_GETSERVICELIMIT)
-        return "Get KiServiceLimit";
-    else if (ControlCode == KPH_RESTOREKISERVICETABLE)
-        return "Restore KiServiceTable";
     else if (ControlCode == KPH_OPENPROCESS)
         return "KphOpenProcess";
-    else if (ControlCode == KPH_GETPROCESSPROTECTED)
-        return "Get Process Protected";
-    else if (ControlCode == KPH_SETPROCESSPROTECTED)
-        return "Set Process Protected";
     else if (ControlCode == KPH_OPENTHREAD)
         return "KphOpenThread";
     else if (ControlCode == KPH_OPENPROCESSTOKEN)
         return "KphOpenProcessTokenEx";
+    else if (ControlCode == KPH_GETPROCESSPROTECTED)
+        return "Get Process Protected";
+    else if (ControlCode == KPH_SETPROCESSPROTECTED)
+        return "Set Process Protected";
+    else if (ControlCode == KPH_TERMINATEPROCESS)
+        return "KphTerminateProcess";
     else if (ControlCode == KPH_SUSPENDPROCESS)
         return "KphSuspendProcess";
     else if (ControlCode == KPH_RESUMEPROCESS)
         return "KphResumeProcess";
-    else if (ControlCode == KPH_TERMINATEPROCESS)
-        return "KphTerminateProcess";
     else if (ControlCode == KPH_READPROCESSMEMORY)
         return "Read Process Memory";
+    else if (ControlCode == KPH_SETPROCESSTOKEN)
+        return "Set Process Token";
     else
         return "Unknown";
 }
@@ -468,9 +390,9 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             inObject = *(int *)(dataBuffer + 4);
             inProcessId = *(int *)(dataBuffer + 8);
             
-            status = ZwOpenProcess2(&processHandle, PROCESS_DUP_HANDLE, inProcessId);
+            status = OpenProcess(&processHandle, PROCESS_DUP_HANDLE, inProcessId);
             
-            if (status != STATUS_SUCCESS)
+            if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             __try
@@ -485,7 +407,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     status = GetObjectName(
                         (PFILE_OBJECT)inObject, dataBuffer, outLength, &retLength);
                     
-                    if (status == STATUS_SUCCESS)
+                    if (NT_SUCCESS(status))
                         dprintf("KProcessHacker: Resolved object name (indirect): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
@@ -496,7 +418,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     ObDereferenceObject(object);
                     ZwClose(dupHandle);
                     
-                    if (status == STATUS_SUCCESS)
+                    if (NT_SUCCESS(status))
                         dprintf("KProcessHacker: Resolved object name (direct): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
@@ -507,118 +429,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             ZwClose(processHandle);
-        }
-        break;
-        
-        case KPH_GETKISERVICETABLE:
-        {
-            if (outLength < SsdtGetCount() * 4)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            RtlCopyMemory(dataBuffer, OldKiServiceTable, SsdtGetCount() * 4);
-            retLength = SsdtGetCount() * 4;
-        }
-        break;
-        
-        case KPH_GIVEKISERVICETABLE:
-        {
-            if (inLength < SsdtGetCount() * 4)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                retLength = SsdtGetCount() * 4;
-                goto IoControlEnd;
-            }
-            
-            if (OrigKiServiceTable != NULL)
-            {
-                ExFreePool(OrigKiServiceTable);
-                OrigKiServiceTable = NULL;
-            }
-            
-            OrigKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
-            
-            if (OrigKiServiceTable == NULL)
-            {
-                status = STATUS_NO_MEMORY;
-                goto IoControlEnd;
-            }
-            
-            RtlCopyMemory(OrigKiServiceTable, dataBuffer, SsdtGetCount() * 4);
-            
-            dprintf("KProcessHacker: Got %d service table entries\n", SsdtGetCount());
-        }
-        break;
-        
-        case KPH_SETKISERVICETABLEENTRY:
-        {
-            int index;
-            PVOID function;
-            
-            if (inLength < SsdtGetCount() * 4)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            index = *(int *)dataBuffer;
-            function = *(PVOID *)(dataBuffer + 4);
-            
-            SsdtModifyEntryByIndex(index, function);
-        }
-        break;
-        
-        case KPH_GETSERVICELIMIT:
-        {
-            if (outLength < 4)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            *(int *)dataBuffer = SsdtGetCount();
-            dprintf("KProcessHacker: GetServiceLimit: returned %d SSDT entries\n", *(int *)dataBuffer);
-            retLength = 4;
-        }
-        break;
-        
-        case KPH_RESTOREKISERVICETABLE:
-        {
-            int i;
-            
-            if (OrigKiServiceTable == NULL)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            if (OldKiServiceTable != NULL)
-            {
-                ExFreePool(OldKiServiceTable);
-                OldKiServiceTable = NULL;
-            }
-            
-            OldKiServiceTable = ExAllocatePoolWithTag(NonPagedPool, SsdtGetCount() * 4, KPH_TAG);
-            
-            if (OldKiServiceTable == NULL)
-                return STATUS_NO_MEMORY;
-            
-            if (Hooked)
-                KPHUnhook();
-            
-            for (i = 0; i < SsdtGetCount(); i++)
-            {
-                SsdtModifyEntryByIndex(i, OrigKiServiceTable[i]);
-            }
-            
-            RtlCopyMemory(OldKiServiceTable, SsdtGetServiceTable(), SsdtGetCount() * 4);
-            
-            /* so we don't try to "restore" the entries later */
-            Hooked = FALSE;
-            
-            dprintf("KProcessHacker: successfully restored %d SSDT entries\n", SsdtGetCount());
         }
         break;
         
@@ -647,59 +457,10 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 UserMode
                 );
             
-            if (status != STATUS_SUCCESS)
+            if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             retLength = 4;
-        }
-        break;
-        
-        case KPH_GETPROCESSPROTECTED:
-        {
-            int processId;
-            PEPROCESS2 processObject;
-            
-            if (inLength < 4 || outLength < 1)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            processId = *(HANDLE *)dataBuffer;
-            
-            status = PsLookupProcessByProcessId(processId, &processObject);
-            
-            if (status != STATUS_SUCCESS)
-                goto IoControlEnd;
-            
-            *(PCHAR)dataBuffer = processObject->ProtectedProcess;
-            ObDereferenceObject(processObject);
-            retLength = 1;
-        }
-        break;
-        
-        case KPH_SETPROCESSPROTECTED:
-        {
-            int processId;
-            CHAR protected;
-            PEPROCESS2 processObject;
-            
-            if (inLength < 5)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            processId = *(HANDLE *)dataBuffer;
-            protected = *(CHAR *)(dataBuffer + 4);
-            
-            status = PsLookupProcessByProcessId(processId, &processObject);
-            
-            if (status != STATUS_SUCCESS)
-                goto IoControlEnd;
-            
-            processObject->ProtectedProcess = protected;
-            ObDereferenceObject(processObject);
         }
         break;
         
@@ -728,7 +489,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 UserMode
                 );
             
-            if (status != STATUS_SUCCESS)
+            if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             retLength = 4;
@@ -757,10 +518,77 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 UserMode
                 );
             
-            if (status != STATUS_SUCCESS)
+            if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             retLength = 4;
+        }
+        break;
+        
+        case KPH_GETPROCESSPROTECTED:
+        {
+            int processId;
+            PEPROCESS2 processObject;
+            
+            if (inLength < 4 || outLength < 1)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processId = *(HANDLE *)dataBuffer;
+            
+            status = PsLookupProcessByProcessId(processId, &processObject);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            *(PCHAR)dataBuffer = processObject->ProtectedProcess;
+            ObDereferenceObject(processObject);
+            retLength = 1;
+        }
+        break;
+        
+        case KPH_SETPROCESSPROTECTED:
+        {
+            int processId;
+            CHAR protected;
+            PEPROCESS2 processObject;
+            
+            if (inLength < 5)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processId = *(HANDLE *)dataBuffer;
+            protected = *(CHAR *)(dataBuffer + 4);
+            
+            status = PsLookupProcessByProcessId(processId, &processObject);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            processObject->ProtectedProcess = protected;
+            ObDereferenceObject(processObject);
+        }
+        break;
+        
+        case KPH_TERMINATEPROCESS:
+        {
+            HANDLE processHandle;
+            NTSTATUS exitStatus;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
+            
+            status = KphTerminateProcess(processHandle, exitStatus);
         }
         break;
         
@@ -793,24 +621,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processHandle = *(HANDLE *)dataBuffer;
             
             status = KphResumeProcess(processHandle);
-        }
-        break;
-        
-        case KPH_TERMINATEPROCESS:
-        {
-            HANDLE processHandle;
-            NTSTATUS exitStatus;
-            
-            if (inLength < 8)
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            processHandle = *(HANDLE *)dataBuffer;
-            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
-            
-            status = KphTerminateProcess(processHandle, exitStatus);
         }
         break;
         
@@ -849,6 +659,24 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             KeUnstackDetachProcess(&apcState);
             ObDereferenceObject(processObject);
+        }
+        break;
+        
+        case KPH_SETPROCESSTOKEN:
+        {
+            int sourcePid;
+            int targetPid;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            sourcePid = *(int *)dataBuffer;
+            targetPid = *(int *)(dataBuffer + 4);
+            
+            status = SetProcessToken(sourcePid, targetPid);
         }
         break;
         
