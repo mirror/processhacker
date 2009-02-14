@@ -36,7 +36,7 @@ namespace ProcessHacker
         public long ContextSwitches;
         public long ContextSwitchesDelta;
         public string Priority;
-        public int StartAddressI;
+        public uint StartAddressI;
         public string StartAddress;
         public Win32.KWAIT_REASON WaitReason;
 
@@ -64,14 +64,30 @@ namespace ProcessHacker
             {
                 try
                 {
-                    foreach (ProcessModule module in Process.GetProcessById(_pid).Modules)
+                    if (_pid != 4)
                     {
-                        try
+                        foreach (ProcessModule module in Process.GetProcessById(_pid).Modules)
                         {
-                            _symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress.ToInt32());
+                            try
+                            {
+                                _symbols.LoadSymbolsFromLibrary(module.FileName, (uint)module.BaseAddress.ToInt32());
+                            }
+                            catch
+                            { }
                         }
-                        catch
-                        { }
+                    }
+                    else
+                    {
+                        // load driver symbols
+                        foreach (var module in Win32.EnumKernelModules())
+                        {
+                            try
+                            {
+                                _symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress);
+                            }
+                            catch
+                            { }
+                        }
                     }
                 }
                 catch

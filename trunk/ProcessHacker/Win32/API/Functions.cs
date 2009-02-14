@@ -225,7 +225,7 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationThread(int ThreadHandle, THREAD_INFORMATION_CLASS ThreadInformationClass,
-            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+            out uint ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQueryInformationProcess(int ProcessHandle, PROCESS_INFORMATION_CLASS ProcessInformationClass,
@@ -632,7 +632,8 @@ namespace ProcessHacker
         [DllImport("dbghelp.dll", SetLastError = true)]
         public static extern bool StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
             [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
-            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord, int ReadMemoryRoutine,
+            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord,
+            [MarshalAs(UnmanagedType.FunctionPtr)] ReadProcessMemoryProc64 ReadMemoryRoutine,
             [MarshalAs(UnmanagedType.FunctionPtr)] FunctionTableAccessProc64 FunctionTableAccessRoutine,
             [MarshalAs(UnmanagedType.FunctionPtr)] GetModuleBaseProc64 GetModuleBaseRoutine,
             int TranslateAddress);

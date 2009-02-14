@@ -70,26 +70,26 @@ namespace ProcessHacker
             Invalid
         }
 
-        private List<KeyValuePair<int, string>> _libraryLookup;
-        private Dictionary<string, List<KeyValuePair<int, string>>> _symbols;
+        private List<KeyValuePair<uint, string>> _libraryLookup;
+        private Dictionary<string, List<KeyValuePair<uint, string>>> _symbols;
         private Dictionary<string, uint> _librarySizes;
 
         public SymbolProvider()
         {
             if (SymbolProvider.BaseInstance != null)
             {
-                _libraryLookup = new List<KeyValuePair<int, string>>(SymbolProvider.BaseInstance._libraryLookup);
-                _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
+                _libraryLookup = new List<KeyValuePair<uint, string>>(SymbolProvider.BaseInstance._libraryLookup);
+                _symbols = new Dictionary<string, List<KeyValuePair<uint, string>>>();
 
                 foreach (string k in SymbolProvider.BaseInstance._symbols.Keys)
-                    _symbols.Add(k, new List<KeyValuePair<int, string>>(SymbolProvider.BaseInstance._symbols[k]));
+                    _symbols.Add(k, new List<KeyValuePair<uint, string>>(SymbolProvider.BaseInstance._symbols[k]));
 
                 _librarySizes = new Dictionary<string, uint>(SymbolProvider.BaseInstance._librarySizes);
             }
             else
             {
-                _libraryLookup = new List<KeyValuePair<int, string>>();
-                _symbols = new Dictionary<string, List<KeyValuePair<int, string>>>();
+                _libraryLookup = new List<KeyValuePair<uint, string>>();
+                _symbols = new Dictionary<string, List<KeyValuePair<uint, string>>>();
                 _librarySizes = new Dictionary<string, uint>();
             }
         }
@@ -102,7 +102,7 @@ namespace ProcessHacker
         public void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
         {
             string realPath = Misc.GetRealPath(path).ToLower();
-            int imageBase = -1;
+            uint imageBase = 0;
 
             foreach (ProcessModule module in modules)
             {
@@ -110,18 +110,18 @@ namespace ProcessHacker
 
                 if (thisPath == realPath)
                 {
-                    imageBase = module.BaseAddress.ToInt32();
+                    imageBase = (uint)module.BaseAddress.ToInt32();
                     break;
                 }
             }
 
-            if (imageBase == -1)
+            if (imageBase == 0)
                 throw new Exception("Could not get image base of library.");
 
             LoadSymbolsFromLibrary(path, imageBase);
         }
 
-        public void LoadSymbolsFromLibrary(string path, int imageBase)
+        public void LoadSymbolsFromLibrary(string path, uint imageBase)
         {
             string realPath = Misc.GetRealPath(path).ToLower();
 
@@ -130,7 +130,7 @@ namespace ProcessHacker
                 return;
 
             PEFile file = null;
-            List<KeyValuePair<int, string>> list = new List<KeyValuePair<int,string>>();
+            List<KeyValuePair<uint, string>> list = new List<KeyValuePair<uint, string>>();
 
             try
             {
@@ -149,8 +149,8 @@ namespace ProcessHacker
             if (file == null || file.ExportData == null)
             {
                 // no symbols (or error), but we can still display a module name in a lookup
-                _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
-                _symbols.Add(realPath, new List<KeyValuePair<int, string>>());
+                _libraryLookup.Add(new KeyValuePair<uint, string>(imageBase, realPath));
+                _symbols.Add(realPath, new List<KeyValuePair<uint, string>>());
 
                 // if we didn't even get to load the PE file
                 if (!_librarySizes.ContainsKey(realPath))
@@ -165,7 +165,7 @@ namespace ProcessHacker
                     if (ordinal >= file.ExportData.ExportAddressTable.Count)
                         continue;
 
-                    int address = (int)file.ExportData.ExportAddressTable[ordinal].ExportRVA;
+                    uint address = file.ExportData.ExportAddressTable[ordinal].ExportRVA;
 
                     string name;
 
@@ -174,30 +174,30 @@ namespace ProcessHacker
                     else
                         name = ordinal.ToString();
 
-                    list.Add(new KeyValuePair<int, string>(imageBase + address, name));
+                    list.Add(new KeyValuePair<uint, string>(imageBase + address, name));
                 }
 
-                _libraryLookup.Add(new KeyValuePair<int, string>(imageBase, realPath));
+                _libraryLookup.Add(new KeyValuePair<uint, string>(imageBase, realPath));
                 _symbols.Add(realPath, list);
             }
 
             // sort the list
-            list.Sort(new Comparison<KeyValuePair<int, string>>(
-                    delegate(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
+            list.Sort(new Comparison<KeyValuePair<uint, string>>(
+                    delegate(KeyValuePair<uint, string> kvp1, KeyValuePair<uint, string> kvp2)
                     {
-                        return ((uint)kvp2.Key).CompareTo((uint)kvp1.Key);
-                    })); 
+                        return (kvp2.Key).CompareTo(kvp1.Key);
+                    }));
 
-            _libraryLookup.Sort(new Comparison<KeyValuePair<int, string>>(
-                    delegate(KeyValuePair<int, string> kvp1, KeyValuePair<int, string> kvp2)
+            _libraryLookup.Sort(new Comparison<KeyValuePair<uint, string>>(
+                    delegate(KeyValuePair<uint, string> kvp1, KeyValuePair<uint, string> kvp2)
                     {
-                        return ((uint)kvp2.Key).CompareTo((uint)kvp1.Key);
+                        return (kvp2.Key).CompareTo(kvp1.Key);
                     }));
         }
 
         public void UnloadSymbols(string path)
         {
-            foreach (KeyValuePair<int, string> kvp in _libraryLookup)
+            foreach (var kvp in _libraryLookup)
             {
                 if (kvp.Value == path)
                 {
@@ -210,13 +210,13 @@ namespace ProcessHacker
             _symbols.Remove(path);
         }
 
-        public string GetModuleFromAddress(int address)
+        public string GetModuleFromAddress(uint address)
         {
-            foreach (KeyValuePair<int, string> kvp in _libraryLookup)
+            foreach (var kvp in _libraryLookup)
             {
-                if ((uint)address >= (uint)kvp.Key)
+                if (address >= kvp.Key)
                 {
-                    List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];
+                    var symbolList = _symbols[kvp.Value];
                     FileInfo fi = new FileInfo(kvp.Value);
 
                     return fi.FullName;
@@ -226,14 +226,14 @@ namespace ProcessHacker
             return "";
         }
 
-        public string GetNameFromAddress(int address)
+        public string GetNameFromAddress(uint address)
         {
             FoundLevel level;
 
             return GetNameFromAddress(address, out level);
         }
 
-        public string GetNameFromAddress(int address, out FoundLevel level)
+        public string GetNameFromAddress(uint address, out FoundLevel level)
         {
             if (address == 0)
             {
@@ -242,23 +242,23 @@ namespace ProcessHacker
             }
 
             // go through each loaded library
-            foreach (KeyValuePair<int, string> kvp in _libraryLookup)
+            foreach (var kvp in _libraryLookup)
             {
                 uint size = _librarySizes[kvp.Value];
 
                 //if ((uint)address >= (uint)kvp.Key && (uint)address < ((uint)kvp.Key + size))       
-                if ((uint)address >= (uint)kvp.Key)
+                if (address >= kvp.Key)
                 {
-                    List<KeyValuePair<int, string>> symbolList = _symbols[kvp.Value];  
+                    var symbolList = _symbols[kvp.Value];  
                     FileInfo fi = new FileInfo(kvp.Value);
 
                     // go through each symbol
-                    foreach (KeyValuePair<int, string> kvps in symbolList)
+                    foreach (var kvps in symbolList)
                     {
-                        if ((uint)address >= (uint)kvps.Key)
+                        if (address >= kvps.Key)
                         {
                             // we found a function name
-                            int offset = address - kvps.Key;
+                            uint offset = address - kvps.Key;
 
                             level = FoundLevel.Function;
 
@@ -293,7 +293,7 @@ namespace ProcessHacker
             {
                 int count = 0;
 
-                foreach (List<KeyValuePair<int, string>> list in _symbols.Values)
+                foreach (var list in _symbols.Values)
                     count += list.Count;
 
                 return count;

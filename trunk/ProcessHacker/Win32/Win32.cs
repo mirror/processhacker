@@ -107,6 +107,8 @@ namespace ProcessHacker
 
         public delegate int EnumWindowsProc(int hwnd, int param);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
+        public delegate bool ReadProcessMemoryProc64(int ProcessHandle, int BaseAddress, byte[] Buffer,
+            int Size, out int BytesRead);
         public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
         public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
 
@@ -719,6 +721,48 @@ namespace ProcessHacker
         #endregion
 
         #region Misc.
+
+        public class KernelModule
+        {
+            public KernelModule(uint baseAddress, string baseName, string fileName)
+            {
+                this.BaseAddress = baseAddress;
+                this.BaseName = baseName;
+                this.FileName = fileName;
+            }
+
+            public uint BaseAddress { get; private set; }
+            public string BaseName { get; private set; }
+            public string FileName { get; private set; }
+        }
+
+        public static KernelModule[] EnumKernelModules()
+        {
+            int requiredSize = 0;
+            int[] imageBases;
+
+            Win32.EnumDeviceDrivers(null, 0, out requiredSize);
+            imageBases = new int[requiredSize / 4];
+            Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
+
+            KernelModule[] kernelModules = new KernelModule[imageBases.Length];
+
+            for (int i = 0; i < imageBases.Length; i++)
+            {
+                if (imageBases[i] == 0)
+                    continue;
+
+                StringBuilder name = new StringBuilder(0x400);
+                StringBuilder fileName = new StringBuilder(0x400);
+
+                Win32.GetDeviceDriverBaseName(imageBases[i], name, name.Capacity * 2);
+                Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
+
+                kernelModules[i] = new KernelModule((uint)imageBases[i], name.ToString(), fileName.ToString());
+            }
+
+            return kernelModules;
+        }
 
         /// <summary>
         /// Loads an image into kernel-mode using ZwSetSystemInformation 

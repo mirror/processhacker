@@ -55,7 +55,8 @@ namespace ProcessHacker
             KphOpenProcessToken,
             KphSuspendProcess,
             KphResumeProcess,
-            KphTerminateProcess
+            KphTerminateProcess,
+            ReadProcessMemory
         }
 
         private Win32.FileHandle _fileHandle;
@@ -370,6 +371,19 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
 
             return buffer;
+        }
+
+        public byte[] ReadProcessMemory(Win32.ProcessHandle processHandle, int baseAddress, int length)
+        {
+            byte[] data = new byte[8];
+            byte[] readData = new byte[length];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
+            Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.ReadProcessMemory), data, readData);
+
+            return readData;
         }
 
         public void RestoreKiServiceTable()

@@ -351,6 +351,8 @@ WCHAR *GetIoControlName(ULONG ControlCode)
         return "KphResumeProcess";
     else if (ControlCode == KPH_TERMINATEPROCESS)
         return "KphTerminateProcess";
+    else if (ControlCode == KPH_READPROCESSMEMORY)
+        return "Read Process Memory";
     else
         return "Unknown";
 }
@@ -809,6 +811,44 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             exitStatus = *(NTSTATUS *)(dataBuffer + 4);
             
             status = KphTerminateProcess(processHandle, exitStatus);
+        }
+        break;
+        
+        case KPH_READPROCESSMEMORY:
+        {
+            HANDLE processHandle;
+            PVOID baseAddress;
+            PKPROCESS processObject;
+            KAPC_STATE apcState;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            baseAddress = *(PVOID *)(dataBuffer + 4);
+            
+            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            KeStackAttachProcess(processObject, &apcState);
+            
+            __try
+            {
+                RtlCopyMemory(dataBuffer, baseAddress, outLength);
+                retLength = outLength;
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = STATUS_ACCESS_VIOLATION;
+            }
+            
+            KeUnstackDetachProcess(&apcState);
+            ObDereferenceObject(processObject);
         }
         break;
         

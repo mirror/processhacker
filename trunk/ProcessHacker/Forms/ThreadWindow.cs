@@ -233,14 +233,36 @@ namespace ProcessHacker
             {
                 try
                 {
+                    Win32.ReadProcessMemoryProc64 readMemoryProc = null;
+
+                    if (_pid == 4 && Program.KPH != null)
+                    {
+                        readMemoryProc = new Win32.ReadProcessMemoryProc64(
+                            delegate(int processHandle, int baseAddress, byte[] buffer, int size, out int bytesRead)
+                            {
+                                try
+                                {
+                                    Array.Copy(Program.KPH.ReadProcessMemory(Win32.ProcessHandle.FromHandle(processHandle),
+                                        baseAddress, size), buffer, size);
+                                    bytesRead = size;
+                                    return true;
+                                }
+                                catch
+                                {
+                                    bytesRead = 0;
+                                    return false;
+                                }
+                            });
+                    }
+
                     if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
-                        ref stackFrame, ref context, 0, null, null, 0))
+                        ref stackFrame, ref context, readMemoryProc, null, null, 0))
                         break;
 
                     if (stackFrame.AddrPC.Offset == 0)
                         break;
 
-                    int addr = (int)(stackFrame.AddrPC.Offset & 0xffffffff);
+                    uint addr = (uint)(stackFrame.AddrPC.Offset & 0xffffffff);
 
                     ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
                         "0x" + addr.ToString("x8"),
@@ -382,7 +404,7 @@ namespace ProcessHacker
         {
             if (listViewCallStack.SelectedItems.Count == 1)
             {
-                fileModule.Text = _symbols.GetModuleFromAddress((int)listViewCallStack.SelectedItems[0].Tag);
+                fileModule.Text = _symbols.GetModuleFromAddress((uint)listViewCallStack.SelectedItems[0].Tag);
                 fileModule.Enabled = true;
             }
             else
