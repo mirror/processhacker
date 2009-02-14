@@ -162,7 +162,6 @@ namespace ProcessHacker
 
         private void ProcessFile(int pid, string fileName)
         {
-            Debugger.Log(1, "ProcessSystemProvider.ProcessFile", "Processing PID " + pid.ToString() + ": " + fileName + "\n");
             FileProcessResult fpResult = new FileProcessResult();
 
             fpResult.PID = pid;
@@ -266,8 +265,6 @@ namespace ProcessHacker
                 catch
                 { }
             }
-
-            Debugger.Log(1, "ProcessSystemProvider.ProcessFile", "Finished PID " + pid.ToString() + ": " + fileName + "\n");
             
             lock (_fpResults)
                 _fpResults.Enqueue(fpResult);
@@ -281,7 +278,7 @@ namespace ProcessHacker
             if (this.RunCount % 3 == 0)
                 Win32.RefreshDriveDevicePrefixes();
 
-            Dictionary<int, int> tsProcesses = new Dictionary<int,int>();
+            Dictionary<int, int> tsProcesses = new Dictionary<int, int>();
             Dictionary<int, Win32.SystemProcess> procs = Win32.EnumProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
@@ -365,8 +362,6 @@ namespace ProcessHacker
                 while (_fpResults.Count > 0)
                 {
                     var result = _fpResults.Dequeue();
-
-                    Debugger.Log(1, "ProcessSystemProvider.UpdateOnce", "Dequeued PID " + result.PID.ToString() + "\n");
 
                     // Dictionary may contain items newdictionary doesn't contain, 
                     // because we just removed terminated processes. However, 
@@ -574,8 +569,6 @@ namespace ProcessHacker
 
                     if (pid > 0)
                     {
-                        Debugger.Log(1, "ProcessSystemProvider.UpdateOnce", "Invoking file processing for PID " +
-                            pid.ToString() + ": " + item.FileName + "\n");
                         (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
                             r => { }, null);
                     }
