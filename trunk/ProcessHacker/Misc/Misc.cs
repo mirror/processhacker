@@ -405,7 +405,7 @@ namespace ProcessHacker
         public static string GetRealPath(string path)
         {
             if (path.ToLower().StartsWith("\\systemroot"))
-                return Environment.SystemDirectory + "\\.." + path.Substring(11);
+                return (new System.IO.FileInfo(Environment.SystemDirectory + "\\.." + path.Substring(11))).FullName;
             else if (path.StartsWith("\\??\\"))
                 return path.Substring(4);
             else

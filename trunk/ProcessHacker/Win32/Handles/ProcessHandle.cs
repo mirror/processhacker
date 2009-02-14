@@ -21,7 +21,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -328,6 +330,46 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the modules loaded by the process. This requires the 
+            /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
+            /// </summary>
+            /// <returns></returns>
+            public ProcessModule[] GetModules()
+            {
+                IntPtr[] moduleHandles;
+                int requiredSize;
+
+                EnumProcessModules(this, null, 0, out requiredSize);
+                moduleHandles = new IntPtr[requiredSize / 4];
+
+                if (!EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
+                    ThrowLastWin32Error();
+
+                ProcessModule[] moduleList = new ProcessModule[moduleHandles.Length];
+
+                for (int i = 0; i < moduleHandles.Length; i++)
+                {
+                    MODULEINFO moduleInfo = new MODULEINFO();
+                    StringBuilder baseName = new StringBuilder(0x400);
+                    StringBuilder fileName = new StringBuilder(0x400);
+
+                    if (!GetModuleInformation(this, moduleHandles[i], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
+                        ThrowLastWin32Error();
+                    if (GetModuleBaseName(this, moduleHandles[i], baseName, baseName.Capacity * 2) == 0)
+                        ThrowLastWin32Error();
+                    if (GetModuleFileNameEx(this, moduleHandles[i], fileName, fileName.Capacity * 2) == 0)
+                        ThrowLastWin32Error();
+
+                    moduleList[i] = new ProcessModule(
+                        moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
+                        baseName.ToString(), Misc.GetRealPath(fileName.ToString())
+                        );
+                }
+
+                return moduleList;
+            }
+
+            /// <summary>
             /// Gets the file name of the process' image, in device name format. This 
             /// requires the PROCESS_QUERY_LIMITED_INFORMATION permission.
             /// </summary>
@@ -568,6 +610,24 @@ namespace ProcessHacker
             {
                 return new TokenHandle(this, access);
             }
+        }
+
+        public class ProcessModule
+        {
+            internal ProcessModule(IntPtr baseAddress, int size, IntPtr entryPoint, string baseName, string fileName)
+            {
+                this.BaseAddress = baseAddress;
+                this.Size = size;
+                this.EntryPoint = entryPoint;
+                this.BaseName = baseName;
+                this.FileName = fileName;
+            }
+
+            public IntPtr BaseAddress { get; private set; }
+            public int Size { get; private set; }
+            public IntPtr EntryPoint { get; private set; }
+            public string BaseName { get; private set; }
+            public string FileName { get; private set; }
         }
     }
 }

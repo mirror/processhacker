@@ -94,10 +94,10 @@ namespace ProcessHacker
         public static extern bool EnumDeviceDrivers(int[] ImageBases, int Size, out int Needed);
 
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool GetDeviceDriverBaseName(int ImageBase, StringBuilder FileName, int Size);
+        public static extern int GetDeviceDriverBaseName(int ImageBase, StringBuilder FileName, int Size);
 
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool GetDeviceDriverFileName(int ImageBase, StringBuilder FileName, int Size);
+        public static extern int GetDeviceDriverFileName(int ImageBase, StringBuilder FileName, int Size);
 
         #endregion
 
@@ -329,6 +329,18 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll")]
         public static extern bool DebugActiveProcessStop(int PID);
+
+        [DllImport("psapi.dll")]
+        public static extern bool EnumProcessModules(int ProcessHandle, IntPtr[] ModuleHandles, int Size, out int RequiredSize);
+
+        [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetModuleBaseName(int ProcessHandle, IntPtr ModuleHandle, StringBuilder BaseName, int Size);
+
+        [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetModuleFileNameEx(int ProcessHandle, IntPtr ModuleHandle, StringBuilder FileName, int Size);
+
+        [DllImport("psapi.dll")]
+        public static extern bool GetModuleInformation(int ProcessHandle, IntPtr ModuleHandle, ref MODULEINFO ModInfo, int Size);
 
         #endregion
 

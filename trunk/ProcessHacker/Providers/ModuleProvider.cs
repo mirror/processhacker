@@ -42,6 +42,7 @@ namespace ProcessHacker
 
     public class ModuleProvider : Provider<int, ModuleItem>
     {
+        private Win32.ProcessHandle _processHandle;
         private int _pid;
 
         public ModuleProvider(int PID)
@@ -49,7 +50,17 @@ namespace ProcessHacker
         {
             _pid = PID;
 
+            try
+            {
+                _processHandle = new Win32.ProcessHandle(_pid,
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+            }
+            catch
+            { }
+
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+            this.Killed += () => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         private void UpdateOnce()
@@ -96,11 +107,11 @@ namespace ProcessHacker
                 if (!Dictionary.ContainsKey(b))
                 {
                     ModuleItem item = new ModuleItem();
-                    StringBuilder name = new StringBuilder(256);
-                    StringBuilder filename = new StringBuilder(256);
+                    StringBuilder name = new StringBuilder(0x400);
+                    StringBuilder filename = new StringBuilder(0x400);
 
-                    Win32.GetDeviceDriverBaseName(b, name, 255);
-                    Win32.GetDeviceDriverFileName(b, filename, 255);
+                    Win32.GetDeviceDriverBaseName(b, name, name.Capacity * 2);
+                    Win32.GetDeviceDriverFileName(b, filename, filename.Capacity * 2);
 
                     item.BaseAddress = b;
                     item.Name = name.ToString();
@@ -129,12 +140,11 @@ namespace ProcessHacker
 
         private void UpdateModules()
         {
-            Process process = Process.GetProcessById(_pid);
-            ProcessModuleCollection modulesCollection = process.Modules;
-            Dictionary<int, ProcessModule> modules = new Dictionary<int, ProcessModule>();
-            Dictionary<int, ModuleItem> newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);
+            var processModules = _processHandle.GetModules();
+            var modules = new Dictionary<int, Win32.ProcessModule>();
+            var newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);
 
-            foreach (ProcessModule m in modulesCollection)
+            foreach (var m in processModules)
                 modules.Add(m.BaseAddress.ToInt32(), m);
 
             // look for unloaded modules
@@ -152,17 +162,13 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(b))
                 {
-                    ProcessModule m = modules[b];
+                    var m = modules[b];
                     ModuleItem item = new ModuleItem();
 
-                    item.Name = m.ModuleName;
-
-                    try { item.FileName = Misc.GetRealPath(m.FileName); }
-                    catch { }
-                    try { item.BaseAddress = b; }
-                    catch { }
-                    try { item.Size = m.ModuleMemorySize; }
-                    catch { }
+                    item.Name = m.BaseName;
+                    item.FileName = Misc.GetRealPath(m.FileName);
+                    item.BaseAddress = b;
+                    item.Size = m.Size;
 
                     try
                     {

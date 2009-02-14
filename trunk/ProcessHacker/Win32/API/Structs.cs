@@ -383,8 +383,18 @@ namespace ProcessHacker
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string szModule;
 
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string szExePath;
+
+            public int dwFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MODULEINFO
+        {
+            public IntPtr BaseOfDll;
+            public int SizeOfImage;
+            public IntPtr EntryPoint;
         }
 
         [StructLayout(LayoutKind.Sequential)]
