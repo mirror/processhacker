@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.3.0
  * NEW:
+   * Around 50% reduction in CPU usage
    * Process termination now uses KProcessHacker
    * KProcessHacker now supports multiple clients at one time
    * Process Hacker can now use KProcessHacker under a limited user account if it is 
@@ -17,7 +18,6 @@ Process Hacker
      asynchronous. This means that there are no more delays when starting 
      certain programs.
    * Slightly different notification icon
-   * Around 50% reduction in CPU usage
    * GDI and USER handle counts
  * FIXED:
    * Limited user account weirdness

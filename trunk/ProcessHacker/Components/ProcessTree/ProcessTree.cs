@@ -217,7 +217,7 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorServiceProcesses;
             else if (p.Username == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
-            else if (p.Username == System.Security.Principal.WindowsIdentity.GetCurrent().Name)
+            else if (p.Username == Program.CurrentUsername)
                 return Properties.Settings.Default.ColorOwnProcesses;
             else if (p.IsInJob)
                 return Properties.Settings.Default.ColorJobProcesses;

@@ -42,6 +42,7 @@ namespace ProcessHacker
 
         public static int CurrentProcess;
         public static int CurrentSessionId;
+        public static string CurrentUsername;
 
         /// <summary>
         /// The Results Window ID Generator
@@ -132,13 +133,15 @@ namespace ProcessHacker
             try
             {
                 using (var thandle = new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION).GetToken())
+                        MinProcessQueryRights).GetToken())
                 {
                     thandle.SetPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
                 }
             }
             catch
             { }
+
+            CurrentUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 
             CurrentProcess = Win32.OpenProcess(
                 Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS, 0, 
