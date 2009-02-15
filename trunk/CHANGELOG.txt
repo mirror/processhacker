@@ -37,6 +37,7 @@ Process Hacker
      already open
    * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
    * Handle leaks in the thread window, handle list and process updater
+   * PH window is permanently offscreen if it is hidden when minimized
    * Workaround for Bug #2553406 - "COMException: Class not registered"
    * Bug #2601383 - "Threads' column's width is not remembered."
 

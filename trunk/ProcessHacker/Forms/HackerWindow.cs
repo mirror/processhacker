@@ -477,8 +477,10 @@ namespace ProcessHacker
 
         private void showHideMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.WindowState == FormWindowState.Minimized)
+                this.WindowState = FormWindowState.Normal;
+
             this.Visible = !this.Visible;
-            this.WindowState = FormWindowState.Normal;
             this.Activate();
         }
 
