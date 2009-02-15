@@ -59,6 +59,8 @@ namespace ProcessHacker
 
         public KProcessHacker()
         {
+            bool started = false;
+
             if (!Properties.Settings.Default.EnableKPH)
                 throw new Exception("KProcessHacker is not enabled.");
 
@@ -67,7 +69,10 @@ namespace ProcessHacker
             {
                 using (var shandle = new Win32.ServiceHandle(DeviceName))
                 {
-                    shandle.Delete();
+                    started = shandle.GetStatus().CurrentState == Win32.SERVICE_STATE.Running;
+
+                    if (!started)
+                        shandle.Delete();
                 }
             }
             catch
@@ -90,7 +95,8 @@ namespace ProcessHacker
 
             try
             {
-                _service.Delete(); // the service will automatically get deleted once it stops
+                if (!started)
+                    _service.Delete(); // the service will automatically get deleted once it stops
             }
             catch
             { }

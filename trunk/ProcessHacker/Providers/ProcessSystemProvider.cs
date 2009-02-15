@@ -254,10 +254,14 @@ namespace ProcessHacker
                 {
                     var modDict = new Dictionary<string, string>();
 
-                    foreach (var m in Dictionary[pid].ProcessQueryLimitedVmReadHandle.GetModules())
+                    using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights |
+                        Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                     {
-                        if (!modDict.ContainsKey(m.BaseName.ToLower()))
-                            modDict.Add(m.BaseName.ToLower(), m.FileName);
+                        foreach (var m in phandle.GetModules())
+                        {
+                            if (!modDict.ContainsKey(m.BaseName.ToLower()))
+                                modDict.Add(m.BaseName.ToLower(), m.FileName);
+                        }
                     }
 
                     if (modDict.ContainsKey("mscoree.dll") &&

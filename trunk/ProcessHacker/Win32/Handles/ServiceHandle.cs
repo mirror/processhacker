@@ -113,6 +113,21 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the status of the service.
+            /// </summary>
+            /// <returns>A SERVICE_STATUS_PROCESS structure.</returns>
+            public SERVICE_STATUS_PROCESS GetStatus()
+            {
+                SERVICE_STATUS_PROCESS status = new SERVICE_STATUS_PROCESS();
+                int retLen;
+
+                if (!QueryServiceStatusEx(this, 0, ref status, Marshal.SizeOf(status), out retLen))
+                    ThrowLastWin32Error();
+
+                return status;
+            }
+
+            /// <summary>
             /// Starts the service.
             /// </summary>
             public void Start()
