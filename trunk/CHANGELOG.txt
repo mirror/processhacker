@@ -23,6 +23,7 @@ Process Hacker
    * Limited user account weirdness
    * No longer deletes the KProcessHacker service if it's already started
    * Process Hacker no longer requires UAC elevation
+   * Memory searching now uses KProcessHacker if possible
    * Incorrect labeling of process files which can't be read (due to permissions) 
      as packed
    * Disables "Show one graph per CPU" if there is only one CPU

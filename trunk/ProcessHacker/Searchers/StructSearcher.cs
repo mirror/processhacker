@@ -34,7 +34,7 @@ namespace ProcessHacker
         {
             Results.Clear();
 
-            int handle = 0;
+            Win32.ProcessHandle phandle;
             int address = 0;
             Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
             int count = 0;
@@ -57,9 +57,11 @@ namespace ProcessHacker
 
             structDef.IOProvider = new ProcessMemoryIO(PID);
 
-            handle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
-
-            if (handle == 0)
+            try
+            {
+                phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+            }
+            catch
             {
                 CallSearchError("Could not open process: " + Win32.GetLastErrorMessage());
                 return;
@@ -67,7 +69,7 @@ namespace ProcessHacker
 
             while (true)
             {
-                if (!Win32.VirtualQueryEx(handle, address, ref info,
+                if (!Win32.VirtualQueryEx(phandle, address, ref info,
                     Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                 {
                     break;
@@ -112,7 +114,7 @@ namespace ProcessHacker
                 }
             }
 
-            Win32.CloseHandle(handle);
+            phandle.Dispose();
 
             CallSearchFinished();
         }

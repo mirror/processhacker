@@ -35,7 +35,7 @@ namespace ProcessHacker
             Results.Clear();
 
             byte[] text = (byte[])Params["text"];
-            int handle = 0;
+            Win32.ProcessHandle phandle;
             int address = 0;
             Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
             int count = 0;
@@ -46,10 +46,13 @@ namespace ProcessHacker
             bool opt_img = (bool)Params["image"];
             bool opt_map = (bool)Params["mapped"];
 
-            handle = Win32.OpenProcess(Win32.PROCESS_RIGHTS.PROCESS_VM_READ | 
-                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION, 0, PID);
-
-            if (handle == 0)
+            try
+            {
+                phandle = new Win32.ProcessHandle(PID, 
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+            }
+            catch
             {
                 CallSearchError("Could not open process: " + Win32.GetLastErrorMessage());
                 return;
@@ -57,7 +60,7 @@ namespace ProcessHacker
 
             while (true)
             {
-                if (!Win32.VirtualQueryEx(handle, address, ref info,
+                if (!Win32.VirtualQueryEx(phandle, address, ref info,
                     Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
                 {
                     break;
@@ -87,7 +90,7 @@ namespace ProcessHacker
                     CallSearchProgressChanged(
                         String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress, count));
 
-                    Win32.ReadProcessMemory(handle, info.BaseAddress, data, info.RegionSize, out bytesRead);
+                    Win32.ReadProcessMemory(phandle, info.BaseAddress, data, info.RegionSize, out bytesRead);
 
                     if (bytesRead == 0)
                         continue;
@@ -119,7 +122,7 @@ namespace ProcessHacker
                 }
             }
 
-            Win32.CloseHandle(handle);
+            phandle.Dispose();
 
             CallSearchFinished();
         }
