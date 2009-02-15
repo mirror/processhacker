@@ -44,6 +44,7 @@ namespace ProcessHacker
             listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
             listThreads.SelectedIndexChanged += new System.EventHandler(listThreads_SelectedIndexChanged);
 
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ThreadListViewColumns, listThreads);
             listThreads.ContextMenu = menuThread;
             GenericViewMenu.AddMenuItems(copyThreadMenuItem.MenuItems, listThreads, null);
             listThreads_SelectedIndexChanged(null, null);

@@ -21,6 +21,8 @@ Process Hacker
    * GDI and USER handle counts
  * FIXED:
    * Limited user account weirdness
+   * No longer deletes the KProcessHacker service if it's already started
+   * Process Hacker no longer requires UAC elevation
    * Incorrect labeling of process files which can't be read (due to permissions) 
      as packed
    * Disables "Show one graph per CPU" if there is only one CPU
@@ -33,9 +35,10 @@ Process Hacker
    * Displays-2-more-processes-than-actual-number bug
    * System Information screwing up when the user tries to open it when it's 
      already open
-   * Workaround for Bug #2553406 - "COMException: Class not registered"
    * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
    * Handle leaks in the thread window, handle list and process updater
+   * Workaround for Bug #2553406 - "COMException: Class not registered"
+   * Bug #2601383 - "Threads' column's width is not remembered."
 
 1.3.2.0
  * NEW:
