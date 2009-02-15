@@ -1883,7 +1883,8 @@ namespace ProcessHacker
             {
                 if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
                 {
-                    this.Hide();
+                    this.WindowState = FormWindowState.Normal;
+                    this.Visible = false;
                 }
             } 
         }
