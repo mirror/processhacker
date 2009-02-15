@@ -48,6 +48,7 @@
             this.checkStartHidden = new System.Windows.Forms.CheckBox();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
+            this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
@@ -89,7 +90,6 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.label23 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -286,9 +286,9 @@
             this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.checkEnableKPH.Location = new System.Drawing.Point(6, 333);
             this.checkEnableKPH.Name = "checkEnableKPH";
-            this.checkEnableKPH.Size = new System.Drawing.Size(217, 18);
+            this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
             this.checkEnableKPH.TabIndex = 12;
-            this.checkEnableKPH.Text = "Enable experimental kernel-mode driver";
+            this.checkEnableKPH.Text = "Enable kernel-mode driver";
             this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the experimental driver which allows Process Hacker to bypass rootkits an" +
                     "d security software to a certain extent.");
             this.checkEnableKPH.UseVisualStyleBackColor = true;
@@ -358,6 +358,15 @@
             this.checkShowTrayIcon.UseVisualStyleBackColor = true;
             this.checkShowTrayIcon.CheckedChanged += new System.EventHandler(this.checkShowTrayIcon_CheckedChanged);
             // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(6, 34);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(122, 13);
+            this.label23.TabIndex = 0;
+            this.label23.Text = "Processes in icon menu:";
+            // 
             // textIconMenuProcesses
             // 
             this.textIconMenuProcesses.Location = new System.Drawing.Point(134, 32);
@@ -416,7 +425,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 355);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 361);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -647,7 +656,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 355);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 361);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -790,15 +799,6 @@
             this.toolTipProvider.InitialDelay = 250;
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(6, 34);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(122, 13);
-            this.label23.TabIndex = 0;
-            this.label23.Text = "Processes in icon menu:";
             // 
             // OptionsWindow
             // 
