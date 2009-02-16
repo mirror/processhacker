@@ -361,117 +361,125 @@ namespace ProcessHacker
 
             processesMenuItem.MenuItems.Clear();
 
-            foreach (var process in processP.Dictionary.Values)
+            // HACK: To be fixed later - we need some sort of locking for the process provider
+            try
             {
-                if (process.PID > 0)
+                foreach (var process in processP.Dictionary.Values)
                 {
-                    processes.Add(process);
+                    if (process.PID > 0)
+                    {
+                        processes.Add(process);
+                    }
                 }
-            }
 
-            for (int i = 0; i < processes.Count && processes.Count > Properties.Settings.Default.IconMenuProcessCount; i++)
-            {
-                if (processes[i].CPUUsage == 0)
+                for (int i = 0; i < processes.Count && processes.Count > Properties.Settings.Default.IconMenuProcessCount; i++)
                 {
-                    processes.RemoveAt(i);
-                    i--;
+                    if (processes[i].CPUUsage == 0)
+                    {
+                        processes.RemoveAt(i);
+                        i--;
+                    }
+                    else if (processes[i].Username != System.Security.Principal.WindowsIdentity.GetCurrent().Name)
+                    {
+                        processes.RemoveAt(i);
+                        i--;
+                    }
                 }
-                else if (processes[i].Username != System.Security.Principal.WindowsIdentity.GetCurrent().Name)
+
+                processes.Sort((i1, i2) => -i1.CPUUsage.CompareTo(i2.CPUUsage));
+
+                if (processes.Count > Properties.Settings.Default.IconMenuProcessCount)
                 {
-                    processes.RemoveAt(i);
-                    i--;
+                    int c = processes.Count;
+                    processes.RemoveRange(Properties.Settings.Default.IconMenuProcessCount,
+                        processes.Count - Properties.Settings.Default.IconMenuProcessCount);
                 }
-            }
 
-            processes.Sort((i1, i2) => -i1.CPUUsage.CompareTo(i2.CPUUsage));
-
-            if (processes.Count > Properties.Settings.Default.IconMenuProcessCount)
-            {
-                int c = processes.Count;
-                processes.RemoveRange(Properties.Settings.Default.IconMenuProcessCount, 
-                    processes.Count - Properties.Settings.Default.IconMenuProcessCount);
-            }
-
-            foreach (var process in processes)
-            {
-                MenuItem processItem = new MenuItem();
-                MenuItem terminateItem = new MenuItem();
-                MenuItem suspendItem = new MenuItem();
-                MenuItem resumeItem = new MenuItem();
-                MenuItem propertiesItem = new MenuItem();
-
-                processItem.Text = process.Name + " (" + process.PID.ToString() + ")";
-                processItem.Tag = process.PID;
-
-                terminateItem.Click += new EventHandler((sender_, e_) =>
+                foreach (var process in processes)
                 {
-                    if (MessageBox.Show("Are you sure you want to terminate the process?", "Process Hacker",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                    MenuItem processItem = new MenuItem();
+                    MenuItem terminateItem = new MenuItem();
+                    MenuItem suspendItem = new MenuItem();
+                    MenuItem resumeItem = new MenuItem();
+                    MenuItem propertiesItem = new MenuItem();
+
+                    processItem.Text = process.Name + " (" + process.PID.ToString() + ")";
+                    processItem.Tag = process.PID;
+
+                    terminateItem.Click += new EventHandler((sender_, e_) =>
+                    {
+                        if (MessageBox.Show("Are you sure you want to terminate the process?", "Process Hacker",
+                            MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                        {
+                            try
+                            {
+                                (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
+                                    Win32.PROCESS_RIGHTS.PROCESS_TERMINATE)).Terminate();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    });
+                    terminateItem.Text = "Terminate";
+
+                    suspendItem.Click += new EventHandler((sender_, e_) =>
                     {
                         try
                         {
                             (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                                Win32.PROCESS_RIGHTS.PROCESS_TERMINATE)).Terminate();
+                                Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Suspend();
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                    }
-                });
-                terminateItem.Text = "Terminate";
+                    });
+                    suspendItem.Text = "Suspend";
 
-                suspendItem.Click += new EventHandler((sender_, e_) =>
-                {
-                    try
+                    resumeItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Suspend();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                });
-                suspendItem.Text = "Suspend";
-
-                resumeItem.Click += new EventHandler((sender_, e_) =>
-                {
-                    try
-                    {
-                        (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Resume();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                });
-                resumeItem.Text = "Resume";
-
-                propertiesItem.Click += new EventHandler((sender_, e_) =>
-                {
-                    try
-                    {
-                        ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[(int)((MenuItem)sender_).Parent.Tag],
-                            new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                        try
                         {
-                            f.Show();
-                            f.Activate();
-                        }));
-                    }
-                    catch (Exception ex)
+                            (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
+                                Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Resume();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    });
+                    resumeItem.Text = "Resume";
+
+                    propertiesItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
-                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                });
-                propertiesItem.Text = "Properties...";
+                        try
+                        {
+                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[(int)((MenuItem)sender_).Parent.Tag],
+                                new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                            {
+                                f.Show();
+                                f.Activate();
+                            }));
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Could not inspect the process:\n\n" + ex.Message,
+                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    });
+                    propertiesItem.Text = "Properties...";
 
-                processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
-                processesMenuItem.MenuItems.Add(processItem);
+                    processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
+                    processesMenuItem.MenuItems.Add(processItem);
 
-                vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
+                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
+                }
+            }
+            catch
+            {
+                processesMenuItem.MenuItems.Clear();
             }
         }
 
