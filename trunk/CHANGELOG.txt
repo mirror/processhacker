@@ -5,6 +5,7 @@ Process Hacker
    * #2596502 - "Add access keys"
    * #2602538 - "Move some options to new window"
    * #2602553 - "Add access key for Help"
+   * #2602606 - "Display a warning when running on 64bit WIN"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time
    * Process termination now uses KProcessHacker

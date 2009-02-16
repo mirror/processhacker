@@ -105,6 +105,14 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
+            if (IntPtr.Size == 8)
+            {
+                MessageBox.Show("Process Hacker cannot run on 64-bit versions of Windows.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                Application.Exit();
+            }
+
             Asm.LockedBus = 1;
             Asm.Lowercase = true;
             Asm.ExtraSpace = true;
