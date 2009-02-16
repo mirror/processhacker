@@ -3,6 +3,7 @@ Process Hacker
 1.3.3.0
  * NEW:
    * #2596502 - "Add access keys"
+   * #2600995 - "Improvements to Help file"
    * #2602538 - "Move some options to new window"
    * #2602553 - "Add access key for Help"
    * #2602606 - "Display a warning when running on 64bit WIN"

@@ -44,7 +44,7 @@
             this.webBrowser.Location = new System.Drawing.Point(201, 12);
             this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser.Name = "webBrowser";
-            this.webBrowser.Size = new System.Drawing.Size(390, 293);
+            this.webBrowser.Size = new System.Drawing.Size(535, 490);
             this.webBrowser.TabIndex = 0;
             this.webBrowser.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.webBrowser_PreviewKeyDown);
             // 
@@ -56,7 +56,7 @@
             this.listBoxContents.IntegralHeight = false;
             this.listBoxContents.Location = new System.Drawing.Point(12, 12);
             this.listBoxContents.Name = "listBoxContents";
-            this.listBoxContents.Size = new System.Drawing.Size(183, 293);
+            this.listBoxContents.Size = new System.Drawing.Size(183, 490);
             this.listBoxContents.TabIndex = 1;
             this.listBoxContents.SelectedIndexChanged += new System.EventHandler(this.listBoxContents_SelectedIndexChanged);
             // 
@@ -64,7 +64,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(603, 317);
+            this.ClientSize = new System.Drawing.Size(748, 514);
             this.Controls.Add(this.listBoxContents);
             this.Controls.Add(this.webBrowser);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
