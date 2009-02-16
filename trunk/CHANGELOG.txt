@@ -2,6 +2,9 @@ Process Hacker
 
 1.3.3.0
  * NEW:
+   * #2596502 - "Add access keys"
+   * #2602538 - "Move some options to new window"
+   * #2602553 - "Add access key for Help"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time
    * Process termination now uses KProcessHacker
@@ -21,6 +24,8 @@ Process Hacker
    * Slightly different notification icon
    * GDI and USER handle counts
  * FIXED:
+   * Workaround for Bug #2553406 - "COMException: Class not registered"
+   * Bug #2601383 - "Threads' column's width is not remembered."
    * Limited user account weirdness
    * No longer deletes the KProcessHacker service if it's already started
    * Process Hacker no longer requires UAC elevation
@@ -40,8 +45,6 @@ Process Hacker
    * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
    * Handle leaks in the thread window, handle list and process updater
    * PH window is permanently offscreen if it is hidden when minimized
-   * Workaround for Bug #2553406 - "COMException: Class not registered"
-   * Bug #2601383 - "Threads' column's width is not remembered."
 
 1.3.2.0
  * NEW:
