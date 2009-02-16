@@ -28,11 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.listServices = new System.Windows.Forms.ListView();
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.panelService = new System.Windows.Forms.Panel();
+            this.buttonDependents = new System.Windows.Forms.Button();
+            this.buttonDependencies = new System.Windows.Forms.Button();
             this.textDescription = new System.Windows.Forms.TextBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonStop = new System.Windows.Forms.Button();
@@ -51,8 +54,7 @@
             this.textServiceBinaryPath = new System.Windows.Forms.TextBox();
             this.labelServiceDisplayName = new System.Windows.Forms.Label();
             this.labelServiceName = new System.Windows.Forms.Label();
-            this.buttonDependencies = new System.Windows.Forms.Button();
-            this.buttonDependents = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.panelService.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -123,6 +125,30 @@
             this.panelService.Size = new System.Drawing.Size(387, 286);
             this.panelService.TabIndex = 2;
             // 
+            // buttonDependents
+            // 
+            this.buttonDependents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDependents.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDependents.Location = new System.Drawing.Point(107, 257);
+            this.buttonDependents.Name = "buttonDependents";
+            this.buttonDependents.Size = new System.Drawing.Size(85, 23);
+            this.buttonDependents.TabIndex = 18;
+            this.buttonDependents.Text = "Dependents...";
+            this.buttonDependents.UseVisualStyleBackColor = true;
+            this.buttonDependents.Click += new System.EventHandler(this.buttonDependents_Click);
+            // 
+            // buttonDependencies
+            // 
+            this.buttonDependencies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDependencies.Location = new System.Drawing.Point(198, 257);
+            this.buttonDependencies.Name = "buttonDependencies";
+            this.buttonDependencies.Size = new System.Drawing.Size(102, 23);
+            this.buttonDependencies.TabIndex = 18;
+            this.buttonDependencies.Text = "Dependencies...";
+            this.buttonDependencies.UseVisualStyleBackColor = true;
+            this.buttonDependencies.Click += new System.EventHandler(this.buttonDependencies_Click);
+            // 
             // textDescription
             // 
             this.textDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -145,6 +171,7 @@
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(24, 24);
             this.buttonStart.TabIndex = 16;
+            this.toolTip.SetToolTip(this.buttonStart, "Starts the service.");
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
@@ -156,6 +183,7 @@
             this.buttonStop.Name = "buttonStop";
             this.buttonStop.Size = new System.Drawing.Size(24, 24);
             this.buttonStop.TabIndex = 16;
+            this.toolTip.SetToolTip(this.buttonStop, "Stops the service.");
             this.buttonStop.UseVisualStyleBackColor = true;
             this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
             // 
@@ -298,30 +326,6 @@
             this.labelServiceName.TabIndex = 0;
             this.labelServiceName.Text = "Service Name";
             // 
-            // buttonDependencies
-            // 
-            this.buttonDependencies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependencies.Location = new System.Drawing.Point(198, 257);
-            this.buttonDependencies.Name = "buttonDependencies";
-            this.buttonDependencies.Size = new System.Drawing.Size(102, 23);
-            this.buttonDependencies.TabIndex = 18;
-            this.buttonDependencies.Text = "Dependencies...";
-            this.buttonDependencies.UseVisualStyleBackColor = true;
-            this.buttonDependencies.Click += new System.EventHandler(this.buttonDependencies_Click);
-            // 
-            // buttonDependents
-            // 
-            this.buttonDependents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDependents.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependents.Location = new System.Drawing.Point(107, 257);
-            this.buttonDependents.Name = "buttonDependents";
-            this.buttonDependents.Size = new System.Drawing.Size(85, 23);
-            this.buttonDependents.TabIndex = 18;
-            this.buttonDependents.Text = "Dependents...";
-            this.buttonDependents.UseVisualStyleBackColor = true;
-            this.buttonDependents.Click += new System.EventHandler(this.buttonDependents_Click);
-            // 
             // ServiceProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -363,5 +367,6 @@
         private System.Windows.Forms.TextBox textDescription;
         private System.Windows.Forms.Button buttonDependents;
         private System.Windows.Forms.Button buttonDependencies;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
