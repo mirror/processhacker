@@ -67,7 +67,6 @@
             this.ClientSize = new System.Drawing.Size(603, 317);
             this.Controls.Add(this.listBoxContents);
             this.Controls.Add(this.webBrowser);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HelpWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
