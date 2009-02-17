@@ -48,6 +48,7 @@ Process Hacker
    * "a hour" -> "an hour", "yesterday ago" -> "a day ago"
    * Handle leaks in the thread window, handle list and process updater
    * PH window is permanently offscreen if it is hidden when minimized
+   * Process colors not being refreshed when items are removed
 
 1.3.2.0
  * NEW:

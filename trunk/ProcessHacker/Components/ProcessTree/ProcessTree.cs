@@ -294,6 +294,7 @@ namespace ProcessHacker
                             try
                             {
                                 _treeModel.Remove(item);
+                                this.RefreshItems();
                             }
                             catch { }
                         }));
