@@ -202,7 +202,11 @@ namespace wyDay.Controls
 
             int yPos = e.Bounds.Top + (e.Bounds.Height - SystemFonts.MenuFont.Height) / 2;
 
-            Size textSize = TextRenderer.MeasureText(((MenuItem)sender).Text, e.Font, new Size(0, 0), TextFormatFlags.SingleLine);
+            Size textSize = TextRenderer.MeasureText(((MenuItem)sender).Text, 
+                ((MenuItem)sender).DefaultItem ? 
+                new Font(e.Font, FontStyle.Bold) : 
+                e.Font, 
+                new Size(0, 0), TextFormatFlags.SingleLine);
 
             Rectangle textRect = new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos,
                                    textSize.Width, textSize.Height);
