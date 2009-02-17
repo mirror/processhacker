@@ -31,7 +31,6 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.labelAppName = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
-            this.labelCredits = new System.Windows.Forms.Label();
             this.linkFamFamFam = new System.Windows.Forms.LinkLabel();
             this.linkVistaMenu = new System.Windows.Forms.LinkLabel();
             this.linkHexBox = new System.Windows.Forms.LinkLabel();
@@ -46,6 +45,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowThanks.SuspendLayout();
             this.SuspendLayout();
@@ -91,19 +93,10 @@
             this.labelVersion.TabIndex = 3;
             this.labelVersion.Text = "Version";
             // 
-            // labelCredits
-            // 
-            this.labelCredits.AutoSize = true;
-            this.labelCredits.Location = new System.Drawing.Point(174, 85);
-            this.labelCredits.Name = "labelCredits";
-            this.labelCredits.Size = new System.Drawing.Size(58, 26);
-            this.labelCredits.TabIndex = 4;
-            this.labelCredits.Text = "Thanks to:\r\n\r\n";
-            // 
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(6, 16);
+            this.linkFamFamFam.Location = new System.Drawing.Point(6, 68);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -114,7 +107,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(6, 29);
+            this.linkVistaMenu.Location = new System.Drawing.Point(6, 81);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -125,7 +118,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(6, 3);
+            this.linkHexBox.Location = new System.Drawing.Point(6, 55);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -137,9 +130,9 @@
             // 
             this.labelBy.Location = new System.Drawing.Point(174, 50);
             this.labelBy.Name = "labelBy";
-            this.labelBy.Size = new System.Drawing.Size(234, 35);
+            this.labelBy.Size = new System.Drawing.Size(234, 17);
             this.labelBy.TabIndex = 8;
-            this.labelBy.Text = "by wj32 and Dean. Licensed under the GNU GPL, v3.";
+            this.labelBy.Text = "Licensed under the GNU GPL, v3.";
             // 
             // linkSourceforge
             // 
@@ -168,7 +161,7 @@
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
-            this.linkAsm.Location = new System.Drawing.Point(6, 42);
+            this.linkAsm.Location = new System.Drawing.Point(6, 94);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;
@@ -179,7 +172,7 @@
             // linkTreeViewAdv
             // 
             this.linkTreeViewAdv.AutoSize = true;
-            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 55);
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 107);
             this.linkTreeViewAdv.Name = "linkTreeViewAdv";
             this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
             this.linkTreeViewAdv.TabIndex = 12;
@@ -193,37 +186,40 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.flowThanks.AutoScroll = true;
+            this.flowThanks.Controls.Add(this.label5);
+            this.flowThanks.Controls.Add(this.label6);
+            this.flowThanks.Controls.Add(this.label7);
+            this.flowThanks.Controls.Add(this.label1);
             this.flowThanks.Controls.Add(this.linkHexBox);
             this.flowThanks.Controls.Add(this.linkFamFamFam);
             this.flowThanks.Controls.Add(this.linkVistaMenu);
             this.flowThanks.Controls.Add(this.linkAsm);
             this.flowThanks.Controls.Add(this.linkTreeViewAdv);
-            this.flowThanks.Controls.Add(this.label1);
             this.flowThanks.Controls.Add(this.label4);
             this.flowThanks.Controls.Add(this.label3);
             this.flowThanks.Controls.Add(this.label2);
             this.flowThanks.Controls.Add(this.labelFiller);
             this.flowThanks.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowThanks.Location = new System.Drawing.Point(177, 103);
+            this.flowThanks.Location = new System.Drawing.Point(177, 70);
             this.flowThanks.Name = "flowThanks";
             this.flowThanks.Padding = new System.Windows.Forms.Padding(3);
-            this.flowThanks.Size = new System.Drawing.Size(231, 113);
+            this.flowThanks.Size = new System.Drawing.Size(231, 146);
             this.flowThanks.TabIndex = 14;
             this.flowThanks.WrapContents = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 68);
+            this.label1.Location = new System.Drawing.Point(6, 42);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(187, 13);
+            this.label1.Size = new System.Drawing.Size(136, 13);
             this.label1.TabIndex = 13;
-            this.label1.Text = "XhmikosR - Installer, many bug reports";
+            this.label1.Text = "XhmikosR - Installer, Tester";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 81);
+            this.label4.Location = new System.Drawing.Point(6, 120);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(199, 26);
             this.label4.TabIndex = 16;
@@ -232,7 +228,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 107);
+            this.label3.Location = new System.Drawing.Point(6, 146);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(202, 26);
             this.label3.TabIndex = 15;
@@ -241,7 +237,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 133);
+            this.label2.Location = new System.Drawing.Point(6, 172);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(193, 26);
             this.label2.TabIndex = 14;
@@ -250,11 +246,38 @@
             // labelFiller
             // 
             this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 159);
+            this.labelFiller.Location = new System.Drawing.Point(6, 198);
             this.labelFiller.Name = "labelFiller";
             this.labelFiller.Size = new System.Drawing.Size(31, 13);
             this.labelFiller.TabIndex = 17;
             this.labelFiller.Text = "        ";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 3);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(116, 13);
+            this.label5.TabIndex = 18;
+            this.label5.Text = "wj32 - Project Manager";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 16);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(91, 13);
+            this.label6.TabIndex = 18;
+            this.label6.Text = "Dean - Developer";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 29);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(142, 13);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Uday Shanbhag - Developer";
             // 
             // AboutWindow
             // 
@@ -265,7 +288,6 @@
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
-            this.Controls.Add(this.labelCredits);
             this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.labelAppName);
             this.Controls.Add(this.pictureBox);
@@ -293,7 +315,6 @@
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Label labelAppName;
         private System.Windows.Forms.Label labelVersion;
-        private System.Windows.Forms.Label labelCredits;
         private System.Windows.Forms.LinkLabel linkFamFamFam;
         private System.Windows.Forms.LinkLabel linkVistaMenu;
         private System.Windows.Forms.LinkLabel linkHexBox;
@@ -308,6 +329,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label labelFiller;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
 
     }
 }

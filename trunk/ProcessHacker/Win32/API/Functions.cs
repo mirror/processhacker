@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
  *   windows API functions
- * 
+ *                       
+ * Copyright (C) 2009 Uday Shanbhag
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 
@@ -28,6 +29,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -159,6 +161,9 @@ namespace ProcessHacker
         #endregion
 
         #region Misc.
+
+        [DllImport("kernel32")]
+        public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
         
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int FormatMessage(
@@ -835,7 +840,7 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Windows  
+        #region Windows
 
         [DllImport("user32.dll")]
         public static extern int GetGuiResources(int ProcessHandle, bool UserObjects);
@@ -848,6 +853,103 @@ namespace ProcessHacker
 
         [DllImport("user32.dll")]
         public static extern int SetActiveWindow(int hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool PeekMessage(out Message msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, PeekMessageFlags flags);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool TranslateMessage(ref Message msg);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool DispatchMessage(ref Message msg);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern void PostQuitMessage(int exitCode);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+#if(_WIN64)
+		private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int index, [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback);
+#else
+        private static extern IntPtr SetWindowLong(IntPtr hWnd, int index, [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback);
+#endif
+
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLong", CharSet = CharSet.Auto)]
+        public static extern IntPtr SetWindowLongStyle(IntPtr hWnd, int index, WindowStyles style);
+
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowLong", CharSet = CharSet.Auto)]
+        public static extern WindowStyles GetWindowLongStyle(IntPtr hWnd, int index);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetClientRect(IntPtr hWnd, out System.Drawing.Rectangle rect);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetWindowRect(IntPtr hWnd, out System.Drawing.Rectangle rect);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndAfter, int x, int y, int w, int h, uint flags);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool ScreenToClient(IntPtr hWnd, ref System.Drawing.Point rect);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SetFocus(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GetMonitorInfo(IntPtr hWnd, ref MonitorInformation info);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr MonitorFromWindow(IntPtr hWnd, uint flags);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern short GetAsyncKeyState(uint key);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SetCapture(IntPtr handle);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool ShowWindow(IntPtr hWnd, ShowWindowType flags);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool SetMenu(IntPtr hWnd, IntPtr menuHandle);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool DestroyWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool AdjustWindowRect(ref System.Drawing.Rectangle rect, WindowStyles style,
+            [MarshalAs(UnmanagedType.Bool)]bool menu);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr RegisterClass(ref WindowClass wndClass);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool UnregisterClass([MarshalAs(UnmanagedType.LPTStr)] string className, IntPtr instanceHandle);
+
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "CreateWindowEx", CharSet = CharSet.Auto)]
+        public static extern IntPtr CreateWindow(int exStyle, [MarshalAs(UnmanagedType.LPTStr)] string className, [MarshalAs(UnmanagedType.LPTStr)] string windowName,
+            WindowStyles style, int x, int y, int width, int height, IntPtr parent, IntPtr menuHandle, IntPtr instanceHandle, IntPtr zero);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int GetCaretBlinkTime();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, UIntPtr wParam,
+           IntPtr lParam);
 
         #endregion
     }

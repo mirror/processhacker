@@ -2,6 +2,7 @@
  * Process Hacker - 
  *   windows API enums
  * 
+ * Copyright (C) 2009 Uday Shanbhag
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 
@@ -337,6 +338,13 @@ namespace ProcessHacker
             ObjectTypeInformation,
             ObjectAllTypesInformation,
             ObjectHandleInformation
+        }
+
+        public enum PeekMessageFlags : int
+        {
+            NoRemove = 0,
+            Remove = 1,
+            NoYield = 2,
         }
 
         [Flags]
@@ -973,7 +981,79 @@ namespace ProcessHacker
         {
             UDP_TABLE_BASIC,
             UDP_TABLE_OWNER_PID,
-            UDP_TABLE_OWNER_MODULE 
+            UDP_TABLE_OWNER_MODULE
+        }
+
+        public enum WindowMessage : uint
+        {
+            // Misc messages
+            Destroy = 0x0002,
+            Close = 0x0010,
+            Quit = 0x0012,
+            Paint = 0x000F,
+            SetCursor = 0x0020,
+            ActivateApplication = 0x001C,
+            EnterMenuLoop = 0x0211,
+            ExitMenuLoop = 0x0212,
+            NonClientHitTest = 0x0084,
+            PowerBroadcast = 0x0218,
+            SystemCommand = 0x0112,
+            GetMinMax = 0x0024,
+
+            // Keyboard messages
+            KeyDown = 0x0100,
+            KeyUp = 0x0101,
+            Character = 0x0102,
+            SystemKeyDown = 0x0104,
+            SystemKeyUp = 0x0105,
+            SystemCharacter = 0x0106,
+
+            // Mouse messages
+            MouseMove = 0x0200,
+            LeftButtonDown = 0x0201,
+            LeftButtonUp = 0x0202,
+            LeftButtonDoubleClick = 0x0203,
+            RightButtonDown = 0x0204,
+            RightButtonUp = 0x0205,
+            RightButtonDoubleClick = 0x0206,
+            MiddleButtonDown = 0x0207,
+            MiddleButtonUp = 0x0208,
+            MiddleButtonDoubleClick = 0x0209,
+            MouseWheel = 0x020a,
+            XButtonDown = 0x020B,
+            XButtonUp = 0x020c,
+            XButtonDoubleClick = 0x020d,
+            MouseFirst = LeftButtonDown, // Skip mouse move, it happens a lot and there is another message for that
+            MouseLast = XButtonDoubleClick,
+
+            // Sizing
+            EnterSizeMove = 0x0231,
+            ExitSizeMove = 0x0232,
+            Size = 0x0005
+        }
+
+        public enum WindowStyles : uint
+        {
+            Overlapped = 0x00000000,
+            Popup = 0x80000000,
+            Child = 0x40000000,
+            Minimize = 0x20000000,
+            Visible = 0x10000000,
+            Disabled = 0x08000000,
+            ClipSiblings = 0x04000000,
+            ClipChildren = 0x02000000,
+            Maximize = 0x01000000,
+            Caption = 0x00C00000, /* WindowStyles.Border | WindowStyles.DialogFrame */
+            Border = 0x00800000,
+            DialogFrame = 0x00400000,
+            VerticalScroll = 0x00200000,
+            HorizontalScroll = 0x00100000,
+            SystemMenu = 0x00080000,
+            ThickFrame = 0x00040000,
+            Group = 0x00020000,
+            TabStop = 0x00010000,
+            MinimizeBox = 0x00020000,
+            MaximizeBox = 0x00010000
         }
 
         public enum WTS_CONNECTSTATE_CLASS : int

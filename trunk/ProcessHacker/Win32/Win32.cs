@@ -106,6 +106,7 @@ namespace ProcessHacker
         }
 
         public delegate int EnumWindowsProc(int hwnd, int param);
+        public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
         public delegate bool ReadProcessMemoryProc64(int ProcessHandle, int BaseAddress, byte[] Buffer,
             int Size, out int BytesRead);

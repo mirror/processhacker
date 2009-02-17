@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
  *   windows API structs
- * 
+ *                        
+ * Copyright (C) 2009 Uday Shanbhag
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 
@@ -395,6 +396,15 @@ namespace ProcessHacker
             public IntPtr BaseOfDll;
             public int SizeOfImage;
             public IntPtr EntryPoint;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MonitorInformation
+        {
+            public uint Size;
+            public System.Drawing.Rectangle MonitorRectangle;
+            public System.Drawing.Rectangle WorkRectangle;
+            public uint Flags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1374,6 +1384,24 @@ namespace ProcessHacker
             public int PagefileUsage;
             public int PeakPagefileUsage;
             public int PrivateBytes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WindowClass
+        {
+            public int Styles;
+            [MarshalAs(UnmanagedType.FunctionPtr)]
+            public Win32.WndProcDelegate WindowsProc;
+            private int ExtraClassData;
+            private int ExtraWindowData;
+            public IntPtr InstanceHandle;
+            public IntPtr IconHandle;
+            public IntPtr CursorHandle;
+            public IntPtr backgroundBrush;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string MenuName;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string ClassName;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
