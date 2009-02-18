@@ -380,7 +380,7 @@ namespace ProcessHacker
                 i++;
             }
 
-            return String.Format("{0:f2}", s) + " " + SizeUnitNames[i];
+            return (s == 0 ? "0" : s.ToString("#,#.##")) + " " + SizeUnitNames[i];
         }
 
         /// <summary>
