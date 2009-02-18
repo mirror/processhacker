@@ -849,7 +849,27 @@ namespace ProcessHacker
         public static extern bool DestroyIcon(IntPtr Handle);
 
         [DllImport("user32.dll")]
+        public static extern bool BringWindowToTop(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
         public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool EnumThreadWindows(
+            int threadId,
+            [MarshalAs(UnmanagedType.FunctionPtr)] EnumThreadWndProc callback,
+            int param
+            );
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool EnumChildWindows(
+            IntPtr hWnd,
+            [MarshalAs(UnmanagedType.FunctionPtr)] EnumChildProc callback,
+            int param
+            );
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
 
         [DllImport("user32.dll")]
         public static extern int SetActiveWindow(int hWnd);
@@ -922,6 +942,9 @@ namespace ProcessHacker
         public static extern bool SetMenu(IntPtr hWnd, IntPtr menuHandle);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool CloseWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool DestroyWindow(IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -948,8 +971,7 @@ namespace ProcessHacker
         public static extern int GetCaretBlinkTime();
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, UIntPtr wParam,
-           IntPtr lParam);
+        public static extern int InternalGetWindowText(IntPtr hWnd, StringBuilder str, int maxCount);
 
         #endregion
     }
