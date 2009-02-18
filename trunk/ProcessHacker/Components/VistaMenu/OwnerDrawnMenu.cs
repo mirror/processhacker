@@ -100,11 +100,11 @@ namespace wyDay.Controls
                 e.ItemWidth = LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN
 
                     //item text width
-                    + TextRenderer.MeasureText(((MenuItem)sender).Text, font, new Size(0, 0), TextFormatFlags.SingleLine).Width
+                    + TextRenderer.MeasureText(((MenuItem)sender).Text, font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoClipping).Width
                     + SHORTCUT_MARGIN
 
                     //shortcut text width
-                    + TextRenderer.MeasureText(ShortcutToString(((MenuItem)sender).Shortcut), font, new Size(0, 0), TextFormatFlags.SingleLine).Width
+                    + TextRenderer.MeasureText(ShortcutToString(((MenuItem)sender).Shortcut), font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoClipping).Width
 
                     //arrow width
                     + ((((MenuItem)sender).IsParent) ? ARROW_MARGIN : 0);
@@ -202,11 +202,12 @@ namespace wyDay.Controls
 
             int yPos = e.Bounds.Top + (e.Bounds.Height - SystemFonts.MenuFont.Height) / 2;
 
-            Size textSize = TextRenderer.MeasureText(((MenuItem)sender).Text, 
-                ((MenuItem)sender).DefaultItem ? 
-                new Font(e.Font, FontStyle.Bold) : 
-                e.Font, 
-                new Size(0, 0), TextFormatFlags.SingleLine);
+            Font font = ((MenuItem)sender).DefaultItem
+                ? new Font(SystemFonts.MenuFont, FontStyle.Bold)
+                : SystemFonts.MenuFont;
+
+            Size textSize = TextRenderer.MeasureText(((MenuItem)sender).Text,
+                                  font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoClipping);
 
             Rectangle textRect = new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos,
                                    textSize.Width, textSize.Height);
@@ -215,26 +216,29 @@ namespace wyDay.Controls
             {
                 textRect.Offset(1, 1);
 
-                TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, e.Font,
+                TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, font,
                     textRect,
                     SystemColors.ControlLightLight,
-                    TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+                    TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix) | TextFormatFlags.NoClipping);
 
                 textRect.Offset(-1, -1);
             }
 
             //Draw the menu item text
-            TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, e.Font,
+            TextRenderer.DrawText(e.Graphics, ((MenuItem)sender).Text, font,
                 textRect,
                 ((MenuItem)sender).Enabled ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText) : SystemColors.GrayText,
-                TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+                TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix) | TextFormatFlags.NoClipping);
 
 
 
             //Draw the shortcut text
             if (shortcutText != null)
             {
-                textSize = TextRenderer.MeasureText(shortcutText, e.Font, Size.Empty, TextFormatFlags.SingleLine);
+                textSize = TextRenderer.MeasureText(shortcutText,
+                                  font, Size.Empty, TextFormatFlags.SingleLine | TextFormatFlags.NoClipping);
+
+
                 textRect = new Rectangle(e.Bounds.Width - textSize.Width - ARROW_MARGIN, yPos, textSize.Width,
                                          textSize.Height);
 
@@ -242,18 +246,18 @@ namespace wyDay.Controls
                 {
                     textRect.Offset(1, 1);
 
-                    TextRenderer.DrawText(e.Graphics, shortcutText, e.Font,
+                    TextRenderer.DrawText(e.Graphics, shortcutText, font,
                         textRect,
                         SystemColors.ControlLightLight,
-                        TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix));
+                        TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix) | TextFormatFlags.NoClipping);
 
                     textRect.Offset(-1, -1);
                 }
 
-                TextRenderer.DrawText(e.Graphics, shortcutText, e.Font,
+                TextRenderer.DrawText(e.Graphics, shortcutText, font,
                     textRect,
                     ((MenuItem)sender).Enabled ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText) : SystemColors.GrayText,
-                    TextFormatFlags.SingleLine);
+                    TextFormatFlags.SingleLine | TextFormatFlags.NoClipping);
             }
         }
     }
