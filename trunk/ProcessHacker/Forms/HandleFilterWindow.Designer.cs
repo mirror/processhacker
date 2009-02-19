@@ -100,6 +100,7 @@
             this.listHandles.TabIndex = 3;
             this.listHandles.UseCompatibleStateImageBehavior = false;
             this.listHandles.View = System.Windows.Forms.View.Details;
+            this.listHandles.DoubleClick += new System.EventHandler(this.listHandles_DoubleClick);
             // 
             // columnProcess
             // 

@@ -34,7 +34,6 @@ namespace ProcessHacker
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
-        public new event EventHandler DoubleClick;
         public event EventHandler SelectedIndexChanged;
 
         public HandleList()
@@ -54,8 +53,7 @@ namespace ProcessHacker
 
         private void listHandles_DoubleClick(object sender, EventArgs e)
         {
-            if (this.DoubleClick != null)
-                this.DoubleClick(sender, e);
+            propertiesHandleMenuItem_Click(sender, e);
         }
 
         private void listHandles_MouseUp(object sender, MouseEventArgs e)

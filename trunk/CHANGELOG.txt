@@ -3,6 +3,7 @@ Process Hacker
 1.3.3.0
  * NEW:
    * #2596502 - "Add access keys"
+   * #2596509 - "Double click on mutant-->Open properties window"
    * #2596512 - "General tab window goes in the background"
    * #2600995 - "Improvements to Help file"
    * #2602538 - "Move some options to new window"

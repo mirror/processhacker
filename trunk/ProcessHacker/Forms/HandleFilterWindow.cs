@@ -274,12 +274,17 @@ namespace ProcessHacker
             }
         }
 
+        private void listHandles_DoubleClick(object sender, EventArgs e)
+        {
+            propertiesMenuItem_Click(sender, e);
+        } 
+
         private void textFilter_TextChanged(object sender, EventArgs e)
         {
             if (textFilter.Text == "")
                 buttonFind.Enabled = false;
             else
                 buttonFind.Enabled = true;
-        } 
+        }
     }
 }
