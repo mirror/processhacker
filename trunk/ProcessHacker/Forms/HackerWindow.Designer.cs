@@ -82,6 +82,7 @@
             this.updateServicesMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
             this.csrProcessesMenuItem = new System.Windows.Forms.MenuItem();
+            this.verifyFileSignatureMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenu = new System.Windows.Forms.MenuItem();
             this.logMenuItem = new System.Windows.Forms.MenuItem();
@@ -126,7 +127,6 @@
             this.processesMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.verifyFileSignatureMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -511,6 +511,12 @@
             this.csrProcessesMenuItem.Text = "&CSR Processes...";
             this.csrProcessesMenuItem.Click += new System.EventHandler(this.csrProcessesMenuItem_Click);
             // 
+            // verifyFileSignatureMenuItem
+            // 
+            this.verifyFileSignatureMenuItem.Index = 1;
+            this.verifyFileSignatureMenuItem.Text = "&Verify File Signature...";
+            this.verifyFileSignatureMenuItem.Click += new System.EventHandler(this.verifyFileSignatureMenuItem_Click);
+            // 
             // windowMenuItem
             // 
             this.windowMenuItem.Index = 3;
@@ -529,6 +535,7 @@
             // 
             this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
             this.logMenuItem.Index = 0;
+            this.logMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlL;
             this.logMenuItem.Text = "&Log...";
             this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
             // 
@@ -845,12 +852,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // verifyFileSignatureMenuItem
-            // 
-            this.verifyFileSignatureMenuItem.Index = 1;
-            this.verifyFileSignatureMenuItem.Text = "&Verify File Signature...";
-            this.verifyFileSignatureMenuItem.Click += new System.EventHandler(this.verifyFileSignatureMenuItem_Click);
             // 
             // HackerWindow
             // 

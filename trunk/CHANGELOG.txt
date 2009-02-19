@@ -9,6 +9,9 @@ Process Hacker
    * #2602553 - "Add access key for Help"
    * #2602606 - "Display a warning when running on 64bit WIN"
    * #2605000 - "Add descriptions to some buttons"
+   * #2605133 - "Add access key to Log"
+   * #2605146 - "When you open Log, the entries shouldn't be selected"
+   * #2605158 - "Log: Add Copy to clipboard and ctrl+A"
    * #2609039 - "Use thousands separator"
    * #2613838 - "Add process' icon before process' name in process' window"
    * KProcessHacker is now enabled by default

@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   simple-to-use text display box
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -36,7 +36,19 @@ namespace ProcessHacker
             InitializeComponent();
 
             textValues.Text = values;
+            textValues.Select(0, 0);
         }
+
+        private void InformationBox_Load(object sender, EventArgs e)
+        {
+            // doesn't work???
+            textValues.Select();
+            textValues.ScrollToCaret();
+        }
+
+        public TextBox TextBox { get { return textValues; } }
+
+        public string DefaultFileName { get; set; }
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
@@ -47,8 +59,21 @@ namespace ProcessHacker
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
+            sfd.FileName = DefaultFileName;
+
             if (sfd.ShowDialog() == DialogResult.OK)
                 System.IO.File.WriteAllText(sfd.FileName, textValues.Text);
+        }
+
+        private void buttonCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(textValues.Text);
+        }
+
+        private void InformationBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.A)
+                textValues.SelectAll();
         }
     }
 }
