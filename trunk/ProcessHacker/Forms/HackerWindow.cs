@@ -1896,5 +1896,59 @@ namespace ProcessHacker
                 }
             } 
         }
+
+        private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            ofd.Filter = "Executable files (*.exe;*.dll;*.sys;*.scr;*.cpl)|*.exe;*.dll;*.sys;*.scr;*.cpl|All files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var result = Win32.VerifyFile(ofd.FileName);
+                    string message = "";
+
+                    switch (result)
+                    {
+                        case Win32.VerifyResult.Distrust:
+                            message = "is not trusted";
+                            break;
+                        case Win32.VerifyResult.Expired:
+                            message = "has an expired certificate";
+                            break;
+                        case Win32.VerifyResult.NoSignature:
+                            message = "does not have a digital signature";
+                            break;
+                        case Win32.VerifyResult.Revoked:
+                            message = "has a revoked certificate";
+                            break;
+                        case Win32.VerifyResult.SecuritySettings:
+                            message = "could not be verified due to security settings";
+                            break;
+                        case Win32.VerifyResult.Trusted:
+                            message = "is trusted";
+                            break;
+                        case Win32.VerifyResult.Unknown:
+                            message = "could not be verified";
+                            break;
+                        default:
+                            message = "could not be verified";
+                            break;
+                    }
+
+                    MessageBox.Show("The file \"" + ofd.FileName + "\" " + message +
+                        ".", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+        }
     }
 }

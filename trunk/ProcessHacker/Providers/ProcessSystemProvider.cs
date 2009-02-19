@@ -114,6 +114,11 @@ namespace ProcessHacker
         public float CurrentCPUUsage { get; private set; }
         public int PIDWithMostCPUUsage { get; private set; }
 
+        public Queue<FileProcessResult> FileProcessingQueue
+        {
+            get { return _fpResults; }
+        }
+
         private void UpdateProcessorPerf()
         {
             using (MemoryAlloc data =

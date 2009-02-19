@@ -20,6 +20,7 @@ Process Hacker
    * Processes list in the notification icon menu, for quick actions on processes
    * "Restart" function
    * "Set Token" function for Windows XP
+   * "Verify File Signature" function
    * Options window has a detailed description for each setting
    * Process window has descriptions for each field
    * File processing (signature verification, checks for packed images) is now 
