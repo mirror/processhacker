@@ -41,6 +41,7 @@ Process Hacker
  * FIXED:
    * Workaround for Bug #2553406 - "COMException: Class not registered"
    * Bug #2601383 - "Threads' column's width is not remembered."
+   * Bug #2615591 - "Bug with Show one graph per cpu?"
    * Limited user account weirdness
    * No longer deletes the KProcessHacker service if it's already started
    * Process Hacker no longer requires UAC elevation

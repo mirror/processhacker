@@ -66,6 +66,7 @@ namespace ProcessHacker
                 _cpuPlotters[i] = new ProcessHacker.Components.Plotter();
                 _cpuPlotters[i].BackColor = Color.Black;
                 _cpuPlotters[i].Dock = DockStyle.Fill;
+                _cpuPlotters[i].Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0);
                 _cpuPlotters[i].UseSecondLine = true;
                 tableCPUs.Controls.Add(_cpuPlotters[i], i, 0);
 
