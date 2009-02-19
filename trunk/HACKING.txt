@@ -56,7 +56,14 @@ GUIDE TO DIRECTORY ORGANIZATION
     statement as well if you want). There are also memory classes for allocating 
     blocks of memory.
 
-TODO:
+NOTES
+ * Do not use OpenProcess, OpenThread, OpenProcessToken or OpenThreadToken. Instead, 
+   use the ProcessHandle, ThreadHandle and GetToken functions, respectively. These 
+   classes make common manipulation tasks much easier. They also use KProcessHacker 
+   automatically, if available.
+ * Similarly, do not use OpenService - use ServiceHandle instead.
+
+TODO
  * Clean up state highlighting - have one master class with ONE timer controlling 
    multiple providers.
  * Make ComboBoxPickerWindow more flexible and get rid of EditDEPWindow.

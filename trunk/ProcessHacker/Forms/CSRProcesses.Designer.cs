@@ -142,10 +142,12 @@
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.listProcesses);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "CSRProcessesWindow";
             this.Text = "CSR Processes";
             this.Load += new System.EventHandler(this.CSRProcessesWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CSRProcessesWindow_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CSRProcessesWindow_KeyDown);
             this.ResumeLayout(false);
 
         }

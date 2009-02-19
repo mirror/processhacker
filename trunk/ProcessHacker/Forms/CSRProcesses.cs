@@ -171,5 +171,11 @@ namespace ProcessHacker
             else
                 buttonTerminate.Enabled = false;
         }
+
+        private void CSRProcessesWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.A)
+                Misc.SelectAll(listProcesses.Items);
+        }
     }
 }
