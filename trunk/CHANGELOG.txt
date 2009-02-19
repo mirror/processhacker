@@ -3,12 +3,14 @@ Process Hacker
 1.3.3.0
  * NEW:
    * #2596502 - "Add access keys"
+   * #2596512 - "General tab window goes in the background"
    * #2600995 - "Improvements to Help file"
    * #2602538 - "Move some options to new window"
    * #2602553 - "Add access key for Help"
    * #2602606 - "Display a warning when running on 64bit WIN"
    * #2605000 - "Add descriptions to some buttons"
    * #2609039 - "Use thousands separator"
+   * #2613838 - "Add process' icon before process' name in process' window"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time
    * Process termination now uses KProcessHacker

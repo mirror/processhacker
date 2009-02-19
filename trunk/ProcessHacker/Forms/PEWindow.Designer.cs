@@ -101,7 +101,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(423, 402);
+            this.tabControl.Size = new System.Drawing.Size(423, 381);
             this.tabControl.TabIndex = 0;
             // 
             // tabCOFFHeader
@@ -110,7 +110,7 @@
             this.tabCOFFHeader.Location = new System.Drawing.Point(4, 22);
             this.tabCOFFHeader.Name = "tabCOFFHeader";
             this.tabCOFFHeader.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCOFFHeader.Size = new System.Drawing.Size(415, 376);
+            this.tabCOFFHeader.Size = new System.Drawing.Size(415, 355);
             this.tabCOFFHeader.TabIndex = 0;
             this.tabCOFFHeader.Text = "COFF Header";
             this.tabCOFFHeader.UseVisualStyleBackColor = true;
@@ -126,7 +126,7 @@
             this.listCOFFHeader.Location = new System.Drawing.Point(3, 3);
             this.listCOFFHeader.Name = "listCOFFHeader";
             this.listCOFFHeader.ShowItemToolTips = true;
-            this.listCOFFHeader.Size = new System.Drawing.Size(409, 370);
+            this.listCOFFHeader.Size = new System.Drawing.Size(409, 349);
             this.listCOFFHeader.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listCOFFHeader.TabIndex = 0;
             this.listCOFFHeader.UseCompatibleStateImageBehavior = false;
@@ -384,7 +384,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(423, 402);
             this.Controls.Add(this.tabControl);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu;
             this.Name = "PEWindow";

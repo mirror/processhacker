@@ -143,7 +143,7 @@
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
             this.listViewCallStack.ShowItemToolTips = true;
-            this.listViewCallStack.Size = new System.Drawing.Size(363, 158);
+            this.listViewCallStack.Size = new System.Drawing.Size(363, 137);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -170,7 +170,7 @@
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 34);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(375, 212);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(375, 191);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -179,7 +179,7 @@
             // 
             this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileModule.Location = new System.Drawing.Point(57, 182);
+            this.fileModule.Location = new System.Drawing.Point(57, 161);
             this.fileModule.Name = "fileModule";
             this.fileModule.ReadOnly = false;
             this.fileModule.Size = new System.Drawing.Size(231, 24);
@@ -189,7 +189,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 188);
+            this.label1.Location = new System.Drawing.Point(6, 167);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 4;
@@ -199,7 +199,7 @@
             // 
             this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonWalk.Location = new System.Drawing.Point(294, 183);
+            this.buttonWalk.Location = new System.Drawing.Point(294, 162);
             this.buttonWalk.Name = "buttonWalk";
             this.buttonWalk.Size = new System.Drawing.Size(75, 23);
             this.buttonWalk.TabIndex = 3;
@@ -212,7 +212,7 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 252);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 231);
             this.groupRegisters.Name = "groupRegisters";
             this.groupRegisters.Size = new System.Drawing.Size(375, 132);
             this.groupRegisters.TabIndex = 2;
@@ -265,7 +265,6 @@
             this.Controls.Add(this.labelThreadUser);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu;
             this.Name = "ThreadWindow";

@@ -72,7 +72,7 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        struct FileProcessResult
+        public struct FileProcessResult
         {
             public int PID;
             public bool IsDotNet;
