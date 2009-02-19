@@ -162,7 +162,16 @@ namespace ProcessHacker
 
         #region Misc.
 
-        [DllImport("kernel32")]
+        [DllImport("user32.dll")]
+        public static extern bool ExitWindowsEx(ExitWindowsFlags flags, int reason);
+
+        [DllImport("powrprof.dll")]
+        public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
+
+        [DllImport("user32.dll")]
+        public static extern bool LockWorkStation();
+
+        [DllImport("kernel32.dll")]
         public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
         
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]

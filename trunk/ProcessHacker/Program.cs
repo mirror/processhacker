@@ -143,7 +143,10 @@ namespace ProcessHacker
                 using (var thandle = new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
                         MinProcessQueryRights).GetToken())
                 {
-                    thandle.SetPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                    try { thandle.SetPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
+                    catch { }
+                    try { thandle.SetPrivilege("SeShutdownPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
+                    catch { }
                 }
             }
             catch

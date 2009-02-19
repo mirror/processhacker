@@ -39,6 +39,7 @@ namespace ProcessHacker
         delegate void QueueUpdatedCallback();
         delegate void AddIconCallback(Icon icon);
         delegate void AddListViewItemCallback(ListView lv, string[] text);
+        delegate void AddMenuItemDelegate(MenuItem menuItem);
 
         #region Variables
 
@@ -1521,6 +1522,25 @@ namespace ProcessHacker
             listNetwork.List.Font = f;
         }
 
+        private void CreateShutdownMenuItems()
+        {
+            AddMenuItemDelegate addMenuItem = (MenuItem menuItem) =>
+            {
+                shutdownMenuItem.MenuItems.Add(menuItem);
+                shutdownTrayMenuItem.MenuItems.Add(menuItem.CloneMenu());
+            };
+
+            addMenuItem(new MenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); }));
+            addMenuItem(new MenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Logoff, 0); }));
+            addMenuItem(new MenuItem("-"));
+            addMenuItem(new MenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); }));
+            addMenuItem(new MenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); }));
+            addMenuItem(new MenuItem("-"));
+            addMenuItem(new MenuItem("Restart", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Reboot, 0); }));
+            addMenuItem(new MenuItem("Shutdown", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Shutdown, 0); }));
+            addMenuItem(new MenuItem("Poweroff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Poweroff, 0); }));
+        }
+
         private void DeleteSettings()
         {
             //Type localFileSettingsProviderType = typeof(System.Configuration.LocalFileSettingsProvider);
@@ -1700,6 +1720,8 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
+
+            this.CreateShutdownMenuItems();
 
             // Try to get a setting. If the file is corrupt, we can reset the settings.
             try

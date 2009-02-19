@@ -118,6 +118,9 @@
             this.showHideMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInformationIconMenuItem = new System.Windows.Forms.MenuItem();
             this.notificationsMenuItem = new System.Windows.Forms.MenuItem();
+            this.enableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
+            this.disableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.NPMenuItem = new System.Windows.Forms.MenuItem();
             this.TPMenuItem = new System.Windows.Forms.MenuItem();
             this.NSMenuItem = new System.Windows.Forms.MenuItem();
@@ -127,9 +130,8 @@
             this.processesMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.enableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
-            this.disableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
+            this.shutdownMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -391,8 +393,9 @@
             this.findHandlesMenuItem,
             this.inspectPEFileMenuItem,
             this.reloadStructsMenuItem,
-            this.menuItem2,
             this.optionsMenuItem,
+            this.menuItem2,
+            this.shutdownMenuItem,
             this.exitMenuItem});
             this.hackerMenuItem.Text = "&Hacker";
             // 
@@ -439,13 +442,13 @@
             // 
             // menuItem2
             // 
-            this.menuItem2.Index = 6;
+            this.menuItem2.Index = 7;
             this.menuItem2.Text = "-";
             // 
             // optionsMenuItem
             // 
             this.vistaMenu.SetImage(this.optionsMenuItem, global::ProcessHacker.Properties.Resources.page_gear);
-            this.optionsMenuItem.Index = 7;
+            this.optionsMenuItem.Index = 6;
             this.optionsMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
             this.optionsMenuItem.Text = "&Options...";
             this.optionsMenuItem.Click += new System.EventHandler(this.optionsMenuItem_Click);
@@ -453,7 +456,7 @@
             // exitMenuItem
             // 
             this.vistaMenu.SetImage(this.exitMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitMenuItem.Index = 8;
+            this.exitMenuItem.Index = 9;
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -783,6 +786,7 @@
             this.sysInformationIconMenuItem,
             this.notificationsMenuItem,
             this.processesMenuItem,
+            this.shutdownTrayMenuItem,
             this.exitTrayMenuItem});
             this.menuIcon.Popup += new System.EventHandler(this.menuIcon_Popup);
             // 
@@ -812,6 +816,23 @@
             this.stoppedSMenuItem,
             this.DSMenuItem});
             this.notificationsMenuItem.Text = "&Notifications";
+            // 
+            // enableAllNotificationsMenuItem
+            // 
+            this.enableAllNotificationsMenuItem.Index = 0;
+            this.enableAllNotificationsMenuItem.Text = "&Enable All";
+            this.enableAllNotificationsMenuItem.Click += new System.EventHandler(this.enableAllNotificationsMenuItem_Click);
+            // 
+            // disableAllNotificationsMenuItem
+            // 
+            this.disableAllNotificationsMenuItem.Index = 1;
+            this.disableAllNotificationsMenuItem.Text = "&Disable All";
+            this.disableAllNotificationsMenuItem.Click += new System.EventHandler(this.disableAllNotificationsMenuItem_Click);
+            // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 2;
+            this.menuItem4.Text = "-";
             // 
             // NPMenuItem
             // 
@@ -851,7 +872,7 @@
             // exitTrayMenuItem
             // 
             this.vistaMenu.SetImage(this.exitTrayMenuItem, global::ProcessHacker.Properties.Resources.door_out);
-            this.exitTrayMenuItem.Index = 4;
+            this.exitTrayMenuItem.Index = 5;
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
@@ -859,22 +880,15 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
-            // enableAllNotificationsMenuItem
+            // shutdownTrayMenuItem
             // 
-            this.enableAllNotificationsMenuItem.Index = 0;
-            this.enableAllNotificationsMenuItem.Text = "&Enable All";
-            this.enableAllNotificationsMenuItem.Click += new System.EventHandler(this.enableAllNotificationsMenuItem_Click);
+            this.shutdownTrayMenuItem.Index = 4;
+            this.shutdownTrayMenuItem.Text = "Shutdown";
             // 
-            // disableAllNotificationsMenuItem
+            // shutdownMenuItem
             // 
-            this.disableAllNotificationsMenuItem.Index = 1;
-            this.disableAllNotificationsMenuItem.Text = "&Disable All";
-            this.disableAllNotificationsMenuItem.Click += new System.EventHandler(this.disableAllNotificationsMenuItem_Click);
-            // 
-            // menuItem4
-            // 
-            this.menuItem4.Index = 2;
-            this.menuItem4.Text = "-";
+            this.shutdownMenuItem.Index = 8;
+            this.shutdownMenuItem.Text = "Shutdown";
             // 
             // HackerWindow
             // 
@@ -1008,6 +1022,8 @@
         private System.Windows.Forms.MenuItem enableAllNotificationsMenuItem;
         private System.Windows.Forms.MenuItem disableAllNotificationsMenuItem;
         private System.Windows.Forms.MenuItem menuItem4;
+        private System.Windows.Forms.MenuItem shutdownTrayMenuItem;
+        private System.Windows.Forms.MenuItem shutdownMenuItem;
     }
 }
 

@@ -120,6 +120,18 @@ namespace ProcessHacker
             SynchronizationEvent
         }
 
+        [Flags]
+        public enum ExitWindowsFlags : int
+        {
+            Logoff = 0x0,
+            Poweroff = 0x8,
+            Reboot = 0x2,
+            RestartApps = 0x40,
+            Shutdown = 0x1,
+            Force = 0x4,
+            ForceIfHung = 0x10
+        }
+
         public enum FILE_CREATION_DISPOSITION : uint
         {
             CreateNew = 1,
