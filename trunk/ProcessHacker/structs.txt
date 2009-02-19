@@ -74,6 +74,17 @@ struct RTL_USER_PROCESS_PARAMETERS
     RTL_DRIVE_LETTER_CURDIR DLCurrentDirectory[0x20];
 }
 
+/* Module information for the process */
+struct PEB_LDR_DATA
+{
+    ulong Length;
+    boolean Initialized;
+    pvoid SsHandle;
+    LIST_ENTRY InLoadOrderModuleList;
+    LIST_ENTRY InMemoryOrderModuleList;
+    LIST_ENTRY InInitializationOrderModuleList;
+}
+
 /* Contains the address of a fast-locking routine for the PEB */
 struct PEBLOCKROUTINE
 {
@@ -89,7 +100,8 @@ struct PEB
     boolean Spare;
     handle Mutant;
     pvoid ImageBaseAddress;
-    pvoid LoaderData; /* should be PEB_LDR_DATA* */
+    /* PEB_LDR_DATA* LoaderData; */
+    pvoid LoaderData;
     RTL_USER_PROCESS_PARAMETERS* ProcessParameters; 
     pvoid SubSystemData;
     pvoid ProcessHeap;
@@ -127,16 +139,28 @@ struct PEB
     pvoid LoaderLock;
     ulong OSMajorVersion;
     ulong OSMinorVersion;
-    ulong OSBuildNumber;
+    ushort OSBuildNumber;
+    ushort OSCSDVersion;
     ulong OSPlatformId;
     ulong ImageSubSystem;
     ulong ImageSubSystemMajorVersion;
     ulong ImageSubSystemMinorVersion;
+    ulong ImageProcessAffinityMask;
     ulong GdiHandleBuffer[0x22];
     ulong PostProcessInitRoutine;
     ulong TlsExpansionBitmap;
     byte TlsExpansionBitmapBits[0x80];
     ulong SessionId;
+    large_integer AppCompatFlags;
+    large_integer AppCompatFlagsUser;
+    pvoid pShimData;
+    pvoid AppCompatInfo;
+    UNICODE_STRING CSDVersion;
+    pvoid ActivationContextData;
+    pvoid ProcessAssemblyStorageMap;
+    pvoid SystemDefaultActivationContextData;
+    pvoid SystemAssemblyStorageMap;
+    ulong MinimumStackCommit;
 }
 
 struct NT_TIB
