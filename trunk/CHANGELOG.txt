@@ -15,6 +15,7 @@ Process Hacker
    * #2605146 - "When you open Log, the entries shouldn't be selected"
    * #2605148 - "CSR Processes: Add select all and/or ctrl+A"
    * #2605158 - "Log: Add Copy to clipboard and ctrl+A"
+   * #2608710 - "Notifications menu improvements"
    * #2609039 - "Use thousands separator"
    * #2613838 - "Add process' icon before process' name in process' window"
    * KProcessHacker is now enabled by default

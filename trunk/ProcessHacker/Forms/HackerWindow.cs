@@ -499,6 +499,26 @@ namespace ProcessHacker
             sysInfoMenuItem_Click(sender, e);
         }
 
+        private void enableAllNotificationsMenuItem_Click(object sender, EventArgs e)
+        {
+            NPMenuItem.Checked = true;
+            TPMenuItem.Checked = true;
+            NSMenuItem.Checked = true;
+            startedSMenuItem.Checked = true;
+            stoppedSMenuItem.Checked = true;
+            DSMenuItem.Checked = true;
+        }
+
+        private void disableAllNotificationsMenuItem_Click(object sender, EventArgs e)
+        {
+            NPMenuItem.Checked = false;
+            TPMenuItem.Checked = false;
+            NSMenuItem.Checked = false;
+            startedSMenuItem.Checked = false;
+            stoppedSMenuItem.Checked = false;
+            DSMenuItem.Checked = false;
+        }
+
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();

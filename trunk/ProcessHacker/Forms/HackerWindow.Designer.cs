@@ -127,6 +127,9 @@
             this.processesMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.enableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
+            this.disableAllNotificationsMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -799,6 +802,9 @@
             // 
             this.notificationsMenuItem.Index = 2;
             this.notificationsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.enableAllNotificationsMenuItem,
+            this.disableAllNotificationsMenuItem,
+            this.menuItem4,
             this.NPMenuItem,
             this.TPMenuItem,
             this.NSMenuItem,
@@ -809,32 +815,32 @@
             // 
             // NPMenuItem
             // 
-            this.NPMenuItem.Index = 0;
+            this.NPMenuItem.Index = 3;
             this.NPMenuItem.Text = "New Processes";
             // 
             // TPMenuItem
             // 
-            this.TPMenuItem.Index = 1;
+            this.TPMenuItem.Index = 4;
             this.TPMenuItem.Text = "Terminated Processes";
             // 
             // NSMenuItem
             // 
-            this.NSMenuItem.Index = 2;
+            this.NSMenuItem.Index = 5;
             this.NSMenuItem.Text = "New Services";
             // 
             // startedSMenuItem
             // 
-            this.startedSMenuItem.Index = 3;
+            this.startedSMenuItem.Index = 6;
             this.startedSMenuItem.Text = "Started Services";
             // 
             // stoppedSMenuItem
             // 
-            this.stoppedSMenuItem.Index = 4;
+            this.stoppedSMenuItem.Index = 7;
             this.stoppedSMenuItem.Text = "Stopped Services";
             // 
             // DSMenuItem
             // 
-            this.DSMenuItem.Index = 5;
+            this.DSMenuItem.Index = 8;
             this.DSMenuItem.Text = "Deleted Services";
             // 
             // processesMenuItem
@@ -852,6 +858,23 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // enableAllNotificationsMenuItem
+            // 
+            this.enableAllNotificationsMenuItem.Index = 0;
+            this.enableAllNotificationsMenuItem.Text = "&Enable All";
+            this.enableAllNotificationsMenuItem.Click += new System.EventHandler(this.enableAllNotificationsMenuItem_Click);
+            // 
+            // disableAllNotificationsMenuItem
+            // 
+            this.disableAllNotificationsMenuItem.Index = 1;
+            this.disableAllNotificationsMenuItem.Text = "&Disable All";
+            this.disableAllNotificationsMenuItem.Click += new System.EventHandler(this.disableAllNotificationsMenuItem_Click);
+            // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 2;
+            this.menuItem4.Text = "-";
             // 
             // HackerWindow
             // 
@@ -982,6 +1005,9 @@
         private System.Windows.Forms.MenuItem helpMenu;
         private System.Windows.Forms.MenuItem menuItem3;
         private System.Windows.Forms.MenuItem verifyFileSignatureMenuItem;
+        private System.Windows.Forms.MenuItem enableAllNotificationsMenuItem;
+        private System.Windows.Forms.MenuItem disableAllNotificationsMenuItem;
+        private System.Windows.Forms.MenuItem menuItem4;
     }
 }
 
