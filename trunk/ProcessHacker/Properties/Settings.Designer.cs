@@ -517,7 +517,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool StartedServices {
             get {
                 return ((bool)(this["StartedServices"]));
@@ -529,7 +529,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool StoppedServices {
             get {
                 return ((bool)(this["StoppedServices"]));
