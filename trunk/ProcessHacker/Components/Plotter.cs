@@ -101,6 +101,7 @@ namespace ProcessHacker.Components
             {
                 float f = _listData1[start];
                 float fPre = _listData1[start + 1];
+
                 int h = (int)(tHeight - (tHeight * f));
                 int hPre = (int)(tHeight - (tHeight * fPre));
 
@@ -114,14 +115,37 @@ namespace ProcessHacker.Components
                 {
                     f = _listData2[start];
                     fPre = _listData2[start + 1];
+
+                    if (!this.OverlaySecondLine)
+                    {
+                        f += _listData1[start];
+                        fPre += _listData1[start + 1];
+
+                        if (f > 1.0f)
+                            f = 1.0f;
+                        if (fPre > 1.0f)
+                            fPre = 1.0f;
+                    }
+
                     h = (int)(tHeight - (tHeight * f));
                     hPre = (int)(tHeight - (tHeight * fPre));
 
                     // draw the second line
-                    g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
-                        new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
-                        new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
-                    g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                    if (this.OverlaySecondLine)
+                    {
+                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
+                            new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
+                            new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
+                        g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                    }
+                    else
+                    {
+                        g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
+                            new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
+                            new Point(px + _moveStep, tHeight - (int)(tHeight * _listData1[start + 1])),
+                            new Point(px, tHeight - (int)(tHeight * _listData1[start])) });
+                        g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                    }
                 }
 
                 if (px < 0)
@@ -366,6 +390,7 @@ namespace ProcessHacker.Components
         #endregion
 
         public bool UseSecondLine { get; set; }
+        public bool OverlaySecondLine { get; set; }
 
         private Color _lineColor1 = Color.FromArgb(0, 255, 0);
         public Color LineColor1

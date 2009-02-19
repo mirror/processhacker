@@ -49,6 +49,7 @@ Process Hacker
      as packed
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges
+   * CPU usage is now correctly displayed in graphs - K+U are not overlayed anymore
    * "Require signatures for" names are now forced to be lower-case
    * "Hide handles with no name" is now unique to each process window - 
      changing it in one window does not affect others
