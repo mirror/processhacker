@@ -39,18 +39,19 @@
             this.linkEmail = new System.Windows.Forms.LinkLabel();
             this.linkAsm = new System.Windows.Forms.LinkLabel();
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
-            this.flowThanks = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowCredits = new System.Windows.Forms.FlowLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
-            this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            this.flowThanks.SuspendLayout();
+            this.flowCredits.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonClose
@@ -181,33 +182,34 @@
             this.linkTreeViewAdv.Text = "Andrey Gliznetsov - TreeViewAdv";
             this.linkTreeViewAdv.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTreeViewAdv_LinkClicked);
             // 
-            // flowThanks
+            // flowCredits
             // 
-            this.flowThanks.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.flowCredits.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowThanks.AutoScroll = true;
-            this.flowThanks.Controls.Add(this.label5);
-            this.flowThanks.Controls.Add(this.label6);
-            this.flowThanks.Controls.Add(this.label7);
-            this.flowThanks.Controls.Add(this.label1);
-            this.flowThanks.Controls.Add(this.linkHexBox);
-            this.flowThanks.Controls.Add(this.linkFamFamFam);
-            this.flowThanks.Controls.Add(this.linkVistaMenu);
-            this.flowThanks.Controls.Add(this.linkAsm);
-            this.flowThanks.Controls.Add(this.linkTreeViewAdv);
-            this.flowThanks.Controls.Add(this.linkICSharpCode);
-            this.flowThanks.Controls.Add(this.label4);
-            this.flowThanks.Controls.Add(this.label3);
-            this.flowThanks.Controls.Add(this.label2);
-            this.flowThanks.Controls.Add(this.labelFiller);
-            this.flowThanks.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowThanks.Location = new System.Drawing.Point(177, 70);
-            this.flowThanks.Name = "flowThanks";
-            this.flowThanks.Padding = new System.Windows.Forms.Padding(3);
-            this.flowThanks.Size = new System.Drawing.Size(231, 146);
-            this.flowThanks.TabIndex = 14;
-            this.flowThanks.WrapContents = false;
+            this.flowCredits.AutoScroll = true;
+            this.flowCredits.Controls.Add(this.label5);
+            this.flowCredits.Controls.Add(this.label6);
+            this.flowCredits.Controls.Add(this.label1);
+            this.flowCredits.Controls.Add(this.label7);
+            this.flowCredits.Controls.Add(this.linkHexBox);
+            this.flowCredits.Controls.Add(this.linkFamFamFam);
+            this.flowCredits.Controls.Add(this.linkVistaMenu);
+            this.flowCredits.Controls.Add(this.linkAsm);
+            this.flowCredits.Controls.Add(this.linkTreeViewAdv);
+            this.flowCredits.Controls.Add(this.linkICSharpCode);
+            this.flowCredits.Controls.Add(this.label8);
+            this.flowCredits.Controls.Add(this.label4);
+            this.flowCredits.Controls.Add(this.label3);
+            this.flowCredits.Controls.Add(this.label2);
+            this.flowCredits.Controls.Add(this.labelFiller);
+            this.flowCredits.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowCredits.Location = new System.Drawing.Point(177, 70);
+            this.flowCredits.Name = "flowCredits";
+            this.flowCredits.Padding = new System.Windows.Forms.Padding(3);
+            this.flowCredits.Size = new System.Drawing.Size(231, 146);
+            this.flowCredits.TabIndex = 14;
+            this.flowCredits.WrapContents = false;
             // 
             // label5
             // 
@@ -230,7 +232,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 29);
+            this.label7.Location = new System.Drawing.Point(6, 42);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(142, 13);
             this.label7.TabIndex = 18;
@@ -239,47 +241,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 42);
+            this.label1.Location = new System.Drawing.Point(6, 29);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(136, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "XhmikosR - Installer, Tester";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 133);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(199, 26);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "NTinternals - a great guide to the Native API";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 159);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(202, 26);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "ReactOS - the ultimate guide to Windows internals";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 185);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(193, 26);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
-            // 
-            // labelFiller
-            // 
-            this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 211);
-            this.labelFiller.Name = "labelFiller";
-            this.labelFiller.Size = new System.Drawing.Size(31, 13);
-            this.labelFiller.TabIndex = 17;
-            this.labelFiller.Text = "        ";
             // 
             // linkICSharpCode
             // 
@@ -292,12 +258,57 @@
             this.linkICSharpCode.Text = "ic#code - SharpDevelop code";
             this.linkICSharpCode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkICSharpCode_LinkClicked);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 146);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(199, 26);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "NTinternals - a great guide to the Native API";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 172);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(202, 26);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "ReactOS - the ultimate guide to Windows internals";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 198);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(193, 26);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
+            // 
+            // labelFiller
+            // 
+            this.labelFiller.AutoSize = true;
+            this.labelFiller.Location = new System.Drawing.Point(6, 224);
+            this.labelFiller.Name = "labelFiller";
+            this.labelFiller.Size = new System.Drawing.Size(31, 13);
+            this.labelFiller.TabIndex = 17;
+            this.labelFiller.Text = "        ";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 133);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(100, 13);
+            this.label8.TabIndex = 20;
+            this.label8.Text = "Sysinternals Forums";
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 285);
-            this.Controls.Add(this.flowThanks);
+            this.Controls.Add(this.flowCredits);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
             this.Controls.Add(this.labelBy);
@@ -315,8 +326,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            this.flowThanks.ResumeLayout(false);
-            this.flowThanks.PerformLayout();
+            this.flowCredits.ResumeLayout(false);
+            this.flowCredits.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -336,7 +347,7 @@
         private System.Windows.Forms.LinkLabel linkEmail;
         private System.Windows.Forms.LinkLabel linkAsm;
         private System.Windows.Forms.LinkLabel linkTreeViewAdv;
-        private System.Windows.Forms.FlowLayoutPanel flowThanks;
+        private System.Windows.Forms.FlowLayoutPanel flowCredits;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -346,6 +357,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.LinkLabel linkICSharpCode;
+        private System.Windows.Forms.Label label8;
 
     }
 }
