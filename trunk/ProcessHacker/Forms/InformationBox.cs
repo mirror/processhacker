@@ -67,6 +67,9 @@ namespace ProcessHacker
 
         private void buttonCopy_Click(object sender, EventArgs e)
         {
+            if (textValues.Text.Length == 0)
+                return;
+
             if (textValues.SelectionLength == 0)
             {
                 Clipboard.SetText(textValues.Text);
