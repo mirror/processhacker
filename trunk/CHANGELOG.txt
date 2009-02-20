@@ -19,6 +19,7 @@ Process Hacker
    * #2608801 - "Add Shutdown options"
    * #2609039 - "Use thousands separator"
    * #2613838 - "Add process' icon before process' name in process' window"
+   * #2615707 - "Improvements to Log"
    * #2617637 - "Help file improvements No2"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time

@@ -67,7 +67,16 @@ namespace ProcessHacker
 
         private void buttonCopy_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(textValues.Text);
+            if (textValues.SelectionLength == 0)
+            {
+                Clipboard.SetText(textValues.Text);
+                textValues.Select();
+                textValues.SelectAll();
+            }
+            else
+            {
+                Clipboard.SetText(textValues.SelectedText);
+            }
         }
 
         private void InformationBox_KeyDown(object sender, KeyEventArgs e)

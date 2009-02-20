@@ -282,7 +282,7 @@ namespace ProcessHacker
             InformationBox box = new InformationBox(str);
 
             box.TopMost = this.TopMost;
-            box.DefaultFileName = "log.txt";
+            box.DefaultFileName = "Process Hacker Log.txt";
             box.TextBox.SelectionStart = str.Length;
             box.ShowDialog();
         }

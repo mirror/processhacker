@@ -39,6 +39,7 @@
             this.textValues.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.textValues.HideSelection = false;
             this.textValues.Location = new System.Drawing.Point(12, 12);
             this.textValues.Multiline = true;
             this.textValues.Name = "textValues";
