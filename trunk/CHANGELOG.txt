@@ -22,6 +22,7 @@ Process Hacker
    * #2613838 - "Add process' icon before process' name in process' window"
    * #2615707 - "Improvements to Log"
    * #2617637 - "Help file improvements No2"
+   * #2617691 - "Add option to replace task manager with Process Hacker"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time
    * Process termination now uses KProcessHacker

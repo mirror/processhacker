@@ -34,6 +34,7 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
+        private string _oldTaskMgrDebugger;
         private Font _font;
 
         public OptionsWindow()
@@ -82,6 +83,41 @@ namespace ProcessHacker
             colorMemoryWS.Color = Properties.Settings.Default.PlotterMemoryWSColor;
             colorIORO.Color = Properties.Settings.Default.PlotterIOROColor;
             colorIOW.Color = Properties.Settings.Default.PlotterIOWColor;
+
+            try
+            {
+                var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                    "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
+                    false
+                    );
+
+                if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")) == 
+                    Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName)
+                {
+                    checkReplaceTaskManager.Checked = true;
+                }
+                else
+                {
+                    checkReplaceTaskManager.Checked = false;
+                }
+            }
+            catch
+            {
+                checkReplaceTaskManager.Enabled = false;
+            }
+
+            // See if we can write to the key.
+            try
+            {
+                Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                    "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
+                    true
+                    );
+            }
+            catch
+            {
+                checkReplaceTaskManager.Enabled = false;
+            }
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -171,9 +207,39 @@ namespace ProcessHacker
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
+            if (checkReplaceTaskManager.Enabled)
+            {
+                try
+                {
+                    string fileName = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+                    var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                        "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
+                        true
+                        );
+
+                    if (checkReplaceTaskManager.Checked)
+                    {
+                        key.SetValue("Debugger", fileName);
+                    }
+                    else
+                    {
+                        if (_oldTaskMgrDebugger == fileName)
+                            key.DeleteValue("Debugger");
+                        else if (_oldTaskMgrDebugger != "")
+                            key.SetValue("Debugger", _oldTaskMgrDebugger);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not replace Task Manager with Process Hacker: " + ex.Message,
+                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
             Properties.Settings.Default.Save();
             Program.HackerWindow.ProcessTree.RefreshItems();
             Program.ApplyFont(Properties.Settings.Default.Font);
+
             this.Close();
         }
 

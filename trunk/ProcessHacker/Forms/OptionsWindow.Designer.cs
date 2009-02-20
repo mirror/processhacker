@@ -41,16 +41,14 @@
             this.buttonFont = new System.Windows.Forms.Button();
             this.textImposterNames = new System.Windows.Forms.TextBox();
             this.label21 = new System.Windows.Forms.Label();
-            this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
-            this.checkEnableKPH = new System.Windows.Forms.CheckBox();
             this.comboSizeUnits = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.checkStartHidden = new System.Windows.Forms.CheckBox();
+            this.checkHideWhenClosed = new System.Windows.Forms.CheckBox();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
             this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
-            this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
@@ -90,7 +88,11 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.checkHideWhenClosed = new System.Windows.Forms.CheckBox();
+            this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
+            this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
+            this.checkEnableKPH = new System.Windows.Forms.CheckBox();
+            this.checkReplaceTaskManager = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -98,6 +100,7 @@
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
+            this.tabAdvanced.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -143,7 +146,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 442);
+            this.buttonClose.Location = new System.Drawing.Point(362, 359);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -203,12 +206,13 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabGeneral);
+            this.tabControl.Controls.Add(this.tabAdvanced);
             this.tabControl.Controls.Add(this.tabHighlighting);
             this.tabControl.Controls.Add(this.tabPlotting);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 424);
+            this.tabControl.Size = new System.Drawing.Size(425, 341);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -216,8 +220,6 @@
             this.tabGeneral.Controls.Add(this.buttonFont);
             this.tabGeneral.Controls.Add(this.textImposterNames);
             this.tabGeneral.Controls.Add(this.label21);
-            this.tabGeneral.Controls.Add(this.checkHideHandlesWithNoName);
-            this.tabGeneral.Controls.Add(this.checkEnableKPH);
             this.tabGeneral.Controls.Add(this.comboSizeUnits);
             this.tabGeneral.Controls.Add(this.label18);
             this.tabGeneral.Controls.Add(this.checkStartHidden);
@@ -230,13 +232,12 @@
             this.tabGeneral.Controls.Add(this.textIconMenuProcesses);
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
-            this.tabGeneral.Controls.Add(this.checkVerifySignatures);
             this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
             this.tabGeneral.Controls.Add(this.checkWarnDangerous);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 398);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 315);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -269,31 +270,6 @@
             this.label21.TabIndex = 13;
             this.label21.Text = "Require Signatures:";
             this.toolTipProvider.SetToolTip(this.label21, "A comma-separated list of process names to require valid signatures for.");
-            // 
-            // checkHideHandlesWithNoName
-            // 
-            this.checkHideHandlesWithNoName.AutoSize = true;
-            this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 333);
-            this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
-            this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
-            this.checkHideHandlesWithNoName.TabIndex = 12;
-            this.checkHideHandlesWithNoName.Text = "Hide handles with no name";
-            this.toolTipProvider.SetToolTip(this.checkHideHandlesWithNoName, "Hides unnamed handles by default. This can be changed in each process window.");
-            this.checkHideHandlesWithNoName.UseVisualStyleBackColor = true;
-            // 
-            // checkEnableKPH
-            // 
-            this.checkEnableKPH.AutoSize = true;
-            this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableKPH.Location = new System.Drawing.Point(6, 357);
-            this.checkEnableKPH.Name = "checkEnableKPH";
-            this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
-            this.checkEnableKPH.TabIndex = 12;
-            this.checkEnableKPH.Text = "Enable kernel-mode driver";
-            this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the experimental driver which allows Process Hacker to bypass rootkits an" +
-                    "d security software to a certain extent.");
-            this.checkEnableKPH.UseVisualStyleBackColor = true;
             // 
             // comboSizeUnits
             // 
@@ -334,6 +310,18 @@
             this.toolTipProvider.SetToolTip(this.checkStartHidden, "Starts Process Hacker hidden. To restore it, double-click on the notification ico" +
                     "n.");
             this.checkStartHidden.UseVisualStyleBackColor = true;
+            // 
+            // checkHideWhenClosed
+            // 
+            this.checkHideWhenClosed.AutoSize = true;
+            this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideWhenClosed.Location = new System.Drawing.Point(21, 213);
+            this.checkHideWhenClosed.Name = "checkHideWhenClosed";
+            this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
+            this.checkHideWhenClosed.TabIndex = 9;
+            this.checkHideWhenClosed.Text = "Hide when closed";
+            this.toolTipProvider.SetToolTip(this.checkHideWhenClosed, "Hides Process Hacker when it is closed.");
+            this.checkHideWhenClosed.UseVisualStyleBackColor = true;
             // 
             // checkHideWhenMinimized
             // 
@@ -388,19 +376,6 @@
             0});
             this.textIconMenuProcesses.Leave += new System.EventHandler(this.textIconMenuProcesses_Leave);
             // 
-            // checkVerifySignatures
-            // 
-            this.checkVerifySignatures.AutoSize = true;
-            this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 309);
-            this.checkVerifySignatures.Name = "checkVerifySignatures";
-            this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
-            this.checkVerifySignatures.TabIndex = 3;
-            this.checkVerifySignatures.Text = "Verify signatures and perform additional checks";
-            this.toolTipProvider.SetToolTip(this.checkVerifySignatures, "Verifies the digital signatures of all processes and highlights certain types of " +
-                    "suspicious processes.");
-            this.checkVerifySignatures.UseVisualStyleBackColor = true;
-            // 
             // tabHighlighting
             // 
             this.tabHighlighting.Controls.Add(this.label20);
@@ -428,7 +403,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 361);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 344);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -659,7 +634,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 361);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 344);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -789,7 +764,7 @@
             // 
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 447);
+            this.label22.Location = new System.Drawing.Point(12, 364);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(300, 13);
             this.label22.TabIndex = 10;
@@ -803,24 +778,75 @@
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
             // 
-            // checkHideWhenClosed
+            // tabAdvanced
             // 
-            this.checkHideWhenClosed.AutoSize = true;
-            this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenClosed.Location = new System.Drawing.Point(21, 213);
-            this.checkHideWhenClosed.Name = "checkHideWhenClosed";
-            this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
-            this.checkHideWhenClosed.TabIndex = 9;
-            this.checkHideWhenClosed.Text = "Hide when closed";
-            this.toolTipProvider.SetToolTip(this.checkHideWhenClosed, "Hides Process Hacker when it is closed.");
-            this.checkHideWhenClosed.UseVisualStyleBackColor = true;
+            this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
+            this.tabAdvanced.Controls.Add(this.checkEnableKPH);
+            this.tabAdvanced.Controls.Add(this.checkHideHandlesWithNoName);
+            this.tabAdvanced.Controls.Add(this.checkVerifySignatures);
+            this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
+            this.tabAdvanced.Name = "tabAdvanced";
+            this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAdvanced.Size = new System.Drawing.Size(417, 315);
+            this.tabAdvanced.TabIndex = 3;
+            this.tabAdvanced.Text = "Advanced";
+            this.tabAdvanced.UseVisualStyleBackColor = true;
+            // 
+            // checkVerifySignatures
+            // 
+            this.checkVerifySignatures.AutoSize = true;
+            this.checkVerifySignatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkVerifySignatures.Location = new System.Drawing.Point(6, 30);
+            this.checkVerifySignatures.Name = "checkVerifySignatures";
+            this.checkVerifySignatures.Size = new System.Drawing.Size(254, 18);
+            this.checkVerifySignatures.TabIndex = 4;
+            this.checkVerifySignatures.Text = "Verify signatures and perform additional checks";
+            this.toolTipProvider.SetToolTip(this.checkVerifySignatures, "Verifies the digital signatures of all processes and highlights certain types of " +
+                    "suspicious processes.");
+            this.checkVerifySignatures.UseVisualStyleBackColor = true;
+            // 
+            // checkHideHandlesWithNoName
+            // 
+            this.checkHideHandlesWithNoName.AutoSize = true;
+            this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 78);
+            this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
+            this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
+            this.checkHideHandlesWithNoName.TabIndex = 13;
+            this.checkHideHandlesWithNoName.Text = "Hide handles with no name";
+            this.toolTipProvider.SetToolTip(this.checkHideHandlesWithNoName, "Hides unnamed handles by default. This can be changed in each process window.");
+            this.checkHideHandlesWithNoName.UseVisualStyleBackColor = true;
+            // 
+            // checkEnableKPH
+            // 
+            this.checkEnableKPH.AutoSize = true;
+            this.checkEnableKPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkEnableKPH.Location = new System.Drawing.Point(6, 6);
+            this.checkEnableKPH.Name = "checkEnableKPH";
+            this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
+            this.checkEnableKPH.TabIndex = 14;
+            this.checkEnableKPH.Text = "Enable kernel-mode driver";
+            this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the experimental driver which allows Process Hacker to bypass rootkits an" +
+                    "d security software to a certain extent.");
+            this.checkEnableKPH.UseVisualStyleBackColor = true;
+            // 
+            // checkReplaceTaskManager
+            // 
+            this.checkReplaceTaskManager.AutoSize = true;
+            this.checkReplaceTaskManager.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkReplaceTaskManager.Location = new System.Drawing.Point(6, 54);
+            this.checkReplaceTaskManager.Name = "checkReplaceTaskManager";
+            this.checkReplaceTaskManager.Size = new System.Drawing.Size(245, 18);
+            this.checkReplaceTaskManager.TabIndex = 17;
+            this.checkReplaceTaskManager.Text = "Replace Task Manager with Process Hacker";
+            this.checkReplaceTaskManager.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 477);
+            this.ClientSize = new System.Drawing.Size(449, 394);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
@@ -842,6 +868,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
             this.tabPlotting.ResumeLayout(false);
             this.tabPlotting.PerformLayout();
+            this.tabAdvanced.ResumeLayout(false);
+            this.tabAdvanced.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -899,17 +927,19 @@
         private System.Windows.Forms.Label label19;
         private ProcessHacker.Components.ColorModifier colorPackedProcesses;
         private ProcessHacker.Components.ColorModifier colorDotNetProcesses;
-        private System.Windows.Forms.CheckBox checkVerifySignatures;
-        private System.Windows.Forms.CheckBox checkEnableKPH;
         private System.Windows.Forms.CheckBox checkStartHidden;
         private System.Windows.Forms.TextBox textImposterNames;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button buttonFont;
-        private System.Windows.Forms.CheckBox checkHideHandlesWithNoName;
         private System.Windows.Forms.ToolTip toolTipProvider;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.NumericUpDown textIconMenuProcesses;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.CheckBox checkHideWhenClosed;
+        private System.Windows.Forms.TabPage tabAdvanced;
+        private System.Windows.Forms.CheckBox checkReplaceTaskManager;
+        private System.Windows.Forms.CheckBox checkEnableKPH;
+        private System.Windows.Forms.CheckBox checkHideHandlesWithNoName;
+        private System.Windows.Forms.CheckBox checkVerifySignatures;
     }
 }
