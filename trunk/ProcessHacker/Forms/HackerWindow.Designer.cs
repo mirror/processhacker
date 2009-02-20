@@ -905,7 +905,7 @@
             this.Text = "Process Hacker";
             this.Load += new System.EventHandler(this.HackerWindow_Load);
             this.SizeChanged += new System.EventHandler(this.HackerWindow_SizeChanged);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formViewer_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HackerWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).EndInit();

@@ -51,6 +51,7 @@ namespace ProcessHacker
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
+            checkHideWhenClosed.Checked = Properties.Settings.Default.HideWhenClosed;
             checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
             checkHideHandlesWithNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
@@ -121,6 +122,7 @@ namespace ProcessHacker
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
+            Properties.Settings.Default.HideWhenClosed = checkHideWhenClosed.Checked;
             Properties.Settings.Default.UnitSpecifier =
                 Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
@@ -180,12 +182,15 @@ namespace ProcessHacker
             if (checkShowTrayIcon.Checked)
             {
                 checkHideWhenMinimized.Enabled = true;
+                checkHideWhenClosed.Enabled = true;
                 checkStartHidden.Enabled = true;
             }
             else
             {
                 checkHideWhenMinimized.Enabled = false;
                 checkHideWhenMinimized.Checked = false;
+                checkHideWhenClosed.Enabled = false;
+                checkHideWhenClosed.Checked = false;
                 checkStartHidden.Enabled = false;
                 checkStartHidden.Checked = false;
             }

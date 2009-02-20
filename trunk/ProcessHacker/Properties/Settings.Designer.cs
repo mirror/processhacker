@@ -978,5 +978,17 @@ namespace ProcessHacker.Properties {
                 this["IconMenuProcessCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideWhenClosed {
+            get {
+                return ((bool)(this["HideWhenClosed"]));
+            }
+            set {
+                this["HideWhenClosed"] = value;
+            }
+        }
     }
 }
