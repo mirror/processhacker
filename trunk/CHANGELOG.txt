@@ -28,13 +28,16 @@ Process Hacker
    * Process termination now uses KProcessHacker
    * Process Hacker can now use KProcessHacker under a limited user account if it is 
      loaded, giving it full admin-like permissions to processes
+   * Process Hacker no longer requires UAC elevation - instead, there are two extra 
+     menu items, "Run As Administrator..." and "Show Details for All Processes"
+   * "Run" function
+   * "Restart" function
+   * "Set Token" function for Windows XP
+   * "Verify File Signature" function
    * Around 50% reduction in CPU usage
    * CSR Processes tool - displays hidden processes (this does not detect Hacker 
      Defender but does detect simple kernel-mode rootkits)
    * Processes list in the notification icon menu, for quick actions on processes
-   * "Restart" function
-   * "Set Token" function for Windows XP
-   * "Verify File Signature" function
    * Options window has a detailed description for each setting
    * Process window has descriptions for each field
    * File processing (signature verification, checks for packed images) is now 
@@ -48,7 +51,6 @@ Process Hacker
    * Bug #2615591 - "Bug with Show one graph per cpu?"
    * Limited user account weirdness
    * No longer deletes the KProcessHacker service if it's already started
-   * Process Hacker no longer requires UAC elevation
    * Memory searching now uses KProcessHacker if possible
    * Incorrect labeling of process files which can't be read (due to permissions) 
      as packed

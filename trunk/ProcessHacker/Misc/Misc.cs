@@ -546,6 +546,17 @@ namespace ProcessHacker
             property.SetValue(c, value, null);
         }
 
+        /// <summary>
+        /// Controls whether the UAC shield icon is displayed on the specified control handle.
+        /// </summary>
+        /// <param name="button">The button to modify.</param>
+        /// <param name="show">Whether to show the UAC shield icon.</param>
+        public static void SetShieldIcon(Button button, bool show)
+        {
+            Win32.SendMessage(button.Handle, 
+                Win32.WindowMessage.BcmSetShield, IntPtr.Zero, show ? new IntPtr(1) : new IntPtr(0));
+        }
+
         #region Stuff from PNG.Net
 
         public enum Endianness

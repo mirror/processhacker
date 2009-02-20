@@ -1214,6 +1214,9 @@ namespace ProcessHacker
             DdeExecute = 0x3e8,
             
             User = 0x400,
+
+            BcmSetShield = 0x160c,
+
             App = 0x8000
         }
 

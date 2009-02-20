@@ -52,6 +52,7 @@ namespace ProcessHacker
         ServiceProvider serviceP = new ServiceProvider();
         NetworkProvider networkP = new NetworkProvider();
 
+        Bitmap uacShieldIcon;
         UsageIcon cpuUsageIcon = new UsageIcon(16, 16);
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
@@ -210,12 +211,60 @@ namespace ProcessHacker
             }
         }
 
+        private void runMenuItem_Click(object sender, EventArgs e)
+        {
+            Win32.SHRunDialog(this.Handle, 0, 0, null, null, 0);
+        }
+
         private void runAsMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void runAsAdministratorMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptBox box = new PromptBox();
+            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+            box.Text = "Enter the command to start";
+            box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
+            box.TextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+            if (box.ShowDialog() == DialogResult.OK)
+            {
+                info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+                info.lpFile = box.Value;
+                info.nShow = Win32.SW_SHOW;
+                info.lpVerb = "runas";
+
+                Win32.ShellExecuteEx(ref info);
+            }
+        }
+
+        private void runAsServiceMenuItem_Click(object sender, EventArgs e)
         {
             RunWindow run = new RunWindow();
 
             run.TopMost = this.TopMost;
             run.ShowDialog();
+        }
+
+        private void showDetailsForAllProcessesMenuItem_Click(object sender, EventArgs e)
+        {
+            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+            info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+            info.nShow = Win32.SW_SHOW;
+            info.lpVerb = "runas";
+
+            this.SaveSettings();
+
+            if (Win32.ShellExecuteEx(ref info))
+            {
+                notifyIcon.Visible = false;
+                Process.GetCurrentProcess().Kill();
+            }
         }
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
@@ -1637,6 +1686,65 @@ namespace ProcessHacker
                 node.IsSelected = false;
         }
 
+        // Technique from http://www.vb-helper.com/howto_2008_uac_shield.html
+        private Bitmap GetUacShieldIcon()
+        {
+            const int width = 50;
+            const int height = 50;
+            const int margin = 4;
+            Bitmap shieldImage;
+            Button button = new Button()
+            {
+                Text = " ",
+                Size = new Size(width, height),
+                FlatStyle = FlatStyle.System
+            };
+
+            Misc.SetShieldIcon(button, true);
+
+            Bitmap buttonImage = new Bitmap(width, height);
+
+            button.Refresh();
+            button.DrawToBitmap(buttonImage, new Rectangle(0, 0, width, height));
+
+            int minX = width;
+            int maxX = 0;
+            int minY = width;
+            int maxY = 0;
+
+            for (int y = margin; y < height - margin; y++)
+            {
+                var targetColor = buttonImage.GetPixel(margin, y);
+
+                for (int x = margin; x < width - margin; x++)
+                {
+                    if (buttonImage.GetPixel(x, y).Equals(targetColor))
+                    {
+                        buttonImage.SetPixel(x, y, Color.Transparent);
+                    }
+                    else
+                    {
+                        if (minY > y) minY = y;
+                        if (minX > x) minX = x;
+                        if (maxY < y) maxY = y;
+                        if (maxX < x) maxX = x;
+                    }
+                }
+            }
+
+            int shieldWidth = maxX - minX + 1;
+            int shieldHeight = maxY - minY + 1;
+
+            shieldImage = new Bitmap(shieldWidth, shieldHeight);
+
+            using (Graphics g = Graphics.FromImage(shieldImage))
+                g.DrawImage(buttonImage, 0, 0, new Rectangle(minX, minY, shieldWidth, shieldHeight), GraphicsUnit.Pixel);
+
+            buttonImage.Dispose();
+
+            return shieldImage;
+        }
+
         private void LoadSettings()
         {
             this.Location = Properties.Settings.Default.WindowLocation;
@@ -1668,6 +1776,7 @@ namespace ProcessHacker
                 Properties.Settings.Default.WindowSize = this.Size;
             }
 
+            Properties.Settings.Default.AlwaysOnTop = this.TopMost;
             Properties.Settings.Default.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
 
@@ -1753,8 +1862,6 @@ namespace ProcessHacker
 
         private void Exit()
         {
-            Properties.Settings.Default.AlwaysOnTop = this.TopMost;
-
             processP.Kill();
             serviceP.Kill();
             networkP.Kill();
@@ -1823,7 +1930,7 @@ namespace ProcessHacker
 
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
-                runAsMenuItem.Enabled = false;
+                runAsServiceMenuItem.Enabled = false;
                 runAsProcessMenuItem.Visible = false;
             }
 
@@ -1897,6 +2004,25 @@ namespace ProcessHacker
         {
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
+
+            if (Program.WindowsVersion == "Vista")
+                uacShieldIcon = this.GetUacShieldIcon();
+
+            using (var thandle = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+            {
+                var elevation = thandle.GetElevationType();
+
+                if (elevation == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                {
+                    vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
+                    runAsServiceMenuItem.Visible = false;
+                }
+                else
+                {
+                    runAsAdministratorMenuItem.Visible = false;
+                    showDetailsForAllProcessesMenuItem.Visible = false;
+                }
+            }
 
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             timerFire.Enabled = true;
@@ -2008,6 +2134,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }
+        }       
     }
 }
