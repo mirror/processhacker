@@ -319,7 +319,7 @@ namespace ProcessHacker
 
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Exit();
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -576,7 +576,7 @@ namespace ProcessHacker
 
         private void exitTrayMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.Exit();
         }
 
         #endregion
@@ -1748,15 +1748,8 @@ namespace ProcessHacker
 
         #endregion
 
-        private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void Exit()
         {
-            if (Properties.Settings.Default.HideWhenClosed && e.CloseReason == CloseReason.UserClosing)
-            {
-                e.Cancel = true;
-                showHideMenuItem_Click(sender, null);
-                return;
-            }
-
             Properties.Settings.Default.AlwaysOnTop = this.TopMost;
 
             processP.Kill();
@@ -1776,6 +1769,18 @@ namespace ProcessHacker
             }
             catch
             { }
+        }
+
+        private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Properties.Settings.Default.HideWhenClosed)
+            {
+                e.Cancel = true;
+                showHideMenuItem_Click(sender, null);
+                return;
+            }
+
+            this.Exit();
         }
 
         public HackerWindow()
