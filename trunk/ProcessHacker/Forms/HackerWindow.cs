@@ -324,8 +324,11 @@ namespace ProcessHacker
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
         {
-            processP.RunOnceAsync();
-            serviceP.RunOnceAsync();
+            if (processP.RunCount > 1)
+                processP.RunOnce();
+
+            if (serviceP.RunCount > 1)
+                serviceP.RunOnce();
         }
 
         private void updateProcessesMenuItem_Click(object sender, EventArgs e)
