@@ -1,0 +1,47 @@
+[CustomMessages]
+;sm=Start Menu, tsk=Task, com=Comment
+;English
+en.tsk_allusers=For all users
+en.tsk_currentuser=For the current user only
+en.tsk_other=Other tasks:
+en.tsk_removestartup=Remove Process Hacker from Windows startup
+en.tsk_resetsettings=Reset Process Hacker's settings
+en.tsk_restoretaskmgr=Restore Windows task manager
+en.tsk_setdefaulttaskmgr=Set Process Hacker as the default task manager for the Windows
+en.tsk_startupdescr=Start Process Hacker on system startup
+en.tsk_startupdescrmin=Minimized on system tray
+en.tsk_startup=Startup options:
+en.run_visitwebsite=Visit Process Hacker's Website
+en.sm_help=Help and Support
+en.sm_helpfile=Process Hacker's Help
+en.sm_changelog=Change Log
+en.sm_com_changelog=Process Hacker's Change Log
+en.AppIsRunningInstall=Process Hacker is running! Please close it and run again setup.
+en.AppIsRunningUninstall=Process Hacker is running! Please close it and run again uninstall.
+en.SetupIsRunningWarningInstall=Process Hacker's setup is already running!
+en.SetupIsRunningWarningUninstall=Process Hacker's setup is already running!
+en.asknetdown=Process Hacker requires the .NET Framework 2. Please download and install the .NET Framework and run this setup again. Do you want to download the .NET Framework now?
+en.DeleteSettings=Do you also want to delete Process Hacker's settings and preferences? If you plan on reinstalling Process Hacker you don't have to delete them.
+
+;Greek
+gr.tsk_allusers=Για όλους τους χρήστες
+gr.tsk_currentuser=Για τον τρέχων χρήστη μόνο
+gr.tsk_other=Έξτρα:
+gr.tsk_removestartup=Αφαίρεση του Process Hacker από την εκκίνηση των Windows
+gr.tsk_resetsettings=Επαναφορά των αρχικών ρυθμίσεων του Process Hacker
+gr.tsk_restoretaskmgr=Επαναφορά του Windows Task Manager
+gr.tsk_setdefaulttaskmgr=Ορισμός του Process Hacker ως τον προκαθορισμένο task manager των Windows
+gr.tsk_startupdescr=Έναρξη με την εκκίνηση των Windows
+gr.tsk_startupdescrmin=Ελαχιστοποιημένο στο tray του συστήματος
+gr.tsk_startup=Επιλογές εκκίνησης:
+gr.run_visitwebsite=Επισκεφτείτε την ιστοσελίδα του Process Hacker
+gr.sm_changelog=Ιστορικό Εκδόσεων
+gr.sm_help=Βοήθεια και Υποστήριξη
+gr.sm_helpfile=Αρχείο βοήθειας του Process Hacker
+gr.sm_com_changelog=Ιστορικό Εκδόσεων του Process Hacker
+gr.AppIsRunningInstall=Το Process Hacker τρέχει! Παρακαλώ κλείστε το Process Hacker και τρέξτε πάλι την εγκατάσταση.
+gr.AppIsRunningUninstall=Το Process Hacker τρέχει! Παρακαλώ κλείστε το Process Hacker και τρέξτε πάλι την απεγκατάσταση.
+gr.SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
+gr.SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
+gr.asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. Θέλετε να κατεβάσετε το .NET Framework τώρα;
+gr.DeleteSettings=Θέλετε να διαγράψετε τις ρυθμίσεις και τις επιλογές του Process Hacker; Αν σκοπεύετε να εγκαταστήσετε πάλι το %1 δεν χρειάζεται να τα διαγράψετε.

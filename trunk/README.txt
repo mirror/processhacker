@@ -42,6 +42,6 @@ Process Hacker is brought to you by the small Process Hacker team:
    * System Information Window
    * Speed improvements in handle filter
    * Networking information
- * XhmikosR (Tester)
+ * XhmikosR (Installer, Tester)
 
 See http://processhacker.sourceforge.net for more details.
