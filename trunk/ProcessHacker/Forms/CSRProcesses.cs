@@ -48,8 +48,6 @@ namespace ProcessHacker
         private void CSRProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.CSRProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
-            e.Cancel = true;
-            this.Hide();
         }
 
         private void buttonScan_Click(object sender, EventArgs e)

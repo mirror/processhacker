@@ -44,9 +44,10 @@ namespace ProcessHacker
         #region Variables
 
         public HelpWindow HelpForm;
-        public SysInfoWindow SysInfoWindow;
         public HandleFilterWindow HandleFilterWindow;
-        public CSRProcessesWindow CSRProcessesWindow;
+
+        Thread sysInfoThread;
+        public SysInfoWindow SysInfoWindow;
 
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
@@ -311,14 +312,31 @@ namespace ProcessHacker
 
         private void sysInfoMenuItem_Click(object sender, EventArgs e)
         {
-            if (SysInfoWindow == null)
+            if (sysInfoThread == null)
+            {
                 SysInfoWindow = new SysInfoWindow();
+                sysInfoThread = new Thread(() =>
+                {
+                    SysInfoWindow.Load += (sender_, e_) =>
+                    {
+                        SysInfoWindow.Start();
+                    };
 
-            SysInfoWindow.Show();
-            SysInfoWindow.Activate();
+                    Application.Run(SysInfoWindow);
+                });
+                sysInfoThread.Start();
+            }
+            else
+            {
+                SysInfoWindow.BeginInvoke(new MethodInvoker(delegate
+                {
+                    SysInfoWindow.Show();
+                    SysInfoWindow.Activate();
 
-            if (!SysInfoWindow.Started)
-                SysInfoWindow.Start();
+                    if (!SysInfoWindow.Started)
+                        SysInfoWindow.Start();
+                }));
+            }
         }
 
         private void logMenuItem_Click(object sender, EventArgs e)
@@ -399,11 +417,9 @@ namespace ProcessHacker
 
         private void csrProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            if (CSRProcessesWindow == null)
-                CSRProcessesWindow = new CSRProcessesWindow();
+            var csrProcesses = new CSRProcessesWindow();
 
-            CSRProcessesWindow.Show();
-            CSRProcessesWindow.Activate();
+            csrProcesses.Show();
         }
 
         private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
