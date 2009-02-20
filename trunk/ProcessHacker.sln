@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker", "ProcessHacker\ProcessHacker.csproj", "{EEEA1778-1702-4964-8793-A98FE37E4D2B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0710ADEF-F89E-4CBC-8150-B340460BC9D6} = {0710ADEF-F89E-4CBC-8150-B340460BC9D6}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assistant", "Assistant\Assistant.csproj", "{0710ADEF-F89E-4CBC-8150-B340460BC9D6}"
 EndProject
