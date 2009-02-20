@@ -20,6 +20,7 @@
 
             Program.PWindows.Remove(_pid);
             Program.UpdateWindows();
+            System.GC.Collect();
 
             base.Dispose(disposing);
         }

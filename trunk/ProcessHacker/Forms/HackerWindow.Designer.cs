@@ -137,6 +137,9 @@
             this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.debugPHMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.freeMemoryMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -577,6 +580,8 @@
             // 
             this.helpMenu.Index = 4;
             this.helpMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.debugPHMenuItem,
+            this.menuItem6,
             this.logMenuItem,
             this.helpMenuItem,
             this.aboutMenuItem});
@@ -585,7 +590,7 @@
             // logMenuItem
             // 
             this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
-            this.logMenuItem.Index = 0;
+            this.logMenuItem.Index = 2;
             this.logMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlL;
             this.logMenuItem.Text = "&Log...";
             this.logMenuItem.Click += new System.EventHandler(this.logMenuItem_Click);
@@ -593,7 +598,7 @@
             // helpMenuItem
             // 
             this.vistaMenu.SetImage(this.helpMenuItem, global::ProcessHacker.Properties.Resources.help);
-            this.helpMenuItem.Index = 1;
+            this.helpMenuItem.Index = 3;
             this.helpMenuItem.Shortcut = System.Windows.Forms.Shortcut.F1;
             this.helpMenuItem.Text = "&Help...";
             this.helpMenuItem.Click += new System.EventHandler(this.helpMenuItem_Click);
@@ -601,7 +606,7 @@
             // aboutMenuItem
             // 
             this.vistaMenu.SetImage(this.aboutMenuItem, global::ProcessHacker.Properties.Resources.information);
-            this.aboutMenuItem.Index = 2;
+            this.aboutMenuItem.Index = 4;
             this.aboutMenuItem.Text = "&About...";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
@@ -930,6 +935,24 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // debugPHMenuItem
+            // 
+            this.debugPHMenuItem.Index = 0;
+            this.debugPHMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.freeMemoryMenuItem});
+            this.debugPHMenuItem.Text = "Debug";
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 1;
+            this.menuItem6.Text = "-";
+            // 
+            // freeMemoryMenuItem
+            // 
+            this.freeMemoryMenuItem.Index = 0;
+            this.freeMemoryMenuItem.Text = "Free Memory";
+            this.freeMemoryMenuItem.Click += new System.EventHandler(this.freeMemoryMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1069,6 +1092,9 @@
         private System.Windows.Forms.MenuItem uacSeparatorMenuItem;
         private System.Windows.Forms.MenuItem runMenuItem;
         private System.Windows.Forms.MenuItem runAsMenuItem;
+        private System.Windows.Forms.MenuItem debugPHMenuItem;
+        private System.Windows.Forms.MenuItem freeMemoryMenuItem;
+        private System.Windows.Forms.MenuItem menuItem6;
     }
 }
 

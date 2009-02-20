@@ -276,7 +276,7 @@ namespace ProcessHacker
                     {
                         if (process != null)
                         {
-                            Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
+                            Marshal.ReleaseComObject(process);
                         }
                     }
                 }

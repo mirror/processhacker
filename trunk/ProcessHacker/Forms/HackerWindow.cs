@@ -357,6 +357,11 @@ namespace ProcessHacker
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
         }
 
+        private void freeMemoryMenuItem_Click(object sender, EventArgs e)
+        {
+            GC.Collect();
+        }  
+
         private void helpMenuItem_Click(object sender, EventArgs e)
         {
             if (HelpForm == null)
@@ -2141,6 +2146,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }       
+        }     
     }
 }
