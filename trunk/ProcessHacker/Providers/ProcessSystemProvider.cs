@@ -654,18 +654,6 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (newitem.FileName != null && newitem.Icon == null && newitem.IconAttempts < 3)
-                    {
-                        try
-                        {
-                            newitem.Icon = (Icon)Win32.GetFileIcon(newitem.FileName);
-                        }
-                        catch
-                        { }
-
-                        newitem.IconAttempts++;
-                    }
-
                     if (item.ProcessQueryHandle != null)
                     {
                         try
