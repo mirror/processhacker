@@ -45,6 +45,7 @@ Process Hacker
      certain programs.
    * Slightly different notification icon
    * GDI and USER handle counts
+   * Terminator's TT2 test is more effective now
  * FIXED:
    * Workaround for Bug #2553406 - "COMException: Class not registered"
    * Bug #2601383 - "Threads' column's width is not remembered."

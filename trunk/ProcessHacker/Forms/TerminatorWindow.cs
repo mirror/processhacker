@@ -43,7 +43,7 @@ namespace ProcessHacker
             this.AddTest("TP1", "Terminates the process using TerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
             this.AddTest("TT1", "Terminates the process' threads");
-            this.AddTest("TT2", "Modifies the process' threads with invalid contexts");
+            this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
             this.AddTest("M1", "Writes garbage to the process' memory regions"); 
             this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
             this.AddTest("CH1", "Closes the process' handles");
@@ -151,18 +151,22 @@ namespace ProcessHacker
 
         private void TT2()
         {
-            Win32.CONTEXT context = new Win32.CONTEXT();
-
-            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
+            Win32.CONTEXT context;
+            int exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
 
             System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
 
             foreach (System.Diagnostics.ProcessThread t in p.Threads)
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(t.Id, Win32.THREAD_RIGHTS.THREAD_SET_CONTEXT))
+                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(t.Id, 
+                    Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
+                    Win32.THREAD_RIGHTS.THREAD_SET_CONTEXT))
                 {
                     try
                     {
+                        context = thandle.GetContext(Win32.CONTEXT_FLAGS.CONTEXT_CONTROL);
+                        context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_CONTROL;
+                        context.Eip = exitProcess;
                         thandle.SetContext(context);
                     }
                     catch
