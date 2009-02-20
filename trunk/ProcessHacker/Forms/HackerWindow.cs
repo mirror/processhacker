@@ -2006,22 +2006,29 @@ namespace ProcessHacker
             this.ApplyFont(Properties.Settings.Default.Font);
 
             if (Program.WindowsVersion == "Vista")
+            {
                 uacShieldIcon = this.GetUacShieldIcon();
 
-            using (var thandle = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
-            {
-                var elevation = thandle.GetElevationType();
+                using (var thandle = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                {
+                    var elevation = thandle.GetElevationType();
 
-                if (elevation == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                {
-                    vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
-                    runAsServiceMenuItem.Visible = false;
+                    if (elevation == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                    {
+                        vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
+                        runAsServiceMenuItem.Visible = false;
+                    }
+                    else
+                    {
+                        runAsAdministratorMenuItem.Visible = false;
+                        showDetailsForAllProcessesMenuItem.Visible = false;
+                    }
                 }
-                else
-                {
-                    runAsAdministratorMenuItem.Visible = false;
-                    showDetailsForAllProcessesMenuItem.Visible = false;
-                }
+            }
+            else
+            {
+                runAsAdministratorMenuItem.Visible = false;
+                showDetailsForAllProcessesMenuItem.Visible = false;
             }
 
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
