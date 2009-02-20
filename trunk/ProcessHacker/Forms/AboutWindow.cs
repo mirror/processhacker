@@ -88,5 +88,10 @@ namespace ProcessHacker
         {
             TryStart("http://sourceforge.net/projects/treeviewadv");
         }
+
+        private void linkICSharpCode_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            TryStart("http://www.icsharpcode.net");
+        }
     }
 }

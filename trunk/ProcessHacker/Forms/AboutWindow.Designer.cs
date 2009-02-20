@@ -40,14 +40,15 @@
             this.linkAsm = new System.Windows.Forms.LinkLabel();
             this.linkTreeViewAdv = new System.Windows.Forms.LinkLabel();
             this.flowThanks = new System.Windows.Forms.FlowLayoutPanel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowThanks.SuspendLayout();
             this.SuspendLayout();
@@ -195,6 +196,7 @@
             this.flowThanks.Controls.Add(this.linkVistaMenu);
             this.flowThanks.Controls.Add(this.linkAsm);
             this.flowThanks.Controls.Add(this.linkTreeViewAdv);
+            this.flowThanks.Controls.Add(this.linkICSharpCode);
             this.flowThanks.Controls.Add(this.label4);
             this.flowThanks.Controls.Add(this.label3);
             this.flowThanks.Controls.Add(this.label2);
@@ -206,51 +208,6 @@
             this.flowThanks.Size = new System.Drawing.Size(231, 146);
             this.flowThanks.TabIndex = 14;
             this.flowThanks.WrapContents = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 42);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(136, 13);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "XhmikosR - Installer, Tester";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 120);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(199, 26);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "NTinternals - a great guide to the Native API";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 146);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(202, 26);
-            this.label3.TabIndex = 15;
-            this.label3.Text = "ReactOS - the ultimate guide to Windows internals";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 172);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(193, 26);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
-            // 
-            // labelFiller
-            // 
-            this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 198);
-            this.labelFiller.Name = "labelFiller";
-            this.labelFiller.Size = new System.Drawing.Size(31, 13);
-            this.labelFiller.TabIndex = 17;
-            this.labelFiller.Text = "        ";
             // 
             // label5
             // 
@@ -278,6 +235,62 @@
             this.label7.Size = new System.Drawing.Size(142, 13);
             this.label7.TabIndex = 18;
             this.label7.Text = "Uday Shanbhag - Developer";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 42);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(136, 13);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "XhmikosR - Installer, Tester";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 133);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(199, 26);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "NTinternals - a great guide to the Native API";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 159);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(202, 26);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "ReactOS - the ultimate guide to Windows internals";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 185);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(193, 26);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Greg Hoglund, James Butler - Rootkits: Subverting the Windows Kernel";
+            // 
+            // labelFiller
+            // 
+            this.labelFiller.AutoSize = true;
+            this.labelFiller.Location = new System.Drawing.Point(6, 211);
+            this.labelFiller.Name = "labelFiller";
+            this.labelFiller.Size = new System.Drawing.Size(31, 13);
+            this.labelFiller.TabIndex = 17;
+            this.labelFiller.Text = "        ";
+            // 
+            // linkICSharpCode
+            // 
+            this.linkICSharpCode.AutoSize = true;
+            this.linkICSharpCode.Location = new System.Drawing.Point(6, 120);
+            this.linkICSharpCode.Name = "linkICSharpCode";
+            this.linkICSharpCode.Size = new System.Drawing.Size(150, 13);
+            this.linkICSharpCode.TabIndex = 19;
+            this.linkICSharpCode.TabStop = true;
+            this.linkICSharpCode.Text = "ic#code - SharpDevelop code";
+            this.linkICSharpCode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkICSharpCode_LinkClicked);
             // 
             // AboutWindow
             // 
@@ -332,6 +345,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.LinkLabel linkICSharpCode;
 
     }
 }
