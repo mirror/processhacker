@@ -55,6 +55,7 @@ Process Hacker
    * Memory searching now uses KProcessHacker if possible
    * Incorrect labeling of process files which can't be read (due to permissions) 
      as packed
+   * Now uses the proper method of detecting .NET processes
    * Disables "Show one graph per CPU" if there is only one CPU
    * Process tree weirdness for users with limited privileges
    * CPU usage is now correctly displayed in graphs - K+U are not overlayed anymore

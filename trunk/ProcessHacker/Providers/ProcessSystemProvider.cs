@@ -252,35 +252,38 @@ namespace ProcessHacker
             catch
             { }
 
-            // find out if it's a .NET process (we'll just see if it has loaded mscoree.dll)
-            if (fpResult.IsPacked)
+            if (pid > 4)
             {
                 try
                 {
-                    var modDict = new Dictionary<string, string>();
+                    var corpubPublishClass = new Debugger.Interop.CorPub.CorpubPublishClass();
+                    Debugger.Interop.CorPub.ICorPublishProcess process = null;
 
-                    using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights |
-                        Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                    try
                     {
-                        foreach (var m in phandle.GetModules())
+                        int managed = 0;
+
+                        corpubPublishClass.GetProcess((uint)pid, out process);
+                        process.IsManaged(out managed);
+
+                        if (managed > 0)
                         {
-                            if (!modDict.ContainsKey(m.BaseName.ToLower()))
-                                modDict.Add(m.BaseName.ToLower(), m.FileName);
+                            fpResult.IsPacked = false;
+                            fpResult.IsDotNet = true;
                         }
                     }
-
-                    if (modDict.ContainsKey("mscoree.dll") &&
-                        modDict["mscoree.dll"].ToLower() == (Environment.SystemDirectory + "\\mscoree.dll").ToLower())
+                    finally
                     {
-                        fpResult.IsDotNet = true;
-                        // .NET processes also look like they're packed
-                        fpResult.IsPacked = false;
+                        if (process != null)
+                        {
+                            Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
+                        }
                     }
                 }
                 catch
                 { }
             }
-            
+
             lock (_fpResults)
                 _fpResults.Enqueue(fpResult);
         }
