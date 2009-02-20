@@ -8,7 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "19"
+#define installer_build_number "20"
 #define installer_build_date "20.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -57,13 +57,6 @@ ShowTasksTreeLines=true
 CompressionThreads=4
 
 ;Specify the architectures that Process Hacker can run on.
-;If in the future Process Hacker runs on 64bit Windows as 32bit application just delete the "ArchitecturesAllowed=x86".
-;If in the future Process Hacker runs on 64bit Windows as 64bit application use:
-;#if is64bit
-;ArchitecturesAllowed=x64
-;ArchitecturesInstallIn64BitMode=x64
-;#endif
-
 ArchitecturesAllowed=x86
 
 [Languages]
@@ -116,6 +109,7 @@ Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: de
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 
 [InstallDelete]
+Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
