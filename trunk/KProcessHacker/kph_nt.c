@@ -358,18 +358,24 @@ NTSTATUS KphTerminateProcess(
     if (!NT_SUCCESS(status))
         return status;
     
-    /* we have to open it again because ZwTerminateProcess only accepts kernel handles */
+    /* Can't terminate ourself. Get user-mode to do it. */
+    if (PsGetProcessId(processObject) == PsGetCurrentProcessId())
+    {
+        ObDereferenceObject(processObject);
+        return STATUS_DISK_FULL;
+    }
+    
+    /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
     clientId.UniqueThread = 0;
     clientId.UniqueProcess = PsGetProcessId(processObject);
     status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
+    ObDereferenceObject(processObject);
     
     if (NT_SUCCESS(status))
     {
         status = ZwTerminateProcess(newProcessHandle, ExitStatus);
         ZwClose(newProcessHandle);
     }
-    
-    ObDereferenceObject(processObject);
     
     return status;
 }

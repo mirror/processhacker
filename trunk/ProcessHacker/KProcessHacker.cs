@@ -203,7 +203,17 @@ namespace ProcessHacker
             Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
             Array.Copy(Misc.IntToBytes(exitStatus, Misc.Endianness.Little), 0, data, 4, 4);
 
-            _fileHandle.IoControl(CtlCode(Control.KphTerminateProcess), data, null);
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphTerminateProcess), data, null);
+            }
+            catch (WindowsException ex)
+            {
+                // STATUS_DISK_FULL means we tried to terminate ourself. Kernel-mode can't do it, 
+                // so we do it now.
+                if (ex.ErrorCode == 112)
+                    Process.GetCurrentProcess().Kill();
+            }
         }
 
         public byte[] Read(int address, int length)

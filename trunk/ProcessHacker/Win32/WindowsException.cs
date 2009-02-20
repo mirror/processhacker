@@ -36,7 +36,7 @@ namespace ProcessHacker
     /// </remarks>
     public class WindowsException : Exception
     {
-        private int _errorCode;
+        private int _errorCode = 0;
         private string _message = null;
 
         public WindowsException()
@@ -45,6 +45,11 @@ namespace ProcessHacker
         public WindowsException(int errorCode)
         {
             _errorCode = errorCode;
+        }
+
+        public int ErrorCode
+        {
+            get { return _errorCode; }
         }
 
         public override string Message
