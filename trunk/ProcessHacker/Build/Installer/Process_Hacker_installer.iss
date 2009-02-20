@@ -86,7 +86,6 @@ Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\..\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\..\KProcessHacker\i386\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\bin\Release\ProcessHacker.exe.config; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\..\README.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\structs.txt; DestDir: {app}; Flags: ignoreversion
 Source: Icons\uninstall.ico; DestDir: {app}; Flags: ignoreversion
