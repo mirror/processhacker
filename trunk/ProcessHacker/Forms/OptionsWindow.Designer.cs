@@ -50,6 +50,7 @@
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.buttonChangeReplaceTaskManager = new System.Windows.Forms.Button();
             this.checkReplaceTaskManager = new System.Windows.Forms.CheckBox();
             this.checkEnableKPH = new System.Windows.Forms.CheckBox();
             this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
@@ -365,6 +366,7 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.buttonChangeReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkEnableKPH);
             this.tabAdvanced.Controls.Add(this.checkHideHandlesWithNoName);
@@ -376,6 +378,17 @@
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
+            // 
+            // buttonChangeReplaceTaskManager
+            // 
+            this.buttonChangeReplaceTaskManager.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonChangeReplaceTaskManager.Location = new System.Drawing.Point(257, 51);
+            this.buttonChangeReplaceTaskManager.Name = "buttonChangeReplaceTaskManager";
+            this.buttonChangeReplaceTaskManager.Size = new System.Drawing.Size(89, 23);
+            this.buttonChangeReplaceTaskManager.TabIndex = 18;
+            this.buttonChangeReplaceTaskManager.Text = "Change...";
+            this.buttonChangeReplaceTaskManager.UseVisualStyleBackColor = true;
+            this.buttonChangeReplaceTaskManager.Click += new System.EventHandler(this.buttonChangeReplaceTaskManager_Click);
             // 
             // checkReplaceTaskManager
             // 
@@ -721,6 +734,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
+            this.Load += new System.EventHandler(this.OptionsWindow_Load);
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).EndInit();
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
@@ -791,5 +805,6 @@
         private System.Windows.Forms.ListView listHighlightingColors;
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button buttonChangeReplaceTaskManager;
     }
 }

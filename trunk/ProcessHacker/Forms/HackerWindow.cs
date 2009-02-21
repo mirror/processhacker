@@ -238,7 +238,8 @@ namespace ProcessHacker
                 info.nShow = Win32.SW_SHOW;
                 info.lpVerb = "runas";
 
-                Win32.ShellExecuteEx(ref info);
+                if (Win32.ShellExecuteEx(ref info))
+                    Win32.CloseHandle(info.hProcess);
             }
         }
 
@@ -252,20 +253,12 @@ namespace ProcessHacker
 
         private void showDetailsForAllProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
-
-            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-            info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
-            info.nShow = Win32.SW_SHOW;
-            info.lpVerb = "runas";
-
-            this.SaveSettings();
-
-            if (Win32.ShellExecuteEx(ref info))
-            {
-                notifyIcon.Visible = false;
-                Process.GetCurrentProcess().Kill();
-            }
+            Program.StartProcessHackerAdmin(null, () =>
+                {
+                    this.SaveSettings();
+                    notifyIcon.Visible = false;
+                    Process.GetCurrentProcess().Kill();
+                });
         }
 
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
@@ -1424,9 +1417,28 @@ namespace ProcessHacker
                 selectAllServiceMenuItem.Enabled = true;
             }
 
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            {
+                startServiceMenuItem.Visible = false;
+                continueServiceMenuItem.Visible = false;
+                pauseServiceMenuItem.Visible = false;
+                stopServiceMenuItem.Visible = false;
+                deleteServiceMenuItem.Visible = false;
+            }
+
             if (listServices.List.Items.Count == 0)
                 selectAllServiceMenuItem.Enabled = false;
         }
+
+        private void performAdminServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.StartProcessHackerAdmin("-t 1", () =>
+            {
+                this.SaveSettings();
+                notifyIcon.Visible = false;
+                Process.GetCurrentProcess().Kill();
+            });
+        }  
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
@@ -2029,31 +2041,20 @@ namespace ProcessHacker
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
 
-            if (Program.WindowsVersion == "Vista")
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 uacShieldIcon = this.GetUacShieldIcon();
 
-                using (var thandle = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
-                {
-                    var elevation = thandle.GetElevationType();
-
-                    if (elevation == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                    {
-                        vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
-                        runAsServiceMenuItem.Visible = false;
-                        runAsProcessMenuItem.Visible = false;
-                    }
-                    else
-                    {
-                        runAsAdministratorMenuItem.Visible = false;
-                        showDetailsForAllProcessesMenuItem.Visible = false;
-                    }
-                }
+                vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
+                vistaMenu.SetImage(performAdminServiceMenuItem, uacShieldIcon);
+                runAsServiceMenuItem.Visible = false;
+                runAsProcessMenuItem.Visible = false;
             }
             else
             {
                 runAsAdministratorMenuItem.Visible = false;
                 showDetailsForAllProcessesMenuItem.Visible = false;
+                performAdminServiceMenuItem.Visible = false;
             }
 
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
@@ -2154,6 +2155,13 @@ namespace ProcessHacker
                     (sender_, e_) => { this.Hide(); t2.Enabled = false; };
                 t2.Enabled = true;
             }
+
+            if (Program.ShowOptions)
+            {
+                optionsMenuItem_Click(sender, e);
+            }
+
+            tabControlBig.SelectedTab = tabControlBig.TabPages["tab" + Program.SelectTab];
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
@@ -2166,6 +2174,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }     
+        }   
     }
 }

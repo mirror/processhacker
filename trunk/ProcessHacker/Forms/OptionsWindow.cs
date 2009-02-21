@@ -111,6 +111,18 @@ namespace ProcessHacker
             {
                 checkReplaceTaskManager.Enabled = false;
             }
+        }      
+
+        private void OptionsWindow_Load(object sender, EventArgs e)
+        {
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            {
+                Misc.SetShieldIcon(buttonChangeReplaceTaskManager, true);
+            }
+            else
+            {
+                buttonChangeReplaceTaskManager.Visible = false;
+            }
         }
 
         private void AddToList(string key, string description, string longDescription)
@@ -196,7 +208,7 @@ namespace ProcessHacker
             }
         }
 
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void SaveSettings()
         {
             Properties.Settings.Default.Font = _font;
             Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
@@ -280,10 +292,14 @@ namespace ProcessHacker
                 }
             }
 
-            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Save(); 
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            this.SaveSettings();
             Program.HackerWindow.ProcessTree.RefreshItems();
             Program.ApplyFont(Properties.Settings.Default.Font);
-
             this.Close();
         }
 
@@ -319,6 +335,16 @@ namespace ProcessHacker
                 _font = fd.Font;
                 buttonFont.Font = _font;
             }
+        }
+
+        private void buttonChangeReplaceTaskManager_Click(object sender, EventArgs e)
+        {
+            Program.StartProcessHackerAdmin("-o", () =>
+                {
+                    this.SaveSettings();
+                    Program.HackerWindow.NotifyIcon.Visible = false;
+                    System.Diagnostics.Process.GetCurrentProcess().Kill();
+                });
         }
     }
 }

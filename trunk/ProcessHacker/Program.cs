@@ -74,6 +74,9 @@ namespace ProcessHacker
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
         public static bool StartMinimized = false;
+        public static bool ShowOptions = false;
+        public static string SelectTab = "Processes";
+        public static Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public static KProcessHacker KPH;
 
         /// <summary>
@@ -88,12 +91,24 @@ namespace ProcessHacker
 
                 if (pArgs.ContainsKey("-m"))
                     StartMinimized = true;
+                if (pArgs.ContainsKey("-o"))
+                    ShowOptions = true;
+
+                if (pArgs.ContainsKey("-t"))
+                {
+                    if (pArgs["-t"] == "0")
+                        SelectTab = "Processes";
+                    else if (pArgs["-t"] == "1")
+                        SelectTab = "Services";
+                }
             }
             catch
             {
                 MessageBox.Show(
                     "Usage: processhacker [-m]\n" + 
-                    "\t-m\tStarts Process Hacker hidden.", 
+                    "\t-m\tStarts Process Hacker hidden.\n" +
+                    "\t-o\tShows Options.\n" +
+                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.", 
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
@@ -147,6 +162,16 @@ namespace ProcessHacker
                     catch { }
                     try { thandle.SetPrivilege("SeShutdownPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
                     catch { }
+
+                    if (Program.WindowsVersion == "Vista")
+                    {
+                        try { ElevationType = thandle.GetElevationType(); }
+                        catch { ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull; }
+                    }
+                    else
+                    {
+                        ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+                    }
                 }
             }
             catch
@@ -179,6 +204,30 @@ namespace ProcessHacker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow());
+        }
+
+        public static void StartProcessHackerAdmin()
+        {
+            StartProcessHackerAdmin("", null);
+        }
+
+        public static void StartProcessHackerAdmin(string args, MethodInvoker successAction)
+        {
+            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+            info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+            info.nShow = Win32.SW_SHOW;
+            info.lpVerb = "runas";
+            info.lpParameters = args;
+
+            if (Win32.ShellExecuteEx(ref info))
+            {
+                Win32.CloseHandle(info.hProcess);
+
+                if (successAction != null)
+                    successAction();
+            }
         }
 
         private static Dictionary<string, string> ParseArgs(string[] args)
