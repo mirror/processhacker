@@ -211,6 +211,13 @@ namespace ProcessHacker
         }
 
         [Flags]
+        public enum HANDLE_FLAGS : byte
+        {
+            Inherit = 0x1,
+            ProtectFromClose = 0x2
+        }
+
+        [Flags]
         public enum HEAPENTRY32FLAGS : int
         {
             LF32_FIXED = 0x00000001,
@@ -784,13 +791,6 @@ namespace ProcessHacker
             TIMER_ALL_ACCESS = 0x1f0003,
             TIMER_MODIFY_STATE = 0x0002,
             TIMER_QUERY_STATE = 0x0001
-        }
-
-        [Flags]
-        public enum SYSTEM_HANDLE_FLAGS : byte
-        {
-            PROTECT_FROM_CLOSE = 0x1,
-            INHERIT = 0x2
         }
 
         public enum SYSTEM_INFORMATION_CLASS : int

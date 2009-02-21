@@ -810,7 +810,7 @@ namespace ProcessHacker
         {
             public int ProcessId;
             public byte ObjectTypeNumber;
-            public SYSTEM_HANDLE_FLAGS Flags;
+            public HANDLE_FLAGS Flags;
             public short Handle;
             public int Object;
             public STANDARD_RIGHTS GrantedAccess;

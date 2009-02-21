@@ -36,18 +36,21 @@ namespace ProcessHacker
 
     public class HandleProvider : Provider<short, HandleItem>
     {
+        private Win32.ProcessHandle _processHandle;
         private int _pid;
 
         public HandleProvider(int PID)
             : base()
         {
             _pid = PID;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
+            _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+
+            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);  
+            this.Killed += () => { _processHandle.Dispose(); };
         }
 
         private void UpdateOnce()
         {
-            Win32.ProcessHandle processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
             Win32.SYSTEM_HANDLE_INFORMATION[] handles = Win32.EnumHandles();
             Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION> processHandles = 
                 new Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION>();
@@ -81,7 +84,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        info = Win32.GetHandleInfo(processHandle, processHandles[h]);
+                        info = Win32.GetHandleInfo(_processHandle, processHandles[h]);
 
                         if ((info.BestName == null || info.BestName == "") &&
                             HideHandlesWithNoName)
@@ -101,7 +104,6 @@ namespace ProcessHacker
                 }
             }
 
-            processHandle.Dispose();
             Dictionary = newdictionary;
         }
 

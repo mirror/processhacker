@@ -503,6 +503,9 @@ namespace ProcessHacker
             int objectHandle;
             int retLength = 0;
 
+            if (handle.Handle == 0 || handle.Handle == -1 || handle.Handle == -2)
+                throw new WindowsException(6);
+
             // duplicates the handle so we can query it
             if (ZwDuplicateObject(process.Handle, handle.Handle,
                 Program.CurrentProcess, out objectHandle, 0, 0, 0) != 0)

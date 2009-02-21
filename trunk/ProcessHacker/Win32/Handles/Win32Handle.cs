@@ -100,6 +100,31 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets certain information about the handle.
+            /// </summary>
+            /// <returns>A HANDLE_FLAGS value.</returns>
+            public HANDLE_FLAGS GetInformation()
+            {
+                HANDLE_FLAGS flags;
+
+                if (!GetHandleInformation(this, out flags))
+                    ThrowLastWin32Error();
+
+                return flags;
+            }
+
+            /// <summary>
+            /// Sets certain information about the handle.
+            /// </summary>
+            /// <param name="mask">Specifies which flags to set.</param>
+            /// <param name="flags">The values of the flags to set.</param>
+            public void SetInformation(HANDLE_FLAGS mask, HANDLE_FLAGS flags)
+            {
+                if (!SetHandleInformation(this, mask, flags))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
             /// Closes the handle. This method must not be called directly; instead, 
             /// override this method in a derived class if your handle must be closed 
             /// with a method other than CloseHandle.

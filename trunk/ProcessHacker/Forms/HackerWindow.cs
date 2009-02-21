@@ -1140,12 +1140,15 @@ namespace ProcessHacker
 
         private void processP_IconUpdater()
         {
-            cpuUsageIcon.Update(processP.CurrentCPUKernelUsage, processP.CurrentCPUUserUsage);
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                cpuUsageIcon.Update(processP.CurrentCPUKernelUsage, processP.CurrentCPUUserUsage);
 
-            if (NotifyIcon.Icon != null)
-                Win32.DestroyIcon(notifyIcon.Icon.Handle);
+                if (NotifyIcon.Icon != null)
+                    Win32.DestroyIcon(notifyIcon.Icon.Handle);
 
-            notifyIcon.Icon = cpuUsageIcon.GetIcon();
+                notifyIcon.Icon = cpuUsageIcon.GetIcon();
+            }));
         }
 
         public void processP_DictionaryAdded(ProcessItem item)

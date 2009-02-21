@@ -162,16 +162,16 @@ namespace ProcessHacker
 
         #region Misc.
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         public static extern bool ExitWindowsEx(ExitWindowsFlags flags, int reason);
 
-        [DllImport("powrprof.dll")]
+        [DllImport("powrprof.dll", SetLastError = true)]
         public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         public static extern bool LockWorkStation();
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
         
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -373,6 +373,12 @@ namespace ProcessHacker
         #endregion
 
         #region Resources/Handles
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetHandleInformation(int handle, HANDLE_FLAGS mask, HANDLE_FLAGS flags);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetHandleInformation(int handle, out HANDLE_FLAGS flags);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(int Handle);
