@@ -1785,6 +1785,7 @@ namespace ProcessHacker
 
         private void LoadSettings()
         {
+            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             this.Location = Properties.Settings.Default.WindowLocation;
             this.Size = Properties.Settings.Default.WindowSize;
             this.WindowState = Properties.Settings.Default.WindowState;
@@ -1931,14 +1932,21 @@ namespace ProcessHacker
             }
 
             this.Exit();
+        }     
+
+        private void CheckedMenuItem_Click(object sender, EventArgs e)
+        {
+            ((MenuItem)sender).Checked = !((MenuItem)sender).Checked;
         }
 
-        public HackerWindow()
+        private void UpdateCommon()
         {
-            InitializeComponent();
+            timerMessages.Enabled = true;
+            treeProcesses.RefreshItems();
+        }
 
-            this.CreateShutdownMenuItems();
-
+        private void LoadVerifySettings()
+        {
             // Try to get a setting. If the file is corrupt, we can reset the settings.
             try
             {
@@ -1967,7 +1975,10 @@ namespace ProcessHacker
 
                 System.Diagnostics.Process.GetCurrentProcess().Kill();
             }
+        }
 
+        private void LoadFixMenuItems()
+        {
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
                 runAsServiceMenuItem.Enabled = false;
@@ -1979,72 +1990,10 @@ namespace ProcessHacker
 
             if (Program.KPH == null || Program.WindowsVersion != "XP")
                 setTokenProcessMenuItem.Visible = false;
-
-            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
-            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
-            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
-
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
-            notifyIcon.ContextMenu = menuIcon;
-            notifyIcon.Visible = Properties.Settings.Default.ShowIcon;
-            NPMenuItem.Checked = Properties.Settings.Default.NewProcesses;
-            TPMenuItem.Checked = Properties.Settings.Default.TerminatedProcesses;
-            NSMenuItem.Checked = Properties.Settings.Default.NewServices;
-            startedSMenuItem.Checked = Properties.Settings.Default.StartedServices;
-            stoppedSMenuItem.Checked = Properties.Settings.Default.StoppedServices;
-            DSMenuItem.Checked = Properties.Settings.Default.DeletedServices;
-
-            NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            NSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-            DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
-
-            try
-            {
-                if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
-                {
-                    Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
-
-                    parser.Parse(Application.StartupPath + "\\structs.txt");
-                }
-            }
-            catch (Exception ex)
-            {
-                QueueMessage("Error loading structure definitions: " + ex.Message);
-            }
-
-            try
-            {
-                this.Text +=
-                    " [" + Win32.ProcessHandle.FromHandle(Program.CurrentProcess).
-                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) + 
-                    (Program.KPH != null ? "+" : "") + "]";
-            }
-            catch
-            { }
         }
 
-        private void CheckedMenuItem_Click(object sender, EventArgs e)
+        private void LoadUac()
         {
-            ((MenuItem)sender).Checked = !((MenuItem)sender).Checked;
-        }
-
-        private void UpdateCommon()
-        {
-            timerMessages.Enabled = true;
-            treeProcesses.RefreshItems();
-        }
-
-        private void HackerWindow_Load(object sender, EventArgs e)
-        {
-            Program.UpdateWindows();
-            this.ApplyFont(Properties.Settings.Default.Font);
-
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 uacShieldIcon = this.GetUacShieldIcon();
@@ -2060,7 +2009,29 @@ namespace ProcessHacker
                 showDetailsForAllProcessesMenuItem.Visible = false;
                 performAdminServiceMenuItem.Visible = false;
             }
+        }
 
+        private void LoadNotificationIcon()
+        {
+            notifyIcon.ContextMenu = menuIcon;
+            notifyIcon.Visible = Properties.Settings.Default.ShowIcon;
+            NPMenuItem.Checked = Properties.Settings.Default.NewProcesses;
+            TPMenuItem.Checked = Properties.Settings.Default.TerminatedProcesses;
+            NSMenuItem.Checked = Properties.Settings.Default.NewServices;
+            startedSMenuItem.Checked = Properties.Settings.Default.StartedServices;
+            stoppedSMenuItem.Checked = Properties.Settings.Default.StoppedServices;
+            DSMenuItem.Checked = Properties.Settings.Default.DeletedServices;
+
+            NPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            TPMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            NSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            startedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            stoppedSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+            DSMenuItem.Click += new EventHandler(CheckedMenuItem_Click);
+        }
+
+        private void LoadControls()
+        {
             cpuUsageIcon = new UsageIcon(16, 16);
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             timerFire.Enabled = true;
@@ -2105,35 +2076,33 @@ namespace ProcessHacker
             networkP.RunOnceAsync();
             networkP.Enabled = true;
 
-            statusText.Text = "Waiting...";
+            tabControlBig_SelectedIndexChanged(null, null);
+        }
 
-            LoadSettings();
-
-            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
-                this.Location = new Point(-3200, -3200);
-
-            // load symbols on a separate thread
+        private void LoadSymbols()
+        {
             Thread t = new Thread(new ThreadStart(delegate
             {
                 try
                 {
-                    foreach (ProcessModule module in Process.GetCurrentProcess().Modules)
+                    string[] modules = { "kernel32.dll", "ntdll.dll", "shell32.dll" };
+
+                    foreach (string module in modules)
                     {
                         this.BeginInvoke(new MethodInvoker(delegate
-                            {
-                                statusIcon.Icon = null;
-                                statusText.Text = "Loading symbols for " + module.ModuleName + "...";
-                            }));
+                        {
+                            statusIcon.Icon = null;
+                            statusText.Text = "Loading symbols for " + modules + "...";
+                        }));
 
                         try
                         {
-                            if (!module.FileName.ToLower().EndsWith(".exe"))
-                                SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(module.FileName, 
-                                    (uint)module.BaseAddress.ToInt32());
+                            SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(Environment.SystemDirectory + "\\" + module,
+                                (uint)Win32.GetModuleHandle(module));
                         }
                         catch (Exception ex)
                         {
-                            QueueMessage("Could not load symbols for " + module.ModuleName + ": " + ex.Message, null);
+                            QueueMessage("Could not load symbols for " + module + ": " + ex.Message, null);
                         }
                     }
                 }
@@ -2149,9 +2118,10 @@ namespace ProcessHacker
 
             t.Priority = ThreadPriority.Lowest;
             t.Start();
+        }
 
-            tabControlBig_SelectedIndexChanged(null, null);
-
+        private void LoadApplyCommandLineArgs()
+        {
             if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
             {
                 // HACK
@@ -2172,10 +2142,76 @@ namespace ProcessHacker
 
             if (Program.ShowOptions)
             {
-                optionsMenuItem_Click(sender, e);
+                OptionsWindow options = new OptionsWindow();
+
+                if (Program.StartMinimized)
+                    options.StartPosition = FormStartPosition.CenterScreen;
+
+                options.TopMost = this.TopMost;
+                options.ShowDialog();
+
+                processP.Interval = Properties.Settings.Default.RefreshInterval;
+                serviceP.Interval = Properties.Settings.Default.RefreshInterval;
+                networkP.Interval = Properties.Settings.Default.RefreshInterval;
+                timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             }
 
             tabControlBig.SelectedTab = tabControlBig.TabPages["tab" + Program.SelectTab];
+        }
+
+        public HackerWindow()
+        {
+            InitializeComponent();
+            this.CreateShutdownMenuItems();
+
+            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
+            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+        }
+
+        private void HackerWindow_Load(object sender, EventArgs e)
+        {
+            this.LoadVerifySettings();
+            Program.UpdateWindows();
+            this.ApplyFont(Properties.Settings.Default.Font);
+            this.LoadUac();
+            this.LoadFixMenuItems();
+            this.LoadControls();
+            this.LoadSettings();
+            this.LoadSymbols();
+            this.LoadApplyCommandLineArgs();
+
+            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
+                this.Location = new Point(-3200, -3200);
+
+            statusText.Text = "Waiting...";
+
+            try
+            {
+                if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+                {
+                    Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+
+                    parser.Parse(Application.StartupPath + "\\structs.txt");
+                }
+            }
+            catch (Exception ex)
+            {
+                QueueMessage("Error loading structure definitions: " + ex.Message);
+            }
+
+            try
+            {
+                this.Text +=
+                    " [" + Win32.ProcessHandle.FromHandle(Program.CurrentProcess).
+                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) +
+                    (Program.KPH != null ? "+" : "") + "]";
+            }
+            catch
+            { }
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
