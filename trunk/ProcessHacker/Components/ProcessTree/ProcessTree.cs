@@ -191,35 +191,39 @@ namespace ProcessHacker
 
         private Color GetProcessColor(ProcessItem p)
         {
-            if (p.IsBeingDebugged)
-                return Properties.Settings.Default.ColorBeingDebugged;
-            else if (p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+            if (Properties.Settings.Default.UseColorDebuggedProcesses && p.IsBeingDebugged)
+                return Properties.Settings.Default.ColorDebuggedProcesses;
+            else if (Properties.Settings.Default.UseColorElevatedProcesses && 
+                p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                 return Properties.Settings.Default.ColorElevatedProcesses;
-            else if (Properties.Settings.Default.VerifySignatures &&
+            else if (Properties.Settings.Default.UseColorPackedProcesses && 
+                Properties.Settings.Default.VerifySignatures &&
                 Properties.Settings.Default.ImposterNames.Contains(p.Name.ToLower()) &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
                 p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
                 p.VerifyResult != Win32.VerifyResult.Unknown &&
                 p.FileName != null)
                 return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.VerifySignatures &&
+            else if (Properties.Settings.Default.UseColorPackedProcesses && 
+                Properties.Settings.Default.VerifySignatures &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
                 p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
                 p.VerifyResult != Win32.VerifyResult.NoSignature &&
                 p.VerifyResult != Win32.VerifyResult.Unknown)
                 return Properties.Settings.Default.ColorPackedProcesses;
-            else if (p.IsDotNet)
+            else if (Properties.Settings.Default.UseColorDotNetProcesses && p.IsDotNet)
                 return Properties.Settings.Default.ColorDotNetProcesses;
-            else if (p.IsPacked)
+            else if (Properties.Settings.Default.UseColorPackedProcesses && p.IsPacked)
                 return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
+            else if (Properties.Settings.Default.UseColorServiceProcesses && 
+                Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
                 Program.HackerWindow.ProcessServices[p.PID].Count > 0)
                 return Properties.Settings.Default.ColorServiceProcesses;
-            else if (p.Username == "NT AUTHORITY\\SYSTEM")
+            else if (Properties.Settings.Default.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
-            else if (p.Username == Program.CurrentUsername)
+            else if (Properties.Settings.Default.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
                 return Properties.Settings.Default.ColorOwnProcesses;
-            else if (p.IsInJob)
+            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInJob)
                 return Properties.Settings.Default.ColorJobProcesses;
             else
                 return SystemColors.Window;

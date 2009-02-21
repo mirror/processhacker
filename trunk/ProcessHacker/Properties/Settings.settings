@@ -149,7 +149,7 @@
     <Setting Name="FilterHandleWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">554, 463</Value>
     </Setting>
-    <Setting Name="ColorBeingDebugged" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="ColorDebuggedProcesses" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">204, 187, 255</Value>
     </Setting>
     <Setting Name="ColorServiceProcesses" Type="System.Drawing.Color" Scope="User">
@@ -258,6 +258,30 @@
     </Setting>
     <Setting Name="HideWhenClosed" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="UseColorOwnProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorElevatedProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorSystemProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorDebuggedProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorServiceProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorJobProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorDotNetProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseColorPackedProcesses" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

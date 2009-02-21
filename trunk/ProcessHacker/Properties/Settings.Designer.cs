@@ -614,12 +614,12 @@ namespace ProcessHacker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("204, 187, 255")]
-        public global::System.Drawing.Color ColorBeingDebugged {
+        public global::System.Drawing.Color ColorDebuggedProcesses {
             get {
-                return ((global::System.Drawing.Color)(this["ColorBeingDebugged"]));
+                return ((global::System.Drawing.Color)(this["ColorDebuggedProcesses"]));
             }
             set {
-                this["ColorBeingDebugged"] = value;
+                this["ColorDebuggedProcesses"] = value;
             }
         }
         
@@ -988,6 +988,102 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["HideWhenClosed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorOwnProcesses {
+            get {
+                return ((bool)(this["UseColorOwnProcesses"]));
+            }
+            set {
+                this["UseColorOwnProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorElevatedProcesses {
+            get {
+                return ((bool)(this["UseColorElevatedProcesses"]));
+            }
+            set {
+                this["UseColorElevatedProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorSystemProcesses {
+            get {
+                return ((bool)(this["UseColorSystemProcesses"]));
+            }
+            set {
+                this["UseColorSystemProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorDebuggedProcesses {
+            get {
+                return ((bool)(this["UseColorDebuggedProcesses"]));
+            }
+            set {
+                this["UseColorDebuggedProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorServiceProcesses {
+            get {
+                return ((bool)(this["UseColorServiceProcesses"]));
+            }
+            set {
+                this["UseColorServiceProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorJobProcesses {
+            get {
+                return ((bool)(this["UseColorJobProcesses"]));
+            }
+            set {
+                this["UseColorJobProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorDotNetProcesses {
+            get {
+                return ((bool)(this["UseColorDotNetProcesses"]));
+            }
+            set {
+                this["UseColorDotNetProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorPackedProcesses {
+            get {
+                return ((bool)(this["UseColorPackedProcesses"]));
+            }
+            set {
+                this["UseColorPackedProcesses"] = value;
             }
         }
     }

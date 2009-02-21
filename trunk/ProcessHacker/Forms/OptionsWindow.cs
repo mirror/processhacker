@@ -67,14 +67,7 @@ namespace ProcessHacker
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
             colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemovedProcesses;
-            colorOwnProcesses.Color = Properties.Settings.Default.ColorOwnProcesses;
-            colorSystemProcesses.Color = Properties.Settings.Default.ColorSystemProcesses;
-            colorServiceProcesses.Color = Properties.Settings.Default.ColorServiceProcesses;
-            colorBeingDebugged.Color = Properties.Settings.Default.ColorBeingDebugged;
-            colorElevatedProcesses.Color = Properties.Settings.Default.ColorElevatedProcesses;
-            colorJobProcesses.Color = Properties.Settings.Default.ColorJobProcesses;
-            colorDotNetProcesses.Color = Properties.Settings.Default.ColorDotNetProcesses;
-            colorPackedProcesses.Color = Properties.Settings.Default.ColorPackedProcesses;
+            this.InitializeHighlightingColors();
 
             checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
             colorCPUKT.Color = Properties.Settings.Default.PlotterCPUKernelColor;
@@ -118,6 +111,59 @@ namespace ProcessHacker
             {
                 checkReplaceTaskManager.Enabled = false;
             }
+        }
+
+        private void AddToList(string key, string description, string longDescription)
+        {
+            listHighlightingColors.Items.Add(new ListViewItem()
+                {
+                    Name = key,
+                    Text = description,
+                    ToolTipText = longDescription
+                });
+        }
+
+        private void InitializeHighlightingColors()
+        {
+            AddToList("ColorOwnProcesses", "Own Processes",
+                "Processes running under the same user account as Process Hacker.");
+            AddToList("ColorSystemProcesses", "System Processes",
+                "Processes running under the NT AUTHORITY\\SYSTEM user account.");
+            AddToList("ColorServiceProcesses", "Service Processes",
+                "Processes which host one or more services.");
+            AddToList("ColorDebuggedProcesses", "Debugged Processes",
+                "Processes that are currently being debugged.");
+            AddToList("ColorElevatedProcesses", "Elevated Processes",
+                "Processes with full privileges on a Windows Vista system with UAC enabled.");
+            AddToList("ColorJobProcesses", "Job Processes",
+                "Processes associated with a job.");
+            AddToList("ColorDotNetProcesses", ".NET Processes",
+                ".NET, or managed processes.");
+            AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
+                "Executables are sometimes \"packed\" to reduce their size.\n" +
+                "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
+                "processes with the name of a system process.");
+
+            foreach (ListViewItem item in listHighlightingColors.Items)
+            {
+                Color c = (Color)Properties.Settings.Default[item.Name];
+                bool use = (bool)Properties.Settings.Default["Use" + item.Name];
+
+                item.BackColor = c;
+                item.Checked = use;
+            }
+        }
+
+        private void listHighlightingColors_DoubleClick(object sender, EventArgs e)
+        {
+            listHighlightingColors.SelectedItems[0].Checked = !listHighlightingColors.SelectedItems[0].Checked;
+
+            ColorDialog cd = new ColorDialog();
+
+            cd.Color = listHighlightingColors.SelectedItems[0].BackColor;
+
+            if (cd.ShowDialog() == DialogResult.OK)
+                listHighlightingColors.SelectedItems[0].BackColor = cd.Color;
         }
 
         private void textUpdateInterval_Leave(object sender, EventArgs e)
@@ -183,14 +229,12 @@ namespace ProcessHacker
             Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
             Properties.Settings.Default.ColorNewProcesses = colorNewProcesses.Color;
             Properties.Settings.Default.ColorRemovedProcesses = colorRemovedProcesses.Color;
-            Properties.Settings.Default.ColorOwnProcesses = colorOwnProcesses.Color;
-            Properties.Settings.Default.ColorSystemProcesses = colorSystemProcesses.Color;
-            Properties.Settings.Default.ColorServiceProcesses = colorServiceProcesses.Color;
-            Properties.Settings.Default.ColorBeingDebugged = colorBeingDebugged.Color;
-            Properties.Settings.Default.ColorElevatedProcesses = colorElevatedProcesses.Color;
-            Properties.Settings.Default.ColorJobProcesses = colorJobProcesses.Color;
-            Properties.Settings.Default.ColorDotNetProcesses = colorDotNetProcesses.Color;
-            Properties.Settings.Default.ColorPackedProcesses = colorPackedProcesses.Color;
+
+            foreach (ListViewItem item in listHighlightingColors.Items)
+            {
+                Properties.Settings.Default[item.Name] = item.BackColor;
+                Properties.Settings.Default["Use" + item.Name] = item.Checked;
+            }
 
             Properties.Settings.Default.PlotterAntialias = checkPlotterAntialias.Checked;
             Properties.Settings.Default.PlotterCPUKernelColor = colorCPUKT.Color;

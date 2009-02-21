@@ -35,6 +35,7 @@ Process Hacker
    * "Set Token" function for Windows XP
    * "Verify File Signature" function
    * Around 50% reduction in CPU usage
+   * Specific highlighting can be enabled/disabled
    * CSR Processes tool - displays hidden processes (this does not detect Hacker 
      Defender but does detect simple kernel-mode rootkits)
    * Processes list in the notification icon menu, for quick actions on processes
