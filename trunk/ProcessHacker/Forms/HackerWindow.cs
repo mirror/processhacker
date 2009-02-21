@@ -2106,6 +2106,9 @@ namespace ProcessHacker
 
             LoadSettings();
 
+            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
+                this.Location = new Point(-3200, -3200);
+
             // load symbols on a separate thread
             Thread t = new Thread(new ThreadStart(delegate
             {
@@ -2148,13 +2151,19 @@ namespace ProcessHacker
 
             if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
             {
-                // HACK: I can't seem to be able to hide the window here, so I have to use a timer!
+                // HACK
                 System.Windows.Forms.Timer t2 =
                     new System.Windows.Forms.Timer();
 
-                t2.Interval = 10; 
+                t2.Interval = 1;
                 t2.Tick +=
-                    (sender_, e_) => { this.Hide(); t2.Enabled = false; };
+                    (sender_, e_) =>
+                    {
+                        t2.Enabled = false;
+                        this.Hide();
+                        this.Location = Properties.Settings.Default.WindowLocation;
+                        t2.Dispose();
+                    };
                 t2.Enabled = true;
             }
 

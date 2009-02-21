@@ -209,7 +209,11 @@ namespace ProcessHacker
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(HackerWindow = new HackerWindow());
+            Application.Run(HackerWindow = new HackerWindow()
+            {
+                Location = new Point(-3200, -3200),
+                StartPosition = FormStartPosition.Manual
+            });
         }
 
         public static void StartProcessHackerAdmin()
