@@ -769,9 +769,9 @@ namespace ProcessHacker
         {
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
+                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(node.PID))
                 {
-                    DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
+                    DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
                         " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
                         MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
@@ -803,9 +803,9 @@ namespace ProcessHacker
         {
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(processSelectedPID))
+                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(node.PID))
                 {
-                    DialogResult result = MessageBox.Show("The process with PID " + processSelectedPID + " is a system process. Are you" +
+                    DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
                         " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
                         MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
