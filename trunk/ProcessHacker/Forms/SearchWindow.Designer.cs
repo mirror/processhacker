@@ -42,17 +42,17 @@
             this.tabHeap = new System.Windows.Forms.TabPage();
             this.textHeapMS = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.tabStruct = new System.Windows.Forms.TabPage();
+            this.textStructAlign = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.listStructName = new System.Windows.Forms.ListBox();
             this.checkPrivate = new System.Windows.Forms.CheckBox();
             this.checkImage = new System.Windows.Forms.CheckBox();
             this.checkMapped = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.tabStruct = new System.Windows.Forms.TabPage();
-            this.listStructName = new System.Windows.Forms.ListBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textStructAlign = new System.Windows.Forms.TextBox();
             this.tabControl.SuspendLayout();
             this.tabLiteral.SuspendLayout();
             this.tabRegex.SuspendLayout();
@@ -221,6 +221,57 @@
             this.label4.TabIndex = 2;
             this.label4.Text = "Minimum Size:";
             // 
+            // tabStruct
+            // 
+            this.tabStruct.Controls.Add(this.textStructAlign);
+            this.tabStruct.Controls.Add(this.label5);
+            this.tabStruct.Controls.Add(this.label3);
+            this.tabStruct.Controls.Add(this.listStructName);
+            this.tabStruct.Location = new System.Drawing.Point(4, 22);
+            this.tabStruct.Name = "tabStruct";
+            this.tabStruct.Padding = new System.Windows.Forms.Padding(3);
+            this.tabStruct.Size = new System.Drawing.Size(485, 285);
+            this.tabStruct.TabIndex = 4;
+            this.tabStruct.Text = "Struct Search";
+            this.tabStruct.UseVisualStyleBackColor = true;
+            // 
+            // textStructAlign
+            // 
+            this.textStructAlign.Location = new System.Drawing.Point(68, 259);
+            this.textStructAlign.Name = "textStructAlign";
+            this.textStructAlign.Size = new System.Drawing.Size(100, 20);
+            this.textStructAlign.TabIndex = 3;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 262);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Alignment:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Struct:";
+            // 
+            // listStructName
+            // 
+            this.listStructName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listStructName.FormattingEnabled = true;
+            this.listStructName.IntegralHeight = false;
+            this.listStructName.Location = new System.Drawing.Point(50, 6);
+            this.listStructName.Name = "listStructName";
+            this.listStructName.Size = new System.Drawing.Size(429, 247);
+            this.listStructName.TabIndex = 0;
+            // 
             // checkPrivate
             // 
             this.checkPrivate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -273,7 +324,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(430, 342);
+            this.buttonOK.Location = new System.Drawing.Point(349, 342);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 13;
@@ -285,64 +336,13 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(349, 342);
+            this.buttonCancel.Location = new System.Drawing.Point(430, 342);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 14;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            // 
-            // tabStruct
-            // 
-            this.tabStruct.Controls.Add(this.textStructAlign);
-            this.tabStruct.Controls.Add(this.label5);
-            this.tabStruct.Controls.Add(this.label3);
-            this.tabStruct.Controls.Add(this.listStructName);
-            this.tabStruct.Location = new System.Drawing.Point(4, 22);
-            this.tabStruct.Name = "tabStruct";
-            this.tabStruct.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStruct.Size = new System.Drawing.Size(485, 285);
-            this.tabStruct.TabIndex = 4;
-            this.tabStruct.Text = "Struct Search";
-            this.tabStruct.UseVisualStyleBackColor = true;
-            // 
-            // listStructName
-            // 
-            this.listStructName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listStructName.FormattingEnabled = true;
-            this.listStructName.IntegralHeight = false;
-            this.listStructName.Location = new System.Drawing.Point(50, 6);
-            this.listStructName.Name = "listStructName";
-            this.listStructName.Size = new System.Drawing.Size(429, 247);
-            this.listStructName.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 6);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
-            this.label3.TabIndex = 1;
-            this.label3.Text = "Struct:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 262);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Alignment:";
-            // 
-            // textStructAlign
-            // 
-            this.textStructAlign.Location = new System.Drawing.Point(68, 259);
-            this.textStructAlign.Name = "textStructAlign";
-            this.textStructAlign.Size = new System.Drawing.Size(100, 20);
-            this.textStructAlign.TabIndex = 3;
             // 
             // SearchWindow
             // 

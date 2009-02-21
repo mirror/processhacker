@@ -76,7 +76,7 @@ namespace ProcessHacker
             this.listResults.Location = new System.Drawing.Point(12, 35);
             this.listResults.Name = "listResults";
             this.listResults.ShowItemToolTips = true;
-            this.listResults.Size = new System.Drawing.Size(464, 275);
+            this.listResults.Size = new System.Drawing.Size(464, 296);
             this.listResults.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listResults.TabIndex = 13;
             this.listResults.UseCompatibleStateImageBehavior = false;
