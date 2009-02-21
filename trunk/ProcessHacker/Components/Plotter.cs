@@ -73,22 +73,25 @@ namespace ProcessHacker.Components
             g.FillRectangle(new SolidBrush(this.BackColor), 0, 0, tWidth, tHeight);
 
             //draw grid
-            int x = tWidth / _gridSize.Width;
-            int y = tHeight / _gridSize.Height;
-
-            Pen pGrid = new Pen(_gridColor);
-            int pos;
-
-            for (int i = 0; i <= x; i++)
+            if (_showGrid)
             {
-                pos = tWidth - (i * _gridSize.Width + _gridStartPos - 1);
-                g.DrawLine(pGrid, pos, 0, pos, tHeight);
-            }
+                int x = tWidth / _gridSize.Width;
+                int y = tHeight / _gridSize.Height;
 
-            for (int i = 0; i <= y; i++)
-            {
-                pos = i * _gridSize.Height - 1;
-                g.DrawLine(pGrid, 0, pos, tWidth, pos);
+                Pen pGrid = new Pen(_gridColor);
+                int pos;
+
+                for (int i = 0; i <= x; i++)
+                {
+                    pos = tWidth - (i * _gridSize.Width + _gridStartPos - 1);
+                    g.DrawLine(pGrid, pos, 0, pos, tHeight);
+                }
+
+                for (int i = 0; i <= y; i++)
+                {
+                    pos = i * _gridSize.Height - 1;
+                    g.DrawLine(pGrid, 0, pos, tWidth, pos);
+                }
             }
 
             //draw lines
@@ -404,6 +407,13 @@ namespace ProcessHacker.Components
         {
             get { return _lineColor2; }
             set { _lineColor2 = value; }
+        }
+
+        private bool _showGrid = true;
+        public bool ShowGrid
+        {
+            get { return _showGrid; }
+            set { _showGrid = value; }
         }
 
         private Color _gridColor = Color.Green;

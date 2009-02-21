@@ -44,7 +44,7 @@ Process Hacker
    * File processing (signature verification, checks for packed images) is now 
      asynchronous. This means that there are no more delays when starting 
      certain programs.
-   * Slightly different notification icon
+   * Notification icon looks better and shows both user and kernel time
    * GDI and USER handle counts
    * Terminator's TT2 test is more effective now
  * FIXED:

@@ -1140,7 +1140,7 @@ namespace ProcessHacker
 
         private void processP_IconUpdater()
         {
-            cpuUsageIcon.Update(processP.CurrentCPUUsage);
+            cpuUsageIcon.Update(processP.CurrentCPUKernelUsage, processP.CurrentCPUUserUsage);
 
             if (NotifyIcon.Icon != null)
                 Win32.DestroyIcon(notifyIcon.Icon.Handle);

@@ -85,7 +85,8 @@ namespace ProcessHacker
         private Dictionary<string, Win32.VerifyResult> _fileResults = new Dictionary<string, Win32.VerifyResult>();
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private long _lastOtherTime;
-        private long _lastSysTime;
+        private long _lastSysKernelTime;
+        private long _lastSysUserTime;
 
         private delegate void ProcessFileDelegate(int pid, string fileName);
 
@@ -103,15 +104,19 @@ namespace ProcessHacker
             this.ProcessorPerfArray = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[this.System.NumberOfProcessors];
 
             this.UpdateProcessorPerf();
-            _lastSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
-            _lastOtherTime = this.ProcessorPerf.IdleTime;
+            _lastSysKernelTime = this.ProcessorPerf.KernelTime;
+            _lastSysUserTime = this.ProcessorPerf.UserTime;
+            _lastOtherTime = this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + 
+                this.ProcessorPerf.InterruptTime;
         }
 
         public Win32.SYSTEM_BASIC_INFORMATION System { get; private set; }
         public Win32.SYSTEM_PERFORMANCE_INFORMATION Performance { get; private set; }
         public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION ProcessorPerf { get; private set; }
         public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] ProcessorPerfArray { get; private set; }
-        public float CurrentCPUUsage { get; private set; }
+        public float CurrentCPUKernelUsage { get; private set; }
+        public float CurrentCPUUserUsage { get; private set; }
+        public float CurrentCPUUsage { get { return this.CurrentCPUKernelUsage + this.CurrentCPUUserUsage; } }
         public int PIDWithMostCPUUsage { get; private set; }
 
         public Queue<FileProcessResult> FileProcessingQueue
@@ -301,14 +306,16 @@ namespace ProcessHacker
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
 
-            long thisSysTime = this.ProcessorPerf.KernelTime + this.ProcessorPerf.UserTime;
-            long sysTime = thisSysTime - _lastSysTime;
+            long thisSysKernelTime = this.ProcessorPerf.KernelTime;
+            long sysKernelTime = thisSysKernelTime - _lastSysKernelTime;
+            _lastSysKernelTime = thisSysKernelTime;
 
-            _lastSysTime = thisSysTime;
+            long thisSysUserTime = this.ProcessorPerf.UserTime;
+            long sysUserTime = thisSysUserTime - _lastSysUserTime;
+            _lastSysUserTime = thisSysUserTime;
 
             long thisOtherTime = this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime;
             long otherTime = thisOtherTime - _lastOtherTime;
-
             _lastOtherTime = thisOtherTime;
 
             // set System Idle Process CPU time
@@ -646,7 +653,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / (sysTime + otherTime);
+                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / 
+                            (sysKernelTime + sysUserTime + otherTime);
 
                         if (newitem.CPUUsage > 400.0f)
                             newitem.CPUUsage /= 8.0f;
@@ -702,8 +710,11 @@ namespace ProcessHacker
                 }
             }
 
-            if (thisSysTime != 0)
-                this.CurrentCPUUsage = (float)sysTime / (sysTime + otherTime);
+            if (thisSysKernelTime != 0 && thisSysUserTime != 0)
+            {
+                this.CurrentCPUKernelUsage = (float)sysKernelTime / (sysKernelTime + sysUserTime + otherTime);
+                this.CurrentCPUUserUsage = (float)sysUserTime / (sysKernelTime + sysUserTime + otherTime);
+            }
 
             Dictionary = newdictionary;
 

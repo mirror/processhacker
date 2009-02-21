@@ -30,33 +30,33 @@ using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using System.Collections.Generic;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
     public class UsageIcon
     {
-        private List<float> _values;
+        private Plotter _plotter;
         private int _width;
         private int _height;
 
         public UsageIcon(int width, int height)
         {
-            _values = new List<float>();
             _width = width;
             _height = height;
-
-            for (int i = 0; i < width; i++)
-                _values.Add(0);
+            _plotter = new Plotter()
+            {
+                Size = new Size(_width, _height),
+                UseSecondLine = true,
+                ShowGrid = false,
+                BackColor = Color.Black,
+                MoveStep = 2
+            };
         }
 
-        public void Update(float value)
+        public void Update(float k, float u)
         {
-            if (value > 1)
-                throw new ArgumentOutOfRangeException();
-
-            // shift values left, push value onto the end
-            _values.RemoveAt(0);
-            _values.Add(value);
+            _plotter.Add(k, u);
         }
 
         public Color BackColor { get; set; }
@@ -65,24 +65,14 @@ namespace ProcessHacker
 
         public Icon GetIcon()
         {
+            _plotter.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
+            _plotter.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
+
             using (Bitmap bm = new Bitmap(_width, _height))
             {
-                using (Graphics g = Graphics.FromImage(bm))
-                {
-                    g.FillRectangle(new SolidBrush(this.BackColor), new Rectangle(0, 0, _width, _height));   
-                    g.DrawLine(new Pen(Color.Red), new Point(0, _height - 1), new Point(_width - 1, _height - 1));
+                _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), bm.Size));
 
-                    for (int x = 0; x < _width; x++)
-                    {
-                        int height = (int)(_values[x] * _height);
-
-                        g.DrawLine(new Pen(this.Color),
-                            new Point(x, _height - 1),
-                            new Point(x, _height - height - 1));
-                    }
-
-                    return Icon.FromHandle(bm.GetHicon());
-                }
+                return Icon.FromHandle(bm.GetHicon());
             }
         }
     }
