@@ -1869,13 +1869,15 @@ namespace ProcessHacker
 
             try
             {
-                Process p = Process.GetProcessById(pid);
-
-                foreach (string s in Misc.DangerousNames)
+                using (var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
                 {
-                    if ((Environment.SystemDirectory + "\\" + s).ToLower() == Misc.GetRealPath(p.MainModule.FileName).ToLower())
+                    foreach (string s in Misc.DangerousNames)
                     {
-                        return true;
+                        if ((Environment.SystemDirectory + "\\" + s).ToLower() == 
+                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())).ToLower())
+                        {
+                            return true;
+                        }
                     }
                 }
             }
