@@ -840,41 +840,43 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string currentDirectory =
-                        processP.Dictionary[processSelectedPID].ProcessQueryLimitedVmReadHandle.GetPebString(
-                        Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
-                    string cmdLine = processP.Dictionary[processSelectedPID].CmdLine;
-
-                    try
+                    using (var phandle = new Win32.ProcessHandle(processSelectedPID,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                     {
-                        using (var phandle = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                            phandle.Terminate();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Could not terminate the process: " + ex.Message, "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                        string currentDirectory = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
+                        string cmdLine = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CommandLine);
 
-                    try
-                    {
-                        Win32.STARTUPINFO startupInfo = new Win32.STARTUPINFO();
-                        Win32.PROCESS_INFORMATION procInfo = new Win32.PROCESS_INFORMATION();
+                        try
+                        {
+                            using (var phandle2 = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                                phandle2.Terminate();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Could not terminate the process: " + ex.Message, "Process Hacker",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
-                        startupInfo.Size = Marshal.SizeOf(startupInfo);
+                        try
+                        {
+                            Win32.STARTUPINFO startupInfo = new Win32.STARTUPINFO();
+                            Win32.PROCESS_INFORMATION procInfo = new Win32.PROCESS_INFORMATION();
 
-                        if (!Win32.CreateProcess(null, cmdLine, 0, 0, false, 0, 0, currentDirectory,
-                            ref startupInfo, ref procInfo))
-                            Win32.ThrowLastWin32Error();
+                            startupInfo.Size = Marshal.SizeOf(startupInfo);
 
-                        Win32.CloseHandle(procInfo.hProcess);
-                        Win32.CloseHandle(procInfo.hThread);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Could not start the command '" + cmdLine + "': " + ex.Message, "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            if (!Win32.CreateProcess(null, cmdLine, 0, 0, false, 0, 0, currentDirectory,
+                                ref startupInfo, ref procInfo))
+                                Win32.ThrowLastWin32Error();
+
+                            Win32.CloseHandle(procInfo.hProcess);
+                            Win32.CloseHandle(procInfo.hThread);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Could not start the command '" + cmdLine + "': " + ex.Message, "Process Hacker",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                 }
                 catch (Exception ex)

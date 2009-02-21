@@ -202,6 +202,11 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.PrivilegeListColumns, listPrivileges);
         }
 
+        public Win32.IWithToken Object
+        {
+            get { return _object; }
+        }
+
         public void SaveSettings()
         {
             if (_groups != null)

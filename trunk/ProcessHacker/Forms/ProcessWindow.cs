@@ -212,7 +212,12 @@ namespace ProcessHacker
                 listModules.SaveSettings();
                 listMemory.SaveSettings();
                 listHandles.SaveSettings();
-                _tokenProps.SaveSettings();
+
+                if (_tokenProps != null)
+                {
+                    _tokenProps.SaveSettings();
+                    (_tokenProps.Object as Win32.ProcessHandle).Dispose();
+                }
 
                 _threadP.Kill();
                 _moduleP.Kill();
@@ -371,9 +376,14 @@ namespace ProcessHacker
 
         private void InitializeSubControls()
         {
-            _tokenProps = new TokenProperties(_processItem.ProcessQueryLimitedHandle);
-            _tokenProps.Dock = DockStyle.Fill;
-            tabToken.Controls.Add(_tokenProps);
+            try
+            {
+                _tokenProps = new TokenProperties(new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights));
+                _tokenProps.Dock = DockStyle.Fill;
+                tabToken.Controls.Add(_tokenProps);
+            }
+            catch
+            { }
 
             _serviceProps = new ServiceProperties(
                 Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
@@ -674,11 +684,16 @@ namespace ProcessHacker
 
                 labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
 
-                if (item.ProcessQueryLimitedHandle != null)
+                try
                 {
-                    labelOtherGDIHandles.Text = item.ProcessQueryLimitedHandle.GetGuiResources(false).ToString("N0");
-                    labelOtherUSERHandles.Text = item.ProcessQueryLimitedHandle.GetGuiResources(true).ToString("N0");
+                    using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
+                        labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
+                    }
                 }
+                catch
+                { }
             }
         }
 

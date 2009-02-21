@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Security.Principal;
 
 namespace ProcessHacker
 {
@@ -167,6 +168,11 @@ namespace ProcessHacker
                     {
                         try { ElevationType = thandle.GetElevationType(); }
                         catch { ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull; }
+
+                        if (ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault &&
+                            !(new WindowsPrincipal(WindowsIdentity.GetCurrent())).
+                                IsInRole(WindowsBuiltInRole.Administrator))
+                            ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited;
                     }
                     else
                     {

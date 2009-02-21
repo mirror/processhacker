@@ -66,8 +66,6 @@ namespace ProcessHacker
 
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
-        public Win32.ProcessHandle ProcessQueryLimitedHandle;
-        public Win32.ProcessHandle ProcessQueryLimitedVmReadHandle;
     }
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
@@ -366,12 +364,6 @@ namespace ProcessHacker
                     if (item.ProcessQueryHandle != null)
                         item.ProcessQueryHandle.Dispose();
 
-                    if (item.ProcessQueryLimitedHandle != null)
-                        item.ProcessQueryLimitedHandle.Dispose();
-
-                    if (item.ProcessQueryLimitedVmReadHandle != null)
-                        item.ProcessQueryLimitedVmReadHandle.Dispose();
-
                     if (item.TokenQueryHandle != null)
                         item.TokenQueryHandle.Dispose();
 
@@ -416,10 +408,14 @@ namespace ProcessHacker
                 {
                     Process p = null;
                     ProcessItem item = new ProcessItem();
+                    Win32.ProcessHandle queryLimitedHandle = null;
 
                     if (pid >= 0)
                     {
                         try { p = Process.GetProcessById(pid); }
+                        catch { }
+
+                        try { queryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights); }
                         catch { }
                     }
 
@@ -480,26 +476,30 @@ namespace ProcessHacker
 
                         try
                         {
-                            item.ProcessQueryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
-
-                            try
+                            if (queryLimitedHandle != null)
                             {
-                                item.TokenQueryHandle = item.ProcessQueryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
+                                try
+                                {
+                                    item.TokenQueryHandle = queryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
 
-                                try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
-                                catch { }
-                                try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
-                                catch { }
-                                try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
-                                catch { }
-                                try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
+                                    try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
+                                    catch { }
+                                    try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
+                                    catch { }
+                                    try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
+                                    catch { }
+                                    try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
+                                    catch { }
+
+                                    item.TokenQueryHandle.Dispose();
+                                    item.TokenQueryHandle = null;
+                                }
+                                catch
+                                { }
+
+                                try { item.IsInJob = queryLimitedHandle.IsInJob(); }
                                 catch { }
                             }
-                            catch
-                            { }
-
-                            try { item.IsInJob = item.ProcessQueryLimitedHandle.IsInJob(); }
-                            catch { }
                         }
                         catch
                         { }
@@ -509,14 +509,14 @@ namespace ProcessHacker
                     {
                         if (pid != 4)
                         {
-                            if (item.ProcessQueryLimitedHandle != null)
+                            if (queryLimitedHandle != null)
                             {
                                 // first try to get the native file name, to prevent PEB
                                 // file name spoofing.
                                 try
                                 {
                                     item.FileName =
-                                        Win32.DeviceFileNameToDos(item.ProcessQueryLimitedHandle.GetNativeImageFileName());
+                                        Win32.DeviceFileNameToDos(queryLimitedHandle.GetNativeImageFileName());
                                 }
                                 catch
                                 { }
@@ -528,7 +528,7 @@ namespace ProcessHacker
                                 {
                                     try
                                     {
-                                        item.FileName = item.ProcessQueryLimitedHandle.GetImageFileName();
+                                        item.FileName = queryLimitedHandle.GetImageFileName();
                                     }
                                     catch
                                     { }
@@ -625,11 +625,10 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.ProcessQueryLimitedVmReadHandle =
-                            new Win32.ProcessHandle(pid,
-                                Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+                        using (var phandle = new Win32.ProcessHandle(pid,
+                            Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                            item.CmdLine = phandle.GetCommandLine();
 
-                        item.CmdLine = item.ProcessQueryLimitedVmReadHandle.GetCommandLine();
                     }
                     catch
                     { }
