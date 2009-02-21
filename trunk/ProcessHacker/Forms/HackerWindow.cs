@@ -1956,7 +1956,7 @@ namespace ProcessHacker
             }
 
             if (Program.KPH == null)
-                toolsMenuItem.Visible = false;
+                csrProcessesMenuItem.Visible = false;
 
             if (Program.KPH == null || Program.WindowsVersion != "XP")
                 setTokenProcessMenuItem.Visible = false;
