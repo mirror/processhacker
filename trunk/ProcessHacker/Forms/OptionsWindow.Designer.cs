@@ -478,7 +478,7 @@
             // columnDescription
             // 
             this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 160;
+            this.columnDescription.Width = 250;
             // 
             // textHighlightingDuration
             // 
