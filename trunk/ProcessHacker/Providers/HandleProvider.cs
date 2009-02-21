@@ -43,10 +43,16 @@ namespace ProcessHacker
             : base()
         {
             _pid = PID;
-            _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+
+            try
+            {
+                _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+            }
+            catch
+            { }
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);  
-            this.Killed += () => { _processHandle.Dispose(); };
+            this.Killed += () => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         private void UpdateOnce()
