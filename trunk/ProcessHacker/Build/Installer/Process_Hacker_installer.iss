@@ -5,7 +5,6 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 ;*Psvince.dll
 ;   http://www.vincenzo.net/isxkb/images/9/91/Psvince.zip
-;
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "21"
@@ -110,6 +109,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Fil
 [InstallDelete]
 ;Remove ProcessHacker.exe.config since it's not needed anymore
 Type: files; Name: {app}\ProcessHacker.exe.config
+
 ;Remove shortcuts in Start Menu of other languages
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
@@ -204,9 +204,10 @@ Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
 	// When uninstalling ask user to delete Process Hacker's and settings based on whether this file exists only
 	if CurUninstallStep = usUninstall then begin
-		if DirExists(ExpandConstant('{localappdata}\wj32\'))then begin
-			if MsgBox(ExpandConstant('{cm:DeleteSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
+		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt')) then begin
+			if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
 				DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
+				DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
 			end;
 		end;
 	end;
@@ -224,7 +225,7 @@ begin
 	if NetFrameWorkInstalled then begin
 		Result := True;
 		end else begin
-			Result1 := MsgBox(ExpandConstant('{cm:asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = idYes;
+			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = idYes;
 			if Result1 =False then begin
 			Result:=False;
 		end else begin
@@ -237,7 +238,7 @@ end;
 begin
 	// Check if Process Hacker is running during installation
 	if IsModuleLoaded( 'ProcessHacker.exe' ) then begin
-		MsgBox(ExpandConstant('{cm:AppIsRunningInstall}'), mbError, MB_OK );
+		MsgBox(ExpandConstant('{cm:msg_AppIsRunningInstall}'), mbError, MB_OK );
 		Result := False;
 	end
 	else Result := True;
@@ -248,7 +249,7 @@ begin
 		// Create a mutex for the installer and if it's already running then expose a message and stop installation
 		if CheckForMutexes(installer_mutex_name) then begin
 			if not WizardSilent() then
-			MsgBox(ExpandConstant('{cm:SetupIsRunningWarningInstall}'), mbError, MB_OK);
+			MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningInstall}'), mbError, MB_OK);
 			Result := False;
 			end
 			else begin
@@ -261,7 +262,7 @@ function InitializeUninstall(): Boolean;
 begin
 	// Check if app is running during uninstallation
 	if IsModuleLoadedU( 'ProcessHacker.exe' ) then begin
-		MsgBox(ExpandConstant('{cm:AppIsRunningUninstall}'), mbError, MB_OK );
+		MsgBox(ExpandConstant('{cm:msg_AppIsRunningUninstall}'), mbError, MB_OK );
 		Result := False;
 	end
 	else Result := True;
@@ -270,7 +271,7 @@ begin
 		Result := True;
 			if CheckForMutexes(installer_mutex_name) then begin
 				if not WizardSilent() then
-				MsgBox(ExpandConstant('{cm:SetupIsRunningWarningUninstall}'), mbError, MB_OK);
+				MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
 		Result := False;
 		end
 		else begin
