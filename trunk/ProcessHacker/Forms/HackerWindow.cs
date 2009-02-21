@@ -2041,6 +2041,7 @@ namespace ProcessHacker
                     {
                         vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
                         runAsServiceMenuItem.Visible = false;
+                        runAsProcessMenuItem.Visible = false;
                     }
                     else
                     {
