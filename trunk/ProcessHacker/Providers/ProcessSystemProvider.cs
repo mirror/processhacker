@@ -633,6 +633,9 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    if (queryLimitedHandle != null)
+                        queryLimitedHandle.Dispose();
+
                     newdictionary.Add(pid, item);
                     this.CallDictionaryAdded(item);
                 }
