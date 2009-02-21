@@ -648,6 +648,13 @@ namespace ProcessHacker
                     {
                         newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / (sysTime + otherTime);
 
+                        if (newitem.CPUUsage > 400.0f)
+                            newitem.CPUUsage /= 8.0f;
+                        else if (newitem.CPUUsage > 200.0f)
+                            newitem.CPUUsage /= 4.0f;
+                        else if (newitem.CPUUsage > 100.0f)
+                            newitem.CPUUsage /= 2.0f;
+
                         if (pid != 0 && newitem.CPUUsage > mostCPUUsage)
                         {
                             mostCPUUsage = newitem.CPUUsage;
