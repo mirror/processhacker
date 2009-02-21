@@ -54,7 +54,7 @@ namespace ProcessHacker
         NetworkProvider networkP = new NetworkProvider();
 
         Bitmap uacShieldIcon;
-        UsageIcon cpuUsageIcon = new UsageIcon(16, 16);
+        UsageIcon cpuUsageIcon;
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
@@ -2061,6 +2061,7 @@ namespace ProcessHacker
                 performAdminServiceMenuItem.Visible = false;
             }
 
+            cpuUsageIcon = new UsageIcon(16, 16);
             timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             timerFire.Enabled = true;
             timerFire_Tick(null, null);
