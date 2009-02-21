@@ -1,15 +1,15 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;ISTool Version 5.2.1, Script by XhmikosR;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;Requirements:																					;;
-;;1) Download Inno Setup QuickStart Pack and psvince.dll:										;;
-;;	 http://www.jrsoftware.org/isdl.php#qsp														;;
-;;	 http://www.vincenzo.net/isxkb/images/9/91/Psvince.zip										;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;ISTool Version 5.2.1, Script by XhmikosR
+;
+;Requirements:
+;*Inno Setup QuickStart Pack
+;   http://www.jrsoftware.org/isdl.php#qsp
+;*Psvince.dll
+;   http://www.vincenzo.net/isxkb/images/9/91/Psvince.zip
+;
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "20"
-#define installer_build_date "20.02.2009"
+#define installer_build_number "21"
+#define installer_build_date "21.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
@@ -54,9 +54,8 @@ InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=false
 DirExistsWarning=no
 ShowTasksTreeLines=true
-CompressionThreads=4
 
-;Specify the architectures that Process Hacker can run on.
+;Specify the architectures that Process Hacker can run on
 ArchitecturesAllowed=x86
 
 [Languages]
@@ -73,13 +72,13 @@ BeveledLabel=Process Hacker v{#= app_version} by {#= app_publisher}             
 Source: Psvince\psvince.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Assistant.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\..\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\..\HACKING.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\HACKING.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\..\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\..\KProcessHacker\i386\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\..\README.txt; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\README.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\structs.txt; DestDir: {app}; Flags: ignoreversion
 Source: Icons\uninstall.ico; DestDir: {app}; Flags: ignoreversion
 
@@ -109,7 +108,9 @@ Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: de
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 
 [InstallDelete]
+;Remove ProcessHacker.exe.config since it's not needed anymore
 Type: files; Name: {app}\ProcessHacker.exe.config
+;Remove shortcuts in Start Menu of other languages
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
