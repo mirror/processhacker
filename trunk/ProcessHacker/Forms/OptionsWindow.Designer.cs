@@ -55,6 +55,7 @@
             this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.listHighlightingColors = new System.Windows.Forms.ListView();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.textHighlightingDuration = new System.Windows.Forms.NumericUpDown();
@@ -79,7 +80,6 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -386,6 +386,7 @@
             this.checkReplaceTaskManager.Size = new System.Drawing.Size(245, 18);
             this.checkReplaceTaskManager.TabIndex = 17;
             this.checkReplaceTaskManager.Text = "Replace Task Manager with Process Hacker";
+            this.toolTipProvider.SetToolTip(this.checkReplaceTaskManager, "Launches Process Hacker instead of Task Manager.");
             this.checkReplaceTaskManager.UseVisualStyleBackColor = true;
             // 
             // checkEnableKPH
@@ -443,6 +444,15 @@
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 297);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(180, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "Double-click on an item to change it.";
             // 
             // listHighlightingColors
             // 
@@ -693,15 +703,6 @@
             this.toolTipProvider.InitialDelay = 250;
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 297);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(180, 13);
-            this.label5.TabIndex = 11;
-            this.label5.Text = "Double-click on an item to change it.";
             // 
             // OptionsWindow
             // 

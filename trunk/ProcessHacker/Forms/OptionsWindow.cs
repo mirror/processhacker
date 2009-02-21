@@ -84,8 +84,8 @@ namespace ProcessHacker
                     false
                     );
 
-                if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")) == 
-                    Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName)
+                if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower() ==
+                    Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
                 {
                     checkReplaceTaskManager.Checked = true;
                 }
