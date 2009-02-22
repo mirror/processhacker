@@ -63,6 +63,7 @@ namespace ProcessHacker
         public int ImportModules;
 
         public bool JustProcessed;
+        public bool ProcessedOnce;
 
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
@@ -682,6 +683,13 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
+
+                    if (pid > 0 && item.IsPacked && !item.ProcessedOnce)
+                    {
+                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
+                            r => { }, null);
+                        newitem.ProcessedOnce = true;
                     }
 
                     //if (item.TokenQueryHandle != null)
