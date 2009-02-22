@@ -8,7 +8,7 @@
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "21"
-#define installer_build_date "21.02.2009"
+#define installer_build_date "22.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
@@ -204,10 +204,11 @@ Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
 	// When uninstalling ask user to delete Process Hacker's and settings based on whether this file exists only
 	if CurUninstallStep = usUninstall then begin
-		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt')) then begin
+		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt')) or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt')) then begin
 			if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
 				DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
 				DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
+				DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
 			end;
 		end;
 	end;
