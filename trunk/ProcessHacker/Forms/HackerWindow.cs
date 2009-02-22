@@ -473,9 +473,9 @@ namespace ProcessHacker
 
         #region Notification Icon & Menu
 
-        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
-            showHideMenuItem_Click(null, null);
+            showHideMenuItem_Click(sender, e);
         }
 
         private void menuIcon_Popup(object sender, EventArgs e)
@@ -2181,6 +2181,7 @@ namespace ProcessHacker
             this.LoadFixMenuItems();
             this.LoadControls();
             this.LoadSettings();
+            this.LoadNotificationIcon();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();
 
@@ -2224,6 +2225,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }   
+        }
     }
 }
