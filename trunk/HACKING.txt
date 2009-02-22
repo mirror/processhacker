@@ -4,8 +4,7 @@ If you use SVN code you may encounter weird bugs. Please use releases instead.
 Process Hacker is developed using Visual C# 2008 Express Edition, and 
 will only work with C# compilers which support C# 3.0.
 
-The build script relies on ILMerge and InnoSetup's iscc.exe being present in 
-your PATH environment variable.
+The build script relies on ILMerge being present in your PATH environment variable.
 
 GUIDE TO DIRECTORY ORGANIZATION
 * Assistant - this a small program which is intended to be installed as a 
