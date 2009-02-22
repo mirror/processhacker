@@ -343,7 +343,6 @@ namespace ProcessHacker
 
             box.TopMost = this.TopMost;
             box.DefaultFileName = "Process Hacker Log.txt";
-            box.TextBox.SelectionStart = str.Length;
             box.ShowDialog();
         }
 
@@ -473,9 +472,9 @@ namespace ProcessHacker
 
         #region Notification Icon & Menu
 
-        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            showHideMenuItem_Click(sender, e);
+            showHideMenuItem_Click(null, null);
         }
 
         private void menuIcon_Popup(object sender, EventArgs e)
@@ -2180,8 +2179,8 @@ namespace ProcessHacker
             this.LoadUac();
             this.LoadFixMenuItems();
             this.LoadControls();
-            this.LoadSettings();
             this.LoadNotificationIcon();
+            this.LoadSettings();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();
 
@@ -2225,6 +2224,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }
+        }   
     }
 }
