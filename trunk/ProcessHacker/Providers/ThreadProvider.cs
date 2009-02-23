@@ -170,12 +170,12 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (Win32.ThreadHandle handle =
+                        using (Win32.ThreadHandle thandle =
                             new Win32.ThreadHandle(tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
                         {
                             int retLen;
 
-                            Win32.ZwQueryInformationThread(handle.Handle,
+                            Win32.ZwQueryInformationThread(thandle.Handle,
                                 Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
                                 out item.StartAddressI, 4, out retLen);
                         }

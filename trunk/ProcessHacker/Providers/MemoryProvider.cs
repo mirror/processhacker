@@ -73,7 +73,6 @@ namespace ProcessHacker
             catch
             { }
 
-            Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
             Dictionary<int, Win32.MEMORY_BASIC_INFORMATION> memoryInfo = new Dictionary<int, Win32.MEMORY_BASIC_INFORMATION>();
             Dictionary<int, MemoryItem> newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
 
@@ -83,7 +82,7 @@ namespace ProcessHacker
 
                 while (true)
                 {
-                    if (!Win32.VirtualQueryEx(phandle, address, ref info, Marshal.SizeOf(info)))
+                    if (!Win32.VirtualQueryEx(_processHandle, address, ref info, Marshal.SizeOf(info)))
                     {
                         break;
                     }
@@ -164,7 +163,6 @@ namespace ProcessHacker
                 }
             }
 
-            phandle.Dispose();
             Dictionary = newdictionary;
         }
 
