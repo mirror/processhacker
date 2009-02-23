@@ -8,7 +8,7 @@
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "21"
-#define installer_build_date "22.02.2009"
+#define installer_build_date "23.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
@@ -62,7 +62,7 @@ Name: en; MessagesFile: compiler:Default.isl
 Name: gr; MessagesFile: Languages\Greek.isl
 
 [Messages]
-BeveledLabel=Process Hacker v{#= app_version} by {#= app_publisher}                                                   Setup v.{#= app_version}.{#= installer_build_number} built on {#= installer_build_date}
+BeveledLabel=Process Hacker v{#= app_version} by {#= app_publisher}                                                    Setup v{#= app_version}.{#= installer_build_number} built on {#= installer_build_date}
 
 ; Include the installer's custom messages
 #include "Custom_Messages.iss"
