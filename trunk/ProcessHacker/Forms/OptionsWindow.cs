@@ -77,21 +77,27 @@ namespace ProcessHacker
             colorIORO.Color = Properties.Settings.Default.PlotterIOROColor;
             colorIOW.Color = Properties.Settings.Default.PlotterIOWColor;
 
+            // See if we can write to the key.
             try
             {
                 var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
-                    "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
-                    false
+                    "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options",
+                    true
                     );
 
-                if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
-                    Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
+                try
                 {
-                    checkReplaceTaskManager.Checked = true;
+                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.ToLower() == "taskmgr.exe"))
+                        key.CreateSubKey("taskmgr.exe");
+
+                    Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                        "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
+                        true
+                        ).Close();
                 }
-                else
+                finally
                 {
-                    checkReplaceTaskManager.Checked = false;
+                    key.Close();
                 }
             }
             catch
@@ -99,13 +105,29 @@ namespace ProcessHacker
                 checkReplaceTaskManager.Enabled = false;
             }
 
-            // See if we can write to the key.
             try
             {
-                Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                     "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
-                    true
+                    false
                     );
+
+                try
+                {
+                    if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
+                        Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
+                    {
+                        checkReplaceTaskManager.Checked = true;
+                    }
+                    else
+                    {
+                        checkReplaceTaskManager.Checked = false;
+                    }
+                }
+                finally
+                {
+                    key.Close();
+                }
             }
             catch
             {
@@ -273,16 +295,23 @@ namespace ProcessHacker
                         true
                         );
 
-                    if (checkReplaceTaskManager.Checked)
+                    try
                     {
-                        key.SetValue("Debugger", fileName);
+                        if (checkReplaceTaskManager.Checked)
+                        {
+                            key.SetValue("Debugger", fileName);
+                        }
+                        else
+                        {
+                            if (_oldTaskMgrDebugger.ToLower().Trim('"') == fileName.ToLower())
+                                key.DeleteValue("Debugger");
+                            else if (_oldTaskMgrDebugger != "")
+                                key.SetValue("Debugger", _oldTaskMgrDebugger);
+                        }
                     }
-                    else
+                    finally
                     {
-                        if (_oldTaskMgrDebugger.ToLower().Trim('"') == fileName.ToLower())
-                            key.DeleteValue("Debugger");
-                        else if (_oldTaskMgrDebugger != "")
-                            key.SetValue("Debugger", _oldTaskMgrDebugger);
+                        key.Close();
                     }
                 }
                 catch (Exception ex)

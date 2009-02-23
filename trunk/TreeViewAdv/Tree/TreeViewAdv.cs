@@ -28,6 +28,7 @@ namespace Aga.Controls.Tree
 		private Pen _linePen;
 		private Pen _markPen;
 		private bool _suspendUpdate;
+        private bool _completeSuspendUpdate; // Overrides my (wj32's) hacks
 		private bool _needFullUpdate;
 		private bool _fireSelectionEvent;
 		private NodePlusMinus _plusMinus;
@@ -276,16 +277,27 @@ namespace Aga.Controls.Tree
 			//SuspendSelectionEvent = true;
 		}
 
+        public void BeginCompleteUpdate()
+        {
+            _completeSuspendUpdate = true;
+        }
+
 		public void EndUpdate()
 		{
 			_suspendUpdate = _suspendedStack.Pop();
 
-			if (_needFullUpdate)
+			if (_needFullUpdate && !_completeSuspendUpdate)
 				FullUpdate();
 			else
 				UpdateView();
 			//SuspendSelectionEvent = false;
 		}
+
+        public void EndCompleteUpdate()
+        {
+            _completeSuspendUpdate = false;
+            FullUpdate();
+        }
 
 		public void ExpandAll()
 		{
@@ -298,7 +310,7 @@ namespace Aga.Controls.Tree
 		}
 
 		/// <summary>
-		/// Expand all parent nodes, andd scroll to the specified node
+		/// Expand all parent nodes and scroll to the specified node
 		/// </summary>
 		public void EnsureVisible(TreeNodeAdv node)
 		{
@@ -1047,14 +1059,16 @@ namespace Aga.Controls.Tree
 			if (node != null)
 			{
 				ReadChilds(node);
-				UpdateSelection();
-				SmartFullUpdate();
+                UpdateSelection();
+
+                if (!_completeSuspendUpdate)
+                {
+                    this.FullUpdate();
+                    this.Invalidate();
+                }
 			}
 			//else 
 			//	throw new ArgumentException("Path not found");
-
-            this.FullUpdate();
-            this.Invalidate();
 		}
 
 		private void _model_NodesRemoved(object sender, TreeModelEventArgs e)
@@ -1088,6 +1102,7 @@ namespace Aga.Controls.Tree
 					}
 				}
 			}
+
 			UpdateSelection();
 			SmartFullUpdate();
 		}

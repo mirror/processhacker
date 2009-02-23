@@ -194,24 +194,6 @@ namespace ProcessHacker
 
         #region Main Menu
 
-        private void selectAllHackerMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (Control c in listControls)
-            {
-                if (c.Focused)
-                {
-                    if (c is ListView)
-                    {
-                        Misc.SelectAll((c as ListView).Items);
-                    }
-                    else if (c is TreeViewAdv)
-                    {
-                        Misc.SelectAll((c as TreeViewAdv).AllNodes);
-                    }
-                }
-            }
-        }
-
         private void runMenuItem_Click(object sender, EventArgs e)
         {
             Win32.SHRunDialog(this.Handle, 0, 0, null, null, 0);
@@ -1129,7 +1111,13 @@ namespace ProcessHacker
             processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(UpdateCommon));
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    treeProcesses.Tree.EndUpdate();
+                    treeProcesses.Tree.EndCompleteUpdate();
+                    this.Cursor = Cursors.Default;
+                    this.UpdateCommon();
+                }));
         }
 
         private void processP_IconUpdater()
@@ -2053,6 +2041,9 @@ namespace ProcessHacker
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
+            treeProcesses.Tree.BeginCompleteUpdate();
+            treeProcesses.Tree.BeginUpdate();
+            this.Cursor = Cursors.WaitCursor;
             processP.RunOnceAsync();
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_IconUpdater);
@@ -2081,6 +2072,16 @@ namespace ProcessHacker
             networkP.Enabled = true;
 
             tabControlBig_SelectedIndexChanged(null, null);
+        }
+
+        private void LoadFixSelectAll()
+        {
+            treeProcesses.Tree.KeyDown +=
+                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(treeProcesses.TreeNodes); };
+            listServices.List.KeyDown +=
+                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listServices.List.Items); };
+            listNetwork.List.KeyDown +=
+                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listNetwork.List.Items); };
         }
 
         private void LoadSymbols()
@@ -2166,20 +2167,24 @@ namespace ProcessHacker
         public HackerWindow()
         {
             InitializeComponent();
+
+            this.SuspendLayout();
+            this.LoadVerifySettings();
             this.CreateShutdownMenuItems();
+            this.LoadFixMenuItems();
+            this.LoadNotificationIcon();
+            this.ResumeLayout();
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
         {
-            this.LoadVerifySettings();
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
             this.LoadUac();
-            this.LoadFixMenuItems();
             this.LoadControls();
-            this.LoadNotificationIcon();
+            this.LoadFixSelectAll();
             this.LoadSettings();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();

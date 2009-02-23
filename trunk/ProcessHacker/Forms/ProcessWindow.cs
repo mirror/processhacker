@@ -141,6 +141,8 @@ namespace ProcessHacker
 
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
             // load settings
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
@@ -201,6 +203,8 @@ namespace ProcessHacker
 
             // disable providers which aren't in use
             tabControl_SelectedIndexChanged(null, null);
+
+            this.ResumeLayout();
         } 
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
