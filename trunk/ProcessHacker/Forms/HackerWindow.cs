@@ -2189,6 +2189,9 @@ namespace ProcessHacker
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();
 
+            if (tabControlBig.SelectedTab == tabProcesses)
+                treeProcesses.Tree.Select();
+
             if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
                 this.Location = new Point(-3200, -3200);
 
