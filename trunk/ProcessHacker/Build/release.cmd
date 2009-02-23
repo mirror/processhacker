@@ -2,11 +2,11 @@
 SET outd=%~p1
 
 ::Copy CHANGELOG.txt, HACKING.txt, LICENSE.txt, README.txt and kprocesshacker.sys
-COPY "%outd%\..\..\..\CHANGELOG.txt" "%outd%\" /V >nul
-COPY "%outd%\..\..\..\HACKING.txt" "%outd%\" /V >nul
-COPY "%outd%\..\..\..\LICENSE.txt" "%outd%\" /V >nul
-COPY "%outd%\..\..\..\README.txt" "%outd%\" /V >nul
-COPY "%outd%\..\..\..\KProcessHacker\i386\kprocesshacker.sys" "%outd%\" /V >nul
+COPY "%outd%\..\..\..\CHANGELOG.txt" "%outd%\" /V
+COPY "%outd%\..\..\..\HACKING.txt" "%outd%\" /V
+COPY "%outd%\..\..\..\LICENSE.txt" "%outd%\" /V
+COPY "%outd%\..\..\..\README.txt" "%outd%\" /V
+COPY "%outd%\..\..\..\KProcessHacker\i386\kprocesshacker.sys" "%outd%\" /V
 
 ::Clear older files
 DEL "%outd%\ProcessHacker.exe.config" /Q >nul 2>&1
