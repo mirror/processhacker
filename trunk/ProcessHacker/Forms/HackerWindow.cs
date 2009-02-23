@@ -2074,14 +2074,26 @@ namespace ProcessHacker
             tabControlBig_SelectedIndexChanged(null, null);
         }
 
-        private void LoadFixSelectAll()
+        private void LoadAddShortcuts()
         {
             treeProcesses.Tree.KeyDown +=
-                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(treeProcesses.TreeNodes); };
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(treeProcesses.TreeNodes);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
+                };
             listServices.List.KeyDown +=
-                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listServices.List.Items); };
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listServices.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listServices.List, -1);
+                };
             listNetwork.List.KeyDown +=
-                (sender, e) => { if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listNetwork.List.Items); };
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listNetwork.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listNetwork.List, -1);
+                };
         }
 
         private void LoadSymbols()
@@ -2184,7 +2196,7 @@ namespace ProcessHacker
             this.ApplyFont(Properties.Settings.Default.Font);
             this.LoadUac();
             this.LoadControls();
-            this.LoadFixSelectAll();
+            this.LoadAddShortcuts();
             this.LoadSettings();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();

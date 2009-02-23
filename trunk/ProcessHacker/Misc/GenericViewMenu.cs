@@ -81,14 +81,18 @@ namespace ProcessHacker
             }
         }
 
-        private static void ListViewMenuItem_Click(object sender, EventArgs e)
+        public static void ListViewCopy(ListView lv, int subItem)
         {
-            MenuItem mitem = (MenuItem)sender;
-            int subitem = (int)((object[])mitem.Tag)[0];
-            ListView lv = (ListView)((object[])mitem.Tag)[1];
-            RetrieveVirtualItemEventHandler retrieveVirtualItem = (RetrieveVirtualItemEventHandler)((object[])mitem.Tag)[2];
+            ListViewCopy(lv, subItem, null);
+        }
+
+        public static void ListViewCopy(ListView lv, int subItem, RetrieveVirtualItemEventHandler retrieveVirtualItem)
+        {
             List<ListViewItem> collection = new List<ListViewItem>();
             string text = "";
+
+            if (lv.SelectedIndices.Count == 0)
+                return;
 
             if (retrieveVirtualItem != null)
             {
@@ -109,7 +113,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < collection.Count; i++)
             {
-                if (subitem == -1)
+                if (subItem == -1)
                 {
                     for (int j = 0; j < lv.Columns.Count; j++)
                     {
@@ -121,7 +125,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    text += collection[i].SubItems[subitem].Text;
+                    text += collection[i].SubItems[subItem].Text;
                 }
 
                 if (i != collection.Count - 1)
@@ -129,6 +133,14 @@ namespace ProcessHacker
             }
 
             Clipboard.SetText(text);
+        }
+
+        private static void ListViewMenuItem_Click(object sender, EventArgs e)
+        {
+            MenuItem mitem = (MenuItem)sender;
+
+            ListViewCopy((ListView)((object[])mitem.Tag)[1], (int)((object[])mitem.Tag)[0],
+                (RetrieveVirtualItemEventHandler)((object[])mitem.Tag)[2]);
         }
 
         public static void AddMenuItems(MenuItem.MenuItemCollection items, TreeViewAdv tv)
@@ -151,13 +163,13 @@ namespace ProcessHacker
             }
         }
 
-        private static void TreeViewAdvMenuItem_Click(object sender, EventArgs e)
+        public static void TreeViewAdvCopy(TreeViewAdv tv, int columnIndex)
         {
-            MenuItem mitem = (MenuItem)sender;
-            int columnIndex = (int)((object[])mitem.Tag)[0];
-            TreeViewAdv tv = (TreeViewAdv)((object[])mitem.Tag)[1];
             List<string[]> collection = new List<string[]>();
             string text = "";
+
+            if (tv.SelectedNodes.Count == 0)
+                return;
 
             foreach (TreeNodeAdv item in tv.SelectedNodes)
             {
@@ -198,6 +210,13 @@ namespace ProcessHacker
             }
 
             Clipboard.SetText(text);
+        }
+
+        private static void TreeViewAdvMenuItem_Click(object sender, EventArgs e)
+        {
+            MenuItem mitem = (MenuItem)sender;
+            
+            TreeViewAdvCopy((TreeViewAdv)((object[])mitem.Tag)[1], (int)((object[])mitem.Tag)[0]);
         }
     }
 }

@@ -23,6 +23,8 @@ Process Hacker
    * #2615707 - "Improvements to Log"
    * #2617637 - "Help file improvements No2"
    * #2617691 - "Add option to replace task manager with Process Hacker"
+   * #2628961 - "Add ctrl+A in Services and Network window"
+   * #2628967 - "Add ctrl+C in Processes, Services and Network window"
    * KProcessHacker is now enabled by default
    * KProcessHacker now supports multiple clients at one time
    * Process termination now uses KProcessHacker
