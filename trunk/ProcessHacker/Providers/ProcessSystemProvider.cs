@@ -56,14 +56,13 @@ namespace ProcessHacker
         public int SessionId;
         public bool HasParent;
         public int ParentPID;
-        public int IconAttempts;
 
         public Win32.VerifyResult VerifyResult;
         public int ImportFunctions;
         public int ImportModules;
 
         public bool JustProcessed;
-        public bool ProcessedOnce;
+        public int ProcessingAttempts;
 
         public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
@@ -426,6 +425,7 @@ namespace ProcessHacker
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;
+                    item.ProcessingAttempts = 1;
 
                     item.Name = procs[pid].Name;
 
@@ -685,11 +685,11 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (pid > 0 && item.IsPacked && !item.ProcessedOnce)
+                    if (pid > 0 && item.IsPacked && item.ProcessingAttempts < 5)
                     {
                         (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
                             r => { }, null);
-                        newitem.ProcessedOnce = true;
+                        newitem.ProcessingAttempts++;
                     }
 
                     //if (item.TokenQueryHandle != null)
