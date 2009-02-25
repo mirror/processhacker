@@ -2109,7 +2109,7 @@ namespace ProcessHacker
                         this.BeginInvoke(new MethodInvoker(delegate
                         {
                             statusIcon.Icon = null;
-                            statusText.Text = "Loading symbols for " + modules + "...";
+                            statusText.Text = "Loading symbols for " + module + "...";
                         }));
 
                         try
