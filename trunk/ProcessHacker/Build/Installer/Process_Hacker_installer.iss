@@ -8,7 +8,7 @@
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "21"
-#define installer_build_date "23.02.2009"
+#define installer_build_date "25.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
@@ -53,6 +53,9 @@ InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=false
 DirExistsWarning=no
 ShowTasksTreeLines=true
+AlwaysShowDirOnReadyPage=true
+AlwaysShowGroupOnReadyPage=true
+WizardImageStretch=false
 
 ;Specify the architectures that Process Hacker can run on
 ArchitecturesAllowed=x86
