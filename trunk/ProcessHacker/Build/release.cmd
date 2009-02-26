@@ -1,4 +1,5 @@
 @ECHO OFF
+SETLOCAL EnableDelayedExpansion
 SET outd=%~p1
 
 ::Copy CHANGELOG.txt, HACKING.txt, LICENSE.txt, README.txt and kprocesshacker.sys
@@ -45,13 +46,13 @@ GOTO Installer
 
 :Installer
 ::Set the path of Inno Setup and compile setup
-FOR /f "tokens=3 skip=3 delims=    " %%i in (
-    'reg query "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 5_is1" /v "Inno Setup: App Path"'
+FOR /f "tokens=1-5* delims= " %%a IN (
+	' REG QUERY "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 5_is1" /v "Inno Setup: App Path" ^| find "App Path" ' 
 ) DO (
-    SET InnoSetupPath=%%i
+	SET InnoSetupPath=%%f
 )
 
-"%InnoSetupPath%iscc.exe" /Q /O"%outd%\..\..\bin\Release" "%outd%\..\..\Build\Installer\Process_Hacker_installer.iss"
+"%InnoSetupPath%\iscc.exe" /Q /O"%outd%\..\..\bin\Release" "%outd%\..\..\Build\Installer\Process_Hacker_installer.iss"
 GOTO END
 
 :END
