@@ -184,7 +184,7 @@ namespace wyDay.Controls
                 if (value == null)
                     return;
 
-                Bitmap bmp = new Bitmap(value.Width, value.Height);
+                Bitmap bmp = new Bitmap(value.Width, value.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
                 Graphics g = Graphics.FromImage(bmp);
 
                 g.DrawImage(value, 0, 0, value.Width, value.Height);
