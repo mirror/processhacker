@@ -140,7 +140,6 @@ namespace ProcessHacker
         public const int SID_SIZE = 0x1000;
         public const int SIZE_OF_80387_REGISTERS = 72;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
-        public const int SW_SHOW = 5;
         public const int SYMBOL_NAME_MAXSIZE = 255;
         public const int WAIT_ABANDONED = 0x80;
         public const int WAIT_OBJECT_0 = 0x0;
@@ -820,7 +819,7 @@ namespace ProcessHacker
 
             info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
             info.lpFile = fileName;
-            info.nShow = Win32.SW_SHOW;
+            info.nShow = ShowWindowType.Show;
             info.fMask = Win32.SEE_MASK_INVOKEIDLIST;
             info.lpVerb = "properties";
 

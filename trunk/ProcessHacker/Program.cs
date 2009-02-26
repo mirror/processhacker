@@ -224,11 +224,18 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction)
         {
+            StartProgramAdmin(Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName,
+                args, successAction, Win32.ShowWindowType.Show);
+        }
+
+        public static void StartProgramAdmin(string program, string args, 
+            MethodInvoker successAction, Win32.ShowWindowType showType)
+        {
             Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
 
             info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-            info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
-            info.nShow = Win32.SW_SHOW;
+            info.lpFile = program;
+            info.nShow = showType;
             info.lpVerb = "runas";
             info.lpParameters = args;
 

@@ -656,7 +656,8 @@ namespace ProcessHacker
             public string lpFile;
             public string lpParameters;
             public string lpDirectory;
-            public int nShow;
+            public ShowWindowType nShow;
+            public short unused;
             public int hInstApp;
 
             public int lpIDList;
