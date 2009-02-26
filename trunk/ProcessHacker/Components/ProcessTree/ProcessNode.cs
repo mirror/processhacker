@@ -87,10 +87,18 @@ namespace ProcessHacker
 
                     _icon = new Bitmap(16, 16);
 
-                    using (Graphics g = Graphics.FromImage(_icon))
-                        g.DrawIcon(_pitem.Icon, new Rectangle(0, 0, 16, 16));
+                    try
+                    {
+                        using (Graphics g = Graphics.FromImage(_icon))
+                            g.DrawIcon(_pitem.Icon, new Rectangle(0, 0, 16, 16));
 
-                    _wasNoIcon = false;
+                        _wasNoIcon = false;
+                    }
+                    catch
+                    {
+                        _icon.Dispose();
+                        _icon = null;
+                    }
                 }
             }
         }
