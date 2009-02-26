@@ -679,11 +679,15 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (pid > 0 && item.IsPacked && item.ProcessingAttempts < 5)
+                    if (pid > 0)
                     {
-                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
-                            r => { }, null);
-                        newitem.ProcessingAttempts++;
+                        if ((item.IsPacked && item.ProcessingAttempts < 5) ||
+                            item.ProcessingAttempts < 2)
+                        {
+                            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
+                                r => { }, null);
+                            newitem.ProcessingAttempts++;
+                        }
                     }
 
                     //if (item.TokenQueryHandle != null)
