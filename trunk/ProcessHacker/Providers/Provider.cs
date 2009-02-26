@@ -30,7 +30,7 @@ namespace ProcessHacker
     /// <summary>
     /// Provides services for continuously updating a dictionary.
     /// </summary>
-    public class Provider<TKey, TValue>
+    public class Provider<TKey, TValue> : IDisposable
     {
         /// <summary>
         /// A generic delegate which is used when updating the dictionary.
@@ -116,6 +116,7 @@ namespace ProcessHacker
         Dictionary<TKey, TValue> _dictionary;
 
         object _busyLock = new object();
+        bool _disposed = false;
         bool _busy = false;
         bool _enabled = false;
         bool _useInvoke = false;
@@ -141,6 +142,35 @@ namespace ProcessHacker
             _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();
             _thread.Priority = ThreadPriority.Lowest;
+        }
+
+        ~Provider()
+        {
+            this.Dispose();
+        }
+
+        public void Dispose()
+        {
+            lock (this)
+            {
+                if (!_disposed)
+                {
+                    _disposed = true;
+                    _thread.Abort();
+                    _thread = null;
+
+                    foreach (Thread t in _asyncThreads)
+                    {
+                        t.Abort();
+                    }
+
+                    _asyncThreads.Clear();
+                    _asyncThreads = null;
+
+                    if (this.Killed != null)
+                        this.Killed();
+                }
+            }
         }
 
         /// <summary>
@@ -255,17 +285,6 @@ namespace ProcessHacker
             DictionaryAdded = null;
             DictionaryModified = null;
             DictionaryRemoved = null;
-        }
-
-        public void Kill()
-        {
-            _thread.Abort();
-
-            foreach (Thread t in _asyncThreads)
-                t.Abort();
-
-            if (this.Killed != null)
-                this.Killed();
         }
 
         private void CallEvent(Delegate e, TValue item, bool useInvoke)

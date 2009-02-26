@@ -1865,9 +1865,9 @@ namespace ProcessHacker
 
         private void Exit()
         {
-            processP.Kill();
-            serviceP.Kill();
-            networkP.Kill();
+            processP.Dispose();
+            serviceP.Dispose();
+            networkP.Dispose();
 
             notifyIcon.Visible = false;
 

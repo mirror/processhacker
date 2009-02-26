@@ -36,6 +36,7 @@ namespace ProcessHacker
         private ProcessItem _processItem;
         private int _pid;
         private Process _process;
+        private Bitmap _processImage;
 
         private ThreadProvider _threadP;
         private ModuleProvider _moduleP;
@@ -209,31 +210,26 @@ namespace ProcessHacker
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // don't try to save settings if we're inspecting DPCs or Interrupts
             if (_pid >= 0)
             {
                 listThreads.SaveSettings();
                 listModules.SaveSettings();
                 listMemory.SaveSettings();
                 listHandles.SaveSettings();
+            }
 
-                if (_tokenProps != null)
-                {
-                    _tokenProps.SaveSettings();
-                    (_tokenProps.Object as Win32.ProcessHandle).Dispose();
-                }
+            if (_tokenProps != null)
+            {
+                _tokenProps.SaveSettings();
+                (_tokenProps.Object as Win32.ProcessHandle).Dispose();
+            }
 
-                if (_threadP != null)
-                    _threadP.Kill();
-                if (_moduleP != null)
-                    _moduleP.Kill();
-                if (_memoryP != null)
-                    _memoryP.Kill();
-                if (_handleP != null)
-                    _handleP.Kill();
+            timerUpdate.Enabled = false;
 
-                if (_process != null)
-                    _process.Close();
+            if (_processImage != null)
+            {
+                pictureIcon.Image = null;
+                _processImage.Dispose();
             }
 
             Program.HackerWindow.ProcessProvider.Updated -=
@@ -242,6 +238,39 @@ namespace ProcessHacker
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.ProcessWindowSize = this.Size;
+        }
+
+        private void ProcessWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (_process != null)
+                _process.Close();
+
+            if (_threadP != null)
+            {
+                _threadP.Dispose();
+                _threadP = null;
+            }
+
+            if (_moduleP != null)
+            {
+                _moduleP.Dispose();
+                _moduleP = null;
+            }
+
+            if (_memoryP != null)
+            {
+                _memoryP.Dispose();
+                _memoryP = null;
+            }
+
+            if (_handleP != null)
+            {
+                _handleP.Dispose();
+                _handleP = null;
+            }
+
+            // A temporary fix for any handle leaks
+            System.GC.Collect();
         }
 
         public void ApplyFont(Font f)
@@ -273,8 +302,17 @@ namespace ProcessHacker
                 textFileVersion.Text = info.FileVersion;
                 fileImage.Text = info.FileName;
 
-                try { pictureIcon.Image = Win32.GetFileIcon(fileName, true).ToBitmap(); }
-                catch { pictureIcon.Image = global::ProcessHacker.Properties.Resources.Process.ToBitmap(); }
+                try
+                {
+                    using (Icon icon = Win32.GetFileIcon(fileName, true))
+                    {
+                        pictureIcon.Image = _processImage = icon.ToBitmap();
+                    }
+                }
+                catch 
+                {
+                    pictureIcon.Image = _processImage = ProcessHacker.Properties.Resources.Process.ToBitmap();
+                }
 
                 if (Properties.Settings.Default.VerifySignatures)
                 {
@@ -478,8 +516,7 @@ namespace ProcessHacker
             textDEP.Enabled = true;
             try
             {
-                using (Win32.ProcessHandle phandle
-                    = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                using (var phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
                 {
                     var depStatus = phandle.GetDepStatus();
                     string str;
@@ -881,7 +918,7 @@ namespace ProcessHacker
             {
                 checkHideHandlesNoName.Enabled = false;
                 this.Cursor = Cursors.WaitCursor;
-                _handleP.Kill();
+                _handleP.Dispose();
                 listHandles.BeginUpdate();
                 listHandles.Highlight = false;
                 _handleP = new HandleProvider(_pid);
@@ -1096,7 +1133,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle
+                using (var phandle
                     = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
                 {
                     _realCurrentDirectory  =
