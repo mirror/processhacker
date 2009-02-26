@@ -509,7 +509,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    textProtected.Text = Program.KPH.GetProcessProtected(_pid) ? "True" : "False";
+                    textProtected.Text = Program.KPH.GetProcessProtected(_pid) ? "Protected" : "Not Protected";
                 }
                 catch (Exception ex)
                 {
@@ -838,13 +838,14 @@ namespace ProcessHacker
         {
             try
             {
-                ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "True", "False" });
+                ComboBoxPickerWindow picker = new ComboBoxPickerWindow(new string[] { "Protect", "Unprotect" });
 
-                picker.SelectedItem = textProtected.Text;
+                picker.Message = "Select an action below:";
+                picker.SelectedItem = (textProtected.Text == "Protected") ? "Protect" : "Unprotect";
 
                 if (picker.ShowDialog() == DialogResult.OK)
                 {
-                    Program.KPH.SetProcessProtected(_pid, picker.SelectedItem == "True");
+                    Program.KPH.SetProcessProtected(_pid, picker.SelectedItem == "Protect");
                     this.UpdateProtected();
                 }
             }

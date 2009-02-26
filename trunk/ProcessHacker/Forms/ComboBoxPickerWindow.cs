@@ -48,6 +48,18 @@ namespace ProcessHacker
             set { comboBox.SelectedItem = value; }
         }
 
+        public string Message
+        {
+            get
+            {
+                return labelText.Text;
+            }
+            set
+            {
+                labelText.Text = value;
+            }
+        }
+
         private void buttonOK_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
