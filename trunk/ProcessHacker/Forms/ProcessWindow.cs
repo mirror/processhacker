@@ -142,8 +142,6 @@ namespace ProcessHacker
 
         private void ProcessWindow_Load(object sender, EventArgs e)
         {
-            this.SuspendLayout();
-
             // load settings
             this.Size = Properties.Settings.Default.ProcessWindowSize;
             buttonSearch.Text = Properties.Settings.Default.SearchType;
@@ -156,15 +154,11 @@ namespace ProcessHacker
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
 
-            this.InitializeSubControls();
             this.ClearStatistics();
 
-            // intialize everything
             try
             {
                 _process = Process.GetProcessById(_pid);
-
-                this.InitializeProviders();
                 this.UpdateProcessProperties();
             }
             catch
@@ -202,11 +196,32 @@ namespace ProcessHacker
             Program.HackerWindow.ProcessProvider.Updated += 
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
+            // HACK: Delay loading
+            Timer t = new Timer();
+
+            t.Tick += (sender_, e_) => { t.Enabled = false; this.LoadStage2(); };
+            t.Interval = 1;
+            t.Enabled = true;
+        }
+
+        private void LoadStage2()
+        {
+            this.SuspendLayout();
+                
+            this.InitializeSubControls();
+
+            try
+            {
+                this.InitializeProviders();
+            }
+            catch
+            { }
+
             // disable providers which aren't in use
             tabControl_SelectedIndexChanged(null, null);
 
             this.ResumeLayout();
-        } 
+        }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
