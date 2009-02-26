@@ -179,7 +179,6 @@ namespace ProcessHacker
         private void runAsAdministratorMenuItem_Click(object sender, EventArgs e)
         {
             PromptBox box = new PromptBox();
-            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
 
             box.Text = "Enter the command to start";
             box.TextBox.AutoCompleteSource = AutoCompleteSource.AllSystemSources;
@@ -187,13 +186,7 @@ namespace ProcessHacker
 
             if (box.ShowDialog() == DialogResult.OK)
             {
-                info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-                info.lpFile = box.Value;
-                info.nShow = Win32.SW_SHOW;
-                info.lpVerb = "runas";
-
-                if (Win32.ShellExecuteEx(ref info))
-                    Win32.CloseHandle(info.hProcess);
+                Program.StartProgramAdmin(box.Value, "", null, Win32.ShowWindowType.Show);
             }
         }
 
@@ -1378,10 +1371,10 @@ namespace ProcessHacker
 
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                startServiceMenuItem.Visible = false;
+                //startServiceMenuItem.Visible = false;
                 continueServiceMenuItem.Visible = false;
                 pauseServiceMenuItem.Visible = false;
-                stopServiceMenuItem.Visible = false;
+                //stopServiceMenuItem.Visible = false;
                 deleteServiceMenuItem.Visible = false;
             }
 
@@ -1419,16 +1412,24 @@ namespace ProcessHacker
 
         private void startServiceMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                    service.Start();
+                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
+                    "start \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide);
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                        service.Start();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -1464,16 +1465,24 @@ namespace ProcessHacker
 
         private void stopServiceMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                    service.Control(Win32.SERVICE_CONTROL.Stop);
+                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
+                    "stop \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide);
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                        service.Control(Win32.SERVICE_CONTROL.Stop);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

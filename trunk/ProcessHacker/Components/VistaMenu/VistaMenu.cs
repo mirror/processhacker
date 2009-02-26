@@ -139,7 +139,8 @@ namespace wyDay.Controls
         {
             Properties prop = EnsurePropertiesExists(mnuItem);
 
-            //prop.Image = value;
+            if (DesignMode)
+                prop.Image = value;
 
             if (!DesignMode && isVistaOrLater)
             {

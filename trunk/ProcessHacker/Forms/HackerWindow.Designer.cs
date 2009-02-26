@@ -748,12 +748,12 @@
             // 
             this.menuService.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.goToProcessServiceMenuItem,
-            this.performAdminServiceMenuItem,
             this.startServiceMenuItem,
             this.continueServiceMenuItem,
             this.pauseServiceMenuItem,
             this.stopServiceMenuItem,
             this.deleteServiceMenuItem,
+            this.performAdminServiceMenuItem,
             this.propertiesServiceMenuItem,
             this.menuItem8,
             this.copyServiceMenuItem,
@@ -769,41 +769,41 @@
             // 
             // performAdminServiceMenuItem
             // 
-            this.performAdminServiceMenuItem.Index = 1;
+            this.performAdminServiceMenuItem.Index = 6;
             this.performAdminServiceMenuItem.Text = "Perform Administrative Tasks";
             this.performAdminServiceMenuItem.Click += new System.EventHandler(this.performAdminServiceMenuItem_Click);
             // 
             // startServiceMenuItem
             // 
             this.vistaMenu.SetImage(this.startServiceMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.startServiceMenuItem.Index = 2;
+            this.startServiceMenuItem.Index = 1;
             this.startServiceMenuItem.Text = "&Start";
             this.startServiceMenuItem.Click += new System.EventHandler(this.startServiceMenuItem_Click);
             // 
             // continueServiceMenuItem
             // 
-            this.continueServiceMenuItem.Index = 3;
+            this.continueServiceMenuItem.Index = 2;
             this.continueServiceMenuItem.Text = "&Continue";
             this.continueServiceMenuItem.Click += new System.EventHandler(this.continueServiceMenuItem_Click);
             // 
             // pauseServiceMenuItem
             // 
             this.vistaMenu.SetImage(this.pauseServiceMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.pauseServiceMenuItem.Index = 4;
+            this.pauseServiceMenuItem.Index = 3;
             this.pauseServiceMenuItem.Text = "&Pause";
             this.pauseServiceMenuItem.Click += new System.EventHandler(this.pauseServiceMenuItem_Click);
             // 
             // stopServiceMenuItem
             // 
             this.vistaMenu.SetImage(this.stopServiceMenuItem, global::ProcessHacker.Properties.Resources.control_stop_blue);
-            this.stopServiceMenuItem.Index = 5;
+            this.stopServiceMenuItem.Index = 4;
             this.stopServiceMenuItem.Text = "S&top";
             this.stopServiceMenuItem.Click += new System.EventHandler(this.stopServiceMenuItem_Click);
             // 
             // deleteServiceMenuItem
             // 
             this.vistaMenu.SetImage(this.deleteServiceMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.deleteServiceMenuItem.Index = 6;
+            this.deleteServiceMenuItem.Index = 5;
             this.deleteServiceMenuItem.Text = "Delete";
             this.deleteServiceMenuItem.Click += new System.EventHandler(this.deleteServiceMenuItem_Click);
             // 
