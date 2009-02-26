@@ -59,6 +59,7 @@ Process Hacker
    * Memory searching now uses KProcessHacker if possible
    * Incorrect labeling of process files which can't be read (due to permissions) 
      as packed
+   * Insane memory usage on Windows XP
    * Now uses the proper method of detecting .NET processes
    * System Information now runs on a separate thread
    * Disables "Show one graph per CPU" in System Information if there is only one CPU

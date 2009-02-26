@@ -18,6 +18,7 @@ namespace wyDay.Controls
     {
         public Image Image;
         public IntPtr renderBmpHbitmap = IntPtr.Zero;
+        public Bitmap PreVistaBitmap;
     }
 
     //enum WindowsType { VistaOrLater, XP, PreXP }
@@ -80,6 +81,8 @@ namespace wyDay.Controls
                 {
                     if (((Properties)de.Value).renderBmpHbitmap != IntPtr.Zero)
                         DeleteObject(((Properties)de.Value).renderBmpHbitmap);
+                    if (((Properties)de.Value).PreVistaBitmap != null)
+                        ((Properties)de.Value).PreVistaBitmap.Dispose();
                 }
 
 
@@ -170,12 +173,30 @@ namespace wyDay.Controls
                     AddVistaMenuItem(mnuItem);
                 }
             }
-
-
-            //for every Pre-Vista Windows, add the parent of the menu item to the list of parents
-            if (!DesignMode && !isVistaOrLater && formHasBeenIntialized)
+            else if (!DesignMode && !isVistaOrLater)
             {
-                AddPreVistaMenuItem(mnuItem);
+                if (prop.PreVistaBitmap != null)
+                {
+                    prop.PreVistaBitmap.Dispose();
+                    prop.PreVistaBitmap = null;
+                }
+
+                if (value == null)
+                    return;
+
+                Bitmap bmp = new Bitmap(value.Width, value.Height);
+                Graphics g = Graphics.FromImage(bmp);
+
+                g.DrawImage(value, 0, 0, value.Width, value.Height);
+                g.Dispose();
+
+                prop.PreVistaBitmap = bmp;
+
+                //for every Pre-Vista Windows, add the parent of the menu item to the list of parents
+                if (formHasBeenIntialized)
+                {
+                    AddPreVistaMenuItem(mnuItem);
+                }
             }
         }
 

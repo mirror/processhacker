@@ -543,7 +543,7 @@ namespace ProcessHacker
                     processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
                     processesMenuItem.MenuItems.Add(processItem);
 
-                    //vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
+                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
                 }
             }
             catch
@@ -1058,6 +1058,16 @@ namespace ProcessHacker
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void reanalyzeProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                processP.QueueFileProcessing(processSelectedPID);
+            }
+            catch
+            { }
+        }   
 
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
@@ -2222,6 +2232,6 @@ namespace ProcessHacker
                     this.Visible = false;
                 }
             } 
-        }   
+        }
     }
 }

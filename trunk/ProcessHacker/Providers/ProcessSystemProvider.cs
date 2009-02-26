@@ -290,6 +290,12 @@ namespace ProcessHacker
                 _fpResults.Enqueue(fpResult);
         }
 
+        public void QueueFileProcessing(int pid)
+        {
+            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, this.Dictionary[pid].FileName,
+                                r => { }, null);
+        }
+
         private void UpdateOnce()
         {
             this.UpdatePerformance();

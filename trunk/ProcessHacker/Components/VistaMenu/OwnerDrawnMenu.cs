@@ -136,7 +136,7 @@ namespace wyDay.Controls
                 }
                 else
                 {
-                    Image drawImg = GetImage(((MenuItem)sender));
+                    Image drawImg = EnsurePropertiesExists((MenuItem)sender).PreVistaBitmap;
 
                     if (drawImg != null)
                     {

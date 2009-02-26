@@ -349,6 +349,7 @@ namespace ProcessHacker
 
                     result = StatusToVerifyResult(winTrustResult);
                     CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                    CryptCATAdminReleaseContext(catAdmin, 0);
                 }
             }
 
