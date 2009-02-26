@@ -1114,7 +1114,6 @@ namespace ProcessHacker
                 this.Invoke(new MethodInvoker(delegate
                 {
                     treeProcesses.Tree.EndUpdate();
-                    treeProcesses.Tree.EndCompleteUpdate();
                     this.Cursor = Cursors.Default;
                     this.UpdateCommon();
                 }));
@@ -2041,7 +2040,6 @@ namespace ProcessHacker
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
-            treeProcesses.Tree.BeginCompleteUpdate();
             treeProcesses.Tree.BeginUpdate();
             this.Cursor = Cursors.WaitCursor;
             processP.RunOnceAsync();
