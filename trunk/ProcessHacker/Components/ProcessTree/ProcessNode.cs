@@ -46,7 +46,15 @@ namespace ProcessHacker
             }
             else
             {
-                _icon = _pitem.Icon.ToBitmap();
+                try
+                {
+                    _icon = _pitem.Icon.ToBitmap();
+                }
+                catch
+                {
+                    _wasNoIcon = true;
+                    _icon = global::ProcessHacker.Properties.Resources.Process_small.ToBitmap();
+                }
             }
         }
 
