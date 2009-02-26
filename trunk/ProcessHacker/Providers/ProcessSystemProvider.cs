@@ -64,7 +64,6 @@ namespace ProcessHacker
         public bool JustProcessed;
         public int ProcessingAttempts;
 
-        public Win32.TokenHandle TokenQueryHandle;
         public Win32.ProcessHandle ProcessQueryHandle;
     }
 
@@ -364,9 +363,6 @@ namespace ProcessHacker
                     if (item.ProcessQueryHandle != null)
                         item.ProcessQueryHandle.Dispose();
 
-                    if (item.TokenQueryHandle != null)
-                        item.TokenQueryHandle.Dispose();
-
                     if (item.Icon != null)
                         Win32.DestroyIcon(item.Icon.Handle);
 
@@ -481,19 +477,17 @@ namespace ProcessHacker
                             {
                                 try
                                 {
-                                    item.TokenQueryHandle = queryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY);
-
-                                    try { item.Username = item.TokenQueryHandle.GetUser().GetName(true); }
-                                    catch { }
-                                    try { item.ElevationType = item.TokenQueryHandle.GetElevationType(); }
-                                    catch { }
-                                    try { item.IsElevated = item.TokenQueryHandle.IsElevated(); }
-                                    catch { }
-                                    try { item.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled(); }
-                                    catch { }
-
-                                    item.TokenQueryHandle.Dispose();
-                                    item.TokenQueryHandle = null;
+                                    using (var thandle = queryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                                    {
+                                        try { item.Username = thandle.GetUser().GetName(true); }
+                                        catch { }
+                                        try { item.ElevationType = thandle.GetElevationType(); }
+                                        catch { }
+                                        try { item.IsElevated = thandle.IsElevated(); }
+                                        catch { }
+                                        try { item.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
+                                        catch { }
+                                    }
                                 }
                                 catch
                                 { }

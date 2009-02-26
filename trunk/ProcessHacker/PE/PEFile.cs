@@ -152,7 +152,7 @@ namespace ProcessHacker.PE
             }
 
             if (section == null)
-                throw new Exception("Relative virtual address has no matching section.");
+                throw new PEException("Relative virtual address has no matching section.");
 
             return section.PointerToRawData + rva - section.VirtualAddress;
         }

@@ -60,7 +60,6 @@ namespace ProcessHacker
 
         int processSelectedItems;
         int processSelectedPID;
-        Process processSelected;
 
         List<Control> listControls = new List<Control>();
 
@@ -151,37 +150,10 @@ namespace ProcessHacker
             if (processSelectedItems == 1)
             {
                 processSelectedPID = treeProcesses.SelectedNodes[0].PID;
-
-                try
-                {
-                    try
-                    {
-                        if (processSelected != null)
-                            processSelected.Close();
-                    }
-                    catch
-                    { }
-
-                    processSelected = Process.GetProcessById(processSelectedPID);
-                }
-                catch
-                {
-                    processSelected = null;
-                }
             }
             else
             {
                 processSelectedPID = -1;
-
-                try
-                {
-                    if (processSelected != null)
-                        processSelected.Close();
-                }
-                catch
-                { }
-
-                processSelected = null;
             }
         }
 
@@ -578,7 +550,7 @@ namespace ProcessHacker
                     processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
                     processesMenuItem.MenuItems.Add(processItem);
 
-                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
+                    //vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
                 }
             }
             catch
@@ -879,8 +851,7 @@ namespace ProcessHacker
                 ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[processSelectedPID],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                 {
-                    f.Show();
-                    f.Activate();
+                    Program.FocusWindow(f);
                 }));
             }
             catch (Exception ex)

@@ -50,10 +50,19 @@ namespace ProcessHacker
             }
         }
 
+        ~ProcessNode()
+        {
+            if (_icon != null)
+                this.Dispose();
+        }
+
         public void Dispose()
         {
             if (_icon != null)
+            {
                 _icon.Dispose();
+                _icon = null;
+            }
         }
 
         public ProcessItem ProcessItem

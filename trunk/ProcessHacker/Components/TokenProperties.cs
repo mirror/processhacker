@@ -54,14 +54,14 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.TokenHandle token = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                using (Win32.TokenHandle thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
                 {
                     try
                     {
-                        textUser.Text = token.GetUser().GetName(true);
-                        textUserSID.Text = token.GetUser().GetStringSID();
-                        textOwner.Text = token.GetOwner().GetName(true);
-                        textPrimaryGroup.Text = token.GetPrimaryGroup().GetName(true);
+                        textUser.Text = thandle.GetUser().GetName(true);
+                        textUserSID.Text = thandle.GetUser().GetStringSID();
+                        textOwner.Text = thandle.GetOwner().GetName(true);
+                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetName(true);
                     }
                     catch (Exception ex)
                     {
@@ -70,7 +70,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        textSessionID.Text = token.GetSessionId().ToString();
+                        textSessionID.Text = thandle.GetSessionId().ToString();
                     }
                     catch (Exception ex)
                     {
@@ -79,7 +79,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.TOKEN_ELEVATION_TYPE type = token.GetElevationType();
+                        Win32.TOKEN_ELEVATION_TYPE type = thandle.GetElevationType();
 
                         if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
                             textElevated.Text = "N/A";
@@ -95,7 +95,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.TokenWithLinkedToken tokWLT = new Win32.TokenWithLinkedToken(token);
+                        Win32.TokenWithLinkedToken tokWLT = new Win32.TokenWithLinkedToken(thandle);
 
                         tokWLT.GetToken().Dispose();
                     }
@@ -106,8 +106,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        bool virtAllowed = token.IsVirtualizationAllowed();
-                        bool virtEnabled = token.IsVirtualizationEnabled();
+                        bool virtAllowed = thandle.IsVirtualizationAllowed();
+                        bool virtEnabled = thandle.IsVirtualizationEnabled();
 
                         if (virtEnabled)
                             textVirtualized.Text = "Enabled";
@@ -141,7 +141,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.TokenHandle.TokenGroupsData groups = token.GetGroups();
+                        Win32.TokenHandle.TokenGroupsData groups = thandle.GetGroups();
                         _groups = new TokenGroups(groups);
 
                         _groups.Dock = DockStyle.Fill;
@@ -154,7 +154,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.TOKEN_PRIVILEGES privileges = token.GetPrivileges();
+                        Win32.TOKEN_PRIVILEGES privileges = thandle.GetPrivileges();
 
                         for (int i = 0; i < privileges.PrivilegeCount; i++)
                         {
@@ -267,8 +267,8 @@ namespace ProcessHacker
             {
                 try
                 {
-                    _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
-                        item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                    using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
+                        thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
 
                     if (item.SubItems[1].Text != "Default Enabled")
                     {
@@ -300,8 +300,8 @@ namespace ProcessHacker
 
                 try
                 {
-                    _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
-                        item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
+                    using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
+                        thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
 
                     item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
                     item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
@@ -324,8 +324,8 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES).SetPrivilege(
-                            item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
+                        using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
+                            thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
 
                         item.Remove();
                     }
@@ -346,10 +346,13 @@ namespace ProcessHacker
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)
         {
-            Win32.TokenWithLinkedToken token = new Win32.TokenWithLinkedToken(_object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY));
-            TokenWindow window = new TokenWindow(token);
+            using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+            {
+                Win32.TokenWithLinkedToken token = new Win32.TokenWithLinkedToken(thandle);
+                TokenWindow window = new TokenWindow(token);
 
-            window.ShowDialog();
+                window.ShowDialog();
+            }
         }
     }
 }

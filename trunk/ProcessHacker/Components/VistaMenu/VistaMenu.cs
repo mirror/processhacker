@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 
-//VistaMenu v1.2, created by Wyatt O'Day
+//VistaMenu v1.7, created by Wyatt O'Day
 //Visit: http://wyday.com/vistamenu/
 
 namespace wyDay.Controls
@@ -139,7 +139,7 @@ namespace wyDay.Controls
         {
             Properties prop = EnsurePropertiesExists(mnuItem);
 
-            prop.Image = value;
+            //prop.Image = value;
 
             if (!DesignMode && isVistaOrLater)
             {
@@ -220,12 +220,6 @@ namespace wyDay.Controls
         {
             if (menuParents[mnuItem.Parent] == null)
             {
-                if (mnuItem.Parent.GetType() == typeof(ContextMenu))
-                    ((ContextMenu)mnuItem.Parent).Popup += PreVistaMenuItem_Popup;
-                else
-                    ((MenuItem)mnuItem.Parent).Popup += PreVistaMenuItem_Popup;
-
-
                 menuParents[mnuItem.Parent] = true;
 
                 if (formHasBeenIntialized)
@@ -254,6 +248,9 @@ namespace wyDay.Controls
                 }
                 else // Pre-Vista menus
                 {
+                    if (ownerForm != null)
+                        ownerForm.ChangeUICues += ownerForm_ChangeUICues;
+
                     foreach (DictionaryEntry de in properties)
                     {
                         AddPreVistaMenuItem((MenuItem)de.Key);
@@ -274,7 +271,6 @@ namespace wyDay.Controls
                 formHasBeenIntialized = true;
             }
         }
-
 
         void MenuItem_Popup(object sender, EventArgs e)
         {

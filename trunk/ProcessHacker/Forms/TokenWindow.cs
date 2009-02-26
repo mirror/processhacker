@@ -42,6 +42,11 @@ namespace ProcessHacker
             panelToken.Controls.Add(_tokenProps);
         }
 
+        public TokenProperties TokenProperties
+        {
+            get { return _tokenProps; }
+        }
+
         private void TokenWindow_Load(object sender, EventArgs e)
         {
             this.Size = Properties.Settings.Default.TokenWindowSize;

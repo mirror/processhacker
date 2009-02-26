@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 
@@ -11,10 +9,6 @@ namespace wyDay.Controls
 {
     public partial class VistaMenu
     {
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern int SendMessage(HandleRef hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-
         ContainerControl ownerForm;
 
         //conditionally draw the little lines under menu items with keyboard accelators on Win 2000+
@@ -46,32 +40,9 @@ namespace wyDay.Controls
         }
 
 
-        void PreVistaMenuItem_Popup(object sender, EventArgs e)
+        void ownerForm_ChangeUICues(object sender, UICuesEventArgs e)
         {
-            if (ownerForm == null)
-            {
-                isUsingKeyboardAccel = true;
-                return;
-            }
-
-
-            //#define WM_QUERYUISTATE                 0x0129
-            //int ret = SendMessage(new HandleRef(((Menu)sender).GetMainMenu().GetForm(), ((Menu)sender).GetMainMenu().GetForm().Handle), 0x0129, IntPtr.Zero, IntPtr.Zero);
-            int ret = SendMessage(new HandleRef(ownerForm, ownerForm.Handle), 0x0129, IntPtr.Zero, IntPtr.Zero);
-
-
-            /*
-             The return value is NULL if the focus indicators and the keyboard accelerators are visible.
-             Otherwise, the return value can be one or more of the following values:
-             
-                UISF_HIDEFOCUS	Focus indicators are hidden.
-                UISF_HIDEACCEL	Keyboard accelerators are hidden.
-                UISF_ACTIVE	Windows XP: A control should be drawn in the style used for active controls.
-             */
-
-            //#define UISF_HIDEACCEL                  0x2
-
-            isUsingKeyboardAccel = (ret & 0x2) == 0;
+            isUsingKeyboardAccel = e.ShowKeyboard;
         }
 
 

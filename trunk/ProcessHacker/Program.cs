@@ -567,7 +567,11 @@ namespace ProcessHacker
                 return;
             }
 
-            f.Visible = true; // just in case it's hidden right now
+            f.Visible = true; // just in case it's hidden right now   
+
+            if (f.WindowState == FormWindowState.Minimized)
+                f.WindowState = FormWindowState.Normal;
+
             f.Activate();
         }
 
@@ -609,11 +613,13 @@ namespace ProcessHacker
                         {
                             using (Graphics g = Graphics.FromImage(image))
                             {
-                                g.DrawImage(TextToForm[s].Icon.ToBitmap(), 0, 0, 16, 16);
+                                g.DrawIcon(TextToForm[s].Icon, new Rectangle(0, 0, 16, 16));
 
                                 vistaMenu.SetImage(item, image);
                             }
                         }
+
+                        image.Dispose();
                     }
 
                     windowMenuItem.MenuItems.Add(new MenuItem("-"));

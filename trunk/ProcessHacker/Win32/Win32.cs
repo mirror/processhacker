@@ -1086,7 +1086,7 @@ namespace ProcessHacker
                     if (!LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
                     {
                         if (name.ToString() == "" && domain.ToString() == "")
-                            throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
+                            Win32.ThrowLastWin32Error();
                     }
                 }
             }

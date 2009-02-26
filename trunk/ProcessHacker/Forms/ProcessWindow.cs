@@ -223,10 +223,17 @@ namespace ProcessHacker
                     (_tokenProps.Object as Win32.ProcessHandle).Dispose();
                 }
 
-                _threadP.Kill();
-                _moduleP.Kill();
-                _memoryP.Kill();
-                _handleP.Kill();
+                if (_threadP != null)
+                    _threadP.Kill();
+                if (_moduleP != null)
+                    _moduleP.Kill();
+                if (_memoryP != null)
+                    _memoryP.Kill();
+                if (_handleP != null)
+                    _handleP.Kill();
+
+                if (_process != null)
+                    _process.Close();
             }
 
             Program.HackerWindow.ProcessProvider.Updated -=
