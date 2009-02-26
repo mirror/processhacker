@@ -687,8 +687,7 @@ namespace ProcessHacker
 
                     if (pid > 0)
                     {
-                        if ((item.IsPacked && item.ProcessingAttempts < 5) ||
-                            item.ProcessingAttempts < 2)
+                        if (item.IsPacked && item.ProcessingAttempts < 5)
                         {
                             (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
                                 r => { }, null);
