@@ -140,14 +140,16 @@ namespace Aga.Controls.Tree
 				c = GetColumnDividerAt(e.Location);
 				if (c != null)
 				{
-					Input = new ResizeColumnState(this, c, e.Location);
+                    Input = new ResizeColumnState(this, c, e.Location);
+                    this.Invalidate();
 					return;
 				}
 				c = GetColumnAt(e.Location);
 				if (c != null)
 				{
 					Input = new ClickColumnState(this, c, e.Location);
-					UpdateView();
+                    UpdateView();
+                    this.Invalidate();
 					return;
 				}
 			}
