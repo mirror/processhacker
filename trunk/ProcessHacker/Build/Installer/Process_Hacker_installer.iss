@@ -7,8 +7,8 @@
 ;   http://www.vincenzo.net/isxkb/images/9/91/Psvince.zip
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "21"
-#define installer_build_date "27.02.2009"
+#define installer_build_number "22"
+#define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
