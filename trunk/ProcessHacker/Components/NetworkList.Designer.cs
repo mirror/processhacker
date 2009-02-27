@@ -58,12 +58,12 @@
             // columnLocal
             // 
             this.columnLocal.Text = "Local";
-            this.columnLocal.Width = 180;
+            this.columnLocal.Width = 260;
             // 
             // columnRemote
             // 
             this.columnRemote.Text = "Remote";
-            this.columnRemote.Width = 220;
+            this.columnRemote.Width = 290;
             // 
             // columnProtocol
             // 

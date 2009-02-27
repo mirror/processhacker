@@ -35,9 +35,9 @@
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
+            this.columnStartType = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.columnStartType = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
             // 
             // listServices
@@ -66,22 +66,27 @@
             // columnName
             // 
             this.columnName.Text = "Name";
-            this.columnName.Width = 140;
+            this.columnName.Width = 150;
             // 
             // columnDescription
             // 
             this.columnDescription.Text = "Description";
-            this.columnDescription.Width = 200;
+            this.columnDescription.Width = 260;
             // 
             // columnType
             // 
             this.columnType.Text = "Type";
-            this.columnType.Width = 100;
+            this.columnType.Width = 110;
             // 
             // columnStatus
             // 
             this.columnStatus.Text = "Status";
             this.columnStatus.Width = 80;
+            // 
+            // columnStartType
+            // 
+            this.columnStartType.Text = "Start Type";
+            this.columnStartType.Width = 80;
             // 
             // columnPID
             // 
@@ -95,11 +100,6 @@
             this.imageList.Images.SetKeyName(1, "Driver");
             this.imageList.Images.SetKeyName(2, "Interactive");
             this.imageList.Images.SetKeyName(3, "FS");
-            // 
-            // columnStartType
-            // 
-            this.columnStartType.Text = "Start Type";
-            this.columnStartType.Width = 80;
             // 
             // ServiceList
             // 

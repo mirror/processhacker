@@ -74,7 +74,7 @@
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
-            this.treeProcesses.Size = new System.Drawing.Size(450, 472);
+            this.treeProcesses.Size = new System.Drawing.Size(808, 472);
             this.treeProcesses.TabIndex = 2;
             this.treeProcesses.UseColumns = true;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
@@ -86,7 +86,7 @@
             this.columnName.Sortable = true;
             this.columnName.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnName.TooltipText = null;
-            this.columnName.Width = 300;
+            this.columnName.Width = 270;
             // 
             // columnPID
             // 
@@ -120,7 +120,7 @@
             this.columnUsername.Sortable = true;
             this.columnUsername.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnUsername.TooltipText = null;
-            this.columnUsername.Width = 100;
+            this.columnUsername.Width = 130;
             // 
             // columnDescription
             // 
@@ -128,7 +128,7 @@
             this.columnDescription.Sortable = true;
             this.columnDescription.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnDescription.TooltipText = null;
-            this.columnDescription.Width = 140;
+            this.columnDescription.Width = 200;
             // 
             // nodeIcon
             // 
@@ -200,7 +200,7 @@
             this.Controls.Add(this.treeProcesses);
             this.DoubleBuffered = true;
             this.Name = "ProcessTree";
-            this.Size = new System.Drawing.Size(450, 472);
+            this.Size = new System.Drawing.Size(808, 472);
             this.ResumeLayout(false);
 
         }
