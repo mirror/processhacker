@@ -17,18 +17,20 @@ DEL "%outd%\processhacker-*-bin.zip" /Q >nul 2>&1
 
 ::Check if ILMerge is present in the default installation location
 IF EXIST "%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe" (
-	SET ILMergePath=%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe && GOTO ILMerge
+	SET ILMergePath=%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe&&GOTO :ILMerge
 ) ELSE (
-	GOTO SearchILMergeInPATH
+	GOTO :SearchILMergeInPATH
 )
 
 :SearchILMergeInPATH
 ::Check if ILMerge is present in PATH
-ilmerge >nul 2>&1
-IF %errorlevel%==9009 (
-	ECHO ILMerge NOT FOUND && GOTO CLEANUP
+Set "A_=ILMerge.exe"
+Set "M_=ILMerge IS NOT INSTALLED"
+
+FOR %%# IN (%A_%) DO IF %%~$PATH:#' EQU ' (
+	Echo:%M_%&&GOTO :CLEANUP
 ) ELSE (
-	GOTO ILMergeInPATH
+	GOTO :ILMergeInPATH
 )
 
 :ILMergeInPath
@@ -36,14 +38,14 @@ REN "%outd%\ProcessHacker.exe" ProcessHacker_in.exe
 ilmerge /t:winexe /out:"%outd%\ProcessHacker.exe" "%outd%\ProcessHacker_in.exe" "%outd%\Aga.Controls.dll"
 DEL "%outd%\ProcessHacker_in.exe" /Q >nul 2>&1
 DEL "%outd%\Aga.Controls.dll" /Q >nul 2>&1
-GOTO Installer
+GOTO :Installer
 
 :ILMerge
 rename "%outd%\ProcessHacker.exe" ProcessHacker_in.exe
 "%ILMergePath%" /t:winexe /out:"%outd%\ProcessHacker.exe" "%outd%\ProcessHacker_in.exe" "%outd%\Aga.Controls.dll"
 DEL "%outd%\ProcessHacker_in.exe" /Q >nul 2>&1
 DEL "%outd%\Aga.Controls.dll" /Q >nul 2>&1
-GOTO Installer
+GOTO :Installer
 
 :Installer
 ::Set the path of Inno Setup and compile setup
@@ -53,16 +55,18 @@ FOR /f "tokens=1-5*" %%a IN (
 	SET InnoSetupPath=%%f
 )
 
-IF NOT EXIST "%InnoSetupPath%" ECHO Inno Setup NOT FOUND&&GOTO CLEANUP
+IF NOT EXIST "%InnoSetupPath%" ECHO Inno Setup NOT FOUND&&GOTO :CLEANUP
 
 "%InnoSetupPath%\iscc.exe" /Q /O"%outd%\..\..\bin\Release" "%outd%\..\..\Build\Installer\Process_Hacker_installer.iss"
-ECHO Instaler compiled successfully&&GOTO CLEANUP
+ECHO Instaler compiled successfully&&GOTO :CLEANUP
 
 :CLEANUP
 ::Clean up the .pdb files
 DEL "%outd%\*.pdb" /Q >nul 2>&1
-GOTO ZIP
+GOTO :ZIP
 
 :ZIP
 "%outd%\..\..\Build\7za\7za.exe" a -tzip "processhacker-svn-bin.zip" "*" -x!*setup.exe -mx=9 >nul
 ECHO ZIP created successfully
+
+:END
