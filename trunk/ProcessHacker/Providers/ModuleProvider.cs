@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -53,7 +54,7 @@ namespace ProcessHacker
             try
             {
                 _processHandle = new Win32.ProcessHandle(_pid,
-                    Program.MinProcessQueryRights |
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
                     Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
             }
             catch
@@ -146,6 +147,46 @@ namespace ProcessHacker
 
             foreach (var m in processModules)
                 modules.Add(m.BaseAddress.ToInt32(), m);
+
+            // add mapped files
+            {
+                Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+                int address = 0;
+
+                while (true)
+                {
+                    if (!Win32.VirtualQueryEx(_processHandle, address, ref info, Marshal.SizeOf(info)))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if (info.Type == Win32.MEMORY_TYPE.MEM_MAPPED)
+                        {
+                            StringBuilder sb = new StringBuilder(0x400);
+                            int length = Win32.GetMappedFileName(_processHandle, info.BaseAddress, sb, sb.Capacity);
+
+                            if (length > 0)
+                            {
+                                string fileName = sb.ToString(0, length);
+
+                                if (fileName.StartsWith("\\"))
+                                    fileName = Win32.DeviceFileNameToDos(fileName);
+
+                                System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+
+                                modules.Add(info.BaseAddress,
+                                    new Win32.ProcessModule(
+                                        new IntPtr(info.BaseAddress),
+                                        info.RegionSize, IntPtr.Zero,
+                                        fi.Name, fi.FullName));
+                            }
+                        }
+
+                        address += info.RegionSize;
+                    }
+                }
+            }
 
             // look for unloaded modules
             foreach (int b in Dictionary.Keys)

@@ -1,5 +1,10 @@
 Process Hacker
 
+1.3.5.5
+ * NEW:
+   * Modules tab shows mapped files
+ * FIXED:
+
 1.3.5.0
  * NEW:
    * #2596502 - "Add access keys"

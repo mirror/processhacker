@@ -302,6 +302,14 @@ namespace ProcessHacker
 
         #region Processes
 
+        [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int GetMappedFileName(
+            int ProcessHandle,
+            int Address,
+            StringBuilder Buffer,
+            int Size
+            );
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool CreateProcess(
             [MarshalAs(UnmanagedType.LPWStr)] string ApplicationName,
