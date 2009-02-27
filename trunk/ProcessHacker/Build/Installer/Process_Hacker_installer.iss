@@ -8,7 +8,7 @@
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "21"
-#define installer_build_date "25.02.2009"
+#define installer_build_date "27.02.2009"
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
@@ -111,6 +111,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Fil
 [InstallDelete]
 ;Remove ProcessHacker.exe.config since it's not needed anymore
 Type: files; Name: {app}\ProcessHacker.exe.config
+Type: files; Name: {app}\HACKING.txt
 
 ;Remove shortcuts in Start Menu of other languages
 Type: files; Name: {userdesktop}\Process Hacker.lnk
