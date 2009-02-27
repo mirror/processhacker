@@ -219,6 +219,16 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Removes as many pages as possible from the process' working set. This requires the 
+            /// PROCESS_QUERY_INFORMATION and PROCESS_SET_INFORMATION permissions.
+            /// </summary>
+            public void EmptyWorkingSet()
+            {
+                if (!Win32.EmptyWorkingSet(this))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
             /// Frees a memory region in the process' virtual memory.
             /// </summary>
             /// <param name="address">The address of the region to free.</param>

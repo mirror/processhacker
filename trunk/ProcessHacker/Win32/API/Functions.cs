@@ -302,6 +302,9 @@ namespace ProcessHacker
 
         #region Processes
 
+        [DllImport("psapi.dll", SetLastError = true)]
+        public static extern bool EmptyWorkingSet(int ProcessHandle);
+
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetMappedFileName(
             int ProcessHandle,

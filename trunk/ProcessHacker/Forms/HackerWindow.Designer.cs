@@ -37,6 +37,7 @@
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.restartProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.reduceWorkingSetProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.setTokenProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -168,6 +169,7 @@
             this.suspendMenuItem,
             this.resumeMenuItem,
             this.restartProcessMenuItem,
+            this.reduceWorkingSetProcessMenuItem,
             this.menuItem5,
             this.affinityProcessMenuItem,
             this.setTokenProcessMenuItem,
@@ -210,33 +212,39 @@
             this.restartProcessMenuItem.Text = "Restart";
             this.restartProcessMenuItem.Click += new System.EventHandler(this.restartProcessMenuItem_Click);
             // 
+            // reduceWorkingSetProcessMenuItem
+            // 
+            this.reduceWorkingSetProcessMenuItem.Index = 4;
+            this.reduceWorkingSetProcessMenuItem.Text = "Reduce Working Set";
+            this.reduceWorkingSetProcessMenuItem.Click += new System.EventHandler(this.reduceWorkingSetProcessMenuItem_Click);
+            // 
             // menuItem5
             // 
-            this.menuItem5.Index = 4;
+            this.menuItem5.Index = 5;
             this.menuItem5.Text = "-";
             // 
             // affinityProcessMenuItem
             // 
-            this.affinityProcessMenuItem.Index = 5;
+            this.affinityProcessMenuItem.Index = 6;
             this.affinityProcessMenuItem.Text = "Affinity...";
             this.affinityProcessMenuItem.Click += new System.EventHandler(this.affinityProcessMenuItem_Click);
             // 
             // setTokenProcessMenuItem
             // 
-            this.setTokenProcessMenuItem.Index = 6;
+            this.setTokenProcessMenuItem.Index = 7;
             this.setTokenProcessMenuItem.Text = "Set Token...";
             this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
             // 
             // terminatorProcessMenuItem
             // 
-            this.terminatorProcessMenuItem.Index = 7;
+            this.terminatorProcessMenuItem.Index = 8;
             this.terminatorProcessMenuItem.Text = "Terminator...";
             this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 8;
+            this.priorityMenuItem.Index = 9;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -290,7 +298,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 9;
+            this.runAsProcessMenuItem.Index = 10;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -312,36 +320,36 @@
             // 
             this.propertiesProcessMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesProcessMenuItem.Index = 10;
+            this.propertiesProcessMenuItem.Index = 11;
             this.propertiesProcessMenuItem.Text = "&Properties...";
             this.propertiesProcessMenuItem.Click += new System.EventHandler(this.inspectProcessMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 11;
+            this.menuItem7.Index = 12;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 12;
+            this.searchProcessMenuItem.Index = 13;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // reanalyzeProcessMenuItem
             // 
-            this.reanalyzeProcessMenuItem.Index = 13;
+            this.reanalyzeProcessMenuItem.Index = 14;
             this.reanalyzeProcessMenuItem.Text = "Re-analyze";
             this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 14;
+            this.copyProcessMenuItem.Index = 15;
             this.copyProcessMenuItem.Text = "&Copy";
             // 
             // selectAllProcessMenuItem
             // 
-            this.selectAllProcessMenuItem.Index = 15;
+            this.selectAllProcessMenuItem.Index = 16;
             this.selectAllProcessMenuItem.Text = "Select &All";
             this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
             // 
@@ -1077,6 +1085,7 @@
         private System.Windows.Forms.MenuItem freeMemoryMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem reanalyzeProcessMenuItem;
+        private System.Windows.Forms.MenuItem reduceWorkingSetProcessMenuItem;
     }
 }
 

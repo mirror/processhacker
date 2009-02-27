@@ -915,6 +915,20 @@ namespace ProcessHacker
             }
         }
 
+        private void reduceWorkingSetProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(processSelectedPID,
+                    Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS))
+                    phandle.EmptyWorkingSet();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void inspectProcessMenuItem_Click(object sender, EventArgs e)
         {
             // user hasn't got any processes selected
