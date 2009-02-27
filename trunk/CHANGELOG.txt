@@ -38,6 +38,7 @@ Process Hacker
    * "Restart" function
    * "Set Token" function for Windows XP
    * "Verify File Signature" function
+   * "Re-analyze" function
    * Around 50% reduction in CPU usage
    * Specific highlighting can be enabled/disabled
    * CSR Processes tool - displays hidden processes (this does not detect Hacker 
