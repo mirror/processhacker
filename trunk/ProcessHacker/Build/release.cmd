@@ -13,7 +13,7 @@ COPY "%outd%\..\..\..\KProcessHacker\i386\kprocesshacker.sys" "%outd%\" /V >nul 
 DEL "%outd%\ProcessHacker.exe.config" /Q >nul 2>&1
 DEL "%outd%\processhacker-*-setup.exe" /Q >nul 2>&1
 DEL "%outd%\ProcessHacker_in.exe" /Q >nul 2>&1
-DEL "%outd%\processhacker-*-bin.zip" /Q >nul 2>&1
+DEL "%outd%\processhacker-bin.zip" /Q >nul 2>&1
 
 ::Check if ILMerge is present in the default installation location
 IF EXIST "%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe" (
@@ -71,7 +71,7 @@ DEL "%outd%\*.pdb" /Q >nul 2>&1
 GOTO :ZIP
 
 :ZIP
-"%outd%\..\..\Build\7za\7za.exe" a -tzip "processhacker-svn-bin.zip" "*" -x!*setup.exe -mx=9 >nul
+"%outd%\..\..\Build\7za\7za.exe" a -tzip "processhacker-bin.zip" "*" -x!*setup.exe -mx=9 >nul
 ECHO ZIP created successfully
 
 :END
