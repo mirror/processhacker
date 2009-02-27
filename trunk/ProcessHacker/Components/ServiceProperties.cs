@@ -297,8 +297,8 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
-                    "start \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide); 
+                Program.StartProcessHackerAdmin("-e -type service -action start -obj \"" +
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
             else
             {
@@ -320,8 +320,8 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
-                    "stop \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide);
+                Program.StartProcessHackerAdmin("-e -type service -action stop -obj \"" +
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
             else
             {

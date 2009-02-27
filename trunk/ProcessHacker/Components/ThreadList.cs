@@ -341,28 +341,6 @@ namespace ProcessHacker
             inspectThreadMenuItem_Click(null, null);
         }
 
-        private bool IsDangerousPID(int pid)
-        {
-            if (pid == 4)
-                return true;
-
-            try
-            {
-                Process p = Process.GetProcessById(pid);
-
-                foreach (string s in Misc.DangerousNames)
-                {
-                    if ((Environment.SystemDirectory + "\\" + s).ToLower() == Misc.GetRealPath(p.MainModule.FileName).ToLower())
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch { }
-
-            return false;
-        }
-
         private void menuThread_Popup(object sender, EventArgs e)
         {
             if (listThreads.SelectedItems.Count == 0)
@@ -476,7 +454,7 @@ namespace ProcessHacker
                     return;
             }
 
-            if (IsDangerousPID(_pid))
+            if (Misc.IsDangerousPID(_pid))
             {
                 if (MessageBox.Show(
                   "Inspecting a system process' threads will lead to instability. Are you sure you want to continue?",
@@ -509,7 +487,7 @@ namespace ProcessHacker
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(_pid))
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to terminate the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -519,13 +497,38 @@ namespace ProcessHacker
                     return;
             }
 
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            {
+                try
+                {
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                    {
+                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                        { }
+                    }
+                }
+                catch
+                {
+                    string objects = "";
+
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                        objects += item.SubItems[0].Text + ",";
+
+                    Program.StartProcessHackerAdmin("-e -type thread -action terminate -obj \"" +
+                        objects + "\"", null);
+
+                    return;
+                }
+            }
+
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
                         Win32.THREAD_RIGHTS.THREAD_TERMINATE))
-                        handle.Terminate();
+                        thandle.Terminate();
                 }
                 catch (Exception ex)
                 {
@@ -540,7 +543,7 @@ namespace ProcessHacker
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(_pid))
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -550,13 +553,38 @@ namespace ProcessHacker
                     return;
             }
 
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            {
+                try
+                {
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                    {
+                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        { }
+                    }
+                }
+                catch
+                {
+                    string objects = "";
+
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                        objects += item.SubItems[0].Text + ",";
+
+                    Program.StartProcessHackerAdmin("-e -type thread -action suspend -obj \"" +
+                        objects + "\"", null);
+
+                    return;
+                }
+            }
+
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
                      Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
-                        handle.Suspend();
+                        thandle.Suspend();
                 }
                 catch (Exception ex)
                 {
@@ -571,13 +599,47 @@ namespace ProcessHacker
 
         private void resumeThreadMenuItem_Click(object sender, EventArgs e)
         {
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
+            {
+                DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
+                    " sure you want to resume the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+
+                if (result == DialogResult.No)
+                    return;
+            }
+
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            {
+                try
+                {
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                    {
+                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        { }
+                    }
+                }
+                catch
+                {
+                    string objects = "";
+
+                    foreach (ListViewItem item in listThreads.SelectedItems)
+                        objects += item.SubItems[0].Text + ",";
+
+                    Program.StartProcessHackerAdmin("-e -type thread -action resume -obj \"" +
+                        objects + "\"", null);
+
+                    return;
+                }
+            }
             foreach (ListViewItem item in listThreads.SelectedItems)
             {
                 try
                 {
-                    using (Win32.ThreadHandle handle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
                     Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
-                        handle.Resume();
+                        thandle.Resume();
                 }
                 catch (Exception ex)
                 {

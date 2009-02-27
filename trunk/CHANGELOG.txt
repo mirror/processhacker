@@ -32,7 +32,8 @@ Process Hacker
    * Process Hacker can now use KProcessHacker under a limited user account if it is 
      loaded, giving it full admin-like permissions to processes
    * Process Hacker no longer requires UAC elevation - instead, there are two extra 
-     menu items, "Run As Administrator..." and "Show Details for All Processes"
+     menu items, "Run As Administrator..." and "Show Details for All Processes". It 
+     also automatically prompts for elevation for specific tasks.
    * "Run" function
    * "Restart" function
    * "Set Token" function for Windows XP

@@ -54,6 +54,7 @@
             this.propertiesProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.searchProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.reanalyzeProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.copyProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +91,7 @@
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenu = new System.Windows.Forms.MenuItem();
             this.freeMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.logMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
@@ -114,7 +116,6 @@
             this.pauseServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.stopServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.deleteServiceMenuItem = new System.Windows.Forms.MenuItem();
-            this.performAdminServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.copyServiceMenuItem = new System.Windows.Forms.MenuItem();
@@ -137,8 +138,6 @@
             this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.reanalyzeProcessMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -327,6 +326,12 @@
             this.searchProcessMenuItem.Index = 12;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
+            // 
+            // reanalyzeProcessMenuItem
+            // 
+            this.reanalyzeProcessMenuItem.Index = 13;
+            this.reanalyzeProcessMenuItem.Text = "Re-analyze";
+            this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
@@ -579,6 +584,11 @@
             this.freeMemoryMenuItem.Text = "Free Memory";
             this.freeMemoryMenuItem.Click += new System.EventHandler(this.freeMemoryMenuItem_Click);
             // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 1;
+            this.menuItem1.Text = "-";
+            // 
             // logMenuItem
             // 
             this.vistaMenu.SetImage(this.logMenuItem, global::ProcessHacker.Properties.Resources.page_white_text);
@@ -742,7 +752,6 @@
             this.pauseServiceMenuItem,
             this.stopServiceMenuItem,
             this.deleteServiceMenuItem,
-            this.performAdminServiceMenuItem,
             this.propertiesServiceMenuItem,
             this.menuItem8,
             this.copyServiceMenuItem,
@@ -790,34 +799,28 @@
             this.deleteServiceMenuItem.Text = "Delete";
             this.deleteServiceMenuItem.Click += new System.EventHandler(this.deleteServiceMenuItem_Click);
             // 
-            // performAdminServiceMenuItem
-            // 
-            this.performAdminServiceMenuItem.Index = 6;
-            this.performAdminServiceMenuItem.Text = "Perform Administrative Tasks";
-            this.performAdminServiceMenuItem.Click += new System.EventHandler(this.performAdminServiceMenuItem_Click);
-            // 
             // propertiesServiceMenuItem
             // 
             this.propertiesServiceMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesServiceMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesServiceMenuItem.Index = 7;
+            this.propertiesServiceMenuItem.Index = 6;
             this.propertiesServiceMenuItem.Text = "&Properties...";
             this.propertiesServiceMenuItem.Click += new System.EventHandler(this.propertiesServiceMenuItem_Click);
             // 
             // menuItem8
             // 
-            this.menuItem8.Index = 8;
+            this.menuItem8.Index = 7;
             this.menuItem8.Text = "-";
             // 
             // copyServiceMenuItem
             // 
             this.vistaMenu.SetImage(this.copyServiceMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyServiceMenuItem.Index = 9;
+            this.copyServiceMenuItem.Index = 8;
             this.copyServiceMenuItem.Text = "Copy";
             // 
             // selectAllServiceMenuItem
             // 
-            this.selectAllServiceMenuItem.Index = 10;
+            this.selectAllServiceMenuItem.Index = 9;
             this.selectAllServiceMenuItem.Text = "Select &All";
             this.selectAllServiceMenuItem.Click += new System.EventHandler(this.selectAllServiceMenuItem_Click);
             // 
@@ -933,17 +936,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 1;
-            this.menuItem1.Text = "-";
-            // 
-            // reanalyzeProcessMenuItem
-            // 
-            this.reanalyzeProcessMenuItem.Index = 13;
-            this.reanalyzeProcessMenuItem.Text = "Re-analyze";
-            this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
             // 
             // HackerWindow
             // 
@@ -1083,7 +1075,6 @@
         private System.Windows.Forms.MenuItem runMenuItem;
         private System.Windows.Forms.MenuItem runAsMenuItem;
         private System.Windows.Forms.MenuItem freeMemoryMenuItem;
-        private System.Windows.Forms.MenuItem performAdminServiceMenuItem;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem reanalyzeProcessMenuItem;
     }

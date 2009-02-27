@@ -427,6 +427,30 @@ namespace ProcessHacker
             return null;
         }
 
+        public static bool IsDangerousPID(int pid)
+        {
+            if (pid == 4)
+                return true;
+
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
+                {
+                    foreach (string s in Misc.DangerousNames)
+                    {
+                        if ((Environment.SystemDirectory + "\\" + s).ToLower() ==
+                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())).ToLower())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
         /// <summary>
         /// Determines whether the array is empty (all 0's).
         /// </summary>

@@ -400,6 +400,7 @@
     <Compile Include="Components\VerticleProgressBar.Designer.cs">
       <DependentUpon>VerticleProgressBar.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExtendedCmd.cs" />
     <Compile Include="FormHelper\AsyncUtils.cs">
       <SubType>Code</SubType>
     </Compile>

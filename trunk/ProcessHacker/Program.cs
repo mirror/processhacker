@@ -86,32 +86,7 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            try
-            {
-                var pArgs = ParseArgs(args);
-
-                if (pArgs.ContainsKey("-m"))
-                    StartMinimized = true;
-                if (pArgs.ContainsKey("-o"))
-                    ShowOptions = true;
-
-                if (pArgs.ContainsKey("-t"))
-                {
-                    if (pArgs["-t"] == "0")
-                        SelectTab = "Processes";
-                    else if (pArgs["-t"] == "1")
-                        SelectTab = "Services";
-                }
-            }
-            catch
-            {
-                MessageBox.Show(
-                    "Usage: processhacker [-m]\n" + 
-                    "\t-m\tStarts Process Hacker hidden.\n" +
-                    "\t-o\tShows Options.\n" +
-                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.", 
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            Application.EnableVisualStyles();
 
             if (Environment.Version.Major < 2)
             {
@@ -201,6 +176,47 @@ namespace ProcessHacker
             catch
             { }
 
+            try
+            {
+                var pArgs = ParseArgs(args);
+
+                if (pArgs.ContainsKey("-m"))
+                    StartMinimized = true;
+                if (pArgs.ContainsKey("-o"))
+                    ShowOptions = true;
+
+                if (pArgs.ContainsKey("-t"))
+                {
+                    if (pArgs["-t"] == "0")
+                        SelectTab = "Processes";
+                    else if (pArgs["-t"] == "1")
+                        SelectTab = "Services";
+                }
+
+                if (pArgs.ContainsKey("-e"))
+                {
+                    try
+                    {
+                        ExtendedCmd.Run(pArgs);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                    return;
+                }
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Usage: processhacker [-m]\n" +
+                    "\t-m\tStarts Process Hacker hidden.\n" +
+                    "\t-o\tShows Options.\n" +
+                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
 #if DEBUG
 #else
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
@@ -208,7 +224,6 @@ namespace ProcessHacker
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 #endif
 
-            Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(HackerWindow = new HackerWindow()
             {

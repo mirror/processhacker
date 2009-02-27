@@ -147,6 +147,13 @@ namespace ProcessHacker
             }
         }
 
+        private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.SaveSettings();
+            Program.HackerWindow.ProcessTree.RefreshItems();
+            Program.ApplyFont(Properties.Settings.Default.Font);
+        }
+
         private void AddToList(string key, string description, string longDescription)
         {
             listHighlightingColors.Items.Add(new ListViewItem()
@@ -326,9 +333,6 @@ namespace ProcessHacker
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
-            this.SaveSettings();
-            Program.HackerWindow.ProcessTree.RefreshItems();
-            Program.ApplyFont(Properties.Settings.Default.Font);
             this.Close();
         }
 

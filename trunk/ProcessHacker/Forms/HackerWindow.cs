@@ -694,19 +694,45 @@ namespace ProcessHacker
                 "Process Hacker", MessageBoxButtons.YesNo, 
                 MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
+                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && 
+                    Program.KPH == null)
+                {
+                    try
+                    {
+                        foreach (ProcessNode node in treeProcesses.SelectedNodes)
+                        {
+                            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
+                                Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                            { }
+                        }
+                    }
+                    catch
+                    {
+                        string objects = "";
+
+                        foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
+                            objects += node_.PID + ",";
+
+                        Program.StartProcessHackerAdmin("-e -type process -action terminate -obj \"" +
+                            objects + "\"", null);
+
+                        return;
+                    }
+                }
+
                 foreach (ProcessNode node in treeProcesses.SelectedNodes)
                 {
                     try
                     {
-                        using (Win32.ProcessHandle handle = new Win32.ProcessHandle(node.PID,
+                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
                             Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                            handle.Terminate();
+                            phandle.Terminate();
                     }
                     catch (Exception ex)
                     {
                         DialogResult result = MessageBox.Show("Could not terminate process \"" + node.Name +
                             "\" with PID " + node.PID.ToString() + ":\n\n" +
-                                ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                         if (result == DialogResult.Cancel)
                             return;
@@ -717,9 +743,35 @@ namespace ProcessHacker
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
         {
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
+                Program.KPH == null)
+            {
+                try
+                {
+                    foreach (ProcessNode node in treeProcesses.SelectedNodes)
+                    {
+                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
+                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
+                        { }
+                    }
+                }
+                catch
+                {
+                    string objects = "";
+
+                    foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
+                        objects += node_.PID + ",";
+
+                    Program.StartProcessHackerAdmin("-e -type process -action suspend -obj \"" +
+                        objects + "\"", null);
+
+                    return;
+                }
+            }
+
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(node.PID))
+                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
                 {
                     DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
                         " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
@@ -741,7 +793,7 @@ namespace ProcessHacker
                 {
                     DialogResult result = MessageBox.Show("Could not suspend process \"" + node.Name +
                         "\" with PID " + node.PID.ToString() + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
                         return;
@@ -751,9 +803,35 @@ namespace ProcessHacker
 
         private void resumeMenuItem_Click(object sender, EventArgs e)
         {
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
+                Program.KPH == null)
+            {
+                try
+                {
+                    foreach (ProcessNode node in treeProcesses.SelectedNodes)
+                    {
+                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
+                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
+                        { }
+                    }
+                }
+                catch
+                {
+                    string objects = "";
+
+                    foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
+                        objects += node_.PID + ",";
+
+                    Program.StartProcessHackerAdmin("-e -type process -action resume -obj \"" +
+                        objects + "\"", null);
+
+                    return;
+                }
+            }
+
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && IsDangerousPID(node.PID))
+                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
                 {
                     DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
                         " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
@@ -775,7 +853,7 @@ namespace ProcessHacker
                 {
                     DialogResult result = MessageBox.Show("Could not resume process \"" + node.Name +
                         "\" with PID " + node.PID.ToString() + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
                         return;
@@ -786,7 +864,7 @@ namespace ProcessHacker
         private void restartProcessMenuItem_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to restart the process?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
                 try
                 {
@@ -1383,28 +1461,9 @@ namespace ProcessHacker
                 selectAllServiceMenuItem.Enabled = true;
             }
 
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                //startServiceMenuItem.Visible = false;
-                continueServiceMenuItem.Visible = false;
-                pauseServiceMenuItem.Visible = false;
-                //stopServiceMenuItem.Visible = false;
-                deleteServiceMenuItem.Visible = false;
-            }
-
             if (listServices.List.Items.Count == 0)
                 selectAllServiceMenuItem.Enabled = false;
         }
-
-        private void performAdminServiceMenuItem_Click(object sender, EventArgs e)
-        {
-            Program.StartProcessHackerAdmin("-t 1", () =>
-            {
-                this.SaveSettings();
-                notifyIcon.Visible = false;
-                Process.GetCurrentProcess().Kill();
-            });
-        }  
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
@@ -1428,8 +1487,8 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
-                    "start \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide);
+                Program.StartProcessHackerAdmin("-e -type service -action start -obj \"" + 
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
             else
             {
@@ -1449,31 +1508,47 @@ namespace ProcessHacker
 
         private void continueServiceMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                    service.Control(Win32.SERVICE_CONTROL.Continue);
+                Program.StartProcessHackerAdmin("-e -type service -action continue -obj \"" +
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error continuing service:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                        service.Control(Win32.SERVICE_CONTROL.Continue);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error continuing service:\n\n" + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void pauseServiceMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                    listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                    service.Control(Win32.SERVICE_CONTROL.Pause);
+                Program.StartProcessHackerAdmin("-e -type service -action pause -obj \"" +
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error pausing service:\n\n" + ex.Message, "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
+                        service.Control(Win32.SERVICE_CONTROL.Pause);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error pausing service:\n\n" + ex.Message, "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -1481,8 +1556,8 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                Program.StartProgramAdmin(Environment.SystemDirectory + "\\sc.exe",
-                    "stop \"" + listServices.SelectedItems[0].Name + "\"", null, Win32.ShowWindowType.Hide);
+                Program.StartProcessHackerAdmin("-e -type service -action stop -obj \"" +
+                    listServices.SelectedItems[0].Name + "\"", null);
             }
             else
             {
@@ -1507,16 +1582,24 @@ namespace ProcessHacker
                 "Process Hacker",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
-                try
+                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
                 {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Delete();
+                    Program.StartProcessHackerAdmin("-e -type service -action delete -obj \"" +
+                        listServices.SelectedItems[0].Name + "\"", null);
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error deleting service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    try
+                    {
+                        using (Win32.ServiceHandle service = new Win32.ServiceHandle(
+                            listServices.SelectedItems[0].Name, (Win32.SERVICE_RIGHTS)Win32.STANDARD_RIGHTS.DELETE))
+                            service.Delete();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error deleting service:\n\n" + ex.Message, "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -1848,30 +1931,6 @@ namespace ProcessHacker
 
         #region Helper functions
 
-        private bool IsDangerousPID(int pid)
-        {
-            if (pid == 4)
-                return true;
-
-            try
-            {
-                using (var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
-                {
-                    foreach (string s in Misc.DangerousNames)
-                    {
-                        if ((Environment.SystemDirectory + "\\" + s).ToLower() == 
-                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())).ToLower())
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch { }
-
-            return false;
-        }
-
         private void SetProcessPriority(ProcessPriorityClass priority)
         {
             try
@@ -1984,7 +2043,11 @@ namespace ProcessHacker
                 uacShieldIcon = this.GetUacShieldIcon();
 
                 vistaMenu.SetImage(showDetailsForAllProcessesMenuItem, uacShieldIcon);
-                vistaMenu.SetImage(performAdminServiceMenuItem, uacShieldIcon);
+                //vistaMenu.SetImage(startServiceMenuItem, uacShieldIcon);
+                //vistaMenu.SetImage(continueServiceMenuItem, uacShieldIcon);
+                //vistaMenu.SetImage(pauseServiceMenuItem, uacShieldIcon);
+                //vistaMenu.SetImage(stopServiceMenuItem, uacShieldIcon);
+                //vistaMenu.SetImage(deleteServiceMenuItem, uacShieldIcon);
                 runAsServiceMenuItem.Visible = false;
                 runAsProcessMenuItem.Visible = false;
             }
@@ -1992,7 +2055,6 @@ namespace ProcessHacker
             {
                 runAsAdministratorMenuItem.Visible = false;
                 showDetailsForAllProcessesMenuItem.Visible = false;
-                performAdminServiceMenuItem.Visible = false;
             }
         }
 
