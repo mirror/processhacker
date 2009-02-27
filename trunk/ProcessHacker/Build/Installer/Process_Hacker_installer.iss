@@ -75,7 +75,6 @@ Source: Psvince\psvince.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Assistant.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\bin\Release\HACKING.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
