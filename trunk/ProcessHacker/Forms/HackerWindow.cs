@@ -428,6 +428,10 @@ namespace ProcessHacker
         {
             List<ProcessItem> processes = new List<ProcessItem>();
 
+            // Clear the images so we don't get GDI+ handle leaks
+            foreach (MenuItem item in processesMenuItem.MenuItems)
+                vistaMenu.SetImage(item, null);
+
             processesMenuItem.MenuItems.Clear();
 
             // HACK: To be fixed later - we need some sort of locking for the process provider
@@ -448,7 +452,7 @@ namespace ProcessHacker
                         processes.RemoveAt(i);
                         i--;
                     }
-                    else if (processes[i].Username != System.Security.Principal.WindowsIdentity.GetCurrent().Name)
+                    else if (processes[i].Username != Program.CurrentUsername)
                     {
                         processes.RemoveAt(i);
                         i--;

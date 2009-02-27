@@ -600,6 +600,9 @@ namespace ProcessHacker
 
                 lock (windowMenuItem)
                 {
+                    foreach (MenuItem menuItem in windowMenuItem.MenuItems)
+                        vistaMenu.SetImage(menuItem, null);
+
                     windowMenuItem.MenuItems.Clear();
 
                     foreach (string s in Texts)
