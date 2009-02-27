@@ -4,7 +4,6 @@ SET outd=%~p1
 
 ::Copy CHANGELOG.txt, HACKING.txt, LICENSE.txt, README.txt and kprocesshacker.sys
 COPY "%outd%\..\..\..\CHANGELOG.txt" "%outd%\" /V >nul 2>&1
-COPY "%outd%\..\..\..\HACKING.txt" "%outd%\" /V >nul 2>&1
 COPY "%outd%\..\..\..\LICENSE.txt" "%outd%\" /V >nul 2>&1
 COPY "%outd%\..\..\..\README.txt" "%outd%\" /V >nul 2>&1
 COPY "%outd%\..\..\..\KProcessHacker\i386\kprocesshacker.sys" "%outd%\" /V >nul 2>&1
