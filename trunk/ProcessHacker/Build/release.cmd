@@ -24,11 +24,11 @@ IF EXIST "%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe" (
 
 :SearchILMergeInPATH
 ::Check if ILMerge is present in PATH
-Set "A_=ILMerge.exe"
-Set "M_=ILMerge IS NOT INSTALLED"
+SET "IL_=ILMerge.exe"
+SET "MSGIL_=ILMerge IS NOT INSTALLED"
 
-FOR %%# IN (%A_%) DO IF %%~$PATH:#' EQU ' (
-	Echo:%M_%&&GOTO :CLEANUP
+FOR %%# IN (%IL_%) DO IF %%~$PATH:#' EQU ' (
+	ECHO:%MSGIL_%&&GOTO :END
 ) ELSE (
 	GOTO :ILMergeInPATH
 )
@@ -49,13 +49,18 @@ GOTO :Installer
 
 :Installer
 ::Set the path of Inno Setup and compile setup
-FOR /f "tokens=1-5*" %%a IN (
-	' REG QUERY "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 5_is1" /v "Inno Setup: App Path" ^| find "App Path" ' 
-) DO (
-	SET InnoSetupPath=%%f
-)
+SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+SET "I_=Inno Setup"
 
-IF NOT EXIST "%InnoSetupPath%" ECHO Inno Setup NOT FOUND&&GOTO :CLEANUP
+SET "A_=%I_% 5"
+SET "M_=Inno Setup IS NOT INSTALLED"
+
+FOR /f "delims=" %%a IN (
+'REG QUERY "%U_%\%A_%_is1" /v "%I_%: App Path"2^>Nul^|FIND "REG_"') DO (
+SET "InnoSetupPath=%%a
+SET "InnoSetupPath=%%a"&Call :Sub %%InnoSetupPath:*Z=%%)
+
+IF NOT DEFINED InnoSetupPath ECHO:%M_%&&GOTO :END
 
 "%InnoSetupPath%\iscc.exe" /Q /O"%outd%\..\..\bin\Release" "%outd%\..\..\Build\Installer\Process_Hacker_installer.iss"
 ECHO Instaler compiled successfully&&GOTO :CLEANUP
@@ -70,3 +75,6 @@ GOTO :ZIP
 ECHO ZIP created successfully
 
 :END
+
+:Sub
+SET InnoSetupPath=%*
