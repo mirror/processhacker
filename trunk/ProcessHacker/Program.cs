@@ -74,6 +74,8 @@ namespace ProcessHacker
         public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
 
+        public static System.Collections.Specialized.StringCollection ImposterNames = 
+            new System.Collections.Specialized.StringCollection();
         public static bool StartMinimized = false;
         public static bool ShowOptions = false;
         public static string SelectTab = "Processes";

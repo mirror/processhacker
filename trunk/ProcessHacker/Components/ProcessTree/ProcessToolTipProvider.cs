@@ -146,7 +146,7 @@ namespace ProcessHacker
                         else if (pNode.ProcessItem.VerifyResult != Win32.VerifyResult.NoSignature)
                             otherNotes += "\n    Signature present but invalid.";
 
-                        if (Properties.Settings.Default.ImposterNames.Contains(pNode.Name.ToLower()) &&
+                        if (Program.ImposterNames.Contains(pNode.Name.ToLower()) &&
                             pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Trusted &&
                             pNode.ProcessItem.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
                             pNode.ProcessItem.VerifyResult != Win32.VerifyResult.Unknown)

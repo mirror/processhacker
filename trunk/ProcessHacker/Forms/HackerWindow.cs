@@ -1907,6 +1907,11 @@ namespace ProcessHacker
             HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+
+            Program.ImposterNames = new System.Collections.Specialized.StringCollection();
+
+            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
+                Program.ImposterNames.Add(s.Trim());
         }
 
         public void QueueMessage(string message)
@@ -2276,9 +2281,9 @@ namespace ProcessHacker
             this.LoadFixMenuItems();
             this.LoadNotificationIcon();
             this.LoadUac();
+            this.LoadSettings();
             this.LoadControls();
             this.LoadAddShortcuts();
-            this.LoadSettings();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();
             this.ResumeLayout();

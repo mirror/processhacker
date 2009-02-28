@@ -198,7 +198,7 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorElevatedProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && 
                 Properties.Settings.Default.VerifySignatures &&
-                Properties.Settings.Default.ImposterNames.Contains(p.Name.ToLower()) &&
+                Program.ImposterNames.Contains(p.Name.ToLower()) &&
                 p.VerifyResult != Win32.VerifyResult.Trusted &&
                 p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
                 p.VerifyResult != Win32.VerifyResult.Unknown &&

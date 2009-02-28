@@ -59,11 +59,7 @@ namespace ProcessHacker
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
             checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
 
-            foreach (string s in Properties.Settings.Default.ImposterNames)
-                textImposterNames.Text += s + ", ";
-
-            if (textImposterNames.Text.EndsWith(", "))
-                textImposterNames.Text = textImposterNames.Text.Remove(textImposterNames.Text.Length - 2, 2);
+            textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
@@ -254,15 +250,12 @@ namespace ProcessHacker
             Properties.Settings.Default.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
             Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
-            Properties.Settings.Default.ImposterNames.Clear();
+            Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
 
-            foreach (string s in textImposterNames.Text.Split(new string[] { ", " }, StringSplitOptions.None))
-            {
-                if (s.Trim() == "")
-                    continue;
+            Program.ImposterNames = new System.Collections.Specialized.StringCollection();
 
-                Properties.Settings.Default.ImposterNames.Add(s.Trim().ToLower());
-            }
+            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
+                Program.ImposterNames.Add(s.Trim());
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
