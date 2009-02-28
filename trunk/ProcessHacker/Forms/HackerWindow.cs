@@ -558,10 +558,11 @@ namespace ProcessHacker
 
         private void showHideMenuItem_Click(object sender, EventArgs e)
         {
+            this.Visible = !this.Visible;
+
             if (this.WindowState == FormWindowState.Minimized)
                 this.WindowState = FormWindowState.Normal;
 
-            this.Visible = !this.Visible;
             this.Activate();
         }
 
@@ -1862,10 +1863,15 @@ namespace ProcessHacker
 
         private void LoadSettings()
         {
-            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
+            this.TopMost = Properties.Settings.Default.AlwaysOnTop;                
             this.Location = Properties.Settings.Default.WindowLocation;
             this.Size = Properties.Settings.Default.WindowSize;
-            this.WindowState = Properties.Settings.Default.WindowState;
+
+            if (Properties.Settings.Default.WindowState != FormWindowState.Minimized)
+                this.WindowState = Properties.Settings.Default.WindowState;
+            else
+                this.WindowState = FormWindowState.Normal;
+
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
@@ -2174,31 +2180,17 @@ namespace ProcessHacker
 
                     foreach (string module in modules)
                     {
-                        this.BeginInvoke(new MethodInvoker(delegate
-                        {
-                            statusIcon.Icon = null;
-                            statusText.Text = "Loading symbols for " + module + "...";
-                        }));
-
                         try
                         {
                             SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(Environment.SystemDirectory + "\\" + module,
                                 (uint)Win32.GetModuleHandle(module));
                         }
-                        catch (Exception ex)
-                        {
-                            QueueMessage("Could not load symbols for " + module + ": " + ex.Message, null);
-                        }
+                        catch
+                        { }
                     }
                 }
                 catch
                 { }
-
-                this.BeginInvoke(new MethodInvoker(delegate
-                {
-                    statusIcon.Icon = null;
-                    statusText.Text = "";
-                }));
             }));
 
             t.Priority = ThreadPriority.Lowest;
@@ -2207,29 +2199,13 @@ namespace ProcessHacker
 
         private void LoadApplyCommandLineArgs()
         {
-            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
-            {
-                // HACK
-                System.Windows.Forms.Timer t2 =
-                    new System.Windows.Forms.Timer();
-
-                t2.Interval = 1;
-                t2.Tick +=
-                    (sender_, e_) =>
-                    {
-                        t2.Enabled = false;
-                        this.Hide();
-                        this.Location = Properties.Settings.Default.WindowLocation;
-                        t2.Dispose();
-                    };
-                t2.Enabled = true;
-            }
+            tabControlBig.SelectedTab = tabControlBig.TabPages["tab" + Program.SelectTab];
 
             if (Program.ShowOptions)
             {
                 OptionsWindow options = new OptionsWindow();
 
-                if (Program.StartMinimized)
+                if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
                     options.StartPosition = FormStartPosition.CenterScreen;
 
                 options.TopMost = this.TopMost;
@@ -2240,40 +2216,35 @@ namespace ProcessHacker
                 networkP.Interval = Properties.Settings.Default.RefreshInterval;
                 timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             }
-
-            tabControlBig.SelectedTab = tabControlBig.TabPages["tab" + Program.SelectTab];
         }
 
         public HackerWindow()
         {
             InitializeComponent();
 
+            // Force the handle to be created
+            { var handle = this.Handle; }
+
             this.SuspendLayout();
             this.LoadVerifySettings();
             this.CreateShutdownMenuItems();
             this.LoadFixMenuItems();
             this.LoadNotificationIcon();
-            this.ResumeLayout();
-
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-        }
-
-        private void HackerWindow_Load(object sender, EventArgs e)
-        {
-            Program.UpdateWindows();
-            this.ApplyFont(Properties.Settings.Default.Font);
             this.LoadUac();
             this.LoadControls();
             this.LoadAddShortcuts();
             this.LoadSettings();
             this.LoadSymbols();
             this.LoadApplyCommandLineArgs();
+            this.ResumeLayout();
+
+            if (!Properties.Settings.Default.StartHidden && !Program.StartMinimized)
+            {
+                this.Visible = true;
+            }
 
             if (tabControlBig.SelectedTab == tabProcesses)
                 treeProcesses.Tree.Select();
-
-            if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
-                this.Location = new Point(-3200, -3200);
 
             statusText.Text = "Waiting...";
 
@@ -2300,6 +2271,14 @@ namespace ProcessHacker
             }
             catch
             { }
+
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+        }
+
+        private void HackerWindow_Load(object sender, EventArgs e)
+        {
+            Program.UpdateWindows();
+            this.ApplyFont(Properties.Settings.Default.Font);
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
@@ -2308,7 +2287,6 @@ namespace ProcessHacker
             {
                 if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
                 {
-                    this.WindowState = FormWindowState.Normal;
                     this.Visible = false;
                 }
             }
