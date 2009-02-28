@@ -1113,10 +1113,10 @@ namespace ProcessHacker
             if (_handleP != null)
                 _handleP.Enabled = tabControl.SelectedTab == tabHandles;
 
-            listThreads.EndUpdate();
-            listModules.EndUpdate();
-            listMemory.EndUpdate();
-            listHandles.EndUpdate();
+            listThreads.Invalidate();
+            listModules.Invalidate();
+            listMemory.Invalidate();
+            listHandles.Invalidate();
         }
 
         #endregion
