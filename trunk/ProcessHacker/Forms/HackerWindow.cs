@@ -2311,7 +2311,9 @@ namespace ProcessHacker
                     this.WindowState = FormWindowState.Normal;
                     this.Visible = false;
                 }
-            } 
+            }
+
+            tabControlBig.Invalidate(false);
         }
     }
 }
