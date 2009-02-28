@@ -42,14 +42,14 @@
             this.flowCredits = new System.Windows.Forms.FlowLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
+            this.label8 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -154,10 +154,10 @@
             this.linkEmail.AutoSize = true;
             this.linkEmail.Location = new System.Drawing.Point(12, 237);
             this.linkEmail.Name = "linkEmail";
-            this.linkEmail.Size = new System.Drawing.Size(190, 13);
+            this.linkEmail.Size = new System.Drawing.Size(145, 13);
             this.linkEmail.TabIndex = 10;
             this.linkEmail.TabStop = true;
-            this.linkEmail.Text = "Send feedback to wj32.64@gmail.com";
+            this.linkEmail.Text = "Post feedback on our tracker";
             this.linkEmail.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEmail_LinkClicked);
             // 
             // linkAsm
@@ -229,15 +229,6 @@
             this.label6.TabIndex = 18;
             this.label6.Text = "Dean - Developer";
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 42);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(142, 13);
-            this.label7.TabIndex = 18;
-            this.label7.Text = "Uday Shanbhag - Developer";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -246,6 +237,15 @@
             this.label1.Size = new System.Drawing.Size(136, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "XhmikosR - Installer, Tester";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 42);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(142, 13);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Uday Shanbhag - Developer";
             // 
             // linkICSharpCode
             // 
@@ -257,6 +257,15 @@
             this.linkICSharpCode.TabStop = true;
             this.linkICSharpCode.Text = "ic#code - SharpDevelop code";
             this.linkICSharpCode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkICSharpCode_LinkClicked);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 133);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(100, 13);
+            this.label8.TabIndex = 20;
+            this.label8.Text = "Sysinternals Forums";
             // 
             // label4
             // 
@@ -293,15 +302,6 @@
             this.labelFiller.Size = new System.Drawing.Size(31, 13);
             this.labelFiller.TabIndex = 17;
             this.labelFiller.Text = "        ";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 133);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(100, 13);
-            this.label8.TabIndex = 20;
-            this.label8.Text = "Sysinternals Forums";
             // 
             // AboutWindow
             // 

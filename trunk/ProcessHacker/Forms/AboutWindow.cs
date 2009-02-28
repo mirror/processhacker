@@ -76,7 +76,7 @@ namespace ProcessHacker
 
         private void linkEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("mailto:wj32.64@gmail.com");
+            TryStart("http://sourceforge.net/tracker2/?group_id=242527");
         }
 
         private void linkAsm_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
