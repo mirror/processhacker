@@ -2213,6 +2213,8 @@ namespace ProcessHacker
                                 {
                                     TopMost = this.TopMost
                                 }).ShowDialog();
+
+                                treeProcesses.Tree.Invalidate();
                             }));
 
                         menu.Show(treeProcesses.Tree, e.Location);

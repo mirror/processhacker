@@ -37,6 +37,8 @@
             this.columnUsername = new Aga.Controls.Tree.TreeColumn();
             this.columnDescription = new Aga.Controls.Tree.TreeColumn();
             this.columnCompany = new Aga.Controls.Tree.TreeColumn();
+            this.columnFileName = new Aga.Controls.Tree.TreeColumn();
+            this.columnCommandLine = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
@@ -46,10 +48,10 @@
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeDescription = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCompany = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnFileName = new Aga.Controls.Tree.TreeColumn();
-            this.columnCommandLine = new Aga.Controls.Tree.TreeColumn();
             this.nodeFileName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCommandLine = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnSessionId = new Aga.Controls.Tree.TreeColumn();
+            this.nodeSessionId = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -62,6 +64,7 @@
             this.treeProcesses.Columns.Add(this.columnWorkingSet);
             this.treeProcesses.Columns.Add(this.columnCPU);
             this.treeProcesses.Columns.Add(this.columnUsername);
+            this.treeProcesses.Columns.Add(this.columnSessionId);
             this.treeProcesses.Columns.Add(this.columnDescription);
             this.treeProcesses.Columns.Add(this.columnCompany);
             this.treeProcesses.Columns.Add(this.columnFileName);
@@ -83,6 +86,7 @@
             this.treeProcesses.NodeControls.Add(this.nodeWorkingSet);
             this.treeProcesses.NodeControls.Add(this.nodeCPU);
             this.treeProcesses.NodeControls.Add(this.nodeUsername);
+            this.treeProcesses.NodeControls.Add(this.nodeSessionId);
             this.treeProcesses.NodeControls.Add(this.nodeDescription);
             this.treeProcesses.NodeControls.Add(this.nodeCompany);
             this.treeProcesses.NodeControls.Add(this.nodeFileName);
@@ -164,6 +168,23 @@
             this.columnCompany.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnCompany.TooltipText = null;
             this.columnCompany.Width = 140;
+            // 
+            // columnFileName
+            // 
+            this.columnFileName.Header = "File Name";
+            this.columnFileName.IsVisible = false;
+            this.columnFileName.Sortable = true;
+            this.columnFileName.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnFileName.TooltipText = null;
+            this.columnFileName.Width = 200;
+            // 
+            // columnCommandLine
+            // 
+            this.columnCommandLine.Header = "Command Line";
+            this.columnCommandLine.Sortable = true;
+            this.columnCommandLine.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnCommandLine.TooltipText = null;
+            this.columnCommandLine.Width = 200;
             // 
             // nodeIcon
             // 
@@ -247,23 +268,6 @@
             this.nodeCompany.ParentColumn = this.columnCompany;
             this.nodeCompany.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
-            // columnFileName
-            // 
-            this.columnFileName.Header = "File Name";
-            this.columnFileName.IsVisible = false;
-            this.columnFileName.Sortable = true;
-            this.columnFileName.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnFileName.TooltipText = null;
-            this.columnFileName.Width = 200;
-            // 
-            // columnCommandLine
-            // 
-            this.columnCommandLine.Header = "Command Line";
-            this.columnCommandLine.Sortable = true;
-            this.columnCommandLine.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnCommandLine.TooltipText = null;
-            this.columnCommandLine.Width = 200;
-            // 
             // nodeFileName
             // 
             this.nodeFileName.DataPropertyName = "FileName";
@@ -281,6 +285,25 @@
             this.nodeCommandLine.LeftMargin = 3;
             this.nodeCommandLine.ParentColumn = this.columnCommandLine;
             this.nodeCommandLine.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // columnSessionId
+            // 
+            this.columnSessionId.Header = "Session ID";
+            this.columnSessionId.IsVisible = false;
+            this.columnSessionId.Sortable = true;
+            this.columnSessionId.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnSessionId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnSessionId.TooltipText = null;
+            // 
+            // nodeSessionId
+            // 
+            this.nodeSessionId.DataPropertyName = "SessionId";
+            this.nodeSessionId.EditEnabled = false;
+            this.nodeSessionId.IncrementalSearchEnabled = true;
+            this.nodeSessionId.LeftMargin = 3;
+            this.nodeSessionId.ParentColumn = this.columnSessionId;
+            this.nodeSessionId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeSessionId.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // ProcessTree
             // 
@@ -318,5 +341,7 @@
         private Aga.Controls.Tree.TreeColumn columnCommandLine;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeFileName;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeCommandLine;
+        private Aga.Controls.Tree.TreeColumn columnSessionId;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeSessionId;
     }
 }

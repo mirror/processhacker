@@ -258,13 +258,11 @@ namespace ProcessHacker
                                 new MethodInvoker(delegate
                             {
                                 node.State = TreeNodeAdv.NodeState.Normal;
-                                treeProcesses.Invalidate();
                             }));
                         }
 
                         node.BackColor = GetProcessColor(item);
                         node.ExpandAll();
-                        treeProcesses.Invalidate();
                     }
                 }
             }));

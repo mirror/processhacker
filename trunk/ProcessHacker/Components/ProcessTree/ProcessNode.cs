@@ -178,6 +178,17 @@ namespace ProcessHacker
             get { return this.GetBestUsername(_pitem.Username, Properties.Settings.Default.ShowAccountDomains); }
         }
 
+        public string SessionId
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return _pitem.SessionId.ToString();
+            }
+        }
+
         public string Description
         {
             get
