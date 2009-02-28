@@ -274,17 +274,22 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin()
         {
-            StartProcessHackerAdmin("", null);
+            StartProcessHackerAdmin("", null, IntPtr.Zero);
         }
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction)
         {
+            StartProcessHackerAdmin(args, successAction, IntPtr.Zero);
+        }
+
+        public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
+        {
             StartProgramAdmin(Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName,
-                args, successAction, Win32.ShowWindowType.Show);
+                args, successAction, Win32.ShowWindowType.Show, hWnd);
         }
 
         public static void StartProgramAdmin(string program, string args, 
-            MethodInvoker successAction, Win32.ShowWindowType showType)
+            MethodInvoker successAction, Win32.ShowWindowType showType, IntPtr hWnd)
         {
             Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
 
@@ -293,6 +298,7 @@ namespace ProcessHacker
             info.nShow = showType;
             info.lpVerb = "runas";
             info.lpParameters = args;
+            info.hWnd = hWnd;
 
             if (Win32.ShellExecuteEx(ref info))
             {

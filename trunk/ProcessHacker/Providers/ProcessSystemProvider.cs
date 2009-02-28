@@ -230,7 +230,7 @@ namespace ProcessHacker
 
                         lock (_fileResults)
                         {
-                            if (_fileResults.ContainsKey(uniName))
+                            if (false && _fileResults.ContainsKey(uniName))
                             {
                                 fpResult.VerifyResult = _fileResults[uniName];
                             }
@@ -245,7 +245,7 @@ namespace ProcessHacker
                                     fpResult.VerifyResult = Win32.VerifyResult.NoSignature;
                                 }
 
-                                _fileResults.Add(uniName, fpResult.VerifyResult);
+                                //_fileResults.Add(uniName, fpResult.VerifyResult);
                             }
                         }
                     }

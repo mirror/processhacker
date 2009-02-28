@@ -651,7 +651,7 @@ namespace ProcessHacker
         {
             public int cbSize;
             public int fMask;
-            public int hWnd;
+            public IntPtr hWnd;
             public string lpVerb;
             public string lpFile;
             public string lpParameters;
