@@ -2324,6 +2324,8 @@ namespace ProcessHacker
         {
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
+            Win32.SetWindowTheme(listServices.List.Handle, "explorer", null);
+            Win32.SetWindowTheme(listNetwork.List.Handle, "explorer", null);
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)

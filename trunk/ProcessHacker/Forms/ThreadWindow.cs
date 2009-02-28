@@ -121,6 +121,9 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
+            Win32.SetWindowTheme(listViewCallStack.Handle, "explorer", null);
+            Win32.SetWindowTheme(listViewRegisters.Handle, "explorer", null);
+
             try
             {
                 _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ);

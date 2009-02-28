@@ -71,6 +71,7 @@ namespace ProcessHacker
 
             listResults.ContextMenu = GenericViewMenu.GetMenu(listResults, 
                 new RetrieveVirtualItemEventHandler(listResults_RetrieveVirtualItem));
+            Win32.SetWindowTheme(listResults.Handle, "explorer", null);
 
             this.Size = Properties.Settings.Default.ResultsWindowSize;
 

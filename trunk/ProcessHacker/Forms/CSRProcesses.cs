@@ -44,6 +44,7 @@ namespace ProcessHacker
         {
             buttonScan.Select();
             ColumnSettings.LoadSettings(Properties.Settings.Default.CSRProcessesColumns, listProcesses);
+            Win32.SetWindowTheme(listProcesses.Handle, "explorer", null);
         }
 
         private void CSRProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)

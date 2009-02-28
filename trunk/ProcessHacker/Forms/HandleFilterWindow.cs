@@ -51,6 +51,7 @@ namespace ProcessHacker
         {
             ColumnSettings.LoadSettings(Properties.Settings.Default.FilterHandleListViewColumns, listHandles);
             this.Size = Properties.Settings.Default.FilterHandleWindowSize;
+            Win32.SetWindowTheme(listHandles.Handle, "explorer", null);
         }
 
         private void HandleFilterWindow_FormClosing(object sender, FormClosingEventArgs e)

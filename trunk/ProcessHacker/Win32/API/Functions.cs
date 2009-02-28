@@ -872,6 +872,9 @@ namespace ProcessHacker
 
         #region Windows
 
+        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+        public static extern int SetWindowTheme(IntPtr hWnd, string appName, string idList);
+
         [DllImport("user32.dll")]
         public static extern int GetGuiResources(int ProcessHandle, bool UserObjects);
 

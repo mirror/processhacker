@@ -498,6 +498,11 @@ namespace ProcessHacker
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
 
+            Win32.SetWindowTheme(listThreads.List.Handle, "explorer", null);
+            Win32.SetWindowTheme(listModules.List.Handle, "explorer", null);
+            Win32.SetWindowTheme(listMemory.List.Handle, "explorer", null);
+            Win32.SetWindowTheme(listHandles.List.Handle, "explorer", null);
+
             this.InitializeShortcuts();
         }
 

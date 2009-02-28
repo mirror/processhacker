@@ -11,6 +11,7 @@ Process Hacker
    * #2647435 - "Add descriptions to Memory search results window"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
+   * Vista-style lists
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
    * Black border bug when restoring from minimized state

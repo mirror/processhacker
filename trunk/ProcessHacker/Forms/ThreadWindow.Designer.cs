@@ -214,7 +214,7 @@
             this.groupRegisters.Controls.Add(this.listViewRegisters);
             this.groupRegisters.Location = new System.Drawing.Point(12, 231);
             this.groupRegisters.Name = "groupRegisters";
-            this.groupRegisters.Size = new System.Drawing.Size(375, 132);
+            this.groupRegisters.Size = new System.Drawing.Size(375, 153);
             this.groupRegisters.TabIndex = 2;
             this.groupRegisters.TabStop = false;
             this.groupRegisters.Text = "Registers";
@@ -230,7 +230,7 @@
             this.listViewRegisters.FullRowSelect = true;
             this.listViewRegisters.Location = new System.Drawing.Point(6, 19);
             this.listViewRegisters.Name = "listViewRegisters";
-            this.listViewRegisters.Size = new System.Drawing.Size(363, 107);
+            this.listViewRegisters.Size = new System.Drawing.Size(363, 128);
             this.listViewRegisters.TabIndex = 0;
             this.listViewRegisters.UseCompatibleStateImageBehavior = false;
             this.listViewRegisters.View = System.Windows.Forms.View.Details;
