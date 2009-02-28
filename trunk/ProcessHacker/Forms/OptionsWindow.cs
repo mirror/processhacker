@@ -130,6 +130,8 @@ namespace ProcessHacker
             {
                 checkReplaceTaskManager.Enabled = false;
             }
+
+            checkShowTrayIcon_CheckedChanged(null, null);
         }      
 
         private void OptionsWindow_Load(object sender, EventArgs e)
