@@ -516,7 +516,7 @@ namespace ProcessHacker
                         objects += item.SubItems[0].Text + ",";
 
                     Program.StartProcessHackerAdmin("-e -type thread -action terminate -obj \"" +
-                        objects + "\"", null);
+                        objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                     return;
                 }
@@ -572,7 +572,7 @@ namespace ProcessHacker
                         objects += item.SubItems[0].Text + ",";
 
                     Program.StartProcessHackerAdmin("-e -type thread -action suspend -obj \"" +
-                        objects + "\"", null);
+                        objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                     return;
                 }
@@ -628,7 +628,7 @@ namespace ProcessHacker
                         objects += item.SubItems[0].Text + ",";
 
                     Program.StartProcessHackerAdmin("-e -type thread -action resume -obj \"" +
-                        objects + "\"", null);
+                        objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                     return;
                 }

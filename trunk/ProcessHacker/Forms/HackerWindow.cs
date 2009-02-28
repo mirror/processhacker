@@ -718,7 +718,7 @@ namespace ProcessHacker
                             objects += node_.PID + ",";
 
                         Program.StartProcessHackerAdmin("-e -type process -action terminate -obj \"" +
-                            objects + "\"", null);
+                            objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                         return;
                     }
@@ -767,7 +767,7 @@ namespace ProcessHacker
                         objects += node_.PID + ",";
 
                     Program.StartProcessHackerAdmin("-e -type process -action suspend -obj \"" +
-                        objects + "\"", null);
+                        objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                     return;
                 }
@@ -827,7 +827,7 @@ namespace ProcessHacker
                         objects += node_.PID + ",";
 
                     Program.StartProcessHackerAdmin("-e -type process -action resume -obj \"" +
-                        objects + "\"", null);
+                        objects + "\" -hwnd " + this.Handle.ToString(), null);
 
                     return;
                 }
@@ -1509,7 +1509,7 @@ namespace ProcessHacker
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 Program.StartProcessHackerAdmin("-e -type service -action start -obj \"" + 
-                    listServices.SelectedItems[0].Name + "\"", null);
+                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null);
             }
             else
             {
@@ -1532,7 +1532,7 @@ namespace ProcessHacker
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 Program.StartProcessHackerAdmin("-e -type service -action continue -obj \"" +
-                    listServices.SelectedItems[0].Name + "\"", null);
+                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null);
             }
             else
             {
@@ -1555,7 +1555,7 @@ namespace ProcessHacker
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 Program.StartProcessHackerAdmin("-e -type service -action pause -obj \"" +
-                    listServices.SelectedItems[0].Name + "\"", null);
+                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null);
             }
             else
             {
@@ -1578,7 +1578,7 @@ namespace ProcessHacker
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 Program.StartProcessHackerAdmin("-e -type service -action stop -obj \"" +
-                    listServices.SelectedItems[0].Name + "\"", null);
+                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null);
             }
             else
             {
@@ -1606,7 +1606,7 @@ namespace ProcessHacker
                 if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
                 {
                     Program.StartProcessHackerAdmin("-e -type service -action delete -obj \"" +
-                        listServices.SelectedItems[0].Name + "\"", null);
+                        listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null);
                 }
                 else
                 {
