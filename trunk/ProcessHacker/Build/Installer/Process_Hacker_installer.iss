@@ -208,7 +208,8 @@ Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
 	// When uninstalling ask user to delete Process Hacker's and settings based on whether this file exists only
 	if CurUninstallStep = usUninstall then begin
-		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt')) or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt')) then begin
+		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
+		or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt')) or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt')) then begin
 			if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
 				DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
 				DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
