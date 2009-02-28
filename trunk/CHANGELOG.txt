@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * #2596481 - "Add option for one instance of Process Hacker"
    * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
+   * #2647422 - "Suggest filename in Memory Editor->Data->Save"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
  * FIXED:

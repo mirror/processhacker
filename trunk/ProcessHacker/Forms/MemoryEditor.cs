@@ -332,6 +332,20 @@ namespace ProcessHacker
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
+                {
+                    string fileName = phandle.GetNativeImageFileName();
+
+                    sfd.FileName = fileName.Substring(fileName.LastIndexOf('\\') + 1) + "-0x" + _address.ToString("x8") + ".bin";
+                }
+            }
+            catch
+            {
+                sfd.FileName = "memory.bin";
+            }
+
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 for (long i = 0; i < hexBoxMemory.ByteProvider.Length; i++)
