@@ -8,12 +8,12 @@ PUSHD %outd%
 ::Copy CHANGELOG.txt, LICENSE.txt, README.txt and kprocesshacker.sys to the
 ::"Release" folder
 FOR %%a IN (
-	CHANGELOG.txt LICENSE.txt README.txt KProcessHacker\i386\kprocesshacker.sys
+	"CHANGELOG.txt" "LICENSE.txt" "README.txt" "KProcessHacker\i386\kprocesshacker.sys"
 	) DO COPY "..\..\..\%%a" >NUL
 
 ::Clear older files present in "Release" folder
-DEL/f/a ProcessHacker.exe.config "processhacker-*-setup.exe"^
- ProcessHacker_in.exe processhacker-bin.zip >NUL 2>&1
+DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^
+ "ProcessHacker_in.exe" "processhacker-bin.zip" >NUL 2>&1
 
 ::Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
@@ -22,9 +22,10 @@ IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 			ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
 
 ::Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
-REN ProcessHacker.exe ProcessHacker_in.exe
-%ILMergePath% /t:winexe /out:ProcessHacker.exe ProcessHacker_in.exe^
- Aga.Controls.dll&&DEL/f/a ProcessHacker_in.exe Aga.Controls.dll >NUL 2>&1
+REN "ProcessHacker.exe" "ProcessHacker_in.exe"
+%ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe"^
+ "Aga.Controls.dll"&&ECHO:ILMerge completed successfully!^
+ &&DEL/f/a "ProcessHacker_in.exe" "Aga.Controls.dll" >NUL 2>&1
 
 ::Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
@@ -44,12 +45,11 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 DEL/f/a/q *.pdb >NUL 2>&1
 
 ::ZIP the binaries
-IF NOT DEFINED N_ (START "" /B /WAIT ..\..\Build\7za\7za.exe a -tzip^
+IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip^
  "processhacker-bin.zip" "*" -x!*setup.exe -mx=9 >NUL&&(
 	ECHO:ZIP created successfully!))
 
 :END
->NUL PING -n 6 127.0.0.1
 GOTO :EOF
 
 :Sub
