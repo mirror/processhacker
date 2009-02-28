@@ -27,6 +27,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProcessHacker
 {
@@ -174,6 +175,33 @@ namespace ProcessHacker
         {
             if (e.Control && e.KeyCode == Keys.A)
                 Misc.SelectAll(listProcesses.Items);
+        }
+
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.FileName = "CSR Processes.txt";
+            sfd.OverwritePrompt = true;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                    {
+                        foreach (ListViewItem item in listProcesses.Items)
+                        {
+                            sw.WriteLine((item.BackColor == Color.Red ? "[Hidden] " : "") +
+                                item.SubItems[1].Text + ": " + item.SubItems[0].Text);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

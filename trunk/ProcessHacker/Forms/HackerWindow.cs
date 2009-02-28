@@ -45,6 +45,7 @@ namespace ProcessHacker
 
         public HelpWindow HelpForm;
         public HandleFilterWindow HandleFilterWindow;
+        public CSRProcessesWindow CSRProcessesWindow;
 
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
@@ -356,9 +357,11 @@ namespace ProcessHacker
 
         private void csrProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            var csrProcesses = new CSRProcessesWindow();
+            if (CSRProcessesWindow == null || CSRProcessesWindow.IsDisposed)
+                CSRProcessesWindow = new CSRProcessesWindow();
 
-            csrProcesses.Show();
+            CSRProcessesWindow.Show();
+            CSRProcessesWindow.Activate();
         }
 
         private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
