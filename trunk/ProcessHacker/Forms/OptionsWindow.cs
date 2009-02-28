@@ -53,6 +53,7 @@ namespace ProcessHacker
             checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
             checkHideWhenClosed.Checked = Properties.Settings.Default.HideWhenClosed;
+            checkAllowOnlyOneInstance.Checked = Properties.Settings.Default.AllowOnlyOneInstance;
             checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
             checkHideHandlesWithNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
@@ -246,6 +247,7 @@ namespace ProcessHacker
             Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
             Properties.Settings.Default.HideWhenClosed = checkHideWhenClosed.Checked;
+            Properties.Settings.Default.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
             Properties.Settings.Default.UnitSpecifier =
                 Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;

@@ -1000,7 +1000,7 @@ namespace ProcessHacker
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetCaretBlinkTime();
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int InternalGetWindowText(IntPtr hWnd, StringBuilder str, int maxCount);
 
         #endregion

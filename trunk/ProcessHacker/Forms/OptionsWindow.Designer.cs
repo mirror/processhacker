@@ -81,6 +81,7 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
+            this.checkAllowOnlyOneInstance = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -134,7 +135,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 359);
+            this.buttonClose.Location = new System.Drawing.Point(362, 385);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 2;
@@ -146,7 +147,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 285);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 309);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -159,7 +160,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 261);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 285);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -200,11 +201,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 341);
+            this.tabControl.Size = new System.Drawing.Size(425, 367);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
             this.tabGeneral.Controls.Add(this.buttonFont);
             this.tabGeneral.Controls.Add(this.textImposterNames);
             this.tabGeneral.Controls.Add(this.label21);
@@ -225,7 +227,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 315);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 341);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -703,7 +705,7 @@
             // 
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 364);
+            this.label22.Location = new System.Drawing.Point(12, 390);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(300, 13);
             this.label22.TabIndex = 10;
@@ -717,12 +719,24 @@
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
             // 
+            // checkAllowOnlyOneInstance
+            // 
+            this.checkAllowOnlyOneInstance.AutoSize = true;
+            this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 261);
+            this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
+            this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
+            this.checkAllowOnlyOneInstance.TabIndex = 16;
+            this.checkAllowOnlyOneInstance.Text = "Allow only one instance";
+            this.toolTipProvider.SetToolTip(this.checkAllowOnlyOneInstance, "Process Hacker will detect a previous instance of itself and switch to it.");
+            this.checkAllowOnlyOneInstance.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonClose;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 394);
+            this.ClientSize = new System.Drawing.Size(449, 420);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonClose);
@@ -807,5 +821,6 @@
         private System.Windows.Forms.ColumnHeader columnDescription;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonChangeReplaceTaskManager;
+        private System.Windows.Forms.CheckBox checkAllowOnlyOneInstance;
     }
 }

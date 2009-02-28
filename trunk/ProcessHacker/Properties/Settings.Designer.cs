@@ -1086,5 +1086,17 @@ namespace ProcessHacker.Properties {
                 this["UseColorPackedProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AllowOnlyOneInstance {
+            get {
+                return ((bool)(this["AllowOnlyOneInstance"]));
+            }
+            set {
+                this["AllowOnlyOneInstance"] = value;
+            }
+        }
     }
 }

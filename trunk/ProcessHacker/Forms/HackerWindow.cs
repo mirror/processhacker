@@ -1965,6 +1965,26 @@ namespace ProcessHacker
 
         #endregion
 
+        protected override void WndProc(ref Message m)
+        {
+            // Magic number - PH uses this to detect previous instances.
+            if (m.Msg == 0x9991)
+            {
+                this.Visible = true;
+
+                if (this.WindowState == FormWindowState.Minimized)
+                    this.WindowState = FormWindowState.Normal;
+
+                this.Activate();
+
+                m.Result = new IntPtr(0x1119);
+
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+
         private void Exit()
         {
             processP.Dispose();

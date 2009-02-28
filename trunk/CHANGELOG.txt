@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.5.5
  * NEW:
+   * #2596481 - "Add option for one instance of Process Hacker"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
  * FIXED:

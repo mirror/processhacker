@@ -88,6 +88,15 @@ namespace ProcessHacker
         {
             Application.EnableVisualStyles();
 
+            // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
+            try
+            {
+                if (Properties.Settings.Default.AllowOnlyOneInstance)
+                    CheckForPreviousInstance();
+            }
+            catch
+            { }
+
             if (Environment.Version.Major < 2)
             {
                 MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
@@ -228,6 +237,32 @@ namespace ProcessHacker
 
             HackerWindow = new HackerWindow();
             Application.Run();
+        }
+
+        private static void CheckForPreviousInstance()
+        {
+            bool found = false;
+
+            Win32.EnumWindows((hWnd, param) =>
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder(0x100);
+                    int length = Win32.InternalGetWindowText(hWnd, sb, sb.Capacity);
+
+                    if (sb.ToString().Contains("Process Hacker ["))
+                    {
+                        if (Win32.SendMessage(hWnd, (Win32.WindowMessage)0x9991, IntPtr.Zero, IntPtr.Zero).ToInt32() ==
+                            0x1119)
+                        {
+                            found = true;
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }, 0);
+
+            if (found)
+                Environment.Exit(0);
         }
 
         public static void StartProcessHackerAdmin()
