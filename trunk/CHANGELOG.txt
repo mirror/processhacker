@@ -3,6 +3,7 @@ Process Hacker
 1.3.5.5
  * NEW:
    * #2596481 - "Add option for one instance of Process Hacker"
+   * #2625193 - "Add warning before shutting down, or restarting pc etc."
    * #2647387 - "Add descriptions to Memory Editor's buttons"
    * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
    * #2647422 - "Suggest filename in Memory Editor->Data->Save"

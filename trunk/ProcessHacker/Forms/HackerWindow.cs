@@ -1759,9 +1759,27 @@ namespace ProcessHacker
             addMenuItem(new MenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); }));
             addMenuItem(new MenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); }));
             addMenuItem(new MenuItem("-"));
-            addMenuItem(new MenuItem("Restart", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Reboot, 0); }));
-            addMenuItem(new MenuItem("Shutdown", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Shutdown, 0); }));
-            addMenuItem(new MenuItem("Poweroff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Poweroff, 0); }));
+            addMenuItem(new MenuItem("Restart", (sender, e) =>
+            {
+                if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Reboot, 0);
+            }));
+            addMenuItem(new MenuItem("Shutdown", (sender, e) =>
+            {
+                if (MessageBox.Show("Are you sure you want to shutdown your computer?", "Process Hacker",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Shutdown, 0);
+            }));
+            addMenuItem(new MenuItem("Poweroff", (sender, e) =>
+            {
+                if (MessageBox.Show("Are you sure you want to poweroff your computer?", "Process Hacker",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Poweroff, 0);
+            }));
         }
 
         private void DeleteSettings()
