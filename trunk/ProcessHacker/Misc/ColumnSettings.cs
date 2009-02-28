@@ -70,7 +70,8 @@ namespace ProcessHacker
                 for (int i = 0; i < tv.Columns.Count; i++)
                 {
                     TreeColumn c = tv.Columns[i];
-                    result += c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + "|";
+                    result += c.Header + "," + c.Width.ToString() + "," + c.SortOrder.ToString() + 
+                        "," + c.IsVisible.ToString() + "|";
                 }
             }
             catch
@@ -130,6 +131,7 @@ namespace ProcessHacker
 
                     newColumns[i] = new TreeColumn(s[0], Int32.Parse(s[1]));
                     newColumns[i].SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), s[2]);
+                    newColumns[i].IsVisible = bool.Parse(s[3]);
                     newColumnsD.Add(s[0], newColumns[i]);
                 }
 

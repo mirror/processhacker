@@ -37,8 +37,8 @@ namespace ProcessHacker
         public Icon Icon;
         public string CmdLine;
         public float CPUUsage;
-        public string FileDescription;
         public string FileName;
+        public FileVersionInfo VersionInfo;
         public long MemoryUsage;
         public string Name;
         public string Username;
@@ -566,21 +566,14 @@ namespace ProcessHacker
                     if (pid == 0)
                     {
                         item.Name = "System Idle Process";
-                        item.FileDescription = "System Idle Process";
-                    }
-                    else if (pid == 4)
-                    {
-                        item.FileDescription = "Windows Kernel";
                     }
                     else if (pid == -2)
                     {
-                        item.FileDescription = "Deferred Procedure Calls";
                         item.ParentPID = 0;
                         item.HasParent = true;
                     }
                     else if (pid == -3)
                     {
-                        item.FileDescription = "Hardware Interrupts";
                         item.ParentPID = 0;
                         item.HasParent = true;
                     }
@@ -588,7 +581,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.FileDescription = FileVersionInfo.GetVersionInfo(item.FileName).FileDescription;
+                            item.VersionInfo = FileVersionInfo.GetVersionInfo(item.FileName);
                         }
                         catch
                         { }
@@ -705,20 +698,14 @@ namespace ProcessHacker
                     //    { }
                     //}
 
-                    if (newitem.MemoryUsage != item.MemoryUsage ||
-                        newitem.CPUUsage != item.CPUUsage || 
-                        newitem.IsBeingDebugged != item.IsBeingDebugged ||
-                        //newitem.IsVirtualizationEnabled != item.IsVirtualizationEnabled ||
+                    newdictionary[pid] = newitem;
+
+                    if (newitem.IsBeingDebugged != item.IsBeingDebugged ||
                         newitem.JustProcessed
                         )
                     {
                         newitem.JustProcessed = false;
-                        newdictionary[pid] = newitem;
                         this.CallDictionaryModified(item, newitem);
-                    }
-                    else if (Win32.ProcessesWithThreads.ContainsKey(pid))
-                    {
-                        newdictionary[pid] = newitem;
                     }
                 }
             }

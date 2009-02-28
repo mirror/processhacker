@@ -109,8 +109,6 @@ namespace ProcessHacker
 
             _processes.Remove(item.PID);
 
-            this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
-
             foreach (ProcessNode n in targetChildren)
             {
                 try
@@ -120,8 +118,6 @@ namespace ProcessHacker
                 catch
                 { }
             }
-
-            _tree.Invalidate();
         }
 
         public TreePath GetPath(ProcessNode node)
@@ -217,12 +213,21 @@ namespace ProcessHacker
                             return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
                         else if (sortC == "pvt. memory")
                             return ModifySort(n1.ProcessItem.MemoryUsage.CompareTo(n2.ProcessItem.MemoryUsage), sortO);
+                        else if (sortC == "working set")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
                         else if (sortC == "cpu")
                             return ModifySort(n1.ProcessItem.CPUUsage.CompareTo(n2.ProcessItem.CPUUsage), sortO);
                         else if (sortC == "username")
                             return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
                         else if (sortC == "description")
                             return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
+                        else if (sortC == "company")
+                            return ModifySort(n1.Company.CompareTo(n2.Company), sortO);
+                        else if (sortC == "file name")
+                            return ModifySort(n1.FileName.CompareTo(n2.FileName), sortO);
+                        else if (sortC == "command line")
+                            return ModifySort(n1.CommandLine.CompareTo(n2.CommandLine), sortO);
                         else
                             return 0;
                     }));

@@ -134,9 +134,14 @@ namespace ProcessHacker
             get { if (_pitem.PID == _pitem.ParentPID) return -1; else return _pitem.ParentPID; }
         }
 
-        public string Memory
+        public string PvtMemory
         {
             get { return Misc.GetNiceSizeName(_pitem.MemoryUsage); }
+        }
+
+        public string WorkingSet
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.WorkingSetSize); }
         }
 
         public string CPU
@@ -175,7 +180,52 @@ namespace ProcessHacker
 
         public string Description
         {
-            get { return _pitem.FileDescription != null ? _pitem.FileDescription : ""; }
+            get
+            {
+                if (PID == 0)
+                    return "System Idle Process";
+                else if (PID == -2)
+                    return "Deferred Procedure Calls";
+                else if (PID == -3)
+                    return "Interrupts";
+                else if (_pitem.VersionInfo != null)
+                    return _pitem.VersionInfo.FileDescription;
+                else
+                    return "";
+            }
+        }
+
+        public string Company
+        {
+            get
+            {
+                if (_pitem.VersionInfo != null)
+                    return _pitem.VersionInfo.CompanyName;
+                else
+                    return "";
+            }
+        }
+
+        public string FileName
+        {
+            get
+            {
+                if (_pitem.FileName == null)
+                    return "";
+                else
+                    return _pitem.FileName;
+            }
+        }
+
+        public string CommandLine
+        {
+            get
+            {
+                if (_pitem.CmdLine == null)
+                    return "";
+                else
+                    return _pitem.CmdLine.Replace("\0", "");
+            }
         }
 
         public Bitmap Icon

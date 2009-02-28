@@ -2201,6 +2201,24 @@ namespace ProcessHacker
             networkP.RunOnceAsync();
             networkP.Enabled = true;
 
+            treeProcesses.Tree.MouseDown += (sender, e) =>
+                {
+                    if (e.Button == MouseButtons.Right && e.Location.Y < 20)
+                    {
+                        ContextMenu menu = new ContextMenu();
+
+                        menu.MenuItems.Add(new MenuItem("Choose Columns...", (sender_, e_) =>
+                            {
+                                (new ChooseColumnsWindow(treeProcesses.Tree)
+                                {
+                                    TopMost = this.TopMost
+                                }).ShowDialog();
+                            }));
+
+                        menu.Show(treeProcesses.Tree, e.Location);
+                    }
+                };
+
             tabControlBig_SelectedIndexChanged(null, null);
         }
 

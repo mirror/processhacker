@@ -37,6 +37,7 @@ namespace ProcessHacker
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
+        private bool _needsRestructure = false;
 
         public ProcessTree()
         {
@@ -172,7 +173,16 @@ namespace ProcessHacker
 
         private void provider_Updated()
         {
-            this.BeginInvoke(new MethodInvoker(delegate { treeProcesses.Invalidate(); }));
+            this.BeginInvoke(new MethodInvoker(delegate
+            {
+                if (_needsRestructure)
+                {
+                    _needsRestructure = false;
+                    _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+                }
+
+                treeProcesses.Invalidate(); 
+            }));
         }
 
         private void PerformDelayed(int delay, MethodInvoker action)
@@ -276,7 +286,7 @@ namespace ProcessHacker
                     }
 
                     if (_treeModel.GetSortColumn() != "")
-                        _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+                        _needsRestructure = true;
                 }
             }));
         }
@@ -301,9 +311,9 @@ namespace ProcessHacker
                                 this.RefreshItems();
                             }
                             catch { }
-                        }));
 
-                        treeProcesses.Invalidate();
+                            _needsRestructure = true;
+                        }));
                     }
                 }
             }));
