@@ -38,6 +38,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.checkAllowOnlyOneInstance = new System.Windows.Forms.CheckBox();
             this.buttonFont = new System.Windows.Forms.Button();
             this.textImposterNames = new System.Windows.Forms.TextBox();
             this.label21 = new System.Windows.Forms.Label();
@@ -81,7 +82,6 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.checkAllowOnlyOneInstance = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -232,6 +232,18 @@
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
             // 
+            // checkAllowOnlyOneInstance
+            // 
+            this.checkAllowOnlyOneInstance.AutoSize = true;
+            this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 261);
+            this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
+            this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
+            this.checkAllowOnlyOneInstance.TabIndex = 16;
+            this.checkAllowOnlyOneInstance.Text = "Allow only one instance";
+            this.toolTipProvider.SetToolTip(this.checkAllowOnlyOneInstance, "Process Hacker will detect a previous instance of itself and switch to it.");
+            this.checkAllowOnlyOneInstance.UseVisualStyleBackColor = true;
+            // 
             // buttonFont
             // 
             this.buttonFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -376,7 +388,7 @@
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(417, 315);
+            this.tabAdvanced.Size = new System.Drawing.Size(417, 341);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -413,8 +425,8 @@
             this.checkEnableKPH.Size = new System.Drawing.Size(155, 18);
             this.checkEnableKPH.TabIndex = 14;
             this.checkEnableKPH.Text = "Enable kernel-mode driver";
-            this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the experimental driver which allows Process Hacker to bypass rootkits an" +
-                    "d security software to a certain extent.");
+            this.toolTipProvider.SetToolTip(this.checkEnableKPH, "Enables the driver which allows Process Hacker to bypass rootkits and security so" +
+                    "ftware.");
             this.checkEnableKPH.UseVisualStyleBackColor = true;
             // 
             // checkHideHandlesWithNoName
@@ -455,7 +467,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 315);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 341);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -575,7 +587,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 315);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 341);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -718,18 +730,6 @@
             this.toolTipProvider.InitialDelay = 250;
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
-            // 
-            // checkAllowOnlyOneInstance
-            // 
-            this.checkAllowOnlyOneInstance.AutoSize = true;
-            this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 261);
-            this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
-            this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
-            this.checkAllowOnlyOneInstance.TabIndex = 16;
-            this.checkAllowOnlyOneInstance.Text = "Allow only one instance";
-            this.toolTipProvider.SetToolTip(this.checkAllowOnlyOneInstance, "Process Hacker will detect a previous instance of itself and switch to it.");
-            this.checkAllowOnlyOneInstance.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
