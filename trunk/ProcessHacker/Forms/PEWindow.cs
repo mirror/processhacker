@@ -45,30 +45,7 @@ namespace ProcessHacker
             this.Text = "PE File - " + path;
             Program.PEWindows.Add(Id, this);
 
-            Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
-            listCOFFHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFHeader);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
-
-            Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
-            listCOFFOptionalHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFOptionalHeader);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
-
-            Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
-            listImageData.ContextMenu = GenericViewMenu.GetMenu(listImageData);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
-
-            Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
-            listSections.ContextMenu = GenericViewMenu.GetMenu(listSections);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
-
-            Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
-            listExports.ContextMenu = GenericViewMenu.GetMenu(listExports,
-                new RetrieveVirtualItemEventHandler(listExports_RetrieveVirtualItem));
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
-
-            Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
-            listImports.ContextMenu = GenericViewMenu.GetMenu(listImports);
-            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
+            this.InitializeLists();
 
             try
             {
@@ -99,6 +76,80 @@ namespace ProcessHacker
             Properties.Settings.Default.PEExportsColumns = ColumnSettings.SaveSettings(listExports);
             Properties.Settings.Default.PEImportsColumns = ColumnSettings.SaveSettings(listImports);
             Properties.Settings.Default.PEWindowSize = this.Size;
+        }
+
+        private void InitializeLists()
+        {
+            Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
+            Win32.SetWindowTheme(listCOFFHeader.Handle, "explorer", null);
+            listCOFFHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFHeader);
+            listCOFFHeader.KeyDown +=
+                (sender, e) =>
+                {
+                 if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listCOFFHeader.Items);
+                 if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listCOFFHeader, -1);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
+
+            Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
+            Win32.SetWindowTheme(listCOFFOptionalHeader.Handle, "explorer", null);
+            listCOFFOptionalHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFOptionalHeader);
+            listCOFFOptionalHeader.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listCOFFOptionalHeader.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listCOFFOptionalHeader, -1);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
+
+            Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
+            Win32.SetWindowTheme(listImageData.Handle, "explorer", null);
+            listImageData.ContextMenu = GenericViewMenu.GetMenu(listImageData);
+            listImageData.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listImageData.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listImageData, -1);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
+
+            Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
+            Win32.SetWindowTheme(listSections.Handle, "explorer", null);
+            listSections.ContextMenu = GenericViewMenu.GetMenu(listSections);
+            listSections.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listSections.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listSections, -1);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
+
+            Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
+            Win32.SetWindowTheme(listExports.Handle, "explorer", null);
+            listExports.ContextMenu = GenericViewMenu.GetMenu(listExports, listExports_RetrieveVirtualItem);
+            listExports.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A)
+                        for (int i = 0; i < listExports.VirtualListSize; i++)
+                            if (!listExports.SelectedIndices.Contains(i))
+                                listExports.SelectedIndices.Add(i);
+
+                    if (e.Control && e.KeyCode == Keys.C)
+                        GenericViewMenu.ListViewCopy(listExports, -1, listExports_RetrieveVirtualItem);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
+
+            Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
+            Win32.SetWindowTheme(listImports.Handle, "explorer", null);
+            listImports.ContextMenu = GenericViewMenu.GetMenu(listImports);
+            listImports.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listImports.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listImports, -1);
+                };
+            ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
         }
 
         public string Id

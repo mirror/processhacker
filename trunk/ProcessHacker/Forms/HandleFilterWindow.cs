@@ -52,6 +52,12 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.FilterHandleListViewColumns, listHandles);
             this.Size = Properties.Settings.Default.FilterHandleWindowSize;
             Win32.SetWindowTheme(listHandles.Handle, "explorer", null);
+            listHandles.KeyDown +=
+                (sender_, e_) =>
+                {
+                    if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listHandles.Items);
+                    if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listHandles, -1);
+                };
         }
 
         private void HandleFilterWindow_FormClosing(object sender, FormClosingEventArgs e)

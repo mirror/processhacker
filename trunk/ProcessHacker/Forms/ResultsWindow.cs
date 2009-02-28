@@ -63,6 +63,18 @@ namespace ProcessHacker
             labelText.Text = "Ready.";
 
             _so = new SearchOptions(_pid, SearchType.String);
+
+            listResults.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A)
+                        for (int i = 0; i < listResults.VirtualListSize; i++)
+                            if (!listResults.SelectedIndices.Contains(i))
+                                listResults.SelectedIndices.Add(i);
+
+                    if (e.Control && e.KeyCode == Keys.C)
+                        GenericViewMenu.ListViewCopy(listResults, -1, listResults_RetrieveVirtualItem);
+                };
         }
 
         private void ResultsWindow_Load(object sender, EventArgs e)

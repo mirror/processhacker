@@ -2038,6 +2038,12 @@ namespace ProcessHacker
 
         private void HackerWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (e.CloseReason == CloseReason.WindowsShutDown)
+            {
+                this.Exit();
+                return;
+            }
+
             if (Properties.Settings.Default.HideWhenClosed)
             {
                 e.Cancel = true;
