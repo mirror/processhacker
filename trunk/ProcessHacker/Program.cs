@@ -86,12 +86,29 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
+            Dictionary<string, string> pArgs = null;
+
             Application.EnableVisualStyles();
+
+            try
+            {
+                pArgs = ParseArgs(args);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Usage: processhacker [-m]\n" +
+                    "\t-m\tStarts Process Hacker hidden.\n" +
+                    "\t-o\tShows Options.\n" +
+                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                pArgs = new Dictionary<string, string>();
+            }
 
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
             try
             {
-                if (Properties.Settings.Default.AllowOnlyOneInstance)
+                if (Properties.Settings.Default.AllowOnlyOneInstance && !pArgs.ContainsKey("-e"))
                     CheckForPreviousInstance();
             }
             catch
@@ -185,10 +202,7 @@ namespace ProcessHacker
             catch
             { }
 
-            try
             {
-                var pArgs = ParseArgs(args);
-
                 if (pArgs.ContainsKey("-m"))
                     StartMinimized = true;
                 if (pArgs.ContainsKey("-o"))
@@ -215,15 +229,6 @@ namespace ProcessHacker
 
                     return;
                 }
-            }
-            catch
-            {
-                MessageBox.Show(
-                    "Usage: processhacker [-m]\n" +
-                    "\t-m\tStarts Process Hacker hidden.\n" +
-                    "\t-o\tShows Options.\n" +
-                    "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
 #if DEBUG
