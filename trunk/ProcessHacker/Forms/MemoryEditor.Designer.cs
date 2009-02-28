@@ -60,6 +60,7 @@ namespace ProcessHacker
             this.hexBoxMemory = new Be.Windows.Forms.HexBox();
             this.utilitiesButtonMemory = new ProcessHacker.UtilitiesButton();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,6 +84,7 @@ namespace ProcessHacker
             this.buttonValues.Name = "buttonValues";
             this.buttonValues.Size = new System.Drawing.Size(24, 24);
             this.buttonValues.TabIndex = 26;
+            this.toolTip.SetToolTip(this.buttonValues, "Show Data Representations");
             this.buttonValues.UseVisualStyleBackColor = true;
             this.buttonValues.Click += new System.EventHandler(this.buttonValues_Click);
             // 
@@ -95,6 +97,7 @@ namespace ProcessHacker
             this.buttonGoToMemory.Size = new System.Drawing.Size(47, 23);
             this.buttonGoToMemory.TabIndex = 22;
             this.buttonGoToMemory.Text = "&Go";
+            this.toolTip.SetToolTip(this.buttonGoToMemory, "Go to the specified address");
             this.buttonGoToMemory.UseVisualStyleBackColor = true;
             this.buttonGoToMemory.Click += new System.EventHandler(this.buttonGoToMemory_Click);
             // 
@@ -116,6 +119,7 @@ namespace ProcessHacker
             this.buttonTopFind.Name = "buttonTopFind";
             this.buttonTopFind.Size = new System.Drawing.Size(23, 23);
             this.buttonTopFind.TabIndex = 19;
+            this.toolTip.SetToolTip(this.buttonTopFind, "Top");
             this.buttonTopFind.UseVisualStyleBackColor = true;
             this.buttonTopFind.Click += new System.EventHandler(this.buttonTopFind_Click);
             // 
@@ -127,6 +131,7 @@ namespace ProcessHacker
             this.buttonNextFind.Name = "buttonNextFind";
             this.buttonNextFind.Size = new System.Drawing.Size(23, 23);
             this.buttonNextFind.TabIndex = 20;
+            this.toolTip.SetToolTip(this.buttonNextFind, "Next Result");
             this.buttonNextFind.UseVisualStyleBackColor = true;
             this.buttonNextFind.Click += new System.EventHandler(this.buttonNextFind_Click);
             // 
@@ -216,6 +221,7 @@ namespace ProcessHacker
             this.buttonStruct.Name = "buttonStruct";
             this.buttonStruct.Size = new System.Drawing.Size(24, 24);
             this.buttonStruct.TabIndex = 26;
+            this.toolTip.SetToolTip(this.buttonStruct, "View Struct...");
             this.buttonStruct.UseVisualStyleBackColor = true;
             this.buttonStruct.Click += new System.EventHandler(this.buttonStruct_Click);
             // 
@@ -247,6 +253,7 @@ namespace ProcessHacker
             this.utilitiesButtonMemory.Name = "utilitiesButtonMemory";
             this.utilitiesButtonMemory.Size = new System.Drawing.Size(24, 24);
             this.utilitiesButtonMemory.TabIndex = 28;
+            this.toolTip.SetToolTip(this.utilitiesButtonMemory, "Insert Data");
             // 
             // vistaMenu
             // 
@@ -302,5 +309,6 @@ namespace ProcessHacker
         private System.Windows.Forms.MenuItem menuItem6;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.Button buttonStruct;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

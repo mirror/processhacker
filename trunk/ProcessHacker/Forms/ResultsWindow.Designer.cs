@@ -57,6 +57,7 @@ namespace ProcessHacker
             this.buttonFind = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -133,6 +134,7 @@ namespace ProcessHacker
             this.buttonFilter.Name = "buttonFilter";
             this.buttonFilter.Size = new System.Drawing.Size(24, 24);
             this.buttonFilter.TabIndex = 22;
+            this.toolTip.SetToolTip(this.buttonFilter, "Filter");
             this.buttonFilter.UseVisualStyleBackColor = true;
             this.buttonFilter.Click += new System.EventHandler(this.buttonFilter_Click);
             // 
@@ -144,6 +146,7 @@ namespace ProcessHacker
             this.buttonIntersect.Name = "buttonIntersect";
             this.buttonIntersect.Size = new System.Drawing.Size(24, 24);
             this.buttonIntersect.TabIndex = 22;
+            this.toolTip.SetToolTip(this.buttonIntersect, "Intersect");
             this.buttonIntersect.UseVisualStyleBackColor = true;
             this.buttonIntersect.Click += new System.EventHandler(this.buttonIntersect_Click);
             // 
@@ -154,6 +157,7 @@ namespace ProcessHacker
             this.buttonEdit.Name = "buttonEdit";
             this.buttonEdit.Size = new System.Drawing.Size(24, 24);
             this.buttonEdit.TabIndex = 21;
+            this.toolTip.SetToolTip(this.buttonEdit, "Edit Search...");
             this.buttonEdit.UseVisualStyleBackColor = true;
             this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
             // 
@@ -164,6 +168,7 @@ namespace ProcessHacker
             this.buttonFind.Name = "buttonFind";
             this.buttonFind.Size = new System.Drawing.Size(24, 24);
             this.buttonFind.TabIndex = 20;
+            this.toolTip.SetToolTip(this.buttonFind, "Search");
             this.buttonFind.UseVisualStyleBackColor = true;
             this.buttonFind.Click += new System.EventHandler(this.buttonFind_Click);
             // 
@@ -175,6 +180,7 @@ namespace ProcessHacker
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(24, 24);
             this.buttonSave.TabIndex = 18;
+            this.toolTip.SetToolTip(this.buttonSave, "Save...");
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
@@ -222,5 +228,6 @@ namespace ProcessHacker
         private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.Button buttonFilter;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

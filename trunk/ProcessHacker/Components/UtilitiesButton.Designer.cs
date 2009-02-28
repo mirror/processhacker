@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.buttonUtilities = new System.Windows.Forms.Button();
             this.menuUtilities = new System.Windows.Forms.ContextMenu();
             this.insertNumberMenuItem = new System.Windows.Forms.MenuItem();
@@ -49,6 +50,7 @@
             this.uTF16MultilineMenuItem = new System.Windows.Forms.MenuItem();
             this.uTF16BigEndianMultilineMenuItem = new System.Windows.Forms.MenuItem();
             this.uTF32MultilineMenuItem = new System.Windows.Forms.MenuItem();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // buttonUtilities
@@ -58,6 +60,7 @@
             this.buttonUtilities.Name = "buttonUtilities";
             this.buttonUtilities.Size = new System.Drawing.Size(24, 24);
             this.buttonUtilities.TabIndex = 0;
+            this.toolTip.SetToolTip(this.buttonUtilities, "Insert Data");
             this.buttonUtilities.UseVisualStyleBackColor = true;
             this.buttonUtilities.Click += new System.EventHandler(this.buttonUtilities_Click);
             // 
@@ -232,5 +235,6 @@
         private System.Windows.Forms.MenuItem uTF16MultilineMenuItem;
         private System.Windows.Forms.MenuItem uTF16BigEndianMultilineMenuItem;
         private System.Windows.Forms.MenuItem uTF32MultilineMenuItem;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }
