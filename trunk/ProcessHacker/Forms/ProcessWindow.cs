@@ -497,6 +497,36 @@ namespace ProcessHacker
             _handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
+
+            this.InitializeShortcuts();
+        }
+
+        private void InitializeShortcuts()
+        {
+            listThreads.List.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listThreads.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listThreads.List, -1);
+                };
+            listModules.List.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listModules.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listModules.List, -1);
+                };
+            listMemory.List.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listMemory.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listMemory.List, -1);
+                };
+            listHandles.List.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listHandles.List.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listHandles.List, -1);
+                };
         }
 
         public void UpdateProtected()
@@ -1015,6 +1045,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listMemory.EndUpdate();
+                    listMemory.Invalidate();
                     listMemory.Highlight = true;
                     checkHideFreeRegions.Enabled = true;
                     this.Cursor = Cursors.Default;
@@ -1030,6 +1061,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listHandles.EndUpdate();
+                    listHandles.Invalidate();
                     listHandles.Highlight = true;
                     checkHideHandlesNoName.Enabled = true;
                     this.Cursor = Cursors.Default;
@@ -1045,6 +1077,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listModules.EndUpdate();
+                    listModules.Invalidate();
                     listModules.Highlight = true;
                 }));
                 _moduleP.Updated -= new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
@@ -1058,6 +1091,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listThreads.EndUpdate();
+                    listThreads.Invalidate();
                     listThreads.Highlight = true;
                 }));
                 _threadP.Updated -= new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
@@ -1105,18 +1139,17 @@ namespace ProcessHacker
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (_threadP != null)
-                _threadP.Enabled = tabControl.SelectedTab == tabThreads;
+                if (_threadP.Enabled = tabControl.SelectedTab == tabThreads)
+                    _threadP.RunOnceAsync();
             if (_moduleP != null)
-                _moduleP.Enabled = tabControl.SelectedTab == tabModules;
+                if (_moduleP.Enabled = tabControl.SelectedTab == tabModules)
+                    _moduleP.RunOnceAsync();
             if (_memoryP != null)
-                _memoryP.Enabled = tabControl.SelectedTab == tabMemory;
+                if (_memoryP.Enabled = tabControl.SelectedTab == tabMemory)
+                    _memoryP.RunOnceAsync();
             if (_handleP != null)
-                _handleP.Enabled = tabControl.SelectedTab == tabHandles;
-
-            listThreads.Invalidate();
-            listModules.Invalidate();
-            listMemory.Invalidate();
-            listHandles.Invalidate();
+                if (_handleP.Enabled = tabControl.SelectedTab == tabHandles)
+                    _handleP.RunOnceAsync();
         }
 
         #endregion

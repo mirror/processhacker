@@ -3,11 +3,13 @@ Process Hacker
 1.3.5.5
  * NEW:
    * #2596481 - "Add option for one instance of Process Hacker"
+   * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
    * Black border bug when restoring from minimized state
+   * Nulls at the ends of handle names
 
 1.3.5.0
  * NEW:

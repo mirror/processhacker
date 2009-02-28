@@ -127,7 +127,7 @@ namespace ProcessHacker
             {
                 int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName), buffer, outBuffer);
 
-                return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8);
+                return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8).TrimEnd('\0');
             }
             catch
             { }
