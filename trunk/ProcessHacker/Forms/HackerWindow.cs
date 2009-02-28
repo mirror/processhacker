@@ -1654,6 +1654,7 @@ namespace ProcessHacker
             if (tabControlBig.SelectedTab == tabNetwork)
             {
                 networkP.Enabled = true;
+                networkP.RunOnceAsync();
             }
             else
             {
