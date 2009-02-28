@@ -180,7 +180,7 @@ namespace ProcessHacker
             try
             {
                 CurrentSessionId = Win32.GetProcessSessionId(System.Diagnostics.Process.GetCurrentProcess().Id);
-                System.Diagnostics.Process.GetCurrentProcess().PriorityClass = System.Diagnostics.ProcessPriorityClass.Normal;
+                System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
             catch
             { }

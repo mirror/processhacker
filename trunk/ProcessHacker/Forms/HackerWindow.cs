@@ -1184,6 +1184,9 @@ namespace ProcessHacker
             processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
 
+            try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
+            catch { }
+
             if (processP.RunCount >= 1)
                 this.Invoke(new MethodInvoker(delegate
                 {
