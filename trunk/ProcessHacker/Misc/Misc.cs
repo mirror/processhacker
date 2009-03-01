@@ -599,7 +599,7 @@ namespace ProcessHacker
         public static void SetShieldIcon(Button button, bool show)
         {
             Win32.SendMessage(button.Handle, 
-                Win32.WindowMessage.BcmSetShield, IntPtr.Zero, show ? new IntPtr(1) : new IntPtr(0));
+                Win32.WindowMessage.BcmSetShield, 0, show ? 1 : 0);
         }
 
         #region Stuff from PNG.Net
