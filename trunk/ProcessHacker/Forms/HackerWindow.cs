@@ -201,7 +201,7 @@ namespace ProcessHacker
 
         private void showDetailsForAllProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            Program.StartProcessHackerAdmin(null, () =>
+            Program.StartProcessHackerAdmin("-v", () =>
                 {
                     this.SaveSettings();
                     notifyIcon.Visible = false;
@@ -2275,9 +2275,6 @@ namespace ProcessHacker
             {
                 OptionsWindow options = new OptionsWindow();
 
-                if (Properties.Settings.Default.StartHidden || Program.StartMinimized)
-                    options.StartPosition = FormStartPosition.CenterScreen;
-
                 options.TopMost = this.TopMost;
                 options.ShowDialog();
 
@@ -2305,10 +2302,10 @@ namespace ProcessHacker
             this.LoadControls();
             this.LoadAddShortcuts();
             this.LoadSymbols();
-            this.LoadApplyCommandLineArgs();
             this.ResumeLayout();
 
-            if (!Properties.Settings.Default.StartHidden && !Program.StartMinimized)
+            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) || 
+                Program.StartVisible || Program.ShowOptions)
             {
                 this.Visible = true;
             }
@@ -2341,8 +2338,6 @@ namespace ProcessHacker
             }
             catch
             { }
-
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -2351,6 +2346,8 @@ namespace ProcessHacker
             this.ApplyFont(Properties.Settings.Default.Font);
             Win32.SetWindowTheme(listServices.List.Handle, "explorer", null);
             Win32.SetWindowTheme(listNetwork.List.Handle, "explorer", null);
+
+            this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)

@@ -50,7 +50,7 @@ namespace ProcessHacker
 
         private void labelLink_Click(object sender, EventArgs e)
         {
-            TryStart("http://sourceforge.net/projects/processhacker");
+            TryStart("http://sourceforge.net/tracker2/?group_id=242527");
         }
 
         private void buttonContinue_Click(object sender, EventArgs e)

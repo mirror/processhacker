@@ -76,7 +76,8 @@ namespace ProcessHacker
 
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
-        public static bool StartMinimized = false;
+        public static bool StartHidden = false;
+        public static bool StartVisible = false;
         public static bool ShowOptions = false;
         public static string SelectTab = "Processes";
         public static Win32.TOKEN_ELEVATION_TYPE ElevationType;
@@ -101,6 +102,7 @@ namespace ProcessHacker
                 MessageBox.Show(
                     "Usage: processhacker [-m]\n" +
                     "\t-m\tStarts Process Hacker hidden.\n" +
+                    "\t-v\tStarts Process Hacker visible.\n" +
                     "\t-o\tShows Options.\n" +
                     "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -206,7 +208,9 @@ namespace ProcessHacker
 
             {
                 if (pArgs.ContainsKey("-m"))
-                    StartMinimized = true;
+                    StartHidden = true;
+                if (pArgs.ContainsKey("-v"))
+                    StartVisible = true;
                 if (pArgs.ContainsKey("-o"))
                     ShowOptions = true;
 
