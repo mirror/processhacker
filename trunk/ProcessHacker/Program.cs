@@ -261,7 +261,10 @@ namespace ProcessHacker
 
                     if (sb.ToString().Contains("Process Hacker ["))
                     {
-                        if (Win32.SendMessage(hWnd, (Win32.WindowMessage)0x9991, IntPtr.Zero, IntPtr.Zero).ToInt32() ==
+                        int result;
+
+                        if (Win32.SendMessageTimeout(hWnd, (Win32.WindowMessage)0x9991, IntPtr.Zero, IntPtr.Zero,
+                            Win32.SmtoFlags.AbortIfHung, 5000, out result).ToInt32() ==
                             0x1119)
                         {
                             Win32.SetForegroundWindow(hWnd);

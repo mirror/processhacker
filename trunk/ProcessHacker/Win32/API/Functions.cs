@@ -882,6 +882,10 @@ namespace ProcessHacker
         public static extern IntPtr SendMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessageTimeout(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l, 
+            SmtoFlags flags, int timeout, out int result);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr PostMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
 
         [DllImport("user32.dll")]
