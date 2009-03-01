@@ -2203,7 +2203,7 @@ namespace ProcessHacker
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
                 {
-                    if (e.Button == MouseButtons.Right && e.Location.Y < 20)
+                    if (e.Button == MouseButtons.Right && e.Location.Y < treeProcesses.Tree.ColumnHeaderHeight)
                     {
                         ContextMenu menu = new ContextMenu();
 
