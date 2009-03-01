@@ -249,7 +249,6 @@ namespace ProcessHacker
         private static void CheckForPreviousInstance()
         {
             bool found = false;
-            int processId = Win32.GetCurrentProcessId();
 
             Win32.EnumWindows((hWnd, param) =>
                 {
@@ -258,7 +257,7 @@ namespace ProcessHacker
 
                     if (sb.ToString().Contains("Process Hacker ["))
                     {
-                        if (Win32.SendMessage(hWnd, (Win32.WindowMessage)0x9991, new IntPtr(processId), IntPtr.Zero).ToInt32() ==
+                        if (Win32.SendMessage(hWnd, (Win32.WindowMessage)0x9991, IntPtr.Zero, IntPtr.Zero).ToInt32() ==
                             0x1119)
                         {
                             Win32.ShowWindow(hWnd, Win32.ShowWindowType.Restore);
