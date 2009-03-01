@@ -200,7 +200,7 @@
             this.textDescription.Name = "textDescription";
             this.textDescription.ReadOnly = true;
             this.textDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textDescription.Size = new System.Drawing.Size(375, 6);
+            this.textDescription.Size = new System.Drawing.Size(375, 38);
             this.textDescription.TabIndex = 17;
             // 
             // buttonStart
