@@ -1,8 +1,6 @@
 [CustomMessages]
-;sm=Start Menu, tsk=Task, com=Comment
+;sm=Start Menu, tsk=Task, com=Comment, msg=Message
 ;English
-en.msg_AppIsRunningInstall=Process Hacker is running! Please close it and run again setup.
-en.msg_AppIsRunningUninstall=Process Hacker is running! Please close it and run again uninstall.
 en.msg_SetupIsRunningWarningInstall=Process Hacker's setup is already running!
 en.msg_SetupIsRunningWarningUninstall=Process Hacker's setup is already running!
 en.msg_asknetdown=Process Hacker requires the .NET Framework 2. Please download and install the .NET Framework and run this setup again. Do you want to download the .NET Framework now?
@@ -25,8 +23,6 @@ en.sm_com_changelog=Process Hacker's Change Log
 
 
 ;Greek
-gr.msg_AppIsRunningInstall=Το Process Hacker τρέχει! Παρακαλώ κλείστε το Process Hacker και τρέξτε πάλι την εγκατάσταση.
-gr.msg_AppIsRunningUninstall=Το Process Hacker τρέχει! Παρακαλώ κλείστε το Process Hacker και τρέξτε πάλι την απεγκατάσταση.
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. Θέλετε να κατεβάσετε το .NET Framework τώρα;

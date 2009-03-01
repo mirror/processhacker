@@ -3,11 +3,9 @@
 ;Requirements:
 ;*Inno Setup QuickStart Pack
 ;   http://www.jrsoftware.org/isdl.php#qsp
-;*Psvince.dll
-;   http://www.vincenzo.net/isxkb/images/9/91/Psvince.zip
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "22"
+#define installer_build_number "23"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -40,22 +38,24 @@ AppVersion={#= app_version}
 MinVersion=0,4.0.1381
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
+InfoAfterFile=..\..\..\CHANGELOG.txt
 SetupIconFile=Icons\ProcessHacker.ico
 UninstallDisplayIcon={app}\ProcessHacker.exe
 WizardImageFile=Icons\ProcessHackerLarge.bmp
 WizardSmallImageFile=Icons\ProcessHackerSmall.bmp
 OutputDir=.
 OutputBaseFilename=processhacker-{#= app_version}-setup
-AllowNoIcons=true
+AllowNoIcons=True
 Compression=lzma/ultra64
-SolidCompression=true
+SolidCompression=True
 InternalCompressLevel=ultra64
-EnableDirDoesntExistWarning=false
+EnableDirDoesntExistWarning=False
 DirExistsWarning=no
-ShowTasksTreeLines=true
-AlwaysShowDirOnReadyPage=true
-AlwaysShowGroupOnReadyPage=true
-WizardImageStretch=false
+ShowTasksTreeLines=True
+AlwaysShowDirOnReadyPage=True
+AlwaysShowGroupOnReadyPage=True
+WizardImageStretch=False
+AppMutex=ProcessHackerMutex
 
 ;Specify the architectures that Process Hacker can run on
 ArchitecturesAllowed=x86
@@ -71,7 +71,6 @@ BeveledLabel=Process Hacker v{#= app_version} by {#= app_publisher}             
 #include "Custom_Messages.iss"
 
 [Files]
-Source: Psvince\psvince.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Assistant.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\base.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
@@ -109,11 +108,12 @@ Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: de
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 
 [InstallDelete]
-;Remove ProcessHacker.exe.config since it's not needed anymore
+;Remove files from the install folder which are not needed anymore
 Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
+Type: files; Name: {app}\psvince.dll
 
-;Remove shortcuts in Start Menu of other languages
+;Remove other languages' shortcuts in Start Menu
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
@@ -153,13 +153,6 @@ Type: dirifempty; Name: {app}
 [Code]
 // Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
-
-// General functions
-function IsModuleLoaded(modulename: String ):  Boolean;
-external 'IsModuleLoaded@files:psvince.dll stdcall setuponly';
-
-function IsModuleLoadedU(modulename: String ):  Boolean;
-external 'IsModuleLoaded@{app}\psvince.dll stdcall uninstallonly';
 
 // Function to check if app is already installed
 function IsInstalled( AppID: String ): Boolean;
@@ -242,23 +235,14 @@ begin
 end;
 
 begin
-	// Check if Process Hacker is running during installation
-	if IsModuleLoaded( 'ProcessHacker.exe' ) then begin
-		MsgBox(ExpandConstant('{cm:msg_AppIsRunningInstall}'), mbError, MB_OK );
-		Result := False;
-	end
-	else Result := True;
-	end;
-
-	if NOT IsModuleLoaded( 'ProcessHacker.exe' ) then begin
-		Result := True;
-		// Create a mutex for the installer and if it's already running then expose a message and stop installation
-		if CheckForMutexes(installer_mutex_name) then begin
-			if not WizardSilent() then
+	// Create a mutex for the installer and if it's already running then expose a message and stop installation
+	Result := True;
+	if CheckForMutexes(installer_mutex_name) then begin
+		if not WizardSilent() then
 			MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningInstall}'), mbError, MB_OK);
 			Result := False;
-			end
-			else begin
+		end
+		else begin
 			CreateMutex(installer_mutex_name);
 		end;
 	end;
@@ -266,25 +250,13 @@ end;
 
 function InitializeUninstall(): Boolean;
 begin
-	// Check if app is running during uninstallation
-	if IsModuleLoadedU( 'ProcessHacker.exe' ) then begin
-		MsgBox(ExpandConstant('{cm:msg_AppIsRunningUninstall}'), mbError, MB_OK );
-		Result := False;
-	end
-	else Result := True;
-
-	if NOT IsModuleLoadedU( 'ProcessHacker.exe' ) then begin
-		Result := True;
-			if CheckForMutexes(installer_mutex_name) then begin
-				if not WizardSilent() then
-				MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
+	Result := True;
+	if CheckForMutexes(installer_mutex_name) then begin
+		if not WizardSilent() then
+			MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
 		Result := False;
 		end
 		else begin
-			CreateMutex(installer_mutex_name);
-		end;
+		CreateMutex(installer_mutex_name);
 	end;
-
-	// Unload the psvince.dll in order to be uninstalled
-	UnloadDLL(ExpandConstant('{app}\psvince.dll'));
 end;
