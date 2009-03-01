@@ -388,6 +388,9 @@ namespace ProcessHacker
 
         #region Resources/Handles
 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int CreateMutex(int attributes, bool initialOwner, string name);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool SetHandleInformation(int handle, HANDLE_FLAGS mask, HANDLE_FLAGS flags);
 
