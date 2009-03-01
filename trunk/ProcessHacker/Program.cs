@@ -264,8 +264,6 @@ namespace ProcessHacker
                         if (Win32.SendMessage(hWnd, (Win32.WindowMessage)0x9991, IntPtr.Zero, IntPtr.Zero).ToInt32() ==
                             0x1119)
                         {
-                            Win32.SendMessage(hWnd, Win32.WindowMessage.SysCommand, new IntPtr(0xf120), IntPtr.Zero);
-                            Win32.SendMessage(hWnd, Win32.WindowMessage.ShowWindow, IntPtr.Zero, IntPtr.Zero);
                             Win32.SetForegroundWindow(hWnd);
                             found = true;
                             return false;
