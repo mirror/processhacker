@@ -2338,6 +2338,16 @@ namespace ProcessHacker
             }
             catch
             { }
+
+            // If it's Vista and we're elevated, we should allow certain window message to allow 
+            // Allow only one instance to work.
+            if (Program.WindowsVersion == "Vista" && 
+                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+            {
+                Win32.ChangeWindowMessageFilter(Win32.WindowMessage.ShowWindow, Win32.UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter(Win32.WindowMessage.SysCommand, Win32.UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter((Win32.WindowMessage)0x9991, Win32.UipiFilterFlag.Add);
+            }
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)

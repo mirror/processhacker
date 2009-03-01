@@ -1,4 +1,4 @@
-﻿/*
+﻿    /*
  * Process Hacker - 
  *   windows API functions
  *                       
@@ -876,6 +876,15 @@ namespace ProcessHacker
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool ChangeWindowMessageFilter(WindowMessage message, UipiFilterFlag flag);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern IntPtr PostMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
+
+        [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
@@ -995,9 +1004,6 @@ namespace ProcessHacker
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool AdjustWindowRect(ref System.Drawing.Rectangle rect, WindowStyles style,
             [MarshalAs(UnmanagedType.Bool)]bool menu);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr windowHandle, WindowMessage msg, IntPtr w, IntPtr l);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr RegisterClass(ref WindowClass wndClass);

@@ -989,6 +989,12 @@ namespace ProcessHacker
             TokenImpersonation
         }
 
+        public enum UipiFilterFlag : int
+        {
+            Add = 1,
+            Remove = 2
+        }
+
         public enum UDP_TABLE_CLASS : int
         {
             UDP_TABLE_BASIC,

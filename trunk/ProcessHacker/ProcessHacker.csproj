@@ -15,7 +15,7 @@
     <ApplicationIcon>ProcessHacker.ico</ApplicationIcon>
     <StartupObject>ProcessHacker.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
