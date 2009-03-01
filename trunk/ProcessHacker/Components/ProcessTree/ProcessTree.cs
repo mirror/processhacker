@@ -268,6 +268,7 @@ namespace ProcessHacker
                                 new MethodInvoker(delegate
                             {
                                 node.State = TreeNodeAdv.NodeState.Normal;
+                                treeProcesses.Invalidate();
                             }));
                         }
 
@@ -319,9 +320,9 @@ namespace ProcessHacker
                                 this.RefreshItems();
                             }
                             catch { }
-
-                            _needsRestructure = true;
                         }));
+
+                        treeProcesses.Invalidate();
                     }
                 }
             }));

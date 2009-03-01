@@ -108,6 +108,7 @@ namespace ProcessHacker
             }
 
             _processes.Remove(item.PID);
+            this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
 
             foreach (ProcessNode n in targetChildren)
             {
@@ -118,6 +119,8 @@ namespace ProcessHacker
                 catch
                 { }
             }
+
+            _tree.Invalidate();
         }
 
         public TreePath GetPath(ProcessNode node)
