@@ -14,12 +14,15 @@ Process Hacker
    * Customizable columns for the process list/tree
    * All lists now have Ctrl+A and Ctrl+C support
    * Vista-style lists
+   * Changing service settings under a limited account now prompts for 
+     elevation instead of giving an Access Denied error
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
    * Replace Task Manager works correctly when Start hidden is enabled
    * csc.exe launching
    * Black border bug when restoring from minimized state
    * Nulls at the ends of handle names
+   * Errors when changing service settings
 
 1.3.5.0
  * NEW:

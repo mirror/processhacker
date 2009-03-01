@@ -33,7 +33,8 @@ namespace ProcessHacker
 {
     public partial class ServiceProperties : UserControl
     {
-        ServiceProvider _provider;
+        private Win32.QUERY_SERVICE_CONFIG _oldConfig;
+        private ServiceProvider _provider;
 
         public event EventHandler NeedsClose;
 
@@ -52,6 +53,7 @@ namespace ProcessHacker
             if (services.Length == 1)
             {
                 this.Text = "Service - " + services[0];
+                buttonApply.Text = "&OK";
             }
             else
             {
@@ -71,12 +73,16 @@ namespace ProcessHacker
             this.FillComboBox(comboStartType, typeof(Win32.SERVICE_START_TYPE));
             this.FillComboBox(comboType, typeof(Win32.SERVICE_TYPE));
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
+            comboType.Items.Add("Win32ShareProcess, InteractiveProcess");
 
             listServices.Visible = true;
             if (listServices.Items.Count > 0)
                 listServices.Items[0].Selected = true;
 
             this.UpdateInformation();
+
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                Misc.SetShieldIcon(buttonApply, true);
         }
 
         public int PID { get; set; }
@@ -154,6 +160,8 @@ namespace ProcessHacker
 
         private void UpdateInformation()
         {
+            checkChangePassword.Checked = false;
+
             if (listServices.SelectedItems.Count == 0)
             {
                 buttonApply.Enabled = false;
@@ -163,7 +171,8 @@ namespace ProcessHacker
                 buttonDependencies.Enabled = false;
                 comboType.Enabled = false;
                 comboStartType.Enabled = false;
-                comboErrorControl.Enabled = false;
+                comboErrorControl.Enabled = false;         
+                _oldConfig = new Win32.QUERY_SERVICE_CONFIG();
                 this.ClearControls();
             }
             else
@@ -179,7 +188,20 @@ namespace ProcessHacker
                     comboStartType.Enabled = true;
                     comboErrorControl.Enabled = true;
 
+                    try
+                    {
+                        using (var shandle = new Win32.ServiceHandle(listServices.SelectedItems[0].Name,
+                            Win32.SERVICE_RIGHTS.SERVICE_QUERY_CONFIG))
+                            _provider.UpdateServiceConfig(listServices.SelectedItems[0].Name,
+                                Win32.GetServiceConfig(listServices.SelectedItems[0].Name));
+                    }
+                    catch
+                    { }
+
                     ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
+
+                    _oldConfig = item.Config;
+                    _oldConfig.BinaryPathName = Misc.GetRealPath(_oldConfig.BinaryPathName);
 
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
@@ -198,10 +220,12 @@ namespace ProcessHacker
 
                     if (item.Config.ServiceType == (Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess))
                         comboType.SelectedItem = "Win32OwnProcess, InteractiveProcess";
+                    else if (item.Config.ServiceType == (Win32.SERVICE_TYPE.Win32ShareProcess | Win32.SERVICE_TYPE.InteractiveProcess))
+                        comboType.SelectedItem = "Win32ShareProcess, InteractiveProcess";
 
                     comboStartType.SelectedItem = item.Config.StartType.ToString();
                     comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
-                    textServiceBinaryPath.Text = item.Config.BinaryPathName;
+                    textServiceBinaryPath.Text = Misc.GetRealPath(item.Config.BinaryPathName);
                     textUserAccount.Text = item.Config.ServiceStartName;
                     textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
 
@@ -236,6 +260,7 @@ namespace ProcessHacker
                 catch (Exception ex)
                 {
                     labelServiceName.Text = ex.Message;
+                    _oldConfig = new Win32.QUERY_SERVICE_CONFIG();
                     this.ClearControls();
                 }
             }
@@ -250,6 +275,7 @@ namespace ProcessHacker
             comboErrorControl.Text = "";
             textServiceBinaryPath.Text = "";
             textUserAccount.Text = "";
+            textPassword.Text = "password";
             textLoadOrderGroup.Text = "";
             textDescription.Text = "";
         }
@@ -260,25 +286,92 @@ namespace ProcessHacker
             {
                 string serviceName = listServices.SelectedItems[0].Name;
 
-                using (Win32.ServiceHandle service = new Win32.ServiceHandle(serviceName,
-                    Win32.SERVICE_RIGHTS.SERVICE_CHANGE_CONFIG))
+                Win32.SERVICE_TYPE type;
+
+                if (comboType.SelectedItem.ToString() == "Win32OwnProcess, InteractiveProcess")
+                    type = Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                else if (comboType.SelectedItem.ToString() == "Win32ShareProcess, InteractiveProcess")
+                    type = Win32.SERVICE_TYPE.Win32ShareProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                else
+                    type = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), comboType.SelectedItem.ToString());
+
+                string binaryPath = textServiceBinaryPath.Text;
+                string loadOrderGroup = textLoadOrderGroup.Text;
+                string userAccount = textUserAccount.Text;
+                string password = textPassword.Text;
+                var startType = (Win32.SERVICE_START_TYPE)
+                    Enum.Parse(typeof(Win32.SERVICE_START_TYPE), comboStartType.SelectedItem.ToString());
+                var errorControl = (Win32.SERVICE_ERROR_CONTROL)
+                    Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL), comboErrorControl.SelectedItem.ToString());
+
+                // Only change the items which the user modified.
+                if (binaryPath == _oldConfig.BinaryPathName)
+                    binaryPath = null;
+                if (loadOrderGroup == _oldConfig.LoadOrderGroup)
+                    loadOrderGroup = null;
+                if (userAccount == _oldConfig.ServiceStartName)
+                    userAccount = null;
+                if (!checkChangePassword.Checked)
+                    password = null;
+
+                if (type == Win32.SERVICE_TYPE.KernelDriver || type == Win32.SERVICE_TYPE.FileSystemDriver)
+                    userAccount = null;
+
+                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                 {
-                    Win32.SERVICE_TYPE type;
+                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(serviceName,
+                        Win32.SERVICE_RIGHTS.SERVICE_CHANGE_CONFIG))
+                    {
+                        if (!Win32.ChangeServiceConfig(service.Handle,
+                            type, startType, errorControl,
+                            binaryPath, loadOrderGroup, 0, 0, userAccount, password, null))
+                            Win32.ThrowLastWin32Error();
+                    }
+                }
+                else
+                {
+                    string args = "-e -type service -action config -obj \"" + serviceName + "\" -hwnd " +
+                        this.Handle.ToString();
 
-                    if (comboType.SelectedItem.ToString() == "Win32OwnProcess, InteractiveProcess")
-                        type = Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess;
-                    else
-                        type = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), comboType.SelectedItem.ToString());
+                    args += " -servicetype \"" + comboType.SelectedItem.ToString() + "\"";
+                    args += " -servicestarttype \"" + comboStartType.SelectedItem.ToString() + "\"";
+                    args += " -serviceerrorcontrol \"" + comboErrorControl.SelectedItem.ToString() + "\"";
 
-                    if (!Win32.ChangeServiceConfig(service.Handle,
-                        type,
-                        (Win32.SERVICE_START_TYPE)
-                        Enum.Parse(typeof(Win32.SERVICE_START_TYPE), comboStartType.SelectedItem.ToString()),
-                        (Win32.SERVICE_ERROR_CONTROL)Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL),
-                        comboErrorControl.SelectedItem.ToString()),
-                        textServiceBinaryPath.Text, textLoadOrderGroup.Text,
-                        0, 0, textUserAccount.Text, null, null))
-                        Win32.ThrowLastWin32Error();
+                    if (binaryPath != null)
+                        args += " -servicebinarypath \"" + binaryPath.Replace("\"", "\\\"") + "\"";
+                    if (loadOrderGroup != null)
+                        args += " -serviceloadordergroup \"" + loadOrderGroup.Replace("\"", "\\\"") + "\"";
+                    if (userAccount != null)
+                        args += " -serviceuseraccount \"" + userAccount.Replace("\"", "\\\"") + "\"";
+                    if (password != null)
+                        args += " -servicepassword \"" + password.Replace("\"", "\\\"") + "\"";
+
+                    {
+                        Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+
+                        info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+                        info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+                        info.nShow = Win32.ShowWindowType.Show;
+                        info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
+                        info.lpVerb = "runas";
+                        info.lpParameters = args;
+                        info.hWnd = this.Handle;
+
+                        if (Win32.ShellExecuteEx(ref info))
+                        {
+                            int result = Win32.WaitForSingleObject(info.hProcess, 2000);
+
+                            Win32.CloseHandle(info.hProcess);
+
+                            if (result == Win32.WAIT_TIMEOUT)
+                                return;
+                        }
+                        else
+                        {
+                            // An error occured - the user probably canceled the elevation dialog.
+                            return;
+                        }
+                    }
                 }
 
                 _provider.UpdateServiceConfig(serviceName, Win32.GetServiceConfig(serviceName));
@@ -383,6 +476,11 @@ namespace ProcessHacker
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void textPassword_TextChanged(object sender, EventArgs e)
+        {
+            checkChangePassword.Checked = true;
         }
     }
 }

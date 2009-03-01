@@ -180,6 +180,8 @@ namespace ProcessHacker
                             !(new WindowsPrincipal(WindowsIdentity.GetCurrent())).
                                 IsInRole(WindowsBuiltInRole.Administrator))
                             ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited;
+                        else if (ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
+                            ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
                     }
                     else
                     {
@@ -317,8 +319,6 @@ namespace ProcessHacker
 
             if (Win32.ShellExecuteEx(ref info))
             {
-                Win32.CloseHandle(info.hProcess);
-
                 if (successAction != null)
                     successAction();
             }

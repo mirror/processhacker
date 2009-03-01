@@ -272,6 +272,46 @@ namespace ProcessHacker
                                             shandle.Delete();
                                     }
                                     break;
+                                case "config":
+                                    {
+                                        using (Win32.ServiceHandle service = new Win32.ServiceHandle(obj,
+                                            Win32.SERVICE_RIGHTS.SERVICE_CHANGE_CONFIG))
+                                        {
+                                            Win32.SERVICE_TYPE serviceType;
+
+                                            if (args["-servicetype"] == "Win32OwnProcess, InteractiveProcess")
+                                                serviceType = Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                                            else if (args["-servicetype"] == "Win32ShareProcess, InteractiveProcess")
+                                                serviceType = Win32.SERVICE_TYPE.Win32ShareProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                                            else
+                                                serviceType = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), args["-servicetype"]);
+
+                                            var startType = (Win32.SERVICE_START_TYPE)
+                                                Enum.Parse(typeof(Win32.SERVICE_START_TYPE), args["-servicestarttype"]);
+                                            var errorControl = (Win32.SERVICE_ERROR_CONTROL)
+                                                Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL), args["-serviceerrorcontrol"]);
+
+                                            string binaryPath = null;
+                                            string loadOrderGroup = null;
+                                            string userAccount = null;
+                                            string password = null;
+
+                                            if (args.ContainsKey("-servicebinarypath"))
+                                                binaryPath = args["-servicebinarypath"];
+                                            if (args.ContainsKey("-serviceloadordergroup"))
+                                                loadOrderGroup = args["-serviceloadordergroup"];
+                                            if (args.ContainsKey("-serviceuseraccount"))
+                                                userAccount = args["-serviceuseraccount"];
+                                            if (args.ContainsKey("-servicepassword"))
+                                                password = args["-servicepassword"];
+
+                                            if (!Win32.ChangeServiceConfig(service.Handle,
+                                                serviceType, startType, errorControl,
+                                                binaryPath, loadOrderGroup, 0, 0, userAccount, password, null))
+                                                Win32.ThrowLastWin32Error();
+                                        }
+                                    }
+                                    break;
                                 default:
                                     throw new Exception("Unknown action '" + action + "'");
                             }
