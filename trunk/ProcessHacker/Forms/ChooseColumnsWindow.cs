@@ -72,7 +72,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listColumns, typeof(ListView), true);
             Win32.SetWindowTheme(listColumns.Handle, "explorer", null);
-            columnColumn.Width = listColumns.Width - 4;
+            columnColumn.Width = listColumns.Width - 21;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
