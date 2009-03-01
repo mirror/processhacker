@@ -2220,6 +2220,7 @@ namespace ProcessHacker
                         menu.Show(treeProcesses.Tree, e.Location);
                     }
                 };
+            treeProcesses.Tree.ColumnClicked += (sender, e) => { DeselectAll(treeProcesses.Tree); };
 
             tabControlBig_SelectedIndexChanged(null, null);
         }
