@@ -759,40 +759,47 @@ namespace ProcessHacker
             // update statistics
             if (tabControl.SelectedTab == tabStatistics)
             {
-                labelCPUPriority.Text = item.Process.BasePriority.ToString();
-                labelCPUKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
-                labelCPUUserTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.UserTime));
-                labelCPUTotalTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
-
-                labelMemoryPB.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
-                labelMemoryWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
-                labelMemoryPWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
-                labelMemoryVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.VirtualSize);
-                labelMemoryPVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
-                labelMemoryPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
-                labelMemoryPPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
-                labelMemoryPF.Text = item.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0");
-
-                labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
-                labelIOReadBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
-                labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
-                labelIOWriteBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
-                labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
-                labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
-
-                labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
-
-                try
-                {
-                    using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
-                    {
-                        labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
-                        labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
-                    }
-                }
-                catch
-                { }
+                this.UpdateStatistics();
             }
+        }
+
+        private void UpdateStatistics()
+        {
+            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+
+            labelCPUPriority.Text = item.Process.BasePriority.ToString();
+            labelCPUKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
+            labelCPUUserTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.UserTime));
+            labelCPUTotalTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
+
+            labelMemoryPB.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
+            labelMemoryWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
+            labelMemoryPWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
+            labelMemoryVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.VirtualSize);
+            labelMemoryPVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
+            labelMemoryPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
+            labelMemoryPPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
+            labelMemoryPF.Text = item.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0");
+
+            labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
+            labelIOReadBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
+            labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
+            labelIOWriteBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
+            labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
+            labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
+
+            labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
+
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                {
+                    labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
+                    labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
+                }
+            }
+            catch
+            { }
         }
 
         private void fileCurrentDirectory_TextBoxLeave(object sender, EventArgs e)
@@ -1155,6 +1162,9 @@ namespace ProcessHacker
             if (_handleP != null)
                 if (_handleP.Enabled = tabControl.SelectedTab == tabHandles)
                     _handleP.RunOnceAsync();
+
+            if (tabControl.SelectedTab == tabStatistics)
+                this.UpdateStatistics();
         }
 
         #endregion

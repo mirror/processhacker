@@ -144,6 +144,36 @@ namespace ProcessHacker
             get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.WorkingSetSize); }
         }
 
+        public string PeakWorkingSet
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakWorkingSetSize); }
+        }
+
+        public string VirtualSize
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.VirtualSize); }
+        }
+
+        public string PeakVirtualSize
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakVirtualSize); }
+        }
+
+        public string PagefileUsage
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PagefileUsage); }
+        }
+
+        public string PeakPagefileUsage
+        {
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakPagefileUsage); }
+        }
+
+        public string PageFaults
+        {
+            get { return _pitem.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0"); }
+        }
+
         public string CPU
         {
             get
@@ -186,6 +216,17 @@ namespace ProcessHacker
                     return "";
                 else
                     return _pitem.SessionId.ToString();
+            }
+        }
+
+        public string BasePriority
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return Misc.GetStringPriority(_pitem.Process.BasePriority);
             }
         }
 
@@ -236,6 +277,96 @@ namespace ProcessHacker
                     return "";
                 else
                     return _pitem.CmdLine.Replace("\0", "");
+            }
+        }
+
+        public string Threads
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return _pitem.Process.NumberOfThreads.ToString();
+            }
+        }
+
+        public string Handles
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return _pitem.Process.HandleCount.ToString();
+            }
+        }
+
+        public int GdiHandlesNumber
+        {
+            get
+            {
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        return phandle.GetGuiResources(false);
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public string GdiHandles
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                {
+                    int number = this.GdiHandlesNumber;
+
+                    if (number == 0)
+                        return "";
+                    else
+                        return number.ToString();
+                }
+            }
+        }       
+
+        public int UserHandlesNumber
+        {
+            get
+            {
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                        return phandle.GetGuiResources(true);
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public string UserHandles
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                {
+                    int number = this.UserHandlesNumber;
+
+                    if (number == 0)
+                        return "";
+                    else
+                        return number.ToString();
+                }
             }
         }
 

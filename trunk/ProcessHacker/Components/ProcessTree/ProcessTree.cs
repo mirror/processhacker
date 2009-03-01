@@ -37,6 +37,7 @@ namespace ProcessHacker
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
+        private bool _draw = true;
         private bool _needsRestructure = false;
 
         public ProcessTree()
@@ -115,6 +116,12 @@ namespace ProcessHacker
             }
         }
 
+        public bool Draw
+        {
+            get { return _draw; }
+            set { _draw = value; }
+        }
+
         public override ContextMenu ContextMenu
         {
             get { return treeProcesses.ContextMenu; }
@@ -173,16 +180,19 @@ namespace ProcessHacker
 
         private void provider_Updated()
         {
-            this.BeginInvoke(new MethodInvoker(delegate
+            if (_draw)
             {
-                if (_needsRestructure)
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    _needsRestructure = false;
-                    _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
-                }
+                    if (_needsRestructure)
+                    {
+                        _needsRestructure = false;
+                        _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
+                    }
 
-                treeProcesses.Invalidate(); 
-            }));
+                    treeProcesses.Invalidate();
+                }));
+            }
         }
 
         private void PerformDelayed(int delay, MethodInvoker action)

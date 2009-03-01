@@ -216,12 +216,33 @@ namespace ProcessHacker
                         else if (sortC == "working set")
                             return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
                                 n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
+                        else if (sortC == "peak working set")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
+                        else if (sortC == "virtual size")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
+                        else if (sortC == "peak virtual size")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize), sortO);
+                        else if (sortC == "pagefile usage")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage), sortO);
+                        else if (sortC == "peak pagefile usage")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage), sortO);
+                        else if (sortC == "page faults")
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
                         else if (sortC == "cpu")
                             return ModifySort(n1.ProcessItem.CPUUsage.CompareTo(n2.ProcessItem.CPUUsage), sortO);
                         else if (sortC == "username")
                             return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
                         else if (sortC == "session id")
                             return ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
+                        else if (sortC == "base priority")
+                            return ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
+                                n2.ProcessItem.Process.BasePriority), sortO);
                         else if (sortC == "description")
                             return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
                         else if (sortC == "company")
@@ -230,6 +251,16 @@ namespace ProcessHacker
                             return ModifySort(n1.FileName.CompareTo(n2.FileName), sortO);
                         else if (sortC == "command line")
                             return ModifySort(n1.CommandLine.CompareTo(n2.CommandLine), sortO);
+                        else if (sortC == "threads")
+                            return ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
+                                n2.ProcessItem.Process.NumberOfThreads), sortO);
+                        else if (sortC == "handles")
+                            return ModifySort(n1.ProcessItem.Process.HandleCount.CompareTo(
+                                n2.ProcessItem.Process.HandleCount), sortO);
+                        else if (sortC == "gdi handles")
+                            return ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
+                        else if (sortC == "user handles")
+                            return ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
                         else
                             return 0;
                     }));

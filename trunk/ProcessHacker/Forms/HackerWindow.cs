@@ -2372,5 +2372,10 @@ namespace ProcessHacker
 
             tabControlBig.Invalidate(false);
         }
+
+        private void HackerWindow_VisibleChanged(object sender, EventArgs e)
+        {
+            treeProcesses.Draw = this.Visible;
+        }
     }
 }

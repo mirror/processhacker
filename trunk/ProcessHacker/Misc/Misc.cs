@@ -398,6 +398,27 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the string representation of a priority number.
+        /// </summary>
+        /// <param name="priority">A priority number.</param>
+        /// <returns>A string.</returns>
+        public static string GetStringPriority(int priority)
+        {
+            if (priority >= 24)
+                return "Realtime";
+            else if (priority >= 13)
+                return "High";
+            else if (priority >= 10)
+                return "Above Normal";
+            else if (priority >= 8)
+                return "Normal";
+            else if (priority >= 6)
+                return "Below Normal";
+            else
+                return "Idle";
+        }
+
+        /// <summary>
         /// Parses a path string and returns the actual path name, removing \SystemRoot and \??\.
         /// </summary>
         /// <param name="path">The path to parse.</param>
