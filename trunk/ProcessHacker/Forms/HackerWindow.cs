@@ -2000,13 +2000,14 @@ namespace ProcessHacker
             // Magic number - PH uses this to detect previous instances.
             if (m.Msg == 0x9991)
             {
-                this.Visible = true;
+                //this.Visible = true;
 
-                if (this.WindowState == FormWindowState.Minimized)
-                    this.WindowState = FormWindowState.Normal;
+                //if (this.WindowState == FormWindowState.Minimized)
+                //    this.WindowState = FormWindowState.Normal;
 
-                this.Activate();
+                //this.Activate();
 
+                Win32.AllowSetForegroundWindow(m.LParam.ToInt32());
                 m.Result = new IntPtr(0x1119);
 
                 return;

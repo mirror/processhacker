@@ -355,6 +355,9 @@ namespace ProcessHacker
         public static extern int GetCurrentProcess();
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetCurrentProcessId();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetProcessDEPPolicy(int ProcessHandle, out DEPFLAGS Flags, out int Permanent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -871,6 +874,12 @@ namespace ProcessHacker
         #endregion
 
         #region Windows
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern bool AllowSetForegroundWindow(int processId);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         public static extern int SetWindowTheme(IntPtr hWnd, string appName, string idList);
