@@ -216,6 +216,10 @@ namespace ProcessHacker
                 if (pArgs.ContainsKey("-o"))
                     ShowOptions = true;
 
+                if (pArgs.ContainsKey(""))
+                    if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
+                        StartVisible = true;
+
                 if (pArgs.ContainsKey("-t"))
                 {
                     if (pArgs["-t"] == "0")

@@ -16,6 +16,7 @@ Process Hacker
    * Vista-style lists
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
+   * Replace Task Manager works correctly when Start hidden is enabled
    * csc.exe launching
    * Black border bug when restoring from minimized state
    * Nulls at the ends of handle names
