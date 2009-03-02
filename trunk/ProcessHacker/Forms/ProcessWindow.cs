@@ -254,6 +254,7 @@ namespace ProcessHacker
             Program.HackerWindow.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
+            Properties.Settings.Default.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
             Properties.Settings.Default.ProcessWindowSize = this.Size;
@@ -465,6 +466,7 @@ namespace ProcessHacker
             Misc.SetDoubleBuffered(listEnvironment, typeof(ListView), true);
             Win32.SetWindowTheme(listEnvironment.Handle, "explorer", null);
             listEnvironment.ContextMenu = GenericViewMenu.GetMenu(listEnvironment);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.EnvironmentListViewColumns, listEnvironment);
         }
 
         private void InitializeProviders()

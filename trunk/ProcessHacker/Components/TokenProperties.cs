@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   token properties viewer
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -200,6 +200,12 @@ namespace ProcessHacker
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.TokenWindowTab];
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.PrivilegeListColumns, listPrivileges);
+            listPrivileges.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listPrivileges.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listPrivileges, -1);
+                };
         }
 
         public Win32.IWithToken Object

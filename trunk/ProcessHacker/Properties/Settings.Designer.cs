@@ -1080,5 +1080,17 @@ namespace ProcessHacker.Properties {
                 this["AllowOnlyOneInstance"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EnvironmentListViewColumns {
+            get {
+                return ((string)(this["EnvironmentListViewColumns"]));
+            }
+            set {
+                this["EnvironmentListViewColumns"] = value;
+            }
+        }
     }
 }

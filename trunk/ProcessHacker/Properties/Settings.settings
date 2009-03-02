@@ -266,5 +266,8 @@
     <Setting Name="AllowOnlyOneInstance" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="EnvironmentListViewColumns" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   token groups viewer
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -49,6 +49,12 @@ namespace ProcessHacker
             Misc.SetDoubleBuffered(listGroups, typeof(ListView), true);
             listGroups.ContextMenu = GenericViewMenu.GetMenu(listGroups);
             ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);
+            listGroups.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listGroups.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listGroups, -1);
+                };
         }
 
         public void SaveSettings()
