@@ -55,7 +55,7 @@ ShowTasksTreeLines=True
 AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
-AppMutex=ProcessHackerMutex
+AppMutex=Global\ProcessHackerMutex
 
 ;Specify the architectures that Process Hacker can run on
 ArchitecturesAllowed=x86
