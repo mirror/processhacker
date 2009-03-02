@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   token handle
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -355,6 +355,18 @@ namespace ProcessHacker
                 AdjustTokenPrivileges(this, 0, ref tkp, 0, 0, 0);
 
                 if (Marshal.GetLastWin32Error() != 0)
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Sets whether virtualization is enabled.
+            /// </summary>
+            /// <param name="enabled">Whether virtualization is enabled.</param>
+            public void SetVirtualizationEnabled(bool enabled)
+            {
+                int value = enabled ? 1 : 0;
+
+                if (!SetTokenInformation(this, TOKEN_INFORMATION_CLASS.TokenVirtualizationEnabled, ref value, 4))
                     ThrowLastWin32Error();
             }
         }

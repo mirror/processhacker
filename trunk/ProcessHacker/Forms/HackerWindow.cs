@@ -605,6 +605,8 @@ namespace ProcessHacker
 
         private void menuProcess_Popup(object sender, EventArgs e)
         {
+            virtualizationProcessMenuItem.Checked = false;
+
             if (treeProcesses.SelectedTreeNodes.Count == 0)
             {
                 Misc.DisableAllMenuItems(menuProcess);
@@ -658,6 +660,22 @@ namespace ProcessHacker
                 {
                     priorityMenuItem.Text = "(" + ex.Message + ")";
                     priorityMenuItem.Enabled = false;
+                }
+
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                    {
+                        using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                        {
+                            if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
+                                virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                        }
+                    }
+                }
+                catch
+                {
+                    virtualizationProcessMenuItem.Enabled = false;
                 }
             }
             else
@@ -926,6 +944,29 @@ namespace ProcessHacker
                 using (var phandle = new Win32.ProcessHandle(processSelectedPID,
                     Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS))
                     phandle.EmptyWorkingSet();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void virtualizationProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to set virtualization for this process?",
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2) == DialogResult.No)
+                return;
+
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                {
+                    using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_WRITE))
+                    {
+                        thandle.SetVirtualizationEnabled(!virtualizationProcessMenuItem.Checked);
+                    }
+                }
             }
             catch (Exception ex)
             {

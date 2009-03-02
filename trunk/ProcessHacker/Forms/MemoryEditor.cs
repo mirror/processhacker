@@ -336,7 +336,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
+                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     string fileName = phandle.GetNativeImageFileName();
 

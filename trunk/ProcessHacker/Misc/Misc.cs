@@ -455,7 +455,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION))
+                using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
                     foreach (string s in Misc.DangerousNames)
                     {

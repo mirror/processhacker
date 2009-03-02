@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   windows handle
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -103,11 +103,11 @@ namespace ProcessHacker
             /// Gets certain information about the handle.
             /// </summary>
             /// <returns>A HANDLE_FLAGS value.</returns>
-            public HANDLE_FLAGS GetInformation()
+            public HANDLE_FLAGS GetHandleInformation()
             {
                 HANDLE_FLAGS flags;
 
-                if (!GetHandleInformation(this, out flags))
+                if (!Win32.GetHandleInformation(this, out flags))
                     ThrowLastWin32Error();
 
                 return flags;
@@ -118,9 +118,9 @@ namespace ProcessHacker
             /// </summary>
             /// <param name="mask">Specifies which flags to set.</param>
             /// <param name="flags">The values of the flags to set.</param>
-            public void SetInformation(HANDLE_FLAGS mask, HANDLE_FLAGS flags)
+            public void SetHandleInformation(HANDLE_FLAGS mask, HANDLE_FLAGS flags)
             {
-                if (!SetHandleInformation(this, mask, flags))
+                if (!Win32.SetHandleInformation(this, mask, flags))
                     ThrowLastWin32Error();
             }
 

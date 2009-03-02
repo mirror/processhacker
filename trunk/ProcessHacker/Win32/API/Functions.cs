@@ -455,6 +455,11 @@ namespace ProcessHacker
             out int NewToken);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool SetTokenInformation(int TokenHandle,
+            TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation,
+            int TokenInformationLength);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool GetTokenInformation(int TokenHandle,
             TOKEN_INFORMATION_CLASS TokenInformationClass, IntPtr TokenInformation,
             int TokenInformationLength, out int ReturnLength);
