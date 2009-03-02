@@ -153,6 +153,10 @@
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.tabEnvironment = new System.Windows.Forms.TabPage();
+            this.listEnvironment = new System.Windows.Forms.ListView();
+            this.columnVarName = new System.Windows.Forms.ColumnHeader();
+            this.columnVarValue = new System.Windows.Forms.ColumnHeader();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -178,6 +182,7 @@
             this.tabMemory.SuspendLayout();
             this.tabHandles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
+            this.tabEnvironment.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -213,6 +218,7 @@
             this.tabControl.Controls.Add(this.tabToken);
             this.tabControl.Controls.Add(this.tabModules);
             this.tabControl.Controls.Add(this.tabMemory);
+            this.tabControl.Controls.Add(this.tabEnvironment);
             this.tabControl.Controls.Add(this.tabHandles);
             this.tabControl.Controls.Add(this.tabServices);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -570,10 +576,10 @@
             // 
             this.tabStatistics.Controls.Add(this.flowStats);
             this.tabStatistics.ImageKey = "chart_bar";
-            this.tabStatistics.Location = new System.Drawing.Point(4, 42);
+            this.tabStatistics.Location = new System.Drawing.Point(4, 23);
             this.tabStatistics.Name = "tabStatistics";
             this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistics.Size = new System.Drawing.Size(430, 351);
+            this.tabStatistics.Size = new System.Drawing.Size(430, 370);
             this.tabStatistics.TabIndex = 9;
             this.tabStatistics.Text = "Statistics";
             this.tabStatistics.UseVisualStyleBackColor = true;
@@ -588,7 +594,7 @@
             this.flowStats.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowStats.Location = new System.Drawing.Point(3, 3);
             this.flowStats.Name = "flowStats";
-            this.flowStats.Size = new System.Drawing.Size(424, 345);
+            this.flowStats.Size = new System.Drawing.Size(424, 364);
             this.flowStats.TabIndex = 0;
             // 
             // groupBox1
@@ -1166,10 +1172,10 @@
             // 
             this.tabPerformance.Controls.Add(this.tablePerformance);
             this.tabPerformance.ImageKey = "chart_pie";
-            this.tabPerformance.Location = new System.Drawing.Point(4, 42);
+            this.tabPerformance.Location = new System.Drawing.Point(4, 23);
             this.tabPerformance.Name = "tabPerformance";
             this.tabPerformance.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPerformance.Size = new System.Drawing.Size(430, 351);
+            this.tabPerformance.Size = new System.Drawing.Size(430, 370);
             this.tabPerformance.TabIndex = 8;
             this.tabPerformance.Text = "Performance";
             this.tabPerformance.UseVisualStyleBackColor = true;
@@ -1188,7 +1194,7 @@
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tablePerformance.Size = new System.Drawing.Size(424, 345);
+            this.tablePerformance.Size = new System.Drawing.Size(424, 364);
             this.tablePerformance.TabIndex = 1;
             // 
             // groupCPUUsage
@@ -1197,7 +1203,7 @@
             this.groupCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupCPUUsage.Location = new System.Drawing.Point(3, 3);
             this.groupCPUUsage.Name = "groupCPUUsage";
-            this.groupCPUUsage.Size = new System.Drawing.Size(418, 109);
+            this.groupCPUUsage.Size = new System.Drawing.Size(418, 115);
             this.groupCPUUsage.TabIndex = 0;
             this.groupCPUUsage.TabStop = false;
             this.groupCPUUsage.Text = "CPU Usage (Kernel, User)";
@@ -1216,7 +1222,7 @@
             this.plotterCPUUsage.Name = "plotterCPUUsage";
             this.plotterCPUUsage.OverlaySecondLine = false;
             this.plotterCPUUsage.ShowGrid = true;
-            this.plotterCPUUsage.Size = new System.Drawing.Size(412, 90);
+            this.plotterCPUUsage.Size = new System.Drawing.Size(412, 96);
             this.plotterCPUUsage.TabIndex = 0;
             this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -1229,9 +1235,9 @@
             // 
             this.groupBox3.Controls.Add(this.plotterIO);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(3, 233);
+            this.groupBox3.Location = new System.Drawing.Point(3, 245);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(418, 109);
+            this.groupBox3.Size = new System.Drawing.Size(418, 116);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "I/O (R+O, W)";
@@ -1250,7 +1256,7 @@
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = true;
             this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(412, 90);
+            this.plotterIO.Size = new System.Drawing.Size(412, 97);
             this.plotterIO.TabIndex = 0;
             this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -1263,9 +1269,9 @@
             // 
             this.groupBox2.Controls.Add(this.plotterMemory);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 118);
+            this.groupBox2.Location = new System.Drawing.Point(3, 124);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(418, 109);
+            this.groupBox2.Size = new System.Drawing.Size(418, 115);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Memory (Private Pages, Working Set)";
@@ -1284,7 +1290,7 @@
             this.plotterMemory.Name = "plotterMemory";
             this.plotterMemory.OverlaySecondLine = true;
             this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(412, 90);
+            this.plotterMemory.Size = new System.Drawing.Size(412, 96);
             this.plotterMemory.TabIndex = 0;
             this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -1297,9 +1303,9 @@
             // 
             this.tabThreads.Controls.Add(this.listThreads);
             this.tabThreads.ImageKey = "hourglass";
-            this.tabThreads.Location = new System.Drawing.Point(4, 42);
+            this.tabThreads.Location = new System.Drawing.Point(4, 23);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(430, 351);
+            this.tabThreads.Size = new System.Drawing.Size(430, 370);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -1312,16 +1318,16 @@
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(430, 351);
+            this.listThreads.Size = new System.Drawing.Size(430, 370);
             this.listThreads.TabIndex = 0;
             // 
             // tabToken
             // 
             this.tabToken.ImageKey = "token";
-            this.tabToken.Location = new System.Drawing.Point(4, 42);
+            this.tabToken.Location = new System.Drawing.Point(4, 23);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(430, 351);
+            this.tabToken.Size = new System.Drawing.Size(430, 370);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -1518,6 +1524,7 @@
             this.imageList.Images.SetKeyName(6, "hourglass");
             this.imageList.Images.SetKeyName(7, "chart_pie");
             this.imageList.Images.SetKeyName(8, "chart_bar");
+            this.imageList.Images.SetKeyName(9, "environment");
             // 
             // timerUpdate
             // 
@@ -1528,6 +1535,45 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // tabEnvironment
+            // 
+            this.tabEnvironment.Controls.Add(this.listEnvironment);
+            this.tabEnvironment.ImageKey = "environment";
+            this.tabEnvironment.Location = new System.Drawing.Point(4, 42);
+            this.tabEnvironment.Name = "tabEnvironment";
+            this.tabEnvironment.Padding = new System.Windows.Forms.Padding(3);
+            this.tabEnvironment.Size = new System.Drawing.Size(430, 351);
+            this.tabEnvironment.TabIndex = 10;
+            this.tabEnvironment.Text = "Environment";
+            this.tabEnvironment.UseVisualStyleBackColor = true;
+            // 
+            // listEnvironment
+            // 
+            this.listEnvironment.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnVarName,
+            this.columnVarValue});
+            this.listEnvironment.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listEnvironment.FullRowSelect = true;
+            this.listEnvironment.HideSelection = false;
+            this.listEnvironment.Location = new System.Drawing.Point(3, 3);
+            this.listEnvironment.Name = "listEnvironment";
+            this.listEnvironment.ShowItemToolTips = true;
+            this.listEnvironment.Size = new System.Drawing.Size(424, 345);
+            this.listEnvironment.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.listEnvironment.TabIndex = 0;
+            this.listEnvironment.UseCompatibleStateImageBehavior = false;
+            this.listEnvironment.View = System.Windows.Forms.View.Details;
+            // 
+            // columnVarName
+            // 
+            this.columnVarName.Text = "Name";
+            this.columnVarName.Width = 150;
+            // 
+            // columnVarValue
+            // 
+            this.columnVarValue.Text = "Value";
+            this.columnVarValue.Width = 250;
             // 
             // ProcessWindow
             // 
@@ -1575,6 +1621,7 @@
             this.tabHandles.ResumeLayout(false);
             this.tabHandles.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
+            this.tabEnvironment.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1700,5 +1747,9 @@
         private System.Windows.Forms.Label labelOtherGDIHandles;
         private System.Windows.Forms.Label labelOtherUSERHandles;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.TabPage tabEnvironment;
+        private System.Windows.Forms.ListView listEnvironment;
+        private System.Windows.Forms.ColumnHeader columnVarName;
+        private System.Windows.Forms.ColumnHeader columnVarValue;
     }
 }

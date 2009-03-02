@@ -200,7 +200,7 @@ namespace ProcessHacker
             Timer t = new Timer();
 
             t.Tick += (sender_, e_) => { t.Enabled = false; this.LoadStage2(); };
-            t.Interval = 1;
+            t.Interval = 50;
             t.Enabled = true;
         }
 
@@ -217,6 +217,8 @@ namespace ProcessHacker
             catch
             { }
 
+            this.UpdateEnvironmentVariables();
+
             // disable providers which aren't in use
             tabControl_SelectedIndexChanged(null, null);
 
@@ -225,6 +227,8 @@ namespace ProcessHacker
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.Visible = false;
+
             if (_pid >= 0)
             {
                 listThreads.SaveSettings();
@@ -294,6 +298,7 @@ namespace ProcessHacker
             listModules.List.Font = f;
             listMemory.List.Font = f;
             listHandles.List.Font = f;
+            listEnvironment.Font = f;
 
             if (_serviceProps != null)
                 _serviceProps.List.Font = f;
@@ -456,6 +461,10 @@ namespace ProcessHacker
             _serviceProps.Dock = DockStyle.Fill;
             _serviceProps.PID = _pid;
             tabServices.Controls.Add(_serviceProps);
+
+            Misc.SetDoubleBuffered(listEnvironment, typeof(ListView), true);
+            Win32.SetWindowTheme(listEnvironment.Handle, "explorer", null);
+            listEnvironment.ContextMenu = GenericViewMenu.GetMenu(listEnvironment);
         }
 
         private void InitializeProviders()
@@ -484,7 +493,7 @@ namespace ProcessHacker
             _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
-            _memoryP.RunOnceAsync();
+            //_memoryP.RunOnceAsync();
             listMemory.Provider = _memoryP;
             _memoryP.Enabled = true;
 
@@ -494,7 +503,7 @@ namespace ProcessHacker
             _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
             _handleP.Interval = Properties.Settings.Default.RefreshInterval;
             _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
-            _handleP.RunOnceAsync();
+            //_handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
             _handleP.Enabled = true;
 
@@ -532,6 +541,34 @@ namespace ProcessHacker
                     if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listHandles.List.Items);
                     if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listHandles.List, -1);
                 };
+            listEnvironment.KeyDown +=
+                (sender, e) =>
+                {
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listEnvironment.Items);
+                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listEnvironment, -1);
+                };
+        }
+
+        private void UpdateEnvironmentVariables()
+        {
+            listEnvironment.Items.Clear();
+
+            listEnvironment.BeginUpdate();
+            try
+            {
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid,
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    foreach (var pair in phandle.GetEnvironmentVariables())
+                    {
+                        if (pair.Key != "")
+                            listEnvironment.Items.Add(new ListViewItem(new string[] { pair.Key, pair.Value }));
+                    }
+                }
+            }
+            catch (Exception ex)
+            { MessageBox.Show(ex.ToString()); }
+            listEnvironment.EndUpdate();
         }
 
         public void UpdateProtected()

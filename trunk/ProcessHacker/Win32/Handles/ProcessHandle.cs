@@ -299,6 +299,91 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the process' environment variables. This requires the 
+            /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
+            /// </summary>
+            /// <returns>A dictionary of variables.</returns>
+            public IDictionary<string, string> GetEnvironmentVariables()
+            {
+                int pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+                int processParameters =
+                    Misc.BytesToInt(this.ReadMemory(pebBaseAddress + 0x10, 4), Misc.Endianness.Little);
+
+                /*
+                 * RTL_USER_PROCESS_PARAMETERS
+                 * off field
+                 * +00 ULONG MaximumLength
+                 * +04 ULONG Length
+                 * +08 ULONG Flags
+                 * +0c ULONG DebugFlags
+                 * +10 PVOID ConsoleHandle
+                 * +14 ULONG ConsoleFlags
+                 * +18 HANDLE StdInputHandle
+                 * +1c HANDLE StdOutputHandle
+                 * +20 HANDLE StdErrorHandle
+                 * +24 UNICODE_STRING CurrentDirectoryPath
+                 * +2c HANDLE CurrentDirectoryHandle
+                 * +30 UNICODE_STRING DllPath
+                 * +38 UNICODE_STRING ImagePathName
+                 * +40 UNICODE_STRING CommandLine
+                 * +48 PVOID Environment
+                 */
+                int envBase =
+                    Misc.BytesToInt(this.ReadMemory(processParameters + 0x48, 4), Misc.Endianness.Little);
+                int length = 0;
+
+                {
+                    Win32.MEMORY_BASIC_INFORMATION mbi = new MEMORY_BASIC_INFORMATION();
+
+                    if (!Win32.VirtualQueryEx(this, envBase, ref mbi, Marshal.SizeOf(mbi)))
+                        ThrowLastWin32Error();
+                    if (mbi.Protect == MEMORY_PROTECTION.PAGE_NOACCESS)
+                        throw new WindowsException();
+
+                    length = mbi.RegionSize - (envBase - mbi.BaseAddress);
+                }
+
+                // Now we read in the entire region of memory
+                // And yes, some memory is wasted.
+                byte[] memory = this.ReadMemory(envBase, length);
+
+                /* The environment variables block is a series of Unicode strings separated by 
+                 * two null bytes. The entire block is terminated by four null bytes.
+                 */
+                Dictionary<string, string> vars = new Dictionary<string, string>();
+                StringBuilder currentVariable = new StringBuilder();
+                int i = 0;
+
+                while (true)
+                {
+                    char currentChar =
+                        UnicodeEncoding.Unicode.GetChars(memory, i, 2)[0];
+
+                    i += 2;
+
+                    if (currentChar == '\0')
+                    {
+                        // Two nulls in a row, the env. block is finished.
+                        if (currentVariable.Length == 0)
+                            break;
+
+                        string[] s = currentVariable.ToString().Split(new char[] { '=' }, 2);
+
+                        if (!vars.ContainsKey(s[0]) && s.Length > 1)
+                            vars.Add(s[0], s[1]);
+
+                        currentVariable = new StringBuilder();
+                    }
+                    else
+                    {
+                        currentVariable.Append(currentChar);
+                    }
+                }
+
+                return vars;
+            }
+
+            /// <summary>
             /// Gets the process' exit code.
             /// </summary>
             /// <returns>A number.</returns>
@@ -453,15 +538,7 @@ namespace ProcessHacker
             /// <returns>A string.</returns>
             public string GetPebString(PebOffset offset)
             {
-                int pebBaseAddress = 0x7ffd7000;
-
-                // get the real PEB address of the process if we can.
-                try
-                {
-                    pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
-                }
-                catch
-                { }
+                int pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
                 /* read address of parameter information block
                  *
@@ -476,7 +553,7 @@ namespace ProcessHacker
                  * +0c PVOID LoaderData;
                  * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
                  */
-                int paramInfoAddrI = 
+                int processParameters = 
                     Misc.BytesToInt(this.ReadMemory(pebBaseAddress + 0x10, 4), Misc.Endianness.Little);
 
                 // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
@@ -487,17 +564,17 @@ namespace ProcessHacker
                 // +00 USHORT Length;
                 // +02 USHORT MaximumLength;
                 // +04 PWSTR Buffer;
-                ushort strLength = Misc.BytesToUShort(
-                    this.ReadMemory(paramInfoAddrI + (int)offset, 2), Misc.Endianness.Little);
-                byte[] stringData = new byte[strLength];
+                ushort stringLength = Misc.BytesToUShort(
+                    this.ReadMemory(processParameters + (int)offset, 2), Misc.Endianness.Little);
+                byte[] stringData = new byte[stringLength];
 
                 // read address of string
-                int strAddr = Misc.BytesToInt(
-                    this.ReadMemory(paramInfoAddrI + (int)offset + 0x4, 4), Misc.Endianness.Little);
+                int stringAddr = Misc.BytesToInt(
+                    this.ReadMemory(processParameters + (int)offset + 0x4, 4), Misc.Endianness.Little);
 
                 // read string and decode it
                 return System.Text.UnicodeEncoding.Unicode.GetString(
-                    this.ReadMemory(strAddr, strLength)).TrimEnd('\0');
+                    this.ReadMemory(stringAddr, stringLength)).TrimEnd('\0');
             }
 
             /// <summary>

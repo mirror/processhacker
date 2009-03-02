@@ -69,6 +69,8 @@ namespace ProcessHacker
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.Visible = false;
+
             Properties.Settings.Default.PECOFFHColumns = ColumnSettings.SaveSettings(listCOFFHeader);
             Properties.Settings.Default.PECOFFOHColumns = ColumnSettings.SaveSettings(listCOFFOptionalHeader);
             Properties.Settings.Default.PEImageDataColumns = ColumnSettings.SaveSettings(listImageData);

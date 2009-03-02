@@ -115,6 +115,8 @@ namespace ProcessHacker
 
         private void MemoryEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.Visible = false;
+
             if (this.WindowState == FormWindowState.Normal)
                 Properties.Settings.Default.MemoryWindowSize = this.Size;
         }
