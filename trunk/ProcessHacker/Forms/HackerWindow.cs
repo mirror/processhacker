@@ -2050,6 +2050,18 @@ namespace ProcessHacker
 
                 return;
             }
+            else if (m.Msg == (int)Win32.WindowMessage.SysCommand)
+            {
+                if (m.WParam.ToInt32() == 0xf020) // SC_MINIMIZE
+                {
+                    if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                    {
+                        this.Visible = false;
+
+                        return;
+                    }
+                }
+            }
 
             base.WndProc(ref m);
         }
@@ -2406,14 +2418,6 @@ namespace ProcessHacker
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
-                {
-                    this.Visible = false;
-                }
-            }
-
             tabControlBig.Invalidate(false);
         }
 

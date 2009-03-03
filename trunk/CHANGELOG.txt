@@ -26,6 +26,7 @@ Process Hacker
    * Nulls at the ends of handle names
    * Errors when changing service settings
    * Slow closing of various windows
+   * "Hide when minimized" is better
 
 1.3.5.0
  * NEW:
