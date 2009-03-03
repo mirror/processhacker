@@ -35,7 +35,7 @@ VersionInfoVersion={#= app_version}
 VersionInfoProductName=Process Hacker {#= app_version}
 VersionInfoProductVersion={#= app_version}
 AppVersion={#= app_version}
-MinVersion=0,4.0.1381
+MinVersion=0,5.01.2600
 AppReadmeFile={app}\README.txt
 LicenseFile=..\..\..\LICENSE.txt
 InfoAfterFile=..\..\..\CHANGELOG.txt
