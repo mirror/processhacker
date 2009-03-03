@@ -1723,7 +1723,7 @@ namespace ProcessHacker
             if (processP.Dictionary.ContainsKey(processP.PIDWithMostCPUUsage))
                 if (processP.Dictionary[processP.PIDWithMostCPUUsage].Name != null)
                     if (notifyIcon.Text.Length + 
-                        processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 63)
+                        processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 62)
                         notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
                             ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
         }
