@@ -232,7 +232,7 @@ namespace ProcessHacker
                     try
                     {
                         using (Win32.ServiceHandle shandle
-                            = new Win32.ServiceHandle(item.Status.ServiceName))
+                            = new Win32.ServiceHandle(item.Status.ServiceName,  Win32.SERVICE_RIGHTS.SERVICE_QUERY_CONFIG))
                             textDescription.Text = shandle.GetDescription();
                     }
                     catch
