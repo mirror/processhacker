@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "23"
+#define installer_build_number "24"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -47,7 +47,7 @@ OutputDir=.
 OutputBaseFilename=processhacker-{#= app_version}-setup
 AllowNoIcons=True
 Compression=lzma/ultra64
-SolidCompression=True
+SolidCompression=true
 InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=False
 DirExistsWarning=no
@@ -55,6 +55,7 @@ ShowTasksTreeLines=True
 AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
+PrivilegesRequired=admin
 AppMutex=Global\ProcessHackerMutex
 
 ;Specify the architectures that Process Hacker can run on
@@ -93,6 +94,7 @@ Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: 
 Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: PHSettingsExistCheck(); Flags: unchecked checkablealone
 Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHRegDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHRegDefaultCheck(); Flags: unchecked dontinheritcheck
+Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Flags: unchecked dontinheritcheck
 
 [INI]
 Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= app_updates_url}
@@ -116,39 +118,47 @@ Type: files; Name: {app}\psvince.dll
 ;Remove other languages' shortcuts in Start Menu
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
+
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
 Type: files; Name: {group}\Process Hacker on the Web.url
+Type: files; Name: {group}\Uninstall Process Hacker.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker on the Web.url
 Type: files; Name: {group}\Help and Support\Change Log.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker's Help.lnk
 Type: dirifempty; Name: {group}\Help and Support
-Type: files; Name: {group}\Uninstall Process Hacker.lnk
 
 Type: files; Name: {group}\Αρχείο βοήθειας του Process Hacker.lnk
 Type: files; Name: {group}\Το Process Hacker στο Internet.url
+Type: files; Name: {group}\Απεγκατάσταση του Process Hacker.lnk
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Το Process Hacker στο Internet.url
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Ιστορικό Εκδόσεων.lnk
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Αρχείο βοήθειας του Process Hacker.lnk
 Type: dirifempty; Name: {group}\Βοήθεια και Υποστήριξη
-Type: files; Name: {group}\Απεγκατάσταση του Process Hacker.lnk
 
 Type: filesandordirs; Name: {localappdata}\wj32; Tasks: resetsettings
 
 [Registry]
-Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; Flags: uninsdeletekeyifempty dontcreatekey
 Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: string; ValueName: Process Hacker; ValueData: """{app}\ProcessHacker.exe"""; Tasks: startuptask; Flags: uninsdeletevalue
 Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: string; ValueName: Process Hacker; ValueData: """{app}\ProcessHacker.exe"" -m"; Tasks: startuptask\minimized; Flags: uninsdeletevalue
 Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueName: Process Hacker; Tasks: removestartuptask; Flags: deletevalue uninsdeletevalue
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Tasks: setdefaulttaskmgr; Flags: uninsdeletevalue
+Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
 
 [Run]
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser; WorkingDir: {app}
 Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser; WorkingDir: {app}
+Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {cmd}; Parameters: "/C ""sc create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"""; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {cmd}; Parameters: "/C ""sc start KProcessHacker"""; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
 Type: dirifempty; Name: {app}
+
+[UninstallRun]
+Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; Flags: runhidden
+Filename: {cmd}; Parameters: "/C ""sc delete KProcessHacker"""; Flags: runhidden
 
 [Code]
 // Create a mutex for the installer

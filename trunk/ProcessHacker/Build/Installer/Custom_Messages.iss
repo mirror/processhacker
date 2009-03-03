@@ -5,7 +5,11 @@ en.msg_SetupIsRunningWarningInstall=Process Hacker's setup is already running!
 en.msg_SetupIsRunningWarningUninstall=Process Hacker's setup is already running!
 en.msg_asknetdown=Process Hacker requires the .NET Framework 2. Please download and install the .NET Framework and run this setup again. Do you want to download the .NET Framework now?
 en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? If you plan on reinstalling Process Hacker you don't have to delete them.
+en.msg_createkprocesshacker=Creating KProcessHacker service
+en.msg_stopkprocesshacker=Stopping KProcessHacker service
+en.msg_startkprocesshacker=Starting KProcessHacker service
 en.tsk_allusers=For all users
+en.tsk_createKPHservice=Install KProcessHacker as a service
 en.tsk_currentuser=For the current user only
 en.tsk_other=Other tasks:
 en.tsk_removestartup=Remove Process Hacker from Windows startup
@@ -21,13 +25,16 @@ en.sm_helpfile=Process Hacker's Help
 en.sm_changelog=Change Log
 en.sm_com_changelog=Process Hacker's Change Log
 
-
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. Θέλετε να κατεβάσετε το .NET Framework τώρα;
 gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές του Process Hacker; Αν σκοπεύετε να εγκαταστήσετε πάλι το %1 δεν χρειάζεται να τα διαγράψετε.
+gr.msg_createkprocesshacker=Δημιουργία της υπηρεσίας KProcessHacker
+gr.msg_stopkprocesshacker=Σταμάτημα της υπηρεσίας KProcessHacker
+gr.msg_startkprocesshacker=Εκκίνηση της υπηρεσίας KProcessHacker
 gr.tsk_allusers=Για όλους τους χρήστες
+gr.tsk_createKPHservice=Εγκατάσταση του KProcessHacker ως υπηρεσία
 gr.tsk_currentuser=Για τον τρέχων χρήστη μόνο
 gr.tsk_other=Έξτρα:
 gr.tsk_removestartup=Αφαίρεση του Process Hacker από την εκκίνηση των Windows
