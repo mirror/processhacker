@@ -38,6 +38,9 @@ namespace ProcessHacker
             textSessionID.Text = Program.CurrentSessionId.ToString();
             comboType.SelectedItem = "Interactive";
 
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                Misc.SetShieldIcon(buttonOK, true);
+
             List<string> users = new List<string>();
 
             users.Add("NT AUTHORITY\\SYSTEM");
@@ -150,55 +153,69 @@ namespace ProcessHacker
                 info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 info.FileName = Application.StartupPath + "\\Assistant.exe";
                 info.Arguments = "-w";
-                
+
                 System.Diagnostics.Process.Start(info);
             }
             catch
             { }
 
-            int manager = 0;
-            int service = 0;
-
             try
             {
-                if ((manager = Win32.OpenSCManager(0, 0, Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE)) == 0)
-                    throw new Exception("Could not open the service manager: " + Win32.GetLastErrorMessage());
-
-                Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
-                string serviceName = "";
-
-                for (int i = 0; i < 8; i++)
-                    serviceName += (char)('A' + r.Next(25));
-
+                string binPath;
                 bool omitUserAndType = false;
 
                 if (_pid != -1)
                     omitUserAndType = true;
 
-                if ((service = Win32.CreateService(manager, serviceName, serviceName + " (Process Hacker Assistant)",
-                    Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS,
-                    Win32.SERVICE_TYPE.Win32OwnProcess, Win32.SERVICE_START_TYPE.DemandStart, Win32.SERVICE_ERROR_CONTROL.Ignore,
-                    "\"" + Application.StartupPath + "\\Assistant.exe\" " +
+                binPath = "\"" + Application.StartupPath + "\\Assistant.exe\" " +
                     (omitUserAndType ? "" :
                     ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
                     Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
-                    Misc.EscapeString(textCmdLine.Text) + "\"", "", 0, 0, "LocalSystem", "")) == 0)
-                    throw new Exception("Could not create service: " + Win32.GetLastErrorMessage());
+                    Misc.EscapeString(textCmdLine.Text) + "\"";
 
-                Win32.StartService(service, 0, 0);
-                Win32.DeleteService(service);
+                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                {
+                    int result = Program.StartProcessHackerAdminWait(
+                        "-e -type processhacker -action runas -obj \"" + binPath.Replace("\"", "\\\"") + "\" " +
+                        "-hwnd " + this.Handle.ToString(), this.Handle, 5000);
 
-                this.Close();
+                    if (result == 0)
+                        this.Close();
+                }
+                else
+                {
+                    Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
+                    string serviceName = "";
+
+                    for (int i = 0; i < 8; i++)
+                        serviceName += (char)('A' + r.Next(25));
+
+                    using (var manager = new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE))
+                    {
+                        using (var service = manager.CreateService(
+                            serviceName,
+                            serviceName + " (Process Hacker Assistant)",
+                            Win32.SERVICE_TYPE.Win32OwnProcess,
+                            Win32.SERVICE_START_TYPE.DemandStart,
+                            Win32.SERVICE_ERROR_CONTROL.Ignore,
+                            binPath,
+                            "",
+                            "LocalSystem",
+                            null))
+                        {
+                            try { service.Start(); }
+                            catch { }
+                            service.Delete();
+                        }
+                    }
+
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                Win32.CloseServiceHandle(manager);
-                Win32.CloseServiceHandle(service);
             }
 
             this.Cursor = Cursors.Default;

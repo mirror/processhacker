@@ -17,6 +17,7 @@ Process Hacker
    * Vista-style lists
    * Changing service settings under a limited account now prompts for 
      elevation instead of giving an Access Denied error
+   * Run As now works under a limited account and prompts for elevation
    * Shows environment variables
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"

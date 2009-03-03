@@ -346,32 +346,10 @@ namespace ProcessHacker
                     if (password != null)
                         args += " -servicepassword \"" + password.Replace("\"", "\\\"") + "\"";
 
-                    {
-                        Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+                    int result = Program.StartProcessHackerAdminWait(args, this.Handle, 2000);
 
-                        info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-                        info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
-                        info.nShow = Win32.ShowWindowType.Show;
-                        info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
-                        info.lpVerb = "runas";
-                        info.lpParameters = args;
-                        info.hWnd = this.Handle;
-
-                        if (Win32.ShellExecuteEx(ref info))
-                        {
-                            int result = Win32.WaitForSingleObject(info.hProcess, 2000);
-
-                            Win32.CloseHandle(info.hProcess);
-
-                            if (result == Win32.WAIT_TIMEOUT)
-                                return;
-                        }
-                        else
-                        {
-                            // An error occured - the user probably canceled the elevation dialog.
-                            return;
-                        }
-                    }
+                    if (result == Win32.WAIT_ABANDONED || result == Win32.WAIT_TIMEOUT)
+                        return;
                 }
 
                 _provider.UpdateServiceConfig(serviceName, Win32.GetServiceConfig(serviceName));

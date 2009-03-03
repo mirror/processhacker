@@ -70,6 +70,44 @@ namespace ProcessHacker
             {
                 switch (type)
                 {
+                    case "processhacker":
+                        {
+                            switch (action)
+                            {
+                                case "runas":
+                                    {
+                                        using (var manager = new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE))
+                                        {
+                                            Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
+                                            string serviceName = "";
+
+                                            for (int i = 0; i < 8; i++)
+                                                serviceName += (char)('A' + r.Next(25));
+
+                                            using (var service = manager.CreateService(
+                                                serviceName,
+                                                serviceName + " (Process Hacker Assistant)",
+                                                Win32.SERVICE_TYPE.Win32OwnProcess,
+                                                Win32.SERVICE_START_TYPE.DemandStart,
+                                                Win32.SERVICE_ERROR_CONTROL.Ignore,
+                                                obj,
+                                                "",
+                                                "LocalSystem",
+                                                null))
+                                            {
+                                                try { service.Start(); }
+                                                catch { }
+                                                service.Delete();
+                                            }
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("Unknown action '" + action + "'");
+                            }
+                        }
+                        break;
+
                     case "process":
                         {
                             foreach (string pid in obj.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))

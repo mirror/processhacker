@@ -38,6 +38,7 @@
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.restartProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.reduceWorkingSetProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.virtualizationProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.setTokenProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -139,7 +140,6 @@
             this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.virtualizationProcessMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -219,6 +219,12 @@
             this.reduceWorkingSetProcessMenuItem.Index = 4;
             this.reduceWorkingSetProcessMenuItem.Text = "Reduce Working Set";
             this.reduceWorkingSetProcessMenuItem.Click += new System.EventHandler(this.reduceWorkingSetProcessMenuItem_Click);
+            // 
+            // virtualizationProcessMenuItem
+            // 
+            this.virtualizationProcessMenuItem.Index = 5;
+            this.virtualizationProcessMenuItem.Text = "Virtualization";
+            this.virtualizationProcessMenuItem.Click += new System.EventHandler(this.virtualizationProcessMenuItem_Click);
             // 
             // menuItem5
             // 
@@ -411,9 +417,9 @@
             this.hackerMenuItem.Index = 0;
             this.hackerMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.runMenuItem,
+            this.runAsAdministratorMenuItem,
             this.runAsMenuItem,
             this.runAsServiceMenuItem,
-            this.runAsAdministratorMenuItem,
             this.showDetailsForAllProcessesMenuItem,
             this.uacSeparatorMenuItem,
             this.findHandlesMenuItem,
@@ -434,20 +440,20 @@
             // 
             // runAsMenuItem
             // 
-            this.runAsMenuItem.Index = 1;
+            this.runAsMenuItem.Index = 2;
             this.runAsMenuItem.Text = "Run As...";
             this.runAsMenuItem.Visible = false;
             this.runAsMenuItem.Click += new System.EventHandler(this.runAsMenuItem_Click);
             // 
             // runAsServiceMenuItem
             // 
-            this.runAsServiceMenuItem.Index = 2;
+            this.runAsServiceMenuItem.Index = 3;
             this.runAsServiceMenuItem.Text = "Run As...";
             this.runAsServiceMenuItem.Click += new System.EventHandler(this.runAsServiceMenuItem_Click);
             // 
             // runAsAdministratorMenuItem
             // 
-            this.runAsAdministratorMenuItem.Index = 3;
+            this.runAsAdministratorMenuItem.Index = 1;
             this.runAsAdministratorMenuItem.Text = "Run As Administrator...";
             this.runAsAdministratorMenuItem.Click += new System.EventHandler(this.runAsAdministratorMenuItem_Click);
             // 
@@ -947,12 +953,6 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // virtualizationProcessMenuItem
-            // 
-            this.virtualizationProcessMenuItem.Index = 5;
-            this.virtualizationProcessMenuItem.Text = "Virtualization";
-            this.virtualizationProcessMenuItem.Click += new System.EventHandler(this.virtualizationProcessMenuItem_Click);
             // 
             // HackerWindow
             // 
