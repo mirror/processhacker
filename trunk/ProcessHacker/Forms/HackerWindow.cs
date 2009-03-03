@@ -2176,7 +2176,7 @@ namespace ProcessHacker
                 //vistaMenu.SetImage(stopServiceMenuItem, uacShieldIcon);
                 //vistaMenu.SetImage(deleteServiceMenuItem, uacShieldIcon);
                 //runAsServiceMenuItem.Visible = false;
-                runAsProcessMenuItem.Visible = false;
+                //runAsProcessMenuItem.Visible = false;
             }
             else
             {
