@@ -568,8 +568,8 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch (Exception ex)
-            { MessageBox.Show(ex.ToString()); }
+            catch
+            { }
             listEnvironment.EndUpdate();
         }
 
