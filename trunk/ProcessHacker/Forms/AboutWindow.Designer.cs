@@ -50,6 +50,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
+            this.buttonChangelog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -303,11 +304,24 @@
             this.labelFiller.TabIndex = 17;
             this.labelFiller.Text = "        ";
             // 
+            // buttonChangelog
+            // 
+            this.buttonChangelog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonChangelog.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonChangelog.Location = new System.Drawing.Point(252, 250);
+            this.buttonChangelog.Name = "buttonChangelog";
+            this.buttonChangelog.Size = new System.Drawing.Size(75, 23);
+            this.buttonChangelog.TabIndex = 15;
+            this.buttonChangelog.Text = "Changelog...";
+            this.buttonChangelog.UseVisualStyleBackColor = true;
+            this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
+            // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(420, 285);
+            this.Controls.Add(this.buttonChangelog);
             this.Controls.Add(this.flowCredits);
             this.Controls.Add(this.linkEmail);
             this.Controls.Add(this.linkSourceforge);
@@ -358,6 +372,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.LinkLabel linkICSharpCode;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button buttonChangelog;
 
     }
 }

@@ -34,6 +34,8 @@ namespace ProcessHacker
             InitializeComponent();
 
             labelVersion.Text = Application.ProductVersion;
+
+            buttonChangelog.Visible = System.IO.File.Exists(Application.StartupPath + "\\CHANGELOG.txt");
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -92,6 +94,20 @@ namespace ProcessHacker
         private void linkICSharpCode_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             TryStart("http://www.icsharpcode.net");
+        }
+
+        private void buttonChangelog_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt"));
+
+                box.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

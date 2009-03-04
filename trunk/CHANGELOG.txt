@@ -9,6 +9,7 @@ Process Hacker
    * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
    * #2647422 - "Suggest filename in Memory Editor->Data->Save"
    * #2647435 - "Add descriptions to Memory search results window"
+   * #2657143 - "Add Changelog in Help menu"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
    * Can change virtualization for processes
