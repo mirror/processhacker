@@ -69,7 +69,7 @@ namespace ProcessHacker
 
         private void LogWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.WindowState != FormWindowState.Minimized)
+            if (this.WindowState == FormWindowState.Normal)
             {
                 Properties.Settings.Default.LogWindowLocation = this.Location;
                 Properties.Settings.Default.LogWindowSize = this.Size;

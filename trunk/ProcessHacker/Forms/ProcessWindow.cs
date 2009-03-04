@@ -259,7 +259,7 @@ namespace ProcessHacker
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
 
-            if (this.WindowState != FormWindowState.Minimized)
+            if (this.WindowState == FormWindowState.Normal)
                 Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
