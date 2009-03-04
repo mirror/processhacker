@@ -195,7 +195,7 @@ namespace Aga.Controls.Tree
 
 			ArrangeControls();
 
-			_plusMinus = new NodePlusMinus();
+			_plusMinus = new NodePlusMinus(this);
 			_controls = new NodeControlsCollection(this);
 
             Font = _font;

@@ -10,15 +10,17 @@ namespace Aga.Controls.Tree.NodeControls
 {
 	internal class NodePlusMinus : NodeControl
 	{
+        private TreeViewAdv _tree;
 		public const int ImageSize = 9;
 		public const int Width = 16;
 		private Bitmap _plus;
 		private Bitmap _minus;
 
-		public NodePlusMinus()
+		public NodePlusMinus(TreeViewAdv tree)
 		{
 			_plus = Resources.plus;
 			_minus = Resources.minus;
+            _tree = tree;
 		}
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
@@ -55,12 +57,17 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)
 		{
-			if (args.Button == MouseButtons.Left)
-			{
-				args.Handled = true;
-				if (args.Node.CanExpand)
-					args.Node.IsExpanded = !args.Node.IsExpanded;
-			}
+            if (args.Button == MouseButtons.Left)
+            {
+                args.Handled = true;
+
+                if (args.Node.CanExpand)
+                {
+                    args.Node.IsExpanded = !args.Node.IsExpanded;
+                    // fixed by wj32
+                    _tree.FullUpdate();
+                }
+            }
 		}
 
 		public override void MouseDoubleClick(TreeNodeAdvMouseEventArgs args)

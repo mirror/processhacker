@@ -2059,29 +2059,42 @@ namespace ProcessHacker
 
         protected override void WndProc(ref Message m)
         {
-            // Magic number - PH uses this to detect previous instances.
-            if (m.Msg == 0x9991)
+            switch (m.Msg)
             {
-                this.Visible = true;
-
-                if (this.WindowState == FormWindowState.Minimized)
-                    this.WindowState = FormWindowState.Normal;
-
-                m.Result = new IntPtr(0x1119);
-
-                return;
-            }
-            else if (m.Msg == (int)Win32.WindowMessage.SysCommand)
-            {
-                if (m.WParam.ToInt32() == 0xf020) // SC_MINIMIZE
-                {
-                    if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                // Magic number - PH uses this to detect previous instances.
+                case 0x9991:
                     {
-                        this.Visible = false;
+                        this.Visible = true;
+
+                        if (this.WindowState == FormWindowState.Minimized)
+                            this.WindowState = FormWindowState.Normal;
+
+                        m.Result = new IntPtr(0x1119);
 
                         return;
                     }
-                }
+                    break;
+
+                case (int)Win32.WindowMessage.SysCommand:
+                    {
+                        if (m.WParam.ToInt32() == 0xf020) // SC_MINIMIZE
+                        {
+                            if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                            {
+                                this.Visible = false;
+
+                                return;
+                            }
+                        }
+                    }
+                    break;
+
+                case (int)Win32.WindowMessage.Activate:
+                case (int)Win32.WindowMessage.KillFocus:
+                    {
+                        treeProcesses.Tree.Invalidate();
+                    }
+                    break;
             }
 
             base.WndProc(ref m);

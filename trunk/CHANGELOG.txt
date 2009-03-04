@@ -32,6 +32,7 @@ Process Hacker
    * Slow closing of various windows
    * "Hide when minimized" is better
    * Opened process properties when a plus/minus was double-clicked
+   * Redrawing of the process tree when the window is activated/deactivated
 
 1.3.5.0
  * NEW:
