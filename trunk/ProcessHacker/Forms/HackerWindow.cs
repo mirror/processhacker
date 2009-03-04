@@ -2387,6 +2387,8 @@ namespace ProcessHacker
 
         public HackerWindow()
         {
+            Program.HackerWindow = this;
+
             InitializeComponent();
 
             // Force the handle to be created

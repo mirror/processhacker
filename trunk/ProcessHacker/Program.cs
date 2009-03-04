@@ -254,7 +254,7 @@ namespace ProcessHacker
 
             Application.SetCompatibleTextRenderingDefault(false);
 
-            HackerWindow = new HackerWindow();
+            new HackerWindow();
             Application.Run();
         }
 
