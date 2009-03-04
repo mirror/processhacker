@@ -257,7 +257,9 @@ namespace ProcessHacker
             Properties.Settings.Default.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
-            Properties.Settings.Default.ProcessWindowSize = this.Size;
+
+            if (this.WindowState != FormWindowState.Minimized)
+                Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
         private void ProcessWindow_FormClosed(object sender, FormClosedEventArgs e)

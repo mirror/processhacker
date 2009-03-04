@@ -4,7 +4,9 @@ Process Hacker
  * NEW:
    * #2596481 - "Add option for one instance of Process Hacker"
    * #2605155 - "CSR Processes: Add Save Processes"
+   * #2625192 - "Log: Add clear log"
    * #2625193 - "Add warning before shutting down, or restarting pc etc."
+   * #2647235 - "Update Log even when it’s open"
    * #2647387 - "Add descriptions to Memory Editor's buttons"
    * #2647418 - "Add ctrl+A and ctrl+C to threads, token, modules etc"
    * #2647422 - "Suggest filename in Memory Editor->Data->Save"

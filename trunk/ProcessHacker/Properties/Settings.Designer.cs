@@ -1092,5 +1092,29 @@ namespace ProcessHacker.Properties {
                 this["EnvironmentListViewColumns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300, 300")]
+        public global::System.Drawing.Point LogWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["LogWindowLocation"]));
+            }
+            set {
+                this["LogWindowLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("595, 508")]
+        public global::System.Drawing.Size LogWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["LogWindowSize"]));
+            }
+            set {
+                this["LogWindowSize"] = value;
+            }
+        }
     }
 }

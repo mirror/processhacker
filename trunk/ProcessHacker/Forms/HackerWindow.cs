@@ -36,16 +36,16 @@ namespace ProcessHacker
 {
     public partial class HackerWindow : Form
     {
-        delegate void QueueUpdatedCallback();
-        delegate void AddIconCallback(Icon icon);
-        delegate void AddListViewItemCallback(ListView lv, string[] text);
-        delegate void AddMenuItemDelegate(MenuItem menuItem);
+        public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
+
+        private delegate void AddMenuItemDelegate(MenuItem menuItem);
 
         #region Variables
 
         public HelpWindow HelpForm;
         public HandleFilterWindow HandleFilterWindow;
         public CSRProcessesWindow CSRProcessesWindow;
+        public LogWindow LogWindow;
 
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
@@ -65,7 +65,7 @@ namespace ProcessHacker
         List<Control> listControls = new List<Control>();
 
         Queue<KeyValuePair<string, Icon>> statusMessages = new Queue<KeyValuePair<string, Icon>>();
-        List<string> log = new List<string>();
+        List<KeyValuePair<DateTime, string>> _log = new List<KeyValuePair<DateTime, string>>();
 
         #endregion
 
@@ -116,14 +116,25 @@ namespace ProcessHacker
             get { return listNetwork.List; }
         }
 
-        public Dictionary<int, List<string>> ProcessServices
+        public IDictionary<int, List<string>> ProcessServices
         {
             get { return processServices; }
+        }
+
+        public IList<KeyValuePair<DateTime, string>> Log
+        {
+            get { return _log; }
         }
 
         #endregion
 
         #region Events
+
+        public event LogUpdatedEventHandler LogUpdated;
+
+        #endregion
+
+        #region Event Handlers
 
         #region Buttons
 
@@ -282,16 +293,13 @@ namespace ProcessHacker
 
         private void logMenuItem_Click(object sender, EventArgs e)
         {
-            string str = "";
+            if (LogWindow == null || LogWindow.IsDisposed)
+            {
+                LogWindow = new LogWindow();
+            }
 
-            foreach (string item in log)
-                str += item + "\r\n";
-
-            InformationBox box = new InformationBox(str);
-
-            box.TopMost = this.TopMost;
-            box.DefaultFileName = "Process Hacker Log.txt";
-            box.ShowDialog();
+            LogWindow.Show();
+            LogWindow.Activate();
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e)
@@ -1792,6 +1800,14 @@ namespace ProcessHacker
             listNetwork.List.Font = f;
         }
 
+        public void ClearLog()
+        {
+            _log.Clear();
+
+            if (this.LogUpdated != null)
+                this.LogUpdated(null);
+        }
+
         private void CreateShutdownMenuItems()
         {
             AddMenuItemDelegate addMenuItem = (MenuItem menuItem) =>
@@ -1962,8 +1978,13 @@ namespace ProcessHacker
 
         public void QueueMessage(string message, Icon icon)
         {
-            log.Add(DateTime.Now.ToString() + ": " + message);
-            statusMessages.Enqueue(new KeyValuePair<string,Icon>(message, icon));
+            var value = new KeyValuePair<DateTime, string>(DateTime.Now, message);
+
+            _log.Add(value);
+            statusMessages.Enqueue(new KeyValuePair<string, Icon>(message, icon));
+
+            if (this.LogUpdated != null)
+                this.LogUpdated(value);
         }
 
         private void SaveSettings()

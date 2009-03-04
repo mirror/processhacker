@@ -269,5 +269,11 @@
     <Setting Name="EnvironmentListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="LogWindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">300, 300</Value>
+    </Setting>
+    <Setting Name="LogWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">595, 508</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

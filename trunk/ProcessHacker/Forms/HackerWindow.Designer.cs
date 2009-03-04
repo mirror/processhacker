@@ -69,9 +69,9 @@
             this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.hackerMenuItem = new System.Windows.Forms.MenuItem();
             this.runMenuItem = new System.Windows.Forms.MenuItem();
+            this.runAsAdministratorMenuItem = new System.Windows.Forms.MenuItem();
             this.runAsMenuItem = new System.Windows.Forms.MenuItem();
             this.runAsServiceMenuItem = new System.Windows.Forms.MenuItem();
-            this.runAsAdministratorMenuItem = new System.Windows.Forms.MenuItem();
             this.showDetailsForAllProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.uacSeparatorMenuItem = new System.Windows.Forms.MenuItem();
             this.findHandlesMenuItem = new System.Windows.Forms.MenuItem();
@@ -438,6 +438,12 @@
             this.runMenuItem.Text = "&Run...";
             this.runMenuItem.Click += new System.EventHandler(this.runMenuItem_Click);
             // 
+            // runAsAdministratorMenuItem
+            // 
+            this.runAsAdministratorMenuItem.Index = 1;
+            this.runAsAdministratorMenuItem.Text = "Run As Administrator...";
+            this.runAsAdministratorMenuItem.Click += new System.EventHandler(this.runAsAdministratorMenuItem_Click);
+            // 
             // runAsMenuItem
             // 
             this.runAsMenuItem.Index = 2;
@@ -450,12 +456,6 @@
             this.runAsServiceMenuItem.Index = 3;
             this.runAsServiceMenuItem.Text = "Run As...";
             this.runAsServiceMenuItem.Click += new System.EventHandler(this.runAsServiceMenuItem_Click);
-            // 
-            // runAsAdministratorMenuItem
-            // 
-            this.runAsAdministratorMenuItem.Index = 1;
-            this.runAsAdministratorMenuItem.Text = "Run As Administrator...";
-            this.runAsAdministratorMenuItem.Click += new System.EventHandler(this.runAsAdministratorMenuItem_Click);
             // 
             // showDetailsForAllProcessesMenuItem
             // 
