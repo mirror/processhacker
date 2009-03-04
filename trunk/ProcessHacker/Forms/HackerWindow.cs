@@ -299,6 +299,10 @@ namespace ProcessHacker
             }
 
             LogWindow.Show();
+
+            if (LogWindow.WindowState == FormWindowState.Minimized)
+                LogWindow.WindowState = FormWindowState.Normal;
+
             LogWindow.Activate();
         }
 
@@ -369,6 +373,10 @@ namespace ProcessHacker
                 CSRProcessesWindow = new CSRProcessesWindow();
 
             CSRProcessesWindow.Show();
+
+            if (CSRProcessesWindow.WindowState == FormWindowState.Minimized)
+                CSRProcessesWindow.WindowState = FormWindowState.Normal;
+
             CSRProcessesWindow.Activate();
         }
 
