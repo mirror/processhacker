@@ -42,7 +42,11 @@ namespace ProcessHacker
             listLog.KeyDown +=
                 (sender, e) =>
                 {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listLog.Items);
+                    if (e.Control && e.KeyCode == Keys.A)
+                        for (int i = 0; i < listLog.VirtualListSize; i++)
+                            if (!listLog.SelectedIndices.Contains(i))
+                                listLog.SelectedIndices.Add(i);
+
                     if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listLog, -1, listLog_RetrieveVirtualItem);
                 };
 
