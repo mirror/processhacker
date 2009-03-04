@@ -22,7 +22,7 @@ GUIDE TO DIRECTORY ORGANIZATION
     have added it to the PATH environment variable.
 * KProcessHacker - the kernel-mode component of Process Hacker. Provides 
   Process Hacker with handle names and provides custom versions of Nt* 
-  API functions. Only one client can connect at a time, though.
+  API functions.
 * ProcessHacker - contains all of Process Hacker's source code.
   * Asm - this contains the assembler and disassembler, converted to unsafe 
     C# code from Oleh Yuschuk's Free Disassembler and Assembler.
