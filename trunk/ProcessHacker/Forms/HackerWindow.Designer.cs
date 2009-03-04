@@ -630,7 +630,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 369);
+            this.statusBar.Location = new System.Drawing.Point(0, 348);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -689,7 +689,7 @@
             this.tabControlBig.Location = new System.Drawing.Point(0, 0);
             this.tabControlBig.Name = "tabControlBig";
             this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 369);
+            this.tabControlBig.Size = new System.Drawing.Size(804, 348);
             this.tabControlBig.TabIndex = 6;
             this.tabControlBig.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
@@ -699,7 +699,7 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 343);
+            this.tabProcesses.Size = new System.Drawing.Size(796, 322);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
@@ -711,10 +711,10 @@
             this.treeProcesses.Location = new System.Drawing.Point(3, 3);
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 337);
+            this.treeProcesses.Size = new System.Drawing.Size(790, 316);
             this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.DoubleClick += new System.EventHandler(this.treeProcesses_DoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
             this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabServices
@@ -723,7 +723,7 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 343);
+            this.tabServices.Size = new System.Drawing.Size(796, 322);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
@@ -735,7 +735,7 @@
             this.listServices.Location = new System.Drawing.Point(3, 3);
             this.listServices.Name = "listServices";
             this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 337);
+            this.listServices.Size = new System.Drawing.Size(790, 316);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
@@ -745,7 +745,7 @@
             this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(796, 343);
+            this.tabNetwork.Size = new System.Drawing.Size(796, 322);
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
@@ -757,7 +757,7 @@
             this.listNetwork.Location = new System.Drawing.Point(3, 3);
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 337);
+            this.listNetwork.Size = new System.Drawing.Size(790, 316);
             this.listNetwork.TabIndex = 0;
             // 
             // menuService
@@ -958,7 +958,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 391);
+            this.ClientSize = new System.Drawing.Size(804, 370);
             this.Controls.Add(this.tabControlBig);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;

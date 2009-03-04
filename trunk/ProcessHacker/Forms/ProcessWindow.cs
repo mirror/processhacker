@@ -185,6 +185,7 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabServices);
                 tabControl.TabPages.Remove(tabThreads);
                 tabControl.TabPages.Remove(tabToken);
+                tabControl.TabPages.Remove(tabEnvironment);
             }
 
             if (_pid == 0)

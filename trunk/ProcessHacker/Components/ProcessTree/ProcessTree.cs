@@ -37,6 +37,7 @@ namespace ProcessHacker
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
+        public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseDoubleClick;
         private bool _draw = true;
         private bool _needsRestructure = false;
 
@@ -77,6 +78,12 @@ namespace ProcessHacker
         {
             if (this.MouseDown != null)
                 this.MouseDown(sender, e);
+        }
+
+        private void treeProcesses_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
+        {
+            if (this.NodeMouseDoubleClick != null)
+                this.NodeMouseDoubleClick(sender, e);
         }
 
         private void ProcessTree_KeyDown(object sender, KeyEventArgs e)

@@ -33,9 +33,16 @@
             this.columnPID = new Aga.Controls.Tree.TreeColumn();
             this.columnPvtMemory = new Aga.Controls.Tree.TreeColumn();
             this.columnWorkingSet = new Aga.Controls.Tree.TreeColumn();
+            this.columnPeakWorkingSet = new Aga.Controls.Tree.TreeColumn();
+            this.columnVirtualSize = new Aga.Controls.Tree.TreeColumn();
+            this.columnPeakVirtualSize = new Aga.Controls.Tree.TreeColumn();
+            this.columnPagefileUsage = new Aga.Controls.Tree.TreeColumn();
+            this.columnPeakPagefileUsage = new Aga.Controls.Tree.TreeColumn();
+            this.columnPageFaults = new Aga.Controls.Tree.TreeColumn();
             this.columnCPU = new Aga.Controls.Tree.TreeColumn();
             this.columnUsername = new Aga.Controls.Tree.TreeColumn();
             this.columnSessionId = new Aga.Controls.Tree.TreeColumn();
+            this.columnBasePriority = new Aga.Controls.Tree.TreeColumn();
             this.columnDescription = new Aga.Controls.Tree.TreeColumn();
             this.columnCompany = new Aga.Controls.Tree.TreeColumn();
             this.columnFileName = new Aga.Controls.Tree.TreeColumn();
@@ -49,9 +56,16 @@
             this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
             this.nodePvtMemory = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePeakWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeVirtualSize = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePeakVirtualSize = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePeakPagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePageFaults = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCPU = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeSessionId = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeBasePriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeDescription = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCompany = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeFileName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -60,20 +74,6 @@
             this.nodeHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeGdiHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnBasePriority = new Aga.Controls.Tree.TreeColumn();
-            this.nodeBasePriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnVirtualSize = new Aga.Controls.Tree.TreeColumn();
-            this.columnPeakVirtualSize = new Aga.Controls.Tree.TreeColumn();
-            this.columnPeakWorkingSet = new Aga.Controls.Tree.TreeColumn();
-            this.columnPageFaults = new Aga.Controls.Tree.TreeColumn();
-            this.columnPagefileUsage = new Aga.Controls.Tree.TreeColumn();
-            this.columnPeakPagefileUsage = new Aga.Controls.Tree.TreeColumn();
-            this.nodePeakWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodeVirtualSize = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodePeakVirtualSize = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodePagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodePeakPagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodePageFaults = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -141,6 +141,7 @@
             this.treeProcesses.Size = new System.Drawing.Size(808, 472);
             this.treeProcesses.TabIndex = 2;
             this.treeProcesses.UseColumns = true;
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.ColumnClicked += new System.EventHandler<Aga.Controls.Tree.TreeColumnEventArgs>(this.treeProcesses_ColumnClicked);
             // 
@@ -179,6 +180,66 @@
             this.columnWorkingSet.TooltipText = null;
             this.columnWorkingSet.Width = 70;
             // 
+            // columnPeakWorkingSet
+            // 
+            this.columnPeakWorkingSet.Header = "Peak Working Set";
+            this.columnPeakWorkingSet.IsVisible = false;
+            this.columnPeakWorkingSet.Sortable = true;
+            this.columnPeakWorkingSet.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPeakWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPeakWorkingSet.TooltipText = null;
+            this.columnPeakWorkingSet.Width = 70;
+            // 
+            // columnVirtualSize
+            // 
+            this.columnVirtualSize.Header = "Virtual Size";
+            this.columnVirtualSize.IsVisible = false;
+            this.columnVirtualSize.Sortable = true;
+            this.columnVirtualSize.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnVirtualSize.TooltipText = null;
+            this.columnVirtualSize.Width = 70;
+            // 
+            // columnPeakVirtualSize
+            // 
+            this.columnPeakVirtualSize.Header = "Peak Virtual Size";
+            this.columnPeakVirtualSize.IsVisible = false;
+            this.columnPeakVirtualSize.Sortable = true;
+            this.columnPeakVirtualSize.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPeakVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPeakVirtualSize.TooltipText = null;
+            this.columnPeakVirtualSize.Width = 70;
+            // 
+            // columnPagefileUsage
+            // 
+            this.columnPagefileUsage.Header = "Pagefile Usage";
+            this.columnPagefileUsage.IsVisible = false;
+            this.columnPagefileUsage.Sortable = true;
+            this.columnPagefileUsage.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPagefileUsage.TooltipText = null;
+            this.columnPagefileUsage.Width = 70;
+            // 
+            // columnPeakPagefileUsage
+            // 
+            this.columnPeakPagefileUsage.Header = "Peak Pagefile Usage";
+            this.columnPeakPagefileUsage.IsVisible = false;
+            this.columnPeakPagefileUsage.Sortable = true;
+            this.columnPeakPagefileUsage.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPeakPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPeakPagefileUsage.TooltipText = null;
+            this.columnPeakPagefileUsage.Width = 70;
+            // 
+            // columnPageFaults
+            // 
+            this.columnPageFaults.Header = "Page Faults";
+            this.columnPageFaults.IsVisible = false;
+            this.columnPageFaults.Sortable = true;
+            this.columnPageFaults.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPageFaults.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPageFaults.TooltipText = null;
+            this.columnPageFaults.Width = 60;
+            // 
             // columnCPU
             // 
             this.columnCPU.Header = "CPU";
@@ -205,6 +266,15 @@
             this.columnSessionId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnSessionId.TooltipText = null;
             this.columnSessionId.Width = 20;
+            // 
+            // columnBasePriority
+            // 
+            this.columnBasePriority.Header = "Base Priority";
+            this.columnBasePriority.IsVisible = false;
+            this.columnBasePriority.Sortable = true;
+            this.columnBasePriority.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnBasePriority.TooltipText = null;
+            this.columnBasePriority.Width = 70;
             // 
             // columnDescription
             // 
@@ -324,6 +394,66 @@
             this.nodeWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodePeakWorkingSet
+            // 
+            this.nodePeakWorkingSet.DataPropertyName = "PeakWorkingSet";
+            this.nodePeakWorkingSet.EditEnabled = false;
+            this.nodePeakWorkingSet.IncrementalSearchEnabled = true;
+            this.nodePeakWorkingSet.LeftMargin = 3;
+            this.nodePeakWorkingSet.ParentColumn = this.columnPeakWorkingSet;
+            this.nodePeakWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePeakWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeVirtualSize
+            // 
+            this.nodeVirtualSize.DataPropertyName = "VirtualSize";
+            this.nodeVirtualSize.EditEnabled = false;
+            this.nodeVirtualSize.IncrementalSearchEnabled = true;
+            this.nodeVirtualSize.LeftMargin = 3;
+            this.nodeVirtualSize.ParentColumn = this.columnVirtualSize;
+            this.nodeVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeVirtualSize.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodePeakVirtualSize
+            // 
+            this.nodePeakVirtualSize.DataPropertyName = "PeakVirtualSize";
+            this.nodePeakVirtualSize.EditEnabled = false;
+            this.nodePeakVirtualSize.IncrementalSearchEnabled = true;
+            this.nodePeakVirtualSize.LeftMargin = 3;
+            this.nodePeakVirtualSize.ParentColumn = this.columnPeakVirtualSize;
+            this.nodePeakVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePeakVirtualSize.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodePagefileUsage
+            // 
+            this.nodePagefileUsage.DataPropertyName = "PagefileUsage";
+            this.nodePagefileUsage.EditEnabled = false;
+            this.nodePagefileUsage.IncrementalSearchEnabled = true;
+            this.nodePagefileUsage.LeftMargin = 3;
+            this.nodePagefileUsage.ParentColumn = this.columnPagefileUsage;
+            this.nodePagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePagefileUsage.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodePeakPagefileUsage
+            // 
+            this.nodePeakPagefileUsage.DataPropertyName = "PeakPagefileUsage";
+            this.nodePeakPagefileUsage.EditEnabled = false;
+            this.nodePeakPagefileUsage.IncrementalSearchEnabled = true;
+            this.nodePeakPagefileUsage.LeftMargin = 3;
+            this.nodePeakPagefileUsage.ParentColumn = this.columnPeakPagefileUsage;
+            this.nodePeakPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePeakPagefileUsage.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodePageFaults
+            // 
+            this.nodePageFaults.DataPropertyName = "PageFaults";
+            this.nodePageFaults.EditEnabled = false;
+            this.nodePageFaults.IncrementalSearchEnabled = true;
+            this.nodePageFaults.LeftMargin = 3;
+            this.nodePageFaults.ParentColumn = this.columnPageFaults;
+            this.nodePageFaults.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePageFaults.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // nodeCPU
             // 
             this.nodeCPU.DataPropertyName = "CPU";
@@ -352,6 +482,15 @@
             this.nodeSessionId.ParentColumn = this.columnSessionId;
             this.nodeSessionId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeSessionId.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeBasePriority
+            // 
+            this.nodeBasePriority.DataPropertyName = "BasePriority";
+            this.nodeBasePriority.EditEnabled = false;
+            this.nodeBasePriority.IncrementalSearchEnabled = true;
+            this.nodeBasePriority.LeftMargin = 3;
+            this.nodeBasePriority.ParentColumn = this.columnBasePriority;
+            this.nodeBasePriority.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeDescription
             // 
@@ -428,144 +567,6 @@
             this.nodeUserHandles.ParentColumn = this.columnUserHandles;
             this.nodeUserHandles.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeUserHandles.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // columnBasePriority
-            // 
-            this.columnBasePriority.Header = "Base Priority";
-            this.columnBasePriority.IsVisible = false;
-            this.columnBasePriority.Sortable = true;
-            this.columnBasePriority.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnBasePriority.TooltipText = null;
-            this.columnBasePriority.Width = 70;
-            // 
-            // nodeBasePriority
-            // 
-            this.nodeBasePriority.DataPropertyName = "BasePriority";
-            this.nodeBasePriority.EditEnabled = false;
-            this.nodeBasePriority.IncrementalSearchEnabled = true;
-            this.nodeBasePriority.LeftMargin = 3;
-            this.nodeBasePriority.ParentColumn = this.columnBasePriority;
-            this.nodeBasePriority.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // columnVirtualSize
-            // 
-            this.columnVirtualSize.Header = "Virtual Size";
-            this.columnVirtualSize.IsVisible = false;
-            this.columnVirtualSize.Sortable = true;
-            this.columnVirtualSize.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnVirtualSize.TooltipText = null;
-            this.columnVirtualSize.Width = 70;
-            // 
-            // columnPeakVirtualSize
-            // 
-            this.columnPeakVirtualSize.Header = "Peak Virtual Size";
-            this.columnPeakVirtualSize.IsVisible = false;
-            this.columnPeakVirtualSize.Sortable = true;
-            this.columnPeakVirtualSize.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnPeakVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnPeakVirtualSize.TooltipText = null;
-            this.columnPeakVirtualSize.Width = 70;
-            // 
-            // columnPeakWorkingSet
-            // 
-            this.columnPeakWorkingSet.Header = "Peak Working Set";
-            this.columnPeakWorkingSet.IsVisible = false;
-            this.columnPeakWorkingSet.Sortable = true;
-            this.columnPeakWorkingSet.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnPeakWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnPeakWorkingSet.TooltipText = null;
-            this.columnPeakWorkingSet.Width = 70;
-            // 
-            // columnPageFaults
-            // 
-            this.columnPageFaults.Header = "Page Faults";
-            this.columnPageFaults.IsVisible = false;
-            this.columnPageFaults.Sortable = true;
-            this.columnPageFaults.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnPageFaults.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnPageFaults.TooltipText = null;
-            this.columnPageFaults.Width = 60;
-            // 
-            // columnPagefileUsage
-            // 
-            this.columnPagefileUsage.Header = "Pagefile Usage";
-            this.columnPagefileUsage.IsVisible = false;
-            this.columnPagefileUsage.Sortable = true;
-            this.columnPagefileUsage.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnPagefileUsage.TooltipText = null;
-            this.columnPagefileUsage.Width = 70;
-            // 
-            // columnPeakPagefileUsage
-            // 
-            this.columnPeakPagefileUsage.Header = "Peak Pagefile Usage";
-            this.columnPeakPagefileUsage.IsVisible = false;
-            this.columnPeakPagefileUsage.Sortable = true;
-            this.columnPeakPagefileUsage.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnPeakPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnPeakPagefileUsage.TooltipText = null;
-            this.columnPeakPagefileUsage.Width = 70;
-            // 
-            // nodePeakWorkingSet
-            // 
-            this.nodePeakWorkingSet.DataPropertyName = "PeakWorkingSet";
-            this.nodePeakWorkingSet.EditEnabled = false;
-            this.nodePeakWorkingSet.IncrementalSearchEnabled = true;
-            this.nodePeakWorkingSet.LeftMargin = 3;
-            this.nodePeakWorkingSet.ParentColumn = this.columnPeakWorkingSet;
-            this.nodePeakWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePeakWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // nodeVirtualSize
-            // 
-            this.nodeVirtualSize.DataPropertyName = "VirtualSize";
-            this.nodeVirtualSize.EditEnabled = false;
-            this.nodeVirtualSize.IncrementalSearchEnabled = true;
-            this.nodeVirtualSize.LeftMargin = 3;
-            this.nodeVirtualSize.ParentColumn = this.columnVirtualSize;
-            this.nodeVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodeVirtualSize.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // nodePeakVirtualSize
-            // 
-            this.nodePeakVirtualSize.DataPropertyName = "PeakVirtualSize";
-            this.nodePeakVirtualSize.EditEnabled = false;
-            this.nodePeakVirtualSize.IncrementalSearchEnabled = true;
-            this.nodePeakVirtualSize.LeftMargin = 3;
-            this.nodePeakVirtualSize.ParentColumn = this.columnPeakVirtualSize;
-            this.nodePeakVirtualSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePeakVirtualSize.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // nodePagefileUsage
-            // 
-            this.nodePagefileUsage.DataPropertyName = "PagefileUsage";
-            this.nodePagefileUsage.EditEnabled = false;
-            this.nodePagefileUsage.IncrementalSearchEnabled = true;
-            this.nodePagefileUsage.LeftMargin = 3;
-            this.nodePagefileUsage.ParentColumn = this.columnPagefileUsage;
-            this.nodePagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePagefileUsage.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // nodePeakPagefileUsage
-            // 
-            this.nodePeakPagefileUsage.DataPropertyName = "PeakPagefileUsage";
-            this.nodePeakPagefileUsage.EditEnabled = false;
-            this.nodePeakPagefileUsage.IncrementalSearchEnabled = true;
-            this.nodePeakPagefileUsage.LeftMargin = 3;
-            this.nodePeakPagefileUsage.ParentColumn = this.columnPeakPagefileUsage;
-            this.nodePeakPagefileUsage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePeakPagefileUsage.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // nodePageFaults
-            // 
-            this.nodePageFaults.DataPropertyName = "PageFaults";
-            this.nodePageFaults.EditEnabled = false;
-            this.nodePageFaults.IncrementalSearchEnabled = true;
-            this.nodePageFaults.LeftMargin = 3;
-            this.nodePageFaults.ParentColumn = this.columnPageFaults;
-            this.nodePageFaults.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePageFaults.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // ProcessTree
             // 

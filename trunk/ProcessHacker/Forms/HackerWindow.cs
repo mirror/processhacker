@@ -1759,7 +1759,7 @@ namespace ProcessHacker
 
         #region Trees
 
-        private void treeProcesses_DoubleClick(object sender, EventArgs e)
+        private void treeProcesses_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
         {
             inspectProcessMenuItem_Click(null, null);
         }
