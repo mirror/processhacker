@@ -51,8 +51,8 @@ namespace ProcessHacker
             /// Creates a new thread handle.
             /// </summary>
             /// <param name="TID">The ID of the thread to open.</param>
-            public ThreadHandle(int TID)
-                : this(TID, THREAD_RIGHTS.THREAD_ALL_ACCESS)
+            public ThreadHandle(int tid)
+                : this(tid, THREAD_RIGHTS.THREAD_ALL_ACCESS)
             { }
 
             /// <summary>
@@ -60,12 +60,12 @@ namespace ProcessHacker
             /// </summary>
             /// <param name="TID">The ID of the thread to open.</param>
             /// <param name="access">The desired access to the thread.</param>
-            public ThreadHandle(int TID, THREAD_RIGHTS access)
+            public ThreadHandle(int tid, THREAD_RIGHTS access)
             {
                 if (Program.KPH != null)
-                    this.Handle = Program.KPH.KphOpenThread(TID, access);
+                    this.Handle = Program.KPH.KphOpenThread(tid, access);
                 else
-                    this.Handle = OpenThread(access, 0, TID);
+                    this.Handle = OpenThread(access, 0, tid);
 
                 if (this.Handle == 0)
                     ThrowLastWin32Error();
@@ -134,7 +134,6 @@ namespace ProcessHacker
             {
                 int priority = GetThreadPriority(this);
 
-                // this is what Microsoft does in its ProcessThread class (found out using Reflector)
                 if (priority == 0x7fffffff)
                     ThrowLastWin32Error();
 
@@ -160,6 +159,16 @@ namespace ProcessHacker
             public void SetContext(CONTEXT context)
             {
                 if (!SetThreadContext(this, ref context))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Sets the thread's priority level.
+            /// </summary>
+            /// <param name="priority">The priority of the thread.</param>
+            public void SetPriorityLevel(System.Diagnostics.ThreadPriorityLevel priority)
+            {
+                if (!SetThreadPriority(this, (int)priority))
                     ThrowLastWin32Error();
             }
 

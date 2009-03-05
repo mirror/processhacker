@@ -645,31 +645,34 @@ namespace ProcessHacker
 
                 try
                 {
-                    switch (Process.GetProcessById(processSelectedPID).PriorityClass)
+                    using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
                     {
-                        case ProcessPriorityClass.RealTime:
-                            realTimeMenuItem.Checked = true;
-                            break;
+                        switch (phandle.GetPriorityClass())
+                        {
+                            case ProcessPriorityClass.RealTime:
+                                realTimeMenuItem.Checked = true;
+                                break;
 
-                        case ProcessPriorityClass.High:
-                            highMenuItem.Checked = true;
-                            break;
+                            case ProcessPriorityClass.High:
+                                highMenuItem.Checked = true;
+                                break;
 
-                        case ProcessPriorityClass.AboveNormal:
-                            aboveNormalMenuItem.Checked = true;
-                            break;
+                            case ProcessPriorityClass.AboveNormal:
+                                aboveNormalMenuItem.Checked = true;
+                                break;
 
-                        case ProcessPriorityClass.Normal:
-                            normalMenuItem.Checked = true;
-                            break;
+                            case ProcessPriorityClass.Normal:
+                                normalMenuItem.Checked = true;
+                                break;
 
-                        case ProcessPriorityClass.BelowNormal:
-                            belowNormalMenuItem.Checked = true;
-                            break;
+                            case ProcessPriorityClass.BelowNormal:
+                                belowNormalMenuItem.Checked = true;
+                                break;
 
-                        case ProcessPriorityClass.Idle:
-                            idleMenuItem.Checked = true;
-                            break;
+                            case ProcessPriorityClass.Idle:
+                                idleMenuItem.Checked = true;
+                                break;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -2055,11 +2058,13 @@ namespace ProcessHacker
         {
             try
             {
-                Process.GetProcessById(processSelectedPID).PriorityClass = priority;
+                using (var phandle = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_SET_INFORMATION))
+                    phandle.SetPriorityClass(priority);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, 
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

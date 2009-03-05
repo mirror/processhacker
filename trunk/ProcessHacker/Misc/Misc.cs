@@ -535,6 +535,22 @@ namespace ProcessHacker
             return sb.ToString();
         }
 
+        public static System.Diagnostics.ProcessPriorityClass NativeToWindowsBasePriority(int priority)
+        {
+            if (priority >= 24)
+                return ProcessPriorityClass.RealTime;
+            else if (priority >= 13)
+                return ProcessPriorityClass.High;
+            else if (priority >= 10)
+                return ProcessPriorityClass.AboveNormal;
+            else if (priority >= 8)
+                return ProcessPriorityClass.Normal;
+            else if (priority >= 6)
+                return ProcessPriorityClass.BelowNormal;
+            else
+                return ProcessPriorityClass.Idle;
+        }
+
         /// <summary>
         /// Reads a null-terminated string from a stream.
         /// </summary>
@@ -600,6 +616,27 @@ namespace ProcessHacker
         {
             Win32.SendMessage(button.Handle, 
                 Win32.WindowMessage.BcmSetShield, 0, show ? 1 : 0);
+        }
+
+        public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)
+        {
+            switch (priority)
+            {
+                case ProcessPriorityClass.RealTime:
+                    return 24;
+                case ProcessPriorityClass.High:
+                    return 13;
+                case ProcessPriorityClass.AboveNormal:
+                    return 10;
+                case ProcessPriorityClass.Normal:
+                    return 8;
+                case ProcessPriorityClass.BelowNormal:
+                    return 6;
+                case ProcessPriorityClass.Idle:
+                    return 4;
+                default:
+                    return 8;
+            }
         }
 
         #region Stuff from PNG.Net

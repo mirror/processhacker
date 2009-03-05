@@ -578,6 +578,20 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the process' priority class.
+            /// </summary>
+            /// <returns>A ProcessPriorityClass enum.</returns>
+            public System.Diagnostics.ProcessPriorityClass GetPriorityClass()
+            {
+                int priority = Win32.GetPriorityClass(this);
+
+                if (priority == 0)
+                    ThrowLastWin32Error();
+
+                return (System.Diagnostics.ProcessPriorityClass)priority;
+            }
+
+            /// <summary>
             /// Gets whether the process is currently being debugged. This requires 
             /// the PROCESS_QUERY_INFORMATION permission.
             /// </summary>
@@ -640,6 +654,16 @@ namespace ProcessHacker
                     if (ZwResumeProcess(this) != 0)
                         ThrowLastWin32Error();
                 //}
+            }
+
+            /// <summary>
+            /// Sets the process' priority class.
+            /// </summary>
+            /// <param name="priority">The process' priority.</param>
+            public void SetPriorityClass(System.Diagnostics.ProcessPriorityClass priority)
+            {
+                if (!Win32.SetPriorityClass(this, (int)priority))
+                    ThrowLastWin32Error();
             }
 
             /// <summary>

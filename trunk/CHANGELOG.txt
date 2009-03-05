@@ -35,6 +35,7 @@ Process Hacker
    * Opened process properties when a plus/minus was double-clicked
    * Redrawing of the process tree when the window is activated/deactivated
    * Double-escaping in the Run As tool
+   * Priority getting/setting under limited accounts
 
 1.3.5.0
  * NEW:

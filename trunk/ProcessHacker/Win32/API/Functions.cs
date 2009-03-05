@@ -302,6 +302,12 @@ namespace ProcessHacker
 
         #region Processes
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetPriorityClass(int ProcessHandle, int Priority);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetPriorityClass(int ProcessHandle);
+
         [DllImport("psapi.dll", SetLastError = true)]
         public static extern bool EmptyWorkingSet(int ProcessHandle);
 
@@ -778,6 +784,9 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetExitCodeThread(int ThreadHandle, out int ExitCode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetThreadPriority(int ThreadHandle, int Priority);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetThreadPriority(int ThreadHandle);

@@ -311,28 +311,18 @@ namespace ProcessHacker
         {
             try
             {
-                ProcessThread thread = null;
+                int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
-                foreach (ProcessThread t in _process.Threads)
-                {
-                    if (t.Id.ToString() == listThreads.SelectedItems[0].SubItems[0].Text)
-                    {
-                        thread = t;
-                        break;
-                    }
-                }
-
-                if (thread == null)
-                {
-                    MessageBox.Show("Thread not found.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                thread.PriorityLevel = priority;
+                using (var thandle = new Win32.ThreadHandle(tid,
+                    Program.WindowsVersion == "Vista" ? 
+                    Win32.THREAD_RIGHTS.THREAD_SET_LIMITED_INFORMATION :
+                    Win32.THREAD_RIGHTS.THREAD_SET_INFORMATION))
+                    thandle.SetPriorityLevel(priority);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("The priority could not be set:\n\n" + ex.Message, 
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -367,49 +357,40 @@ namespace ProcessHacker
 
                 try
                 {
-                    ProcessThread thread = null;
-
-                    foreach (ProcessThread t in _process.Threads)
+                    using (var thandle = new Win32.ThreadHandle(
+                        int.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
+                        Program.MinThreadQueryRights))
                     {
-                        if (t.Id.ToString() == listThreads.SelectedItems[0].SubItems[0].Text)
+                        switch (thandle.GetPriorityLevel())
                         {
-                            thread = t;
-                            break;
+                            case ThreadPriorityLevel.TimeCritical:
+                                timeCriticalThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.Highest:
+                                highestThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.AboveNormal:
+                                aboveNormalThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.Normal:
+                                normalThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.BelowNormal:
+                                belowNormalThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.Lowest:
+                                lowestThreadMenuItem.Checked = true;
+                                break;
+
+                            case ThreadPriorityLevel.Idle:
+                                idleThreadMenuItem.Checked = true;
+                                break;
                         }
-                    }
-
-                    if (thread == null)
-                        return;
-
-                    switch (thread.PriorityLevel)
-                    {
-                        case ThreadPriorityLevel.TimeCritical:
-                            timeCriticalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Highest:
-                            highestThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.AboveNormal:
-                            aboveNormalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Normal:
-                            normalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.BelowNormal:
-                            belowNormalThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Lowest:
-                            lowestThreadMenuItem.Checked = true;
-                            break;
-
-                        case ThreadPriorityLevel.Idle:
-                            idleThreadMenuItem.Checked = true;
-                            break;
                     }
 
                     priorityThreadMenuItem.Enabled = true;
