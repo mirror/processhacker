@@ -50,6 +50,18 @@ namespace ProcessHacker
 
         public string DefaultFileName { get; set; }
 
+        public string Title
+        {
+            get { return this.Text; }
+            set { this.Text = value; }
+        }
+
+        public bool ShowSaveButton
+        {
+            get { return buttonSave.Visible; }
+            set { buttonSave.Visible = value; }
+        }
+
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
