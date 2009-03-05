@@ -543,7 +543,7 @@
             this.vistaMenu.SetImage(this.updateNowMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
             this.updateNowMenuItem.Index = 2;
             this.updateNowMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
-            this.updateNowMenuItem.Text = "Update &Now";
+            this.updateNowMenuItem.Text = "&Refresh";
             this.updateNowMenuItem.Click += new System.EventHandler(this.updateNowMenuItem_Click);
             // 
             // updateProcessesMenuItem
