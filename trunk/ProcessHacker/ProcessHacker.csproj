@@ -1000,6 +1000,9 @@
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />
     <None Include="Resources\report.png" />
+    <None Include="Resources\chart_curve.png" />
+    <None Include="Resources\chart_line.png" />
+    <None Include="Resources\lightbulb_off.png" />
     <Content Include="structs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

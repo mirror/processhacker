@@ -275,5 +275,8 @@
     <Setting Name="LogWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">595, 508</Value>
     </Setting>
+    <Setting Name="ToolbarVisible" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

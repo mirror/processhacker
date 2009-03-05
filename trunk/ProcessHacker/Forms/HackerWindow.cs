@@ -38,7 +38,7 @@ namespace ProcessHacker
     {
         public delegate void LogUpdatedEventHandler(KeyValuePair<DateTime, string>? value);
 
-        private delegate void AddMenuItemDelegate(MenuItem menuItem);
+        private delegate void AddMenuItemDelegate(string text, EventHandler onClick);
 
         #region Variables
 
@@ -344,6 +344,12 @@ namespace ProcessHacker
         private void exitMenuItem_Click(object sender, EventArgs e)
         {
             this.Exit();
+        }
+
+        private void toolbarMenuItem_Click(object sender, EventArgs e)
+        {
+            toolbarMenuItem.Checked = !toolbarMenuItem.Checked;
+            toolStrip.Visible = toolbarMenuItem.Checked;
         }
 
         private void updateNowMenuItem_Click(object sender, EventArgs e)
@@ -1558,7 +1564,7 @@ namespace ProcessHacker
                 node.IsSelected = true;
                 node.EnsureVisible();
 
-                tabControlBig.SelectedTab = tabProcesses;
+                tabControl.SelectedTab = tabProcesses;
             }
             catch
             { }
@@ -1717,7 +1723,7 @@ namespace ProcessHacker
 
         private void tabControlBig_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControlBig.SelectedTab == tabNetwork)
+            if (tabControl.SelectedTab == tabNetwork)
             {
                 networkP.Enabled = true;
                 networkP.RunOnceAsync();
@@ -1768,6 +1774,30 @@ namespace ProcessHacker
 
         #endregion
 
+        #region ToolStrip Items
+
+        private void findHandlesToolStripButton_Click(object sender, EventArgs e)
+        {
+            findHandlesMenuItem_Click(sender, e);
+        }
+
+        private void refreshToolStripButton_Click(object sender, EventArgs e)
+        {
+            updateNowMenuItem_Click(sender, e);
+        }
+
+        private void sysInfoToolStripButton_Click(object sender, EventArgs e)
+        {
+            sysInfoMenuItem_Click(sender, e);
+        }
+
+        private void optionsToolStripButton_Click(object sender, EventArgs e)
+        {
+            optionsMenuItem_Click(sender, e);
+        }
+
+        #endregion
+
         #region Trees
 
         private void treeProcesses_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
@@ -1780,23 +1810,6 @@ namespace ProcessHacker
         #endregion
 
         #region Form-related Helper functions
-
-        private void AddIcon(Icon icon)
-        {
-            imageList.Images.Add(icon);
-        }
-
-        private void AddListViewItem(ListView lv, string[] text)
-        {
-            ListViewItem item = new ListViewItem();
-
-            item.Text = text[0];
-
-            for (int i = 1; i < text.Length; i++)
-            {
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, text[i]));
-            }
-        }
 
         public void ApplyFont(Font f)
         {
@@ -1821,39 +1834,40 @@ namespace ProcessHacker
 
         private void CreateShutdownMenuItems()
         {
-            AddMenuItemDelegate addMenuItem = (MenuItem menuItem) =>
+            AddMenuItemDelegate addMenuItem = (string text, EventHandler onClick) =>
             {
-                shutdownMenuItem.MenuItems.Add(menuItem);
-                shutdownTrayMenuItem.MenuItems.Add(menuItem.CloneMenu());
+                shutdownMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                shutdownTrayMenuItem.MenuItems.Add(new MenuItem(text, onClick));
+                shutDownToolStripMenuItem.DropDownItems.Add(text, null, onClick);
             };
 
-            addMenuItem(new MenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); }));
-            addMenuItem(new MenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Logoff, 0); }));
-            addMenuItem(new MenuItem("-"));
-            addMenuItem(new MenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); }));
-            addMenuItem(new MenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); }));
-            addMenuItem(new MenuItem("-"));
-            addMenuItem(new MenuItem("Restart", (sender, e) =>
+            addMenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); });
+            addMenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Logoff, 0); });
+            addMenuItem("-", null);
+            addMenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); });
+            addMenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); });
+            addMenuItem("-", null);
+            addMenuItem("Restart", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Reboot, 0);
-            }));
-            addMenuItem(new MenuItem("Shutdown", (sender, e) =>
+            });
+            addMenuItem("Shutdown", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to shutdown your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Shutdown, 0);
-            }));
-            addMenuItem(new MenuItem("Poweroff", (sender, e) =>
+            });
+            addMenuItem("Poweroff", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to poweroff your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Poweroff, 0);
-            }));
+            });
         }
 
         private void DeleteSettings()
@@ -1966,6 +1980,7 @@ namespace ProcessHacker
                 this.WindowState = FormWindowState.Normal;
 
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
+            toolbarMenuItem.Checked = toolStrip.Visible = Properties.Settings.Default.ToolbarVisible;
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ProcessTreeColumns, treeProcesses.Tree);
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
@@ -2009,6 +2024,7 @@ namespace ProcessHacker
             Properties.Settings.Default.AlwaysOnTop = this.TopMost;
             Properties.Settings.Default.WindowState = this.WindowState == FormWindowState.Minimized ?
                 FormWindowState.Normal : this.WindowState;
+            Properties.Settings.Default.ToolbarVisible = toolStrip.Visible;
 
             Properties.Settings.Default.PromptBoxText = PromptBox.LastValue;
 
@@ -2374,7 +2390,7 @@ namespace ProcessHacker
 
         private void LoadApplyCommandLineArgs()
         {
-            tabControlBig.SelectedTab = tabControlBig.TabPages["tab" + Program.SelectTab];
+            tabControl.SelectedTab = tabControl.TabPages["tab" + Program.SelectTab];
 
             if (Program.ShowOptions)
             {
@@ -2411,13 +2427,13 @@ namespace ProcessHacker
             this.LoadSymbols();
             this.ResumeLayout();
 
-            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) || 
+            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible || Program.ShowOptions)
             {
                 this.Visible = true;
             }
 
-            if (tabControlBig.SelectedTab == tabProcesses)
+            if (tabControl.SelectedTab == tabProcesses)
                 treeProcesses.Tree.Select();
 
             statusText.Text = "Waiting...";
@@ -2448,7 +2464,7 @@ namespace ProcessHacker
 
             // If it's Vista and we're elevated, we should allow the magic window message to allow 
             // Allow only one instance to work.
-            if (Program.WindowsVersion == "Vista" && 
+            if (Program.WindowsVersion == "Vista" &&
                 Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
             {
                 Win32.ChangeWindowMessageFilter((Win32.WindowMessage)0x9991, Win32.UipiFilterFlag.Add);
@@ -2467,7 +2483,7 @@ namespace ProcessHacker
 
         private void HackerWindow_SizeChanged(object sender, EventArgs e)
         {
-            tabControlBig.Invalidate(false);
+            tabControl.Invalidate(false);
         }
 
         private void HackerWindow_VisibleChanged(object sender, EventArgs e)

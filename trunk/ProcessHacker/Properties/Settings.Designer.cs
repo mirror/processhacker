@@ -1116,5 +1116,17 @@ namespace ProcessHacker.Properties {
                 this["LogWindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ToolbarVisible {
+            get {
+                return ((bool)(this["ToolbarVisible"]));
+            }
+            set {
+                this["ToolbarVisible"] = value;
+            }
+        }
     }
 }

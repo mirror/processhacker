@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HackerWindow));
             this.timerFire = new System.Windows.Forms.Timer(this.components);
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.menuProcess = new System.Windows.Forms.ContextMenu();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
@@ -82,6 +81,7 @@
             this.shutdownMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.viewMenuItem = new System.Windows.Forms.MenuItem();
+            this.toolbarMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.updateNowMenuItem = new System.Windows.Forms.MenuItem();
@@ -104,13 +104,17 @@
             this.statusIcon = new System.Windows.Forms.StatusBarPanel();
             this.statusText = new System.Windows.Forms.StatusBarPanel();
             this.timerMessages = new System.Windows.Forms.Timer(this.components);
-            this.tabControlBig = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProcesses = new System.Windows.Forms.TabPage();
-            this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.listServices = new ProcessHacker.ServiceList();
             this.tabNetwork = new System.Windows.Forms.TabPage();
-            this.listNetwork = new ProcessHacker.NetworkList();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.optionsToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.shutDownToolStripMenuItem = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.findHandlesToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.sysInfoToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.menuService = new System.Windows.Forms.ContextMenu();
             this.goToProcessServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.startServiceMenuItem = new System.Windows.Forms.MenuItem();
@@ -139,29 +143,29 @@
             this.processesMenuItem = new System.Windows.Forms.MenuItem();
             this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
+            this.treeProcesses = new ProcessHacker.ProcessTree();
+            this.listServices = new ProcessHacker.ServiceList();
+            this.listNetwork = new ProcessHacker.NetworkList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.panelHack = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).BeginInit();
-            this.tabControlBig.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.tabProcesses.SuspendLayout();
             this.tabServices.SuspendLayout();
             this.tabNetwork.SuspendLayout();
+            this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
+            this.panelHack.SuspendLayout();
             this.SuspendLayout();
             // 
             // timerFire
             // 
             this.timerFire.Interval = 250;
             this.timerFire.Tick += new System.EventHandler(this.timerFire_Tick);
-            // 
-            // imageList
-            // 
-            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList.Images.SetKeyName(0, "process_small");
             // 
             // menuProcess
             // 
@@ -519,6 +523,7 @@
             // 
             this.viewMenuItem.Index = 1;
             this.viewMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toolbarMenuItem,
             this.sysInfoMenuItem,
             this.menuItem3,
             this.updateNowMenuItem,
@@ -526,35 +531,41 @@
             this.updateServicesMenuItem});
             this.viewMenuItem.Text = "&View";
             // 
+            // toolbarMenuItem
+            // 
+            this.toolbarMenuItem.Index = 0;
+            this.toolbarMenuItem.Text = "Toolbar";
+            this.toolbarMenuItem.Click += new System.EventHandler(this.toolbarMenuItem_Click);
+            // 
             // sysInfoMenuItem
             // 
-            this.sysInfoMenuItem.Index = 0;
+            this.sysInfoMenuItem.Index = 1;
             this.sysInfoMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlI;
             this.sysInfoMenuItem.Text = "System &Information...";
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
             // menuItem3
             // 
-            this.menuItem3.Index = 1;
+            this.menuItem3.Index = 2;
             this.menuItem3.Text = "-";
             // 
             // updateNowMenuItem
             // 
             this.vistaMenu.SetImage(this.updateNowMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
-            this.updateNowMenuItem.Index = 2;
+            this.updateNowMenuItem.Index = 3;
             this.updateNowMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
             this.updateNowMenuItem.Text = "&Refresh";
             this.updateNowMenuItem.Click += new System.EventHandler(this.updateNowMenuItem_Click);
             // 
             // updateProcessesMenuItem
             // 
-            this.updateProcessesMenuItem.Index = 3;
+            this.updateProcessesMenuItem.Index = 4;
             this.updateProcessesMenuItem.Text = "Update &Processes";
             this.updateProcessesMenuItem.Click += new System.EventHandler(this.updateProcessesMenuItem_Click);
             // 
             // updateServicesMenuItem
             // 
-            this.updateServicesMenuItem.Index = 4;
+            this.updateServicesMenuItem.Index = 5;
             this.updateServicesMenuItem.Text = "Update &Services";
             this.updateServicesMenuItem.Click += new System.EventHandler(this.updateServicesMenuItem_Click);
             // 
@@ -630,7 +641,7 @@
             // 
             // statusBar
             // 
-            this.statusBar.Location = new System.Drawing.Point(0, 348);
+            this.statusBar.Location = new System.Drawing.Point(3, 363);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusGeneral,
@@ -639,7 +650,7 @@
             this.statusIcon,
             this.statusText});
             this.statusBar.ShowPanels = true;
-            this.statusBar.Size = new System.Drawing.Size(804, 22);
+            this.statusBar.Size = new System.Drawing.Size(798, 22);
             this.statusBar.TabIndex = 5;
             // 
             // statusGeneral
@@ -680,18 +691,18 @@
             this.timerMessages.Interval = 2000;
             this.timerMessages.Tick += new System.EventHandler(this.timerMessages_Tick);
             // 
-            // tabControlBig
+            // tabControl
             // 
-            this.tabControlBig.Controls.Add(this.tabProcesses);
-            this.tabControlBig.Controls.Add(this.tabServices);
-            this.tabControlBig.Controls.Add(this.tabNetwork);
-            this.tabControlBig.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControlBig.Location = new System.Drawing.Point(0, 0);
-            this.tabControlBig.Name = "tabControlBig";
-            this.tabControlBig.SelectedIndex = 0;
-            this.tabControlBig.Size = new System.Drawing.Size(804, 348);
-            this.tabControlBig.TabIndex = 6;
-            this.tabControlBig.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
+            this.tabControl.Controls.Add(this.tabProcesses);
+            this.tabControl.Controls.Add(this.tabServices);
+            this.tabControl.Controls.Add(this.tabNetwork);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 0);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(798, 335);
+            this.tabControl.TabIndex = 6;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControlBig_SelectedIndexChanged);
             // 
             // tabProcesses
             // 
@@ -699,23 +710,10 @@
             this.tabProcesses.Location = new System.Drawing.Point(4, 22);
             this.tabProcesses.Name = "tabProcesses";
             this.tabProcesses.Padding = new System.Windows.Forms.Padding(3);
-            this.tabProcesses.Size = new System.Drawing.Size(796, 322);
+            this.tabProcesses.Size = new System.Drawing.Size(790, 309);
             this.tabProcesses.TabIndex = 0;
             this.tabProcesses.Text = "Processes";
             this.tabProcesses.UseVisualStyleBackColor = true;
-            // 
-            // treeProcesses
-            // 
-            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeProcesses.Draw = true;
-            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
-            this.treeProcesses.Name = "treeProcesses";
-            this.treeProcesses.Provider = null;
-            this.treeProcesses.Size = new System.Drawing.Size(790, 316);
-            this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
-            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
-            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
             // 
             // tabServices
             // 
@@ -723,21 +721,10 @@
             this.tabServices.Location = new System.Drawing.Point(4, 22);
             this.tabServices.Name = "tabServices";
             this.tabServices.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServices.Size = new System.Drawing.Size(796, 322);
+            this.tabServices.Size = new System.Drawing.Size(790, 329);
             this.tabServices.TabIndex = 1;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;
-            // 
-            // listServices
-            // 
-            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listServices.DoubleBuffered = true;
-            this.listServices.Location = new System.Drawing.Point(3, 3);
-            this.listServices.Name = "listServices";
-            this.listServices.Provider = null;
-            this.listServices.Size = new System.Drawing.Size(790, 316);
-            this.listServices.TabIndex = 0;
-            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
             // 
             // tabNetwork
             // 
@@ -745,20 +732,84 @@
             this.tabNetwork.Location = new System.Drawing.Point(4, 22);
             this.tabNetwork.Name = "tabNetwork";
             this.tabNetwork.Padding = new System.Windows.Forms.Padding(3);
-            this.tabNetwork.Size = new System.Drawing.Size(796, 322);
+            this.tabNetwork.Size = new System.Drawing.Size(790, 329);
             this.tabNetwork.TabIndex = 2;
             this.tabNetwork.Text = "Network";
             this.tabNetwork.UseVisualStyleBackColor = true;
             // 
-            // listNetwork
+            // toolStrip
             // 
-            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listNetwork.DoubleBuffered = true;
-            this.listNetwork.Location = new System.Drawing.Point(3, 3);
-            this.listNetwork.Name = "listNetwork";
-            this.listNetwork.Provider = null;
-            this.listNetwork.Size = new System.Drawing.Size(790, 316);
-            this.listNetwork.TabIndex = 0;
+            this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.refreshToolStripButton,
+            this.optionsToolStripButton,
+            this.shutDownToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.findHandlesToolStripButton,
+            this.sysInfoToolStripButton});
+            this.toolStrip.Location = new System.Drawing.Point(3, 3);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Size = new System.Drawing.Size(798, 25);
+            this.toolStrip.TabIndex = 5;
+            this.toolStrip.Text = "toolStrip1";
+            // 
+            // refreshToolStripButton
+            // 
+            this.refreshToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.refreshToolStripButton.Image = global::ProcessHacker.Properties.Resources.arrow_refresh;
+            this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshToolStripButton.Name = "refreshToolStripButton";
+            this.refreshToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.refreshToolStripButton.Text = "Refresh";
+            this.refreshToolStripButton.ToolTipText = "Refresh (F5)";
+            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
+            // 
+            // optionsToolStripButton
+            // 
+            this.optionsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.optionsToolStripButton.Image = global::ProcessHacker.Properties.Resources.cog_edit;
+            this.optionsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.optionsToolStripButton.Name = "optionsToolStripButton";
+            this.optionsToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.optionsToolStripButton.Text = "Options";
+            this.optionsToolStripButton.ToolTipText = "Options... (Ctrl+O)";
+            this.optionsToolStripButton.Click += new System.EventHandler(this.optionsToolStripButton_Click);
+            // 
+            // shutDownToolStripMenuItem
+            // 
+            this.shutDownToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.shutDownToolStripMenuItem.Image = global::ProcessHacker.Properties.Resources.lightbulb_off;
+            this.shutDownToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.shutDownToolStripMenuItem.Name = "shutDownToolStripMenuItem";
+            this.shutDownToolStripMenuItem.Size = new System.Drawing.Size(29, 22);
+            this.shutDownToolStripMenuItem.Text = "Shutdown";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // findHandlesToolStripButton
+            // 
+            this.findHandlesToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.findHandlesToolStripButton.Image = global::ProcessHacker.Properties.Resources.find;
+            this.findHandlesToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.findHandlesToolStripButton.Name = "findHandlesToolStripButton";
+            this.findHandlesToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.findHandlesToolStripButton.Text = "Find Handles...";
+            this.findHandlesToolStripButton.ToolTipText = "Find Handles... (Ctrl+F)";
+            this.findHandlesToolStripButton.Click += new System.EventHandler(this.findHandlesToolStripButton_Click);
+            // 
+            // sysInfoToolStripButton
+            // 
+            this.sysInfoToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.sysInfoToolStripButton.Image = global::ProcessHacker.Properties.Resources.chart_line;
+            this.sysInfoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.sysInfoToolStripButton.Name = "sysInfoToolStripButton";
+            this.sysInfoToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.sysInfoToolStripButton.Text = "System Information...";
+            this.sysInfoToolStripButton.ToolTipText = "System Information... (Ctrl+I)";
+            this.sysInfoToolStripButton.Click += new System.EventHandler(this.sysInfoToolStripButton_Click);
             // 
             // menuService
             // 
@@ -950,22 +1001,67 @@
             this.exitTrayMenuItem.Text = "E&xit";
             this.exitTrayMenuItem.Click += new System.EventHandler(this.exitTrayMenuItem_Click);
             // 
+            // treeProcesses
+            // 
+            this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeProcesses.Draw = true;
+            this.treeProcesses.Location = new System.Drawing.Point(3, 3);
+            this.treeProcesses.Name = "treeProcesses";
+            this.treeProcesses.Provider = null;
+            this.treeProcesses.Size = new System.Drawing.Size(784, 303);
+            this.treeProcesses.TabIndex = 4;
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
+            this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
+            // 
+            // listServices
+            // 
+            this.listServices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listServices.DoubleBuffered = true;
+            this.listServices.Location = new System.Drawing.Point(3, 3);
+            this.listServices.Name = "listServices";
+            this.listServices.Provider = null;
+            this.listServices.Size = new System.Drawing.Size(784, 323);
+            this.listServices.TabIndex = 0;
+            this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            // 
+            // listNetwork
+            // 
+            this.listNetwork.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listNetwork.DoubleBuffered = true;
+            this.listNetwork.Location = new System.Drawing.Point(3, 3);
+            this.listNetwork.Name = "listNetwork";
+            this.listNetwork.Provider = null;
+            this.listNetwork.Size = new System.Drawing.Size(784, 323);
+            this.listNetwork.TabIndex = 0;
+            // 
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // panelHack
+            // 
+            this.panelHack.Controls.Add(this.tabControl);
+            this.panelHack.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelHack.Location = new System.Drawing.Point(3, 28);
+            this.panelHack.Name = "panelHack";
+            this.panelHack.Size = new System.Drawing.Size(798, 335);
+            this.panelHack.TabIndex = 5;
             // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 370);
-            this.Controls.Add(this.tabControlBig);
+            this.ClientSize = new System.Drawing.Size(804, 388);
+            this.Controls.Add(this.panelHack);
+            this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.statusBar);
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Menu = this.mainMenu;
             this.Name = "HackerWindow";
+            this.Padding = new System.Windows.Forms.Padding(3);
             this.Text = "Process Hacker";
             this.Load += new System.EventHandler(this.HackerWindow_Load);
             this.SizeChanged += new System.EventHandler(this.HackerWindow_SizeChanged);
@@ -976,19 +1072,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusText)).EndInit();
-            this.tabControlBig.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.tabProcesses.ResumeLayout(false);
             this.tabServices.ResumeLayout(false);
             this.tabNetwork.ResumeLayout(false);
+            this.toolStrip.ResumeLayout(false);
+            this.toolStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
+            this.panelHack.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Timer timerFire;
-        private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.ContextMenu menuProcess;
         private System.Windows.Forms.MenuItem terminateMenuItem;
         private System.Windows.Forms.MenuItem suspendMenuItem;
@@ -1027,7 +1126,7 @@
         private System.Windows.Forms.StatusBarPanel statusText;
         private System.Windows.Forms.MenuItem logMenuItem;
         private System.Windows.Forms.StatusBarPanel statusGeneral;
-        private System.Windows.Forms.TabControl tabControlBig;
+        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabProcesses;
         private System.Windows.Forms.TabPage tabServices;
         private ServiceList listServices;
@@ -1097,6 +1196,15 @@
         private System.Windows.Forms.MenuItem reanalyzeProcessMenuItem;
         private System.Windows.Forms.MenuItem reduceWorkingSetProcessMenuItem;
         private System.Windows.Forms.MenuItem virtualizationProcessMenuItem;
+        private System.Windows.Forms.ToolStrip toolStrip;
+        private System.Windows.Forms.ToolStripButton refreshToolStripButton;
+        private System.Windows.Forms.ToolStripButton findHandlesToolStripButton;
+        private System.Windows.Forms.ToolStripButton sysInfoToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripDropDownButton shutDownToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton optionsToolStripButton;
+        private System.Windows.Forms.MenuItem toolbarMenuItem;
+        private System.Windows.Forms.Panel panelHack;
     }
 }
 
