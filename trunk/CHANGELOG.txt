@@ -22,6 +22,7 @@ Process Hacker
      elevation instead of giving an Access Denied error
    * Run As now works under a limited account and prompts for elevation
    * Shows environment variables
+   * Unicode string memory scanning
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
    * Replace Task Manager works correctly when Start hidden is enabled

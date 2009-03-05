@@ -50,6 +50,7 @@ namespace ProcessHacker
             hexBoxSearch.ByteProvider = new Be.Windows.Forms.DynamicByteProvider((byte[])so.Searcher.Params["text"]);
             textRegex.Text = (string)so.Searcher.Params["regex"];
             textStringMS.Text = (string)so.Searcher.Params["s_ms"];
+            checkUnicode.Checked = (bool)so.Searcher.Params["unicode"];
             textHeapMS.Text = (string)so.Searcher.Params["h_ms"];
             checkNoOverlap.Checked = (bool)so.Searcher.Params["nooverlap"];
             checkIgnoreCase.Checked = (bool)so.Searcher.Params["ignorecase"];
@@ -119,6 +120,7 @@ namespace ProcessHacker
             _so.Searcher.Params["text"] = text;
             _so.Searcher.Params["regex"] = textRegex.Text;
             _so.Searcher.Params["s_ms"] = textStringMS.Text;
+            _so.Searcher.Params["unicode"] = checkUnicode.Checked;
             _so.Searcher.Params["h_ms"] = textHeapMS.Text;
             _so.Searcher.Params["nooverlap"] = checkNoOverlap.Checked;
             _so.Searcher.Params["ignorecase"] = checkIgnoreCase.Checked;
@@ -147,6 +149,9 @@ namespace ProcessHacker
 
         private void FocusTab()
         {
+            if (tabControl.SelectedTab != tabLiteral && tabControl.SelectedTab != tabRegex)
+                this.AcceptButton = buttonOK;
+
             if (tabControl.SelectedTab == tabLiteral)
             {
                 hexBoxSearch.Select();

@@ -30,6 +30,11 @@ namespace ProcessHacker
     {
         public StringSearcher(int PID) : base(PID) { }
 
+        private bool IsChar(byte b)
+        {
+            return (b >= ' ' && b <= '~') || b == '\n' || b == '\r' || b == '\t';
+        }
+
         public override void Search()
         {
             Results.Clear();
@@ -41,6 +46,7 @@ namespace ProcessHacker
             int count = 0;
 
             int minsize = (int)BaseConverter.ToNumberParse((string)Params["s_ms"]);
+            bool unicode = (bool)Params["unicode"];
 
             bool opt_priv = (bool)Params["private"];
             bool opt_img = (bool)Params["image"];
@@ -96,26 +102,63 @@ namespace ProcessHacker
                         continue;
 
                     StringBuilder curstr = new StringBuilder();
+                    bool isUnicode = false;
+                    byte byte2 = 0;
+                    byte byte1 = 0;
                                                
                     for (int i = 0; i < bytesRead; i++)
                     {
-                        if ((data[i] >= ' ' && data[i] <= '~') || data[i] == '\n' || data[i] == '\r' ||
-                            data[i] == '\t')
+                        bool isChar = IsChar(data[i]);
+
+                        if (unicode && isChar && isUnicode && byte1 != 0)
                         {
-                            curstr.Append(UnicodeEncoding.ASCII.GetChars(data, i, 1)[0]);
+                            isUnicode = false;
+
+                            if (curstr.Length > 0)
+                                curstr.Remove(curstr.Length - 1, 1);
+
+                            curstr.Append((char)data[i]);
+                        }
+                        else if (isChar)
+                        {
+                            curstr.Append((char)data[i]);
+                        }
+                        else if (unicode && data[i] == 0 && IsChar(byte1) && !IsChar(byte2))
+                        {
+                            // skip null byte
+                            isUnicode = true;
+                        }
+                        else if (unicode &&
+                            data[i] == 0 && IsChar(byte1) && IsChar(byte2) && curstr.Length < minsize)
+                        {
+                            // ... [char] [char] *[null]* ([char] [null] [char] [null]) ...
+                            //                   ^ we are here
+                            isUnicode = true;
+                            curstr = new StringBuilder();
+                            curstr.Append((char)byte1);
                         }
                         else
                         {
                             if (curstr.Length >= minsize)
                             {
+                                int length = curstr.Length;
+
+                                if (isUnicode)
+                                    length *= 2;
+
                                 Results.Add(new string[] { String.Format("0x{0:x8}", info.BaseAddress),
-                                String.Format("0x{0:x8}", i - curstr.Length), curstr.Length.ToString(), curstr.ToString() });
+                                    String.Format("0x{0:x8}", i - length), length.ToString(), 
+                                    curstr.ToString() });
 
                                 count++;
                             }
 
+                            isUnicode = false;
                             curstr = new StringBuilder();
                         }
+
+                        byte2 = byte1;
+                        byte1 = data[i];
                     }
 
                     data = null;

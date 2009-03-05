@@ -53,6 +53,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.checkUnicode = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabLiteral.SuspendLayout();
             this.tabRegex.SuspendLayout();
@@ -167,6 +168,7 @@
             // 
             // tabString
             // 
+            this.tabString.Controls.Add(this.checkUnicode);
             this.tabString.Controls.Add(this.textStringMS);
             this.tabString.Controls.Add(this.label2);
             this.tabString.Location = new System.Drawing.Point(4, 22);
@@ -344,6 +346,16 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
+            // checkUnicode
+            // 
+            this.checkUnicode.AutoSize = true;
+            this.checkUnicode.Location = new System.Drawing.Point(8, 34);
+            this.checkUnicode.Name = "checkUnicode";
+            this.checkUnicode.Size = new System.Drawing.Size(122, 17);
+            this.checkUnicode.TabIndex = 2;
+            this.checkUnicode.Text = "Find Unicode strings";
+            this.checkUnicode.UseVisualStyleBackColor = true;
+            // 
             // SearchWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -407,5 +419,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ListBox listStructName;
+        private System.Windows.Forms.CheckBox checkUnicode;
     }
 }

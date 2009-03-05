@@ -57,8 +57,9 @@ namespace ProcessHacker
             // defaults
             _searcher.Params.Add("text", new byte[0]);
             _searcher.Params.Add("regex", "");
-            _searcher.Params.Add("s_ms", "0x10");
-            _searcher.Params.Add("h_ms", "0x400");
+            _searcher.Params.Add("s_ms", "10");
+            _searcher.Params.Add("unicode", true);
+            _searcher.Params.Add("h_ms", "1024");
             _searcher.Params.Add("nooverlap", true);
             _searcher.Params.Add("ignorecase", false);
             _searcher.Params.Add("private", true);
