@@ -151,6 +151,8 @@ namespace ProcessHacker
         {
             if (tabControl.SelectedTab != tabLiteral && tabControl.SelectedTab != tabRegex)
                 this.AcceptButton = buttonOK;
+            else
+                this.AcceptButton = null;
 
             if (tabControl.SelectedTab == tabLiteral)
             {
