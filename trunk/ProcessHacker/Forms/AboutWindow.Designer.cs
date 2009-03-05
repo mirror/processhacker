@@ -312,7 +312,7 @@
             this.buttonChangelog.Name = "buttonChangelog";
             this.buttonChangelog.Size = new System.Drawing.Size(75, 23);
             this.buttonChangelog.TabIndex = 15;
-            this.buttonChangelog.Text = "Changelog...";
+            this.buttonChangelog.Text = "Change Log...";
             this.buttonChangelog.UseVisualStyleBackColor = true;
             this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
             // 
