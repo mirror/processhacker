@@ -22,8 +22,8 @@ en.tsk_startup=Startup options:
 en.run_visitwebsite=Visit Process Hacker's Website
 en.sm_help=Help and Support
 en.sm_helpfile=Process Hacker's Help
-en.sm_changelog=Change Log
-en.sm_com_changelog=Process Hacker's Change Log
+en.sm_changelog=Changelog
+en.sm_com_changelog=Process Hacker's Changelog
 
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
