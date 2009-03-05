@@ -171,8 +171,8 @@ namespace ProcessHacker
                     (omitUserAndType ? "" :
                     ("-u \"" + comboUsername.Text + "\" -t " + comboType.SelectedItem.ToString().ToLower() + " ")) +
                     (_pid != -1 ? ("-P " + _pid.ToString() + " ") : "") + "-p \"" +
-                    Misc.EscapeString(textPassword.Text) + "\" -s " + textSessionID.Text + " -c \"" +
-                    Misc.EscapeString(textCmdLine.Text) + "\"";
+                    textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
+                    textCmdLine.Text.Replace("\"", "\\\"") + "\"";
 
                 if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
                 {
