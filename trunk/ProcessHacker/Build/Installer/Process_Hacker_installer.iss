@@ -124,6 +124,7 @@ Type: files; Name: {group}\Process Hacker on the Web.url
 Type: files; Name: {group}\Uninstall Process Hacker.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker on the Web.url
 Type: files; Name: {group}\Help and Support\Change Log.lnk
+ ; Type: files; Name: {group}\Help and Support\Changelog.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker's Help.lnk
 Type: dirifempty; Name: {group}\Help and Support
 
