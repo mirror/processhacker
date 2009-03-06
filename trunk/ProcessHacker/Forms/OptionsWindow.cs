@@ -303,7 +303,7 @@ namespace ProcessHacker
                     {
                         if (checkReplaceTaskManager.Checked)
                         {
-                            key.SetValue("Debugger", fileName);
+                            key.SetValue("Debugger", "\"" + fileName + "\"");
                         }
                         else
                         {
