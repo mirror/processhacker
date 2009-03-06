@@ -103,7 +103,7 @@ namespace ProcessHacker
                 InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt"));
 
                 box.ShowSaveButton = false;
-                box.Title = "Process Hacker Change Log";
+                box.Title = "Process Hacker Changelog";
                 box.ShowDialog();
             }
             catch (Exception ex)
