@@ -47,13 +47,13 @@ OutputDir=.
 OutputBaseFilename=processhacker-{#= app_version}-setup
 AllowNoIcons=True
 Compression=lzma/ultra64
-SolidCompression=true
+SolidCompression=True
 InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=False
 DirExistsWarning=no
-ShowTasksTreeLines=true
-AlwaysShowDirOnReadyPage=true
-AlwaysShowGroupOnReadyPage=true
+ShowTasksTreeLines=True
+AlwaysShowDirOnReadyPage=True
+AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
 PrivilegesRequired=admin
 AppMutex=Global\ProcessHackerMutex
