@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -89,7 +90,7 @@ namespace ProcessHacker
         public static void ListViewCopy(ListView lv, int subItem, RetrieveVirtualItemEventHandler retrieveVirtualItem)
         {
             List<ListViewItem> collection = new List<ListViewItem>();
-            string text = "";
+            StringBuilder text = new StringBuilder();
 
             if (lv.SelectedIndices.Count == 0)
                 return;
@@ -117,22 +118,22 @@ namespace ProcessHacker
                 {
                     for (int j = 0; j < lv.Columns.Count; j++)
                     {
-                        text += collection[i].SubItems[j].Text;
+                        text.Append(collection[i].SubItems[j].Text);
 
                         if (j != lv.Columns.Count - 1)
-                            text += ", ";
+                            text.Append(", ");
                     }
                 }
                 else
                 {
-                    text += collection[i].SubItems[subItem].Text;
+                    text.Append(collection[i].SubItems[subItem].Text);
                 }
 
                 if (i != collection.Count - 1)
-                    text += "\r\n";
+                    text.AppendLine();
             }
 
-            Clipboard.SetText(text);
+            Clipboard.SetText(text.ToString());
         }
 
         private static void ListViewMenuItem_Click(object sender, EventArgs e)
@@ -166,7 +167,7 @@ namespace ProcessHacker
         public static void TreeViewAdvCopy(TreeViewAdv tv, int columnIndex)
         {
             List<string[]> collection = new List<string[]>();
-            string text = "";
+            StringBuilder text = new StringBuilder();
 
             if (tv.SelectedNodes.Count == 0)
                 return;
@@ -194,22 +195,22 @@ namespace ProcessHacker
                 {
                     for (int j = 0; j < tv.Columns.Count; j++)
                     {
-                        text += collection[i][j];
+                        text.Append(collection[i][j]);
 
                         if (j != tv.Columns.Count - 1)
-                            text += ", ";
+                            text.Append(", ");
                     }
                 }
                 else
                 {
-                    text += collection[i][columnIndex];
+                    text.AppendLine(collection[i][columnIndex]);
                 }
 
                 if (i != collection.Count - 1)
-                    text += "\r\n";
+                    text.AppendLine();
             }
 
-            Clipboard.SetText(text);
+            Clipboard.SetText(text.ToString());
         }
 
         private static void TreeViewAdvMenuItem_Click(object sender, EventArgs e)
