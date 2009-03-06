@@ -88,12 +88,12 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Name: desktopicon\user; Description: {cm:tsk_currentuser}; GroupDescription: {cm:AdditionalIcons}; Flags: exclusive
 Name: desktopicon\common; Description: {cm:tsk_allusers}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked exclusive
 Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
-Name: startuptask; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:tsk_startup}; Check: PHStartupRegCheck(); Flags: unchecked checkablealone
-Name: startuptask\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: PHStartupRegCheck(); Flags: unchecked
-Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT PHStartupRegCheck(); Flags: unchecked
-Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: PHSettingsExistCheck(); Flags: unchecked checkablealone
-Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHRegDefaultCheck(); Flags: unchecked dontinheritcheck
-Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHRegDefaultCheck(); Flags: unchecked dontinheritcheck
+Name: startuptask; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:tsk_startup}; Check: StartupRegCheck(); Flags: unchecked checkablealone
+Name: startuptask\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupRegCheck(); Flags: unchecked
+Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupRegCheck(); Flags: unchecked
+Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
+Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
+Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Flags: unchecked dontinheritcheck
 
 [INI]
@@ -124,7 +124,7 @@ Type: files; Name: {group}\Process Hacker on the Web.url
 Type: files; Name: {group}\Uninstall Process Hacker.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker on the Web.url
 Type: files; Name: {group}\Help and Support\Change Log.lnk
- ; Type: files; Name: {group}\Help and Support\Changelog.lnk
+Type: files; Name: {group}\Help and Support\Changelog.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker's Help.lnk
 Type: dirifempty; Name: {group}\Help and Support
 
@@ -155,7 +155,6 @@ Filename: {cmd}; Parameters: "/C ""sc start KProcessHacker"""; Tasks: createKPHs
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
-Type: dirifempty; Name: {app}
 
 [UninstallRun]
 Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; Flags: runhidden
@@ -187,21 +186,22 @@ begin
 end;
 
 // Check if Process Hacker is configured to run on startup in order to control startup choice within the installer
-function PHStartupRegCheck(): Boolean;
+function StartupRegCheck(): Boolean;
 begin
 	Result := True;
 	if RegValueExists(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Process Hacker') then
 	Result := False;
 end;
 
-function PHSettingsExistCheck(): Boolean;
+function SettingsExistCheck(): Boolean;
 begin
 	Result := False;
-	if fileExists(ExpandConstant('{app}\ProcessHacker.exe.config')) or DirExists(ExpandConstant('{localappdata}\wj32\'))then
+	if DirExists(ExpandConstant('{localappdata}\wj32\')) then
 	Result := True;
 end;
 
-function PHRegDefaultCheck(): Boolean;
+// Check if Process Hacker is set as the default Task Manager for Windows
+function PHDefaultCheck(): Boolean;
 begin
 	Result := False;
 	if RegValueExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe', 'Debugger') then
