@@ -193,6 +193,7 @@ begin
 	Result := False;
 end;
 
+// Check if Process Hacker's settings exist
 function SettingsExistCheck(): Boolean;
 begin
 	Result := False;
@@ -200,6 +201,7 @@ begin
 	Result := True;
 end;
 
+// Check if Process Hacker is set as the default Task Manager for Windows
 function PHDefaultCheck(): Boolean;
 var
 	svalue: String;
