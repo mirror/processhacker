@@ -294,11 +294,14 @@ namespace ProcessHacker
                 {
                     _treeModel.Modify(oldItem, newItem);
 
-                    TreeNodeAdv node = this.FindTreeNode(newItem.PID);
-
-                    if (node != null)
+                    if (newItem.FullUpdate)
                     {
-                        node.BackColor = GetProcessColor(newItem);
+                        TreeNodeAdv node = this.FindTreeNode(newItem.PID);
+
+                        if (node != null)
+                        {
+                            node.BackColor = GetProcessColor(newItem);
+                        }
                     }
 
                     if (_treeModel.GetSortColumn() != "")

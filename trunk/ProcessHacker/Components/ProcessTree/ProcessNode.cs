@@ -136,7 +136,7 @@ namespace ProcessHacker
 
         public string PvtMemory
         {
-            get { return Misc.GetNiceSizeName(_pitem.MemoryUsage); }
+            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PrivateBytes); }
         }
 
         public string WorkingSet

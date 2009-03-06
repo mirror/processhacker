@@ -215,7 +215,8 @@ namespace ProcessHacker
                         else if (sortC == "pid")
                             return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
                         else if (sortC == "pvt. memory")
-                            return ModifySort(n1.ProcessItem.MemoryUsage.CompareTo(n2.ProcessItem.MemoryUsage), sortO);
+                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes.CompareTo(
+                                n2.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes), sortO);
                         else if (sortC == "working set")
                             return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
                                 n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);

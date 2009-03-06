@@ -39,7 +39,6 @@ namespace ProcessHacker
         public float CPUUsage;
         public string FileName;
         public FileVersionInfo VersionInfo;
-        public long MemoryUsage;
         public string Name;
         public string Username;
         public Win32.SYSTEM_PROCESS_INFORMATION Process;
@@ -51,7 +50,6 @@ namespace ProcessHacker
         public bool IsElevated;
         public bool IsInJob;
         public bool IsPacked;
-        public bool IsVirtualizationEnabled;
         public long LastTime;
         public int SessionId;
         public bool HasParent;
@@ -65,6 +63,8 @@ namespace ProcessHacker
         public int ProcessingAttempts;
 
         public Win32.ProcessHandle ProcessQueryHandle;
+
+        public bool FullUpdate;
     }
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
@@ -423,7 +423,6 @@ namespace ProcessHacker
 
                     item.PID = pid;
                     item.LastTime = processInfo.KernelTime + processInfo.UserTime;
-                    item.MemoryUsage = processInfo.VirtualMemoryCounters.PrivateBytes;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;
@@ -490,8 +489,6 @@ namespace ProcessHacker
                                         try { item.ElevationType = thandle.GetElevationType(); }
                                         catch { }
                                         try { item.IsElevated = thandle.IsElevated(); }
-                                        catch { }
-                                        try { item.IsVirtualizationEnabled = thandle.IsVirtualizationEnabled(); }
                                         catch { }
                                     }
                                 }
@@ -637,19 +634,19 @@ namespace ProcessHacker
                 else
                 {
                     ProcessItem item = Dictionary[pid];
-                    ProcessItem newitem = new ProcessItem();
+                    ProcessItem newitem = item;
 
-                    newitem = item;
                     newitem.LastTime = processInfo.KernelTime + processInfo.UserTime;
-                    newitem.MemoryUsage = processInfo.VirtualMemoryCounters.PrivateBytes;
                     newitem.Process = processInfo;
+                    newitem.FullUpdate = false;
+                    newitem.JustProcessed = false;
 
                     if (Win32.ProcessesWithThreads.ContainsKey(pid))
                         newitem.Threads = procs[pid].Threads;
 
                     try
                     {
-                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 / 
+                        newitem.CPUUsage = (float)(newitem.LastTime - item.LastTime) * 100 /
                             (sysKernelTime + sysUserTime + otherTime);
 
                         if (newitem.CPUUsage > 400.0f)
@@ -673,6 +670,7 @@ namespace ProcessHacker
                         try
                         {
                             newitem.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            newitem.FullUpdate = true;
                         }
                         catch
                         { }
@@ -688,25 +686,8 @@ namespace ProcessHacker
                         }
                     }
 
-                    //if (item.TokenQueryHandle != null)
-                    //{
-                    //    try
-                    //    {
-                    //        newitem.IsVirtualizationEnabled = item.TokenQueryHandle.IsVirtualizationEnabled();
-                    //    }
-                    //    catch
-                    //    { }
-                    //}
-
                     newdictionary[pid] = newitem;
-
-                    if (newitem.IsBeingDebugged != item.IsBeingDebugged ||
-                        newitem.JustProcessed
-                        )
-                    {
-                        newitem.JustProcessed = false;
-                        this.CallDictionaryModified(item, newitem);
-                    }
+                    this.CallDictionaryModified(item, newitem);
                 }
             }
 
