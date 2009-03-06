@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "24"
+#define installer_build_number "25"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -51,9 +51,9 @@ SolidCompression=true
 InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=False
 DirExistsWarning=no
-ShowTasksTreeLines=True
-AlwaysShowDirOnReadyPage=True
-AlwaysShowGroupOnReadyPage=True
+ShowTasksTreeLines=true
+AlwaysShowDirOnReadyPage=true
+AlwaysShowGroupOnReadyPage=true
 WizardImageStretch=False
 PrivilegesRequired=admin
 AppMutex=Global\ProcessHackerMutex
@@ -92,8 +92,8 @@ Name: startuptask; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:tsk
 Name: startuptask\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupRegCheck(); Flags: unchecked
 Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupRegCheck(); Flags: unchecked
 Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
-Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
-Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
+Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
+Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Flags: unchecked dontinheritcheck
 
 [INI]
@@ -200,12 +200,16 @@ begin
 	Result := True;
 end;
 
-// Check if Process Hacker is set as the default Task Manager for Windows
 function PHDefaultCheck(): Boolean;
+var
+	svalue: String;
 begin
-	Result := False;
-	if RegValueExists(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe', 'Debugger') then
 	Result := True;
+	if RegQueryStringValue(HKLM,
+	  'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe', 'Debugger', svalue) then begin
+		if svalue = (ExpandConstant('"{app}\ProcessHacker.exe"')) then
+		Result := False;
+	end;
 end;
 
 Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
@@ -234,11 +238,13 @@ begin
 	NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
 	if NetFrameWorkInstalled then begin
 		Result := True;
-		end else begin
+		end
+		else begin
 			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = idYes;
 			if Result1 =False then begin
 			Result:=False;
-		end else begin
+		end
+		else begin
 			Result:=False;
 		ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
 		'','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
