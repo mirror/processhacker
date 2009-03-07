@@ -517,7 +517,7 @@
             this.nodeFileName.IncrementalSearchEnabled = true;
             this.nodeFileName.LeftMargin = 3;
             this.nodeFileName.ParentColumn = this.columnFileName;
-            this.nodeFileName.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.nodeFileName.Trimming = System.Drawing.StringTrimming.EllipsisPath;
             // 
             // nodeCommandLine
             // 
