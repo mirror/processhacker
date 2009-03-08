@@ -353,6 +353,13 @@ namespace Assistant
         static extern bool CloseHandle(int Handle);
 
         [DllImport("userenv.dll", SetLastError = true)]
+        static extern bool CreateEnvironmentBlock(
+            out int Environment,
+            int TokenHandle,
+            bool Inherit
+            );
+
+        [DllImport("userenv.dll", SetLastError = true)]
         static extern bool UnloadUserProfile(
             int TokenHandle,
             int ProfileHandle
@@ -689,6 +696,7 @@ namespace Assistant
 
         static void Main()
         {
+            EnablePrivilege("SeAssignPrimaryTokenPrivilege");
             EnablePrivilege("SeBackupPrivilege");
             EnablePrivilege("SeRestorePrivilege");
 
@@ -844,8 +852,19 @@ namespace Assistant
 
             if (args.ContainsKey("-c") || args.ContainsKey("-f"))
             {
+                ProfileInformation profInfo = new ProfileInformation();
+
+                profInfo.Size = Marshal.SizeOf(profInfo);
+                profInfo.UserName = username;
+
+                LoadUserProfile(token, ref profInfo);
+                UnloadUserProfile(token, profInfo.ProfileHandle);
+
                 StartupInfo info = new StartupInfo();
                 ProcessInformation pinfo = new ProcessInformation();
+                int environment;
+
+                CreateEnvironmentBlock(out environment, token, false);
 
                 info.Size = Marshal.SizeOf(info);
                 info.Desktop = "WinSta0\\Default";
@@ -853,7 +872,7 @@ namespace Assistant
                 if (!CreateProcessAsUser(token,
                     args.ContainsKey("-f") ? args["-f"] : null,
                     args.ContainsKey("-c") ? args["-c"] : null,
-                    0, 0, false, 0, 0,
+                    0, 0, false, CreationFlags.CreateUnicodeEnvironment, environment,
                     args.ContainsKey("-d") ? args["-d"] : null,
                     ref info, ref pinfo))
                 {
