@@ -38,6 +38,7 @@ Process Hacker
    * Double-escaping in the Run As tool
    * Priority getting/setting under limited accounts
    * Run As tool sets new environment variables for the child process
+   * .NET processes are sometimes labelled as packed
 
 1.3.5.0
  * NEW:
