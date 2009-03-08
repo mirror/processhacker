@@ -53,7 +53,6 @@ namespace ProcessHacker
             if (services.Length == 1)
             {
                 this.Text = "Service - " + services[0];
-                buttonApply.Text = "&OK";
             }
             else
             {
@@ -90,6 +89,12 @@ namespace ProcessHacker
         public ListView List
         {
             get { return listServices; }
+        }
+
+        public string ApplyButtonText
+        {
+            get { return buttonApply.Text; }
+            set { buttonApply.Text = value; }
         }
 
         private void Close()

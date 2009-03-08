@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Diagnostics;
 
 namespace Assistant
 {
@@ -852,35 +853,30 @@ namespace Assistant
 
             if (args.ContainsKey("-c") || args.ContainsKey("-f"))
             {
-                ProfileInformation profInfo = new ProfileInformation();
-
-                profInfo.Size = Marshal.SizeOf(profInfo);
-                profInfo.UserName = username;
-
-                LoadUserProfile(token, ref profInfo);
-                UnloadUserProfile(token, profInfo.ProfileHandle);
-
-                StartupInfo info = new StartupInfo();
-                ProcessInformation pinfo = new ProcessInformation();
-                int environment;
-
-                CreateEnvironmentBlock(out environment, token, false);
-
-                info.Size = Marshal.SizeOf(info);
-                info.Desktop = "WinSta0\\Default";
-
-                if (!CreateProcessAsUser(token,
-                    args.ContainsKey("-f") ? args["-f"] : null,
-                    args.ContainsKey("-c") ? args["-c"] : null,
-                    0, 0, false, CreationFlags.CreateUnicodeEnvironment, environment,
-                    args.ContainsKey("-d") ? args["-d"] : null,
-                    ref info, ref pinfo))
+                if (!args.ContainsKey("-e"))
                 {
-                    Console.WriteLine("Error: Could not create process: " + GetLastErrorMessage());
-                    Exit(Marshal.GetLastWin32Error());
-                }
+                    StartupInfo info = new StartupInfo();
+                    ProcessInformation pinfo = new ProcessInformation();
+                    int environment;
 
-                CloseHandle(token);
+                    CreateEnvironmentBlock(out environment, token, false);
+
+                    info.Size = Marshal.SizeOf(info);
+                    info.Desktop = "WinSta0\\Default";
+
+                    if (!CreateProcessAsUser(token,
+                        args.ContainsKey("-f") ? args["-f"] : null,
+                        args.ContainsKey("-c") ? args["-c"] : null,
+                        0, 0, false, CreationFlags.CreateUnicodeEnvironment, environment,
+                        args.ContainsKey("-d") ? args["-d"] : null,
+                        ref info, ref pinfo))
+                    {
+                        Console.WriteLine("Error: Could not create process: " + GetLastErrorMessage());
+                        Exit(Marshal.GetLastWin32Error());
+                    }
+
+                    CloseHandle(token);
+                }
             }
 
             Exit();
