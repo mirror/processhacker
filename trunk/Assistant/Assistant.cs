@@ -34,6 +34,12 @@ namespace Assistant
 
         #region Enums & Structs
 
+        enum LogonFlags : int
+        {
+            LogonWithProfile = 1,
+            NetCredentialsOnly = 2
+        }
+
         enum LogonType : int
         {
             Interactive = 2,
@@ -254,6 +260,16 @@ namespace Assistant
             TOKEN_EXECUTE = STANDARD_RIGHTS.STANDARD_RIGHTS_EXECUTE
         }
 
+        [Flags]
+        enum SE_PRIVILEGE_ATTRIBUTES : uint
+        {
+            SE_PRIVILEGE_DISABLED = 0x00000000,
+            SE_PRIVILEGE_ENABLED_BY_DEFAULT = 0x00000001,
+            SE_PRIVILEGE_ENABLED = 0x00000002,
+            SE_PRIVILEGE_REMOVED = 0x00000004,
+            SE_PRIVILEGE_USED_FOR_ACCESS = 0x80000000
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         struct StartupInfo
         {
@@ -293,6 +309,42 @@ namespace Assistant
             public int ThreadId;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        struct ProfileInformation
+        {
+            public int Size;
+            public int Flags;
+            public string UserName;
+            public string ProfilePath;
+            public string DefaultPath;
+            public string ServerName;
+            public string PolicyPath;
+            public int ProfileHandle;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct LUID
+        {
+            public int LowPart;
+            public int HighPart;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct LUID_AND_ATTRIBUTES
+        {
+            public LUID Luid;
+            public SE_PRIVILEGE_ATTRIBUTES Attributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct TOKEN_PRIVILEGES
+        {
+            public uint PrivilegeCount;
+
+            [MarshalAs(UnmanagedType.ByValArray)]
+            public LUID_AND_ATTRIBUTES[] Privileges;
+        }
+
         #endregion
 
         #region Imports
@@ -300,8 +352,20 @@ namespace Assistant
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         static extern bool CloseHandle(int Handle);
 
+        [DllImport("userenv.dll", SetLastError = true)]
+        static extern bool UnloadUserProfile(
+            int TokenHandle,
+            int ProfileHandle
+            );
+
+        [DllImport("userenv.dll", SetLastError = true)]
+        static extern bool LoadUserProfile(
+            int TokenHandle,
+            ref ProfileInformation ProfileInfo
+            );
+
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool OpenProcessToken(int ProcessHandle, TokenRights DesiredAccess,
+        static extern bool OpenProcessToken(int ProcessHandle, TokenRights DesiredAccess,
             out int TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
@@ -348,6 +412,19 @@ namespace Assistant
             [MarshalAs(UnmanagedType.LPWStr)] string CurrentDirectory,
             [MarshalAs(UnmanagedType.Struct)] ref StartupInfo StartupInfo,
             [MarshalAs(UnmanagedType.Struct)] ref ProcessInformation ProcessInformation
+            );
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool CreateProcessWithTokenW(
+            int TokenHandle,
+            LogonFlags Flags,
+            string ApplicationName,
+            string CommandLine,
+            CreationFlags CreationFlags,
+            int Environment,
+            string CurrentDirectory,
+            ref StartupInfo StartupInfo,
+            ref ProcessInformation ProcessInfo
             );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -413,6 +490,14 @@ namespace Assistant
             int Dacl,      
             [MarshalAs(UnmanagedType.Bool)] bool DaclDefaulted
             );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern bool LookupPrivilegeValue(string SystemName, string PrivilegeName, ref LUID Luid);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool AdjustTokenPrivileges(int TokenHandle, int DisableAllPrivileges,
+            ref TOKEN_PRIVILEGES NewState, int BufferLength,
+            int PreviousState, int ReturnLength);
 
         #endregion
 
@@ -569,8 +654,44 @@ namespace Assistant
 
         static Dictionary<string, string> args;
 
+        static void EnablePrivilege(string name)
+        {
+            try
+            {
+                int token;
+
+                if (OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32(),
+                    TokenRights.TOKEN_ALL_ACCESS, out token))
+                {
+                    try
+                    {
+                        TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
+
+                        tkp.Privileges = new LUID_AND_ATTRIBUTES[1];
+
+                        if (!LookupPrivilegeValue(null, name, ref tkp.Privileges[0].Luid))
+                            return;
+
+                        tkp.PrivilegeCount = 1;
+                        tkp.Privileges[0].Attributes = SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED;
+
+                        AdjustTokenPrivileges(token, 0, ref tkp, 0, 0, 0);
+                    }
+                    finally
+                    {
+                        CloseHandle(token);
+                    }
+                }
+            }
+            catch
+            { }
+        }
+
         static void Main()
         {
+            EnablePrivilege("SeBackupPrivilege");
+            EnablePrivilege("SeRestorePrivilege");
+
             try
             {
                 args = ParseArgs(Environment.GetCommandLineArgs());
@@ -620,12 +741,12 @@ namespace Assistant
             }
 
             int token = 0;
+            string domain = null;
+            string username = "";
 
             if (args.ContainsKey("-u"))
             {
                 string user = args["-u"];
-                string domain = null;
-                string username = "";
 
                 if (user.Contains("\\"))
                 {
@@ -656,7 +777,7 @@ namespace Assistant
                         Exit(-1);
                     }
                 }
-                
+
                 if (!LogonUser(username, domain, args.ContainsKey("-p") ? args["-p"] : "", type,
                     LogonProvider.Default, out token))
                 {
