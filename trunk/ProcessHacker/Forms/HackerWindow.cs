@@ -737,7 +737,16 @@ namespace ProcessHacker
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to terminate the selected process(es)?", 
+            string name = "the selected process(es)";
+
+            if (treeProcesses.SelectedTreeNodes.Count == 0)
+                return;
+            else if (treeProcesses.SelectedTreeNodes.Count == 1)
+                name = treeProcesses.SelectedNodes[0].Name;
+            else
+                name = "the selected processes";
+
+            if (MessageBox.Show("Are you sure you want to terminate " + name + "?", 
                 "Process Hacker", MessageBoxButtons.YesNo, 
                 MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
@@ -820,7 +829,7 @@ namespace ProcessHacker
             {
                 if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
                 {
-                    DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
+                    DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
                         " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
                         MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
@@ -838,8 +847,8 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not suspend process \"" + node.Name +
-                        "\" with PID " + node.PID.ToString() + ":\n\n" +
+                    DialogResult result = MessageBox.Show("Could not suspend process " + node.Name +
+                        " (PID " + node.PID.ToString() + "):\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
@@ -880,7 +889,7 @@ namespace ProcessHacker
             {
                 if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
                 {
-                    DialogResult result = MessageBox.Show("The process with PID " + node.PID.ToString() + " is a system process. Are you" +
+                    DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
                         " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
                         MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
@@ -898,8 +907,8 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    DialogResult result = MessageBox.Show("Could not resume process \"" + node.Name +
-                        "\" with PID " + node.PID.ToString() + ":\n\n" +
+                    DialogResult result = MessageBox.Show("Could not resume process " + node.Name +
+                        " (PID " + node.PID.ToString() + "):\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)

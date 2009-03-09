@@ -189,6 +189,7 @@ namespace ProcessHacker
                 this.Cursor = Cursors.WaitCursor;
 
                 buttonFind.Image = global::ProcessHacker.Properties.Resources.cross;
+                toolTip.SetToolTip(buttonFind, "Cancel");
                 buttonEdit.Enabled = false;
                 buttonFilter.Enabled = false;
                 buttonIntersect.Enabled = false;
@@ -238,6 +239,7 @@ namespace ProcessHacker
                 labelText.Text = String.Format("{0} results.", listResults.Items.Count);
 
                 buttonFind.Image = global::ProcessHacker.Properties.Resources.arrow_refresh;
+                toolTip.SetToolTip(buttonFind, "Search");
                 this.Cursor = Cursors.Default;
                 buttonEdit.Enabled = true;
                 buttonFilter.Enabled = true;
