@@ -24,6 +24,7 @@ Process Hacker
    * Run As now works under a limited account and prompts for elevation
    * Shows environment variables
    * Unicode string memory scanning
+   * Better Terminate Process confirmation dialog
  * FIXED:
    * #2602541 - "Bug with 'Hide When Minimized' enabled -svn635"
    * Replace Task Manager works correctly when Start hidden is enabled
