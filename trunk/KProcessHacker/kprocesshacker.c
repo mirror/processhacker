@@ -402,12 +402,13 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 
                 status = ObReferenceObjectByHandle(dupHandle, 0x80000000, 
                     *IoFileObjectType, KernelMode, &object, 0);
-                ZwClose(dupHandle);
                 
                 if (!NT_SUCCESS(status))
                 {
                     goto IoControlEnd;
                 }
+                
+                ZwClose(dupHandle);
                 
                 if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
                 {

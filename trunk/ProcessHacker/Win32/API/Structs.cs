@@ -455,17 +455,17 @@ namespace ProcessHacker
         public struct OBJECT_TYPE_INFORMATION
         {
             public UNICODE_STRING Name;
-            public uint ObjectCount;
             public uint HandleCount;
+            public uint ObjectCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public uint[] Reserved1;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            public byte[] Reserved1;
 
-            public uint PeakObjectCount;
             public uint PeakHandleCount;
+            public uint PeakObjectCount;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public uint[] Reserved2;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+            public byte[] Reserved2;
 
             public STANDARD_RIGHTS InvalidAttributes;
             public GENERIC_MAPPING GenericMapping;
