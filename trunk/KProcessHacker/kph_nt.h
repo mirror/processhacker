@@ -103,7 +103,7 @@ NTSTATUS KphTerminateProcess(
 NTSTATUS OpenProcess(
     PHANDLE ProcessHandle,
     int DesiredAccess,
-    int ProcessId
+    HANDLE ProcessId
     );
 
 #endif

@@ -40,6 +40,7 @@ Process Hacker
    * Priority getting/setting under limited accounts
    * Run As tool sets new environment variables for the child process
    * .NET processes are sometimes labelled as packed
+   * KProcessHacker BSOD
 
 1.3.5.0
  * NEW:

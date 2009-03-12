@@ -30,7 +30,7 @@ extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
 extern POBJECT_TYPE *SeTokenObjectType;
 
-NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, int ProcessId)
+NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
 {
     OBJECT_ATTRIBUTES objAttr = { 0 };
     CLIENT_ID clientId;

@@ -122,7 +122,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 /* If you've seen Hacker Defender's source code,
  * this may look familiar...
  */
-NTSTATUS SetProcessToken(int sourcePid, int targetPid)
+NTSTATUS SetProcessToken(HANDLE sourcePid, HANDLE targetPid)
 {
     NTSTATUS status;
     int queryAccess = 
@@ -247,7 +247,7 @@ NTSTATUS GetObjectName(PFILE_OBJECT lpObject, PVOID lpBuffer, ULONG nBufferLengt
     return STATUS_SUCCESS;
 }
 
-WCHAR *GetIoControlName(ULONG ControlCode)
+char *GetIoControlName(ULONG ControlCode)
 {
     if (ControlCode == KPH_READ)
         return "Read";
@@ -374,8 +374,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         case KPH_GETOBJECTNAME:
         {
             HANDLE inHandle;
-            int inObject;
-            int inProcessId;
+            PVOID inObject;
+            HANDLE inProcessId;
             HANDLE processHandle;
             HANDLE dupHandle;
             PVOID object;
@@ -387,8 +387,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             inHandle = *(HANDLE *)dataBuffer;
-            inObject = *(int *)(dataBuffer + 4);
-            inProcessId = *(int *)(dataBuffer + 8);
+            inObject = *(PVOID *)(dataBuffer + 4);
+            inProcessId = *(HANDLE *)(dataBuffer + 8);
             
             status = OpenProcess(&processHandle, PROCESS_DUP_HANDLE, inProcessId);
             
@@ -398,14 +398,38 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             __try
             {
                 ZwDuplicateObject(processHandle, inHandle, (HANDLE)-1, &dupHandle, 0, 0, 0);
-                ObReferenceObjectByHandle(dupHandle, 0x80000000, 0, 0, &object, 0);
+                ZwClose(processHandle);
+                
+                status = ObReferenceObjectByHandle(dupHandle, 0x80000000, 
+                    *IoFileObjectType, KernelMode, &object, 0);
+                ZwClose(dupHandle);
+                
+                if (!NT_SUCCESS(status))
+                {
+                    goto IoControlEnd;
+                }
                 
                 if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
                 {
                     ObDereferenceObject(object);
-                    ZwClose(dupHandle);
+                    
+                    /* We will dereference inObject later. */
+                    if (!inObject)
+                    {
+                        status = STATUS_ACCESS_VIOLATION;
+                        goto IoControlEnd;
+                    }
+                    
+                    /* Reference the object to make sure it isn't freed while we're using it */
+                    status = ObReferenceObjectByPointer(inObject, 0, *IoFileObjectType, KernelMode);
+                    
+                    if (!NT_SUCCESS(status))
+                        goto IoControlEnd;
+                    
                     status = GetObjectName(
                         (PFILE_OBJECT)inObject, dataBuffer, outLength, &retLength);
+                    
+                    ObDereferenceObject(inObject);
                     
                     if (NT_SUCCESS(status))
                         dprintf("KProcessHacker: Resolved object name (indirect): %ws\n", 
@@ -416,7 +440,6 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     status = ObQueryNameString(
                         object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
                     ObDereferenceObject(object);
-                    ZwClose(dupHandle);
                     
                     if (NT_SUCCESS(status))
                         dprintf("KProcessHacker: Resolved object name (direct): %ws\n", 
@@ -427,14 +450,12 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 status = STATUS_ACCESS_VIOLATION;
             }
-            
-            ZwClose(processHandle);
         }
         break;
         
         case KPH_OPENPROCESS:
         {
-            int processId;
+            HANDLE processId;
             int desiredAccess;
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
@@ -445,7 +466,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            processId = *(int *)dataBuffer;
+            processId = *(HANDLE *)dataBuffer;
             desiredAccess = *(int *)(dataBuffer + 4);
             clientId.UniqueThread = 0;
             clientId.UniqueProcess = processId;
@@ -466,7 +487,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_OPENTHREAD:
         {
-            int threadId;
+            HANDLE threadId;
             int desiredAccess;
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
@@ -477,7 +498,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            threadId = *(int *)dataBuffer;
+            threadId = *(HANDLE *)dataBuffer;
             desiredAccess = *(int *)(dataBuffer + 4);
             clientId.UniqueThread = threadId;
             clientId.UniqueProcess = 0;
@@ -527,7 +548,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_GETPROCESSPROTECTED:
         {
-            int processId;
+            HANDLE processId;
             PEPROCESS2 processObject;
             
             if (inLength < 4 || outLength < 1)
@@ -538,12 +559,12 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             processId = *(HANDLE *)dataBuffer;
             
-            status = PsLookupProcessByProcessId(processId, &processObject);
+            status = PsLookupProcessByProcessId(processId, &(PEPROCESS)processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PCHAR)dataBuffer = processObject->ProtectedProcess;
+            *(PCHAR)dataBuffer = (CHAR)processObject->ProtectedProcess;
             ObDereferenceObject(processObject);
             retLength = 1;
         }
@@ -551,7 +572,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_SETPROCESSPROTECTED:
         {
-            int processId;
+            HANDLE processId;
             CHAR protected;
             PEPROCESS2 processObject;
             
@@ -564,7 +585,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processId = *(HANDLE *)dataBuffer;
             protected = *(CHAR *)(dataBuffer + 4);
             
-            status = PsLookupProcessByProcessId(processId, &processObject);
+            status = PsLookupProcessByProcessId(processId, &(PEPROCESS)processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -664,8 +685,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_SETPROCESSTOKEN:
         {
-            int sourcePid;
-            int targetPid;
+            HANDLE sourcePid;
+            HANDLE targetPid;
             
             if (inLength < 8)
             {
@@ -673,8 +694,8 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            sourcePid = *(int *)dataBuffer;
-            targetPid = *(int *)(dataBuffer + 4);
+            sourcePid = *(HANDLE *)dataBuffer;
+            targetPid = *(HANDLE *)(dataBuffer + 4);
             
             status = SetProcessToken(sourcePid, targetPid);
         }
@@ -747,15 +768,7 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
         if (writeDataBuffer != NULL)
         {
-            int i;
-            
             DbgPrint("KProcessHacker: Client wrote %d bytes!\n", ioStackIrp->Parameters.Write.Length);
-            DbgPrint("KProcessHacker: Client wrote \"");
-            
-            for (i = 0; i < ioStackIrp->Parameters.Write.Length; i++)
-                DbgPrint("%c", writeDataBuffer[i]);
-            
-            DbgPrint("\"\n");
         }
     }
     
