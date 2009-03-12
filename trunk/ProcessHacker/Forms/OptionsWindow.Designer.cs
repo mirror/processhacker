@@ -520,9 +520,19 @@
             0,
             0,
             0});
+            this.textHighlightingDuration.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.textHighlightingDuration.Name = "textHighlightingDuration";
             this.textHighlightingDuration.Size = new System.Drawing.Size(66, 20);
             this.textHighlightingDuration.TabIndex = 5;
+            this.textHighlightingDuration.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // label7
             // 
