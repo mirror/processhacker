@@ -51,6 +51,8 @@ namespace ProcessHacker
                 {
                     using (StreamWriter sw = new StreamWriter(fi.FullName))
                     {
+                        Program.HackerWindow.ProcessTree.Tree.ExpandAll();
+
                         if (ext == ".htm" || ext == ".html")
                         {
 

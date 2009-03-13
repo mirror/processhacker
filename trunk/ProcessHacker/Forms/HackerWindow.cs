@@ -324,7 +324,6 @@ namespace ProcessHacker
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
-            timerFire.Interval = Properties.Settings.Default.RefreshInterval;
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -1276,7 +1275,7 @@ namespace ProcessHacker
                 }));
         }
 
-        private void processP_IconUpdater()
+        private void processP_InfoUpdater()
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
@@ -1286,6 +1285,18 @@ namespace ProcessHacker
                     Win32.DestroyIcon(notifyIcon.Icon.Handle);
 
                 notifyIcon.Icon = cpuUsageIcon.GetIcon();
+                
+                UpdateStatusInfo();
+
+                notifyIcon.Text = "Process Hacker\n" +
+                    "CPU Usage: " + (processP.CurrentCPUUsage * 100).ToString("F2") + "%";
+
+                if (processP.Dictionary.ContainsKey(processP.PIDWithMostCPUUsage))
+                    if (processP.Dictionary[processP.PIDWithMostCPUUsage].Name != null)
+                        if (notifyIcon.Text.Length +
+                            processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 62)
+                            notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
+                                ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
             }));
         }
 
@@ -1751,21 +1762,6 @@ namespace ProcessHacker
         #endregion
 
         #region Timers
-
-        private void timerFire_Tick(object sender, EventArgs e)
-        {
-            UpdateStatusInfo();
-             
-            notifyIcon.Text = "Process Hacker\n" + 
-                "CPU Usage: " + (processP.CurrentCPUUsage * 100).ToString("F2") + "%";
-
-            if (processP.Dictionary.ContainsKey(processP.PIDWithMostCPUUsage))
-                if (processP.Dictionary[processP.PIDWithMostCPUUsage].Name != null)
-                    if (notifyIcon.Text.Length + 
-                        processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 62)
-                        notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
-                            ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
-        }
 
         private void timerMessages_Tick(object sender, EventArgs e)
         {
@@ -2284,9 +2280,6 @@ namespace ProcessHacker
         private void LoadControls()
         {
             cpuUsageIcon = new UsageIcon(16, 16);
-            timerFire.Interval = Properties.Settings.Default.RefreshInterval;
-            timerFire.Enabled = true;
-            timerFire_Tick(null, null);
 
             listControls.Add(treeProcesses.Tree);
             listControls.Add(listServices);
@@ -2304,7 +2297,7 @@ namespace ProcessHacker
             this.Cursor = Cursors.WaitCursor;
             processP.RunOnceAsync();
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
-            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_IconUpdater);
+            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_InfoUpdater);
             processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;
 
@@ -2416,7 +2409,6 @@ namespace ProcessHacker
                 processP.Interval = Properties.Settings.Default.RefreshInterval;
                 serviceP.Interval = Properties.Settings.Default.RefreshInterval;
                 networkP.Interval = Properties.Settings.Default.RefreshInterval;
-                timerFire.Interval = Properties.Settings.Default.RefreshInterval;
             }
         }
 

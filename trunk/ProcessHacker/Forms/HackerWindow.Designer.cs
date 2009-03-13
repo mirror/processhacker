@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HackerWindow));
-            this.timerFire = new System.Windows.Forms.Timer(this.components);
             this.menuProcess = new System.Windows.Forms.ContextMenu();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
@@ -162,11 +161,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.panelHack.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // timerFire
-            // 
-            this.timerFire.Interval = 250;
-            this.timerFire.Tick += new System.EventHandler(this.timerFire_Tick);
             // 
             // menuProcess
             // 
@@ -1097,7 +1091,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Timer timerFire;
         private System.Windows.Forms.ContextMenu menuProcess;
         private System.Windows.Forms.MenuItem terminateMenuItem;
         private System.Windows.Forms.MenuItem suspendMenuItem;
