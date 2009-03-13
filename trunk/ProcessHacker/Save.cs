@@ -111,8 +111,10 @@ namespace ProcessHacker
                             continue;
 
                         string text = (control as BaseTextControl).GetLabel(node);
+                        int columnIndex = columnIndexMap[control.ParentColumn];
 
-                        str[i + 1][columnIndexMap[control.ParentColumn]] = (text == null ? "" : text);
+                        str[i + 1][columnIndex] = (columnIndex == 0 ? (new string(' ', (node.Level - 1) * 2)) : "") + 
+                            (text == null ? "" : text);
                     }
 
                     i++;
