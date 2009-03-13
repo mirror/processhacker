@@ -100,10 +100,7 @@ namespace ProcessHacker
         {
             if (checkAutoscroll.Checked)
             {
-                if (!listLog.Focused)
-                    listLog.SelectedIndices.Clear();
-
-                if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
+                if (!listLog.Focused && listLog.VirtualListSize > 0)
                     listLog.EnsureVisible(listLog.VirtualListSize - 1);
             }
         }
