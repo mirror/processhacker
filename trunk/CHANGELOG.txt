@@ -13,6 +13,7 @@ Process Hacker
    * #2647435 - "Add descriptions to Memory search results window"
    * #2657138 - "Add a toolbar"
    * #2657143 - "Add Changelog in Help menu"
+   * #2675859 - "Log: auto-scroll option"
    * Modules tab shows mapped files
    * "Reduce Working Set" function
    * Can change virtualization for processes

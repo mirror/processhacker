@@ -37,6 +37,7 @@
             this.buttonCopy = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
             this.buttonClear = new System.Windows.Forms.Button();
+            this.checkAutoscroll = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // listLog
@@ -123,11 +124,26 @@
             this.buttonClear.UseVisualStyleBackColor = true;
             this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
             // 
+            // checkAutoscroll
+            // 
+            this.checkAutoscroll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkAutoscroll.AutoSize = true;
+            this.checkAutoscroll.Checked = true;
+            this.checkAutoscroll.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkAutoscroll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkAutoscroll.Location = new System.Drawing.Point(93, 440);
+            this.checkAutoscroll.Name = "checkAutoscroll";
+            this.checkAutoscroll.Size = new System.Drawing.Size(81, 18);
+            this.checkAutoscroll.TabIndex = 5;
+            this.checkAutoscroll.Text = "Auto-scroll";
+            this.checkAutoscroll.UseVisualStyleBackColor = true;
+            // 
             // LogWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(579, 472);
+            this.Controls.Add(this.checkAutoscroll);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonCopy);
@@ -139,6 +155,7 @@
             this.Text = "Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LogWindow_FormClosing);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -152,5 +169,6 @@
         private System.Windows.Forms.Button buttonCopy;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Button buttonClear;
+        private System.Windows.Forms.CheckBox checkAutoscroll;
     }
 }

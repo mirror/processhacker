@@ -98,8 +98,14 @@ namespace ProcessHacker
 
         private void timerScroll_Tick(object sender, EventArgs e)
         {
-            if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
-                listLog.EnsureVisible(listLog.VirtualListSize - 1);
+            if (checkAutoscroll.Checked)
+            {
+                if (!listLog.Focused)
+                    listLog.SelectedIndices.Clear();
+
+                if (listLog.SelectedIndices.Count == 0 && listLog.VirtualListSize > 0)
+                    listLog.EnsureVisible(listLog.VirtualListSize - 1);
+            }
         }
 
         private void buttonCopy_Click(object sender, EventArgs e)
