@@ -41,6 +41,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listServices.ListViewItemSorter = new SortedListComparer(listServices);
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
@@ -197,6 +198,8 @@ namespace ProcessHacker
                 litem.SubItems[4].Text = newItem.Config.StartType.ToString();
                 litem.SubItems[5].Text = newItem.Status.ServiceStatusProcess.ProcessID == 0 ? "" :
                     newItem.Status.ServiceStatusProcess.ProcessID.ToString();
+
+                listServices.Sort();
             }
         }
 

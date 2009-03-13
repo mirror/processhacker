@@ -33,7 +33,6 @@ GUIDE TO DIRECTORY ORGANIZATION
     third-party user controls like HexBox and VistaMenu.
   * Forms - contains all of the forms (windows) in Process Hacker.
   * Icons - contains *.ico files.
-  * Misc - contains useful code too small to be in other directories.
   * PE - contains the PE reader for reading imports and exports from 
     PE files (exe, dll, ocx, sys, etc.)
   * Properties - whatever Visual C# put in there.
