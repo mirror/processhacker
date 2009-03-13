@@ -1,10 +1,10 @@
 [CustomMessages]
 ;sm=Start Menu, tsk=Task, com=Comment, msg=Message
 ;English
-en.msg_SetupIsRunningWarningInstall=Process Hacker's setup is already running!
-en.msg_SetupIsRunningWarningUninstall=Process Hacker's setup is already running!
-en.msg_asknetdown=Process Hacker requires the .NET Framework 2. Please download and install the .NET Framework and run this setup again. Do you want to download the .NET Framework now?
-en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? If you plan on reinstalling Process Hacker you don't have to delete them.
+en.msg_SetupIsRunningWarningInstall=Process Hacker Setup is already running!
+en.msg_SetupIsRunningWarningUninstall=Process Hacker Setup is already running!
+en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again. Do you want to download the .NET Framework now?
+en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? If you plan on reinstalling Process Hacker you do not have to delete them.
 en.msg_createkprocesshacker=Creating KProcessHacker service
 en.msg_stopkprocesshacker=Stopping KProcessHacker service
 en.msg_startkprocesshacker=Starting KProcessHacker service
