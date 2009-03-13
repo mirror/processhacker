@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.5.5
  * NEW:
+   * #2596473 - "Add "Save Processes""
    * #2596481 - "Add option for one instance of Process Hacker"
    * #2605155 - "CSR Processes: Add Save Processes"
    * #2625192 - "Log: Add clear log"

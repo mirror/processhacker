@@ -72,7 +72,7 @@ namespace ProcessHacker
             SaveFileDialog sfd = new SaveFileDialog();
 
             sfd.FileName = DefaultFileName;
-            sfd.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
 
             if (sfd.ShowDialog() == DialogResult.OK)
                 System.IO.File.WriteAllText(sfd.FileName, textValues.Text);

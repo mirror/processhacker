@@ -440,6 +440,11 @@ namespace ProcessHacker
             }
         }
 
+        private void saveMenuItem_Click(object sender, EventArgs e)
+        {
+            Save.SaveToFile();
+        }
+
         #endregion
 
         #region Notification Icon & Menu
