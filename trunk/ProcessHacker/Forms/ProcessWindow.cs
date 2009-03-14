@@ -466,6 +466,7 @@ namespace ProcessHacker
             _serviceProps.PID = _pid;
             tabServices.Controls.Add(_serviceProps);
 
+            listEnvironment.ListViewItemSorter = new SortedListComparer(listEnvironment);
             Misc.SetDoubleBuffered(listEnvironment, typeof(ListView), true);
             Win32.SetWindowTheme(listEnvironment.Handle, "explorer", null);
             listEnvironment.ContextMenu = GenericViewMenu.GetMenu(listEnvironment);
@@ -500,7 +501,7 @@ namespace ProcessHacker
             _memoryP.Updated += new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
             //_memoryP.RunOnceAsync();
             listMemory.Provider = _memoryP;
-            _memoryP.Enabled = true;
+            //_memoryP.Enabled = true;
 
             listHandles.BeginUpdate();
             listHandles.Highlight = false;
@@ -510,7 +511,7 @@ namespace ProcessHacker
             _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
             //_handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
-            _handleP.Enabled = true;
+            //_handleP.Enabled = true;
 
             Win32.SetWindowTheme(listThreads.List.Handle, "explorer", null);
             Win32.SetWindowTheme(listModules.List.Handle, "explorer", null);

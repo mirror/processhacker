@@ -44,6 +44,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listPrivileges, typeof(ListView), true);
 
+            listPrivileges.ListViewItemSorter = new SortedListComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
 

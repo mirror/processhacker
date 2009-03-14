@@ -39,6 +39,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listThreads.ListViewItemSorter = new SortedListComparer(listThreads);
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);
             listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
@@ -247,6 +248,7 @@ namespace ProcessHacker
                 litem.SubItems[3].Text = newItem.Priority;
 
                 (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
+                listThreads.Sort();
             }
         }
 

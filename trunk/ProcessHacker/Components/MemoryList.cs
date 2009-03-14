@@ -47,7 +47,20 @@ namespace ProcessHacker
             listMemory.ContextMenu = menuMemory;
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
 
-            listMemory.ListViewItemSorter = new MemoryListComparer();
+            listMemory.ListViewItemSorter = new SortedListComparer(listMemory)
+                {
+                    SortColumn = 1,
+                    SortOrder = SortOrder.Ascending
+                };
+
+            (listMemory.ListViewItemSorter as SortedListComparer).CustomSorters.Add(2,
+                (x, y) =>
+                {
+                    MemoryItem ix = (MemoryItem)x.Tag;
+                    MemoryItem iy = (MemoryItem)y.Tag;
+
+                    return ix.Size.CompareTo(iy.Size);
+                });
         }
 
         private void listMemory_MouseUp(object sender, MouseEventArgs e)
@@ -271,6 +284,9 @@ namespace ProcessHacker
                 litem.SubItems[1].Text = "0x" + newItem.Address.ToString("x8");
                 litem.SubItems[2].Text = Misc.GetNiceSizeName(newItem.Size);
                 litem.SubItems[3].Text = GetProtectStr(newItem.Protection);
+                litem.Tag = newItem;
+
+                listMemory.Sort();
             }
         }
 
@@ -488,19 +504,6 @@ namespace ProcessHacker
                     MessageBox.Show(ex.Message, "Message Box", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }
-    }
-
-    public class MemoryListComparer : System.Collections.IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            ListViewItem lx = x as ListViewItem;
-            ListViewItem ly = y as ListViewItem;
-            MemoryItem mx = (MemoryItem)lx.Tag;
-            MemoryItem my = (MemoryItem)ly.Tag;
-
-            return mx.Address.CompareTo(my.Address);
         }
     }
 }

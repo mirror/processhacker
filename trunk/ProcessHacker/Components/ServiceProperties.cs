@@ -46,6 +46,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listServices.ListViewItemSorter = new SortedListComparer(listServices);
+            Win32.SetWindowTheme(listServices.Handle, "explorer", null);
+
             PID = -1;
 
             _provider = Program.HackerWindow.ServiceProvider;

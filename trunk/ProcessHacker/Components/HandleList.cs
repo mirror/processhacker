@@ -40,6 +40,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listHandles.ListViewItemSorter = new SortedListComparer(listHandles);
             listHandles.KeyDown += new KeyEventHandler(HandleList_KeyDown);
             listHandles.MouseDown += new MouseEventHandler(listHandles_MouseDown);
             listHandles.MouseUp += new MouseEventHandler(listHandles_MouseUp);

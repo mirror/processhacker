@@ -41,6 +41,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listNetwork.ListViewItemSorter = new SortedListComparer(listNetwork);
             listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
             listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
             listNetwork.MouseUp += new MouseEventHandler(listNetwork_MouseUp);
@@ -231,6 +232,7 @@ namespace ProcessHacker
                 }
 
                 litem.SubItems[3].Text = newItem.State != 0 ? newItem.State.ToString() : "";
+                listNetwork.Sort();
             }
         }
 

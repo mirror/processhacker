@@ -22,14 +22,20 @@
 
 using System;
 using System.Windows.Forms;
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace ProcessHacker
 {
-    public class SortedListComparer : System.Collections.IComparer
+    public class SortedListComparer : IComparer
     {
         private ListView _list;
+        private bool _triState;
+        private IComparer _triStateComparer;
         private int _sortColumn;
         private SortOrder _sortOrder;
+        private Dictionary<int, Comparison<ListViewItem>> _customSorters = new Dictionary<int, Comparison<ListViewItem>>();
 
         public SortedListComparer(ListView list)
         {
@@ -39,11 +45,52 @@ namespace ProcessHacker
             _sortOrder = SortOrder.Ascending;
         }
 
+        public bool TriState
+        {
+            get { return _triState; }
+            set { _triState = value; }
+        }
+
+        public IComparer TriStateComparer
+        {
+            get { return _triStateComparer; }
+            set { _triStateComparer = value; }
+        }
+
+        public int SortColumn
+        {
+            get { return _sortColumn; }
+            set { _sortColumn = value; }
+        }
+
+        public SortOrder SortOrder
+        {
+            get { return _sortOrder; }
+            set { _sortOrder = value; }
+        }
+
+        public IDictionary<int, Comparison<ListViewItem>> CustomSorters
+        {
+            get { return _customSorters; }
+        }
+
         private void list_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             if (e.Column == _sortColumn)
             {
-                _sortOrder = _sortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+                if (_triState)
+                {
+                    if (_sortOrder == SortOrder.Ascending)
+                        _sortOrder = SortOrder.Descending;
+                    else if (_sortOrder == SortOrder.Descending)
+                        _sortOrder = SortOrder.None;
+                    else
+                        _sortOrder = SortOrder.Ascending;
+                }
+                else
+                {
+                    _sortOrder = _sortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending;
+                }
             }
             else
             {
@@ -66,13 +113,28 @@ namespace ProcessHacker
 
         public int Compare(object x, object y)
         {
+            if (_triState && _sortOrder == SortOrder.None)
+                return _triStateComparer.Compare(x, y);
+
             ListViewItem lx = x as ListViewItem;
             ListViewItem ly = y as ListViewItem;
+
+            if (_customSorters.ContainsKey(_sortColumn))
+                return ModifySort(_customSorters[_sortColumn](lx, ly), _sortOrder);
+
+            string sx, sy;
             int ix, iy;
             IComparable cx, cy;
 
-            if (!int.TryParse(lx.SubItems[_sortColumn].Text, out ix) ||
-                !int.TryParse(ly.SubItems[_sortColumn].Text, out iy))
+            sx = lx.SubItems[_sortColumn].Text;
+            sy = ly.SubItems[_sortColumn].Text;
+
+            if (!int.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx, 
+                sx.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0, 
+                null, out ix) ||
+                !int.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy, 
+                sy.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0, 
+                null, out iy))
             {
                 cx = lx.SubItems[_sortColumn].Text;
                 cy = ly.SubItems[_sortColumn].Text;

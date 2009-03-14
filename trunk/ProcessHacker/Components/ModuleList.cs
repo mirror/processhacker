@@ -34,7 +34,6 @@ namespace ProcessHacker
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
-        public event EventHandler SelectedIndexChanged;
 
         public ModuleList()
         {
@@ -44,7 +43,6 @@ namespace ProcessHacker
             listModules.MouseDown += new MouseEventHandler(listModules_MouseDown);
             listModules.MouseUp += new MouseEventHandler(listModules_MouseUp);
             listModules.DoubleClick += new EventHandler(listModules_DoubleClick);
-            listModules.SelectedIndexChanged += new System.EventHandler(listModules_SelectedIndexChanged);
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ModuleListViewColumns, listModules);
             listModules.ContextMenu = menuModule;
@@ -67,11 +65,6 @@ namespace ProcessHacker
         {
             if (this.MouseDown != null)
                 this.MouseDown(sender, e);
-        }
-
-        private void listModules_SelectedIndexChanged(object sender, System.EventArgs e)
-        {
-
         }
 
         private void ModuleList_KeyDown(object sender, KeyEventArgs e)
@@ -169,7 +162,22 @@ namespace ProcessHacker
                         }
 
                         _mainModule = _mainModule.ToLower();
-                        listModules.ListViewItemSorter = new ModuleListComparer(_mainModule);
+                        listModules.ListViewItemSorter = new SortedListComparer(listModules)
+                            {
+                                TriState = true,
+                                TriStateComparer = new ModuleListComparer(_mainModule),
+                                SortColumn = 0,
+                                SortOrder = SortOrder.None
+                            };
+
+                        (listModules.ListViewItemSorter as SortedListComparer).CustomSorters.Add(2,
+                            (x, y) =>
+                            {
+                                ModuleItem ix = (ModuleItem)x.Tag;
+                                ModuleItem iy = (ModuleItem)y.Tag;
+
+                                return ix.Size.CompareTo(iy.Size);
+                            });
                     }
                     catch
                     { }

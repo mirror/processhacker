@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * #2596473 - "Add "Save Processes""
    * #2596481 - "Add option for one instance of Process Hacker"
+   * #2601397 - "Ability to sort by name, type etc to all of the windows"
    * #2605155 - "CSR Processes: Add Save Processes"
    * #2625192 - "Log: Add clear log"
    * #2625193 - "Add warning before shutting down, or restarting pc etc."

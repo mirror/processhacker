@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EEEA1778-1702-4964-8793-A98FE37E4D2B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -318,7 +318,6 @@
     <Compile Include="Components\ColorModifier.Designer.cs">
       <DependentUpon>ColorModifier.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\HighlightedListViewItem.cs" />
     <Compile Include="Components\NetworkList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -545,6 +544,7 @@
     <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="HighlightedListViewItem.cs" />
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="ColumnSettings.cs" />
     <Compile Include="DeltaManager.cs" />
