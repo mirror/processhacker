@@ -74,6 +74,12 @@
             this.nodeHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeGdiHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnIoTotal = new Aga.Controls.Tree.TreeColumn();
+            this.columnIoReadOther = new Aga.Controls.Tree.TreeColumn();
+            this.columnIoWrite = new Aga.Controls.Tree.TreeColumn();
+            this.nodeIoTotal = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeIoReadOther = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeIoWrite = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -102,6 +108,9 @@
             this.treeProcesses.Columns.Add(this.columnHandles);
             this.treeProcesses.Columns.Add(this.columnGdiHandles);
             this.treeProcesses.Columns.Add(this.columnUserHandles);
+            this.treeProcesses.Columns.Add(this.columnIoTotal);
+            this.treeProcesses.Columns.Add(this.columnIoReadOther);
+            this.treeProcesses.Columns.Add(this.columnIoWrite);
             this.treeProcesses.DefaultToolTipProvider = null;
             this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -135,6 +144,9 @@
             this.treeProcesses.NodeControls.Add(this.nodeHandles);
             this.treeProcesses.NodeControls.Add(this.nodeGdiHandles);
             this.treeProcesses.NodeControls.Add(this.nodeUserHandles);
+            this.treeProcesses.NodeControls.Add(this.nodeIoTotal);
+            this.treeProcesses.NodeControls.Add(this.nodeIoReadOther);
+            this.treeProcesses.NodeControls.Add(this.nodeIoWrite);
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
@@ -568,6 +580,66 @@
             this.nodeUserHandles.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeUserHandles.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // columnIoTotal
+            // 
+            this.columnIoTotal.Header = "I/O Total";
+            this.columnIoTotal.IsVisible = false;
+            this.columnIoTotal.Sortable = true;
+            this.columnIoTotal.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoTotal.TooltipText = null;
+            this.columnIoTotal.Width = 60;
+            // 
+            // columnIoReadOther
+            // 
+            this.columnIoReadOther.Header = "I/O R+O";
+            this.columnIoReadOther.IsVisible = false;
+            this.columnIoReadOther.Sortable = true;
+            this.columnIoReadOther.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoReadOther.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoReadOther.TooltipText = null;
+            this.columnIoReadOther.Width = 60;
+            // 
+            // columnIoWrite
+            // 
+            this.columnIoWrite.Header = "I/O W";
+            this.columnIoWrite.IsVisible = false;
+            this.columnIoWrite.Sortable = true;
+            this.columnIoWrite.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoWrite.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoWrite.TooltipText = null;
+            this.columnIoWrite.Width = 60;
+            // 
+            // nodeIoTotal
+            // 
+            this.nodeIoTotal.DataPropertyName = "IoTotal";
+            this.nodeIoTotal.EditEnabled = false;
+            this.nodeIoTotal.IncrementalSearchEnabled = true;
+            this.nodeIoTotal.LeftMargin = 3;
+            this.nodeIoTotal.ParentColumn = this.columnIoTotal;
+            this.nodeIoTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeIoTotal.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeIoReadOther
+            // 
+            this.nodeIoReadOther.DataPropertyName = "IoReadOther";
+            this.nodeIoReadOther.EditEnabled = false;
+            this.nodeIoReadOther.IncrementalSearchEnabled = true;
+            this.nodeIoReadOther.LeftMargin = 3;
+            this.nodeIoReadOther.ParentColumn = this.columnIoReadOther;
+            this.nodeIoReadOther.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeIoReadOther.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeIoWrite
+            // 
+            this.nodeIoWrite.DataPropertyName = "IoWrite";
+            this.nodeIoWrite.EditEnabled = false;
+            this.nodeIoWrite.IncrementalSearchEnabled = true;
+            this.nodeIoWrite.LeftMargin = 3;
+            this.nodeIoWrite.ParentColumn = this.columnIoWrite;
+            this.nodeIoWrite.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeIoWrite.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -628,5 +700,11 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodePagefileUsage;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodePeakPagefileUsage;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodePageFaults;
+        private Aga.Controls.Tree.TreeColumn columnIoTotal;
+        private Aga.Controls.Tree.TreeColumn columnIoReadOther;
+        private Aga.Controls.Tree.TreeColumn columnIoWrite;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoTotal;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoReadOther;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoWrite;
     }
 }

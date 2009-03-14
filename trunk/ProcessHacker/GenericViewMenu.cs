@@ -155,6 +155,9 @@ namespace ProcessHacker
 
             foreach (TreeColumn c in tv.Columns)
             {
+                if (!c.IsVisible)
+                    continue;
+
                 MenuItem item = new MenuItem("Copy \"" + c.Header + "\"");
 
                 item.Tag = new object[] { c.Index, tv };

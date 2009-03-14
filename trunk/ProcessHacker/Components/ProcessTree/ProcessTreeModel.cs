@@ -265,6 +265,12 @@ namespace ProcessHacker
                             return ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
                         else if (sortC == "user handles")
                             return ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
+                        else if (sortC == "i/o total")
+                            return ModifySort(n1.IoTotalNumber.CompareTo(n2.IoTotalNumber), sortO);
+                        else if (sortC == "i/o ro")
+                            return ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
+                        else if (sortC == "i/o w")
+                            return ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
                         else
                             return 0;
                     }));

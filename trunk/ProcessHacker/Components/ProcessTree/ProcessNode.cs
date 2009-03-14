@@ -334,7 +334,7 @@ namespace ProcessHacker
                         return number.ToString();
                 }
             }
-        }       
+        }
 
         public int UserHandlesNumber
         {
@@ -367,6 +367,76 @@ namespace ProcessHacker
                     else
                         return number.ToString();
                 }
+            }
+        }
+
+        public long IoTotalNumber
+        {
+            get
+            {
+                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                    return 0;
+                else
+                    return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
+                        _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
+                        Properties.Settings.Default.RefreshInterval;
+            }
+        }
+
+        public string IoTotal
+        {
+            get
+            {
+                if (this.IoTotalNumber == 0)
+                    return "";
+                else
+                    return Misc.GetNiceSizeName(this.IoTotalNumber) + "/s";
+            }
+        }
+
+        public long IoReadOtherNumber
+        {
+            get
+            {
+                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                    return 0;
+                else
+                    return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] * 1000 /
+                        Properties.Settings.Default.RefreshInterval;
+            }
+        }
+
+        public string IoReadOther
+        {
+            get
+            {
+                if (this.IoReadOtherNumber == 0)
+                    return "";
+                else
+                    return Misc.GetNiceSizeName(this.IoReadOtherNumber) + "/s";
+            }
+        }
+
+        public long IoWriteNumber
+        {
+            get
+            {
+                if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
+                    return 0;
+                else
+                    return _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
+                        Properties.Settings.Default.RefreshInterval;
+            }
+        }
+
+        public string IoWrite
+        {
+            get
+            {
+                if (this.IoWriteNumber == 0)
+                    return "";
+                else
+                    return Misc.GetNiceSizeName(this.IoWriteNumber) + "/s";
             }
         }
 
