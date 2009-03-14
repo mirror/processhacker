@@ -140,8 +140,7 @@ namespace ProcessHacker
 
             try
             {
-                KPH = new KProcessHacker();
-                //KPH.SendKiServiceTable();
+                KPH = new KProcessHacker("KProcessHacker");
             }
             catch
             { }

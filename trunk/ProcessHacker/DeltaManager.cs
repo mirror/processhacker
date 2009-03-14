@@ -33,6 +33,10 @@ using System.Collections.Generic;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Defines subtraction for a numberic type.
+    /// </summary>
+    /// <typeparam name="T">The numeric type.</typeparam>
     public interface ISubtractor<T>
     {
         /// <summary>
@@ -41,6 +45,9 @@ namespace ProcessHacker
         T Subtract(T v1, T v2);
     }
 
+    /// <summary>
+    /// Provides subtraction for 64-bit integers.
+    /// </summary>
     public class Int64Subtractor : ISubtractor<long>
     {
         public long Subtract(long v1, long v2)
@@ -49,6 +56,9 @@ namespace ProcessHacker
         }
     }
 
+    /// <summary>
+    /// Provides subtraction for 32-bit integers.
+    /// </summary>
     public class Int32Subtractor : ISubtractor<int>
     {
         public int Subtract(int v1, int v2)
@@ -57,6 +67,9 @@ namespace ProcessHacker
         }
     }
 
+    /// <summary>
+    /// Provides subtraction for double-precision floating-point values.
+    /// </summary>
     public class DoubleSubtractor : ISubtractor<double>
     {
         public double Subtract(double v1, double v2)
@@ -65,6 +78,9 @@ namespace ProcessHacker
         }
     }
 
+    /// <summary>
+    /// Provides subtraction for single-precision floating-point values.
+    /// </summary>
     public class FloatSubtractor : ISubtractor<float>
     {
         public float Subtract(float v1, float v2)
@@ -74,7 +90,7 @@ namespace ProcessHacker
     }
 
     /// <summary>
-    /// Provides methods for managing discrete sets of data.
+    /// Provides methods for managing deltas of discrete sets of data.
     /// </summary>
     public class DeltaManager<TKey, TValue>
     {
@@ -82,6 +98,10 @@ namespace ProcessHacker
         private Dictionary<TKey, TValue> _deltas = new Dictionary<TKey, TValue>();
         private ISubtractor<TValue> _subtractor;
 
+        /// <summary>
+        /// Creates a delta manager using the specified subtractor.
+        /// </summary>
+        /// <param name="subtractor">A subtractor for the appropriate type.</param>
         public DeltaManager(ISubtractor<TValue> subtractor)
         {
             _subtractor = subtractor;

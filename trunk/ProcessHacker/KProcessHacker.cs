@@ -31,14 +31,15 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides an interface to KProcessHacker.
+    /// </summary>
     public class KProcessHacker
-    {
-        public const string DeviceName = "KProcessHacker";
-
-        private uint _baseControlNumber;
-        private Win32.ServiceHandle _service;
-
-        public enum Control : uint
+    {         
+        /// <summary>
+        /// A control code used by KProcessHacker to represent a specific function.
+        /// </summary>
+        private enum Control : uint
         {
             Read = 0,
             Write,
@@ -55,10 +56,19 @@ namespace ProcessHacker
             SetProcessToken
         }
 
+        private string _deviceName;
         private Win32.FileHandle _fileHandle;
+        private uint _baseControlNumber;
+        private Win32.ServiceHandle _service;
 
-        public KProcessHacker()
+        /// <summary>
+        /// Creates a connection to KProcessHacker.
+        /// </summary>
+        /// <param name="deviceName">The device to connect to.</param>
+        public KProcessHacker(string deviceName)
         {
+            _deviceName = deviceName;
+
             bool started = false;
 
             if (!Properties.Settings.Default.EnableKPH)
@@ -67,7 +77,7 @@ namespace ProcessHacker
             // delete the service if it exists
             try
             {
-                using (var shandle = new Win32.ServiceHandle(DeviceName))
+                using (var shandle = new Win32.ServiceHandle(deviceName))
                 {
                     started = shandle.GetStatus().CurrentState == Win32.SERVICE_STATE.Running;
 
@@ -83,14 +93,14 @@ namespace ProcessHacker
                 Win32.ServiceManagerHandle scm =
                     new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE);
 
-                _service = scm.CreateService(DeviceName, DeviceName, Win32.SERVICE_TYPE.KernelDriver,
+                _service = scm.CreateService(deviceName, deviceName, Win32.SERVICE_TYPE.KernelDriver,
                     Application.StartupPath + "\\kprocesshacker.sys");
                 _service.Start();
             }
             catch
             { }
 
-            _fileHandle = new Win32.FileHandle("\\\\.\\" + DeviceName,
+            _fileHandle = new Win32.FileHandle("\\\\.\\" + deviceName,
                 Win32.FILE_RIGHTS.FILE_GENERIC_READ | Win32.FILE_RIGHTS.FILE_GENERIC_WRITE);
 
             try
@@ -104,14 +114,22 @@ namespace ProcessHacker
             _baseControlNumber = Misc.BytesToUInt(_fileHandle.Read(4), Misc.Endianness.Little);
         }
 
-        public void Close()
+        public string DeviceName
         {
-            _fileHandle.Dispose();
-        }
+            get { return _deviceName; }
+        }  
 
         private uint CtlCode(Control ctl)
         {
             return _baseControlNumber + ((uint)ctl * 4);
+        }
+
+        /// <summary>
+        /// Closes the connection to KProcessHacker.
+        /// </summary>
+        public void Close()
+        {
+            _fileHandle.Dispose();
         }
 
         public string GetObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)

@@ -270,7 +270,9 @@ namespace ProcessHacker
 
         public void RunOnceAsync()
         {
-            Thread t = new Thread(new ThreadStart(this.RunOnce));
+            Thread t = null;
+
+            t = new Thread(new ThreadStart(delegate { this.RunOnce(); _asyncThreads.Remove(t); }));
 
             t.SetApartmentState(ApartmentState.STA);
             _asyncThreads.Add(t);

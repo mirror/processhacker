@@ -28,6 +28,12 @@ using System.Drawing;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides automatic sorting support for the ListView control.
+    /// </summary>
+    /// <example>
+    /// myListView.ListViewItemSorter = new SortedListComparer(myListView);
+    /// </example>
     public class SortedListComparer : IComparer
     {
         private ListView _list;
@@ -37,6 +43,10 @@ namespace ProcessHacker
         private SortOrder _sortOrder;
         private Dictionary<int, Comparison<ListViewItem>> _customSorters = new Dictionary<int, Comparison<ListViewItem>>();
 
+        /// <summary>
+        /// Creates a new sorted list manager.
+        /// </summary>
+        /// <param name="list">The ListView to manage.</param>
         public SortedListComparer(ListView list)
         {
             _list = list;
@@ -45,30 +55,47 @@ namespace ProcessHacker
             _sortOrder = SortOrder.Ascending;
         }
 
+        /// <summary>
+        /// Allows three states of sorting: Ascending, Descending and None. 
+        /// You must specify the sorter used for the None state using 
+        /// TriStateComparer.
+        /// </summary>
         public bool TriState
         {
             get { return _triState; }
             set { _triState = value; }
         }
 
+        /// <summary>
+        /// Specifies the sorter used for the None sorting state.
+        /// </summary>
         public IComparer TriStateComparer
         {
             get { return _triStateComparer; }
             set { _triStateComparer = value; }
         }
 
+        /// <summary>
+        /// Specifies the index of the column to sort.
+        /// </summary>
         public int SortColumn
         {
             get { return _sortColumn; }
             set { _sortColumn = value; }
         }
 
+        /// <summary>
+        /// Specifies the sort order/state.
+        /// </summary>
         public SortOrder SortOrder
         {
             get { return _sortOrder; }
             set { _sortOrder = value; }
         }
 
+        /// <summary>
+        /// Allows custom sorting for individual columns.
+        /// </summary>
         public IDictionary<int, Comparison<ListViewItem>> CustomSorters
         {
             get { return _customSorters; }
@@ -111,6 +138,12 @@ namespace ProcessHacker
                 return 0;
         }
 
+        /// <summary>
+        /// Compares two ListView objects.
+        /// </summary>
+        /// <param name="x">The first ListView.</param>
+        /// <param name="y">The second ListView.</param>
+        /// <returns>A comparison result.</returns>
         public int Compare(object x, object y)
         {
             if (_triState && _sortOrder == SortOrder.None)
