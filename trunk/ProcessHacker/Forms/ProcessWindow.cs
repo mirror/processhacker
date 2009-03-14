@@ -77,6 +77,23 @@ namespace ProcessHacker
                 this.Icon = Program.HackerWindow.Icon;
 
             Program.PWindows.Add(_pid, this);
+
+            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
+            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
+            plotterCPUUsage.GetToolTip = i =>
+                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
+                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + ")";
+            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
+            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
+            plotterMemory.GetToolTip = i =>
+                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]);
+            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
+            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
+            plotterIO.GetToolTip = i =>
+                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
         }
 
         public MenuItem WindowMenuItem
@@ -129,23 +146,6 @@ namespace ProcessHacker
             this.ApplyFont(Properties.Settings.Default.Font);
 
             this.ClearStatistics();
-
-            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
-            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
-            plotterCPUUsage.GetToolTip = i =>
-                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
-                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
-                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + ")";
-            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
-            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
-            plotterMemory.GetToolTip = i =>
-                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]);
-            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
-            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
-            plotterIO.GetToolTip = i =>
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
 
             try
             {
