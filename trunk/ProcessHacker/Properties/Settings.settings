@@ -279,7 +279,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="SysInfoWindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">858, 545</Value>
+      <Value Profile="(Default)">858, 574</Value>
     </Setting>
     <Setting Name="SysInfoWindowLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">100, 100</Value>

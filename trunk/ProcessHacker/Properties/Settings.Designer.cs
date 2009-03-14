@@ -1131,7 +1131,7 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("858, 545")]
+        [global::System.Configuration.DefaultSettingValueAttribute("858, 574")]
         public global::System.Drawing.Size SysInfoWindowSize {
             get {
                 return ((global::System.Drawing.Size)(this["SysInfoWindowSize"]));
