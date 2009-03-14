@@ -230,5 +230,10 @@ namespace ProcessHacker
                 tableCPUs.Visible = false;
             }
         }
+
+        private void checkAlwaysOnTop_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = checkAlwaysOnTop.Checked;
+        }
     }
 }

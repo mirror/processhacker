@@ -123,6 +123,7 @@
             this.labelCPUSystemCalls = new System.Windows.Forms.Label();
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
+            this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -153,7 +154,7 @@
             this.gboxCPUPlotter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gboxCPUPlotter.Location = new System.Drawing.Point(3, 3);
             this.gboxCPUPlotter.Name = "gboxCPUPlotter";
-            this.gboxCPUPlotter.Size = new System.Drawing.Size(812, 59);
+            this.gboxCPUPlotter.Size = new System.Drawing.Size(812, 62);
             this.gboxCPUPlotter.TabIndex = 2;
             this.gboxCPUPlotter.TabStop = false;
             this.gboxCPUPlotter.Text = "CPU Usage (Kernel, User)";
@@ -187,7 +188,7 @@
             this.plotterCPU.Name = "plotterCPU";
             this.plotterCPU.OverlaySecondLine = false;
             this.plotterCPU.ShowGrid = true;
-            this.plotterCPU.Size = new System.Drawing.Size(806, 40);
+            this.plotterCPU.Size = new System.Drawing.Size(806, 43);
             this.plotterCPU.TabIndex = 0;
             this.plotterCPU.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterCPU.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -216,16 +217,16 @@
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableGraphs.Size = new System.Drawing.Size(818, 219);
+            this.tableGraphs.Size = new System.Drawing.Size(818, 228);
             this.tableGraphs.TabIndex = 3;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.plotterMemory);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 157);
+            this.groupBox1.Location = new System.Drawing.Point(3, 163);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(812, 59);
+            this.groupBox1.Size = new System.Drawing.Size(812, 62);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commit, Physical Memory";
@@ -247,7 +248,7 @@
             this.plotterMemory.Name = "plotterMemory";
             this.plotterMemory.OverlaySecondLine = true;
             this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(806, 40);
+            this.plotterMemory.Size = new System.Drawing.Size(806, 43);
             this.plotterMemory.TabIndex = 5;
             this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -261,9 +262,9 @@
             // 
             this.groupBox2.Controls.Add(this.plotterIO);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 92);
+            this.groupBox2.Location = new System.Drawing.Point(3, 95);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(812, 59);
+            this.groupBox2.Size = new System.Drawing.Size(812, 62);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "I/O (R+O, W)";
@@ -285,7 +286,7 @@
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = true;
             this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(806, 40);
+            this.plotterIO.Size = new System.Drawing.Size(806, 43);
             this.plotterIO.TabIndex = 5;
             this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -299,7 +300,7 @@
             // 
             this.checkShowOneGraphPerCPU.AutoSize = true;
             this.checkShowOneGraphPerCPU.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(3, 68);
+            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(3, 71);
             this.checkShowOneGraphPerCPU.Name = "checkShowOneGraphPerCPU";
             this.checkShowOneGraphPerCPU.Size = new System.Drawing.Size(153, 18);
             this.checkShowOneGraphPerCPU.TabIndex = 3;
@@ -321,9 +322,9 @@
             this.flowInfo.Controls.Add(this.groupBox9);
             this.flowInfo.Controls.Add(this.groupBox10);
             this.flowInfo.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowInfo.Location = new System.Drawing.Point(12, 237);
+            this.flowInfo.Location = new System.Drawing.Point(12, 246);
             this.flowInfo.Name = "flowInfo";
-            this.flowInfo.Size = new System.Drawing.Size(818, 260);
+            this.flowInfo.Size = new System.Drawing.Size(818, 256);
             this.flowInfo.TabIndex = 4;
             // 
             // groupBox3
@@ -1285,11 +1286,25 @@
             this.labelCPUInterrupts.TabIndex = 1;
             this.labelCPUInterrupts.Text = "value";
             // 
+            // checkAlwaysOnTop
+            // 
+            this.checkAlwaysOnTop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkAlwaysOnTop.AutoSize = true;
+            this.checkAlwaysOnTop.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkAlwaysOnTop.Location = new System.Drawing.Point(728, 508);
+            this.checkAlwaysOnTop.Name = "checkAlwaysOnTop";
+            this.checkAlwaysOnTop.Size = new System.Drawing.Size(102, 18);
+            this.checkAlwaysOnTop.TabIndex = 5;
+            this.checkAlwaysOnTop.Text = "Always on Top";
+            this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
+            this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
+            // 
             // SysInfoWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(842, 509);
+            this.ClientSize = new System.Drawing.Size(842, 538);
+            this.Controls.Add(this.checkAlwaysOnTop);
             this.Controls.Add(this.flowInfo);
             this.Controls.Add(this.tableGraphs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1329,6 +1344,7 @@
             this.tableLayoutPanel8.ResumeLayout(false);
             this.tableLayoutPanel8.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1428,5 +1444,6 @@
         private System.Windows.Forms.Label labelCPUSystemCalls;
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label labelCPUInterrupts;
+        private System.Windows.Forms.CheckBox checkAlwaysOnTop;
     }
 }
