@@ -244,30 +244,32 @@ namespace ProcessHacker.Components
         {
             // find the largest value
             long max = 0;
+            // restrict scaling to the currently visible data points
+            int maxIndex = this.Width / _moveStep;
 
-            foreach (long l in _longData1)
-                if (l > max)
-                    max = l;
-            foreach (long l in _longData2)
-                if (l > max)
-                    max = l;
+            for (int i = 0; i < _longData1.Count && i < maxIndex; i++)
+                if (_longData1[i] > max)
+                    max = _longData1[i];
+            for (int i = 0; i < _longData2.Count && i < maxIndex; i++)
+                if (_longData2[i] > max)
+                    max = _longData2[i];
 
             // redo the float list
             _data1 = new List<float>();
             _data2 = new List<float>();
 
-            foreach (long l in _longData1)
+            for (int i = 0; i < _longData1.Count && i < maxIndex; i++)
             {
                 if (max != 0)
-                    _data1.Add((float)l / max);
+                    _data1.Add((float)_longData1[i] / max);
                 else
                     _data1.Add(0);
             }
 
-            foreach (long l in _longData2)
+            for (int i = 0; i < _longData2.Count && i < maxIndex; i++)
             {
                 if (max != 0)
-                    _data2.Add((float)l / max);
+                    _data2.Add((float)_longData2[i] / max);
                 else
                     _data2.Add(0);
             }
