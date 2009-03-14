@@ -51,6 +51,9 @@
             this.columnHandles = new Aga.Controls.Tree.TreeColumn();
             this.columnGdiHandles = new Aga.Controls.Tree.TreeColumn();
             this.columnUserHandles = new Aga.Controls.Tree.TreeColumn();
+            this.columnIoTotal = new Aga.Controls.Tree.TreeColumn();
+            this.columnIoReadOther = new Aga.Controls.Tree.TreeColumn();
+            this.columnIoWrite = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
@@ -74,9 +77,6 @@
             this.nodeHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeGdiHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserHandles = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnIoTotal = new Aga.Controls.Tree.TreeColumn();
-            this.columnIoReadOther = new Aga.Controls.Tree.TreeColumn();
-            this.columnIoWrite = new Aga.Controls.Tree.TreeColumn();
             this.nodeIoTotal = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeIoReadOther = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeIoWrite = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -361,6 +361,36 @@
             this.columnUserHandles.TooltipText = null;
             this.columnUserHandles.Width = 35;
             // 
+            // columnIoTotal
+            // 
+            this.columnIoTotal.Header = "I/O Total";
+            this.columnIoTotal.IsVisible = false;
+            this.columnIoTotal.Sortable = true;
+            this.columnIoTotal.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoTotal.TooltipText = null;
+            this.columnIoTotal.Width = 65;
+            // 
+            // columnIoReadOther
+            // 
+            this.columnIoReadOther.Header = "I/O R+O";
+            this.columnIoReadOther.IsVisible = false;
+            this.columnIoReadOther.Sortable = true;
+            this.columnIoReadOther.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoReadOther.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoReadOther.TooltipText = null;
+            this.columnIoReadOther.Width = 65;
+            // 
+            // columnIoWrite
+            // 
+            this.columnIoWrite.Header = "I/O W";
+            this.columnIoWrite.IsVisible = false;
+            this.columnIoWrite.Sortable = true;
+            this.columnIoWrite.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnIoWrite.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnIoWrite.TooltipText = null;
+            this.columnIoWrite.Width = 65;
+            // 
             // nodeIcon
             // 
             this.nodeIcon.DataPropertyName = "Icon";
@@ -579,36 +609,6 @@
             this.nodeUserHandles.ParentColumn = this.columnUserHandles;
             this.nodeUserHandles.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeUserHandles.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // columnIoTotal
-            // 
-            this.columnIoTotal.Header = "I/O Total";
-            this.columnIoTotal.IsVisible = false;
-            this.columnIoTotal.Sortable = true;
-            this.columnIoTotal.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnIoTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnIoTotal.TooltipText = null;
-            this.columnIoTotal.Width = 60;
-            // 
-            // columnIoReadOther
-            // 
-            this.columnIoReadOther.Header = "I/O R+O";
-            this.columnIoReadOther.IsVisible = false;
-            this.columnIoReadOther.Sortable = true;
-            this.columnIoReadOther.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnIoReadOther.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnIoReadOther.TooltipText = null;
-            this.columnIoReadOther.Width = 60;
-            // 
-            // columnIoWrite
-            // 
-            this.columnIoWrite.Header = "I/O W";
-            this.columnIoWrite.IsVisible = false;
-            this.columnIoWrite.Sortable = true;
-            this.columnIoWrite.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnIoWrite.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnIoWrite.TooltipText = null;
-            this.columnIoWrite.Width = 60;
             // 
             // nodeIoTotal
             // 
