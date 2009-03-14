@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   CPU usage icon drawing code
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -36,12 +36,16 @@ namespace ProcessHacker
 {
     public class UsageIcon
     {
+        private HistoryManager<bool, float> _history = new HistoryManager<bool, float>();
         private Plotter _plotter;
         private int _width;
         private int _height;
 
         public UsageIcon(int width, int height)
         {
+            _history.Add(true);
+            _history.Add(false);
+
             _width = width;
             _height = height;
             _plotter = new Plotter()
@@ -50,13 +54,16 @@ namespace ProcessHacker
                 UseSecondLine = true,
                 ShowGrid = false,
                 BackColor = Color.Black,
-                MoveStep = 2
+                MoveStep = 2,
+                Data1 = _history[true],
+                Data2 = _history[false]
             };
         }
 
         public void Update(float k, float u)
         {
-            _plotter.Add(k, u);
+            _history.Update(true, k);
+            _history.Update(false, u);
         }
 
         public Color BackColor { get; set; }
@@ -70,6 +77,7 @@ namespace ProcessHacker
 
             using (Bitmap bm = new Bitmap(_width, _height))
             {
+                _plotter.Draw();
                 _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), bm.Size));
 
                 return Icon.FromHandle(bm.GetHicon());

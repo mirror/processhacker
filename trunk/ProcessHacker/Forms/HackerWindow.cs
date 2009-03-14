@@ -264,16 +264,11 @@ namespace ProcessHacker
 
         private void sysInfoMenuItem_Click(object sender, EventArgs e)
         {
-            if (sysInfoThread == null)
+            if (sysInfoThread == null || !sysInfoThread.IsAlive)
             {
                 SysInfoWindow = new SysInfoWindow();
                 sysInfoThread = new Thread(() =>
                 {
-                    SysInfoWindow.Load += (sender_, e_) =>
-                    {
-                        SysInfoWindow.Start();
-                    };
-
                     Application.Run(SysInfoWindow);
                 });
                 sysInfoThread.Start();
@@ -284,9 +279,6 @@ namespace ProcessHacker
                 {
                     SysInfoWindow.Show();
                     SysInfoWindow.Activate();
-
-                    if (!SysInfoWindow.Started)
-                        SysInfoWindow.Start();
                 }));
             }
         }
@@ -476,7 +468,7 @@ namespace ProcessHacker
 
                 for (int i = 0; i < processes.Count && processes.Count > Properties.Settings.Default.IconMenuProcessCount; i++)
                 {
-                    if (processes[i].CPUUsage == 0)
+                    if (processes[i].CpuUsage == 0)
                     {
                         processes.RemoveAt(i);
                         i--;
@@ -488,7 +480,7 @@ namespace ProcessHacker
                     }
                 }
 
-                processes.Sort((i1, i2) => -i1.CPUUsage.CompareTo(i2.CPUUsage));
+                processes.Sort((i1, i2) => -i1.CpuUsage.CompareTo(i2.CpuUsage));
 
                 if (processes.Count > Properties.Settings.Default.IconMenuProcessCount)
                 {
@@ -1279,7 +1271,7 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                cpuUsageIcon.Update(processP.CurrentCPUKernelUsage, processP.CurrentCPUUserUsage);
+                cpuUsageIcon.Update(processP.CurrentCpuKernelUsage, processP.CurrentCpuUserUsage);
 
                 if (NotifyIcon.Icon != null)
                     Win32.DestroyIcon(notifyIcon.Icon.Handle);
@@ -1289,14 +1281,14 @@ namespace ProcessHacker
                 UpdateStatusInfo();
 
                 notifyIcon.Text = "Process Hacker\n" +
-                    "CPU Usage: " + (processP.CurrentCPUUsage * 100).ToString("F2") + "%";
+                    "CPU Usage: " + (processP.CurrentCpuUsage * 100).ToString("F2") + "%";
 
-                if (processP.Dictionary.ContainsKey(processP.PIDWithMostCPUUsage))
-                    if (processP.Dictionary[processP.PIDWithMostCPUUsage].Name != null)
+                if (processP.Dictionary.ContainsKey(processP.PIDWithMostCpuUsage))
+                    if (processP.Dictionary[processP.PIDWithMostCpuUsage].Name != null)
                         if (notifyIcon.Text.Length +
-                            processP.Dictionary[processP.PIDWithMostCPUUsage].Name.Length + 7 < 62)
-                            notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCPUUsage].Name +
-                                ": " + processP.Dictionary[processP.PIDWithMostCPUUsage].CPUUsage.ToString("F2") + "%";
+                            processP.Dictionary[processP.PIDWithMostCpuUsage].Name.Length + 7 < 62)
+                            notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCpuUsage].Name +
+                                ": " + processP.Dictionary[processP.PIDWithMostCpuUsage].CpuUsage.ToString("F2") + "%";
             }));
         }
 
@@ -1309,7 +1301,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    parent = processP.Dictionary[item.ParentPID];
+                    parent = processP.Dictionary[item.ParentPid];
 
                     parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
                 }
@@ -2070,7 +2062,7 @@ namespace ProcessHacker
             else
                 statusGeneral.Text = "Loading...";
 
-            statusCPU.Text = "CPU: " + (processP.CurrentCPUUsage * 100).ToString("N2") + "%";
+            statusCPU.Text = "CPU: " + (processP.CurrentCpuUsage * 100).ToString("N2") + "%";
             statusMemory.Text = "Phys. Memory: " +
                 ((float)(processP.System.NumberOfPhysicalPages - processP.Performance.AvailablePages) * 100 /
                 processP.System.NumberOfPhysicalPages).ToString("N2") + "%";

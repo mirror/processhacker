@@ -46,9 +46,6 @@ namespace ProcessHacker
         private TokenProperties _tokenProps;
         private ServiceProperties _serviceProps;
 
-        private DeltaManager<string, long> _processStats =
-            new DeltaManager<string, long>(new Int64Subtractor());
-
         private string _realCurrentDirectory;
 
         public ProcessWindow(ProcessItem process)
@@ -80,29 +77,6 @@ namespace ProcessHacker
                 this.Icon = Program.HackerWindow.Icon;
 
             Program.PWindows.Add(_pid, this);
-
-            try
-            {
-                ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
-
-                _processStats.Add("System Other",
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime + 
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.DpcTime + 
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptTime);
-                _processStats.Add("System Kernel",
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
-                _processStats.Add("System User",
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
-                _processStats.Add("Process Kernel", item.Process.KernelTime);
-                _processStats.Add("Process User", item.Process.UserTime);
-                _processStats.Add("IO Read+Other",
-                    (long)item.Process.IoCounters.ReadTransferCount +
-                    (long)item.Process.IoCounters.OtherTransferCount);
-                _processStats.Add("IO Write",
-                    (long)item.Process.IoCounters.WriteTransferCount);
-            }
-            catch
-            { }
         }
 
         public MenuItem WindowMenuItem
@@ -156,6 +130,23 @@ namespace ProcessHacker
 
             this.ClearStatistics();
 
+            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
+            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
+            plotterCPUUsage.GetToolTip = i =>
+                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
+                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + ")";
+            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
+            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
+            plotterMemory.GetToolTip = i =>
+                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]);
+            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
+            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
+            plotterIO.GetToolTip = i =>
+                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
+
             try
             {
                 _process = Process.GetProcessById(_pid);
@@ -190,8 +181,6 @@ namespace ProcessHacker
 
             if (_pid == 0)
                 textFileDescription.Text = "System Idle Process";
-
-            this.UpdateDeltas();
 
             // add our handler to the process provider
             Program.HackerWindow.ProcessProvider.Updated += 
@@ -415,19 +404,19 @@ namespace ProcessHacker
 
             if (_processItem.HasParent)
             {
-                if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPID))
+                if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPid))
                 {
                     textParent.Text =
-                        Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPID].Name +
-                        " (" + _processItem.ParentPID.ToString() + ")";
+                        Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPid].Name +
+                        " (" + _processItem.ParentPid.ToString() + ")";
                 }
                 else
                 {
-                    textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
+                    textParent.Text = "Non-existent Process (" + _processItem.ParentPid.ToString() + ")";
                     buttonInspectParent.Enabled = false;
                 }
             }
-            else if (_processItem.ParentPID == -1)
+            else if (_processItem.ParentPid == -1)
             {
                 // this process doesn't actually have a parent
                 textParent.Text = "No Parent Process";
@@ -439,7 +428,7 @@ namespace ProcessHacker
                 // another running process has the same PID as 
                 // its parent. We checked their creation times 
                 // back in ProcessSystemProvider.cs.
-                textParent.Text = "Non-existent Process (" + _processItem.ParentPID.ToString() + ")";
+                textParent.Text = "Non-existent Process (" + _processItem.ParentPid.ToString() + ")";
                 buttonInspectParent.Enabled = false;
             }
 
@@ -746,31 +735,10 @@ namespace ProcessHacker
             labelOtherUSERHandles.Text = "";
         }
 
-        private void UpdateDeltas()
-        {
-            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
-
-            // update deltas         
-            _processStats.Update("System Other",
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.IdleTime +
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.DpcTime +
-                    Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptTime);
-            _processStats.Update("System Kernel",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.KernelTime);
-            _processStats.Update("System User",
-                Program.HackerWindow.ProcessProvider.ProcessorPerf.UserTime);
-            _processStats.Update("Process Kernel", item.Process.KernelTime);
-            _processStats.Update("Process User", item.Process.UserTime);
-            _processStats.Update("IO Read+Other",
-                (long)item.Process.IoCounters.ReadTransferCount +
-                (long)item.Process.IoCounters.OtherTransferCount);
-            _processStats.Update("IO Write",
-                (long)item.Process.IoCounters.WriteTransferCount);
-        }
-
         private void UpdatePerformance()
-        {
-            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+        {                                                       
+            ProcessSystemProvider sysProvider = Program.HackerWindow.ProcessProvider;
+            ProcessItem item = sysProvider.Dictionary[_pid];
 
             plotterCPUUsage.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
             plotterCPUUsage.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
@@ -780,24 +748,28 @@ namespace ProcessHacker
             plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
 
             // update graphs
-            long sysTotal = _processStats.GetDelta("System Kernel") + _processStats.GetDelta("System User")
-                + _processStats.GetDelta("System Other");
-            float procKernel = (float)_processStats.GetDelta("Process Kernel") / sysTotal;
-            float procUser = (float)_processStats.GetDelta("Process User") / sysTotal;
+            long sysTotal = sysProvider.LongDeltas[SystemStats.CpuKernel] + sysProvider.LongDeltas[SystemStats.CpuUser]
+                + sysProvider.LongDeltas[SystemStats.CpuOther];
+            float procKernel = (float)item.DeltaManager[ProcessStats.CpuKernel] / sysTotal;
+            float procUser = (float)item.DeltaManager[ProcessStats.CpuUser] / sysTotal;  
+            long ioRO = item.DeltaManager[ProcessStats.IoRead] + item.DeltaManager[ProcessStats.IoOther];
+            long ioW = item.DeltaManager[ProcessStats.IoWrite];
 
-            plotterCPUUsage.Add(procKernel, procUser);
             plotterCPUUsage.Text = ((procKernel + procUser) * 100).ToString("F2") +
                 "% (K: " + (procKernel * 100).ToString("F2") +
                 "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
-            plotterMemory.Add(item.Process.VirtualMemoryCounters.PrivateBytes,
-                item.Process.VirtualMemoryCounters.WorkingSetSize);
             plotterMemory.Text = "Pvt: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes) + 
                 ", WS: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
 
-            plotterIO.Add(_processStats.GetDelta("IO Read+Other"), _processStats.GetDelta("IO Write"));
-            plotterIO.Text = "R+O: " + Misc.GetNiceSizeName(_processStats.GetDelta("IO Read+Other")) +
-                ", W: " + Misc.GetNiceSizeName(_processStats.GetDelta("IO Write"));
+            plotterIO.Text = "R+O: " + Misc.GetNiceSizeName(ioRO) + ", W: " + Misc.GetNiceSizeName(ioW);
+
+            plotterCPUUsage.MoveGrid();
+            plotterCPUUsage.Draw();
+            plotterMemory.MoveGrid();
+            plotterMemory.Draw();
+            plotterIO.MoveGrid();
+            plotterIO.Draw();
 
             // update statistics
             if (tabControl.SelectedTab == tabStatistics)
@@ -977,7 +949,7 @@ namespace ProcessHacker
             try
             {
                 ProcessWindow pForm = Program.GetProcessWindow(
-                    Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPID],
+                    Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPid],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                     {
                         f.Show();
@@ -1082,7 +1054,6 @@ namespace ProcessHacker
                 {
                     try
                     {
-                        this.UpdateDeltas();
                         this.UpdatePerformance();
                     }
                     catch

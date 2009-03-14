@@ -32,19 +32,32 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
+            // 
+            // toolTip
+            // 
+            this.toolTip.AutomaticDelay = 0;
+            this.toolTip.ShowAlways = true;
             // 
             // Plotter
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "Plotter";
+            this.Size = new System.Drawing.Size(150, 163);
+            this.MouseLeave += new System.EventHandler(this.Plotter_MouseLeave);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Plotter_Paint);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Plotter_MouseMove);
             this.Resize += new System.EventHandler(this.Plotter_Resize);
+            this.MouseEnter += new System.EventHandler(this.Plotter_MouseEnter);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

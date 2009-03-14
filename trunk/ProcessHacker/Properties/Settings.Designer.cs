@@ -1128,5 +1128,29 @@ namespace ProcessHacker.Properties {
                 this["ToolbarVisible"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("858, 545")]
+        public global::System.Drawing.Size SysInfoWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SysInfoWindowSize"]));
+            }
+            set {
+                this["SysInfoWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100, 100")]
+        public global::System.Drawing.Point SysInfoWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["SysInfoWindowLocation"]));
+            }
+            set {
+                this["SysInfoWindowLocation"] = value;
+            }
+        }
     }
 }

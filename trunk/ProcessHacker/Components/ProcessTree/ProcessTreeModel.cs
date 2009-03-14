@@ -43,8 +43,8 @@ namespace ProcessHacker
             ProcessNode itemNode = new ProcessNode(item);
 
             // find this process' parent
-            if (item.HasParent && _processes.ContainsKey(item.ParentPID))
-                _processes[item.ParentPID].Children.Add(itemNode);
+            if (item.HasParent && _processes.ContainsKey(item.ParentPid))
+                _processes[item.ParentPid].Children.Add(itemNode);
             else
                 _roots.Add(itemNode);
 
@@ -239,7 +239,7 @@ namespace ProcessHacker
                             return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
                                 n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
                         else if (sortC == "cpu")
-                            return ModifySort(n1.ProcessItem.CPUUsage.CompareTo(n2.ProcessItem.CPUUsage), sortO);
+                            return ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
                         else if (sortC == "username")
                             return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
                         else if (sortC == "session id")

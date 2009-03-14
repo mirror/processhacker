@@ -41,7 +41,6 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupProcess = new System.Windows.Forms.GroupBox();
-            this.fileCurrentDirectory = new ProcessHacker.Components.FileNameBox();
             this.label26 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.textProtected = new System.Windows.Forms.TextBox();
@@ -61,7 +60,6 @@
             this.textStartTime = new System.Windows.Forms.TextBox();
             this.textCmdLine = new System.Windows.Forms.TextBox();
             this.groupFile = new System.Windows.Forms.GroupBox();
-            this.fileImage = new ProcessHacker.Components.FileNameBox();
             this.pictureIcon = new System.Windows.Forms.PictureBox();
             this.textFileDescription = new System.Windows.Forms.TextBox();
             this.textFileCompany = new System.Windows.Forms.TextBox();
@@ -123,20 +121,14 @@
             this.tabPerformance = new System.Windows.Forms.TabPage();
             this.tablePerformance = new System.Windows.Forms.TableLayoutPanel();
             this.groupCPUUsage = new System.Windows.Forms.GroupBox();
-            this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.plotterIO = new ProcessHacker.Components.Plotter();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.plotterMemory = new ProcessHacker.Components.Plotter();
             this.tabThreads = new System.Windows.Forms.TabPage();
-            this.listThreads = new ProcessHacker.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
             this.tabModules = new System.Windows.Forms.TabPage();
-            this.listModules = new ProcessHacker.ModuleList();
             this.tabMemory = new System.Windows.Forms.TabPage();
             this.label15 = new System.Windows.Forms.Label();
             this.checkHideFreeRegions = new System.Windows.Forms.CheckBox();
-            this.buttonSearch = new wyDay.Controls.SplitButton();
             this.menuSearch = new System.Windows.Forms.ContextMenu();
             this.newWindowSearchMenuItem = new System.Windows.Forms.MenuItem();
             this.literalSearchMenuItem = new System.Windows.Forms.MenuItem();
@@ -144,18 +136,26 @@
             this.stringScanMenuItem = new System.Windows.Forms.MenuItem();
             this.heapScanMenuItem = new System.Windows.Forms.MenuItem();
             this.structSearchMenuItem = new System.Windows.Forms.MenuItem();
-            this.listMemory = new ProcessHacker.MemoryList();
             this.tabEnvironment = new System.Windows.Forms.TabPage();
             this.listEnvironment = new System.Windows.Forms.ListView();
             this.columnVarName = new System.Windows.Forms.ColumnHeader();
             this.columnVarValue = new System.Windows.Forms.ColumnHeader();
             this.tabHandles = new System.Windows.Forms.TabPage();
             this.checkHideHandlesNoName = new System.Windows.Forms.CheckBox();
-            this.listHandles = new ProcessHacker.HandleList();
             this.tabServices = new System.Windows.Forms.TabPage();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.fileCurrentDirectory = new ProcessHacker.Components.FileNameBox();
+            this.fileImage = new ProcessHacker.Components.FileNameBox();
+            this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
+            this.plotterIO = new ProcessHacker.Components.Plotter();
+            this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.listThreads = new ProcessHacker.ThreadList();
+            this.listModules = new ProcessHacker.ModuleList();
+            this.buttonSearch = new wyDay.Controls.SplitButton();
+            this.listMemory = new ProcessHacker.MemoryList();
+            this.listHandles = new ProcessHacker.HandleList();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -275,16 +275,6 @@
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
-            // 
-            // fileCurrentDirectory
-            // 
-            this.fileCurrentDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileCurrentDirectory.Location = new System.Drawing.Point(101, 73);
-            this.fileCurrentDirectory.Name = "fileCurrentDirectory";
-            this.fileCurrentDirectory.ReadOnly = true;
-            this.fileCurrentDirectory.Size = new System.Drawing.Size(309, 24);
-            this.fileCurrentDirectory.TabIndex = 10;
             // 
             // label26
             // 
@@ -497,16 +487,6 @@
             this.groupFile.TabStop = false;
             this.groupFile.Text = "File";
             // 
-            // fileImage
-            // 
-            this.fileImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileImage.Location = new System.Drawing.Point(103, 83);
-            this.fileImage.Name = "fileImage";
-            this.fileImage.ReadOnly = true;
-            this.fileImage.Size = new System.Drawing.Size(309, 24);
-            this.fileImage.TabIndex = 10;
-            // 
             // pictureIcon
             // 
             this.pictureIcon.Location = new System.Drawing.Point(6, 19);
@@ -594,7 +574,7 @@
             this.flowStats.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowStats.Location = new System.Drawing.Point(3, 3);
             this.flowStats.Name = "flowStats";
-            this.flowStats.Size = new System.Drawing.Size(424, 345);
+            this.flowStats.Size = new System.Drawing.Size(424, 364);
             this.flowStats.TabIndex = 0;
             // 
             // groupBox1
@@ -1208,29 +1188,6 @@
             this.groupCPUUsage.TabStop = false;
             this.groupCPUUsage.Text = "CPU Usage (Kernel, User)";
             // 
-            // plotterCPUUsage
-            // 
-            this.plotterCPUUsage.BackColor = System.Drawing.Color.Black;
-            this.plotterCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterCPUUsage.GridColor = System.Drawing.Color.Green;
-            this.plotterCPUUsage.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterCPUUsage.IsMoved = true;
-            this.plotterCPUUsage.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
-            this.plotterCPUUsage.MoveStep = 3;
-            this.plotterCPUUsage.Name = "plotterCPUUsage";
-            this.plotterCPUUsage.OverlaySecondLine = false;
-            this.plotterCPUUsage.ShowGrid = true;
-            this.plotterCPUUsage.Size = new System.Drawing.Size(412, 90);
-            this.plotterCPUUsage.TabIndex = 0;
-            this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPUUsage.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterCPUUsage.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterCPUUsage.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterCPUUsage.UseSecondLine = true;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.plotterIO);
@@ -1241,29 +1198,6 @@
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "I/O (R+O, W)";
-            // 
-            // plotterIO
-            // 
-            this.plotterIO.BackColor = System.Drawing.Color.Black;
-            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterIO.GridColor = System.Drawing.Color.Green;
-            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterIO.IsMoved = true;
-            this.plotterIO.LineColor1 = System.Drawing.Color.Yellow;
-            this.plotterIO.LineColor2 = System.Drawing.Color.Purple;
-            this.plotterIO.Location = new System.Drawing.Point(3, 16);
-            this.plotterIO.MoveStep = 3;
-            this.plotterIO.Name = "plotterIO";
-            this.plotterIO.OverlaySecondLine = true;
-            this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(412, 90);
-            this.plotterIO.TabIndex = 0;
-            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterIO.UseSecondLine = true;
             // 
             // groupBox2
             // 
@@ -1276,29 +1210,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Memory (Private Pages, Working Set)";
             // 
-            // plotterMemory
-            // 
-            this.plotterMemory.BackColor = System.Drawing.Color.Black;
-            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterMemory.GridColor = System.Drawing.Color.Green;
-            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterMemory.IsMoved = true;
-            this.plotterMemory.LineColor1 = System.Drawing.Color.Orange;
-            this.plotterMemory.LineColor2 = System.Drawing.Color.Cyan;
-            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
-            this.plotterMemory.MoveStep = 3;
-            this.plotterMemory.Name = "plotterMemory";
-            this.plotterMemory.OverlaySecondLine = true;
-            this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(412, 90);
-            this.plotterMemory.TabIndex = 0;
-            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterMemory.UseSecondLine = true;
-            // 
             // tabThreads
             // 
             this.tabThreads.Controls.Add(this.listThreads);
@@ -1309,17 +1220,6 @@
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
-            // 
-            // listThreads
-            // 
-            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listThreads.DoubleBuffered = true;
-            this.listThreads.Highlight = false;
-            this.listThreads.Location = new System.Drawing.Point(0, 0);
-            this.listThreads.Name = "listThreads";
-            this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(430, 351);
-            this.listThreads.TabIndex = 0;
             // 
             // tabToken
             // 
@@ -1342,17 +1242,6 @@
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
-            // 
-            // listModules
-            // 
-            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listModules.DoubleBuffered = true;
-            this.listModules.Highlight = false;
-            this.listModules.Location = new System.Drawing.Point(0, 0);
-            this.listModules.Name = "listModules";
-            this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(430, 351);
-            this.listModules.TabIndex = 0;
             // 
             // tabMemory
             // 
@@ -1391,18 +1280,6 @@
             this.checkHideFreeRegions.Text = "Hide Free Regions";
             this.checkHideFreeRegions.UseVisualStyleBackColor = true;
             this.checkHideFreeRegions.CheckedChanged += new System.EventHandler(this.checkHideFreeRegions_CheckedChanged);
-            // 
-            // buttonSearch
-            // 
-            this.buttonSearch.AutoSize = true;
-            this.buttonSearch.Location = new System.Drawing.Point(58, 6);
-            this.buttonSearch.Name = "buttonSearch";
-            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
-            this.buttonSearch.SplitMenu = this.menuSearch;
-            this.buttonSearch.TabIndex = 9;
-            this.buttonSearch.Text = "&String Scan...";
-            this.buttonSearch.UseVisualStyleBackColor = true;
-            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // menuSearch
             // 
@@ -1449,19 +1326,6 @@
             this.structSearchMenuItem.Index = 5;
             this.structSearchMenuItem.Text = "S&truct...";
             this.structSearchMenuItem.Click += new System.EventHandler(this.structSearchMenuItem_Click);
-            // 
-            // listMemory
-            // 
-            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listMemory.DoubleBuffered = true;
-            this.listMemory.Highlight = false;
-            this.listMemory.Location = new System.Drawing.Point(6, 59);
-            this.listMemory.Name = "listMemory";
-            this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(418, 288);
-            this.listMemory.TabIndex = 0;
             // 
             // tabEnvironment
             // 
@@ -1527,19 +1391,6 @@
             this.checkHideHandlesNoName.UseVisualStyleBackColor = true;
             this.checkHideHandlesNoName.CheckedChanged += new System.EventHandler(this.checkHideHandlesNoName_CheckedChanged);
             // 
-            // listHandles
-            // 
-            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHandles.DoubleBuffered = true;
-            this.listHandles.Highlight = false;
-            this.listHandles.Location = new System.Drawing.Point(6, 30);
-            this.listHandles.Name = "listHandles";
-            this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(418, 317);
-            this.listHandles.TabIndex = 0;
-            // 
             // tabServices
             // 
             this.tabServices.ImageKey = "cog";
@@ -1570,6 +1421,167 @@
             this.timerUpdate.Enabled = true;
             this.timerUpdate.Interval = 2000;
             this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
+            // 
+            // fileCurrentDirectory
+            // 
+            this.fileCurrentDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileCurrentDirectory.Location = new System.Drawing.Point(101, 73);
+            this.fileCurrentDirectory.Name = "fileCurrentDirectory";
+            this.fileCurrentDirectory.ReadOnly = true;
+            this.fileCurrentDirectory.Size = new System.Drawing.Size(309, 24);
+            this.fileCurrentDirectory.TabIndex = 10;
+            // 
+            // fileImage
+            // 
+            this.fileImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileImage.Location = new System.Drawing.Point(103, 83);
+            this.fileImage.Name = "fileImage";
+            this.fileImage.ReadOnly = true;
+            this.fileImage.Size = new System.Drawing.Size(309, 24);
+            this.fileImage.TabIndex = 10;
+            // 
+            // plotterCPUUsage
+            // 
+            this.plotterCPUUsage.BackColor = System.Drawing.Color.Black;
+            this.plotterCPUUsage.Data1 = null;
+            this.plotterCPUUsage.Data2 = null;
+            this.plotterCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPUUsage.GridColor = System.Drawing.Color.Green;
+            this.plotterCPUUsage.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterCPUUsage.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
+            this.plotterCPUUsage.LongData1 = null;
+            this.plotterCPUUsage.LongData2 = null;
+            this.plotterCPUUsage.MoveStep = 3;
+            this.plotterCPUUsage.Name = "plotterCPUUsage";
+            this.plotterCPUUsage.OverlaySecondLine = false;
+            this.plotterCPUUsage.ShowGrid = true;
+            this.plotterCPUUsage.Size = new System.Drawing.Size(412, 90);
+            this.plotterCPUUsage.TabIndex = 0;
+            this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPUUsage.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterCPUUsage.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterCPUUsage.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterCPUUsage.UseLongData = false;
+            this.plotterCPUUsage.UseSecondLine = true;
+            // 
+            // plotterIO
+            // 
+            this.plotterIO.BackColor = System.Drawing.Color.Black;
+            this.plotterIO.Data1 = null;
+            this.plotterIO.Data2 = null;
+            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterIO.GridColor = System.Drawing.Color.Green;
+            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterIO.LineColor1 = System.Drawing.Color.Yellow;
+            this.plotterIO.LineColor2 = System.Drawing.Color.Purple;
+            this.plotterIO.Location = new System.Drawing.Point(3, 16);
+            this.plotterIO.LongData1 = null;
+            this.plotterIO.LongData2 = null;
+            this.plotterIO.MoveStep = 3;
+            this.plotterIO.Name = "plotterIO";
+            this.plotterIO.OverlaySecondLine = true;
+            this.plotterIO.ShowGrid = true;
+            this.plotterIO.Size = new System.Drawing.Size(412, 90);
+            this.plotterIO.TabIndex = 0;
+            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterIO.UseLongData = true;
+            this.plotterIO.UseSecondLine = true;
+            // 
+            // plotterMemory
+            // 
+            this.plotterMemory.BackColor = System.Drawing.Color.Black;
+            this.plotterMemory.Data1 = null;
+            this.plotterMemory.Data2 = null;
+            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterMemory.GridColor = System.Drawing.Color.Green;
+            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterMemory.LineColor1 = System.Drawing.Color.Orange;
+            this.plotterMemory.LineColor2 = System.Drawing.Color.Cyan;
+            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
+            this.plotterMemory.LongData1 = null;
+            this.plotterMemory.LongData2 = null;
+            this.plotterMemory.MoveStep = 3;
+            this.plotterMemory.Name = "plotterMemory";
+            this.plotterMemory.OverlaySecondLine = true;
+            this.plotterMemory.ShowGrid = true;
+            this.plotterMemory.Size = new System.Drawing.Size(412, 90);
+            this.plotterMemory.TabIndex = 0;
+            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterMemory.UseLongData = true;
+            this.plotterMemory.UseSecondLine = true;
+            // 
+            // listThreads
+            // 
+            this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listThreads.DoubleBuffered = true;
+            this.listThreads.Highlight = false;
+            this.listThreads.Location = new System.Drawing.Point(0, 0);
+            this.listThreads.Name = "listThreads";
+            this.listThreads.Provider = null;
+            this.listThreads.Size = new System.Drawing.Size(430, 370);
+            this.listThreads.TabIndex = 0;
+            // 
+            // listModules
+            // 
+            this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listModules.DoubleBuffered = true;
+            this.listModules.Highlight = false;
+            this.listModules.Location = new System.Drawing.Point(0, 0);
+            this.listModules.Name = "listModules";
+            this.listModules.Provider = null;
+            this.listModules.Size = new System.Drawing.Size(430, 351);
+            this.listModules.TabIndex = 0;
+            // 
+            // buttonSearch
+            // 
+            this.buttonSearch.AutoSize = true;
+            this.buttonSearch.Location = new System.Drawing.Point(58, 6);
+            this.buttonSearch.Name = "buttonSearch";
+            this.buttonSearch.Size = new System.Drawing.Size(99, 23);
+            this.buttonSearch.SplitMenu = this.menuSearch;
+            this.buttonSearch.TabIndex = 9;
+            this.buttonSearch.Text = "&String Scan...";
+            this.buttonSearch.UseVisualStyleBackColor = true;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
+            // 
+            // listMemory
+            // 
+            this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listMemory.DoubleBuffered = true;
+            this.listMemory.Highlight = false;
+            this.listMemory.Location = new System.Drawing.Point(6, 59);
+            this.listMemory.Name = "listMemory";
+            this.listMemory.Provider = null;
+            this.listMemory.Size = new System.Drawing.Size(418, 288);
+            this.listMemory.TabIndex = 0;
+            // 
+            // listHandles
+            // 
+            this.listHandles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandles.DoubleBuffered = true;
+            this.listHandles.Highlight = false;
+            this.listHandles.Location = new System.Drawing.Point(6, 30);
+            this.listHandles.Name = "listHandles";
+            this.listHandles.Provider = null;
+            this.listHandles.Size = new System.Drawing.Size(418, 317);
+            this.listHandles.TabIndex = 0;
             // 
             // vistaMenu
             // 

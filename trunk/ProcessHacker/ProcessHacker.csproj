@@ -545,6 +545,7 @@
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="HighlightedListViewItem.cs" />
+    <Compile Include="HistoryManager.cs" />
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="ColumnSettings.cs" />
     <Compile Include="DeltaManager.cs" />

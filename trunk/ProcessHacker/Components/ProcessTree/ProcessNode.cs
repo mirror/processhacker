@@ -131,7 +131,7 @@ namespace ProcessHacker
 
         public int PPID
         {
-            get { if (_pitem.PID == _pitem.ParentPID) return -1; else return _pitem.ParentPID; }
+            get { if (_pitem.PID == _pitem.ParentPid) return -1; else return _pitem.ParentPid; }
         }
 
         public string PvtMemory
@@ -178,10 +178,10 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.CPUUsage == 0)
+                if (_pitem.CpuUsage == 0)
                     return "";
                 else
-                    return _pitem.CPUUsage.ToString("F2");
+                    return _pitem.CpuUsage.ToString("F2");
             }
         }
 

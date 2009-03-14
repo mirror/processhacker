@@ -34,9 +34,14 @@ namespace ProcessHacker.Components
 {
     public partial class Plotter : UserControl
     {
+        public delegate string GetToolTipDelegate(int item);
+
         private const BufferedGraphics NO_MANAGED_BACK_BUFFER = null;
         private BufferedGraphicsContext _graphicManager;
         private BufferedGraphics _managedBackBuffer;
+        private bool _showToolTip;
+        private Point _mouseLocation;
+        private string _lastToolTip;
 
         public Plotter()
         {
@@ -49,12 +54,12 @@ namespace ProcessHacker.Components
             _managedBackBuffer =
                 _graphicManager.Allocate(this.CreateGraphics(), this.ClientRectangle);
 
-            Draw();
+            this.Draw();
         }
 
+        public GetToolTipDelegate GetToolTip;
+
         private int _gridStartPos = 0;
-        private List<float> _listData1 = new List<float>();
-        private List<float> _listData2 = new List<float>();
 
         private void Plotter_Paint(object sender, PaintEventArgs e)
         {
@@ -62,7 +67,7 @@ namespace ProcessHacker.Components
                 _managedBackBuffer.Render(e.Graphics);
         }
 
-        private void Draw()
+        public void Draw()
         {
             int tWidth = this.Width;
             int tHeight = this.Height;
@@ -95,16 +100,25 @@ namespace ProcessHacker.Components
                 }
             }
 
+            if (_useLongData && (_longData1 == null || (this.UseSecondLine && _longData2 == null)))
+                return;
+
+            if (_useLongData)
+                this.FixLongData();
+
+            if (_data1 == null || (this.UseSecondLine && _data2 == null))
+                return;
+
             //draw lines
             int px = tWidth - _moveStep;
-            int start = _listData1.Count - 2;
+            int start = 0;
             Pen lGrid1 = new Pen(_lineColor1);
             Pen lGrid2 = new Pen(_lineColor2);
 
-            while (start >= 0)
+            while (start < _data1.Count - 1)
             {
-                float f = _listData1[start];
-                float fPre = _listData1[start + 1];
+                float f = _data1[start + 1];
+                float fPre = _data1[start];
 
                 int h = (int)(tHeight - (tHeight * f));
                 int hPre = (int)(tHeight - (tHeight * fPre));
@@ -117,13 +131,13 @@ namespace ProcessHacker.Components
 
                 if (this.UseSecondLine)
                 {
-                    f = _listData2[start];
-                    fPre = _listData2[start + 1];
+                    f = _data2[start + 1];
+                    fPre = _data2[start];
 
                     if (!this.OverlaySecondLine)
                     {
-                        f += _listData1[start];
-                        fPre += _listData1[start + 1];
+                        f += _data1[start + 1];
+                        fPre += _data1[start];
 
                         if (f > 1.0f)
                             f = 1.0f;
@@ -146,8 +160,8 @@ namespace ProcessHacker.Components
                     {
                         g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
                             new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
-                            new Point(px + _moveStep, tHeight - (int)(tHeight * _listData1[start + 1])),
-                            new Point(px, tHeight - (int)(tHeight * _listData1[start])) });
+                            new Point(px + _moveStep, tHeight - (int)(tHeight * _data1[start])),
+                            new Point(px, tHeight - (int)(tHeight * _data1[start + 1])) });
                         g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
                     }
                 }
@@ -158,11 +172,11 @@ namespace ProcessHacker.Components
                 }
 
                 px -= _moveStep;
-                start--;
+                start++;
             }
 
             // draw text
-            if (this.Text != "" && this.Text != null)
+            if (this.Text != null && this.Text != "")
             {
                 // draw the background for the text
                 g.FillRectangle(new SolidBrush(_textBoxColor),
@@ -172,116 +186,87 @@ namespace ProcessHacker.Components
                 TextRenderer.DrawText(g, this.Text, this.Font, _textPosition, _textColor);
             }
 
+            if (_showToolTip)
+                this.ShowToolTip();
+
             this.Refresh();
         }
 
-        /// <summary>
-        /// reset
-        /// </summary>
-        public void Reset()
+        private void ShowToolTip()
         {
-            _gridStartPos = 0;
-            _listData1.Clear();
-            _listData2.Clear();
-            Draw();
+            this.ShowToolTip(false);
         }
 
-        /// <summary>
-        /// Adds two numbers to the lists of data. The numbers represent a fraction 
-        /// of the plotter's height.
-        /// </summary>
-        /// <param name="f1">A floating-point number less than or equal to 1.</param> 
-        /// <param name="f2">A floating-point number less than or equal to 1.</param>
-        public void Add(float f1, float f2)
+        private void ShowToolTip(bool force)
         {
-            if (f1 > 1.0f)
-                f1 = 1.0f;
-            if (f2 > 1.0f)
-                f2 = 1.0f;
-            if (f1 < 0.0f || float.IsNaN(f1))
-                f1 = 0.0f;
-            if (f2 < 0.0f || float.IsNaN(f2))
-                f2 = 0.0f;
-
-            _listData1.Add(f1);
-            _listData2.Add(f2);
-
-            if (_listData1.Count > this.ClientRectangle.Width / this.MoveStep + 1)
-                _listData1.RemoveRange(0, _listData1.Count - 1 - this.ClientRectangle.Width / this.MoveStep);
-            if (_listData2.Count > this.ClientRectangle.Width / this.MoveStep + 1)
-                _listData2.RemoveRange(0, _listData2.Count - 1 - this.ClientRectangle.Width / this.MoveStep);
-
-            if (_isMoved)
+            if (this.GetToolTip != null)
             {
-                _gridStartPos += _moveStep;
-                if (_gridStartPos >= _gridSize.Width)
+                int itemIndex = (this.Width - _mouseLocation.X) / _moveStep;
+
+                if (itemIndex < this.Data1.Count)
                 {
-                    _gridStartPos -= _gridSize.Width;
+                    try
+                    {
+                        string currentToolTip = this.GetToolTip(itemIndex);
+
+                        if (currentToolTip != _lastToolTip || force)
+                            toolTip.Show(currentToolTip, this,
+                                new Point(_mouseLocation.X + 10, _mouseLocation.Y + 10),
+                                int.MaxValue);
+
+                        _lastToolTip = currentToolTip;
+                    }
+                    catch
+                    { }
+                }
+                else
+                {
+                    toolTip.Hide(this);
                 }
             }
-
-            this.Draw();
         }
 
-        private List<long> _listRawData1 = new List<long>();
-        private List<long> _listRawData2 = new List<long>();
-
-        /// <summary>
-        /// Adds two numbers to the lists of data. The numbers are raw values, and 
-        /// the graph will be automatically scaled to fit the largest value.
-        /// </summary>
-        /// <param name="v1">A long.</param>
-        /// <param name="v2">A long.</param>
-        public void Add(long v1, long v2)
+        public void MoveGrid()
         {
-            _listRawData1.Add(v1);
-            _listRawData2.Add(v2);
+            _gridStartPos += _moveStep;
 
-            if (_listRawData1.Count > this.ClientRectangle.Width / this.MoveStep + 1)
-                _listRawData1.RemoveRange(0, _listRawData1.Count - 1 - this.ClientRectangle.Width / this.MoveStep);
-            if (_listRawData2.Count > this.ClientRectangle.Width / this.MoveStep + 1)
-                _listRawData2.RemoveRange(0, _listRawData2.Count - 1 - this.ClientRectangle.Width / this.MoveStep);
+            if (_gridStartPos >= _gridSize.Width)
+            {
+                _gridStartPos -= _gridSize.Width;
+            }
+        }
 
+        public void FixLongData()
+        {
             // find the largest value
             long max = 0;
 
-            foreach (long l in _listRawData1)
+            foreach (long l in _longData1)
                 if (l > max)
                     max = l;
-            foreach (long l in _listRawData2)
+            foreach (long l in _longData2)
                 if (l > max)
                     max = l;
 
-            // redo the other list
-            _listData1.Clear();
-            _listData2.Clear();
+            // redo the float list
+            _data1 = new List<float>();
+            _data2 = new List<float>();
 
-            foreach (long l in _listRawData1)
+            foreach (long l in _longData1)
             {
                 if (max != 0)
-                    _listData1.Add((float)l / max);
+                    _data1.Add((float)l / max);
                 else
-                    _listData1.Add(0);
+                    _data1.Add(0);
             }
 
-            foreach (long l in _listRawData2)
+            foreach (long l in _longData2)
             {
                 if (max != 0)
-                    _listData2.Add((float)l / max);
+                    _data2.Add((float)l / max);
                 else
-                    _listData2.Add(0);
+                    _data2.Add(0);
             }
-
-            if (_isMoved)
-            {
-                _gridStartPos += _moveStep;
-                if (_gridStartPos >= _gridSize.Width)
-                {
-                    _gridStartPos -= _gridSize.Width;
-                }
-            }
-            
-            this.Draw();
         }
 
         #region Text
@@ -372,8 +357,6 @@ namespace ProcessHacker.Components
                 _textPosition = new Point(
                     _boxPosition.X + _textPadding.Left,
                     _boxPosition.Y + _textPadding.Top);
-
-                this.Draw();
             }
         }
 
@@ -438,11 +421,39 @@ namespace ProcessHacker.Components
             set { _moveStep = value; }
         }
 
-        private bool _isMoved = true;
-        public bool IsMoved
+        private IList<float> _data1;
+        public IList<float> Data1
         {
-            get { return _isMoved; }
-            set { _isMoved = value; }
+            get { return _data1; }
+            set { _data1 = value; }
+        }
+
+        private IList<float> _data2;
+        public IList<float> Data2
+        {
+            get { return _data2; }
+            set { _data2 = value; }
+        }
+
+        private bool _useLongData;
+        public bool UseLongData
+        {
+            get { return _useLongData; }
+            set { _useLongData = value; }
+        }
+
+        private IList<long> _longData1;
+        public IList<long> LongData1
+        {
+            get { return _longData1; }
+            set { _longData1 = value; }
+        }
+
+        private IList<long> _longData2;
+        public IList<long> LongData2
+        {
+            get { return _longData2; }
+            set { _longData2 = value; }
         }
 
         private void Plotter_Resize(object sender, EventArgs e)
@@ -457,7 +468,33 @@ namespace ProcessHacker.Components
                 new Size(this.Width + 1, this.Height + 1);
             _managedBackBuffer =
                 _graphicManager.Allocate(this.CreateGraphics(), this.ClientRectangle);
+
             this.Draw();
+        }
+
+        private void Plotter_MouseEnter(object sender, EventArgs e)
+        {
+            _showToolTip = true;
+        }
+
+        private void Plotter_MouseLeave(object sender, EventArgs e)
+        {
+            _showToolTip = false;
+            toolTip.Hide(this);
+        }
+
+        private void Plotter_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Location != _mouseLocation)
+            {
+                _mouseLocation = e.Location;
+                this.ShowToolTip(true);
+            }
+            else
+            {
+                _mouseLocation = e.Location;
+                this.ShowToolTip();
+            }
         }
     }
 }

@@ -16,7 +16,10 @@ Process Hacker
    * #2657138 - "Add a toolbar"
    * #2657143 - "Add Changelog in Help menu"
    * #2675859 - "Log: auto-scroll option"
+   * #2675864 - "System Information improvements"
    * #2675871 - "Suggest file extension everywhere"
+   * Full CPU, I/O and memory usage history for processes and the OS
+   * Tooltips for graphs
    * Modules tab shows mapped files
    * "Reduce Working Set" function
    * Can change virtualization for processes

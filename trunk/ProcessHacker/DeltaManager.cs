@@ -87,6 +87,12 @@ namespace ProcessHacker
             _subtractor = subtractor;
         }
 
+        public TValue this[TKey key]
+        {
+            get { return _deltas[key]; }
+            set { _deltas[key] = value; }
+        }
+
         public TValue GetDelta(TKey key)
         {
             return _deltas[key];
