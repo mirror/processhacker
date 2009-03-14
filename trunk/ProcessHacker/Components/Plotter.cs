@@ -63,8 +63,12 @@ namespace ProcessHacker.Components
 
         private void Plotter_Paint(object sender, PaintEventArgs e)
         {
-            if (!this.InvokeRequired)
+            try
+            {
                 _managedBackBuffer.Render(e.Graphics);
+            }
+            catch
+            { }
         }
 
         public void Draw()
