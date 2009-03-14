@@ -228,11 +228,13 @@ begin
 	if CurUninstallStep = usUninstall then begin
 		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
 		or fileExists(ExpandConstant('{userdocs}\Process Hacker.txt')) or fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
-		or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt')) or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt')) then begin
+		or fileExists(ExpandConstant('{userdocs}\Process Hacker.csv')) or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
+		or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt')) then begin
 			if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
 				DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
 				DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
 				DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
+				DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
 				DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
 				DeleteFile(ExpandConstant('{app}\CSR Processes.txt'));
 				DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
