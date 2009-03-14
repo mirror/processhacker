@@ -1,6 +1,6 @@
 Process Hacker
 
-1.3.5.5
+1.3.6.0
  * NEW:
    * #2596473 - "Add "Save Processes""
    * #2596481 - "Add option for one instance of Process Hacker"
