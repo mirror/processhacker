@@ -83,7 +83,7 @@ namespace ProcessHacker
             plotterCPUUsage.GetToolTip = i =>
                 ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
                 "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
-                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + ")";
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)";
             plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
             plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
             plotterMemory.GetToolTip = i =>

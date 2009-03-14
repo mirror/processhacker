@@ -53,8 +53,8 @@ namespace ProcessHacker
             plotterIO.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoWrite];
             plotterIO.GetToolTip = i =>
                 Program.HackerWindow.ProcessProvider.MostIoHistory[i] + "\n" +
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) +
-                ", W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
+                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
             plotterMemory.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.Commit];
             plotterMemory.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
             plotterMemory.GetToolTip = i =>
