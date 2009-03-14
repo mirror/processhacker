@@ -41,6 +41,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listHandles.ListViewItemSorter = new SortedListComparer(listHandles);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
 
