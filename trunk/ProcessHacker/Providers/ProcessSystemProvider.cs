@@ -771,7 +771,7 @@ namespace ProcessHacker
                     newitem.LongHistoryManager.Update(ProcessStats.IoReadOther,
                         newitem.DeltaManager[ProcessStats.IoRead] + newitem.DeltaManager[ProcessStats.IoOther]);
                     newitem.LongHistoryManager.Update(ProcessStats.PrivateMemory, processInfo.VirtualMemoryCounters.PrivateBytes);
-                    newitem.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.VirtualSize);
+                    newitem.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize);
 
                     newitem.Process = processInfo;
                     newitem.FullUpdate = false;
