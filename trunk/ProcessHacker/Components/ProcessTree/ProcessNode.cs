@@ -108,6 +108,40 @@ namespace ProcessHacker
             get { return _children; }
         }
 
+        public ProcessHacker.Components.NodePlotter.PlotterInfo CpuHistory
+        {
+            get
+            {
+                return new ProcessHacker.Components.NodePlotter.PlotterInfo()
+                {
+                    UseSecondLine = true,
+                    OverlaySecondLine = false,
+                    UseLongData = false,
+                    Data1 = _pitem.FloatHistoryManager[ProcessStats.CpuKernel],
+                    Data2 = _pitem.FloatHistoryManager[ProcessStats.CpuUser],
+                    LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor,
+                    LineColor2 = Properties.Settings.Default.PlotterCPUUserColor
+                };
+            }
+        }
+
+        public ProcessHacker.Components.NodePlotter.PlotterInfo IoHistory
+        {
+            get
+            {
+                return new ProcessHacker.Components.NodePlotter.PlotterInfo()
+                {
+                    UseSecondLine = true,
+                    OverlaySecondLine = true,
+                    UseLongData = true,
+                    LongData1 = _pitem.LongHistoryManager[ProcessStats.IoReadOther],
+                    LongData2 = _pitem.LongHistoryManager[ProcessStats.IoWrite],
+                    LineColor1 = Properties.Settings.Default.PlotterIOROColor,
+                    LineColor2 = Properties.Settings.Default.PlotterIOWColor
+                };
+            }
+        }
+
         public string Name
         {
             get { return _pitem.Name != null ? _pitem.Name : ""; }

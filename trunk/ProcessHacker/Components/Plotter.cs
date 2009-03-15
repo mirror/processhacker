@@ -65,10 +65,15 @@ namespace ProcessHacker.Components
         {
             try
             {
-                _managedBackBuffer.Render(e.Graphics);
+                this.Render(e.Graphics);
             }
             catch
             { }
+        }
+
+        public void Render(Graphics g)
+        {
+            _managedBackBuffer.Render(g);
         }
 
         public void Draw()

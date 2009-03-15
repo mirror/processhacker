@@ -213,6 +213,9 @@
     <EmbeddedResource Include="Forms\LogWindow.resx">
       <DependentUpon>LogWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MiniSysInfo.resx">
+      <DependentUpon>MiniSysInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProcessPickerWindow.resx">
       <DependentUpon>ProcessPickerWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -348,6 +351,9 @@
     <Compile Include="Components\HandleList.Designer.cs">
       <DependentUpon>HandleList.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\NodePlotter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\ProcessTree\ProcessToolTipProvider.cs" />
     <Compile Include="Components\ProcessTree\ProcessNode.cs" />
     <Compile Include="Components\ProcessTree\ProcessTreeModel.cs" />
@@ -459,6 +465,12 @@
     </Compile>
     <Compile Include="Forms\LogWindow.Designer.cs">
       <DependentUpon>LogWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MiniSysInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MiniSysInfo.Designer.cs">
+      <DependentUpon>MiniSysInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProcessPickerWindow.cs">
       <SubType>Form</SubType>

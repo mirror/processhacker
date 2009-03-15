@@ -1,6 +1,8 @@
 Process Hacker
 
 1.3.6.5
+ * NEW:
+   * CPU and I/O history columns
  * FIXED:
    * Minimize size of System Information
 

@@ -45,6 +45,27 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            var column = new TreeColumn("CPU History", 60);
+
+            column.IsVisible = false;
+            column.MinColumnWidth = 10;
+            treeProcesses.Columns.Add(column);
+            treeProcesses.NodeControls.Add(new ProcessHacker.Components.NodePlotter()
+            {
+                DataPropertyName = "CpuHistory",
+                ParentColumn = column
+            });
+
+            column = new TreeColumn("I/O History", 60);
+            column.IsVisible = false;
+            column.MinColumnWidth = 10;
+            treeProcesses.Columns.Add(column);
+            treeProcesses.NodeControls.Add(new ProcessHacker.Components.NodePlotter()
+            {
+                DataPropertyName = "IoHistory",
+                ParentColumn = column
+            });
+
             treeProcesses.KeyDown += new KeyEventHandler(ProcessTree_KeyDown);
             treeProcesses.MouseDown += new MouseEventHandler(treeProcesses_MouseDown);
             treeProcesses.MouseUp += new MouseEventHandler(treeProcesses_MouseUp);

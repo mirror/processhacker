@@ -893,6 +893,9 @@ namespace ProcessHacker
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point location);
+
+        [DllImport("user32.dll")]
         public static extern bool ChangeWindowMessageFilter(WindowMessage message, UipiFilterFlag flag);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]

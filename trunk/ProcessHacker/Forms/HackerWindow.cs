@@ -46,6 +46,7 @@ namespace ProcessHacker
         public HandleFilterWindow HandleFilterWindow;
         public CSRProcessesWindow CSRProcessesWindow;
         public LogWindow LogWindow;
+        public MiniSysInfo MiniSysInfoWindow;
 
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
@@ -266,9 +267,10 @@ namespace ProcessHacker
         {
             if (sysInfoThread == null || !sysInfoThread.IsAlive)
             {
-                SysInfoWindow = new SysInfoWindow();
                 sysInfoThread = new Thread(() =>
                 {
+                    SysInfoWindow = new SysInfoWindow();
+
                     Application.Run(SysInfoWindow);
                 });
                 sysInfoThread.Start();
