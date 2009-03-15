@@ -1308,7 +1308,7 @@
             this.Controls.Add(this.flowInfo);
             this.Controls.Add(this.tableGraphs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(357, 436);
+            this.MinimumSize = new System.Drawing.Size(200, 400);
             this.Name = "SysInfoWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "System Information";
