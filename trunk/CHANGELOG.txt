@@ -7,7 +7,6 @@ Process Hacker
    * Minimize size of System Information
    * Settings were lost between versions
 
-
 1.3.6.0
  * NEW:
    * #2596473 - "Add "Save Processes""
