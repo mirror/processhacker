@@ -118,6 +118,21 @@ namespace ProcessHacker
             catch
             { }
 
+            // Try to upgrade settings
+            try
+            {
+                if (Properties.Settings.Default.NeedsUpgrade)
+                {
+                    Properties.Settings.Default.Upgrade();
+                    Properties.Settings.Default.NeedsUpgrade = false;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Process Hacker could not upgrade its settings from a previous version.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             if (Environment.Version.Major < 2)
             {
                 MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",

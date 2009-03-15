@@ -1152,5 +1152,17 @@ namespace ProcessHacker.Properties {
                 this["SysInfoWindowLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NeedsUpgrade {
+            get {
+                return ((bool)(this["NeedsUpgrade"]));
+            }
+            set {
+                this["NeedsUpgrade"] = value;
+            }
+        }
     }
 }
