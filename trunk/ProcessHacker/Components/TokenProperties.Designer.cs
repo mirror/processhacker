@@ -18,6 +18,9 @@
                 components.Dispose();
             }
 
+            if (_groups != null)
+                _groups.Dispose();
+
             base.Dispose(disposing);
         }
 

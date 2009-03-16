@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            this.Provider = null;
+
             base.Dispose(disposing);
         }
 

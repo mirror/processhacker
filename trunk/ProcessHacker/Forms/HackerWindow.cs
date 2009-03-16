@@ -2106,7 +2106,7 @@ namespace ProcessHacker
 
                         return;
                     }
-                    break;
+                    //break;
 
                 case (int)Win32.WindowMessage.SysCommand:
                     {

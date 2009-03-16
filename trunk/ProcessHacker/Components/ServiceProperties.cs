@@ -106,12 +106,6 @@ namespace ProcessHacker
                 this.NeedsClose(this, new EventArgs());
         }
 
-        public void Deinit()
-        {
-            _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
-            _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
-        }
-
         private void FillComboBox(ComboBox box, Type t)
         {
             foreach (string s in Enum.GetNames(t))

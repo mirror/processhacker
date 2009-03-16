@@ -55,10 +55,5 @@ namespace ProcessHacker
         {
             this.Close();
         }
-
-        private void ServiceWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            _serviceProps.Deinit();
-        }
     }
 }

@@ -142,12 +142,16 @@ namespace ProcessHacker
         private void PerformDelayed(MethodInvoker method)
         {
             Timer t = new Timer();
-
-            t.Tick += new EventHandler(delegate(object o, EventArgs e)
+            EventHandler handler = null;
+            
+            handler = new EventHandler(delegate(object o, EventArgs e)
             {
                 method();
+                t.Tick -= handler;
+                t.Dispose();
             });
 
+            t.Tick += handler;
             t.Interval = _highlightingDuration;
             t.Start();
         }

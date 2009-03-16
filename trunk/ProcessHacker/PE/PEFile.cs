@@ -125,17 +125,17 @@ namespace ProcessHacker.PE
             }
 
             // read relocations
-            if (_imageData.ContainsKey(ImageDataType.BaseRelocationTable))
-            {
-                ImageData iD = _imageData[ImageDataType.BaseRelocationTable];
+            //if (_imageData.ContainsKey(ImageDataType.BaseRelocationTable))
+            //{
+            //    ImageData iD = _imageData[ImageDataType.BaseRelocationTable];
 
-                if (iD.VirtualAddress != 0)
-                {
-                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
+            //    if (iD.VirtualAddress != 0)
+            //    {
+            //        s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
 
-                    this.RelocData = new RelocData(br, this);
-                }
-            }
+            //        this.RelocData = new RelocData(br, this);
+            //    }
+            //}
         }
 
         public static long RvaToVa(PEFile peFile, long rva)

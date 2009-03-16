@@ -52,8 +52,6 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            fileCurrentDirectory.TextBoxLeave += new EventHandler(fileCurrentDirectory_TextBoxLeave);
-
             _processItem = process;
             _pid = process.PID;
 
@@ -250,39 +248,6 @@ namespace ProcessHacker
 
             if (this.WindowState == FormWindowState.Normal)
                 Properties.Settings.Default.ProcessWindowSize = this.Size;
-        }
-
-        private void ProcessWindow_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            if (_process != null)
-                _process.Close();
-
-            if (_threadP != null)
-            {
-                _threadP.Dispose();
-                _threadP = null;
-            }
-
-            if (_moduleP != null)
-            {
-                _moduleP.Dispose();
-                _moduleP = null;
-            }
-
-            if (_memoryP != null)
-            {
-                _memoryP.Dispose();
-                _memoryP = null;
-            }
-
-            if (_handleP != null)
-            {
-                _handleP.Dispose();
-                _handleP = null;
-            }
-
-            // A temporary fix for any handle leaks
-            System.GC.Collect();
         }
 
         public void ApplyFont(Font f)
@@ -1076,7 +1041,7 @@ namespace ProcessHacker
                     checkHideFreeRegions.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }));
-                _memoryP.Updated -= new Provider<int, MemoryItem>.ProviderUpdateOnce(_memoryP_Updated);
+                _memoryP.Updated -= new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
             }
         }
 
@@ -1106,7 +1071,7 @@ namespace ProcessHacker
                     listModules.Invalidate();
                     listModules.Highlight = true;
                 }));
-                _moduleP.Updated -= new Provider<int, ModuleItem>.ProviderUpdateOnce(_moduleP_Updated);
+                _moduleP.Updated -= new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             }
         }
 
@@ -1120,7 +1085,7 @@ namespace ProcessHacker
                     listThreads.Invalidate();
                     listThreads.Highlight = true;
                 }));
-                _threadP.Updated -= new Provider<int, ThreadItem>.ProviderUpdateOnce(_threadP_Updated);
+                _threadP.Updated -= new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
             }
         }
 

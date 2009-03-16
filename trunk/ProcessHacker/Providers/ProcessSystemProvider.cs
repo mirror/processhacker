@@ -82,6 +82,8 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
+        private const bool CacheFileVerifyResults = false;
+
         public struct FileProcessResult
         {
             public int PID;
@@ -287,7 +289,7 @@ namespace ProcessHacker
 
                         lock (_fileResults)
                         {
-                            if (false && _fileResults.ContainsKey(uniName))
+                            if (CacheFileVerifyResults && _fileResults.ContainsKey(uniName))
                             {
                                 fpResult.VerifyResult = _fileResults[uniName];
                             }

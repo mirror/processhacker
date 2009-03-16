@@ -17,6 +17,10 @@
             {
                 components.Dispose();
             }
+
+            _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
+            _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
+
             base.Dispose(disposing);
         }
 

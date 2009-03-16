@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _serviceProps.Dispose();
+
             base.Dispose(disposing);
         }
 
@@ -46,7 +49,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Service";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ServiceWindow_FormClosing);
             this.ResumeLayout(false);
 
         }
