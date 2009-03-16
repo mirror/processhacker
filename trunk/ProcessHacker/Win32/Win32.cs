@@ -342,14 +342,22 @@ namespace ProcessHacker
                 using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
                 {
                     Marshal.StructureToPtr(wci, mem, false);
-                    trustData.UnionData = mem;
 
-                    GUID action2 = DRIVER_ACTION_VERIFY;
-                    uint winTrustResult = WinVerifyTrust(0, ref action2, ref trustData);
+                    try
+                    {
+                        trustData.UnionData = mem;
 
-                    result = StatusToVerifyResult(winTrustResult);
-                    CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
-                    CryptCATAdminReleaseContext(catAdmin, 0);
+                        GUID action2 = DRIVER_ACTION_VERIFY;
+                        uint winTrustResult = WinVerifyTrust(0, ref action2, ref trustData);
+
+                        result = StatusToVerifyResult(winTrustResult);
+                    }
+                    finally
+                    {
+                        CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                        CryptCATAdminReleaseContext(catAdmin, 0);
+                        Marshal.DestroyStructure(mem, typeof(WINTRUST_CATALOG_INFO));
+                    }
                 }
             }
 
@@ -414,6 +422,50 @@ namespace ProcessHacker
 
         #region Files
 
+        public static Icon GetFileIcon(string fileName)
+        {
+            return GetFileIcon(fileName, false);
+        }
+
+        public static Icon GetFileIcon(string fileName, bool large)
+        {
+            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
+
+            if (fileName == null || fileName == "")
+                throw new Exception("File name cannot be empty.");
+
+            try
+            {
+                if (Win32.SHGetFileInfo(fileName, 0, ref shinfo,
+                      (uint)Marshal.SizeOf(shinfo),
+                       Win32.SHGFI_ICON |
+                       (large ? Win32.SHGFI_LARGEICON : Win32.SHGFI_SMALLICON)) == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Icon.FromHandle(shinfo.hIcon);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static string DeviceFileNameToDos(string fileName)
+        {
+            // don't know if this is really necessary...
+            var prefixes = DriveDevicePrefixes;
+
+            foreach (var pair in prefixes)
+                if (fileName.StartsWith(pair.Key))
+                    return pair.Value + fileName.Substring(pair.Key.Length);
+
+            return fileName;
+        }   
+
         public static void RefreshDriveDevicePrefixes()
         {
             // just create a new dictionary to avoid having to lock the existing one
@@ -430,18 +482,6 @@ namespace ProcessHacker
             }
 
             DriveDevicePrefixes = newPrefixes;
-        }
-
-        public static string DeviceFileNameToDos(string fileName)
-        {
-            // don't know if this is really necessary...
-            var prefixes = DriveDevicePrefixes;
-
-            foreach (var pair in prefixes)
-                if (fileName.StartsWith(pair.Key))
-                    return pair.Value + fileName.Substring(pair.Key.Length);
-
-            return fileName;
         }
 
         #endregion
@@ -978,38 +1018,6 @@ namespace ProcessHacker
             }
         }   
 
-        public static Icon GetFileIcon(string fileName)
-        {
-            return GetFileIcon(fileName, false);
-        }
-
-        public static Icon GetFileIcon(string fileName, bool large)
-        {
-            Win32.SHFILEINFO shinfo = new Win32.SHFILEINFO();
-
-            if (fileName == null || fileName == "")
-                throw new Exception("File name cannot be empty.");
-
-            try
-            {
-                if (Win32.SHGetFileInfo(fileName, 0, ref shinfo,
-                      (uint)Marshal.SizeOf(shinfo),
-                       Win32.SHGFI_ICON |
-                       (large ? Win32.SHGFI_LARGEICON : Win32.SHGFI_SMALLICON)) == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return Icon.FromHandle(shinfo.hIcon);
-                }
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         /// <summary>
         /// Gets the name of the process with the specified process ID.
         /// </summary>
@@ -1219,40 +1227,6 @@ namespace ProcessHacker
                     return data.ReadStruct<QUERY_SERVICE_CONFIG>();
                 }
             }
-        }
-
-        #endregion
-
-        #region Statistics
-
-        public static IO_COUNTERS GetProcessIoCounters(ProcessHandle process)
-        {
-            IO_COUNTERS counters = new IO_COUNTERS();
-
-            if (!GetProcessIoCounters(process.Handle, out counters))
-                ThrowLastWin32Error();
-
-            return counters;
-        }
-
-        public static ulong[] GetProcessTimes(ProcessHandle process)
-        {
-            ulong[] times = new ulong[4];
-
-            if (!GetProcessTimes(process.Handle, out times[0], out times[1], out times[2], out times[3]))
-                ThrowLastWin32Error();
-
-            return times;
-        }
-
-        public static ulong[] GetSystemTimes()
-        {
-            ulong[] times = new ulong[3];
-
-            if (!GetSystemTimes(out times[0], out times[1], out times[2]))
-                ThrowLastWin32Error();
-
-            return times; 
         }
 
         #endregion

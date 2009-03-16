@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -31,6 +32,7 @@ namespace ProcessHacker
     /// </summary>
     public class MemoryAlloc : IDisposable
     {
+        private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
         private bool _freed = false;
         private IntPtr _memory;
         private int _size;
@@ -149,8 +151,11 @@ namespace ProcessHacker
         /// <returns>The new struct.</returns>
         public T ReadStruct<T>(int offset, int index)
         {
+            if (!_sizeCache.ContainsKey(typeof(T)))
+                _sizeCache.Add(typeof(T), Marshal.SizeOf(typeof(T)));
+
             return (T)Marshal.PtrToStructure(
-                new IntPtr(_memory.ToInt32() + offset + Marshal.SizeOf(typeof(T)) * index), typeof(T));
+                new IntPtr(_memory.ToInt32() + offset + _sizeCache[typeof(T)] * index), typeof(T));
         }
 
         /// <summary>
