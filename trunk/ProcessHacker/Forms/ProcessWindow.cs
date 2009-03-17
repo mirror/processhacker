@@ -81,17 +81,20 @@ namespace ProcessHacker
             plotterCPUUsage.GetToolTip = i =>
                 ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
                 "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
-                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)";
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
             plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
             plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
             plotterMemory.GetToolTip = i =>
                 "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]);
+                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
             plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
             plotterIO.GetToolTip = i =>
                 "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
         }
 
         public MenuItem WindowMenuItem

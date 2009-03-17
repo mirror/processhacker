@@ -48,18 +48,21 @@ namespace ProcessHacker
                 Program.HackerWindow.ProcessProvider.MostCpuHistory[i] + "\n" + 
                 ((plotterCPU.Data1[i] + plotterCPU.Data2[i]) * 100).ToString("N2") + 
                 "% (K " + (plotterCPU.Data1[i] * 100).ToString("N2") + 
-                "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)";
+                "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)" + "\n" + 
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoReadOther];
             plotterIO.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoWrite];
             plotterIO.GetToolTip = i =>
                 Program.HackerWindow.ProcessProvider.MostIoHistory[i] + "\n" +
                 "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]);
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
             plotterMemory.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.Commit];
             plotterMemory.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
             plotterMemory.GetToolTip = i =>
                 "Commit: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Phys. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]);
+                "Phys. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
 
             // create a plotter per CPU
             _cpuPlotters = new Plotter[_noOfCPUs];
@@ -83,7 +86,8 @@ namespace ProcessHacker
                     Program.HackerWindow.ProcessProvider.MostCpuHistory[j] + "\n" +
                     ((plotter.Data1[j] + plotter.Data2[j]) * 100).ToString("N2") +
                     "% (K " + (plotter.Data1[j] * 100).ToString("N2") +
-                    "%, U " + (plotter.Data2[j] * 100).ToString("N2") + "%)";
+                    "%, U " + (plotter.Data2[j] * 100).ToString("N2") + "%)" + "\n" +
+                    Program.HackerWindow.ProcessProvider.TimeHistory[j].ToString();
                 tableCPUs.Controls.Add(plotter, i, 0);
             }
 

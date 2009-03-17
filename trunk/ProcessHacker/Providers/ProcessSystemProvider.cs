@@ -98,6 +98,7 @@ namespace ProcessHacker
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(new Int64Subtractor());
         private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(new Int64Subtractor());
+        private HistoryManager<bool, DateTime> _timeHistory = new HistoryManager<bool, DateTime>();
         private HistoryManager<SystemStats, long> _longHistory = new HistoryManager<SystemStats, long>();
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
@@ -118,6 +119,8 @@ namespace ProcessHacker
             this.ProcessorPerfArray = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[this.System.NumberOfProcessors];
 
             this.UpdateProcessorPerf();
+
+            _timeHistory.Add(false);
 
             _mostUsageHistory = new HistoryManager<bool, string>();
             _mostUsageHistory.Add(false);
@@ -168,6 +171,7 @@ namespace ProcessHacker
         public DeltaManager<SystemStats, long> LongDeltas { get { return _longDeltas; } }
         public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
         public HistoryManager<SystemStats, long> LongHistory { get { return _longHistory; } }
+        public ReadOnlyCollection<DateTime> TimeHistory { get { return _timeHistory[false]; } }
         public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
         public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
 
@@ -861,6 +865,8 @@ namespace ProcessHacker
             {
                 _mostUsageHistory.Update(true, "");
             }
+
+            _timeHistory.Update(false, DateTime.Now);
 
             Dictionary = newdictionary;
 

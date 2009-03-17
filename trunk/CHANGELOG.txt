@@ -1,5 +1,9 @@
 Process Hacker
 
+1.3.6.2
+ * NEW:
+   * Statistics times in System Information and process properties
+
 1.3.6.1
  * NEW:
    * CPU and I/O history columns
