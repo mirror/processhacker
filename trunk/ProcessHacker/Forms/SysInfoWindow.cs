@@ -171,23 +171,24 @@ namespace ProcessHacker
             labelTotalsThreads.Text = info.ThreadCount.ToString("N0");
             labelTotalsHandles.Text = info.HandlesCount.ToString("N0");
 
-            labelCCC.Text = Misc.GetNiceSizeName(perfInfo.CommittedPages * _pageSize);
-            labelCCP.Text = Misc.GetNiceSizeName(perfInfo.PeakCommitment * _pageSize);
-            labelCCL.Text = Misc.GetNiceSizeName(perfInfo.CommitLimit * _pageSize);
+            labelCCC.Text = Misc.GetNiceSizeName((long)perfInfo.CommittedPages * _pageSize);
+            labelCCP.Text = Misc.GetNiceSizeName((long)perfInfo.PeakCommitment * _pageSize);
+            labelCCL.Text = Misc.GetNiceSizeName((long)perfInfo.CommitLimit * _pageSize);
 
-            labelPMC.Text = Misc.GetNiceSizeName((_pages - perfInfo.AvailablePages) * _pageSize);
-            labelPMT.Text = Misc.GetNiceSizeName(_pages * _pageSize);
+            labelPMC.Text = Misc.GetNiceSizeName((long)(_pages - perfInfo.AvailablePages) * _pageSize);
+            labelPSC.Text = Misc.GetNiceSizeName((long)info.SystemCache * _pageSize);
+            labelPMT.Text = Misc.GetNiceSizeName((long)_pages * _pageSize);
 
             labelCacheCurrent.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
             labelCachePeak.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);
-            labelCacheMinimum.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsMinimum * _pageSize);
-            labelCacheMaximum.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsMaximum * _pageSize);
+            labelCacheMinimum.Text = Misc.GetNiceSizeName((long)cacheInfo.SystemCacheWsMinimum * _pageSize);
+            labelCacheMaximum.Text = Misc.GetNiceSizeName((long)cacheInfo.SystemCacheWsMaximum * _pageSize);
 
-            labelKPPPU.Text = Misc.GetNiceSizeName(perfInfo.PagedPoolPages * _pageSize);
-            labelKPPVU.Text = Misc.GetNiceSizeName(perfInfo.PagedPoolUsage * _pageSize);
+            labelKPPPU.Text = Misc.GetNiceSizeName((long)perfInfo.PagedPoolPages * _pageSize);
+            labelKPPVU.Text = Misc.GetNiceSizeName((long)perfInfo.PagedPoolUsage * _pageSize);
             labelKPPA.Text = perfInfo.PagedPoolAllocs.ToString("N0");
             labelKPPF.Text = perfInfo.PagedPoolFrees.ToString("N0");
-            labelKPNPU.Text = Misc.GetNiceSizeName(perfInfo.NonPagedPoolUsage * _pageSize);
+            labelKPNPU.Text = Misc.GetNiceSizeName((long)perfInfo.NonPagedPoolUsage * _pageSize);
             labelKPNPA.Text = perfInfo.NonPagedPoolAllocs.ToString("N0");
             labelKPNPF.Text = perfInfo.NonPagedPoolFrees.ToString("N0");
 

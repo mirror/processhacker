@@ -3,10 +3,14 @@ Process Hacker
 1.3.6.5
  * NEW:
    * CPU and I/O history columns
+   * System Cache value in System Information
  * FIXED:
-   * Minimize size of System Information
+   * #2625167 - "Commit charge limit should not be 16EB"
+   * #2642385 - "Maximum File Cache size should not be 16EB"
+   * Minimize size of the System Information window
    * Settings were lost between versions
    * Handle and memory leaks
+   * Integer overflows in System Information
 
 1.3.6.0
  * NEW:

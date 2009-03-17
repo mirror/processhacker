@@ -31,12 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SysInfoWindow));
             this.gboxCPUPlotter = new System.Windows.Forms.GroupBox();
             this.tableCPUs = new System.Windows.Forms.TableLayoutPanel();
-            this.plotterCPU = new ProcessHacker.Components.Plotter();
             this.tableGraphs = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.plotterMemory = new ProcessHacker.Components.Plotter();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.plotterIO = new ProcessHacker.Components.Plotter();
             this.checkShowOneGraphPerCPU = new System.Windows.Forms.CheckBox();
             this.flowInfo = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -61,6 +58,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.labelPMC = new System.Windows.Forms.Label();
             this.labelPMT = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label15 = new System.Windows.Forms.Label();
@@ -124,6 +122,10 @@
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
+            this.labelPSC = new System.Windows.Forms.Label();
+            this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.plotterIO = new ProcessHacker.Components.Plotter();
+            this.plotterCPU = new ProcessHacker.Components.Plotter();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -171,33 +173,6 @@
             this.tableCPUs.TabIndex = 3;
             this.tableCPUs.Visible = false;
             // 
-            // plotterCPU
-            // 
-            this.plotterCPU.BackColor = System.Drawing.Color.Black;
-            this.plotterCPU.Data1 = null;
-            this.plotterCPU.Data2 = null;
-            this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPU.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPU.Location = new System.Drawing.Point(3, 16);
-            this.plotterCPU.LongData1 = null;
-            this.plotterCPU.LongData2 = null;
-            this.plotterCPU.MoveStep = 3;
-            this.plotterCPU.Name = "plotterCPU";
-            this.plotterCPU.OverlaySecondLine = false;
-            this.plotterCPU.ShowGrid = true;
-            this.plotterCPU.Size = new System.Drawing.Size(806, 43);
-            this.plotterCPU.TabIndex = 0;
-            this.plotterCPU.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterCPU.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterCPU.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterCPU.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterCPU.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterCPU.UseLongData = false;
-            this.plotterCPU.UseSecondLine = true;
-            // 
             // tableGraphs
             // 
             this.tableGraphs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -231,33 +206,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Commit, Physical Memory";
             // 
-            // plotterMemory
-            // 
-            this.plotterMemory.BackColor = System.Drawing.Color.Black;
-            this.plotterMemory.Data1 = null;
-            this.plotterMemory.Data2 = null;
-            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterMemory.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterMemory.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
-            this.plotterMemory.LongData1 = null;
-            this.plotterMemory.LongData2 = null;
-            this.plotterMemory.MoveStep = 3;
-            this.plotterMemory.Name = "plotterMemory";
-            this.plotterMemory.OverlaySecondLine = true;
-            this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(806, 43);
-            this.plotterMemory.TabIndex = 5;
-            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterMemory.UseLongData = true;
-            this.plotterMemory.UseSecondLine = true;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.plotterIO);
@@ -268,33 +216,6 @@
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "I/O (R+O, W)";
-            // 
-            // plotterIO
-            // 
-            this.plotterIO.BackColor = System.Drawing.Color.Black;
-            this.plotterIO.Data1 = null;
-            this.plotterIO.Data2 = null;
-            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterIO.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
-            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterIO.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterIO.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterIO.Location = new System.Drawing.Point(3, 16);
-            this.plotterIO.LongData1 = null;
-            this.plotterIO.LongData2 = null;
-            this.plotterIO.MoveStep = 3;
-            this.plotterIO.Name = "plotterIO";
-            this.plotterIO.OverlaySecondLine = true;
-            this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(806, 43);
-            this.plotterIO.TabIndex = 5;
-            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterIO.UseLongData = true;
-            this.plotterIO.UseSecondLine = true;
             // 
             // checkShowOneGraphPerCPU
             // 
@@ -514,7 +435,7 @@
             this.groupBox5.Controls.Add(this.tableLayoutPanel3);
             this.groupBox5.Location = new System.Drawing.Point(3, 171);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(195, 56);
+            this.groupBox5.Size = new System.Drawing.Size(195, 75);
             this.groupBox5.TabIndex = 3;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Physical Memory";
@@ -525,17 +446,19 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel3.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label7, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label7, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.labelPMC, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.labelPMT, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.labelPMT, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label19, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.labelPSC, 1, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 37);
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(189, 56);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // label4
@@ -552,7 +475,7 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 21);
+            this.label7.Location = new System.Drawing.Point(3, 39);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(31, 13);
             this.label7.TabIndex = 1;
@@ -572,11 +495,21 @@
             // 
             this.labelPMT.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelPMT.AutoSize = true;
-            this.labelPMT.Location = new System.Drawing.Point(153, 21);
+            this.labelPMT.Location = new System.Drawing.Point(153, 39);
             this.labelPMT.Name = "labelPMT";
             this.labelPMT.Size = new System.Drawing.Size(33, 13);
             this.labelPMT.TabIndex = 1;
             this.labelPMT.Text = "value";
+            // 
+            // label19
+            // 
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 20);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(75, 13);
+            this.label19.TabIndex = 1;
+            this.label19.Text = "System Cache";
             // 
             // groupBox6
             // 
@@ -1299,6 +1232,97 @@
             this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
             // 
+            // labelPSC
+            // 
+            this.labelPSC.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPSC.AutoSize = true;
+            this.labelPSC.Location = new System.Drawing.Point(153, 20);
+            this.labelPSC.Name = "labelPSC";
+            this.labelPSC.Size = new System.Drawing.Size(33, 13);
+            this.labelPSC.TabIndex = 1;
+            this.labelPSC.Text = "value";
+            // 
+            // plotterMemory
+            // 
+            this.plotterMemory.BackColor = System.Drawing.Color.Black;
+            this.plotterMemory.Data1 = null;
+            this.plotterMemory.Data2 = null;
+            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterMemory.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterMemory.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.Location = new System.Drawing.Point(3, 16);
+            this.plotterMemory.LongData1 = null;
+            this.plotterMemory.LongData2 = null;
+            this.plotterMemory.MoveStep = 3;
+            this.plotterMemory.Name = "plotterMemory";
+            this.plotterMemory.OverlaySecondLine = true;
+            this.plotterMemory.ShowGrid = true;
+            this.plotterMemory.Size = new System.Drawing.Size(806, 43);
+            this.plotterMemory.TabIndex = 5;
+            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterMemory.UseLongData = true;
+            this.plotterMemory.UseSecondLine = true;
+            // 
+            // plotterIO
+            // 
+            this.plotterIO.BackColor = System.Drawing.Color.Black;
+            this.plotterIO.Data1 = null;
+            this.plotterIO.Data2 = null;
+            this.plotterIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterIO.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterIO.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterIO.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.Location = new System.Drawing.Point(3, 16);
+            this.plotterIO.LongData1 = null;
+            this.plotterIO.LongData2 = null;
+            this.plotterIO.MoveStep = 3;
+            this.plotterIO.Name = "plotterIO";
+            this.plotterIO.OverlaySecondLine = true;
+            this.plotterIO.ShowGrid = true;
+            this.plotterIO.Size = new System.Drawing.Size(806, 43);
+            this.plotterIO.TabIndex = 5;
+            this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterIO.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterIO.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterIO.UseLongData = true;
+            this.plotterIO.UseSecondLine = true;
+            // 
+            // plotterCPU
+            // 
+            this.plotterCPU.BackColor = System.Drawing.Color.Black;
+            this.plotterCPU.Data1 = null;
+            this.plotterCPU.Data2 = null;
+            this.plotterCPU.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterCPU.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(128)))), ((int)(((byte)(64)))));
+            this.plotterCPU.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterCPU.LineColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPU.LineColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPU.Location = new System.Drawing.Point(3, 16);
+            this.plotterCPU.LongData1 = null;
+            this.plotterCPU.LongData2 = null;
+            this.plotterCPU.MoveStep = 3;
+            this.plotterCPU.Name = "plotterCPU";
+            this.plotterCPU.OverlaySecondLine = false;
+            this.plotterCPU.ShowGrid = true;
+            this.plotterCPU.Size = new System.Drawing.Size(806, 43);
+            this.plotterCPU.TabIndex = 0;
+            this.plotterCPU.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterCPU.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterCPU.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterCPU.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterCPU.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterCPU.UseLongData = false;
+            this.plotterCPU.UseSecondLine = true;
+            // 
             // SysInfoWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1445,5 +1469,7 @@
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label labelCPUInterrupts;
         private System.Windows.Forms.CheckBox checkAlwaysOnTop;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label labelPSC;
     }
 }

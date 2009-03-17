@@ -483,13 +483,16 @@ namespace ProcessHacker
         public struct PERFORMANCE_INFORMATION
         {
             public int Size;
-
-            // I've made this an array because we already have this 
-            // stuff from SYSTEM_PERFORMANCE_INFORMATION. I just want 
-            // counts below.
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-            public int[] IDontCare;
-
+            public int CommitTotal;
+            public int CommitLimit;
+            public int CommitPeak;
+            public int PhysicalTotal;
+            public int PhysicalAvailable;
+            public int SystemCache;
+            public int KernelTotal;
+            public int KernelPaged;
+            public int KernelNonPaged;
+            public int PageSize;
             public int HandlesCount;
             public int ProcessCount;
             public int ThreadCount;
