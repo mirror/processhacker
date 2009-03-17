@@ -435,16 +435,16 @@ namespace ProcessHacker
             _threadP = new ThreadProvider(_pid);
             _threadP.Interval = Properties.Settings.Default.RefreshInterval;
             _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
-            //_threadP.RunOnceAsync();
             listThreads.Provider = _threadP;
+            //_threadP.RunOnceAsync();
 
             listModules.BeginUpdate();
             listModules.Highlight = false;
             _moduleP = new ModuleProvider(_pid);
             _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
             _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
-            _moduleP.RunOnceAsync();
             listModules.Provider = _moduleP;
+            _moduleP.RunOnceAsync();
 
             listMemory.BeginUpdate();
             listMemory.Highlight = false;
@@ -452,8 +452,8 @@ namespace ProcessHacker
             _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
-            //_memoryP.RunOnceAsync();
             listMemory.Provider = _memoryP;
+            //_memoryP.RunOnceAsync();
 
             listHandles.BeginUpdate();
             listHandles.Highlight = false;
@@ -461,8 +461,8 @@ namespace ProcessHacker
             _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
             _handleP.Interval = Properties.Settings.Default.RefreshInterval;
             _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
-            //_handleP.RunOnceAsync();
             listHandles.Provider = _handleP;
+            //_handleP.RunOnceAsync();
 
             Win32.SetWindowTheme(listThreads.List.Handle, "explorer", null);
             Win32.SetWindowTheme(listModules.List.Handle, "explorer", null);

@@ -2368,7 +2368,12 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string[] modules = { "kernel32.dll", "ntdll.dll", "shell32.dll" };
+                    string[] modules =
+                    {
+                        "advapi32.dll", "comctl32.dll", "crypt32.dll", "dnsapi.dll",
+                        "gdi32.dll", "imagehlp.dll", "kernel32.dll", 
+                        "ntdll.dll", "ole32.dll", "psapi.dll", "rpcrt4.dll", "shell32.dll",
+                        "user32.dll", "winsta.dll", "wintrust.dll", "wtsapi32.dll" };
 
                     foreach (string module in modules)
                     {

@@ -79,11 +79,7 @@ namespace ProcessHacker
             if (SymbolProvider.BaseInstance != null)
             {
                 _libraryLookup = new List<KeyValuePair<uint, string>>(SymbolProvider.BaseInstance._libraryLookup);
-                _symbols = new Dictionary<string, List<KeyValuePair<uint, string>>>();
-
-                foreach (string k in SymbolProvider.BaseInstance._symbols.Keys)
-                    _symbols.Add(k, new List<KeyValuePair<uint, string>>(SymbolProvider.BaseInstance._symbols[k]));
-
+                _symbols = new Dictionary<string, List<KeyValuePair<uint, string>>>(SymbolProvider.BaseInstance._symbols);
                 _librarySizes = new Dictionary<string, uint>(SymbolProvider.BaseInstance._librarySizes);
             }
             else
@@ -154,7 +150,7 @@ namespace ProcessHacker
 
                 // if we didn't even get to load the PE file
                 if (!_librarySizes.ContainsKey(realPath))
-                    _librarySizes.Add(realPath, 0x7fffffff);
+                    _librarySizes.Add(realPath, 0xffffffff);
             }
             else
             {
