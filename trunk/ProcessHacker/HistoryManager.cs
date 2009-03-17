@@ -30,7 +30,7 @@ namespace ProcessHacker
     public class HistoryManager<TKey, TValue>
     {
         private Dictionary<TKey, List<TValue>> _history = new Dictionary<TKey, List<TValue>>();
-        private int _maxCount = 400;
+        private int _maxCount = 1000;
 
         public int MaxCount
         {
