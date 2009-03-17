@@ -2415,13 +2415,14 @@ namespace ProcessHacker
         {
             Program.HackerWindow = this;
 
+            this.LoadVerifySettings();
+
             InitializeComponent();
 
             // Force the handle to be created
             { var handle = this.Handle; }
 
             this.SuspendLayout();
-            this.LoadVerifySettings();
             this.CreateShutdownMenuItems();
             this.LoadFixMenuItems();
             this.LoadNotificationIcon();

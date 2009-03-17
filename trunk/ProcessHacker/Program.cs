@@ -123,15 +123,21 @@ namespace ProcessHacker
             {
                 if (Properties.Settings.Default.NeedsUpgrade)
                 {
-                    Properties.Settings.Default.Upgrade();
+                    try
+                    {
+                        Properties.Settings.Default.Upgrade();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Process Hacker could not upgrade its settings from a previous version.", "Process Hacker",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
                     Properties.Settings.Default.NeedsUpgrade = false;
                 }
             }
             catch
-            {
-                MessageBox.Show("Process Hacker could not upgrade its settings from a previous version.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            { }
 
             if (Environment.Version.Major < 2)
             {
