@@ -50,8 +50,7 @@ namespace ProcessHacker
                 foreach (var connection in list)
                 {
                     string id = connection.PID.ToString() + "-" + connection.Local.ToString() + "-" +
-                        (connection.Remote != null ? connection.Remote.ToString() : "") + "-" + connection.State.ToString() + "-" +
-                        connection.Protocol.ToString();
+                        (connection.Remote != null ? connection.Remote.ToString() : "") + "-" + connection.Protocol.ToString();
 
                     if (preKeyDict.ContainsKey(id))
                         preKeyDict[id] = new KeyValuePair<int, Win32.NetworkConnection>(
