@@ -190,8 +190,6 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(Win32.NetworkConnection item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
-
             if (listNetwork.Groups[item.PID.ToString()] == null)
             {
                 string header = Win32.GetNameFromPID(item.PID) + " (" + item.PID.ToString() + ")";
@@ -216,6 +214,8 @@ namespace ProcessHacker
                 }
             }
 
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
+
             litem.Name = item.ID;
             litem.Group = listNetwork.Groups[item.PID.ToString()];
 
@@ -232,8 +232,7 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Protocol.ToString().ToUpper()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.State != 0 ? item.State.ToString() : ""));
 
-            try { listNetwork.Items.Add(litem); }
-            catch { }
+            listNetwork.Items.Add(litem);
         }
 
         private void provider_DictionaryModified(Win32.NetworkConnection oldItem, Win32.NetworkConnection newItem)
