@@ -41,18 +41,17 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            listHandles.SetDoubleBuffered(true);
+            listHandles.SetTheme("explorer");
             listHandles.ListViewItemSorter = new SortedListComparer(listHandles);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
-
-            Misc.SetDoubleBuffered(listHandles, typeof(ListView), true);
         }
 
         private void HandleFilterWindow_Load(object sender, EventArgs e)
         {
             ColumnSettings.LoadSettings(Properties.Settings.Default.FilterHandleListViewColumns, listHandles);
             this.Size = Properties.Settings.Default.FilterHandleWindowSize;
-            Win32.SetWindowTheme(listHandles.Handle, "explorer", null);
             listHandles.KeyDown +=
                 (sender_, e_) =>
                 {

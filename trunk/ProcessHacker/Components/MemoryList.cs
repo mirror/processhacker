@@ -30,15 +30,18 @@ namespace ProcessHacker
 {
     public partial class MemoryList : UserControl
     {
-        MemoryProvider _provider;
+        private MemoryProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
+        private int _pid;
 
         public MemoryList()
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listMemory);
             listMemory.KeyDown += new KeyEventHandler(MemoryList_KeyDown);
             listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
             listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
@@ -134,6 +137,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -153,6 +157,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.PID;
                 }
             }
@@ -160,7 +165,29 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Core Memory List
+        #region Interfacing
+
+        public void BeginUpdate()
+        {
+            listMemory.BeginUpdate();
+        }
+
+        public void EndUpdate()
+        {
+            listMemory.EndUpdate();
+        }
+
+        public ListView.ListViewItemCollection Items
+        {
+            get { return listMemory.Items; }
+        }
+
+        public ListView.SelectedListViewItemCollection SelectedItems
+        {
+            get { return listMemory.SelectedItems; }
+        }
+
+        #endregion
 
         private string GetProtectStr(Win32.MEMORY_PROTECTION protect)
         {
@@ -221,11 +248,16 @@ namespace ProcessHacker
                 return "Private";
             else
                 return "Unknown";
+        }       
+
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
         }
 
         private void provider_DictionaryAdded(MemoryItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
 
             litem.Name = item.Address.ToString();
 
@@ -297,34 +329,6 @@ namespace ProcessHacker
                 listMemory.Items[item.Address.ToString()].Remove();
             }
         }
-
-        #endregion
-
-        #region Interfacing
-
-        public void BeginUpdate()
-        {
-            listMemory.BeginUpdate();
-        }
-
-        public void EndUpdate()
-        {
-            listMemory.EndUpdate();
-        }
-
-        public ListView.ListViewItemCollection Items
-        {
-            get { return listMemory.Items; }
-        }
-
-        public ListView.SelectedListViewItemCollection SelectedItems
-        {
-            get { return listMemory.SelectedItems; }
-        }
-
-        #endregion
-
-        private int _pid;
 
         public void SaveSettings()
         {

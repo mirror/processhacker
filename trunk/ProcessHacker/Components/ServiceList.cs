@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   service list
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -30,7 +30,8 @@ namespace ProcessHacker
 {
     public partial class ServiceList : UserControl
     {
-        ServiceProvider _provider;
+        private ServiceProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -41,6 +42,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listServices);
+            listServices.SetTheme("explorer");
             listServices.ListViewItemSorter = new SortedListComparer(listServices);
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
@@ -130,6 +133,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new ServiceProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -148,17 +152,45 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new ServiceProvider.ProviderUpdateOnce(provider_Updated);
                 }
             }
         }
 
         #endregion
 
-        #region Core Service List
+        #region Interfacing
+
+        public void BeginUpdate()
+        {
+            listServices.BeginUpdate();
+        }
+
+        public void EndUpdate()
+        {
+            listServices.EndUpdate();
+        }
+
+        public ListView.ListViewItemCollection Items
+        {
+            get { return listServices.Items; }
+        }
+
+        public ListView.SelectedListViewItemCollection SelectedItems
+        {
+            get { return listServices.SelectedItems; }
+        }
+
+        #endregion
+
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
+        }  
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
 
             litem.Name = item.Status.ServiceName;
             litem.Text = item.Status.ServiceName;
@@ -211,46 +243,6 @@ namespace ProcessHacker
             ListViewItem litem = listServices.Items[item.Status.ServiceName];
 
             litem.Remove();
-
-            if (selected && selectedCount == 1)
-            {
-                if (listServices.Items.Count == 0)
-                { }
-                else if (index > (listServices.Items.Count - 1))
-                {
-                    listServices.Items[listServices.Items.Count - 1].Selected = true;
-                }
-                else
-                {
-                    listServices.Items[index].Selected = true;
-                }
-            }
         }
-
-        #endregion
-
-        #region Interfacing
-
-        public void BeginUpdate()
-        {
-            listServices.BeginUpdate();
-        }
-
-        public void EndUpdate()
-        {
-            listServices.EndUpdate();
-        }
-
-        public ListView.ListViewItemCollection Items
-        {
-            get { return listServices.Items; }
-        }
-
-        public ListView.SelectedListViewItemCollection SelectedItems
-        {
-            get { return listServices.SelectedItems; }
-        }
-
-        #endregion
     }
 }

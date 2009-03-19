@@ -36,8 +36,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            Misc.SetDoubleBuffered(listLog, typeof(ListView), true);
-            Win32.SetWindowTheme(listLog.Handle, "explorer", null);
+            listLog.SetDoubleBuffered(true);
+            listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
             listLog.KeyDown +=
                 (sender, e) =>

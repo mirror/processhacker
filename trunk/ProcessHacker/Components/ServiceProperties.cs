@@ -47,7 +47,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             listServices.ListViewItemSorter = new SortedListComparer(listServices);
-            Win32.SetWindowTheme(listServices.Handle, "explorer", null);
+            listServices.SetTheme("explorer");
 
             PID = -1;
 
@@ -84,7 +84,7 @@ namespace ProcessHacker
             this.UpdateInformation();
 
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                Misc.SetShieldIcon(buttonApply, true);
+                buttonApply.SetShieldIcon(true);
         }
 
         public int PID { get; set; }

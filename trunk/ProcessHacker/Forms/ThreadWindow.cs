@@ -121,14 +121,14 @@ namespace ProcessHacker
 
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
-            Win32.SetWindowTheme(listViewCallStack.Handle, "explorer", null);
+            listViewCallStack.SetTheme("explorer");
             listViewCallStack.KeyDown +=
                 (sender_, e_) =>
                 {
                     if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listViewCallStack.Items);
                     if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewCallStack, -1);
                 };
-            Win32.SetWindowTheme(listViewRegisters.Handle, "explorer", null);
+            listViewRegisters.SetTheme("explorer");
             listViewRegisters.KeyDown +=
                 (sender_, e_) =>
                 {

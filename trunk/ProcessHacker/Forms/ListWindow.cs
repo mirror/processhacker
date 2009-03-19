@@ -51,7 +51,7 @@ namespace ProcessHacker
 
         private void ListWindow_Load(object sender, EventArgs e)
         {
-            Win32.SetWindowTheme(listView.Handle, "explorer", null);
+            listView.SetTheme("explorer");
         }
 
         private void buttonClose_Click(object sender, EventArgs e)

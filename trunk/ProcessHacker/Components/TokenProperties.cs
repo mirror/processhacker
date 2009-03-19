@@ -42,14 +42,10 @@ namespace ProcessHacker
 
             _object = obj;
 
-            Misc.SetDoubleBuffered(listPrivileges, typeof(ListView), true);
-
+            listPrivileges.SetDoubleBuffered(true);
             listPrivileges.ListViewItemSorter = new SortedListComparer(listPrivileges);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listPrivileges, null);
             listPrivileges.ContextMenu = menuPrivileges;
-
-            typeof(ListView).GetProperty("DoubleBuffered",
-                BindingFlags.NonPublic | BindingFlags.Instance).SetValue(listPrivileges, true, null);
 
             _object = obj;
 

@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   network list
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -30,7 +30,8 @@ namespace ProcessHacker
 {
     public partial class NetworkList : UserControl
     {
-        NetworkProvider _provider;
+        private NetworkProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -41,6 +42,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listNetwork);
+            listNetwork.SetTheme("explorer");
             listNetwork.ListViewItemSorter = new SortedListComparer(listNetwork);
             listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
             listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
@@ -130,6 +133,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new NetworkProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new NetworkProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new NetworkProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new NetworkProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -148,17 +152,45 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new NetworkProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new NetworkProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new NetworkProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new NetworkProvider.ProviderUpdateOnce(provider_Updated);
                 }
             }
         }
 
         #endregion
 
-        #region Core Network List
+        #region Interfacing
+
+        public void BeginUpdate()
+        {
+            listNetwork.BeginUpdate();
+        }
+
+        public void EndUpdate()
+        {
+            listNetwork.EndUpdate();
+        }
+
+        public ListView.ListViewItemCollection Items
+        {
+            get { return listNetwork.Items; }
+        }
+
+        public ListView.SelectedListViewItemCollection SelectedItems
+        {
+            get { return listNetwork.SelectedItems; }
+        }
+
+        #endregion
+
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
+        }  
 
         private void provider_DictionaryAdded(Win32.NetworkConnection item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem();
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
 
             if (listNetwork.Groups[item.PID.ToString()] == null)
             {
@@ -244,46 +276,6 @@ namespace ProcessHacker
             ListViewItem litem = listNetwork.Items[item.ID];
 
             litem.Remove();
-
-            if (selected && selectedCount == 1)
-            {
-                if (listNetwork.Items.Count == 0)
-                { }
-                else if (index > (listNetwork.Items.Count - 1))
-                {
-                    listNetwork.Items[listNetwork.Items.Count - 1].Selected = true;
-                }
-                else
-                {
-                    listNetwork.Items[index].Selected = true;
-                }
-            }
         }
-
-        #endregion
-
-        #region Interfacing
-
-        public void BeginUpdate()
-        {
-            listNetwork.BeginUpdate();
-        }
-
-        public void EndUpdate()
-        {
-            listNetwork.EndUpdate();
-        }
-
-        public ListView.ListViewItemCollection Items
-        {
-            get { return listNetwork.Items; }
-        }
-
-        public ListView.SelectedListViewItemCollection SelectedItems
-        {
-            get { return listNetwork.SelectedItems; }
-        }
-
-        #endregion
     }
 }

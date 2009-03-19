@@ -39,7 +39,7 @@ namespace ProcessHacker
             comboType.SelectedItem = "Interactive";
 
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                Misc.SetShieldIcon(buttonOK, true);
+                buttonOK.SetShieldIcon(true);
 
             List<string> users = new List<string>();
 

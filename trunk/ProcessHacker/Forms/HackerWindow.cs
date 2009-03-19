@@ -1335,7 +1335,7 @@ namespace ProcessHacker
         private void serviceP_Updated()
         {
             listServices.List.EndUpdate();
-            HighlightedListViewItem.StateHighlighting = true;
+            HighlightingContext.StateHighlighting = true;
 
             serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
             serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified);
@@ -1927,7 +1927,7 @@ namespace ProcessHacker
                 FlatStyle = FlatStyle.System
             };
 
-            Misc.SetShieldIcon(button, true);
+            button.SetShieldIcon(true);
 
             Bitmap buttonImage = new Bitmap(width, height);
 
@@ -1990,8 +1990,8 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.NetworkListViewColumns, listNetwork.List);
 
-            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
-            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 
@@ -2298,8 +2298,8 @@ namespace ProcessHacker
             cpuUsageIcon.BackColor = Color.Black;
             cpuUsageIcon.Color = Color.FromArgb(0, 255, 0);
 
-            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
-            HighlightedListViewItem.StateHighlighting = false;
+            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightingContext.StateHighlighting = false;
             listServices.List.BeginUpdate();
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             listServices.Provider = serviceP;
@@ -2481,8 +2481,6 @@ namespace ProcessHacker
         {
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
-            Win32.SetWindowTheme(listServices.List.Handle, "explorer", null);
-            Win32.SetWindowTheme(listNetwork.List.Handle, "explorer", null);
 
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }

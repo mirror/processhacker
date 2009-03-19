@@ -39,7 +39,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            Misc.SetDoubleBuffered(listDisasm, typeof(ListView), true);
+            listDisasm.SetDoubleBuffered(true);
+            listDisasm.SetTheme("explorer");
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listDisasm,
                 new RetrieveVirtualItemEventHandler(listDisasm_RetrieveVirtualItem));
             listDisasm.ContextMenu = menuLine;

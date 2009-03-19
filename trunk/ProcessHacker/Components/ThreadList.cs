@@ -29,16 +29,20 @@ namespace ProcessHacker
 {
     public partial class ThreadList : UserControl
     {
-        ThreadProvider _provider;
+        private ThreadProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
         public event EventHandler SelectedIndexChanged;
+        private int _pid;
+        private Process _process;
 
         public ThreadList()
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listThreads);
             listThreads.ListViewItemSorter = new SortedListComparer(listThreads);
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);
@@ -178,6 +182,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded -= new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new ThreadProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -196,6 +201,7 @@ namespace ProcessHacker
                     _provider.DictionaryAdded += new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new ThreadProvider.ProviderUpdateOnce(provider_Updated);
 
                     _pid = _provider.PID;
                     _process = Process.GetProcessById(_pid);
@@ -205,7 +211,34 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Core Thread List
+        #region Interfacing
+
+        public void BeginUpdate()
+        {
+            listThreads.BeginUpdate();
+        }
+
+        public void EndUpdate()
+        {
+            listThreads.EndUpdate();
+        }
+
+        public ListView.ListViewItemCollection Items
+        {
+            get { return listThreads.Items; }
+        }
+
+        public ListView.SelectedListViewItemCollection SelectedItems
+        {
+            get { return listThreads.SelectedItems; }
+        }
+
+        #endregion
+
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
+        }   
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {
@@ -217,7 +250,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
 
             litem.Name = item.TID.ToString();
             litem.Text = item.TID.ToString();
@@ -259,50 +292,7 @@ namespace ProcessHacker
             int selectedCount = listThreads.SelectedItems.Count;
 
             listThreads.Items[item.TID.ToString()].Remove();
-
-            if (selected && selectedCount == 1)
-            {
-                if (listThreads.Items.Count == 0)
-                { }
-                else if (index > (listThreads.Items.Count - 1))
-                {
-                    listThreads.Items[listThreads.Items.Count - 1].Selected = true;
-                }
-                else
-                {
-                    listThreads.Items[index].Selected = true;
-                }
-            }
         }
-
-        #endregion
-
-        #region Interfacing
-
-        public void BeginUpdate()
-        {
-            listThreads.BeginUpdate();
-        }
-
-        public void EndUpdate()
-        {
-            listThreads.EndUpdate();
-        }
-
-        public ListView.ListViewItemCollection Items
-        {
-            get { return listThreads.Items; }
-        }
-
-        public ListView.SelectedListViewItemCollection SelectedItems
-        {
-            get { return listThreads.SelectedItems; }
-        }
-
-        #endregion
-
-        int _pid;
-        Process _process;
 
         public void SaveSettings()
         {

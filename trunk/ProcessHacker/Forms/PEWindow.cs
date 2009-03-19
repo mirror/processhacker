@@ -82,8 +82,8 @@ namespace ProcessHacker
 
         private void InitializeLists()
         {
-            Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
-            Win32.SetWindowTheme(listCOFFHeader.Handle, "explorer", null);
+            listCOFFHeader.SetDoubleBuffered(true);
+            listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.KeyDown +=
                 (sender, e) =>
@@ -93,8 +93,8 @@ namespace ProcessHacker
                 };
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
 
-            Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
-            Win32.SetWindowTheme(listCOFFOptionalHeader.Handle, "explorer", null);
+            listCOFFOptionalHeader.SetDoubleBuffered(true);
+            listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.KeyDown +=
                 (sender, e) =>
@@ -104,8 +104,8 @@ namespace ProcessHacker
                 };
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
 
-            Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
-            Win32.SetWindowTheme(listImageData.Handle, "explorer", null);
+            listImageData.SetDoubleBuffered(true);
+            listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.KeyDown +=
                 (sender, e) =>
@@ -115,8 +115,8 @@ namespace ProcessHacker
                 };
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
 
-            Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
-            Win32.SetWindowTheme(listSections.Handle, "explorer", null);
+            listSections.SetDoubleBuffered(true);
+            listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.KeyDown +=
                 (sender, e) =>
@@ -126,8 +126,8 @@ namespace ProcessHacker
                 };
             ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
 
-            Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
-            Win32.SetWindowTheme(listExports.Handle, "explorer", null);
+            listExports.SetDoubleBuffered(true);
+            listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.KeyDown +=
                 (sender, e) =>
@@ -142,8 +142,8 @@ namespace ProcessHacker
                 };
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
-            Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
-            Win32.SetWindowTheme(listImports.Handle, "explorer", null);
+            listImports.SetDoubleBuffered(true);
+            listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.KeyDown +=
                 (sender, e) =>

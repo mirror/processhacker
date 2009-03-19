@@ -45,9 +45,10 @@ namespace ProcessHacker
 
         public ResultsWindow(int PID)
         {
-            InitializeComponent();     
+            InitializeComponent();
 
-            Misc.SetDoubleBuffered(listResults, typeof(ListView), true);
+            listResults.SetDoubleBuffered(true);
+            listResults.SetTheme("explorer");
 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
@@ -82,7 +83,6 @@ namespace ProcessHacker
             Program.UpdateWindows();
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
-            Win32.SetWindowTheme(listResults.Handle, "explorer", null);
 
             this.Size = Properties.Settings.Default.ResultsWindowSize;
 

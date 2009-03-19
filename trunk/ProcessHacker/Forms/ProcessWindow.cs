@@ -425,8 +425,8 @@ namespace ProcessHacker
             tabServices.Controls.Add(_serviceProps);
 
             listEnvironment.ListViewItemSorter = new SortedListComparer(listEnvironment);
-            Misc.SetDoubleBuffered(listEnvironment, typeof(ListView), true);
-            Win32.SetWindowTheme(listEnvironment.Handle, "explorer", null);
+            listEnvironment.SetDoubleBuffered(true);
+            listEnvironment.SetTheme("explorer");
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
             ColumnSettings.LoadSettings(Properties.Settings.Default.EnvironmentListViewColumns, listEnvironment);
         }
@@ -467,10 +467,10 @@ namespace ProcessHacker
             listHandles.Provider = _handleP;
             //_handleP.RunOnceAsync();
 
-            Win32.SetWindowTheme(listThreads.List.Handle, "explorer", null);
-            Win32.SetWindowTheme(listModules.List.Handle, "explorer", null);
-            Win32.SetWindowTheme(listMemory.List.Handle, "explorer", null);
-            Win32.SetWindowTheme(listHandles.List.Handle, "explorer", null);
+            listThreads.List.SetTheme("explorer");
+            listModules.List.SetTheme("explorer");
+            listMemory.List.SetTheme("explorer");
+            listHandles.List.SetTheme("explorer");
 
             this.InitializeShortcuts();
         }
@@ -1036,7 +1036,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listMemory.EndUpdate();
-                    listMemory.Invalidate();
+                    listMemory.Refresh();
                     listMemory.Highlight = true;
                     checkHideFreeRegions.Enabled = true;
                     this.Cursor = Cursors.Default;
@@ -1052,7 +1052,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listHandles.EndUpdate();
-                    listHandles.Invalidate();
+                    listHandles.Refresh();
                     listHandles.Highlight = true;
                     checkHideHandlesNoName.Enabled = true;
                     this.Cursor = Cursors.Default;
@@ -1068,7 +1068,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listModules.EndUpdate();
-                    listModules.Invalidate();
+                    listModules.Refresh();
                     listModules.Highlight = true;
                 }));
                 _moduleP.Updated -= new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
@@ -1082,7 +1082,7 @@ namespace ProcessHacker
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
                     listThreads.EndUpdate();
-                    listThreads.Invalidate();
+                    listThreads.Refresh();
                     listThreads.Highlight = true;
                 }));
                 _threadP.Updated -= new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);

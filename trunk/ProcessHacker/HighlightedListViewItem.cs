@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   reusable ListViewItem highlighting
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -33,17 +33,15 @@ namespace ProcessHacker
         Normal, New, Removed
     }
 
-    /// <summary>
-    /// A list view item that supports temporary highlighting.
-    /// </summary>
-    public class HighlightedListViewItem : ListViewItem
+    public class HighlightingContext : IDisposable
     {
+        public static event MethodInvoker HighlightingDurationChanged;
+
         private static Dictionary<ListViewItemState, Color> _colors = new Dictionary<ListViewItemState, Color>();
-        private ListViewItemState _state = ListViewItemState.Normal;
         private static int _highlightingDuration = 1000;
         private static bool _stateHighlighting = true;
 
-        static HighlightedListViewItem()
+        static HighlightingContext()
         {
             _colors.Add(ListViewItemState.New, Color.FromArgb(0xe0f0e0));
             _colors.Add(ListViewItemState.Removed, Color.FromArgb(0xf0e0e0));
@@ -60,7 +58,13 @@ namespace ProcessHacker
         public static int HighlightingDuration
         {
             get { return _highlightingDuration; }
-            set { _highlightingDuration = value; }
+            set
+            {
+                _highlightingDuration = value;
+
+                if (HighlightingDurationChanged != null)
+                    HighlightingDurationChanged();
+            }
         }
 
         /// <summary>
@@ -72,25 +76,91 @@ namespace ProcessHacker
             set { _stateHighlighting = value; }
         }
 
-        private Color _normalColor = SystemColors.Window;
+        private ListView _list;
+        private Queue<MethodInvoker> _preQueue = new Queue<MethodInvoker>();
+        private Queue<MethodInvoker> _queue = new Queue<MethodInvoker>();
 
-        public HighlightedListViewItem() : this(true) { }
-
-        public HighlightedListViewItem(bool highlight) : this("", highlight) { }
-
-        public HighlightedListViewItem(string text) : this(text, true) { }
-
-        public HighlightedListViewItem(string text, bool highlight) : base(text)
+        public HighlightingContext(ListView list)
         {
-            if (_stateHighlighting && highlight)
+            _list = list;
+        }
+
+        public void Tick()
+        {
+            _list.BeginUpdate();
+
+            while (_preQueue.Count > 0)
+                _preQueue.Dequeue().Invoke();
+
+            _list.EndUpdate();
+
+            System.Threading.Timer t = null;
+
+            t = new System.Threading.Timer(o =>
             {
-                this.BackColor = _colors[ListViewItemState.New];
+                _list.BeginUpdate();
+
+                while (_queue.Count > 0)
+                    _queue.Dequeue().Invoke();
+
+                _list.EndUpdate();
+
+                t.Dispose();
+            }, null, HighlightingContext.HighlightingDuration, System.Threading.Timeout.Infinite);
+        }
+
+        public void Enqueue(MethodInvoker method)
+        {
+            _queue.Enqueue(method);
+        }
+
+        public void EnqueuePre(MethodInvoker method)
+        {
+            _preQueue.Enqueue(method);
+        }
+
+        public void Dispose()
+        {
+            // Nothing
+        }
+    }
+
+    /// <summary>
+    /// A list view item that supports temporary highlighting.
+    /// </summary>
+    public class HighlightedListViewItem : ListViewItem
+    {
+        private HighlightingContext _context;
+        private Color _normalColor = SystemColors.Window;
+        private ListViewItemState _state = ListViewItemState.Normal;
+
+        public HighlightedListViewItem(HighlightingContext context)
+            : this(context, true)
+        { }
+
+        public HighlightedListViewItem(HighlightingContext context, bool highlight)
+            : this(context, "", highlight)
+        { }
+
+        public HighlightedListViewItem(HighlightingContext context, string text)
+            : this(context, text, true)
+        { }
+
+        public HighlightedListViewItem(HighlightingContext context, string text, bool highlight)
+            : base(text)
+        {
+            _context = context;
+
+            if (HighlightingContext.StateHighlighting && highlight)
+            {
+                this.BackColor = HighlightingContext.Colors[ListViewItemState.New];
                 _state = ListViewItemState.New;
-                this.PerformDelayed(new MethodInvoker(delegate
-                {
-                    this.BackColor = _normalColor;
-                    _state = ListViewItemState.Normal;
-                }));
+
+                _context.Enqueue(new MethodInvoker(delegate
+                    {
+                        this.BackColor = _normalColor;
+                        _state = ListViewItemState.Normal;
+                    }));
             }
             else
             {
@@ -100,10 +170,17 @@ namespace ProcessHacker
 
         public override void Remove()
         {
-            if (_stateHighlighting)
+            if (HighlightingContext.StateHighlighting)
             {
-                this.BackColor = _colors[ListViewItemState.Removed];
-                this.PerformDelayed(new MethodInvoker(RemoveThis));
+                _context.EnqueuePre(new MethodInvoker(delegate
+                    {
+                        this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
+
+                        _context.Enqueue(delegate
+                        {
+                            this.BaseRemove();
+                        });
+                    }));
             }
             else
             {
@@ -111,7 +188,7 @@ namespace ProcessHacker
             }
         }
 
-        private void RemoveThis()
+        private void BaseRemove()
         {
             base.Remove();
         }
@@ -130,30 +207,17 @@ namespace ProcessHacker
 
         public void SetTemporaryState(ListViewItemState state)
         {
-            this.BackColor = _colors[state];
-            _state = state;
-            this.PerformDelayed(new MethodInvoker(delegate
+            _context.EnqueuePre(delegate
             {
-                this.BackColor = _normalColor;
-                _state = ListViewItemState.Normal;
-            }));
-        }
+                this.BackColor = HighlightingContext.Colors[state];
+                _state = state;
 
-        private void PerformDelayed(MethodInvoker method)
-        {
-            Timer t = new Timer();
-            EventHandler handler = null;
-            
-            handler = new EventHandler(delegate(object o, EventArgs e)
-            {
-                method();
-                t.Tick -= handler;
-                t.Dispose();
+                _context.Enqueue(delegate
+                {
+                    this.BackColor = _normalColor;
+                    _state = ListViewItemState.Normal;
+                });
             });
-
-            t.Tick += handler;
-            t.Interval = _highlightingDuration;
-            t.Start();
         }
     }
 }

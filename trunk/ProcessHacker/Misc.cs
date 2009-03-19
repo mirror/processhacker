@@ -651,14 +651,37 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Controls whether the UAC shield icon is displayed on the specified control handle.
+        /// Enables or disables double buffering for a control.
+        /// </summary>
+        /// <param name="value">The new value.</param>
+        public static void SetDoubleBuffered(this Control c, bool value)
+        {
+            SetDoubleBuffered(c, c.GetType(), value);
+        }
+
+        /// <summary>
+        /// Controls whether the UAC shield icon is displayed on the specified button.
         /// </summary>
         /// <param name="button">The button to modify.</param>
         /// <param name="show">Whether to show the UAC shield icon.</param>
-        public static void SetShieldIcon(Button button, bool show)
+        private static void SetShieldIconInternal(Button button, bool show)
         {
             Win32.SendMessage(button.Handle, 
                 Win32.WindowMessage.BcmSetShield, 0, show ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Controls whether the UAC shield icon is displayed on the button.
+        /// </summary>
+        /// <param name="visible">Whether the shield icon is visible.</param>
+        public static void SetShieldIcon(this Button button, bool visible)
+        {
+            SetShieldIconInternal(button, visible);
+        }
+
+        public static void SetTheme(this Control control, string theme)
+        {
+            Win32.SetWindowTheme(control.Handle, theme, null);
         }
 
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)

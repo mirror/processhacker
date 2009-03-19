@@ -18,6 +18,7 @@
                 components.Dispose();
             }
 
+            _highlightingContext.Dispose();
             this.Provider = null;
 
             base.Dispose(disposing);

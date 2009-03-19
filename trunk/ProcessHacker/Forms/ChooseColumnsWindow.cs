@@ -70,8 +70,8 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            Misc.SetDoubleBuffered(listColumns, typeof(ListView), true);
-            Win32.SetWindowTheme(listColumns.Handle, "explorer", null);
+            listColumns.SetDoubleBuffered(true);
+            listColumns.SetTheme("explorer");
             columnColumn.Width = listColumns.Width - 21;
         }
 

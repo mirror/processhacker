@@ -150,6 +150,7 @@ namespace ProcessHacker
                     {
                         _closed = true;
                         Close();
+                        GC.SuppressFinalize(this);
                     }
                 }
             }

@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   Handle list
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -30,7 +30,8 @@ namespace ProcessHacker
 {
     public partial class HandleList : UserControl
     {
-        HandleProvider _provider;
+        private HandleProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -40,6 +41,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listHandles);
             listHandles.ListViewItemSorter = new SortedListComparer(listHandles);
             listHandles.KeyDown += new KeyEventHandler(HandleList_KeyDown);
             listHandles.MouseDown += new MouseEventHandler(listHandles_MouseDown);
@@ -133,6 +135,7 @@ namespace ProcessHacker
                 {
                     _provider.DictionaryAdded -= new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved -= new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new HandleProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -151,46 +154,8 @@ namespace ProcessHacker
                     _provider.Invoke = new HandleProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new HandleProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.PID;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Core Handle List
-
-        private void provider_DictionaryAdded(HandleItem item)
-        {
-            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
-
-            litem.Name = item.Handle.Handle.ToString();
-            litem.Text = item.ObjectInfo.TypeName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
-
-            listHandles.Items.Add(litem);
-        }
-
-        private void provider_DictionaryRemoved(HandleItem item)
-        {
-            int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
-            bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
-            int selectedCount = listHandles.SelectedItems.Count;
-
-            listHandles.Items[item.Handle.Handle.ToString()].Remove();
-
-            if (selected && selectedCount == 1)
-            {
-                if (listHandles.Items.Count == 0)
-                { }
-                else if (index > (listHandles.Items.Count - 1))
-                {
-                    listHandles.Items[listHandles.Items.Count - 1].Selected = true;
-                }
-                else
-                {
-                    listHandles.Items[index].Selected = true;
                 }
             }
         }
@@ -220,6 +185,32 @@ namespace ProcessHacker
         }
 
         #endregion
+
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
+        }
+
+        private void provider_DictionaryAdded(HandleItem item)
+        {
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
+
+            litem.Name = item.Handle.Handle.ToString();
+            litem.Text = item.ObjectInfo.TypeName;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
+
+            listHandles.Items.Add(litem);
+        }
+
+        private void provider_DictionaryRemoved(HandleItem item)
+        {
+            int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
+            bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
+            int selectedCount = listHandles.SelectedItems.Count;
+
+            listHandles.Items[item.Handle.Handle.ToString()].Remove();
+        }
 
         private int _pid;
 

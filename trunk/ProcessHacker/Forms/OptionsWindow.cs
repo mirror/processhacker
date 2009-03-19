@@ -138,7 +138,7 @@ namespace ProcessHacker
         {
             if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
-                Misc.SetShieldIcon(buttonChangeReplaceTaskManager, true);
+                buttonChangeReplaceTaskManager.SetShieldIcon(true);
             }
             else
             {
@@ -283,9 +283,9 @@ namespace ProcessHacker
             Properties.Settings.Default.PlotterIOWColor = colorIOW.Color;
 
             // apply the settings immediately if we can
-            HighlightedListViewItem.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
-            HighlightedListViewItem.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
-            HighlightedListViewItem.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
 

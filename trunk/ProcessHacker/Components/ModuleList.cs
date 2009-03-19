@@ -29,16 +29,20 @@ namespace ProcessHacker
 {
     public partial class ModuleList : UserControl
     {
-        ModuleProvider _provider;
+        private ModuleProvider _provider;
+        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
         public new event EventHandler DoubleClick;
+        private int _pid;
+        private string _mainModule;
 
         public ModuleList()
         {
             InitializeComponent();
 
+            _highlightingContext = new HighlightingContext(listModules);
             listModules.KeyDown += new KeyEventHandler(ModuleList_KeyDown);
             listModules.MouseDown += new MouseEventHandler(listModules_MouseDown);
             listModules.MouseUp += new MouseEventHandler(listModules_MouseUp);
@@ -125,6 +129,7 @@ namespace ProcessHacker
                 {
                     _provider.DictionaryAdded -= new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved -= new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new ModuleProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -145,6 +150,7 @@ namespace ProcessHacker
                     _provider.Invoke = new ModuleProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new ModuleProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.PID;
 
                     try
@@ -187,33 +193,6 @@ namespace ProcessHacker
 
         #endregion
 
-        #region Core Module List
-
-        private void provider_DictionaryAdded(ModuleItem item)
-        {
-            HighlightedListViewItem litem = new HighlightedListViewItem(this.Highlight);
-
-            litem.Name = item.BaseAddress.ToString();
-            litem.Text = item.Name;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Misc.GetNiceSizeName(item.Size) : ""));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
-            litem.ToolTipText = item.FileName;
-            litem.Tag = item;
-
-            if (item.FileName.ToLower() == _mainModule)
-                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
-
-            listModules.Items.Add(litem);
-        }
-
-        private void provider_DictionaryRemoved(ModuleItem item)
-        {
-            listModules.Items[item.BaseAddress.ToString()].Remove();
-        }
-
-        #endregion
-
         #region Interfacing
 
         public void BeginUpdate()
@@ -238,8 +217,33 @@ namespace ProcessHacker
 
         #endregion
 
-        private int _pid;
-        private string _mainModule;
+        private void provider_Updated()
+        {
+            _highlightingContext.Tick();
+        }
+
+        private void provider_DictionaryAdded(ModuleItem item)
+        {
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
+
+            litem.Name = item.BaseAddress.ToString();
+            litem.Text = item.Name;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Misc.GetNiceSizeName(item.Size) : ""));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
+            litem.ToolTipText = item.FileName;
+            litem.Tag = item;
+
+            if (item.FileName.ToLower() == _mainModule)
+                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
+
+            listModules.Items.Add(litem);
+        }
+
+        private void provider_DictionaryRemoved(ModuleItem item)
+        {
+            listModules.Items[item.BaseAddress.ToString()].Remove();
+        }
 
         public void SaveSettings()
         {
