@@ -46,7 +46,7 @@ namespace ProcessHacker
                 listView.Items.Add(item);
             }
 
-            listView.ContextMenu = GenericViewMenu.GetMenu(listView);
+            listView.ContextMenu = listView.GetCopyMenu();
         }
 
         private void ListWindow_Load(object sender, EventArgs e)

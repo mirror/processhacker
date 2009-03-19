@@ -78,7 +78,7 @@ namespace ProcessHacker
                 listViewRegisters.Items.Add(item);
             }
 
-            listViewCallStack.ContextMenu = GenericViewMenu.GetMenu(listViewCallStack);
+            listViewCallStack.ContextMenu = listViewCallStack.GetCopyMenu();
 
             try
             {

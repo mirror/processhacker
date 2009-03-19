@@ -629,11 +629,11 @@ namespace ProcessHacker
 
             if (treeProcesses.SelectedTreeNodes.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuProcess);
+                menuProcess.DisableAll();
             }
             else if (treeProcesses.SelectedTreeNodes.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuProcess);
+                menuProcess.EnableAll();
 
                 priorityMenuItem.Text = "&Priority";
                 terminateMenuItem.Text = "&Terminate Process";
@@ -703,7 +703,7 @@ namespace ProcessHacker
             }
             else
             {
-                Misc.DisableAllMenuItems(menuProcess);
+                menuProcess.DisableAll();
 
                 terminateMenuItem.Text = "&Terminate Processes";
                 suspendMenuItem.Text = "&Suspend Processes";
@@ -719,7 +719,7 @@ namespace ProcessHacker
             {
                 // probably DPCs or Interrupts
                 priorityMenuItem.Text = "&Priority";
-                Misc.DisableAllMenuItems(menuProcess);
+                menuProcess.DisableAll();
                 propertiesProcessMenuItem.Enabled = true;
             }
 
@@ -825,7 +825,7 @@ namespace ProcessHacker
 
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
+                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(node.PID))
                 {
                     DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
                         " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
@@ -885,7 +885,7 @@ namespace ProcessHacker
 
             foreach (ProcessNode node in treeProcesses.SelectedNodes)
             {
-                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(node.PID))
+                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(node.PID))
                 {
                     DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
                         " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
@@ -1479,7 +1479,7 @@ namespace ProcessHacker
         {
             if (listServices.SelectedItems.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuService);
+                menuService.DisableAll();
                 goToProcessServiceMenuItem.Visible = true;
                 startServiceMenuItem.Visible = true;
                 continueServiceMenuItem.Visible = true;
@@ -1490,7 +1490,7 @@ namespace ProcessHacker
             }
             else if (listServices.SelectedItems.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuService);
+                menuService.EnableAll();
 
                 goToProcessServiceMenuItem.Visible = true;
                 startServiceMenuItem.Visible = true;
@@ -1547,14 +1547,14 @@ namespace ProcessHacker
                 }
                 catch
                 {
-                    Misc.DisableAllMenuItems(menuService);
+                    menuService.DisableAll();
                     copyServiceMenuItem.Enabled = true;
                     propertiesServiceMenuItem.Enabled = true;
                 }
             }
             else
             {
-                Misc.DisableAllMenuItems(menuService);
+                menuService.DisableAll();
 
                 goToProcessServiceMenuItem.Visible = false;
                 startServiceMenuItem.Visible = false;
@@ -2283,7 +2283,7 @@ namespace ProcessHacker
 
             treeProcesses.ContextMenu = menuProcess;
             listServices.ContextMenu = menuService;
-            listNetwork.ContextMenu = GenericViewMenu.GetMenu(listNetwork.List);
+            listNetwork.ContextMenu = listNetwork.List.GetCopyMenu();
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;

@@ -337,13 +337,13 @@ namespace ProcessHacker
         {
             if (listThreads.SelectedItems.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuThread);
+                menuThread.DisableAll();
 
                 return;
             }
             else if (listThreads.SelectedItems.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuThread);
+                menuThread.EnableAll();
 
                 timeCriticalThreadMenuItem.Checked = false;
                 highestThreadMenuItem.Checked = false;
@@ -405,7 +405,7 @@ namespace ProcessHacker
             }
             else
             {
-                Misc.DisableAllMenuItems(menuThread);
+                menuThread.DisableAll();
 
                 terminateThreadMenuItem.Enabled = true;
                 suspendThreadMenuItem.Enabled = true;
@@ -437,7 +437,7 @@ namespace ProcessHacker
                     return;
             }
 
-            if (Misc.IsDangerousPID(_pid))
+            if (Misc.IsDangerousPid(_pid))
             {
                 if (MessageBox.Show(
                   "Inspecting a system process' threads will lead to instability. Are you sure you want to continue?",
@@ -470,7 +470,7 @@ namespace ProcessHacker
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to terminate the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -526,7 +526,7 @@ namespace ProcessHacker
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -582,7 +582,7 @@ namespace ProcessHacker
 
         private void resumeThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(_pid))
+            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to resume the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,

@@ -340,7 +340,7 @@ namespace ProcessHacker
         {
             if (listMemory.SelectedItems.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuMemory);
+                menuMemory.EnableAll();
 
                 MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
@@ -353,7 +353,7 @@ namespace ProcessHacker
             }
             else
             {
-                Misc.DisableAllMenuItems(menuMemory);
+                menuMemory.DisableAll();
 
                 readWriteAddressMemoryMenuItem.Enabled = true;
 

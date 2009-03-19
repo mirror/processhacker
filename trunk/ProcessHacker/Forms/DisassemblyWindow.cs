@@ -171,15 +171,15 @@ namespace ProcessHacker
         {
             if (listDisasm.SelectedIndices.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuLine);
+                menuLine.DisableAll();
             }
             else if (listDisasm.SelectedIndices.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuLine);
+                menuLine.EnableAll();
             }
             else
             {
-                Misc.EnableAllMenuItems(menuLine);
+                menuLine.EnableAll();
                 followMenuItem.Enabled = false;
             }
         }

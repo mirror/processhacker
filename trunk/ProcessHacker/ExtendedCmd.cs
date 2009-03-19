@@ -136,7 +136,7 @@ namespace ProcessHacker
                                         break;
                                     case "suspend":
                                         {
-                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(int.Parse(pid)))
+                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(int.Parse(pid)))
                                             {
                                                 DialogResult result = MessageBox.Show(window,
                                                     "The process with PID " + pid + " is a system process. Are you" +
@@ -168,7 +168,7 @@ namespace ProcessHacker
                                         break;
                                     case "resume":
                                         {
-                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPID(int.Parse(pid)))
+                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(int.Parse(pid)))
                                             {
                                                 DialogResult result = MessageBox.Show(window,
                                                     "The process with PID " + pid + " is a system process. Are you" +

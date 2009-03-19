@@ -911,8 +911,8 @@ namespace ProcessHacker
                     retDict[struc.OwningProcessId].Add(new NetworkConnection()
                         {
                             Protocol = NetworkProtocol.Tcp,
-                            Local = new IPEndPoint(struc.LocalAddress, Misc.ByteSwap((ushort)struc.LocalPort)),
-                            Remote = new IPEndPoint(struc.RemoteAddress, Misc.ByteSwap((ushort)struc.RemotePort)),
+                            Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).SwapBytes()),
+                            Remote = new IPEndPoint(struc.RemoteAddress, ((ushort)struc.RemotePort).SwapBytes()),
                             State = struc.State,
                             PID = struc.OwningProcessId
                         });
@@ -938,7 +938,7 @@ namespace ProcessHacker
                         new NetworkConnection()
                         {
                             Protocol = NetworkProtocol.Udp,
-                            Local = new IPEndPoint(struc.LocalAddress, Misc.ByteSwap((ushort)struc.LocalPort)),
+                            Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).SwapBytes()),
                             PID = struc.OwningProcessId
                         });
                 }

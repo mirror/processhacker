@@ -84,7 +84,7 @@ namespace ProcessHacker
         {
             Misc.SetDoubleBuffered(listCOFFHeader, typeof(ListView), true);
             Win32.SetWindowTheme(listCOFFHeader.Handle, "explorer", null);
-            listCOFFHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFHeader);
+            listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
             listCOFFHeader.KeyDown +=
                 (sender, e) =>
                 {
@@ -95,7 +95,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listCOFFOptionalHeader, typeof(ListView), true);
             Win32.SetWindowTheme(listCOFFOptionalHeader.Handle, "explorer", null);
-            listCOFFOptionalHeader.ContextMenu = GenericViewMenu.GetMenu(listCOFFOptionalHeader);
+            listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
             listCOFFOptionalHeader.KeyDown +=
                 (sender, e) =>
                 {
@@ -106,7 +106,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listImageData, typeof(ListView), true);
             Win32.SetWindowTheme(listImageData.Handle, "explorer", null);
-            listImageData.ContextMenu = GenericViewMenu.GetMenu(listImageData);
+            listImageData.ContextMenu = listImageData.GetCopyMenu();
             listImageData.KeyDown +=
                 (sender, e) =>
                 {
@@ -117,7 +117,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listSections, typeof(ListView), true);
             Win32.SetWindowTheme(listSections.Handle, "explorer", null);
-            listSections.ContextMenu = GenericViewMenu.GetMenu(listSections);
+            listSections.ContextMenu = listSections.GetCopyMenu();
             listSections.KeyDown +=
                 (sender, e) =>
                 {
@@ -128,7 +128,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listExports, typeof(ListView), true);
             Win32.SetWindowTheme(listExports.Handle, "explorer", null);
-            listExports.ContextMenu = GenericViewMenu.GetMenu(listExports, listExports_RetrieveVirtualItem);
+            listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
             listExports.KeyDown +=
                 (sender, e) =>
                 {
@@ -144,7 +144,7 @@ namespace ProcessHacker
 
             Misc.SetDoubleBuffered(listImports, typeof(ListView), true);
             Win32.SetWindowTheme(listImports.Handle, "explorer", null);
-            listImports.ContextMenu = GenericViewMenu.GetMenu(listImports);
+            listImports.ContextMenu = listImports.GetCopyMenu();
             listImports.KeyDown +=
                 (sender, e) =>
                 {

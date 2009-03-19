@@ -222,5 +222,15 @@ namespace ProcessHacker
             
             TreeViewAdvCopy((TreeViewAdv)((object[])mitem.Tag)[1], (int)((object[])mitem.Tag)[0]);
         }
+
+        public static ContextMenu GetCopyMenu(this ListView lv)
+        {
+            return lv.GetCopyMenu(null);
+        }
+
+        public static ContextMenu GetCopyMenu(this ListView lv, RetrieveVirtualItemEventHandler retrieveVirtualItem)
+        {
+            return GetMenu(lv, retrieveVirtualItem);
+        }
     }
 }

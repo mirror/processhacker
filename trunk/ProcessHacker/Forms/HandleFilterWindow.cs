@@ -74,11 +74,11 @@ namespace ProcessHacker
         {
             if (listHandles.SelectedItems.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuHandle);
+                menuHandle.DisableAll();
             }
             else if (listHandles.SelectedItems.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuHandle);
+                menuHandle.EnableAll();
 
                 propertiesMenuItem.Enabled = false;
 
@@ -89,7 +89,7 @@ namespace ProcessHacker
             }
             else
             {
-                Misc.EnableAllMenuItems(menuHandle);
+                menuHandle.EnableAll();
                 closeMenuItem.Enabled = false;
                 propertiesMenuItem.Enabled = false;
             }

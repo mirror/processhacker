@@ -48,7 +48,7 @@ namespace ProcessHacker
 
             listGroups.ListViewItemSorter = new SortedListComparer(listGroups);
             Misc.SetDoubleBuffered(listGroups, typeof(ListView), true);
-            listGroups.ContextMenu = GenericViewMenu.GetMenu(listGroups);
+            listGroups.ContextMenu = listGroups.GetCopyMenu();
             ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);
             listGroups.KeyDown +=
                 (sender, e) =>

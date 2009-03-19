@@ -251,11 +251,11 @@ namespace ProcessHacker
         {
             if (listPrivileges.SelectedItems.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuPrivileges);
+                menuPrivileges.DisableAll();
             }
             else
             {
-                Misc.EnableAllMenuItems(menuPrivileges);
+                menuPrivileges.EnableAll();
             }
 
             if (listPrivileges.Items.Count > 0)

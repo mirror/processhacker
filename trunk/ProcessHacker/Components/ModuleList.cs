@@ -252,7 +252,7 @@ namespace ProcessHacker
             {
                 if (_pid == 4)
                 {
-                    Misc.DisableAllMenuItems(menuModule);
+                    menuModule.DisableAll();
 
                     inspectModuleMenuItem.Enabled = true;
                     searchModuleMenuItem.Enabled = true;
@@ -263,12 +263,12 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    Misc.EnableAllMenuItems(menuModule);
+                    menuModule.EnableAll();
                 }
             }
             else
             {
-                Misc.DisableAllMenuItems(menuModule);
+                menuModule.DisableAll();
 
                 if (listModules.SelectedItems.Count > 1)
                 {

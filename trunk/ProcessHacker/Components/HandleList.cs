@@ -232,11 +232,11 @@ namespace ProcessHacker
         {
             if (listHandles.SelectedItems.Count == 0)
             {
-                Misc.DisableAllMenuItems(menuHandle);
+                menuHandle.DisableAll();
             }
             else if (listHandles.SelectedItems.Count == 1)
             {
-                Misc.EnableAllMenuItems(menuHandle);
+                menuHandle.EnableAll();
 
                 propertiesHandleMenuItem.Enabled = false;
 
@@ -247,7 +247,7 @@ namespace ProcessHacker
             }
             else
             {
-                Misc.EnableAllMenuItems(menuHandle);
+                menuHandle.EnableAll();
                 closeHandleMenuItem.Enabled = false;
                 propertiesHandleMenuItem.Enabled = false;
             }

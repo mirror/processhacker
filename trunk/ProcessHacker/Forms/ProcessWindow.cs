@@ -427,7 +427,7 @@ namespace ProcessHacker
             listEnvironment.ListViewItemSorter = new SortedListComparer(listEnvironment);
             Misc.SetDoubleBuffered(listEnvironment, typeof(ListView), true);
             Win32.SetWindowTheme(listEnvironment.Handle, "explorer", null);
-            listEnvironment.ContextMenu = GenericViewMenu.GetMenu(listEnvironment);
+            listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
             ColumnSettings.LoadSettings(Properties.Settings.Default.EnvironmentListViewColumns, listEnvironment);
         }
 
