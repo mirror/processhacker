@@ -274,7 +274,7 @@ namespace ProcessHacker
                     return "Deferred Procedure Calls";
                 else if (PID == -3)
                     return "Interrupts";
-                else if (_pitem.VersionInfo != null)
+                else if (_pitem.VersionInfo != null && _pitem.VersionInfo.FileDescription != null)
                     return _pitem.VersionInfo.FileDescription;
                 else
                     return "";
@@ -285,7 +285,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.VersionInfo != null)
+                if (_pitem.VersionInfo != null && _pitem.VersionInfo.CompanyName != null)
                     return _pitem.VersionInfo.CompanyName;
                 else
                     return "";
