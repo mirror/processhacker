@@ -45,6 +45,7 @@ namespace ProcessHacker
             buttonFont.Font = _font;
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
             textIconMenuProcesses.Value = Properties.Settings.Default.IconMenuProcessCount;
+            textMaxSamples.Value = Properties.Settings.Default.MaxSamples;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             comboSizeUnits.SelectedItem =
                 Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
@@ -253,6 +254,9 @@ namespace ProcessHacker
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
             Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
             Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
+
+            Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
+            HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
 
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
 

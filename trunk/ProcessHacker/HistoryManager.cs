@@ -27,10 +27,21 @@ using System.Text;
 
 namespace ProcessHacker
 {
+    public static class HistoryManagerGlobal
+    {
+        private static int _globalMaxCount = 750;
+
+        public static int GlobalMaxCount
+        {
+            get { return _globalMaxCount; }
+            set { _globalMaxCount = value; }
+        }
+    }
+
     public class HistoryManager<TKey, TValue>
     {
         private Dictionary<TKey, List<TValue>> _history = new Dictionary<TKey, List<TValue>>();
-        private int _maxCount = 1000;
+        private int _maxCount = -1;
 
         public int MaxCount
         {
@@ -55,10 +66,12 @@ namespace ProcessHacker
 
         public void Update(TKey key, TValue value)
         {
+            int maxCount = _maxCount == -1 ? HistoryManagerGlobal.GlobalMaxCount : _maxCount;
+
             _history[key].Insert(0, value);
 
-            if (_history[key].Count > _maxCount)
-                _history[key].RemoveRange(_history[key].Count - 1, _history[key].Count - _maxCount);
+            if (_history[key].Count > maxCount)
+                _history[key].RemoveRange(maxCount, _history[key].Count - maxCount);
         }
     }
 }

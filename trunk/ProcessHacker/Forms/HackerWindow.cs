@@ -1999,6 +1999,8 @@ namespace ProcessHacker
 
             foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
+
+            HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
         }
 
         public void QueueMessage(string message)

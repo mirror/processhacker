@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * Statistics times in System Information and process properties
    * Highlighting system
+   * Configurable max. samples
  * FIXED:
    * #2694437 - "Crash when sorting the process list"
    * Network connections would be readded if their state changed

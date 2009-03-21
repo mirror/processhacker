@@ -1164,5 +1164,17 @@ namespace ProcessHacker.Properties {
                 this["NeedsUpgrade"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("750")]
+        public int MaxSamples {
+            get {
+                return ((int)(this["MaxSamples"]));
+            }
+            set {
+                this["MaxSamples"] = value;
+            }
+        }
     }
 }

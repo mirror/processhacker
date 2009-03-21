@@ -51,6 +51,8 @@
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             this.buttonChangeReplaceTaskManager = new System.Windows.Forms.Button();
             this.checkReplaceTaskManager = new System.Windows.Forms.CheckBox();
             this.checkEnableKPH = new System.Windows.Forms.CheckBox();
@@ -87,6 +89,7 @@
             this.tabGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).BeginInit();
             this.tabAdvanced.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).BeginInit();
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
@@ -125,7 +128,7 @@
             this.textUpdateInterval.Size = new System.Drawing.Size(66, 20);
             this.textUpdateInterval.TabIndex = 1;
             this.textUpdateInterval.Value = new decimal(new int[] {
-            250,
+            1000,
             0,
             0,
             0});
@@ -380,6 +383,8 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.textMaxSamples);
+            this.tabAdvanced.Controls.Add(this.label6);
             this.tabAdvanced.Controls.Add(this.buttonChangeReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkEnableKPH);
@@ -392,6 +397,43 @@
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
+            // 
+            // textMaxSamples
+            // 
+            this.textMaxSamples.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Location = new System.Drawing.Point(118, 102);
+            this.textMaxSamples.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textMaxSamples.Name = "textMaxSamples";
+            this.textMaxSamples.Size = new System.Drawing.Size(72, 20);
+            this.textMaxSamples.TabIndex = 20;
+            this.textMaxSamples.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 104);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(106, 13);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Max. Sample History:";
+            this.toolTipProvider.SetToolTip(this.label6, "The number of performance data samples that are retained.");
             // 
             // buttonChangeReplaceTaskManager
             // 
@@ -767,6 +809,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.textIconMenuProcesses)).EndInit();
             this.tabAdvanced.ResumeLayout(false);
             this.tabAdvanced.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textMaxSamples)).EndInit();
             this.tabHighlighting.ResumeLayout(false);
             this.tabHighlighting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
@@ -832,5 +875,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonChangeReplaceTaskManager;
         private System.Windows.Forms.CheckBox checkAllowOnlyOneInstance;
+        private System.Windows.Forms.NumericUpDown textMaxSamples;
+        private System.Windows.Forms.Label label6;
     }
 }
