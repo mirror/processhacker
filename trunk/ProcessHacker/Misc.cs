@@ -248,7 +248,7 @@ namespace ProcessHacker
 
                     foreach (string k in Misc.KernelNames)
                     {
-                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        if (realname.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
                         {
                             kernel = true;
 
@@ -300,7 +300,7 @@ namespace ProcessHacker
 
                     foreach (string k in Misc.KernelNames)
                     {
-                        if (realname.ToLower() == Environment.SystemDirectory.ToLower() + "\\" + k.ToLower())
+                        if (realname.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
                         {
                             kernel = true;
 
@@ -502,8 +502,9 @@ namespace ProcessHacker
                 {
                     foreach (string s in Misc.DangerousNames)
                     {
-                        if ((Environment.SystemDirectory + "\\" + s).ToLower() ==
-                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())).ToLower())
+                        if ((Environment.SystemDirectory + "\\" + s).Equals(
+                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())), 
+                            StringComparison.InvariantCultureIgnoreCase))
                         {
                             return true;
                         }

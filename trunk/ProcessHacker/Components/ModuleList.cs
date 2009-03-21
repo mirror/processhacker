@@ -234,7 +234,7 @@ namespace ProcessHacker
             litem.ToolTipText = item.FileName;
             litem.Tag = item;
 
-            if (item.FileName.ToLower() == _mainModule)
+            if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
 
             listModules.Items.Add(litem);
@@ -439,9 +439,9 @@ namespace ProcessHacker
             ModuleItem mx = (ModuleItem)lx.Tag;
             ModuleItem my = (ModuleItem)ly.Tag;
 
-            if (mx.FileName.ToLower() == _mainModule)
+            if (mx.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 return -1;
-            if (my.FileName.ToLower() == _mainModule)
+            if (my.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 return 1;
 
             return mx.Name.CompareTo(my.Name);

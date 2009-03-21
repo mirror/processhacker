@@ -65,7 +65,7 @@ namespace ProcessHacker
 
             foreach (var process in processes.Values)
             {
-                if (process.Name != null && process.Name.ToLower() == "csrss.exe")
+                if (process.Name != null && process.Name.Equals("csrss.exe", StringComparison.InvariantCultureIgnoreCase))
                 {
                     try
                     {

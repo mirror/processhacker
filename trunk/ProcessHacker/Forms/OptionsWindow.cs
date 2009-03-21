@@ -84,7 +84,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.ToLower() == "taskmgr.exe"))
+                    if (!Array.Exists<string>(key.GetSubKeyNames(), s => s.Equals("taskmgr.exe", StringComparison.InvariantCultureIgnoreCase)))
                         key.CreateSubKey("taskmgr.exe");
 
                     Microsoft.Win32.Registry.LocalMachine.OpenSubKey(

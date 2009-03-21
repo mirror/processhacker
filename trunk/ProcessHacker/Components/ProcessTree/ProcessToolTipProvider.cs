@@ -74,7 +74,8 @@ namespace ProcessHacker
                 string runDllText = "";
 
                 if (pNode.ProcessItem.FileName != null && 
-                    pNode.ProcessItem.FileName.ToLower() == (Environment.SystemDirectory + "\\rundll32.exe").ToLower() && 
+                    pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\rundll32.exe", 
+                    StringComparison.InvariantCultureIgnoreCase) && 
                     pNode.ProcessItem.CmdLine != null)
                 {
                     try
