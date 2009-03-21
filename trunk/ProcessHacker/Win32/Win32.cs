@@ -514,7 +514,13 @@ namespace ProcessHacker
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
                 while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
                     data.Size, out retLength) == STATUS_INFO_LENGTH_MISMATCH)
+                {
                     data.Resize(data.Size * 2);
+
+                    // Fail if we've resized it to over 16MB - protect from infinite resizing
+                    if (data.Size > 16 * 1024 * 1024)
+                        throw new OutOfMemoryException();
+                }
 
                 // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
                 // structures.
