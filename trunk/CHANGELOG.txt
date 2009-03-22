@@ -8,6 +8,7 @@ Process Hacker
  * FIXED:
    * #2694437 - "Crash when sorting the process list"
    * Network connections would be readded if their state changed
+   * Integer overflows in the process provider
 
 1.3.6.1
  * NEW:
