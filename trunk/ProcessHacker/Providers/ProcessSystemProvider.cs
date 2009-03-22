@@ -425,9 +425,9 @@ namespace ProcessHacker
             _longHistory.Update(SystemStats.IoOther, _longDeltas[SystemStats.IoOther]);
             _longHistory.Update(SystemStats.IoReadOther, 
                 _longDeltas[SystemStats.IoRead] + _longDeltas[SystemStats.IoOther]);
-            _longHistory.Update(SystemStats.Commit, this.Performance.CommittedPages * this.System.PageSize);
-            _longHistory.Update(SystemStats.PhysicalMemory, 
-                (this.System.NumberOfPhysicalPages - this.Performance.AvailablePages) * this.System.PageSize);
+            _longHistory.Update(SystemStats.Commit, (long)this.Performance.CommittedPages * this.System.PageSize);
+            _longHistory.Update(SystemStats.PhysicalMemory,
+                (long)(this.System.NumberOfPhysicalPages - this.Performance.AvailablePages) * this.System.PageSize);
 
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
