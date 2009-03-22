@@ -290,5 +290,8 @@
     <Setting Name="MaxSamples" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">750</Value>
     </Setting>
+    <Setting Name="PlotterStep" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -46,6 +46,7 @@ namespace ProcessHacker
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
             textIconMenuProcesses.Value = Properties.Settings.Default.IconMenuProcessCount;
             textMaxSamples.Value = Properties.Settings.Default.MaxSamples;
+            textStep.Value = Properties.Settings.Default.PlotterStep;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             comboSizeUnits.SelectedItem =
                 Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
@@ -257,6 +258,8 @@ namespace ProcessHacker
 
             Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
             HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
+            Properties.Settings.Default.PlotterStep = (int)textStep.Value;
+            ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
 

@@ -40,13 +40,18 @@ namespace ProcessHacker
 
     public class HistoryManager<TKey, TValue>
     {
-        private Dictionary<TKey, List<TValue>> _history = new Dictionary<TKey, List<TValue>>();
+        private Dictionary<TKey, CircularBuffer<TValue>> _history = new Dictionary<TKey, CircularBuffer<TValue>>();
         private int _maxCount = -1;
 
         public int MaxCount
         {
             get { return _maxCount; }
             set { _maxCount = value; }
+        }
+
+        public int EffectiveMaxCount
+        {
+            get { return _maxCount == -1 ? HistoryManagerGlobal.GlobalMaxCount : _maxCount; }
         }
 
         public ReadOnlyCollection<TValue> this[TKey key]
@@ -56,7 +61,7 @@ namespace ProcessHacker
 
         public void Add(TKey key)
         {
-            _history.Add(key, new List<TValue>());
+            _history.Add(key, new CircularBuffer<TValue>(this.EffectiveMaxCount));
         }
 
         public ReadOnlyCollection<TValue> GetHistory(TKey key)
@@ -66,12 +71,12 @@ namespace ProcessHacker
 
         public void Update(TKey key, TValue value)
         {
-            int maxCount = _maxCount == -1 ? HistoryManagerGlobal.GlobalMaxCount : _maxCount;
+            int maxCount = this.EffectiveMaxCount;
 
-            _history[key].Insert(0, value);
+            if (_history[key].Size != maxCount)
+                _history[key].Resize(maxCount);
 
-            if (_history[key].Count > maxCount)
-                _history[key].RemoveRange(maxCount, _history[key].Count - maxCount);
+            _history[key].Add(value);
         }
     }
 }

@@ -1258,7 +1258,6 @@
             this.plotterCPUUsage.Location = new System.Drawing.Point(3, 16);
             this.plotterCPUUsage.LongData1 = null;
             this.plotterCPUUsage.LongData2 = null;
-            this.plotterCPUUsage.MoveStep = 3;
             this.plotterCPUUsage.Name = "plotterCPUUsage";
             this.plotterCPUUsage.OverlaySecondLine = false;
             this.plotterCPUUsage.ShowGrid = true;
@@ -1296,7 +1295,6 @@
             this.plotterIO.Location = new System.Drawing.Point(3, 16);
             this.plotterIO.LongData1 = null;
             this.plotterIO.LongData2 = null;
-            this.plotterIO.MoveStep = 3;
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = true;
             this.plotterIO.ShowGrid = true;
@@ -1334,7 +1332,6 @@
             this.plotterMemory.Location = new System.Drawing.Point(3, 16);
             this.plotterMemory.LongData1 = null;
             this.plotterMemory.LongData2 = null;
-            this.plotterMemory.MoveStep = 3;
             this.plotterMemory.Name = "plotterMemory";
             this.plotterMemory.OverlaySecondLine = true;
             this.plotterMemory.ShowGrid = true;

@@ -42,7 +42,7 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 
 :CLEANUP
 ::Clean up the .pdb files in "Release" folder
-DEL/f/a/q *.pdb >NUL 2>&1
+DEL /f/a/q *.pdb >NUL 2>&1
 
 ::ZIP the binaries
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip^

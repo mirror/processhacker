@@ -34,6 +34,14 @@ namespace ProcessHacker.Components
 {
     public partial class Plotter : UserControl
     {
+        private static int _globalMoveStep = 3;
+
+        public static int GlobalMoveStep
+        {
+            get { return _globalMoveStep; }
+            set { _globalMoveStep = value; }
+        }
+
         public delegate string GetToolTipDelegate(int item);
 
         private const BufferedGraphics NO_MANAGED_BACK_BUFFER = null;
@@ -80,6 +88,7 @@ namespace ProcessHacker.Components
         {
             int tWidth = this.Width;
             int tHeight = this.Height;
+            int moveStep = this.EffectiveMoveStep;
 
             Graphics g = _managedBackBuffer.Graphics;
             g.SmoothingMode = Properties.Settings.Default.PlotterAntialias ?
@@ -119,7 +128,7 @@ namespace ProcessHacker.Components
                 return;
 
             //draw lines
-            int px = tWidth - _moveStep;
+            int px = tWidth - moveStep;
             int start = 0;
             Pen lGrid1 = new Pen(_lineColor1);
             Pen lGrid2 = new Pen(_lineColor2);
@@ -134,9 +143,9 @@ namespace ProcessHacker.Components
 
                 // fill in the area below the line
                 g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor1)),
-                    new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
-                        new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
-                g.DrawLine(lGrid1, px, h, px + _moveStep, hPre);
+                    new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
+                        new Point(px + moveStep, tHeight), new Point(px, tHeight) });
+                g.DrawLine(lGrid1, px, h, px + moveStep, hPre);
 
                 if (this.UseSecondLine)
                 {
@@ -161,17 +170,17 @@ namespace ProcessHacker.Components
                     if (this.OverlaySecondLine)
                     {
                         g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
-                            new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
-                            new Point(px + _moveStep, tHeight), new Point(px, tHeight) });
-                        g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                            new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
+                            new Point(px + moveStep, tHeight), new Point(px, tHeight) });
+                        g.DrawLine(lGrid2, px, h, px + moveStep, hPre);
                     }
                     else
                     {
                         g.FillPolygon(new SolidBrush(Color.FromArgb(100, _lineColor2)),
-                            new Point[] { new Point(px, h), new Point(px + _moveStep, hPre), 
-                            new Point(px + _moveStep, tHeight - (int)(tHeight * _data1[start])),
+                            new Point[] { new Point(px, h), new Point(px + moveStep, hPre), 
+                            new Point(px + moveStep, tHeight - (int)(tHeight * _data1[start])),
                             new Point(px, tHeight - (int)(tHeight * _data1[start + 1])) });
-                        g.DrawLine(lGrid2, px, h, px + _moveStep, hPre);
+                        g.DrawLine(lGrid2, px, h, px + moveStep, hPre);
                     }
                 }
 
@@ -180,7 +189,7 @@ namespace ProcessHacker.Components
                     break;
                 }
 
-                px -= _moveStep;
+                px -= moveStep;
                 start++;
             }
 
@@ -210,7 +219,7 @@ namespace ProcessHacker.Components
         {
             if (this.GetToolTip != null)
             {
-                int itemIndex = (this.Width - _mouseLocation.X) / _moveStep;
+                int itemIndex = (this.Width - _mouseLocation.X) / this.EffectiveMoveStep;
 
                 if (itemIndex < this.Data1.Count)
                 {
@@ -237,7 +246,7 @@ namespace ProcessHacker.Components
 
         public void MoveGrid()
         {
-            _gridStartPos += _moveStep;
+            _gridStartPos += this.EffectiveMoveStep;
 
             if (_gridStartPos >= _gridSize.Width)
             {
@@ -250,7 +259,7 @@ namespace ProcessHacker.Components
             // find the largest value
             long max = 0;
             // restrict scaling to the currently visible data points
-            int maxIndex = this.Width / _moveStep;
+            int maxIndex = this.Width / this.EffectiveMoveStep;
 
             for (int i = 0; i < _longData1.Count && i < maxIndex; i++)
                 if (_longData1[i] > max)
@@ -425,11 +434,16 @@ namespace ProcessHacker.Components
             set { _gridSize = value; }
         }
 
-        private int _moveStep = 3;
+        private int _moveStep = -1;
         public int MoveStep
         {
             get { return _moveStep; }
             set { _moveStep = value; }
+        }
+
+        public int EffectiveMoveStep
+        {
+            get { return _moveStep == -1 ? GlobalMoveStep : _moveStep; }
         }
 
         private IList<float> _data1;

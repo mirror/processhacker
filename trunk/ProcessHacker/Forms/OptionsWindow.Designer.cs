@@ -84,6 +84,8 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
+            this.label8 = new System.Windows.Forms.Label();
+            this.textStep = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -93,6 +95,7 @@
             this.tabHighlighting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -623,6 +626,8 @@
             // 
             // tabPlotting
             // 
+            this.tabPlotting.Controls.Add(this.textStep);
+            this.tabPlotting.Controls.Add(this.label8);
             this.tabPlotting.Controls.Add(this.checkPlotterAntialias);
             this.tabPlotting.Controls.Add(this.label12);
             this.tabPlotting.Controls.Add(this.label13);
@@ -660,7 +665,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 135);
+            this.label12.Location = new System.Drawing.Point(6, 165);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(92, 13);
             this.label12.TabIndex = 21;
@@ -670,7 +675,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 160);
+            this.label13.Location = new System.Drawing.Point(6, 190);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(59, 13);
             this.label13.TabIndex = 20;
@@ -680,7 +685,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 109);
+            this.label14.Location = new System.Drawing.Point(6, 139);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(69, 13);
             this.label14.TabIndex = 12;
@@ -690,7 +695,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 83);
+            this.label15.Location = new System.Drawing.Point(6, 113);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(72, 13);
             this.label15.TabIndex = 13;
@@ -700,7 +705,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 58);
+            this.label16.Location = new System.Drawing.Point(6, 88);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(83, 13);
             this.label16.TabIndex = 14;
@@ -710,7 +715,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 32);
+            this.label17.Location = new System.Drawing.Point(6, 62);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(91, 13);
             this.label17.TabIndex = 10;
@@ -720,7 +725,7 @@
             // colorIORO
             // 
             this.colorIORO.Color = System.Drawing.Color.Transparent;
-            this.colorIORO.Location = new System.Drawing.Point(124, 133);
+            this.colorIORO.Location = new System.Drawing.Point(124, 163);
             this.colorIORO.Name = "colorIORO";
             this.colorIORO.Size = new System.Drawing.Size(40, 20);
             this.colorIORO.TabIndex = 17;
@@ -728,7 +733,7 @@
             // colorIOW
             // 
             this.colorIOW.Color = System.Drawing.Color.Transparent;
-            this.colorIOW.Location = new System.Drawing.Point(124, 159);
+            this.colorIOW.Location = new System.Drawing.Point(124, 189);
             this.colorIOW.Name = "colorIOW";
             this.colorIOW.Size = new System.Drawing.Size(40, 20);
             this.colorIOW.TabIndex = 18;
@@ -736,7 +741,7 @@
             // colorMemoryWS
             // 
             this.colorMemoryWS.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryWS.Location = new System.Drawing.Point(124, 107);
+            this.colorMemoryWS.Location = new System.Drawing.Point(124, 137);
             this.colorMemoryWS.Name = "colorMemoryWS";
             this.colorMemoryWS.Size = new System.Drawing.Size(40, 20);
             this.colorMemoryWS.TabIndex = 19;
@@ -744,7 +749,7 @@
             // colorMemoryPB
             // 
             this.colorMemoryPB.Color = System.Drawing.Color.Transparent;
-            this.colorMemoryPB.Location = new System.Drawing.Point(124, 81);
+            this.colorMemoryPB.Location = new System.Drawing.Point(124, 111);
             this.colorMemoryPB.Name = "colorMemoryPB";
             this.colorMemoryPB.Size = new System.Drawing.Size(40, 20);
             this.colorMemoryPB.TabIndex = 15;
@@ -752,7 +757,7 @@
             // colorCPUUT
             // 
             this.colorCPUUT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUUT.Location = new System.Drawing.Point(124, 55);
+            this.colorCPUUT.Location = new System.Drawing.Point(124, 85);
             this.colorCPUUT.Name = "colorCPUUT";
             this.colorCPUUT.Size = new System.Drawing.Size(40, 20);
             this.colorCPUUT.TabIndex = 16;
@@ -760,7 +765,7 @@
             // colorCPUKT
             // 
             this.colorCPUKT.Color = System.Drawing.Color.Transparent;
-            this.colorCPUKT.Location = new System.Drawing.Point(124, 29);
+            this.colorCPUKT.Location = new System.Drawing.Point(124, 59);
             this.colorCPUKT.Name = "colorCPUKT";
             this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
             this.colorCPUKT.TabIndex = 11;
@@ -782,6 +787,32 @@
             this.toolTipProvider.InitialDelay = 250;
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 32);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(32, 13);
+            this.label8.TabIndex = 23;
+            this.label8.Text = "Step:";
+            // 
+            // textStep
+            // 
+            this.textStep.Location = new System.Drawing.Point(44, 30);
+            this.textStep.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textStep.Name = "textStep";
+            this.textStep.Size = new System.Drawing.Size(69, 20);
+            this.textStep.TabIndex = 24;
+            this.textStep.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
             // 
             // OptionsWindow
             // 
@@ -815,6 +846,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).EndInit();
             this.tabPlotting.ResumeLayout(false);
             this.tabPlotting.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textStep)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -877,5 +909,7 @@
         private System.Windows.Forms.CheckBox checkAllowOnlyOneInstance;
         private System.Windows.Forms.NumericUpDown textMaxSamples;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown textStep;
+        private System.Windows.Forms.Label label8;
     }
 }

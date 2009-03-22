@@ -1334,7 +1334,11 @@ namespace ProcessHacker
 
         private void serviceP_Updated()
         {
-            listServices.List.EndUpdate();
+            listServices.BeginInvoke(new MethodInvoker(delegate
+            {
+                listServices.List.EndUpdate();
+            }));
+
             HighlightingContext.StateHighlighting = true;
 
             serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
@@ -2001,6 +2005,7 @@ namespace ProcessHacker
                 Program.ImposterNames.Add(s.Trim());
 
             HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
+            ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
         }
 
         public void QueueMessage(string message)

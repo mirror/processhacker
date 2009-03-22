@@ -315,6 +315,7 @@
     <Compile Include="Asm\AsmMisc.cs" />
     <Compile Include="Asm\AsmData.cs" />
     <Compile Include="Asm\AsmDefinitions.cs" />
+    <Compile Include="CircularBuffer.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
     </Compile>
