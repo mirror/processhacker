@@ -10,6 +10,7 @@ Process Hacker
    * Network connections would be readded if their state changed
    * Integer overflows in the process provider
    * Less memory usage overall
+   * Crash when saving with the I/O or CPU History column visible
 
 1.3.6.1
  * NEW:

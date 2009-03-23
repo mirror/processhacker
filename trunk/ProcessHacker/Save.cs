@@ -84,7 +84,7 @@ namespace ProcessHacker
 
             foreach (TreeColumn column in Program.HackerWindow.ProcessTree.Tree.Columns)
             {
-                if (column.IsVisible)
+                if (column.IsVisible && column.Header != "CPU History" && column.Header != "I/O History")
                 {
                     columnIndexMap[column] = columns;
                     columns++;
@@ -96,10 +96,8 @@ namespace ProcessHacker
 
             foreach (var column in Program.HackerWindow.ProcessTree.Tree.Columns)
             {
-                if (!column.IsVisible)
-                    continue;
-
-                str[0][columnIndexMap[column]] = column.Header;
+                if (columnIndexMap.ContainsKey(column))
+                    str[0][columnIndexMap[column]] = column.Header;
             }
 
             {
