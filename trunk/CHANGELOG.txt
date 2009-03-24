@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.6.2
  * NEW:
+   * #2702929 - "Add a Cancel button in Options"
    * Statistics times in System Information and process properties
    * Highlighting system
    * Configurable max. samples and plotter step size

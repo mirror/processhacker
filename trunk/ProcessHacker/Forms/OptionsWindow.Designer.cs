@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.textUpdateInterval = new System.Windows.Forms.NumericUpDown();
-            this.buttonClose = new System.Windows.Forms.Button();
+            this.buttonOK = new System.Windows.Forms.Button();
             this.checkShowProcessDomains = new System.Windows.Forms.CheckBox();
             this.checkWarnDangerous = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -69,6 +69,8 @@
             this.colorRemovedProcesses = new ProcessHacker.Components.ColorModifier();
             this.colorNewProcesses = new ProcessHacker.Components.ColorModifier();
             this.tabPlotting = new System.Windows.Forms.TabPage();
+            this.textStep = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
             this.checkPlotterAntialias = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -84,8 +86,7 @@
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
-            this.label8 = new System.Windows.Forms.Label();
-            this.textStep = new System.Windows.Forms.NumericUpDown();
+            this.buttonCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -137,17 +138,17 @@
             0});
             this.textUpdateInterval.Leave += new System.EventHandler(this.textUpdateInterval_Leave);
             // 
-            // buttonClose
+            // buttonOK
             // 
-            this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(362, 385);
-            this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(75, 23);
-            this.buttonClose.TabIndex = 2;
-            this.buttonClose.Text = "&Close";
-            this.buttonClose.UseVisualStyleBackColor = true;
-            this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
+            this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonOK.Location = new System.Drawing.Point(281, 385);
+            this.buttonOK.Name = "buttonOK";
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
+            this.buttonOK.TabIndex = 2;
+            this.buttonOK.Text = "&OK";
+            this.buttonOK.UseVisualStyleBackColor = true;
+            this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
             // 
             // checkShowProcessDomains
             // 
@@ -649,6 +650,32 @@
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
             // 
+            // textStep
+            // 
+            this.textStep.Location = new System.Drawing.Point(44, 30);
+            this.textStep.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.textStep.Name = "textStep";
+            this.textStep.Size = new System.Drawing.Size(69, 20);
+            this.textStep.TabIndex = 24;
+            this.textStep.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 32);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(32, 13);
+            this.label8.TabIndex = 23;
+            this.label8.Text = "Step:";
+            // 
             // checkPlotterAntialias
             // 
             this.checkPlotterAntialias.AutoSize = true;
@@ -776,9 +803,9 @@
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(12, 390);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(300, 13);
+            this.label22.Size = new System.Drawing.Size(234, 13);
             this.label22.TabIndex = 10;
-            this.label22.Text = "Tip: Hover over an item to get a more detailed description of it.";
+            this.label22.Text = "Tip: Hover over an item to get a description of it.";
             // 
             // toolTipProvider
             // 
@@ -788,41 +815,28 @@
             this.toolTipProvider.IsBalloon = true;
             this.toolTipProvider.ReshowDelay = 50;
             // 
-            // label8
+            // buttonCancel
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 32);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(32, 13);
-            this.label8.TabIndex = 23;
-            this.label8.Text = "Step:";
-            // 
-            // textStep
-            // 
-            this.textStep.Location = new System.Drawing.Point(44, 30);
-            this.textStep.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.textStep.Name = "textStep";
-            this.textStep.Size = new System.Drawing.Size(69, 20);
-            this.textStep.TabIndex = 24;
-            this.textStep.Value = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
+            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonCancel.Location = new System.Drawing.Point(362, 385);
+            this.buttonCancel.Name = "buttonCancel";
+            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
+            this.buttonCancel.TabIndex = 11;
+            this.buttonCancel.Text = "&Cancel";
+            this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // OptionsWindow
             // 
-            this.AcceptButton = this.buttonClose;
+            this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(449, 420);
+            this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.buttonClose);
+            this.Controls.Add(this.buttonOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -856,7 +870,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown textUpdateInterval;
-        private System.Windows.Forms.Button buttonClose;
+        private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.CheckBox checkShowProcessDomains;
         private System.Windows.Forms.CheckBox checkWarnDangerous;
         private System.Windows.Forms.Label label2;
@@ -911,5 +925,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown textStep;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button buttonCancel;
     }
 }

@@ -35,6 +35,7 @@ namespace ProcessHacker
     public partial class OptionsWindow : Form
     {
         private string _oldTaskMgrDebugger;
+        private bool _autoClosed = false;
         private Font _font;
 
         public OptionsWindow()
@@ -150,9 +151,16 @@ namespace ProcessHacker
 
         private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.SaveSettings();
-            Program.HackerWindow.ProcessTree.RefreshItems();
-            Program.ApplyFont(Properties.Settings.Default.Font);
+            //if (!_autoClosed)
+            //{
+            //    var result = MessageBox.Show("Do you want to save any changes you have made?", "Process Hacker",
+            //        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+            //    if (result == DialogResult.Yes)
+            //        this.ApplySettings();
+            //    else if (result == DialogResult.Cancel)
+            //        e.Cancel = true;
+            //}
         }
 
         private void AddToList(string key, string description, string longDescription)
@@ -335,8 +343,23 @@ namespace ProcessHacker
             Properties.Settings.Default.Save(); 
         }
 
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void ApplySettings()
         {
+            this.SaveSettings();
+            Program.HackerWindow.ProcessTree.RefreshItems();
+            Program.ApplyFont(Properties.Settings.Default.Font);
+        }
+
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            _autoClosed = true;
+            this.ApplySettings();
+            this.Close();
+        }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            _autoClosed = true;
             this.Close();
         }
 
