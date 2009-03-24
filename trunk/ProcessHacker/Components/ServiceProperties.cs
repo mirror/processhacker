@@ -48,6 +48,7 @@ namespace ProcessHacker
 
             listServices.ListViewItemSorter = new SortedListComparer(listServices);
             listServices.SetTheme("explorer");
+            ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceMiniListColumns, listServices);
 
             PID = -1;
 
@@ -100,8 +101,15 @@ namespace ProcessHacker
             set { buttonApply.Text = value; }
         }
 
+        public void SaveSettings()
+        {
+            Properties.Settings.Default.ServiceMiniListColumns = ColumnSettings.SaveSettings(listServices);
+        }
+
         private void Close()
         {
+            this.SaveSettings();
+
             if (this.NeedsClose != null)
                 this.NeedsClose(this, new EventArgs());
         }

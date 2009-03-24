@@ -1188,5 +1188,17 @@ namespace ProcessHacker.Properties {
                 this["PlotterStep"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ServiceMiniListColumns {
+            get {
+                return ((string)(this["ServiceMiniListColumns"]));
+            }
+            set {
+                this["ServiceMiniListColumns"] = value;
+            }
+        }
     }
 }

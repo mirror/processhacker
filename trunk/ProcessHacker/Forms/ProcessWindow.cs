@@ -234,6 +234,11 @@ namespace ProcessHacker
                 (_tokenProps.Object as Win32.ProcessHandle).Dispose();
             }
 
+            if (_serviceProps != null)
+            {
+                _serviceProps.SaveSettings();
+            }
+
             timerUpdate.Enabled = false;
 
             if (_processImage != null)
