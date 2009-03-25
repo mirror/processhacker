@@ -2004,7 +2004,7 @@ namespace ProcessHacker
             foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
 
-            HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
+            HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
         }
 

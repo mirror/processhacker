@@ -265,7 +265,7 @@ namespace ProcessHacker
             Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
 
             Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
-            HistoryManagerGlobal.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
+            HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             Properties.Settings.Default.PlotterStep = (int)textStep.Value;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 

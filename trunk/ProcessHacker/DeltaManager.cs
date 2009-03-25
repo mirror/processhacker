@@ -45,6 +45,34 @@ namespace ProcessHacker
         T Subtract(T v1, T v2);
     }
 
+    public static class Subtractor
+    {
+        private static Int64Subtractor _int64Subtractor = new Int64Subtractor();
+        private static Int32Subtractor _int32Subtractor = new Int32Subtractor();
+        private static DoubleSubtractor _doubleSubtractor = new DoubleSubtractor();
+        private static FloatSubtractor _floatSubtractor = new FloatSubtractor();
+
+        public static Int64Subtractor Int64Subtractor
+        {
+            get { return _int64Subtractor; }
+        }
+
+        public static Int32Subtractor Int32Subtractor
+        {
+            get { return _int32Subtractor; }
+        }
+
+        public static DoubleSubtractor DoubleSubtractor
+        {
+            get { return _doubleSubtractor; }
+        }
+
+        public static FloatSubtractor FloatSubtractor
+        {
+            get { return _floatSubtractor; }
+        }
+    }
+
     /// <summary>
     /// Provides subtraction for 64-bit integers.
     /// </summary>

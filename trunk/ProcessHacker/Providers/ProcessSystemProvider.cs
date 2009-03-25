@@ -96,8 +96,8 @@ namespace ProcessHacker
 
         private Dictionary<string, Win32.VerifyResult> _fileResults = new Dictionary<string, Win32.VerifyResult>();
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
-        private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(new Int64Subtractor());
-        private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(new Int64Subtractor());
+        private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor);
+        private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(Subtractor.Int64Subtractor);
         private HistoryManager<bool, DateTime> _timeHistory = new HistoryManager<bool, DateTime>();
         private HistoryManager<SystemStats, long> _longHistory = new HistoryManager<SystemStats, long>();
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
@@ -538,7 +538,7 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
-                    item.DeltaManager = new DeltaManager<ProcessStats, long>(new Int64Subtractor());
+                    item.DeltaManager = new DeltaManager<ProcessStats, long>(Subtractor.Int64Subtractor);
                     item.DeltaManager.Add(ProcessStats.CpuKernel, processInfo.KernelTime);
                     item.DeltaManager.Add(ProcessStats.CpuUser, processInfo.UserTime);
                     item.DeltaManager.Add(ProcessStats.IoRead, (long)processInfo.IoCounters.ReadTransferCount);

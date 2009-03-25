@@ -27,7 +27,7 @@ using System.Text;
 
 namespace ProcessHacker
 {
-    public static class HistoryManagerGlobal
+    public static class HistoryManager
     {
         private static int _globalMaxCount = 750;
 
@@ -51,7 +51,7 @@ namespace ProcessHacker
 
         public int EffectiveMaxCount
         {
-            get { return _maxCount == -1 ? HistoryManagerGlobal.GlobalMaxCount : _maxCount; }
+            get { return _maxCount == -1 ? HistoryManager.GlobalMaxCount : _maxCount; }
         }
 
         public ReadOnlyCollection<TValue> this[TKey key]
