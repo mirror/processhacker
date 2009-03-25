@@ -36,8 +36,13 @@ namespace ProcessHacker
         CpuKernel, CpuUser, IoRead, IoWrite, IoOther, IoReadOther, PrivateMemory, WorkingSet
     }
 
-    public struct ProcessItem
+    public class ProcessItem : ICloneable
     {
+        public object Clone()
+        {
+            return base.MemberwiseClone();
+        }
+
         public int PID;
 
         public Icon Icon;
@@ -84,7 +89,7 @@ namespace ProcessHacker
     {
         private const bool CacheFileVerifyResults = false;
 
-        public struct FileProcessResult
+        public class FileProcessResult
         {
             public int PID;
             public bool IsDotNet;
@@ -496,7 +501,7 @@ namespace ProcessHacker
                     // the look-for-modified-processes section relies on Dictionary!
                     if (Dictionary.ContainsKey(result.PID))
                     {
-                        var item = Dictionary[result.PID];
+                        ProcessItem item = this.Dictionary[result.PID];
 
                         item.IsDotNet = result.IsDotNet;
                         item.IsPacked = result.IsPacked;
@@ -504,8 +509,6 @@ namespace ProcessHacker
                         item.ImportFunctions = result.ImportFunctions;
                         item.ImportModules = result.ImportModules;
                         item.JustProcessed = true;
-
-                        Dictionary[result.PID] = item;
                     }
                 }
             }
@@ -758,61 +761,60 @@ namespace ProcessHacker
                 // look for modified processes
                 else
                 {
-                    ProcessItem item = Dictionary[pid];
-                    ProcessItem newitem = item;
+                    ProcessItem item = this.Dictionary[pid];
 
-                    newitem.DeltaManager.Update(ProcessStats.CpuKernel, processInfo.KernelTime);
-                    newitem.DeltaManager.Update(ProcessStats.CpuUser, processInfo.UserTime);
-                    newitem.DeltaManager.Update(ProcessStats.IoRead, (long)processInfo.IoCounters.ReadTransferCount);
-                    newitem.DeltaManager.Update(ProcessStats.IoWrite, (long)processInfo.IoCounters.WriteTransferCount);
-                    newitem.DeltaManager.Update(ProcessStats.IoOther, (long)processInfo.IoCounters.OtherTransferCount);
+                    item.DeltaManager.Update(ProcessStats.CpuKernel, processInfo.KernelTime);
+                    item.DeltaManager.Update(ProcessStats.CpuUser, processInfo.UserTime);
+                    item.DeltaManager.Update(ProcessStats.IoRead, (long)processInfo.IoCounters.ReadTransferCount);
+                    item.DeltaManager.Update(ProcessStats.IoWrite, (long)processInfo.IoCounters.WriteTransferCount);
+                    item.DeltaManager.Update(ProcessStats.IoOther, (long)processInfo.IoCounters.OtherTransferCount);
 
-                    newitem.FloatHistoryManager.Update(ProcessStats.CpuKernel,
-                        (float)newitem.DeltaManager[ProcessStats.CpuKernel] /
+                    item.FloatHistoryManager.Update(ProcessStats.CpuKernel,
+                        (float)item.DeltaManager[ProcessStats.CpuKernel] /
                         (sysKernelTime + sysUserTime + otherTime));
-                    newitem.FloatHistoryManager.Update(ProcessStats.CpuUser,
-                        (float)newitem.DeltaManager[ProcessStats.CpuUser] /
+                    item.FloatHistoryManager.Update(ProcessStats.CpuUser,
+                        (float)item.DeltaManager[ProcessStats.CpuUser] /
                         (sysKernelTime + sysUserTime + otherTime));
-                    newitem.LongHistoryManager.Update(ProcessStats.IoRead, newitem.DeltaManager[ProcessStats.IoRead]);
-                    newitem.LongHistoryManager.Update(ProcessStats.IoWrite, newitem.DeltaManager[ProcessStats.IoWrite]);
-                    newitem.LongHistoryManager.Update(ProcessStats.IoOther, newitem.DeltaManager[ProcessStats.IoOther]);
-                    newitem.LongHistoryManager.Update(ProcessStats.IoReadOther,
-                        newitem.DeltaManager[ProcessStats.IoRead] + newitem.DeltaManager[ProcessStats.IoOther]);
-                    newitem.LongHistoryManager.Update(ProcessStats.PrivateMemory, processInfo.VirtualMemoryCounters.PrivateBytes);
-                    newitem.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize);
+                    item.LongHistoryManager.Update(ProcessStats.IoRead, item.DeltaManager[ProcessStats.IoRead]);
+                    item.LongHistoryManager.Update(ProcessStats.IoWrite, item.DeltaManager[ProcessStats.IoWrite]);
+                    item.LongHistoryManager.Update(ProcessStats.IoOther, item.DeltaManager[ProcessStats.IoOther]);
+                    item.LongHistoryManager.Update(ProcessStats.IoReadOther,
+                        item.DeltaManager[ProcessStats.IoRead] + item.DeltaManager[ProcessStats.IoOther]);
+                    item.LongHistoryManager.Update(ProcessStats.PrivateMemory, processInfo.VirtualMemoryCounters.PrivateBytes);
+                    item.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize);
 
-                    newitem.Process = processInfo;
-                    newitem.FullUpdate = false;
-                    newitem.JustProcessed = false;
+                    item.Process = processInfo;
+                    item.FullUpdate = false;
+                    item.JustProcessed = false;
 
                     if (Win32.ProcessesWithThreads.ContainsKey(pid))
-                        newitem.Threads = procs[pid].Threads;
+                        item.Threads = procs[pid].Threads;
 
                     try
                     {
-                        newitem.CpuUsage = (float)
-                            (newitem.DeltaManager[ProcessStats.CpuUser] + 
-                            newitem.DeltaManager[ProcessStats.CpuKernel]) * 100 /
+                        item.CpuUsage = (float)
+                            (item.DeltaManager[ProcessStats.CpuUser] + 
+                            item.DeltaManager[ProcessStats.CpuKernel]) * 100 /
                             (sysKernelTime + sysUserTime + otherTime);
 
-                        if (newitem.CpuUsage > 400.0f)
-                            newitem.CpuUsage /= 8.0f;
-                        else if (newitem.CpuUsage > 200.0f)
-                            newitem.CpuUsage /= 4.0f;
-                        else if (newitem.CpuUsage > 100.0f)
-                            newitem.CpuUsage /= 2.0f;
+                        if (item.CpuUsage > 400.0f)
+                            item.CpuUsage /= 8.0f;
+                        else if (item.CpuUsage > 200.0f)
+                            item.CpuUsage /= 4.0f;
+                        else if (item.CpuUsage > 100.0f)
+                            item.CpuUsage /= 2.0f;
 
-                        if (pid != 0 && newitem.CpuUsage > mostCPUUsage)
+                        if (pid != 0 && item.CpuUsage > mostCPUUsage)
                         {
-                            mostCPUUsage = newitem.CpuUsage;
+                            mostCPUUsage = item.CpuUsage;
                             this.PIDWithMostCpuUsage = pid;
                         }
 
-                        if (pid != 0 && (newitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                            newitem.LongHistoryManager[ProcessStats.IoWrite][0]) > mostIOActivity)
+                        if (pid != 0 && (item.LongHistoryManager[ProcessStats.IoReadOther][0] +
+                            item.LongHistoryManager[ProcessStats.IoWrite][0]) > mostIOActivity)
                         {
-                            mostIOActivity = newitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                                newitem.LongHistoryManager[ProcessStats.IoWrite][0];
+                            mostIOActivity = item.LongHistoryManager[ProcessStats.IoReadOther][0] +
+                                item.LongHistoryManager[ProcessStats.IoWrite][0];
                             this.PIDWithMostIoActivity = pid;
                         }
                     }
@@ -823,8 +825,8 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            newitem.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
-                            newitem.FullUpdate = true;
+                            item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+                            item.FullUpdate = true;
                         }
                         catch
                         { }
@@ -836,12 +838,12 @@ namespace ProcessHacker
                         {
                             (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
                                 r => { }, null);
-                            newitem.ProcessingAttempts++;
+                            item.ProcessingAttempts++;
                         }
                     }
 
-                    newdictionary[pid] = newitem;
-                    this.CallDictionaryModified(item, newitem);
+                    if (item.FullUpdate)
+                        this.CallDictionaryModified(null, item);
                 }
             }
 

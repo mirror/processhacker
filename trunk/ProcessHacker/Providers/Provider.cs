@@ -225,6 +225,9 @@ namespace ProcessHacker
             protected set { _dictionary = value; }
         }
 
+        /// <summary>
+        /// Updates the provider if it is enabled.
+        /// </summary>
         private void Update()
         {
             while (true)
@@ -238,6 +241,9 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Updates the provider if it is enabled.
+        /// </summary>
         public void RunOnce()
         {
             lock (_busyLock)
@@ -268,6 +274,9 @@ namespace ProcessHacker
             }
         }
 
+        /// <summary>
+        /// Updates the provider in an internal worker thread if it is enabled.
+        /// </summary>
         public void RunOnceAsync()
         {
             Thread t = null;

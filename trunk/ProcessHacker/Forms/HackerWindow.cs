@@ -1296,7 +1296,7 @@ namespace ProcessHacker
 
         public void processP_DictionaryAdded(ProcessItem item)
         {
-            ProcessItem parent = new ProcessItem();
+            ProcessItem parent = null;
             string parentText = "";
 
             if (item.HasParent)

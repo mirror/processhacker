@@ -162,11 +162,11 @@ namespace ProcessHacker
                 this.BackColor = HighlightingContext.Colors[ListViewItemState.New];
                 _state = ListViewItemState.New;
 
-                _context.Enqueue(new MethodInvoker(delegate
+                _context.Enqueue(delegate
                     {
                         this.BackColor = _normalColor;
                         _state = ListViewItemState.Normal;
-                    }));
+                    });
             }
             else
             {
@@ -178,7 +178,7 @@ namespace ProcessHacker
         {
             if (HighlightingContext.StateHighlighting)
             {
-                _context.EnqueuePre(new MethodInvoker(delegate
+                _context.EnqueuePre(delegate
                     {
                         this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
 
@@ -186,7 +186,7 @@ namespace ProcessHacker
                         {
                             this.BaseRemove();
                         });
-                    }));
+                    });
             }
             else
             {

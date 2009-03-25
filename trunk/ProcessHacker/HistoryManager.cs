@@ -41,6 +41,7 @@ namespace ProcessHacker
     public class HistoryManager<TKey, TValue>
     {
         private Dictionary<TKey, CircularBuffer<TValue>> _history = new Dictionary<TKey, CircularBuffer<TValue>>();
+        private Dictionary<TKey, ReadOnlyCollection<TValue>> _readOnlyCollections = new Dictionary<TKey, ReadOnlyCollection<TValue>>();
         private int _maxCount = -1;
 
         public int MaxCount
@@ -66,7 +67,10 @@ namespace ProcessHacker
 
         public ReadOnlyCollection<TValue> GetHistory(TKey key)
         {
-            return new ReadOnlyCollection<TValue>(_history[key]);
+            if (!_readOnlyCollections.ContainsKey(key))
+                _readOnlyCollections.Add(key, new ReadOnlyCollection<TValue>(_history[key]));
+
+            return _readOnlyCollections[key];
         }
 
         public void Update(TKey key, TValue value)

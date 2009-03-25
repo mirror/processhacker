@@ -39,7 +39,6 @@ namespace ProcessHacker
         public event EventHandler SelectionChanged;
         public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseDoubleClick;
         private bool _draw = true;
-        private bool _needsRestructure = false;
 
         public ProcessTree()
         {
@@ -212,9 +211,8 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    if (_needsRestructure)
+                    if (_treeModel.GetSortColumn() != "")
                     {
-                        _needsRestructure = false;
                         _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
                     }
 
@@ -313,7 +311,7 @@ namespace ProcessHacker
             {
                 lock (this)
                 {
-                    _treeModel.Modify(oldItem, newItem);
+                    //_treeModel.Modify(oldItem, newItem);
 
                     if (newItem.FullUpdate)
                     {
@@ -324,9 +322,6 @@ namespace ProcessHacker
                             node.BackColor = GetProcessColor(newItem);
                         }
                     }
-
-                    if (_treeModel.GetSortColumn() != "")
-                        _needsRestructure = true;
                 }
             }));
         }
