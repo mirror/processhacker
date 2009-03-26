@@ -2345,6 +2345,8 @@ namespace ProcessHacker
                                     TopMost = this.TopMost
                                 }).ShowDialog();
 
+                                copyProcessMenuItem.MenuItems.Clear();
+                                GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
                                 treeProcesses.Tree.Invalidate();
                             }));
 
@@ -2352,6 +2354,11 @@ namespace ProcessHacker
                     }
                 };
             treeProcesses.Tree.ColumnClicked += (sender, e) => { DeselectAll(treeProcesses.Tree); };
+            treeProcesses.Tree.ColumnReordered += (sender, e) =>
+            {
+                copyProcessMenuItem.MenuItems.Clear();
+                GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+            };
 
             tabControlBig_SelectedIndexChanged(null, null);
         }

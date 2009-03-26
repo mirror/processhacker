@@ -8,10 +8,12 @@ Process Hacker
    * Configurable max. samples and plotter step size
  * FIXED:
    * #2694437 - "Crash when sorting the process list"
+   * #2713087 - "Processes: Copy should copy only the columns currently used"
    * Network connections would be readded if their state changed
    * Integer overflows in the process provider
    * Less memory usage overall
    * Crash when saving with the I/O or CPU History column visible
+   * Inconsistent Copy menu after columns are modified
 
 1.3.6.1
  * NEW:

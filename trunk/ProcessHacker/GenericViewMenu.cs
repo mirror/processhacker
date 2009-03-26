@@ -155,12 +155,26 @@ namespace ProcessHacker
 
             foreach (TreeColumn c in tv.Columns)
             {
-                if (!c.IsVisible)
+                int controlIndex = 0;
+                int index = -1;
+
+                foreach (NodeControl control in tv.NodeControls)
+                {
+                    if (control is BaseTextControl && control.ParentColumn == c)
+                    {
+                        index = controlIndex;
+                        break;
+                    }
+
+                    controlIndex++;
+                }
+
+                if (!c.IsVisible || index == -1)
                     continue;
 
                 MenuItem item = new MenuItem("Copy \"" + c.Header + "\"");
 
-                item.Tag = new object[] { c.Index, tv };
+                item.Tag = new object[] { index, tv };
                 item.Click += new EventHandler(TreeViewAdvMenuItem_Click);
 
                 items.Add(item);
@@ -182,11 +196,10 @@ namespace ProcessHacker
 
                 foreach (NodeControl control in tv.NodeControls)
                 {
-                    if (control.ParentColumn.Index == i && (control is BaseTextControl))
-                    {
+                    if (control.ParentColumn.IsVisible && control is BaseTextControl)
                         array[i] = (control as BaseTextControl).GetLabel(item);
-                        i++;
-                    }
+
+                    i++;
                 }
 
                 collection.Add(array);
@@ -196,17 +209,35 @@ namespace ProcessHacker
             {
                 if (columnIndex == -1)
                 {
-                    for (int j = 0; j < tv.Columns.Count; j++)
+                    for (int j = 0; j < collection[i].Length; j++)
                     {
-                        text.Append(collection[i][j]);
+                        if (collection[i][j] != null)
+                        {
+                            text.Append(collection[i][j]);
+                        }
 
-                        if (j != tv.Columns.Count - 1)
+                        bool emptyFromHere = true;
+
+                        for (int k = j + 1; k < collection[i].Length; k++)
+                        {
+                            if (collection[i][k] != null && collection[i][k] != "")
+                            {
+                                emptyFromHere = false;
+                                break;
+                            }
+                        }
+
+                        if (emptyFromHere)
+                            break;
+
+                        if (collection[i][j] != null && j != collection[i].Length - 1)
                             text.Append(", ");
                     }
                 }
                 else
                 {
-                    text.AppendLine(collection[i][columnIndex]);
+                    if (collection[i][columnIndex] != null)
+                        text.AppendLine(collection[i][columnIndex]);
                 }
 
                 if (i != collection.Count - 1)
