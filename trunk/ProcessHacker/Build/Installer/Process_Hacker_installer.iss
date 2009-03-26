@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "26"
+#define installer_build_number "27"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -56,6 +56,8 @@ AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
 PrivilegesRequired=admin
+ShowLanguageDialog=auto
+LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
 ;Specify the architectures that Process Hacker can run on
