@@ -96,6 +96,49 @@
     <p1>The handle that was passed to NtClose.</p1>
     <p2>0: The caller tried to close a protected handle, 1: The caller tried to close an invalid handle.</p2>
   </code>
+  <code id="0x98" name="END_OF_NT_EVALUATION_PERIOD">
+    <description>
+      Indicates that the trial period for Windows has ended.
+    </description>
+    <p1>The low 32-bits of the expiration date.</p1>
+    <p2>The high 32-bits of the expiration date.</p2>
+    <p3>Reserved.</p3>
+    <p4>Reserved.</p4>
+  </code>
+  <code id="0x9a" name="SYSTEM_LICENSE_VIOLATION">
+    <description>
+      Indicates that the Windows EULA has been violated.
+    </description>
+    <p1>
+0x0: Offline product type changes have been attempted.
+0x1: Offline changes to the Windows evaluation time period have been attempted.
+0x2: The setup key could not be opened.
+0x3: The setup mode could not be detected.
+0x4: The SystemPrefix value from the setup key is missing.
+0x5: Offline changes to the number of licensed processors have been attempted.
+0x6: The ProductOptions key could not be opened.
+0x7: The ProductType value could not be read.
+0x8: Change Notify on ProductOptions failed.
+0x9: Change Notify on SystemPrefix failed.
+0xa: An NTW system was converted to an NTS system.
+0xb: The reference of the setup key failed.
+0xc: The reference of the product options key failed.
+0xd: The attempt to open ProductOptions in the worker thread failed.
+0xf: The attempt to open the setup key failed.
+0x10: A failure occurred in the setup key worker thread.
+0x11: A failure occurred in the product options key worker thread.
+0x12: Unable to open the LicenseInfoSuites key for the suite.
+0x13: Unable to query the LicenseInfoSuites key for the suite.
+0x14: Unable to allocate memory.
+0x15: Unable to reset the ConcurrentLimit value for the suite key.
+0x16: Unable to open the license key for a suite product.
+0x17: Unable to reset the ConcurrentLimit value for a suite product.
+0x18: Unable to start the Change Notify for the LicenseInfoSuites.
+0x19: A suite is running on a system that must be PDC.
+0x1a: A failure occurred when enumerating the suites.
+0x1b: Changes to the policy cache were attempted.
+    </p1>
+  </code>
   <code id="0xfc" name="ATTEMPTED_EXECUTE_OF_NOEXECUTE_MEMORY">
     <description>Indicates that an attempt was made to execute non-executable memory.</description>
     <p1>The address whose execution was attempted.</p1>
