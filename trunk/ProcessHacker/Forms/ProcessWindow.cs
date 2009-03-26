@@ -842,7 +842,7 @@ namespace ProcessHacker
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to terminate this process?", "Process Hacker",
+            if (MessageBox.Show("Are you sure you want to terminate " + _processItem.Name + "?", "Process Hacker",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
             {
                 try

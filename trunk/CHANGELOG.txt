@@ -4,6 +4,7 @@ Process Hacker
  * NEW:
    * #2702907 - "CSR Processes: Enable termination of multiple processes"
    * #2702909 - "CSR Processes: Show process name when confirming termination"
+   * #2702911 - "Show process name when terminating process in properties"
    * #2702929 - "Add a Cancel button in Options"
    * Statistics times in System Information and process properties
    * Highlighting system
