@@ -1,0 +1,9 @@
+TARGETNAME=kbugcheck
+TARGETTYPE=DRIVER
+TARGETPATH=.\
+
+INCLUDES=$(DDK_INC_PATH)
+LIBS=%BUILD%\lib
+
+SOURCES= \
+    kbugcheck.c \
