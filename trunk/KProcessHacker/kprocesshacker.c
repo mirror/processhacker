@@ -33,14 +33,11 @@
 #include "kernel_types.h"
 #include "debug.h"
 
-/* It's never safe to allow a hook driver to unload, but it should be 
- * used when debugging to save time.
- */
 #define ALLOW_UNLOAD
 
-#pragma alloc_text(PAGE, KPHCreate) 
-#pragma alloc_text(PAGE, KPHClose) 
-#pragma alloc_text(PAGE, KPHIoControl) 
+#pragma alloc_text(PAGE, KPHCreate)
+#pragma alloc_text(PAGE, KPHClose)
+#pragma alloc_text(PAGE, KPHIoControl)
 #pragma alloc_text(PAGE, KPHRead)
 #pragma alloc_text(PAGE, KPHWrite)
 #pragma alloc_text(PAGE, KPHUnsupported)
