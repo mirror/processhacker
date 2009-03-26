@@ -126,7 +126,7 @@ namespace BugCheck
 
                 BugCheckCode code = _bugCheckCodes[comboBugCheckCode.SelectedItem.ToString()];
 
-                textDescription.Text = code.Name;
+                textDescription.Text = code.Name + " (0x" + code.Code.ToString("x") + ")";
 
                 if (code.Description != null)
                     textDescription.Text += "\r\n\r\n" + code.Description + "\r\n";

@@ -28,4 +28,30 @@
     <p4>Address which referenced memory.</p4>
   </code>
   <code id="0xb" name="NO_EXCEPTION_HANDLING_SUPPORT" />
+  <code id="0xc" name="MAXIMUM_WAIT_OBJECTS_EXCEEDED">
+    <description>
+      Indicates that the current thread exceeded the permitted number of wait objects.
+    </description>
+  </code>
+  <code id="0xd" name="MUTEX_LEVEL_NUMBER_VIOLATION" />
+  <code id="0xe" name="NO_USER_MODE_CONTEXT" />
+  <code id="0xf" name="SPIN_LOCK_ALREADY_OWNED">
+    <description>
+      Indicates that a request for a spin lock was initiated when the spin lock was already owned.
+    </description>
+  </code>
+  <code id="0x10" name="SPIN_LOCK_NOT_OWNED" />
+  <code id="0x11" name="THREAD_NOT_MUTEX_OWNER" />
+  <code id="0x12" name="TRAP_CAUSE_UNKNOWN">
+    <description>
+      Indicates that an unknown exception has occurred.
+    </description>
+    <p1>The unexcepted interrupt.</p1>
+    <p2>The unknown floating-point exception.</p2>
+    <p3>The enabled and asserted status bits.</p3>
+    <p4>Reserved.</p4>
+  </code>
+  <code id="0x13" name="EMPTY_THREAD_REAPER_LIST" />
+  <code id="0x14" name="CREATE_DELETE_LOCK_NOT_LOCKED" />
+  
 </db>
