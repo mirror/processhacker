@@ -101,15 +101,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static int SwapBytes(this int v)
-        {
-            return ByteSwap(v);
-        }
-
-        /// <summary>
         /// Swaps the order of the bytes in the argument.
         /// </summary>
         /// <param name="v">The number to change.</param>
@@ -125,15 +116,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static uint SwapBytes(this uint v)
-        {
-            return ByteSwap(v);
-        }
-
-        /// <summary>
         /// Swaps the order of the bytes in the argument.
         /// </summary>
         /// <param name="v">The number to change.</param>
@@ -144,15 +126,6 @@ namespace ProcessHacker
             byte b2 = (byte)(v >> 8);
 
             return (ushort)(b2 | (b1 << 8));
-        }
-
-        /// <summary>
-        /// Swaps the order of the bytes.
-        /// </summary>
-        /// <returns>A number.</returns>
-        public static ushort SwapBytes(this ushort v)
-        {
-            return ByteSwap(v);
         }
 
         /// <summary>
@@ -175,14 +148,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Disables all menu items. 
-        /// </summary>
-        public static void DisableAll(this Menu menu)
-        {
-            DisableAllMenuItems(menu);
-        }
-
-        /// <summary>
         /// Enables the menu items contained in the specified menu. 
         /// </summary>
         /// <param name="menu">The menu.</param>
@@ -190,14 +155,6 @@ namespace ProcessHacker
         {
             foreach (MenuItem item in menu.MenuItems)
                 item.Enabled = true;
-        }
-
-        /// <summary>
-        /// Enables all menu items. 
-        /// </summary>
-        public static void EnableAll(this Menu menu)
-        {
-            EnableAllMenuItems(menu);
         }
 
         /// <summary>

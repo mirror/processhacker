@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<db>
+  <code id="0x1" name="APC_INDEX_MISMATCH">
+    <description>
+      Indicates that there is a mismatch in the APC state index.
+    </description>
+    <p1>The address of the system call.</p1>
+    <p2>The value of the following: Thread->ApcStateIndex &lt;&lt; 8 | Previous ApcStateIndex</p2>
+    <p3>The value of Thread->KernelApcDisable</p3>
+    <p4>The value of the previous KernelApcDisable</p4>
+  </code>
+  <code id="0x2" name="DEVICE_QUEUE_NOT_BUSY" />
+  <code id="0x3" name="INVALID_AFFINITY_SET" />
+  <code id="0x4" name="INVALID_DATA_ACCESS_TRAP" />
+  <code id="0x5" name="INVALID_PROCESS_ATTACH_ATTEMPT" />
+  <code id="0x6" name="INVALID_PROCESS_DETACH_ATTEMPT" />
+  <code id="0x7" name="INVALID_SOFTWARE_INTERRUPT" />
+  <code id="0x8" name="IRQL_NOT_DISPATCH_LEVEL" />
+  <code id="0x9" name="IRQL_NOT_GREATER_OR_EQUAL" />
+  <code id="0xa" name="IRQL_NOT_LESS_OR_EQUAL">
+    <description>
+      Indicates that kernel-mode code accessed paged memory at DISPATCH_LEVEL or above.
+    </description>
+    <p1>Memory referenced.</p1>
+    <p2>IRQL at the time.</p2>
+    <p3>0: Read, 1: Write.</p3>
+    <p4>Address which referenced memory.</p4>
+  </code>
+  <code id="0xb" name="NO_EXCEPTION_HANDLING_SUPPORT" />
+</db>
