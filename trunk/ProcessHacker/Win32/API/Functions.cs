@@ -128,6 +128,12 @@ namespace ProcessHacker
         #region Memory
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int GetProcessHeaps(int NumberOfHeaps, int[] Heaps);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int HeapCompact(int Heap, bool NoSerialize);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int HeapFree(int Heap, int Flags, IntPtr Memory);
 
         [DllImport("kernel32.dll", SetLastError = true)]
