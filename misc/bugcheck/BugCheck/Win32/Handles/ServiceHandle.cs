@@ -94,25 +94,6 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Gets the service's description.
-            /// </summary>
-            /// <returns>A string.</returns>
-            public string GetDescription()
-            {
-                int retLen;
-
-                QueryServiceConfig2(this, SERVICE_INFO_LEVEL.Description, IntPtr.Zero, 0, out retLen);
-
-                using (MemoryAlloc data = new MemoryAlloc(retLen))
-                {
-                    if (!QueryServiceConfig2(this, SERVICE_INFO_LEVEL.Description, data, retLen, out retLen))
-                        ThrowLastWin32Error();
-
-                    return data.ReadStruct<SERVICE_DESCRIPTION>().Description;
-                }
-            }
-
-            /// <summary>
             /// Gets the status of the service.
             /// </summary>
             /// <returns>A SERVICE_STATUS_PROCESS structure.</returns>

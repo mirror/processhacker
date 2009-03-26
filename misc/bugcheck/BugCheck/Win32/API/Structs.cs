@@ -686,31 +686,6 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SYMBOL_INFO
-        {
-            public int SizeOfStruct;
-            public int TypeIndex;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-            public long[] Reserved;
-
-            public int Index;
-            public int Size;
-            public long ModBase;
-            public SYMBOL_FLAGS Flags;
-            public long Value;
-            public long Address;
-            public int Register;
-            public int Scope;
-            public int Tag;
-            public int NameLen;
-            public int MaxNameLen;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SYMBOL_NAME_MAXSIZE)]
-            public string Name;
-        } 
-
-        [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_BASIC_INFORMATION
         {
             public int Reserved;

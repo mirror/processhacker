@@ -397,35 +397,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Formats a size into a string representation, postfixing it with the correct unit.
-        /// </summary>
-        /// <param name="size">The size to format.</param>
-        /// <returns></returns>
-        public static string GetNiceSizeName(long size)
-        {
-            return GetNiceSizeName((ulong)size);
-        }
-
-        /// <summary>
-        /// Formats a size into a string representation, postfixing it with the correct unit.
-        /// </summary>
-        /// <param name="size">The size to format.</param>
-        /// <returns></returns>
-        public static string GetNiceSizeName(ulong size)
-        {
-            int i = 0;
-            decimal s = (decimal)size;
-
-            while (s > 1024 && i < SizeUnitNames.Length && i < Properties.Settings.Default.UnitSpecifier)
-            {
-                s /= 1024;
-                i++;
-            }
-
-            return (s == 0 ? "0" : s.ToString("#,#.##")) + " " + SizeUnitNames[i];
-        }
-
-        /// <summary>
         /// Formats a <see cref="TimeSpan"/> object into a string representation.
         /// </summary>
         /// <param name="time">The <see cref="TimeSpan"/> to format.</param>
@@ -473,46 +444,6 @@ namespace ProcessHacker
                 return path.Substring(4);
             else
                 return path;
-        }
-        
-        /// <summary>
-        /// Returns a <see cref="ProcessThread"/> object of the specified thread ID.
-        /// </summary>
-        /// <param name="p">The process which the thread belongs to.</param>
-        /// <param name="id">The ID of the thread.</param>
-        /// <returns></returns>
-        public static ProcessThread GetThreadById(Process p, int id)
-        {
-            foreach (ProcessThread t in p.Threads)
-                if (t.Id == id)
-                    return t;
-
-            return null;
-        }
-
-        public static bool IsDangerousPid(int pid)
-        {
-            if (pid == 4)
-                return true;
-
-            try
-            {
-                using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
-                {
-                    foreach (string s in Misc.DangerousNames)
-                    {
-                        if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())), 
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch { }
-
-            return false;
         }
 
         /// <summary>
