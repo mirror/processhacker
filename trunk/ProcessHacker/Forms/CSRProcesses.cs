@@ -39,13 +39,14 @@ namespace ProcessHacker
 
             listProcesses.ListViewItemSorter = new SortedListComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
+            listProcesses.SetDoubleBuffered(true);
+            listProcesses.SetTheme("explorer");
         }
 
         private void CSRProcessesWindow_Load(object sender, EventArgs e)
         {
             buttonScan.Select();
             ColumnSettings.LoadSettings(Properties.Settings.Default.CSRProcessesColumns, listProcesses);
-            listProcesses.SetTheme("explorer");
         }
 
         private void CSRProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -147,30 +148,45 @@ namespace ProcessHacker
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to terminate the selected process?",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-            {
-                try
-                {
-                    (new Win32.ProcessHandle(
-                        int.Parse(listProcesses.SelectedItems[0].SubItems[1].Text),
-                        Win32.PROCESS_RIGHTS.PROCESS_TERMINATE)).Terminate();
+            string promptMessage = "the selected processes";
 
-                    listProcesses.SelectedItems[0].Remove();
-                }
-                catch (Exception ex)
+            if (listProcesses.SelectedIndices.Count == 1)
+                promptMessage = listProcesses.SelectedItems[0].SubItems[0].Text;
+
+            if (MessageBox.Show("Are you sure you want to terminate " + promptMessage + "?",
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            {
+                List<ListViewItem> remove = new List<ListViewItem>();
+
+                foreach (ListViewItem item in listProcesses.SelectedItems)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    try
+                    {
+                        using (var phandle = new Win32.ProcessHandle(
+                            int.Parse(item.SubItems[1].Text),
+                            Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                            phandle.Terminate();
+                        remove.Add(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error terminating " + item.SubItems[0].Text + 
+                            ": " + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
+
+                foreach (var item in remove)
+                    item.Remove();
             }
         }
 
         private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listProcesses.SelectedItems.Count == 1)
-                buttonTerminate.Enabled = true;
-            else
+            if (listProcesses.SelectedItems.Count == 0)
                 buttonTerminate.Enabled = false;
+            else
+                buttonTerminate.Enabled = true;
         }
 
         private void CSRProcessesWindow_KeyDown(object sender, KeyEventArgs e)
