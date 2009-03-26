@@ -38,6 +38,7 @@ namespace ProcessHacker
         private Process _process;
         private Bitmap _processImage;
 
+        private SharedThreadProvider _sharedThreadP;
         private ThreadProvider _threadP;
         private ModuleProvider _moduleP;
         private MemoryProvider _memoryP;
@@ -438,9 +439,12 @@ namespace ProcessHacker
 
         private void InitializeProviders()
         {
+            _sharedThreadP = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+
             listThreads.BeginUpdate();
             listThreads.Highlight = false;
             _threadP = new ThreadProvider(_pid);
+            _sharedThreadP.Add(_threadP);
             _threadP.Interval = Properties.Settings.Default.RefreshInterval;
             _threadP.Updated += new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
             listThreads.Provider = _threadP;
@@ -449,6 +453,7 @@ namespace ProcessHacker
             listModules.BeginUpdate();
             listModules.Highlight = false;
             _moduleP = new ModuleProvider(_pid);
+            _sharedThreadP.Add(_moduleP);
             _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
             _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             listModules.Provider = _moduleP;
@@ -457,6 +462,7 @@ namespace ProcessHacker
             listMemory.BeginUpdate();
             listMemory.Highlight = false;
             _memoryP = new MemoryProvider(_pid);
+            _sharedThreadP.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
@@ -466,6 +472,7 @@ namespace ProcessHacker
             listHandles.BeginUpdate();
             listHandles.Highlight = false;
             _handleP = new HandleProvider(_pid);
+            _sharedThreadP.Add(_handleP);
             _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
             _handleP.Interval = Properties.Settings.Default.RefreshInterval;
             _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);

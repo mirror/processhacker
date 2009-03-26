@@ -30,7 +30,7 @@ namespace ProcessHacker
     /// <summary>
     /// Provides services for continuously updating a dictionary.
     /// </summary>
-    public class Provider<TKey, TValue> : IDisposable
+    public class Provider<TKey, TValue> : IProvider, IDisposable
     {
         /// <summary>
         /// A generic delegate which is used when updating the dictionary.
@@ -111,17 +111,18 @@ namespace ProcessHacker
         /// </summary>
         public event ProviderError Error;
 
-        Thread _thread;
-        List<Thread> _asyncThreads = new List<Thread>();
-        Dictionary<TKey, TValue> _dictionary;
+        private Thread _thread;
+        private List<Thread> _asyncThreads = new List<Thread>();
+        private Dictionary<TKey, TValue> _dictionary;
 
-        object _busyLock = new object();
-        bool _disposed = false;
-        bool _busy = false;
-        bool _enabled = false;
-        bool _useInvoke = false;
-        int _runCount = 0;
-        int _interval;
+        private object _busyLock = new object();
+        private bool _disposed = false;
+        private bool _busy = false;
+        private bool _createThread = true;
+        private bool _enabled = false;
+        private bool _useInvoke = false;
+        private int _runCount = 0;
+        private int _interval;
 
         /// <summary>
         /// Creates a new instance of the Provider class.
@@ -137,11 +138,6 @@ namespace ProcessHacker
         public Provider(IEqualityComparer<TKey> comparer)
         {
             _dictionary = new Dictionary<TKey, TValue>(comparer);
-
-            _thread = new Thread(new ThreadStart(Update));
-            _thread.SetApartmentState(ApartmentState.STA);
-            _thread.Start();
-            _thread.Priority = ThreadPriority.Lowest;
         }
 
         ~Provider()
@@ -156,8 +152,12 @@ namespace ProcessHacker
                 if (!_disposed)
                 {
                     _disposed = true;
-                    _thread.Abort();
-                    _thread = null;
+
+                    if (_thread != null)
+                    {
+                        _thread.Abort();
+                        _thread = null;
+                    }
 
                     foreach (Thread t in _asyncThreads)
                     {
@@ -182,12 +182,32 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// If enabled, the provider manages a background thread for the updater.
+        /// </summary>
+        public bool CreateThread
+        {
+            get { return _createThread; }
+            set { _createThread = value; }
+        }
+
+        /// <summary>
         /// Determines whether the provider should update.
         /// </summary>
         public bool Enabled
         {
             get { return _enabled; }
-            set { _enabled = value; }
+            set
+            {
+                _enabled = value;
+
+                if (_enabled && _createThread && _thread == null)
+                {
+                    _thread = new Thread(new ThreadStart(Update));
+                    _thread.SetApartmentState(ApartmentState.STA);
+                    _thread.Start();
+                    _thread.Priority = ThreadPriority.Lowest;
+                }
+            }
         }
 
         /// <summary>
@@ -242,7 +262,7 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Updates the provider if it is enabled.
+        /// Updates the provider. If it is already updating, this function waits until it finishes.
         /// </summary>
         public void RunOnce()
         {
@@ -275,7 +295,7 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Updates the provider in an internal worker thread if it is enabled.
+        /// Updates the provider in an internal worker thread.
         /// </summary>
         public void RunOnceAsync()
         {
