@@ -1,4 +1,4 @@
-;ISTool Version 5.2.1, Script by XhmikosR
+;ISTool Version 5.2.1 and Inno Setup 5.2.4 dev, Script by XhmikosR
 ;
 ;Requirements:
 ;*Inno Setup QuickStart Pack
