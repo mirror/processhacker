@@ -53,5 +53,66 @@
   </code>
   <code id="0x13" name="EMPTY_THREAD_REAPER_LIST" />
   <code id="0x14" name="CREATE_DELETE_LOCK_NOT_LOCKED" />
-  
+  <code id="0x15" name="LAST_CHANCE_CALLED_FROM_KMODE" />
+  <code id="0x16" name="CID_HANDLE_CREATION" />
+  <code id="0x17" name="CID_HANDLE_DELETION" />
+  <code id="0x18" name="REFERENCE_BY_POINTER">
+    <description>
+      Indicates that the reference count of an object is illegal for the current state of the object.
+    </description>
+    <p1>Object type of the object whose reference count is being lowered.</p1>
+    <p2>Object whose reference count is being lowered.</p2>
+    <p3>Reserved.</p3>
+    <p4>Reserved.</p4>
+  </code>
+  <code id="0x19" name="BAD_POOL_HEADER">
+    <description>
+      Indicates that a pool header is corrupt.
+    </description>
+  </code>
+  <code id="0x1a" name="MEMORY_MANAGEMENT">
+    <description>
+      Indicates that a severe memory management error occurred.
+    </description>
+  </code>
+  <code id="0x50" name="PAGE_FAULT_IN_NONPAGED_AREA">
+    <description>
+      Indicates that invalid system memory has been referenced.
+    </description>
+    <p1>Memory address referenced.</p1>
+    <p2>0: Read, 1: Write.</p2>
+    <p3>Address that referenced memory.</p3>
+    <p4>Reserved.</p4>
+  </code>
+  <code id="0x5d" name="UNSUPPORTED_PROCESSOR">
+    <description>
+      Indicates that the computer is attempting to run Windows on an unsupported processor.
+    </description>
+  </code>
+  <code id="0x93" name="INVALID_KERNEL_HANDLE">
+    <description>
+      Indicates that an invalid or protected handle was passed to NtClose.
+    </description>
+    <p1>The handle that was passed to NtClose.</p1>
+    <p2>0: The caller tried to close a protected handle, 1: The caller tried to close an invalid handle.</p2>
+  </code>
+  <code id="0xfc" name="ATTEMPTED_EXECUTE_OF_NOEXECUTE_MEMORY">
+    <description>Indicates that an attempt was made to execute non-executable memory.</description>
+    <p1>The address whose execution was attempted.</p1>
+    <p2>The contents of the page table entry (PTE).</p2>
+    <p3>Reserved.</p3>
+    <p4>Reserved.</p4>
+  </code>
+  <code id="0xfd" name="DIRTY_NOWRITE_PAGES_CONGESTION">
+    <description>Indicates that there are no free pages available to continue basic system operations.</description>
+    <p1>Total number of dirty pages.</p1>
+    <p2>Number of non-writeable dirty pages.</p2>
+    <p3>Reserved.</p3>
+    <p4>Most recently modified write-error status.</p4>
+  </code>
+  <code id="0xdeaddead" name="MANUALLY_INITIATED_CRASH">
+    <description>
+      Indicates that the user deliberately initiated a crash dump.
+    </description>
+  </code>
 </db>
