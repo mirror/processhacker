@@ -31,9 +31,9 @@ namespace ProcessHacker
     public partial class SysInfoWindow : Form
     {
         private Components.Plotter[] _cpuPlotters;
-        private int _noOfCPUs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
-        private int _pages = Program.HackerWindow.ProcessProvider.System.NumberOfPhysicalPages;
-        private int _pageSize = Program.HackerWindow.ProcessProvider.System.PageSize;
+        private uint _noOfCPUs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
+        private uint _pages = (uint)Program.HackerWindow.ProcessProvider.System.NumberOfPhysicalPages;
+        private uint _pageSize = (uint)Program.HackerWindow.ProcessProvider.System.PageSize;
 
         public SysInfoWindow()
         {
@@ -66,7 +66,7 @@ namespace ProcessHacker
 
             // create a plotter per CPU
             _cpuPlotters = new Plotter[_noOfCPUs];
-            tableCPUs.ColumnCount = _noOfCPUs;
+            tableCPUs.ColumnCount = (int)_noOfCPUs;
             tableCPUs.ColumnStyles.Clear();
             tableCPUs.Dock = DockStyle.Fill;
 
@@ -171,48 +171,48 @@ namespace ProcessHacker
             Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemFileCacheInformation,
                 ref cacheInfo, System.Runtime.InteropServices.Marshal.SizeOf(cacheInfo), out retLen);
 
-            labelTotalsProcesses.Text = info.ProcessCount.ToString("N0");
-            labelTotalsThreads.Text = info.ThreadCount.ToString("N0");
-            labelTotalsHandles.Text = info.HandlesCount.ToString("N0");
+            labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");
+            labelTotalsThreads.Text = ((ulong)info.ThreadCount).ToString("N0");
+            labelTotalsHandles.Text = ((ulong)info.HandlesCount).ToString("N0");
 
-            labelCCC.Text = Misc.GetNiceSizeName((long)perfInfo.CommittedPages * _pageSize);
-            labelCCP.Text = Misc.GetNiceSizeName((long)perfInfo.PeakCommitment * _pageSize);
-            labelCCL.Text = Misc.GetNiceSizeName((long)perfInfo.CommitLimit * _pageSize);
+            labelCCC.Text = Misc.GetNiceSizeName((ulong)perfInfo.CommittedPages * _pageSize);
+            labelCCP.Text = Misc.GetNiceSizeName((ulong)perfInfo.PeakCommitment * _pageSize);
+            labelCCL.Text = Misc.GetNiceSizeName((ulong)perfInfo.CommitLimit * _pageSize);
 
-            labelPMC.Text = Misc.GetNiceSizeName((long)(_pages - perfInfo.AvailablePages) * _pageSize);
-            labelPSC.Text = Misc.GetNiceSizeName((long)info.SystemCache * _pageSize);
-            labelPMT.Text = Misc.GetNiceSizeName((long)_pages * _pageSize);
+            labelPMC.Text = Misc.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
+            labelPSC.Text = Misc.GetNiceSizeName((ulong)info.SystemCache * _pageSize);
+            labelPMT.Text = Misc.GetNiceSizeName((ulong)_pages * _pageSize);
 
             labelCacheCurrent.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
             labelCachePeak.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);
-            labelCacheMinimum.Text = Misc.GetNiceSizeName((long)cacheInfo.SystemCacheWsMinimum * _pageSize);
-            labelCacheMaximum.Text = Misc.GetNiceSizeName((long)cacheInfo.SystemCacheWsMaximum * _pageSize);
+            labelCacheMinimum.Text = Misc.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMinimum * _pageSize);
+            labelCacheMaximum.Text = Misc.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMaximum * _pageSize);
 
-            labelKPPPU.Text = Misc.GetNiceSizeName((long)perfInfo.PagedPoolPages * _pageSize);
-            labelKPPVU.Text = Misc.GetNiceSizeName((long)perfInfo.PagedPoolUsage * _pageSize);
-            labelKPPA.Text = perfInfo.PagedPoolAllocs.ToString("N0");
-            labelKPPF.Text = perfInfo.PagedPoolFrees.ToString("N0");
-            labelKPNPU.Text = Misc.GetNiceSizeName((long)perfInfo.NonPagedPoolUsage * _pageSize);
-            labelKPNPA.Text = perfInfo.NonPagedPoolAllocs.ToString("N0");
-            labelKPNPF.Text = perfInfo.NonPagedPoolFrees.ToString("N0");
+            labelKPPPU.Text = Misc.GetNiceSizeName((ulong)perfInfo.PagedPoolPages * _pageSize);
+            labelKPPVU.Text = Misc.GetNiceSizeName((ulong)perfInfo.PagedPoolUsage * _pageSize);
+            labelKPPA.Text = ((ulong)perfInfo.PagedPoolAllocs).ToString("N0");
+            labelKPPF.Text = ((ulong)perfInfo.PagedPoolFrees).ToString("N0");
+            labelKPNPU.Text = Misc.GetNiceSizeName((ulong)perfInfo.NonPagedPoolUsage * _pageSize);
+            labelKPNPA.Text = ((ulong)perfInfo.NonPagedPoolAllocs).ToString("N0");
+            labelKPNPF.Text = ((ulong)perfInfo.NonPagedPoolFrees).ToString("N0");
 
-            labelPFTotal.Text = perfInfo.PageFaults.ToString("N0");
-            labelPFCOW.Text = perfInfo.CopyOnWriteFaults.ToString("N0");
-            labelPFTrans.Text = perfInfo.TransitionFaults.ToString("N0");
-            labelPFCacheTrans.Text = perfInfo.CacheTransitionFaults.ToString("N0");
-            labelPFDZ.Text = perfInfo.CacheTransitionFaults.ToString("N0");
-            labelPFCache.Text = cacheInfo.SystemCacheWsFaults.ToString("N0");
+            labelPFTotal.Text = ((ulong)perfInfo.PageFaults).ToString("N0");
+            labelPFCOW.Text = ((ulong)perfInfo.CopyOnWriteFaults).ToString("N0");
+            labelPFTrans.Text = ((ulong)perfInfo.TransitionFaults).ToString("N0");
+            labelPFCacheTrans.Text = ((ulong)perfInfo.CacheTransitionFaults).ToString("N0");
+            labelPFDZ.Text = ((ulong)perfInfo.CacheTransitionFaults).ToString("N0");
+            labelPFCache.Text = ((ulong)cacheInfo.SystemCacheWsFaults).ToString("N0");
 
-            labelIOR.Text = perfInfo.IoReadOperationCount.ToString("N0");
+            labelIOR.Text = ((ulong)perfInfo.IoReadOperationCount).ToString("N0");
             labelIORB.Text = Misc.GetNiceSizeName(perfInfo.IoReadTransferCount);
-            labelIOW.Text = perfInfo.IoWriteOperationCount.ToString("N0");
+            labelIOW.Text = ((ulong)perfInfo.IoWriteOperationCount).ToString("N0");
             labelIOWB.Text = Misc.GetNiceSizeName(perfInfo.IoWriteTransferCount);
-            labelIOO.Text = perfInfo.IoOtherOperationCount.ToString("N0");
+            labelIOO.Text = ((ulong)perfInfo.IoOtherOperationCount).ToString("N0");
             labelIOOB.Text = Misc.GetNiceSizeName(perfInfo.IoOtherTransferCount);
 
-            labelCPUContextSwitches.Text = perfInfo.ContextSwitches.ToString("N0");
-            labelCPUInterrupts.Text = Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptCount.ToString("N0");
-            labelCPUSystemCalls.Text = perfInfo.SystemCalls.ToString("N0");
+            labelCPUContextSwitches.Text = ((ulong)perfInfo.ContextSwitches).ToString("N0");
+            labelCPUInterrupts.Text = ((ulong)Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");
+            labelCPUSystemCalls.Text = ((ulong)perfInfo.SystemCalls).ToString("N0");
         }
 
         private void ProcessProvider_Updated()

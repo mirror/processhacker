@@ -747,12 +747,6 @@ namespace ProcessHacker
             plotterMemory.Draw();
             plotterIO.MoveGrid();
             plotterIO.Draw();
-
-            // update statistics
-            if (tabControl.SelectedTab == tabStatistics)
-            {
-                this.UpdateStatistics();
-            }
         }
 
         private void UpdateStatistics()
@@ -771,16 +765,16 @@ namespace ProcessHacker
             labelMemoryPVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
             labelMemoryPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
             labelMemoryPPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
-            labelMemoryPF.Text = item.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0");
+            labelMemoryPF.Text = ((ulong)item.Process.VirtualMemoryCounters.PageFaultCount).ToString("N0");
 
-            labelIOReads.Text = item.Process.IoCounters.ReadOperationCount.ToString("N0");
+            labelIOReads.Text = ((ulong)item.Process.IoCounters.ReadOperationCount).ToString("N0");
             labelIOReadBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
-            labelIOWrites.Text = item.Process.IoCounters.WriteOperationCount.ToString("N0");
+            labelIOWrites.Text = ((ulong)item.Process.IoCounters.WriteOperationCount).ToString("N0");
             labelIOWriteBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
-            labelIOOther.Text = item.Process.IoCounters.OtherOperationCount.ToString("N0");
+            labelIOOther.Text = ((ulong)item.Process.IoCounters.OtherOperationCount).ToString("N0");
             labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
 
-            labelOtherHandles.Text = item.Process.HandleCount.ToString("N0");
+            labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
 
             try
             {
@@ -1029,12 +1023,14 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    try
+                    if (tabControl.SelectedTab == tabStatistics)
+                    {
+                        this.UpdateStatistics();
+                    }
+                    else if (tabControl.SelectedTab == tabPerformance)
                     {
                         this.UpdatePerformance();
                     }
-                    catch
-                    { }
                 }));
             }
             catch
@@ -1155,7 +1151,13 @@ namespace ProcessHacker
                     _handleP.RunOnceAsync();
 
             if (tabControl.SelectedTab == tabStatistics)
+            {
                 this.UpdateStatistics();
+            }
+            else if (tabControl.SelectedTab == tabPerformance)
+            {
+                this.UpdatePerformance();
+            }
         }
 
         #endregion
