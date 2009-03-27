@@ -406,5 +406,17 @@ namespace ProcessHacker
                     System.Diagnostics.Process.GetCurrentProcess().Kill();
                 }, this.Handle);
         }
+
+        private void buttonEnableAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listHighlightingColors.Items)
+                item.Checked = true;
+        }
+
+        private void buttonDisableAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in listHighlightingColors.Items)
+                item.Checked = false;
+        }
     }
 }

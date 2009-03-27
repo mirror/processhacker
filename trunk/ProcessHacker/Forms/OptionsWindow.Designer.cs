@@ -87,6 +87,8 @@
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonEnableAll = new System.Windows.Forms.Button();
+            this.buttonDisableAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -502,6 +504,8 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.buttonDisableAll);
+            this.tabHighlighting.Controls.Add(this.buttonEnableAll);
             this.tabHighlighting.Controls.Add(this.label5);
             this.tabHighlighting.Controls.Add(this.listHighlightingColors);
             this.tabHighlighting.Controls.Add(this.textHighlightingDuration);
@@ -521,7 +525,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 297);
+            this.label5.Location = new System.Drawing.Point(6, 317);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(180, 13);
             this.label5.TabIndex = 11;
@@ -542,7 +546,7 @@
             this.listHighlightingColors.MultiSelect = false;
             this.listHighlightingColors.Name = "listHighlightingColors";
             this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(405, 234);
+            this.listHighlightingColors.Size = new System.Drawing.Size(405, 246);
             this.listHighlightingColors.TabIndex = 10;
             this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
             this.listHighlightingColors.View = System.Windows.Forms.View.Details;
@@ -827,6 +831,30 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
+            // buttonEnableAll
+            // 
+            this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonEnableAll.Location = new System.Drawing.Point(255, 312);
+            this.buttonEnableAll.Name = "buttonEnableAll";
+            this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
+            this.buttonEnableAll.TabIndex = 12;
+            this.buttonEnableAll.Text = "&Enable All";
+            this.buttonEnableAll.UseVisualStyleBackColor = true;
+            this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
+            // 
+            // buttonDisableAll
+            // 
+            this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDisableAll.Location = new System.Drawing.Point(336, 312);
+            this.buttonDisableAll.Name = "buttonDisableAll";
+            this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
+            this.buttonDisableAll.TabIndex = 12;
+            this.buttonDisableAll.Text = "&Disable All";
+            this.buttonDisableAll.UseVisualStyleBackColor = true;
+            this.buttonDisableAll.Click += new System.EventHandler(this.buttonDisableAll_Click);
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
@@ -926,5 +954,7 @@
         private System.Windows.Forms.NumericUpDown textStep;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Button buttonDisableAll;
+        private System.Windows.Forms.Button buttonEnableAll;
     }
 }
