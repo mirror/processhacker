@@ -389,6 +389,9 @@ namespace ProcessHacker
                 this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
             long otherTime = _longDeltas[SystemStats.CpuOther];
 
+            if (sysKernelTime + sysUserTime + otherTime == 0)
+                return;
+
             _longDeltas.Update(SystemStats.IoRead, this.Performance.IoReadTransferCount);
             _longDeltas.Update(SystemStats.IoWrite, this.Performance.IoWriteTransferCount);
             _longDeltas.Update(SystemStats.IoOther, this.Performance.IoOtherTransferCount);
