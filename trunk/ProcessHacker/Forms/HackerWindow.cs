@@ -171,6 +171,11 @@ namespace ProcessHacker
             }
         }
 
+        private void listNetwork_DoubleClick(object sender, EventArgs e)
+        {
+            goToProcessNetworkMenuItem_Click(sender, e);
+        }
+
         private void listServices_DoubleClick(object sender, EventArgs e)
         {
             propertiesServiceMenuItem_Click(null, null);
@@ -447,6 +452,55 @@ namespace ProcessHacker
         private void saveMenuItem_Click(object sender, EventArgs e)
         {
             Save.SaveToFile();
+        }
+
+        #endregion
+
+        #region Network Context Menu
+
+        private void menuNetwork_Popup(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems.Count == 0)
+            {
+                menuNetwork.DisableAll();
+            }
+            else if (listNetwork.SelectedItems.Count == 1)
+            {
+                menuNetwork.EnableAll();
+            }
+            else
+            {
+                menuNetwork.EnableAll();
+                goToProcessNetworkMenuItem.Enabled = false;
+            }
+
+            if (listNetwork.Items.Count > 0)
+                selectAllNetworkMenuItem.Enabled = true;
+            else
+                selectAllNetworkMenuItem.Enabled = false;
+        }
+
+        private void goToProcessNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            DeselectAll(treeProcesses.Tree);
+
+            try
+            {
+                TreeNodeAdv node = treeProcesses.FindTreeNode((int)listNetwork.SelectedItems[0].Tag);
+
+                node.EnsureVisible();
+                node.IsSelected = true;
+                treeProcesses.Tree.FullUpdate();
+
+                tabControl.SelectedTab = tabProcesses;
+            }
+            catch
+            { }
+        }
+
+        private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            Misc.SelectAll(listNetwork.List.Items);
         }
 
         #endregion
@@ -1596,9 +1650,10 @@ namespace ProcessHacker
             {
                 TreeNodeAdv node = treeProcesses.FindTreeNode(serviceP.Dictionary[
                     listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID);
-                
-                node.IsSelected = true;
+
                 node.EnsureVisible();
+                node.IsSelected = true;
+                treeProcesses.Tree.FullUpdate();
 
                 tabControl.SelectedTab = tabProcesses;
             }
@@ -2303,10 +2358,11 @@ namespace ProcessHacker
 
             GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             GenericViewMenu.AddMenuItems(copyServiceMenuItem.MenuItems, listServices.List, null);
+            GenericViewMenu.AddMenuItems(copyNetworkMenuItem.MenuItems, listNetwork.List, null);
 
             treeProcesses.ContextMenu = menuProcess;
             listServices.ContextMenu = menuService;
-            listNetwork.ContextMenu = listNetwork.List.GetCopyMenu();
+            listNetwork.ContextMenu = menuNetwork;
 
             sharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
             sharedThreadProvider.Add(processP);

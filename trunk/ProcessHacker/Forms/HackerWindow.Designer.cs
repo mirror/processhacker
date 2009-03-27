@@ -147,7 +147,12 @@
             this.shutdownTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.exitTrayMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.goToProcessNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.panelHack = new System.Windows.Forms.Panel();
+            this.menuNetwork = new System.Windows.Forms.ContextMenu();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -774,6 +779,7 @@
             this.listNetwork.Provider = null;
             this.listNetwork.Size = new System.Drawing.Size(784, 361);
             this.listNetwork.TabIndex = 0;
+            this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
             // 
             // toolStrip
             // 
@@ -1043,6 +1049,20 @@
             // 
             this.vistaMenu.ContainerControl = this;
             // 
+            // goToProcessNetworkMenuItem
+            // 
+            this.goToProcessNetworkMenuItem.DefaultItem = true;
+            this.vistaMenu.SetImage(this.goToProcessNetworkMenuItem, global::ProcessHacker.Properties.Resources.arrow_right);
+            this.goToProcessNetworkMenuItem.Index = 0;
+            this.goToProcessNetworkMenuItem.Text = "&Go to Process";
+            this.goToProcessNetworkMenuItem.Click += new System.EventHandler(this.goToProcessNetworkMenuItem_Click);
+            // 
+            // copyNetworkMenuItem
+            // 
+            this.vistaMenu.SetImage(this.copyNetworkMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
+            this.copyNetworkMenuItem.Index = 2;
+            this.copyNetworkMenuItem.Text = "&Copy";
+            // 
             // panelHack
             // 
             this.panelHack.Controls.Add(this.tabControl);
@@ -1051,6 +1071,26 @@
             this.panelHack.Name = "panelHack";
             this.panelHack.Size = new System.Drawing.Size(798, 393);
             this.panelHack.TabIndex = 5;
+            // 
+            // menuNetwork
+            // 
+            this.menuNetwork.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.goToProcessNetworkMenuItem,
+            this.menuItem6,
+            this.copyNetworkMenuItem,
+            this.selectAllNetworkMenuItem});
+            this.menuNetwork.Popup += new System.EventHandler(this.menuNetwork_Popup);
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 1;
+            this.menuItem6.Text = "-";
+            // 
+            // selectAllNetworkMenuItem
+            // 
+            this.selectAllNetworkMenuItem.Index = 3;
+            this.selectAllNetworkMenuItem.Text = "Select &All";
+            this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
             // HackerWindow
             // 
@@ -1209,6 +1249,11 @@
         private System.Windows.Forms.MenuItem toolbarMenuItem;
         private System.Windows.Forms.Panel panelHack;
         private System.Windows.Forms.MenuItem saveMenuItem;
+        private System.Windows.Forms.ContextMenu menuNetwork;
+        private System.Windows.Forms.MenuItem goToProcessNetworkMenuItem;
+        private System.Windows.Forms.MenuItem copyNetworkMenuItem;
+        private System.Windows.Forms.MenuItem menuItem6;
+        private System.Windows.Forms.MenuItem selectAllNetworkMenuItem;
     }
 }
 
