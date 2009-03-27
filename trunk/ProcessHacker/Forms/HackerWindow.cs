@@ -51,6 +51,7 @@ namespace ProcessHacker
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
 
+        SharedThreadProvider sharedThreadProvider;
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
         NetworkProvider networkP = new NetworkProvider();
@@ -318,6 +319,7 @@ namespace ProcessHacker
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
+            sharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -2300,6 +2302,11 @@ namespace ProcessHacker
             treeProcesses.ContextMenu = menuProcess;
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = listNetwork.List.GetCopyMenu();
+
+            sharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            sharedThreadProvider.Add(processP);
+            sharedThreadProvider.Add(serviceP);
+            sharedThreadProvider.Add(networkP);
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;

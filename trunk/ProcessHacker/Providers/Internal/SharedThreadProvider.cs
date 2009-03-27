@@ -20,6 +20,12 @@ namespace ProcessHacker
             _thread.Priority = ThreadPriority.Lowest;
         }
 
+        public int Interval
+        {
+            get { return _interval; }
+            set { _interval = value; }
+        }
+
         public void Add(IProvider provider)
         {
             provider.CreateThread = false;
