@@ -12,6 +12,7 @@ Process Hacker
    * Highlighting system
    * Configurable max. samples and plotter step size
    * Network list with icons
+   * Can close multiple handles at once
  * FIXED:
    * #2694437 - "Crash when sorting the process list"
    * #2713087 - "Processes: Copy should copy only the columns currently used"

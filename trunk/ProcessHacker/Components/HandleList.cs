@@ -239,32 +239,34 @@ namespace ProcessHacker
             else
             {
                 menuHandle.EnableAll();
-                closeHandleMenuItem.Enabled = false;
                 propertiesHandleMenuItem.Enabled = false;
             }
         }
 
         private void closeHandleMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            foreach (ListViewItem item in listHandles.SelectedItems)
             {
-                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[2].Text);
-
-                using (Win32.ProcessHandle process =
-                       new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                try
                 {
-                    if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
-                        0x1 // DUPLICATE_CLOSE_SOURCE
-                        ) != 0)
-                        Win32.ThrowLastWin32Error();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not close handle:\n\n" + ex.Message,
-                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
 
-                return;
+                    using (Win32.ProcessHandle process =
+                           new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                    {
+                        if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                            0x1 // DUPLICATE_CLOSE_SOURCE
+                            ) != 0)
+                            Win32.ThrowLastWin32Error();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Could not close handle:\n\n" + ex.Message,
+                         "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
             }
         }
 
