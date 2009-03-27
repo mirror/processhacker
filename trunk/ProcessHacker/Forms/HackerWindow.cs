@@ -1264,6 +1264,8 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
+            networkP.RunOnceAsync();
+
             processP.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
             processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
             processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
@@ -1759,8 +1761,11 @@ namespace ProcessHacker
         {
             if (tabControl.SelectedTab == tabNetwork)
             {
-                networkP.Enabled = true;
-                networkP.RunOnceAsync();
+                if (processP.RunCount > 0)
+                {
+                    networkP.Enabled = true;
+                    networkP.RunOnceAsync();
+                }
             }
             else
             {
@@ -2336,7 +2341,6 @@ namespace ProcessHacker
 
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
             listNetwork.Provider = networkP;
-            networkP.RunOnceAsync();
             networkP.Enabled = true;
 
             treeProcesses.Tree.MouseDown += (sender, e) =>

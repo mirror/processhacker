@@ -32,17 +32,21 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.listNetwork = new System.Windows.Forms.ListView();
+            this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnLocal = new System.Windows.Forms.ColumnHeader();
             this.columnRemote = new System.Windows.Forms.ColumnHeader();
             this.columnProtocol = new System.Windows.Forms.ColumnHeader();
             this.columnState = new System.Windows.Forms.ColumnHeader();
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
             // 
             // listNetwork
             // 
             this.listNetwork.AllowColumnReorder = true;
             this.listNetwork.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnProcess,
             this.columnLocal,
             this.columnRemote,
             this.columnProtocol,
@@ -54,29 +58,42 @@
             this.listNetwork.Name = "listNetwork";
             this.listNetwork.ShowItemToolTips = true;
             this.listNetwork.Size = new System.Drawing.Size(685, 472);
+            this.listNetwork.SmallImageList = this.imageList;
             this.listNetwork.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listNetwork.TabIndex = 1;
             this.listNetwork.UseCompatibleStateImageBehavior = false;
             this.listNetwork.View = System.Windows.Forms.View.Details;
             // 
+            // columnProcess
+            // 
+            this.columnProcess.Text = "Process";
+            this.columnProcess.Width = 120;
+            // 
             // columnLocal
             // 
             this.columnLocal.Text = "Local";
-            this.columnLocal.Width = 260;
+            this.columnLocal.Width = 250;
             // 
             // columnRemote
             // 
             this.columnRemote.Text = "Remote";
-            this.columnRemote.Width = 290;
+            this.columnRemote.Width = 270;
             // 
             // columnProtocol
             // 
             this.columnProtocol.Text = "Protocol";
+            this.columnProtocol.Width = 52;
             // 
             // columnState
             // 
             this.columnState.Text = "State";
-            this.columnState.Width = 100;
+            this.columnState.Width = 95;
+            // 
+            // imageList
+            // 
+            this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // NetworkList
             // 
@@ -97,5 +114,7 @@
         private System.Windows.Forms.ColumnHeader columnRemote;
         private System.Windows.Forms.ColumnHeader columnProtocol;
         private System.Windows.Forms.ColumnHeader columnState;
+        private System.Windows.Forms.ColumnHeader columnProcess;
+        private System.Windows.Forms.ImageList imageList;
     }
 }

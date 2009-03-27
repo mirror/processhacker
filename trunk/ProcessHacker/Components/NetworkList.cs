@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace ProcessHacker
 {
@@ -183,6 +184,17 @@ namespace ProcessHacker
 
         #endregion
 
+        private void ResetImageKeys()
+        {
+            foreach (ListViewItem lvItem in listNetwork.Items)
+            {
+                string t = lvItem.ImageKey;
+
+                lvItem.ImageKey = "";
+                lvItem.ImageKey = t;
+            }
+        }
+
         private void provider_Updated()
         {
             _highlightingContext.Tick();
@@ -190,39 +202,29 @@ namespace ProcessHacker
 
         private void provider_DictionaryAdded(Win32.NetworkConnection item)
         {
-            if (listNetwork.Groups[item.PID.ToString()] == null)
-            {
-                string header = Win32.GetNameFromPID(item.PID) + " (" + item.PID.ToString() + ")";
-
-                // find the right place to put the group
-                bool inserted = false;
-
-                for (int i = 0; i < listNetwork.Groups.Count; i++)
-                {
-                    if (listNetwork.Groups[i].Header.CompareTo(header) >= 0)
-                    {
-                        listNetwork.Groups.Insert(i, new ListViewGroup(item.PID.ToString(), header));
-                        inserted = true;
-                        break;
-                    }
-                }
-
-                if (!inserted)
-                {
-                    // either we don't have any groups or we should add it at the end
-                    listNetwork.Groups.Add(new ListViewGroup(item.PID.ToString(), header));
-                }
-            }
-
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
 
             litem.Name = item.ID;
-            litem.Group = listNetwork.Groups[item.PID.ToString()];
+            litem.Tag = item.PID;
+
+            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(item.PID))
+            {
+                if (imageList.Images.ContainsKey(item.PID.ToString()))
+                    imageList.Images.RemoveByKey(item.PID.ToString());
+
+                litem.ImageKey = item.PID.ToString();
+                imageList.Images.Add(item.PID.ToString(), Program.HackerWindow.ProcessProvider.Dictionary[item.PID].Icon);
+            }
+
+            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(item.PID))
+                litem.Text = Program.HackerWindow.ProcessProvider.Dictionary[item.PID].Name;
+            else
+                litem.Text = "(" + item.PID.ToString() + ")";
 
             if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
-                litem.Text = item.Local.ToString();
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Local.ToString()));
             else
-                litem.Text = "";
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
 
             if (item.Remote != null && item.Remote.ToString() != "0.0.0.0:0")
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Remote.ToString()));
@@ -233,6 +235,7 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.State != 0 ? item.State.ToString() : ""));
 
             listNetwork.Items.Add(litem);
+            this.ResetImageKeys();
         }
 
         private void provider_DictionaryModified(Win32.NetworkConnection oldItem, Win32.NetworkConnection newItem)
@@ -247,22 +250,22 @@ namespace ProcessHacker
                 if (newItem.Local != null && newItem.Local.ToString() != "0.0.0.0:0")
                 {
                     if (newItem.LocalString != null)
-                        litem.SubItems[0].Text = newItem.LocalString + ":" + newItem.Local.Port.ToString() +
+                        litem.SubItems[1].Text = newItem.LocalString + ":" + newItem.Local.Port.ToString() +
                             " (" + newItem.Local.ToString() + ")";
                     else
-                        litem.SubItems[0].Text = newItem.Local.ToString();
+                        litem.SubItems[1].Text = newItem.Local.ToString();
                 }
 
                 if (newItem.Remote != null && newItem.Remote.ToString() != "0.0.0.0:0")
                 {
                     if (newItem.RemoteString != null)
-                        litem.SubItems[1].Text = newItem.RemoteString + ":" + newItem.Remote.Port.ToString() +
+                        litem.SubItems[2].Text = newItem.RemoteString + ":" + newItem.Remote.Port.ToString() +
                             " (" + newItem.Remote.ToString() + ")";
                     else
-                        litem.SubItems[1].Text = newItem.Remote.ToString();
+                        litem.SubItems[2].Text = newItem.Remote.ToString();
                 }
 
-                litem.SubItems[3].Text = newItem.State != 0 ? newItem.State.ToString() : "";
+                litem.SubItems[4].Text = newItem.State != 0 ? newItem.State.ToString() : "";
                 listNetwork.Sort();
             }
         }
@@ -273,6 +276,24 @@ namespace ProcessHacker
             bool selected = listNetwork.Items[item.ID].Selected;
             int selectedCount = listNetwork.SelectedItems.Count;
             ListViewItem litem = listNetwork.Items[item.ID];
+            bool imageStillUsed = false;
+
+            foreach (ListViewItem lvItem in listNetwork.Items)
+            {
+                if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                {
+                    imageStillUsed = true;
+                    break;
+                }
+            }
+
+            if (!imageStillUsed)
+            {
+                imageList.Images.RemoveByKey(item.PID.ToString());
+
+                // Reset all the image keys (by now most items' icons have screwed up).
+                this.ResetImageKeys();
+            }
 
             litem.Remove();
         }

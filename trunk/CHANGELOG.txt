@@ -6,10 +6,12 @@ Process Hacker
    * #2702909 - "CSR Processes: Show process name when confirming termination"
    * #2702911 - "Show process name when terminating process in properties"
    * #2702929 - "Add a Cancel button in Options"
+   * #2713088 - "Network: Ctrl+A and Ctrl+C should copy the processes' names"
    * #2714130 - "Option to disable/enable all highlighting colors"
    * Statistics times in System Information and process properties
    * Highlighting system
    * Configurable max. samples and plotter step size
+   * Network list with icons
  * FIXED:
    * #2694437 - "Crash when sorting the process list"
    * #2713087 - "Processes: Copy should copy only the columns currently used"
