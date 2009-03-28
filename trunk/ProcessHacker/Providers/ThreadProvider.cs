@@ -29,8 +29,13 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
-    public struct ThreadItem
+    public class ThreadItem : ICloneable
     {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public int TID;
 
         public long ContextSwitches;
@@ -188,7 +193,7 @@ namespace ProcessHacker
                 else
                 {
                     ThreadItem item = Dictionary[tid];
-                    ThreadItem newitem = item;
+                    ThreadItem newitem = item.Clone() as ThreadItem;
 
                     newitem.ContextSwitchesDelta = t.ContextSwitchCount - newitem.ContextSwitches;
                     newitem.ContextSwitches = t.ContextSwitchCount;

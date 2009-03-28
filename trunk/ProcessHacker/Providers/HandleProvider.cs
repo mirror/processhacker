@@ -28,8 +28,13 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
-    public struct HandleItem
+    public class HandleItem : ICloneable
     {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public Win32.SYSTEM_HANDLE_INFORMATION Handle;
         public Win32.ObjectInformation ObjectInfo;
     }
@@ -100,7 +105,6 @@ namespace ProcessHacker
                     {
                         continue;
                     }
-
 
                     item.Handle = processHandles[h];
                     item.ObjectInfo = info;

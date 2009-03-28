@@ -30,7 +30,7 @@ namespace ProcessHacker
     /// <summary>
     /// Provides services for continuously updating a dictionary.
     /// </summary>
-    public class Provider<TKey, TValue> : IProvider, IDisposable
+    public abstract class Provider<TKey, TValue> : IProvider, IDisposable
     {
         /// <summary>
         /// A generic delegate which is used when updating the dictionary.

@@ -31,8 +31,13 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
-    public struct ModuleItem
+    public class ModuleItem : ICloneable
     {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public int BaseAddress;
         public int Size;
         public string Name;

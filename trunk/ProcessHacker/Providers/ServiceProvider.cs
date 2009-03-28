@@ -28,8 +28,13 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
-    public struct ServiceItem
+    public class ServiceItem : ICloneable
     {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public Win32.ENUM_SERVICE_STATUS_PROCESS Status;
         public Win32.QUERY_SERVICE_CONFIG Config;
     }
@@ -96,38 +101,38 @@ namespace ProcessHacker
             // check for modified services
             foreach (ServiceItem service in Dictionary.Values)
             {
-                ServiceItem newserviceitem = service;
+                ServiceItem newServiceItem = service.Clone() as ServiceItem;
 
-                newserviceitem.Status = newdictionary[service.Status.ServiceName];
-                newserviceitem.Config = service.Config;
+                newServiceItem.Status = newdictionary[service.Status.ServiceName];
+                newServiceItem.Config = service.Config;
 
                 bool modified = false;
 
-                if (service.Status.DisplayName != newserviceitem.Status.DisplayName)
+                if (service.Status.DisplayName != newServiceItem.Status.DisplayName)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ControlsAccepted !=
-                    newserviceitem.Status.ServiceStatusProcess.ControlsAccepted)
+                    newServiceItem.Status.ServiceStatusProcess.ControlsAccepted)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.CurrentState !=
-                    newserviceitem.Status.ServiceStatusProcess.CurrentState)
+                    newServiceItem.Status.ServiceStatusProcess.CurrentState)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ProcessID !=
-                    newserviceitem.Status.ServiceStatusProcess.ProcessID)
+                    newServiceItem.Status.ServiceStatusProcess.ProcessID)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ServiceFlags !=
-                    newserviceitem.Status.ServiceStatusProcess.ServiceFlags)
+                    newServiceItem.Status.ServiceStatusProcess.ServiceFlags)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ServiceType !=
-                    newserviceitem.Status.ServiceStatusProcess.ServiceType)
+                    newServiceItem.Status.ServiceStatusProcess.ServiceType)
                     modified = true;
                 else if (service.Config.StartType !=
-                    newserviceitem.Config.StartType)
+                    newServiceItem.Config.StartType)
                     modified = true;
 
                 if (modified)
                 {
-                    this.CallDictionaryModified(service, newserviceitem);
-                    Dictionary[service.Status.ServiceName] = newserviceitem;
+                    this.CallDictionaryModified(service, newServiceItem);
+                    Dictionary[service.Status.ServiceName] = newServiceItem;
                 }         
             }
         }

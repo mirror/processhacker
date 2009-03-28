@@ -29,8 +29,13 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
-    public struct MemoryItem
+    public class MemoryItem : ICloneable
     {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public int Address;
         public string ModuleName;
         public int Size;
@@ -143,20 +148,21 @@ namespace ProcessHacker
                 else
                 {
                     MemoryItem item = Dictionary[address];
-                    MemoryItem newitem = item;
-
-                    newitem.Size = info.RegionSize;
-                    newitem.Type = info.Type;
-                    newitem.State = info.State;
-                    newitem.Protection = info.Protect;
 
                     if (
-                        newitem.Size != item.Size ||
-                        newitem.Type != item.Type ||
-                        newitem.State != item.State ||
-                        newitem.Protection != item.Protection
+                        info.RegionSize != item.Size ||
+                        info.Type != item.Type ||
+                        info.State != item.State ||
+                        info.Protect != item.Protection
                         )
                     {
+                        MemoryItem newitem = item.Clone() as MemoryItem;
+
+                        newitem.Size = info.RegionSize;
+                        newitem.Type = info.Type;
+                        newitem.State = info.State;
+                        newitem.Protection = info.Protect;
+
                         newdictionary[address] = newitem;
                         this.CallDictionaryModified(item, newitem);
                     }
