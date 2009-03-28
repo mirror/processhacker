@@ -323,20 +323,7 @@ namespace ProcessHacker
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-
-            int[] heaps = new int[128];
-            int count = Win32.GetProcessHeaps(heaps.Length, heaps);
-
-            if (count <= heaps.Length)
-            {
-                for (int i = 0; i < count; i++)
-                    Win32.HeapCompact(heaps[i], false);
-            }
+            Program.CollectGarbage();
         }  
 
         private void helpMenuItem_Click(object sender, EventArgs e)

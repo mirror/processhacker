@@ -102,6 +102,8 @@ namespace ProcessHacker
                 }
                 catch
                 { }
+
+                Program.CollectGarbage();
             }));
         }
 

@@ -423,6 +423,24 @@ namespace ProcessHacker
             }
         }
 
+        public static void CollectGarbage()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
+            int[] heaps = new int[128];
+            int count = Win32.GetProcessHeaps(heaps.Length, heaps);
+
+            if (count <= heaps.Length)
+            {
+                for (int i = 0; i < count; i++)
+                    Win32.HeapCompact(heaps[i], false);
+            }
+        }
+
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             if (e.ExceptionObject is OutOfMemoryException)
