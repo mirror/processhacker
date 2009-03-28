@@ -52,18 +52,23 @@ namespace ProcessHacker
 
         public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
 
+        public const bool MemoryEditorsThreaded = true;
         public static Dictionary<string, MemoryEditor> MemoryEditors = new Dictionary<string, MemoryEditor>();
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
 
+        public const bool ResultsWindowsThreaded = true;
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
 
+        public const bool ThreadWindowsThreaded = false;
         public static Dictionary<string, ThreadWindow> ThreadWindows = new Dictionary<string, ThreadWindow>();
         public static Dictionary<string, Thread> ThreadThreads = new Dictionary<string, Thread>();
 
+        public const bool PEWindowsThreaded = false;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
+        public const bool PWindowsThreaded = false;
         public static Dictionary<int, ProcessWindow> PWindows = new Dictionary<int, ProcessWindow>();
         public static Dictionary<int, Thread> PThreads = new Dictionary<int, Thread>();
 
@@ -471,26 +476,35 @@ namespace ProcessHacker
                 return ed;
             }
 
-            Thread t = new Thread(new ThreadStart(delegate
+            if (MemoryEditorsThreaded)
+            {
+                Thread t = new Thread(new ThreadStart(delegate
+                {
+                    ed = new MemoryEditor(PID, address, length);
+
+                    action(ed);
+
+                    try
+                    {
+                        Application.Run(ed);
+                    }
+                    catch
+                    { }
+
+                    Program.MemoryEditorsThreads.Remove(id);
+                }));
+
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+
+                Program.MemoryEditorsThreads.Add(id, t);
+            }
+            else
             {
                 ed = new MemoryEditor(PID, address, length);
-
                 action(ed);
-
-                try
-                {
-                    Application.Run(ed);
-                }
-                catch
-                { }
-
-                Program.MemoryEditorsThreads.Remove(id);
-            }));
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-
-            Program.MemoryEditorsThreads.Add(id, t);
+                ed.Show();
+            }
 
             return ed;
         }
@@ -512,29 +526,38 @@ namespace ProcessHacker
             ResultsWindow rw = null;
             string id = "";
 
-            Thread t = new Thread(new ThreadStart(delegate
+            if (ResultsWindowsThreaded)
+            {
+                Thread t = new Thread(new ThreadStart(delegate
+                {
+                    rw = new ResultsWindow(PID);
+
+                    id = rw.Id;
+
+                    action(rw);
+
+                    try
+                    {
+                        Application.Run(rw);
+                    }
+                    catch
+                    { }
+
+                    Program.ResultsThreads.Remove(id);
+                }));
+
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+
+                while (id == "") Thread.Sleep(1);
+                Program.ResultsThreads.Add(id, t);
+            }
+            else
             {
                 rw = new ResultsWindow(PID);
-
-                id = rw.Id;
-
                 action(rw);
-
-                try
-                {
-                    Application.Run(rw);
-                }
-                catch
-                { }
-
-                Program.ResultsThreads.Remove(id);
-            }));
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-
-            while (id == "") Thread.Sleep(1);
-            Program.ResultsThreads.Add(id, t);
+                rw.Show();
+            }
 
             return rw;
         }
@@ -565,29 +588,38 @@ namespace ProcessHacker
                 return tw;
             }
 
-            Thread t = new Thread(new ThreadStart(delegate
+            if (ThreadWindowsThreaded)
+            {
+                Thread t = new Thread(new ThreadStart(delegate
+                {
+                    tw = new ThreadWindow(PID, TID, symbols);
+
+                    id = tw.Id;
+
+                    action(tw);
+
+                    try
+                    {
+                        Application.Run(tw);
+                    }
+                    catch
+                    { }
+
+                    Program.ThreadThreads.Remove(id);
+                }));
+
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+
+                while (id == "") Thread.Sleep(1);
+                Program.ThreadThreads.Add(id, t);
+            }
+            else
             {
                 tw = new ThreadWindow(PID, TID, symbols);
-
-                id = tw.Id;
-
                 action(tw);
-
-                try
-                {
-                    Application.Run(tw);
-                }
-                catch
-                { }
-
-                Program.ThreadThreads.Remove(id);
-            }));
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-
-            while (id == "") Thread.Sleep(1);
-            Program.ThreadThreads.Add(id, t);
+                tw.Show();
+            }
 
             return tw;
         }
@@ -617,26 +649,35 @@ namespace ProcessHacker
                 return pw;
             }
 
-            Thread t = new Thread(new ThreadStart(delegate
+            if (PEWindowsThreaded)
+            {
+                Thread t = new Thread(new ThreadStart(delegate
+                {
+                    pw = new PEWindow(path);
+
+                    action(pw);
+
+                    try
+                    {
+                        Application.Run(pw);
+                    }
+                    catch
+                    { }
+
+                    Program.PEThreads.Remove(path);
+                }));
+
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+
+                Program.PEThreads.Add(path, t);
+            }
+            else
             {
                 pw = new PEWindow(path);
-
                 action(pw);
-
-                try
-                {
-                    Application.Run(pw);
-                }
-                catch
-                { }
-
-                Program.PEThreads.Remove(path);
-            }));
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-
-            Program.PEThreads.Add(path, t);
+                pw.Show();
+            }
 
             return pw;
         }
@@ -666,26 +707,35 @@ namespace ProcessHacker
                 return pw;
             }
 
-            Thread t = new Thread(new ThreadStart(delegate
+            if (PWindowsThreaded)
+            {
+                Thread t = new Thread(new ThreadStart(delegate
+                {
+                    pw = new ProcessWindow(process);
+
+                    action(pw);
+
+                    try
+                    {
+                        Application.Run(pw);
+                    }
+                    catch
+                    { }
+
+                    Program.PThreads.Remove(process.PID);
+                }));
+
+                t.SetApartmentState(ApartmentState.STA);
+                t.Start();
+
+                Program.PThreads.Add(process.PID, t);
+            }
+            else
             {
                 pw = new ProcessWindow(process);
-
                 action(pw);
-
-                try
-                {
-                    Application.Run(pw);
-                }
-                catch
-                { }
-
-                Program.PThreads.Remove(process.PID);
-            }));
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-
-            Program.PThreads.Add(process.PID, t);
+                pw.Show();
+            }
 
             return pw;
         }
@@ -694,7 +744,7 @@ namespace ProcessHacker
         {
             if (f.InvokeRequired)
             {
-                f.Invoke(new MethodInvoker(delegate { Program.FocusWindow(f); }));
+                f.BeginInvoke(new MethodInvoker(delegate { Program.FocusWindow(f); }));
 
                 return;
             }
@@ -713,7 +763,7 @@ namespace ProcessHacker
             {
                 if (f.InvokeRequired)
                 {
-                    f.Invoke(new UpdateWindowAction(UpdateWindow), f, Texts, TextToForm);
+                    f.BeginInvoke(new UpdateWindowAction(UpdateWindow), f, Texts, TextToForm);
 
                     return;
                 }
