@@ -189,11 +189,15 @@ namespace ProcessHacker
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
             // HACK: Delay loading
-            Timer t = new Timer();
+            System.Threading.Timer t = null;
 
-            t.Tick += (sender_, e_) => { t.Dispose(); this.LoadStage2(); };
-            t.Interval = 50;
-            t.Enabled = true;
+            t = new System.Threading.Timer(
+                new System.Threading.TimerCallback(o =>
+                {
+                    t.Dispose();
+                    this.BeginInvoke(new MethodInvoker(this.LoadStage2));
+                }),
+                null, 100, System.Threading.Timeout.Infinite);
         }
 
         private void LoadStage2()

@@ -64,7 +64,9 @@ namespace ProcessHacker
         {
             while (true)
             {
-                foreach (var provider in _providers)
+                var providers = _providers.ToArray();
+
+                foreach (var provider in providers)
                     if (provider.Enabled)
                         provider.RunOnce();
 

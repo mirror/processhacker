@@ -156,7 +156,11 @@ namespace wyDay.Controls
 
                 //if there's no Image, then just bail out
                 if (value == null)
+                {
+                    // wj32: clean up resources before doing that...
+                    RemoveVistaMenuItem(mnuItem);
                     return;
+                }
 
                 //convert to 32bppPArgb (the 'P' means The red, green, and blue components are premultiplied, according to the alpha component.)
                 Bitmap renderBmp = new Bitmap(value.Width, value.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
@@ -182,7 +186,10 @@ namespace wyDay.Controls
                 }
 
                 if (value == null)
+                {
+                    RemoveVistaMenuItem(mnuItem);
                     return;
+                }
 
                 Bitmap bmp = new Bitmap(value.Width, value.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
                 Graphics g = Graphics.FromImage(bmp);
@@ -255,6 +262,23 @@ namespace wyDay.Controls
                     }
                 }
             }
+        }
+
+        public void RemoveVistaMenuItem(MenuItem mnuItem)
+        {
+            if (menuParents[mnuItem.Parent.Handle] != null)
+            {
+                List<MenuItem> mnuBitmapChildren = (List<MenuItem>)menuParents[mnuItem.Parent.Handle];
+
+                mnuBitmapChildren.Remove(mnuItem);
+            }
+        }
+
+        public void RemovePreVistaMenuItem(MenuItem mnuItem)
+        {
+            mnuItem.DrawItem -= MenuItem_DrawItem;
+            mnuItem.MeasureItem -= MenuItem_MeasureItem;
+            mnuItem.OwnerDraw = false;
         }
 
         void ISupportInitialize.EndInit()

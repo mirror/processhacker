@@ -329,7 +329,8 @@ namespace ProcessHacker
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            GC.Collect();
+            for (int i = 0; i < 3; i++)
+                GC.Collect();
 
             int[] heaps = new int[128];
             int count = Win32.GetProcessHeaps(heaps.Length, heaps);
@@ -520,7 +521,7 @@ namespace ProcessHacker
             foreach (MenuItem item in processesMenuItem.MenuItems)
                 vistaMenu.SetImage(item, null);
 
-            processesMenuItem.MenuItems.Clear();
+            processesMenuItem.MenuItems.DisposeAndClear();
 
             // HACK: To be fixed later - we need some sort of locking for the process provider
             try
@@ -640,7 +641,10 @@ namespace ProcessHacker
             }
             catch
             {
-                processesMenuItem.MenuItems.Clear();
+                foreach (MenuItem item in processesMenuItem.MenuItems)
+                    vistaMenu.SetImage(item, null);
+
+                processesMenuItem.MenuItems.DisposeAndClear();
             }
         }
 
@@ -2412,7 +2416,7 @@ namespace ProcessHacker
                                     TopMost = this.TopMost
                                 }).ShowDialog();
 
-                                copyProcessMenuItem.MenuItems.Clear();
+                                copyProcessMenuItem.MenuItems.DisposeAndClear();
                                 GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
                                 treeProcesses.Tree.Invalidate();
                             }));
@@ -2423,7 +2427,7 @@ namespace ProcessHacker
             treeProcesses.Tree.ColumnClicked += (sender, e) => { DeselectAll(treeProcesses.Tree); };
             treeProcesses.Tree.ColumnReordered += (sender, e) =>
             {
-                copyProcessMenuItem.MenuItems.Clear();
+                copyProcessMenuItem.MenuItems.DisposeAndClear();
                 GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
             };
 

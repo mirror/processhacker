@@ -157,6 +157,19 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Clears and cleans up resources held by the menu items.
+        /// </summary>
+        public static void DisposeAndClear(this Menu.MenuItemCollection items)
+        {
+            //foreach (MenuItem item in items)
+            //{
+            //    item.Dispose();
+            //}
+
+            items.Clear();
+        }
+
+        /// <summary>
         /// Converts a 32-bit Unix time value into a DateTime object.
         /// </summary>
         /// <param name="time">The Unix time value.</param>

@@ -19,6 +19,7 @@ Process Hacker
    * Network connections would be readded if their state changed
    * Integer overflows in the process provider and system statistics
    * Less memory usage overall
+   * Memory leaks various windows
    * Crash when saving with the I/O or CPU History column visible
    * Inconsistent Copy menu after columns are modified
    * Crash when F5 (Refresh) is held down

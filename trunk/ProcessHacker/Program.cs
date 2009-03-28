@@ -464,7 +464,7 @@ namespace ProcessHacker
             {
                 ed = MemoryEditors[id];
 
-                ed.Invoke(new MethodInvoker(delegate { action(ed); }));
+                ed.Invoke(action, ed);
 
                 return ed;
             }
@@ -558,7 +558,7 @@ namespace ProcessHacker
             {
                 tw = ThreadWindows[id];
 
-                tw.Invoke(new MethodInvoker(delegate { action(tw); }));
+                tw.Invoke(action, tw);
 
                 return tw;
             }
@@ -610,7 +610,7 @@ namespace ProcessHacker
             {
                 pw = PEWindows[path];
 
-                pw.Invoke(new MethodInvoker(delegate { action(pw); }));
+                pw.Invoke(action, pw);
 
                 return pw;
             }
@@ -659,7 +659,7 @@ namespace ProcessHacker
             {
                 pw = PWindows[process.PID];
 
-                pw.Invoke(new MethodInvoker(delegate { action(pw); }));
+                pw.Invoke(action, pw);
 
                 return pw;
             }
@@ -726,9 +726,10 @@ namespace ProcessHacker
                     foreach (MenuItem menuItem in windowMenuItem.MenuItems)
                     {
                         vistaMenu.SetImage(menuItem, null);
+                        menuItem.Tag = null;
                     }
 
-                    windowMenuItem.MenuItems.Clear();
+                    windowMenuItem.MenuItems.DisposeAndClear();
 
                     foreach (string s in Texts)
                     {
