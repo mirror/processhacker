@@ -5,8 +5,9 @@ using System.Threading;
 
 namespace ProcessHacker
 {
-    internal class SharedThreadProvider
+    internal class SharedThreadProvider : IDisposable
     {
+        private bool _disposed;
         private List<IProvider> _providers = new List<IProvider>();
         private Thread _thread;
         private int _interval;
@@ -18,6 +19,27 @@ namespace ProcessHacker
             _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();
             _thread.Priority = ThreadPriority.Lowest;
+        }
+
+        ~SharedThreadProvider()
+        {
+            this.Dispose();
+        }
+
+        public void Dispose()
+        {
+            lock (this)
+            {
+                if (!_disposed)
+                {
+                    _disposed = true;
+
+                    _thread.Abort();
+                    _thread = null;
+
+                    GC.SuppressFinalize(this);
+                }
+            }
         }
 
         public int Interval

@@ -2454,7 +2454,7 @@ namespace ProcessHacker
 
         private void LoadSymbols()
         {
-            Thread t = new Thread(new ThreadStart(delegate
+            ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
             {
                 try
                 {
@@ -2479,9 +2479,6 @@ namespace ProcessHacker
                 catch
                 { }
             }));
-
-            t.Priority = ThreadPriority.Lowest;
-            t.Start();
         }
 
         private void LoadApplyCommandLineArgs()

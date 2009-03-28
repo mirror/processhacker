@@ -169,6 +169,8 @@ namespace ProcessHacker
 
                     if (this.Killed != null)
                         this.Killed();
+
+                    GC.SuppressFinalize(this);
                 }
             }
         }

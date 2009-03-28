@@ -45,17 +45,23 @@
                 _handleP = null;
             }
 
+            if (_sharedThreadP != null)
+            {
+                _sharedThreadP.Dispose();
+                _sharedThreadP = null;
+            }
+
             if (_tokenProps != null)
                 _tokenProps.Dispose();
 
             if (_serviceProps != null)
                 _serviceProps.Dispose();
 
-            // A temporary fix for any handle leaks
-            System.GC.Collect();
-
             Program.PWindows.Remove(_pid);
             Program.UpdateWindows();
+
+            // A temporary fix for any handle/memory leaks
+            System.GC.Collect();
 
             base.Dispose(disposing);
         }

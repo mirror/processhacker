@@ -191,7 +191,7 @@ namespace ProcessHacker
             // HACK: Delay loading
             Timer t = new Timer();
 
-            t.Tick += (sender_, e_) => { t.Enabled = false; this.LoadStage2(); };
+            t.Tick += (sender_, e_) => { t.Dispose(); this.LoadStage2(); };
             t.Interval = 50;
             t.Enabled = true;
         }

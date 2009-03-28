@@ -77,24 +77,17 @@ namespace ProcessHacker
         }
 
         private ListView _list;
-        private bool _destroyed = false;
         private Queue<MethodInvoker> _preQueue = new Queue<MethodInvoker>();
         private Queue<MethodInvoker> _queue = new Queue<MethodInvoker>();
 
         public HighlightingContext(ListView list)
         {
             _list = list;
-            _list.HandleDestroyed += new EventHandler(list_HandleDestroyed);
-        }
-
-        private void list_HandleDestroyed(object sender, EventArgs e)
-        {
-            _destroyed = true;
         }
 
         public void Tick()
         {
-            if (_destroyed)
+            if (!_list.IsHandleCreated)
                 return;
 
             _list.BeginInvoke(new MethodInvoker(delegate
@@ -111,7 +104,7 @@ namespace ProcessHacker
 
             t = new System.Threading.Timer(o =>
             {
-                if (!_destroyed)
+                if (_list.IsHandleCreated)
                 {
                     _list.BeginInvoke(new MethodInvoker(delegate
                     {
@@ -140,7 +133,7 @@ namespace ProcessHacker
 
         public void Dispose()
         {
-            _list.HandleDestroyed -= new EventHandler(list_HandleDestroyed);
+            // Nothing
         }
     }
 

@@ -60,7 +60,7 @@ namespace ProcessHacker
             this.Killed += new MethodInvoker(ThreadProvider_Killed);
 
             // start loading symbols
-            Thread t = new Thread(new ThreadStart(delegate
+            ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
             {
                 try
                 {
@@ -98,9 +98,6 @@ namespace ProcessHacker
                 catch
                 { }
             }));
-
-            t.Priority = ThreadPriority.Lowest;
-            t.Start();
         }
 
         private void ThreadProvider_Killed()

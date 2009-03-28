@@ -149,7 +149,7 @@ namespace ProcessHacker
                     if (!_closed && _owned)
                     {
                         _closed = true;
-                        Close();
+                        this.Close();
                         GC.SuppressFinalize(this);
                     }
                 }

@@ -90,32 +90,32 @@ namespace ProcessHacker
             }
         }
 
-        public void LoadSymbolsFromLibrary(string path)
-        {
-            LoadSymbolsFromLibrary(path, Process.GetCurrentProcess().Modules);
-        }
+        //public void LoadSymbolsFromLibrary(string path)
+        //{
+        //    LoadSymbolsFromLibrary(path, Process.GetCurrentProcess().Modules);
+        //}
 
-        public void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
-        {
-            string realPath = Misc.GetRealPath(path).ToLower();
-            uint imageBase = 0;
+        //public void LoadSymbolsFromLibrary(string path, ProcessModuleCollection modules)
+        //{
+        //    string realPath = Misc.GetRealPath(path).ToLower();
+        //    uint imageBase = 0;
 
-            foreach (ProcessModule module in modules)
-            {
-                string thisPath = Misc.GetRealPath(module.FileName).ToLower();
+        //    foreach (ProcessModule module in modules)
+        //    {
+        //        string thisPath = Misc.GetRealPath(module.FileName).ToLower();
 
-                if (thisPath == realPath)
-                {
-                    imageBase = (uint)module.BaseAddress.ToInt32();
-                    break;
-                }
-            }
+        //        if (thisPath == realPath)
+        //        {
+        //            imageBase = (uint)module.BaseAddress.ToInt32();
+        //            break;
+        //        }
+        //    }
 
-            if (imageBase == 0)
-                throw new Exception("Could not get image base of library.");
+        //    if (imageBase == 0)
+        //        throw new Exception("Could not get image base of library.");
 
-            LoadSymbolsFromLibrary(path, imageBase);
-        }
+        //    LoadSymbolsFromLibrary(path, imageBase);
+        //}
 
         public void LoadSymbolsFromLibrary(string path, uint imageBase)
         {
