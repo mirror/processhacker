@@ -82,6 +82,8 @@ namespace ProcessHacker
         public static string SelectTab = "Processes";
         public static Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public static KProcessHacker KPH;
+        public static SharedThreadProvider SharedThreadProvider;
+        public static SharedThreadProvider SecondarySharedThreadProvider;
 
         /// <summary>
         /// The main entry point for the application.

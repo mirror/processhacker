@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace ProcessHacker
 {
-    internal class SharedThreadProvider : IDisposable
+    public class SharedThreadProvider : IDisposable
     {
         private object _disposeLock = new object();
         private bool _disposed;
@@ -52,12 +52,16 @@ namespace ProcessHacker
         public void Add(IProvider provider)
         {
             provider.CreateThread = false;
-            _providers.Add(provider);
+
+            lock (_providers)
+                _providers.Add(provider);
         }
 
         public void Remove(IProvider provider)
         {
-            _providers.Remove(provider);
+            lock (_providers)
+                _providers.Remove(provider);
+
             provider.CreateThread = true;
         }
 
@@ -65,7 +69,10 @@ namespace ProcessHacker
         {
             while (true)
             {
-                var providers = _providers.ToArray();
+                IProvider[] providers;
+
+                lock (_providers)
+                    providers = _providers.ToArray();
 
                 foreach (var provider in providers)
                     if (provider.Enabled)

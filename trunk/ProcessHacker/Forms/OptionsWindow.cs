@@ -340,6 +340,12 @@ namespace ProcessHacker
                 }
             }
 
+            Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.SecondarySharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
+
             Properties.Settings.Default.Save(); 
         }
 

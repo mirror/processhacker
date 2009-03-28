@@ -51,7 +51,6 @@ namespace ProcessHacker
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
 
-        SharedThreadProvider sharedThreadProvider;
         ProcessSystemProvider processP = new ProcessSystemProvider();
         ServiceProvider serviceP = new ServiceProvider();
         NetworkProvider networkP = new NetworkProvider();
@@ -320,11 +319,6 @@ namespace ProcessHacker
 
             options.TopMost = this.TopMost;
             options.ShowDialog();
-
-            processP.Interval = Properties.Settings.Default.RefreshInterval;
-            serviceP.Interval = Properties.Settings.Default.RefreshInterval;
-            networkP.Interval = Properties.Settings.Default.RefreshInterval;
-            sharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
         }
 
         private void freeMemoryMenuItem_Click(object sender, EventArgs e)
@@ -2371,10 +2365,11 @@ namespace ProcessHacker
             listServices.ContextMenu = menuService;
             listNetwork.ContextMenu = menuNetwork;
 
-            sharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
-            sharedThreadProvider.Add(processP);
-            sharedThreadProvider.Add(serviceP);
-            sharedThreadProvider.Add(networkP);
+            Program.SecondarySharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            Program.SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            Program.SharedThreadProvider.Add(processP);
+            Program.SharedThreadProvider.Add(serviceP);
+            Program.SharedThreadProvider.Add(networkP);
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
@@ -2575,7 +2570,6 @@ namespace ProcessHacker
         {
             Program.UpdateWindows();
             this.ApplyFont(Properties.Settings.Default.Font);
-
             this.BeginInvoke(new MethodInvoker(this.LoadApplyCommandLineArgs));
         }
 

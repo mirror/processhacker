@@ -23,32 +23,30 @@
 
             if (_threadP != null)
             {
+                Program.SecondarySharedThreadProvider.Remove(_threadP);
                 _threadP.Dispose();
                 _threadP = null;
             }
 
             if (_moduleP != null)
             {
+                Program.SecondarySharedThreadProvider.Remove(_moduleP);
                 _moduleP.Dispose();
                 _moduleP = null;
             }
 
             if (_memoryP != null)
             {
+                Program.SecondarySharedThreadProvider.Remove(_memoryP);
                 _memoryP.Dispose();
                 _memoryP = null;
             }
 
             if (_handleP != null)
             {
+                Program.SecondarySharedThreadProvider.Remove(_handleP);
                 _handleP.Dispose();
                 _handleP = null;
-            }
-
-            if (_sharedThreadP != null)
-            {
-                _sharedThreadP.Dispose();
-                _sharedThreadP = null;
             }
 
             if (_tokenProps != null)
