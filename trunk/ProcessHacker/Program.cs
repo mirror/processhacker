@@ -155,9 +155,9 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
-            Asm.LockedBus = 1;
-            Asm.Lowercase = true;
-            Asm.ExtraSpace = true;
+            //Asm.LockedBus = 1;
+            //Asm.Lowercase = true;
+            //Asm.ExtraSpace = true;
 
             try
             {

@@ -414,10 +414,10 @@ namespace ProcessHacker
 
         private void listExports_DoubleClick(object sender, EventArgs e)
         {
-            DisassemblyWindow dw = new DisassemblyWindow(new FileStream(_path, FileMode.Open, FileAccess.Read), 
-                _exportVAs[_peFile.ExportData.ExportOrdinalTable[listExports.SelectedIndices[0]]], -1);
+            //DisassemblyWindow dw = new DisassemblyWindow(new FileStream(_path, FileMode.Open, FileAccess.Read), 
+            //    _exportVAs[_peFile.ExportData.ExportOrdinalTable[listExports.SelectedIndices[0]]], -1);
 
-            dw.Show();
+            //dw.Show();
         }
     }
 }
