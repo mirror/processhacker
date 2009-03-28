@@ -150,28 +150,31 @@ namespace ProcessHacker
         {
             lock (_disposeLock)
             {
-                if (!_disposed)
+                lock (_busyLock)
                 {
-                    _disposed = true;
-
-                    if (_thread != null)
+                    if (!_disposed)
                     {
-                        _thread.Abort();
-                        _thread = null;
+                        _disposed = true;
+
+                        if (_thread != null)
+                        {
+                            _thread.Abort();
+                            _thread = null;
+                        }
+
+                        foreach (Thread t in _asyncThreads)
+                        {
+                            t.Abort();
+                        }
+
+                        _asyncThreads.Clear();
+                        _asyncThreads = null;
+
+                        if (this.Killed != null)
+                            this.Killed();
+
+                        GC.SuppressFinalize(this);
                     }
-
-                    foreach (Thread t in _asyncThreads)
-                    {
-                        t.Abort();
-                    }
-
-                    _asyncThreads.Clear();
-                    _asyncThreads = null;
-
-                    if (this.Killed != null)
-                        this.Killed();
-
-                    GC.SuppressFinalize(this);
                 }
             }
         }
@@ -275,9 +278,14 @@ namespace ProcessHacker
 
                 if (ProviderUpdate != null)
                 {
-                    if (BeforeUpdate != null)
-                        BeforeUpdate();
-
+                    try
+                    {
+                        if (BeforeUpdate != null)
+                            BeforeUpdate();
+                    }
+                    catch
+                    { }
+                    
                     try
                     {
                         ProviderUpdate();
@@ -289,8 +297,13 @@ namespace ProcessHacker
                             Error(ex);
                     }
 
-                    if (Updated != null)
-                        Updated();
+                    try
+                    {
+                        if (Updated != null)
+                            Updated();
+                    }
+                    catch
+                    { }
                 }
 
                 _busy = false;

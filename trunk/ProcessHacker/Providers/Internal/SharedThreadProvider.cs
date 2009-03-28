@@ -38,6 +38,9 @@ namespace ProcessHacker
                     _thread.Abort();
                     _thread = null;
 
+                    foreach (IProvider provider in _providers)
+                        this.Remove(provider);
+
                     GC.SuppressFinalize(this);
                 }
             }
