@@ -148,33 +148,27 @@ namespace ProcessHacker.FormHelper
 
         private void OnMatchListView(ListViewItem item)
         {
-            lock (this)
+            if (item == null)
             {
-                if (item == null)
-                {
-                    if (listViewItemContainer.Count > 0)
-                        FireAsync(MatchListView, listViewItemContainer);
-                    return;
-                }
+                if (listViewItemContainer.Count > 0)
+                    FireAsync(MatchListView, listViewItemContainer);
+                return;
+            }
 
-                listViewItemContainer.Add(item);
+            listViewItemContainer.Add(item);
 
-                if (listViewItemContainer.Count >= BufferSize)
-                {
-                    List<ListViewItem> items = listViewItemContainer;
+            if (listViewItemContainer.Count >= BufferSize)
+            {
+                List<ListViewItem> items = listViewItemContainer;
 
-                    FireAsync(MatchListView, items);
-                    listViewItemContainer = new List<ListViewItem>(BufferSize);
-                }
+                FireAsync(MatchListView, items);
+                listViewItemContainer = new List<ListViewItem>(BufferSize);
             }
         }
 
         private void OnMatchProgress(int currentValue, int allValue)
         {
-            lock (this)
-            {
-                FireAsync(MatchProgress, currentValue, allValue);
-            }
+            FireAsync(MatchProgress, currentValue, allValue);
         }
     }
 }

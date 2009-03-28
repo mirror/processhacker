@@ -115,6 +115,7 @@ namespace ProcessHacker
         private List<Thread> _asyncThreads = new List<Thread>();
         private Dictionary<TKey, TValue> _dictionary;
 
+        private object _disposeLock = new object();
         private object _busyLock = new object();
         private bool _disposed = false;
         private bool _busy = false;
@@ -147,7 +148,7 @@ namespace ProcessHacker
 
         public void Dispose()
         {
-            lock (this)
+            lock (_disposeLock)
             {
                 if (!_disposed)
                 {

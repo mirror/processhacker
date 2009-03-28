@@ -7,6 +7,7 @@ namespace ProcessHacker
 {
     internal class SharedThreadProvider : IDisposable
     {
+        private object _disposeLock = new object();
         private bool _disposed;
         private List<IProvider> _providers = new List<IProvider>();
         private Thread _thread;
@@ -28,7 +29,7 @@ namespace ProcessHacker
 
         public void Dispose()
         {
-            lock (this)
+            lock (_disposeLock)
             {
                 if (!_disposed)
                 {

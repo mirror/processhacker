@@ -38,6 +38,7 @@ namespace ProcessHacker
         public new event EventHandler DoubleClick;
         public event EventHandler SelectionChanged;
         public event EventHandler<TreeNodeAdvMouseEventArgs> NodeMouseDoubleClick;
+        private object _listLock = new object();
         private bool _draw = true;
 
         public ProcessTree()
@@ -279,7 +280,7 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this)
+                lock (_listLock)
                 {
                     _treeModel.Add(item);
 
@@ -309,7 +310,7 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this)
+                lock (_listLock)
                 {
                     //_treeModel.Modify(oldItem, newItem);
 
@@ -330,7 +331,7 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                lock (this)
+                lock (_listLock)
                 {
                     TreeNodeAdv node = this.FindTreeNode(item.PID);
 
@@ -356,7 +357,7 @@ namespace ProcessHacker
 
         public void RefreshItems()
         {
-            lock (this)
+            lock (_listLock)
             {
                 foreach (TreeNodeAdv node in treeProcesses.AllNodes)
                 {

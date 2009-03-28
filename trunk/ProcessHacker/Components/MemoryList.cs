@@ -35,6 +35,7 @@ namespace ProcessHacker
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
+        private object _listLock = new object();
         private int _pid;
 
         public MemoryList()
@@ -290,7 +291,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
         {
-            lock (this)
+            lock (_listLock)
             {
                 ListViewItem litem = listMemory.Items[newItem.Address.ToString()];
 
@@ -324,7 +325,7 @@ namespace ProcessHacker
 
         private void provider_DictionaryRemoved(MemoryItem item)
         {
-            lock (this)
+            lock (_listLock)
             {
                 listMemory.Items[item.Address.ToString()].Remove();
             }

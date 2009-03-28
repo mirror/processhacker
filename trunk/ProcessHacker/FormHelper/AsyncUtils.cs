@@ -2,6 +2,7 @@
  * Process Hacker - 
  *   wrapper for running tasks asynchronously
  * 
+ * Copyright (C) 2009 wj32
  * Copyright (C) 2008 Dean
  * 
  * This file is part of Process Hacker.
@@ -38,7 +39,9 @@ namespace ProcessHacker.FormHelper
     }
 
     public abstract class AsyncOperation
-    {       
+    {
+        private object _asyncLock = new object();
+
         public AsyncOperation(ISynchronizeInvoke target)
         {
             isiTarget = target;
@@ -47,7 +50,7 @@ namespace ProcessHacker.FormHelper
        
         public void Start()
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 if (isRunning)
                 {
@@ -55,11 +58,13 @@ namespace ProcessHacker.FormHelper
                 }
                 isRunning = true;
             }
+
             new MethodInvoker(InternalStart).BeginInvoke(null, null);
         }        
+
         public void Cancel()
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 cancelledFlag = true;
             }
@@ -67,7 +72,7 @@ namespace ProcessHacker.FormHelper
 
         public bool CancelAndWait()
         {
-            lock (this)
+            lock (_asyncLock)
             {               
                 cancelledFlag = true;
 
@@ -76,12 +81,13 @@ namespace ProcessHacker.FormHelper
                     Monitor.Wait(this, 1000);
                 }
             }
+
             return !HasCompleted;
         }
 
         public bool WaitUntilDone()
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 // Wait for either completion or cancellation.  As with
                 // CancelAndWait, we don't sleep forever - to reduce the
@@ -92,13 +98,15 @@ namespace ProcessHacker.FormHelper
                     Monitor.Wait(this, 1000);
                 }
             }
+
             return HasCompleted;
         }
+
         public bool IsDone
         {
             get
             {
-                lock (this)
+                lock (_asyncLock)
                 {
                     return completeFlag || cancelAcknowledgedFlag || failedFlag;
                 }
@@ -106,47 +114,49 @@ namespace ProcessHacker.FormHelper
         }        
         public event EventHandler Completed;              
         public event EventHandler Cancelled;       
-        public event System.Threading.ThreadExceptionEventHandler Failed;     
+        public event System.Threading.ThreadExceptionEventHandler Failed;   
+                             
+        private ISynchronizeInvoke isiTarget;
         protected ISynchronizeInvoke Target
         {
             get { return isiTarget; }
         }
-        private ISynchronizeInvoke isiTarget;
 
         /// <summary>
         /// To be overridden by the deriving class
         /// </summary>
         protected abstract void DoWork();
-        
+                            
+        private bool cancelledFlag;
         protected bool CancelRequested
         {
             get
             {
-                lock (this) { return cancelledFlag; }
+                lock (_asyncLock) { return cancelledFlag; }
             }
         }
-        private bool cancelledFlag;
-      
+                        
+        private bool completeFlag;
         protected bool HasCompleted
         {
             get
             {
-                lock (this) { return completeFlag; }
+                lock (_asyncLock) { return completeFlag; }
             }
         }
-        private bool completeFlag;
         
       
         protected void AcknowledgeCancel()
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 cancelAcknowledgedFlag = true;
                 isRunning = false;
-                Monitor.Pulse(this);
+                Monitor.Pulse(_asyncLock);
                 FireAsync(Cancelled, this, EventArgs.Empty);
             }
         }
+
         private bool cancelAcknowledgedFlag;
         // if the operation fails with an exception,set to true
         private bool failedFlag;
@@ -158,7 +168,8 @@ namespace ProcessHacker.FormHelper
             cancelledFlag = false;
             completeFlag = false;
             cancelAcknowledgedFlag = false;
-            failedFlag = false;           
+            failedFlag = false; 
+          
             try
             {
                 DoWork();
@@ -170,13 +181,15 @@ namespace ProcessHacker.FormHelper
                     FailOperation(e);
                 }
                 catch
-                { }               
+                { }  
+            
                 if (e is SystemException)
                 {
                     throw;
                 }
             }
-            lock (this)
+
+            lock (_asyncLock)
             {
                 // raise the Completion event 
                 if (!cancelAcknowledgedFlag && !failedFlag)
@@ -185,26 +198,29 @@ namespace ProcessHacker.FormHelper
                 }
             }
         } 
+
         private void CompleteOperation()
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 completeFlag = true;
                 isRunning = false;
-                Monitor.Pulse(this);                
+                Monitor.Pulse(_asyncLock);                
                 FireAsync(Completed, this, EventArgs.Empty);
             }
         }
+
         private void FailOperation(Exception e)
         {
-            lock (this)
+            lock (_asyncLock)
             {
                 failedFlag = true;
                 isRunning = false;
-                Monitor.Pulse(this);
+                Monitor.Pulse(_asyncLock);
                 FireAsync(Failed, this, new ThreadExceptionEventArgs(e));
             }
         }
+
         protected void FireAsync(Delegate dlg, params object[] pList)
         {
             if (dlg != null)

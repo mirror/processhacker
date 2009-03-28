@@ -32,8 +32,9 @@ namespace ProcessHacker
         /// </summary>
         public class Win32Handle : IDisposable
         {
+            private object _disposeLock = new object();
             private bool _owned = true;
-            private bool _closed = false;
+            private bool _disposed = false;
             private int _handle;
 
             public static implicit operator int(Win32Handle handle)
@@ -77,9 +78,9 @@ namespace ProcessHacker
             /// <summary>
             /// Gets whether this handle is closed.
             /// </summary>
-            public bool Closed
+            public bool Disposed
             {
-                get { return _closed; }
+                get { return _disposed; }
             }
 
             /// <summary>
@@ -144,11 +145,11 @@ namespace ProcessHacker
             /// </summary>
             public void Dispose()
             {
-                lock (this)
+                lock (_disposeLock)
                 {
-                    if (!_closed && _owned)
+                    if (!_disposed && _owned)
                     {
-                        _closed = true;
+                        _disposed = true;
                         this.Close();
                         GC.SuppressFinalize(this);
                     }
