@@ -235,9 +235,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 29);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(136, 13);
+            this.label1.Size = new System.Drawing.Size(188, 13);
             this.label1.TabIndex = 13;
-            this.label1.Text = "XhmikosR - Installer, Tester";
+            this.label1.Text = "XhmikosR - Installer Developer, Tester";
             // 
             // label7
             // 
