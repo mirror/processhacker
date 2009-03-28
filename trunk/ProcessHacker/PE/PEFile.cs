@@ -105,7 +105,7 @@ namespace ProcessHacker.PE
 
                 if (iD.VirtualAddress != 0)
                 {
-                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
+                    s.Seek(this.RvaToVa(iD.VirtualAddress), SeekOrigin.Begin);
 
                     this.ExportData = new ExportData(br, this);
                 }
@@ -118,7 +118,7 @@ namespace ProcessHacker.PE
 
                 if (iD.VirtualAddress != 0)
                 {
-                    s.Seek(PEFile.RvaToVa(this, iD.VirtualAddress), SeekOrigin.Begin);
+                    s.Seek(this.RvaToVa(iD.VirtualAddress), SeekOrigin.Begin);
 
                     this.ImportData = new ImportData(br, this);
                 }
@@ -138,11 +138,11 @@ namespace ProcessHacker.PE
             //}
         }
 
-        public static long RvaToVa(PEFile peFile, long rva)
+        public long RvaToVa(long rva)
         {
             SectionHeader section = null;
 
-            foreach (SectionHeader sh in peFile.Sections)
+            foreach (SectionHeader sh in this.Sections)
             {
                 if (rva >= sh.VirtualAddress && rva < sh.VirtualAddress + sh.VirtualSize)
                 {

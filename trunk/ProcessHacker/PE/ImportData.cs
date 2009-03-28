@@ -84,15 +84,11 @@ namespace ProcessHacker.PE
 
                 while (true)
                 {
-                    byte[] data = br.ReadBytes(4);
-
-                    if (Misc.IsEmpty(data))
-                        break;
-
-                    br.BaseStream.Seek(-4, SeekOrigin.Current);
-
                     ImportLookupEntry entry = new ImportLookupEntry();
                     uint number = br.ReadUInt32();
+
+                    if (number == 0)
+                        break;
 
                     if ((number & 0x80000000) == 1)
                     {
@@ -106,7 +102,7 @@ namespace ProcessHacker.PE
 
                         try
                         {
-                            PEFile.RvaToVa(peFile, entry.NameTableRVA);
+                            peFile.RvaToVa(entry.NameTableRVA);
                         }
                         catch
                         {
@@ -124,7 +120,7 @@ namespace ProcessHacker.PE
 
             foreach (ImportDirectoryEntry entry in this.ImportDirectoryTable)
             {
-                br.BaseStream.Seek(PEFile.RvaToVa(peFile, entry.NameRVA), SeekOrigin.Begin);
+                br.BaseStream.Seek(peFile.RvaToVa(entry.NameRVA), SeekOrigin.Begin);
 
                 entry.Name = Misc.ReadString(br.BaseStream);
             }
@@ -137,7 +133,7 @@ namespace ProcessHacker.PE
 
                     if (!entry.UseOrdinal)
                     {
-                        br.BaseStream.Seek(PEFile.RvaToVa(peFile, entry.NameTableRVA), SeekOrigin.Begin);
+                        br.BaseStream.Seek(peFile.RvaToVa(entry.NameTableRVA), SeekOrigin.Begin);
 
                         entry.NameEntry = new ImportNameEntry();
                         entry.NameEntry.Hint = br.ReadUInt16();

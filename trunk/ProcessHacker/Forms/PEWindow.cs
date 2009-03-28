@@ -318,7 +318,7 @@ namespace ProcessHacker
                     ExportEntry entry = _peFile.ExportData.ExportAddressTable[i];
 
                     if (entry.ExportRVA != 0)
-                        _exportVAs.Add(PEFile.RvaToVa(_peFile, entry.ExportRVA));
+                        _exportVAs.Add(_peFile.RvaToVa(entry.ExportRVA));
                     else
                         _exportVAs.Add(0);
                 }

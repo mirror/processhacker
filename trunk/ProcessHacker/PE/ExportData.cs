@@ -57,7 +57,7 @@ namespace ProcessHacker.PE
             this.OrdinalTableRVA = br.ReadUInt32();
 
             // read address table
-            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.ExportAddressTableRVA), SeekOrigin.Begin);
+            br.BaseStream.Seek(peFile.RvaToVa(this.ExportAddressTableRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.AddressTableEntries; i++)
             {
@@ -86,13 +86,13 @@ namespace ProcessHacker.PE
 
                 if (entry.Type == ExportEntry.ExportType.Forwarder)
                 {
-                    br.BaseStream.Seek(PEFile.RvaToVa(peFile, entry.ExportRVA), SeekOrigin.Begin);
+                    br.BaseStream.Seek(peFile.RvaToVa(entry.ExportRVA), SeekOrigin.Begin);
                     entry.ForwardedString = Misc.ReadString(br.BaseStream);
                 }
             }
 
             // read ordinal table
-            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.OrdinalTableRVA), SeekOrigin.Begin);
+            br.BaseStream.Seek(peFile.RvaToVa(this.OrdinalTableRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.AddressTableEntries; i++)
             {
@@ -100,7 +100,7 @@ namespace ProcessHacker.PE
             }
 
             // read name pointer table
-            br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.NamePointerRVA), SeekOrigin.Begin);
+            br.BaseStream.Seek(peFile.RvaToVa(this.NamePointerRVA), SeekOrigin.Begin);
 
             for (int i = 0; i < this.NumberOfNamePointers; i++)
             {
@@ -110,7 +110,7 @@ namespace ProcessHacker.PE
             // read names
             for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
             {
-                br.BaseStream.Seek(PEFile.RvaToVa(peFile, this.ExportNamePointerTable[i]), SeekOrigin.Begin);
+                br.BaseStream.Seek(peFile.RvaToVa(this.ExportNamePointerTable[i]), SeekOrigin.Begin);
                 this.ExportNameTable.Add(Misc.ReadString(br.BaseStream));
             }
         }
