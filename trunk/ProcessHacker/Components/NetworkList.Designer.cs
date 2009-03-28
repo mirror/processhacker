@@ -67,7 +67,7 @@
             // columnProcess
             // 
             this.columnProcess.Text = "Process";
-            this.columnProcess.Width = 120;
+            this.columnProcess.Width = 137;
             // 
             // columnLocal
             // 
@@ -77,7 +77,7 @@
             // columnRemote
             // 
             this.columnRemote.Text = "Remote";
-            this.columnRemote.Width = 270;
+            this.columnRemote.Width = 280;
             // 
             // columnProtocol
             // 
