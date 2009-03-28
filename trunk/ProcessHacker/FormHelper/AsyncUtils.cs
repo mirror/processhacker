@@ -78,7 +78,7 @@ namespace ProcessHacker.FormHelper
 
                 while (!IsDone)
                 {
-                    Monitor.Wait(this, 1000);
+                    Monitor.Wait(_asyncLock, 1000);
                 }
             }
 
@@ -95,7 +95,7 @@ namespace ProcessHacker.FormHelper
                 // up every second to check we didn't miss a Pulse.
                 while (!IsDone)
                 {
-                    Monitor.Wait(this, 1000);
+                    Monitor.Wait(_asyncLock, 1000);
                 }
             }
 
