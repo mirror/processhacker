@@ -45,7 +45,10 @@ pre {
     <dl>
       <dt>Update Interval</dt>
       <dd>The amount of time in milliseconds between each <em>update</em>; i.e, when 
-      Process Hacker looks for new, modified or removed processes and services.</dd>
+      Process Hacker looks for new, modified or removed processes, services and other objects.</dd>
+      
+      <dt>Processes in icon menu</dt>
+      <dd>The number of processes to display in the notification icon menu.</dd>
       
       <dt>Search Engine</dt>
       <dd>This is used by the <strong>Search Online...</strong> menu item in the process and module 
@@ -62,27 +65,38 @@ pre {
       smaller unit will be displayed in that smaller unit, while sizes requiring a larger unit will 
       use units up to the maximum unit specified here.</dd>
       
-      <dt>Show tray icon</dt>
-      <dd>When this option is enabled, Process Hacker will display an icon in the system tray area. 
+      <dt>Show notification icon</dt>
+      <dd>If enabled, Process Hacker will display an icon in the system notification area. 
       That icon will show the CPU usage history and any enabled notifications such as new/terminated 
       processes and new/started/stopped/deleted services. You can configure notifications by 
       right-clicking on the icon.</dd>
       
       <dt>Hide when minimized</dt>
-      <dd>When this option is enabled, Process Hacker will automatically hide when it is minimized. You 
-      can double-click on the tray icon to show Process Hacker again.</dd>
+      <dd>If enabled, Process Hacker will automatically hide itself when it is minimized. You 
+      can double-click on the notification icon to show Process Hacker.</dd>
+      
+      <dt>Hide when closed</dt>
+      <dd>If enabled, Process Hacker will automatically hide itself when it is closed. You 
+      can double-click on the notification icon to show Process Hacker.</dd>
+      
+      <dt>Start hidden</dt>
+      <dd>If enabled, Process Hacker will start hidden. You can double-click on the notification 
+      icon to show Process Hacker.</dd>
+      
+      <dt>Allow only one instance</dt>
+      <dd>If enabled, Process Hacker will allow only one instance of itself. Any attempts to start 
+      a new instance will show the existing instance.</dd>
       
       <dt>Warn about potentially dangerous actions</dt>
-      <dd>When this option is enabled, Process Hacker will warn about certain actions to system processes.</dd>
+      <dd>If enabled, Process Hacker will warn about certain actions to system processes.</dd>
       
       <dt>Show user/group domains</dt>
-      <dd>When this option is enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
+      <dd>If enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
       would be shown as <code>machine-name\user</code>.</dd>
-      
-      <dt>Verify signatures and perform additional checks</dt>
-      <dd>This option affects newly created processes, and controls whether Process Hacker will 
-      attempt to verify the digital signatures of processes.</dd>
-      
+    </dl>
+    
+    <h2>Advanced</h2>
+    <dl>
       <dt>Enable kernel-mode driver</dt>
       <dd>Some handles cannot be displayed by a user-mode program like Process Hacker; this 
       option enables <em>KProcessHacker</em> which allows Process Hacker 
@@ -94,6 +108,21 @@ pre {
       The ability to open any process or thread without being intercepted by rootkits/security 
       software, and<br />
       The ability to protect and unprotect processes.</dd>
+      
+      <dt>Verify signatures and perform additional checks</dt>
+      <dd>This option affects newly created processes, and controls whether Process Hacker will 
+      attempt to verify the digital signatures of processes.</dd>
+      
+      <dt>Replace Task Manager with Process Hacker</dt>
+      <dd>If enabled, any attempt to start Task Manager will start Process Hacker instead.</dd>
+      
+      <dt>Hide handles with no name</dt>
+      <dd>If enabled, unnamed handles will be hidden by default. This can be changed in each 
+      process properties window.</dd>
+      
+      <dt>Max. Sample History</dt>
+      <dd>Specifies the maximum number of performance-related samples to be retained. This includes 
+      CPU, I/O and memory usage data for the system and all processes.</dd>
     </dl>
     
     <h2>Highlighting</h2>
@@ -142,8 +171,11 @@ pre {
     <h2>Plotting</h2>
     <dl>
       <dt>Use Anti-aliasing</dt>
-      <dd>If selected, Process Hacker will draw graphs with anti-aliasing. This will 
+      <dd>If enabled, Process Hacker will draw graphs with anti-aliasing. This will 
       usually consume much more system resources than normal.</dd>
+      
+      <dt>Step</dt>
+      <dd>This option controls the distance in pixels between each data point.</dd>
     </dl>
     
     <h1 id="numberinput">Number Input</h1>
@@ -161,7 +193,7 @@ pre {
       <li>It starts with <code>w</code> - base 12</li>				
       <li>It starts with <code>r</code> - base 32</li>
     </ul>
-
+    
     <h1 id="proctree">Process Tree</h1>
     <p>The process tree displays processes running on the system as a tree; processes started by a 
     particular parent process are shown indented below it. Processes with a non-existent parent 
@@ -170,33 +202,40 @@ pre {
     it or selecting the "Properties..." menu item.</p>
     
     <p>You can sort by the various columns by clicking on them - the tree view will temporarily 
-    become a flat list. You can click the same column again to sort in the opposite order, and 
+    become a flat list. You can click the same column again to sort in the reverse order, and 
     once more to return to the tree view.</p>
     
     <p>Like Process Explorer, Process Hacker shows Deferred Procedure Calls (DPCs) and Interrupts 
     in the process tree. The only information these "processes" show is their CPU usage.</p>
-
+    
     <h2>Context Menu</h2>
     <p><strong>Warning:</strong> Manipulating csrss.exe, dwm.exe, lsass.exe, lsm.exe, smss.exe,
     winlogon.exe or any other system processes is not recommended and may lead to system instability or
     a crash.</p>
-
+    
     <dl>
       <dt>Terminate Process(es)</dt>
-      <dd>Uses the <code>TerminateProcess()</code> API function to terminate the selected 
+      <dd>Uses the <code>TerminateProcess</code> API function to terminate the selected 
       process(es).</dd>
 
       <dt>Suspend Process(es)</dt>
-      <dd>Uses the <code>NtSuspendProcess()</code> API function to suspend the selected
+      <dd>Uses the <code>NtSuspendProcess</code> API function to suspend the selected
       process(es).</dd>
 
       <dt>Resume Process(es)</dt>
-      <dd>Uses the <code>NtResumeProcess()</code> API function to resume the selected 
+      <dd>Uses the <code>NtResumeProcess</code> API function to resume the selected 
       process(es).</dd>
       
       <dt>Restart</dt>
       <dd>Restarts the selected process with the same command line arguments and working 
       directory.</dd>
+      
+      <dt>Reduce Working Set</dt>
+      <dd>Uses the <code>EmptyWorkingSet</code> API function to reduce the process' working set. 
+      This is a safe function; the process will eventually reclaim most of its working set.</dd>
+      
+      <dt>Virtualization</dt>
+      <dd>Allows you to enable or disable virtualization for the selected process, if allowed.</dd>
       
       <dt>Affinity...</dt>
       <dd>Allows you to view and modify the process' CPU affinity (the CPUs on which it is allowed 
@@ -218,6 +257,9 @@ pre {
       
       <dt>Search Online...</dt>
       <dd>Opens the default web browser with the search engine specified in Process Hacker's options.</dd>
+      
+      <dt>Re-analyze</dt>
+      <dd>Re-examines the process to determine if it is signed, packed, or a .NET process.</dd>
 
       <dt>Select All</dt>
       <dd>Selects all items in the list.</dd>
@@ -236,7 +278,7 @@ pre {
       
       <dt>Performance</dt>
       <dd>Displays three graphs relating to the process' performance - CPU Usage, 
-      Memory Usage, and I/O activity.</dd>
+      Memory Usage, and I/O activity. You can hover your mouse over the graphs to view details.</dd>
       
       <dt>Threads</dt>
       <dd>Displays the process' threads, including their symbolic start addresses. You can click on 
@@ -254,6 +296,9 @@ pre {
       <dd>Displays the process' virtual memory regions. Double-click a memory region to 
       read/write its contents, and right-click a memory region to perform other actions. You can 
       also search memory using the search button (see below).</dd>
+      
+      <dt>Environment</dt>
+      <dd>Displays the process' environment variables.</dd>
       
       <dt>Handles</dt>
       <dd>Displays the process' handles - resources it has opened. You can right-click a handle and 
