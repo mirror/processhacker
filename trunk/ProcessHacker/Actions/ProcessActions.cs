@@ -81,33 +81,74 @@ namespace ProcessHacker.UI
             return result == DialogResult.Yes;
         }
 
-        public static void Terminate(IWin32Window window, int[] pids, string[] names, bool prompt)
+        private static bool ElevateIfRequired(IWin32Window window, int[] pids, string[] names,
+            Win32.PROCESS_RIGHTS access, string action)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
+            if (Program.WindowsVersion == WindowsVersion.Vista &&
+                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
                 Program.KPH == null)
             {
                 try
                 {
                     foreach (int pid in pids)
                     {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pid,
-                            Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pid, access))
                         { }
                     }
                 }
-                catch
+                catch (WindowsException ex)
                 {
-                    string objects = "";
+                    TaskDialog td = new TaskDialog();
 
-                    foreach (int pid in pids)
-                        objects += pid + ",";
+                    td.WindowTitle = "Process Hacker";
+                    td.MainIcon = TaskDialogIcon.Shield;
+                    td.MainInstruction = "Do you want to elevate the action?";
+                    td.Content = "The action cannot be performed in the current security context. " +
+                        "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";
 
-                    Program.StartProcessHackerAdmin("-e -type process -action terminate -obj \"" +
-                        objects + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
+                    td.ExpandedInformation = "Error: " + ex.Message + " (0x" + ex.ErrorCode.ToString("x") + ")";
+                    td.ExpandFooterArea = true;
 
-                    return;
+                    td.Buttons = new TaskDialogButton[]
+                    {
+                        new TaskDialogButton((int)DialogResult.Yes, "Elevate\nPrompt for credentials and elevate the action."),
+                        new TaskDialogButton((int)DialogResult.No, "Continue\nAttempt to perform the action without elevation.")
+                    };
+                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                    td.UseCommandLinks = true;
+
+                    DialogResult result = (DialogResult)td.Show(window);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        string objects = "";
+
+                        foreach (int pid in pids)
+                            objects += pid + ",";
+
+                        Program.StartProcessHackerAdmin("-e -type process -action " + action + " -obj \"" +
+                            objects + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
+
+                        return true;
+                    }
+                    else if (result == DialogResult.No)
+                    {
+                        return false;
+                    }
+                    else if (result == DialogResult.Cancel)
+                    {
+                        return true;
+                    }
                 }
             }
+
+            return false;
+        }
+
+        public static void Terminate(IWin32Window window, int[] pids, string[] names, bool prompt)
+        {
+            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE, "terminate"))
+                return;
 
             if (prompt && !Prompt(window, pids, names, "terminate",
                 "Terminating a process will cause unsaved data to be lost. " +
@@ -137,31 +178,8 @@ namespace ProcessHacker.UI
 
         public static void Suspend(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
-            {
-                try
-                {
-                    foreach (int pid in pids)
-                    {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pid,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        { }
-                    }
-                }
-                catch
-                {
-                    string objects = "";
-
-                    foreach (int pid in pids)
-                        objects += pid + ",";
-
-                    Program.StartProcessHackerAdmin("-e -type process -action suspend -obj \"" +
-                        objects + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
-
-                    return;
-                }
-            }
+            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME, "suspend"))
+                return;
 
             if (prompt && !Prompt(window, pids, names, "suspend",
                 "Suspending a process will pause its execution. " +
@@ -191,31 +209,8 @@ namespace ProcessHacker.UI
 
         public static void Resume(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
-            {
-                try
-                {
-                    foreach (int pid in pids)
-                    {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pid,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        { }
-                    }
-                }
-                catch
-                {
-                    string objects = "";
-
-                    foreach (int pid in pids)
-                        objects += pid + ",";
-
-                    Program.StartProcessHackerAdmin("-e -type process -action resume -obj \"" +
-                        objects + "\" -hwnd " + window.Handle.ToString(), null, window.Handle);
-
-                    return;
-                }
-            }
+            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME, "resume"))
+                return;
 
             if (prompt && !Prompt(window, pids, names, "resume",
                 "Resuming a process will begin its execution. " +
