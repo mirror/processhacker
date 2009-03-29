@@ -15,6 +15,7 @@ Process Hacker
    * Can close multiple handles at once
    * Less memory usage
  * FIXED:
+   * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"
    * #2713087 - "Processes: Copy should copy only the columns currently used"
    * Network connections would be readded if their state changed
