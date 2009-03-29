@@ -64,8 +64,7 @@ namespace ProcessHacker.UI
             Win32.SERVICE_RIGHTS access, string action)
         {
             if (Program.WindowsVersion == WindowsVersion.Vista &&
-                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
+                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 try
                 {
