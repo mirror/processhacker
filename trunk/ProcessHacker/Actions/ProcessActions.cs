@@ -93,9 +93,19 @@ namespace ProcessHacker.UI
             }
             else if (Program.WindowsVersion == WindowsVersion.XP)
             {
-                result = MessageBox.Show("Are you sure you want to " + action + " " + name + "?",
-                    "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+                if (dangerous)
+                {
+                    result = MessageBox.Show("You are about to " + action + " one or more system processes. " + 
+                        "Are you sure you want to " + action + " " + name + "?",
+                        "Process Hacker", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+                }
+                else
+                {
+                    result = MessageBox.Show("Are you sure you want to " + action + " " + name + "?",
+                        "Process Hacker", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+                }
             }
 
             return result == DialogResult.Yes;
