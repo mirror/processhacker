@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -550,7 +551,7 @@ namespace ProcessHacker
             textProtected.Enabled = true;
             buttonEditProtected.Enabled = true;
 
-            if (Program.KPH != null && Program.WindowsVersion == "Vista")
+            if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
             {
                 try
                 {
@@ -837,20 +838,7 @@ namespace ProcessHacker
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to terminate " + _processItem.Name + "?", "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-            {
-                try
-                {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                        phandle.Terminate();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Process Hacker",
-                      MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ProcessActions.Terminate(this, new int[] { _processItem.PID }, new string[] { _processItem.Name }, true);
         }
 
         private void buttonEditDEP_Click(object sender, EventArgs e)

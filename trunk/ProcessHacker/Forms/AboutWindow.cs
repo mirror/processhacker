@@ -96,6 +96,11 @@ namespace ProcessHacker
             TryStart("http://www.icsharpcode.net");
         }
 
+        private void linkTaskDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            TryStart("http://www.codeproject.com/KB/vista/TaskDialogWinForms.aspx");
+        }
+
         private void buttonChangelog_Click(object sender, EventArgs e)
         {
             try

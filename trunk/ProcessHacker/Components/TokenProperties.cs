@@ -182,7 +182,7 @@ namespace ProcessHacker
                 this.Controls.Add(errorMessage);
             }
 
-            if (Program.WindowsVersion == "XP")
+            if (Program.WindowsVersion == WindowsVersion.XP)
             {
                 // XP obviously doesn't have UAC
                 labelElevated.Enabled = false;

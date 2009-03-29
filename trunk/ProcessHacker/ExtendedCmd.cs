@@ -24,11 +24,34 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.UI;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace ProcessHacker
 {
     public static class ExtendedCmd
     {
+        private static class ThemingScope
+        {
+            [DllImport("kernel32.dll")]
+            private static extern bool ActivateActCtx(IntPtr hActCtx, out IntPtr lpCookie);
+
+            public static void Activate()
+            {
+                IntPtr zero = IntPtr.Zero;
+                Assembly windowsForms = Assembly.GetAssembly(typeof(Control));
+
+                // HACK
+                IntPtr hActCtx = (IntPtr)windowsForms.GetType("System.Windows.Forms.UnsafeNativeMethods", true).
+                    GetNestedType("ThemingScope", BindingFlags.NonPublic | BindingFlags.Static).
+                    GetField("hActCtx", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+
+                if (OSFeature.Feature.IsPresent(OSFeature.Themes))
+                    ActivateActCtx(hActCtx, out zero);
+            }
+        }
+
         public class WindowFromHWnd : IWin32Window
         {
             private IntPtr _handle;
@@ -46,6 +69,8 @@ namespace ProcessHacker
 
         public static void Run(IDictionary<string, string> args)
         {
+            ThemingScope.Activate();
+
             if (!args.ContainsKey("-type"))
                 throw new Exception("-type switch required.");
 
@@ -110,98 +135,30 @@ namespace ProcessHacker
 
                     case "process":
                         {
-                            foreach (string pid in obj.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                            var processes = Win32.EnumProcesses();
+                            string[] pidStrings = obj.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                            int[] pids = new int[pidStrings.Length];
+                            string[] names = new string[pidStrings.Length];
+
+                            for (int i = 0; i < pidStrings.Length; i++)
                             {
-                                switch (action)
-                                {
-                                    case "terminate":
-                                        {
-                                            try
-                                            {
-                                                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(int.Parse(pid),
-                                                    Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                                                    phandle.Terminate();
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "Could not terminate process with PID " +
-                                                    pid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                                pids[i] = int.Parse(pidStrings[i]);
+                                names[i] = processes[pids[i]].Name;
+                            }
 
-                                                if (result == DialogResult.Cancel)
-                                                    return;
-                                            }
-                                        }
-                                        break;
-                                    case "suspend":
-                                        {
-                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(int.Parse(pid)))
-                                            {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "The process with PID " + pid + " is a system process. Are you" +
-                                                    " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
-                                                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                                                if (result == DialogResult.No)
-                                                    continue;
-                                                else if (result == DialogResult.Cancel)
-                                                    return;
-                                            }
-
-                                            try
-                                            {
-                                                using (var phandle =
-                                                    new Win32.ProcessHandle(int.Parse(pid), Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                                                    phandle.Suspend();
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                DialogResult result = MessageBox.Show(window, "Could not suspend process with PID " +
-                                                    pid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                                                if (result == DialogResult.Cancel)
-                                                    return;
-                                            }
-                                        }
-                                        break;
-                                    case "resume":
-                                        {
-                                            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(int.Parse(pid)))
-                                            {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "The process with PID " + pid + " is a system process. Are you" +
-                                                    " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
-                                                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                                                if (result == DialogResult.No)
-                                                    continue;
-                                                else if (result == DialogResult.Cancel)
-                                                    return;
-                                            }
-
-                                            try
-                                            {
-                                                using (var phandle =
-                                                    new Win32.ProcessHandle(int.Parse(pid), Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                                                    phandle.Resume();
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                DialogResult result = MessageBox.Show(window,
-                                                    "Could not resume process with PID " +
-                                                    pid + ":\n\n" +
-                                                    ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                                                if (result == DialogResult.Cancel)
-                                                    return;
-                                            }
-                                        }
-                                        break;
-                                    default:
-                                        throw new Exception("Unknown action '" + action + "'");
-                                }
+                            switch (action)
+                            {
+                                case "terminate":
+                                    ProcessActions.Terminate(window, pids, names, true);
+                                    break;
+                                case "suspend":
+                                    ProcessActions.Suspend(window, pids, names, true);
+                                    break;
+                                case "resume":
+                                    ProcessActions.Resume(window, pids, names, true);
+                                    break;
+                                default:
+                                    throw new Exception("Unknown action '" + action + "'");
                             }
                         }
                         break;

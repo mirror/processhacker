@@ -901,9 +901,9 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("audiodg.exe, csrss.exe, dwm.exe, explorer.exe, lsass.exe, lsm.exe, ntkrnlpa.exe, " +
-            "ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, spoolsv.exe, sv" +
-            "chost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe")]
+        [global::System.Configuration.DefaultSettingValueAttribute("audiodg.exe, csrss.exe, dwm.exe, explorer.exe, logonui.exe, lsass.exe, lsm.exe, n" +
+            "tkrnlpa.exe, ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, sp" +
+            "oolsv.exe, svchost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe")]
         public string ImposterNames {
             get {
                 return ((string)(this["ImposterNames"]));

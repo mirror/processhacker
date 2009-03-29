@@ -29,6 +29,13 @@ using System.Security.Principal;
 
 namespace ProcessHacker
 {
+    public enum WindowsVersion
+    {
+        Unknown,
+        XP,
+        Vista
+    }
+
     public static class Program
     {
         /// <summary>
@@ -36,7 +43,7 @@ namespace ProcessHacker
         /// </summary>
         public static HackerWindow HackerWindow;
 
-        public static string WindowsVersion = "Unknown";
+        public static WindowsVersion WindowsVersion = WindowsVersion.Unknown;
 
         public static Win32.PROCESS_RIGHTS MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION;
         public static Win32.THREAD_RIGHTS MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION;
@@ -99,6 +106,7 @@ namespace ProcessHacker
             Dictionary<string, string> pArgs = null;
 
             Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
             try
             {
@@ -178,11 +186,11 @@ namespace ProcessHacker
             ThreadPool.SetMaxThreads(32, 64);
 
             if (Environment.OSVersion.Version.Major <= 5)
-                WindowsVersion = "XP";
+                WindowsVersion = WindowsVersion.XP;
             else if (Environment.OSVersion.Version.Major >= 6)
-                WindowsVersion = "Vista";
+                WindowsVersion = WindowsVersion.Vista;
 
-            if (WindowsVersion == "Vista")
+            if (WindowsVersion == WindowsVersion.Vista)
             {
                 MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
                 MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
@@ -198,7 +206,7 @@ namespace ProcessHacker
                     try { thandle.SetPrivilege("SeShutdownPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
                     catch { }
 
-                    if (Program.WindowsVersion == "Vista")
+                    if (Program.WindowsVersion == WindowsVersion.Vista)
                     {
                         try { ElevationType = thandle.GetElevationType(); }
                         catch { ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull; }
@@ -278,8 +286,6 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 #endif
-
-            Application.SetCompatibleTextRenderingDefault(false);
 
             new HackerWindow();
             Application.Run();
@@ -815,7 +821,7 @@ namespace ProcessHacker
                         windowMenuItem.MenuItems.Add(item);
 
                         // don't add icon on XP - doesn't work for some reason
-                        if (Program.WindowsVersion == "Vista")
+                        if (Program.WindowsVersion == WindowsVersion.Vista)
                         {
                             using (Graphics g = Graphics.FromImage(image))
                             {

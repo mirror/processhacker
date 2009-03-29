@@ -39,7 +39,7 @@ namespace ProcessHacker
 
         public static string[] DangerousNames = 
         {
-            "csrss.exe", "dwm.exe", "lsass.exe", "lsm.exe", "services.exe",
+            "csrss.exe", "dwm.exe", "logonui.exe", "lsass.exe", "lsm.exe", "services.exe",
             "smss.exe", "wininit.exe", "winlogon.exe"
         };
 

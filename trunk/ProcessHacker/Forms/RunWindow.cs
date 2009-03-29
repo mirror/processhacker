@@ -240,7 +240,7 @@ namespace ProcessHacker
                     textPassword.Enabled = false;
                     comboType.SelectedItem = "Service";
 
-                    if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == "XP")
+                    if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && Program.WindowsVersion == WindowsVersion.XP)
                         comboType.SelectedItem = "NewCredentials";
                 }
                 else

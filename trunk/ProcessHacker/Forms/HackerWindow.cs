@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -550,51 +551,30 @@ namespace ProcessHacker
                     MenuItem propertiesItem = new MenuItem();
 
                     processItem.Text = process.Name + " (" + process.PID.ToString() + ")";
-                    processItem.Tag = process.PID;
+                    processItem.Tag = process;
 
                     terminateItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        if (MessageBox.Show("Are you sure you want to terminate the process?", "Process Hacker",
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                        {
-                            try
-                            {
-                                (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                                    Win32.PROCESS_RIGHTS.PROCESS_TERMINATE)).Terminate();
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+
+                        ProcessActions.Terminate(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
                     terminateItem.Text = "Terminate";
 
                     suspendItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        try
-                        {
-                            (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                                Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Suspend();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+
+                        ProcessActions.Suspend(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
                     suspendItem.Text = "Suspend";
 
                     resumeItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        try
-                        {
-                            (new Win32.ProcessHandle((int)((MenuItem)sender_).Parent.Tag,
-                                Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME)).Resume();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+
+                        ProcessActions.Resume(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
                     resumeItem.Text = "Resume";
 
@@ -788,184 +768,53 @@ namespace ProcessHacker
 
         private void terminateMenuItem_Click(object sender, EventArgs e)
         {
-            string name = "the selected process(es)";
-
-            if (treeProcesses.SelectedTreeNodes.Count == 0)
+            if (treeProcesses.SelectedNodes.Count == 0)
                 return;
-            else if (treeProcesses.SelectedTreeNodes.Count == 1)
-                name = treeProcesses.SelectedNodes[0].Name;
-            else
-                name = "the selected processes";
 
-            if (MessageBox.Show("Are you sure you want to terminate " + name + "?", 
-                "Process Hacker", MessageBoxButtons.YesNo, 
-                MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            int[] pids = new int[treeProcesses.SelectedNodes.Count];
+            string[] names = new string[pids.Length];
+
+            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && 
-                    Program.KPH == null)
-                {
-                    try
-                    {
-                        foreach (ProcessNode node in treeProcesses.SelectedNodes)
-                        {
-                            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
-                                Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                            { }
-                        }
-                    }
-                    catch
-                    {
-                        string objects = "";
-
-                        foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
-                            objects += node_.PID + ",";
-
-                        Program.StartProcessHackerAdmin("-e -type process -action terminate -obj \"" +
-                            objects + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-
-                        return;
-                    }
-                }
-
-                foreach (ProcessNode node in treeProcesses.SelectedNodes)
-                {
-                    try
-                    {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
-                            Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                            phandle.Terminate();
-                    }
-                    catch (Exception ex)
-                    {
-                        DialogResult result = MessageBox.Show("Could not terminate process \"" + node.Name +
-                            "\" with PID " + node.PID.ToString() + ":\n\n" +
-                            ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                        if (result == DialogResult.Cancel)
-                            return;
-                    }
-                }
+                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                names[i] = treeProcesses.SelectedNodes[i].Name;
             }
+
+            ProcessActions.Terminate(this, pids, names, true);
         }
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
+            if (treeProcesses.SelectedNodes.Count == 0)
+                return;
+
+            int[] pids = new int[treeProcesses.SelectedNodes.Count];
+            string[] names = new string[pids.Length];
+
+            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                try
-                {
-                    foreach (ProcessNode node in treeProcesses.SelectedNodes)
-                    {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        { }
-                    }
-                }
-                catch
-                {
-                    string objects = "";
-
-                    foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
-                        objects += node_.PID + ",";
-
-                    Program.StartProcessHackerAdmin("-e -type process -action suspend -obj \"" +
-                        objects + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-
-                    return;
-                }
+                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
-            foreach (ProcessNode node in treeProcesses.SelectedNodes)
-            {
-                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(node.PID))
-                {
-                    DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
-                        " sure you want to suspend it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                    if (result == DialogResult.No)
-                        continue;
-                    else if (result == DialogResult.Cancel)
-                        return;
-                }
-
-                try
-                {
-                    using (Win32.ProcessHandle handle = new Win32.ProcessHandle(node.PID,
-                        Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        handle.Suspend();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not suspend process " + node.Name +
-                        " (PID " + node.PID.ToString() + "):\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
+            ProcessActions.Suspend(this, pids, names, true);
         }
 
         private void resumeMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
+            if (treeProcesses.SelectedNodes.Count == 0)
+                return;
+
+            int[] pids = new int[treeProcesses.SelectedNodes.Count];
+            string[] names = new string[pids.Length];
+
+            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                try
-                {
-                    foreach (ProcessNode node in treeProcesses.SelectedNodes)
-                    {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(node.PID,
-                            Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        { }
-                    }
-                }
-                catch
-                {
-                    string objects = "";
-
-                    foreach (ProcessNode node_ in treeProcesses.SelectedNodes)
-                        objects += node_.PID + ",";
-
-                    Program.StartProcessHackerAdmin("-e -type process -action resume -obj \"" +
-                        objects + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-
-                    return;
-                }
+                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
-            foreach (ProcessNode node in treeProcesses.SelectedNodes)
-            {
-                if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(node.PID))
-                {
-                    DialogResult result = MessageBox.Show(node.Name + " (PID " + node.PID.ToString() + ") is a system process. Are you" +
-                        " sure you want to resume it?", "Process Hacker", MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
-
-                    if (result == DialogResult.No)
-                        continue;
-                    else if (result == DialogResult.Cancel)
-                        return;
-                }
-
-                try
-                {
-                    using (Win32.ProcessHandle handle = new Win32.ProcessHandle(node.PID,
-                        Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
-                        handle.Resume();
-                }
-                catch (Exception ex)
-                {
-                    DialogResult result = MessageBox.Show("Could not resume process " + node.Name +
-                        " (PID " + node.PID.ToString() + "):\n\n" +
-                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
-
-                    if (result == DialogResult.Cancel)
-                        return;
-                }
-            }
+            ProcessActions.Resume(this, pids, names, true);
         }
 
         private void restartProcessMenuItem_Click(object sender, EventArgs e)
@@ -2292,7 +2141,7 @@ namespace ProcessHacker
             if (Program.KPH == null)
                 csrProcessesMenuItem.Visible = false;
 
-            if (Program.KPH == null || Program.WindowsVersion != "XP")
+            if (Program.KPH == null || Program.WindowsVersion != WindowsVersion.XP)
                 setTokenProcessMenuItem.Visible = false;
         }
 
@@ -2546,7 +2395,7 @@ namespace ProcessHacker
 
             // If it's Vista and we're elevated, we should allow the magic window message to allow 
             // Allow only one instance to work.
-            if (Program.WindowsVersion == "Vista" &&
+            if (Program.WindowsVersion == WindowsVersion.Vista &&
                 Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
             {
                 Win32.ChangeWindowMessageFilter((Win32.WindowMessage)0x9991, Win32.UipiFilterFlag.Add);

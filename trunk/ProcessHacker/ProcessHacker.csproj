@@ -382,6 +382,13 @@
     <Compile Include="Components\StructViewer.Designer.cs">
       <DependentUpon>StructViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\TaskDialog\ActiveTaskDialog.cs" />
+    <Compile Include="Components\TaskDialog\TaskDialog.cs" />
+    <Compile Include="Components\TaskDialog\TaskDialogCommonDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\TaskDialog\TaskDialogNotificationArgs.cs" />
+    <Compile Include="Components\TaskDialog\UnsafeNativeMethods.cs" />
     <Compile Include="Components\ThreadList.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -580,6 +587,7 @@
     <Compile Include="SharpDevelop\Wrappers\NativeMethods.cs" />
     <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
+    <Compile Include="Actions\ProcessActions.cs" />
     <Compile Include="UsageIcon.cs" />
     <Compile Include="GenericViewMenu.cs" />
     <Compile Include="PE\PEException.cs" />

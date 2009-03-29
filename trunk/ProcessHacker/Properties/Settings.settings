@@ -222,7 +222,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ImposterNames" Type="System.String" Scope="User">
-      <Value Profile="(Default)">audiodg.exe, csrss.exe, dwm.exe, explorer.exe, lsass.exe, lsm.exe, ntkrnlpa.exe, ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, spoolsv.exe, svchost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe</Value>
+      <Value Profile="(Default)">audiodg.exe, csrss.exe, dwm.exe, explorer.exe, logonui.exe, lsass.exe, lsm.exe, ntkrnlpa.exe, ntoskrnl.exe, procexp.exe, rundll32.exe, services.exe, smss.exe, spoolsv.exe, svchost.exe, taskeng.exe, taskmgr.exe, wininit.exe, winlogon.exe</Value>
     </Setting>
     <Setting Name="Font" Type="System.Drawing.Font" Scope="User">
       <Value Profile="(Default)">Microsoft Sans Serif, 8.25pt</Value>

@@ -306,7 +306,7 @@ namespace ProcessHacker
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
                 using (var thandle = new Win32.ThreadHandle(tid,
-                    Program.WindowsVersion == "Vista" ? 
+                    Program.WindowsVersion == WindowsVersion.Vista ? 
                     Win32.THREAD_RIGHTS.THREAD_SET_LIMITED_INFORMATION :
                     Win32.THREAD_RIGHTS.THREAD_SET_INFORMATION))
                     thandle.SetPriorityLevel(priority);
