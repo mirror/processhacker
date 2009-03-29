@@ -14,7 +14,7 @@ Process Hacker
    * Network list with icons
    * Can close multiple handles at once
    * Less memory usage
-   * Vista-style confirmation dialogs
+   * Confirmation dialogs are now consistent and use new Vista interfaces where possible
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

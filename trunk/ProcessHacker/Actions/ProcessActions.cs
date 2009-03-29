@@ -195,7 +195,7 @@ namespace ProcessHacker.UI
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show("Could not terminate process \"" + names[i] +
+                    DialogResult r = MessageBox.Show(window, "Could not terminate process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
@@ -226,7 +226,7 @@ namespace ProcessHacker.UI
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show("Could not suspend process \"" + names[i] +
+                    DialogResult r = MessageBox.Show(window, "Could not suspend process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
@@ -257,7 +257,7 @@ namespace ProcessHacker.UI
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show("Could not resume process \"" + names[i] +
+                    DialogResult r = MessageBox.Show(window, "Could not resume process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
@@ -289,7 +289,7 @@ namespace ProcessHacker.UI
                 }
                 catch (Exception ex)
                 {
-                    DialogResult r = MessageBox.Show("Could not reduce the working set of process \"" + names[i] +
+                    DialogResult r = MessageBox.Show(window, "Could not reduce the working set of process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 

@@ -141,7 +141,7 @@ namespace ProcessHacker.UI
             }
             catch (Exception ex)
             {
-                DialogResult r = MessageBox.Show("Could not start the service \"" + service +
+                DialogResult r = MessageBox.Show(window, "Could not start the service \"" + service +
                     "\":\n\n" +
                     ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -164,7 +164,7 @@ namespace ProcessHacker.UI
             }
             catch (Exception ex)
             {
-                DialogResult r = MessageBox.Show("Could not continue the service \"" + service +
+                DialogResult r = MessageBox.Show(window, "Could not continue the service \"" + service +
                     "\":\n\n" +
                     ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -187,7 +187,7 @@ namespace ProcessHacker.UI
             }
             catch (Exception ex)
             {
-                DialogResult r = MessageBox.Show("Could not pause the service \"" + service +
+                DialogResult r = MessageBox.Show(window, "Could not pause the service \"" + service +
                     "\":\n\n" +
                     ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -210,7 +210,7 @@ namespace ProcessHacker.UI
             }
             catch (Exception ex)
             {
-                DialogResult r = MessageBox.Show("Could not stop the service \"" + service +
+                DialogResult r = MessageBox.Show(window, "Could not stop the service \"" + service +
                     "\":\n\n" +
                     ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -234,7 +234,7 @@ namespace ProcessHacker.UI
             }
             catch (Exception ex)
             {
-                DialogResult r = MessageBox.Show("Could not delete the service \"" + service +
+                DialogResult r = MessageBox.Show(window, "Could not delete the service \"" + service +
                     "\":\n\n" +
                     ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
