@@ -25,9 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
@@ -137,15 +135,6 @@ namespace ProcessHacker
         #endregion
 
         #region Event Handlers
-
-        #region Buttons
-
-        //private void buttonSearch_Click(object sender, EventArgs e)
-        //{
-        //    PerformSearch(buttonSearch.Text);
-        //}
-
-        #endregion
 
         #region Lists
 
@@ -874,16 +863,19 @@ namespace ProcessHacker
 
         private void reduceWorkingSetProcessMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (treeProcesses.SelectedNodes.Count == 0)
+                return;
+
+            int[] pids = new int[treeProcesses.SelectedNodes.Count];
+            string[] names = new string[pids.Length];
+
+            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                using (var phandle = new Win32.ProcessHandle(processSelectedPID,
-                    Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS))
-                    phandle.EmptyWorkingSet();
+                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                names[i] = treeProcesses.SelectedNodes[i].Name;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+
+            ProcessActions.ReduceWorkingSet(this, pids, names, false);
         }
 
         private void virtualizationProcessMenuItem_Click(object sender, EventArgs e)
@@ -1501,123 +1493,27 @@ namespace ProcessHacker
 
         private void startServiceMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action start -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Start();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Start(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void continueServiceMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action continue -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Control(Win32.SERVICE_CONTROL.Continue);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error continuing service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Continue(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void pauseServiceMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action pause -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Control(Win32.SERVICE_CONTROL.Pause);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error pausing service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Pause(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void stopServiceMenuItem_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action stop -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Control(Win32.SERVICE_CONTROL.Stop);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Stop(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void deleteServiceMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to delete the service '" + 
-                listServices.SelectedItems[0].Name + "'?", 
-                "Process Hacker",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-            {
-                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-                {
-                    Program.StartProcessHackerAdmin("-e -type service -action delete -obj \"" +
-                        listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-                }
-                else
-                {
-                    try
-                    {
-                        using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                            listServices.SelectedItems[0].Name, (Win32.SERVICE_RIGHTS)Win32.STANDARD_RIGHTS.DELETE))
-                            service.Delete();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error deleting service:\n\n" + ex.Message, "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
+            ServiceActions.Delete(this, listServices.SelectedItems[0].Name, true);
         }
 
         private void propertiesServiceMenuItem_Click(object sender, EventArgs e)

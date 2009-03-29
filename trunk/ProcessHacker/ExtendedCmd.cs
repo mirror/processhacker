@@ -157,6 +157,9 @@ namespace ProcessHacker
                                 case "resume":
                                     ProcessActions.Resume(window, pids, names, true);
                                     break;
+                                case "reduceworkingset":
+                                    ProcessActions.ReduceWorkingSet(window, pids, names, false);
+                                    break;
                                 default:
                                     throw new Exception("Unknown action '" + action + "'");
                             }
@@ -239,32 +242,27 @@ namespace ProcessHacker
                             {
                                 case "start":
                                     {
-                                        using (var shandle = new Win32.ServiceHandle(obj, Win32.SERVICE_RIGHTS.SERVICE_START))
-                                            shandle.Start();
+                                        ServiceActions.Start(window, obj, false);
                                     }
                                     break;
                                 case "continue":
                                     {
-                                        using (var shandle = new Win32.ServiceHandle(obj, Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE))
-                                            shandle.Control(Win32.SERVICE_CONTROL.Continue);
+                                        ServiceActions.Continue(window, obj, false);
                                     }
                                     break;
                                 case "pause":
                                     {
-                                        using (var shandle = new Win32.ServiceHandle(obj, Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE))
-                                            shandle.Control(Win32.SERVICE_CONTROL.Pause);
+                                        ServiceActions.Pause(window, obj, false);
                                     }
                                     break;
                                 case "stop":
                                     {
-                                        using (var shandle = new Win32.ServiceHandle(obj, Win32.SERVICE_RIGHTS.SERVICE_STOP))
-                                            shandle.Control(Win32.SERVICE_CONTROL.Stop);
+                                        ServiceActions.Stop(window, obj, false);
                                     }
                                     break;
                                 case "delete":
                                     {
-                                        using (var shandle = new Win32.ServiceHandle(obj, (Win32.SERVICE_RIGHTS)Win32.STANDARD_RIGHTS.DELETE))
-                                            shandle.Delete();
+                                        ServiceActions.Delete(window, obj, true);
                                     }
                                     break;
                                 case "config":

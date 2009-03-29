@@ -22,12 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 using System.ServiceProcess;
+using System.Windows.Forms;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -376,48 +373,12 @@ namespace ProcessHacker
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action start -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Start();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error starting service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Start(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                Program.StartProcessHackerAdmin("-e -type service -action stop -obj \"" +
-                    listServices.SelectedItems[0].Name + "\" -hwnd " + this.Handle.ToString(), null, this.Handle);
-            }
-            else
-            {
-                try
-                {
-                    using (Win32.ServiceHandle service = new Win32.ServiceHandle(
-                        listServices.SelectedItems[0].Name, Win32.SERVICE_RIGHTS.SERVICE_ALL_ACCESS))
-                        service.Control(Win32.SERVICE_CONTROL.Stop);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error stopping service:\n\n" + ex.Message, "Process Hacker",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            ServiceActions.Stop(this, listServices.SelectedItems[0].Name, false);
         }
 
         private void buttonDependents_Click(object sender, EventArgs e)

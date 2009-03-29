@@ -26,6 +26,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Security.Principal;
+using Microsoft.Samples;
 
 namespace ProcessHacker
 {
@@ -449,22 +450,87 @@ namespace ProcessHacker
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (e.ExceptionObject is OutOfMemoryException)
-                return;
-
-            ErrorDialog ed = new ErrorDialog(e.ExceptionObject as Exception);
-
-            ed.ShowDialog();
+            UnhandledException(e.ExceptionObject as Exception);
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            if (e.Exception is OutOfMemoryException)
-                return;
+            UnhandledException(e.Exception);
+        }
 
-            ErrorDialog ed = new ErrorDialog(e.Exception);
+        private static void UnhandledException(Exception ex)
+        {
+            if (false)
+            {
+                TaskDialog td = new TaskDialog();
 
-            ed.ShowDialog();
+                td.WindowTitle = "Process Hacker";
+                td.MainInstruction = "Process Hacker has encountered a problem";
+                td.Content = "An unhandled exception has occurred in Process Hacker.";
+
+                td.Buttons = new TaskDialogButton[]
+                {
+                    new TaskDialogButton((int)DialogResult.Yes, "Continue\nIgnore the error and continue. This may cause Process Hacker to crash."),
+                    new TaskDialogButton((int)DialogResult.No, "Close\nClose Process Hacker.")
+                };
+                td.UseCommandLinks = true;
+
+                try
+                {
+                    if (Program.HackerWindow != null)
+                    {
+                        td.CustomMainIcon = ProcessHacker.Properties.Resources.Process;
+                    }
+                }
+                catch
+                { }
+
+                td.ExpandedInformation = "Please report this problem to " +
+                    "<a href=\"report\">http://sourceforge.net/projects/processhacker</a>\r\n\r\n" + ex.ToString();
+                td.EnableHyperlinks = true;
+                td.ExpandFooterArea = true;
+                td.CollapsedControlText = "Show problem details";
+                td.ExpandedControlText = "Hide problem details";
+                td.Callback = (taskDialog, args, callbackData) =>
+                    {
+                        if (args.Notification == TaskDialogNotification.HyperlinkClicked)
+                        {
+                            if (args.Hyperlink == "report")
+                            {
+                                try
+                                {
+                                    System.Diagnostics.Process.Start("http://sourceforge.net/tracker2/?group_id=242527");
+                                }
+                                catch
+                                { }
+                            }
+
+                            return true;
+                        }
+
+                        return false;
+                    };
+
+                DialogResult result = (DialogResult)td.Show();
+
+                if (result == DialogResult.No)
+                {
+                    try
+                    {
+                        Properties.Settings.Default.Save();
+                    }
+                    catch
+                    { }
+
+                    System.Diagnostics.Process.GetCurrentProcess().Kill(); 
+                }
+            }
+            else
+            {
+                ErrorDialog ed = new ErrorDialog(ex);
+
+                ed.ShowDialog();
+            }
         }
 
         /// <summary>

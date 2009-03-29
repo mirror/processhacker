@@ -1,8 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Samples;
+﻿/*
+ * Process Hacker - 
+ *   process actions
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Windows.Forms;
+using Microsoft.Samples;
 
 namespace ProcessHacker.UI
 {
@@ -92,7 +112,7 @@ namespace ProcessHacker.UI
                 {
                     foreach (int pid in pids)
                     {
-                        using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pid, access))
+                        using (var phandle = new Win32.ProcessHandle(pid, access))
                         { }
                     }
                 }
@@ -116,6 +136,15 @@ namespace ProcessHacker.UI
                     };
                     td.CommonButtons = TaskDialogCommonButtons.Cancel;
                     td.UseCommandLinks = true;
+                    td.Callback = (taskDialog, args, userData) =>
+                        {
+                            if (args.Notification == TaskDialogNotification.Created)
+                            {
+                                taskDialog.SetButtonElevationRequiredState((int)DialogResult.Yes, true);
+                            }
+
+                            return false;
+                        };
 
                     DialogResult result = (DialogResult)td.Show(window);
 
@@ -229,6 +258,38 @@ namespace ProcessHacker.UI
                 catch (Exception ex)
                 {
                     DialogResult r = MessageBox.Show("Could not resume process \"" + names[i] +
+                        "\" with PID " + pids[i].ToString() + ":\n\n" +
+                        ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+
+                    if (r == DialogResult.Cancel)
+                        return;
+                }
+            }
+        }     
+
+        public static void ReduceWorkingSet(IWin32Window window, int[] pids, string[] names, bool prompt)
+        {
+            if (ElevateIfRequired(window, pids, names,
+                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA, 
+                "reduceworkingset"))
+                return;
+
+            if (prompt && !Prompt(window, pids, names, "reduce the working set of",
+                "Reducing the working set of a process reduces its physical memory consumption. " + 
+                "Are you sure you want to continue?", true))
+                return;
+
+            for (int i = 0; i < pids.Length; i++)
+            {
+                try
+                {
+                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pids[i],
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA))
+                        phandle.EmptyWorkingSet();
+                }
+                catch (Exception ex)
+                {
+                    DialogResult r = MessageBox.Show("Could not reduce the working set of process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 

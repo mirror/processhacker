@@ -315,6 +315,7 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
+    <Compile Include="Actions\ServiceActions.cs" />
     <Compile Include="CircularBuffer.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
@@ -588,6 +589,7 @@
     <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
     <Compile Include="Actions\ProcessActions.cs" />
+    <Compile Include="Singleton.cs" />
     <Compile Include="UsageIcon.cs" />
     <Compile Include="GenericViewMenu.cs" />
     <Compile Include="PE\PEException.cs" />
