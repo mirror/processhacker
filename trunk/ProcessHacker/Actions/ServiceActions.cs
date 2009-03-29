@@ -28,7 +28,7 @@ namespace ProcessHacker.UI
 {
     public static class ServiceActions
     {
-        private static bool Prompt(IWin32Window window, string service, string action, string content)
+        private static bool Prompt(IWin32Window window, string service, string action, string content, TaskDialogIcon icon)
         {
             DialogResult result = DialogResult.No;
 
@@ -38,6 +38,7 @@ namespace ProcessHacker.UI
 
                 td.WindowTitle = "Process Hacker";
                 td.MainInstruction = "Do you want to " + action + " " + service + "?";
+                td.MainIcon = icon;
                 td.Content = content;
 
                 td.Buttons = new TaskDialogButton[]
@@ -130,7 +131,7 @@ namespace ProcessHacker.UI
                 return;
 
             if (prompt && !Prompt(window, service, "start",
-                ""))
+                "", TaskDialogIcon.None))
                 return;
 
             try
@@ -153,7 +154,7 @@ namespace ProcessHacker.UI
                 return;
 
             if (prompt && !Prompt(window, service, "continue",
-                ""))
+                "", TaskDialogIcon.None))
                 return;
 
             try
@@ -176,7 +177,7 @@ namespace ProcessHacker.UI
                 return;
 
             if (prompt && !Prompt(window, service, "pause",
-                ""))
+                "", TaskDialogIcon.None))
                 return;
 
             try
@@ -199,7 +200,7 @@ namespace ProcessHacker.UI
                 return;
 
             if (prompt && !Prompt(window, service, "stop",
-                ""))
+                "", TaskDialogIcon.None))
                 return;
 
             try
@@ -223,7 +224,7 @@ namespace ProcessHacker.UI
 
             if (prompt && !Prompt(window, service, "delete",
                 "Deleting a service can prevent the system from starting or functioning properly. " +
-                "Are you sure you want to continue?"))
+                "Are you sure you want to continue?", TaskDialogIcon.Warning))
                 return;
 
             try
