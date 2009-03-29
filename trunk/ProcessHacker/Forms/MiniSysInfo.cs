@@ -47,6 +47,7 @@ namespace ProcessHacker
 
         MARGINS margins = new MARGINS() { Left = -1, Right = -1, Top = -1, Bottom = -1 };
         Timer hideTimer = new System.Windows.Forms.Timer() { Interval = 500 };
+        bool renewed = false;
 
         public MiniSysInfo()
         {
@@ -60,9 +61,14 @@ namespace ProcessHacker
 
                 if (r.X < 0 || r.X > this.Width || r.Y < 0 || r.Y > this.Height)
                 {
-                    hideTimer.Stop();
-                    this.Close();
+                    if (!renewed)
+                    {
+                        hideTimer.Stop();
+                        this.Close();
+                    }
                 }
+
+                renewed = false;
             };
             hideTimer.Start();
 
@@ -83,8 +89,7 @@ namespace ProcessHacker
 
         public void RenewTimer()
         {
-            hideTimer.Stop();
-            hideTimer.Start();
+            renewed = true;
         }
 
         protected override void WndProc(ref Message m)
