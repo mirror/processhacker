@@ -571,7 +571,6 @@ namespace ProcessHacker
 
                     resumeItem.Click += new EventHandler((sender_, e_) =>
                     {
-
                         ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Resume(this, new int[] { item.PID }, new string[] { item.Name }, true);
@@ -582,7 +581,9 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[(int)((MenuItem)sender_).Parent.Tag],
+                            ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
+
+                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[item.PID],
                                 new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                             {
                                 f.Show();
