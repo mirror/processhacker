@@ -1,7 +1,7 @@
 Process Hacker
 
 1.3.6.2
- * NEW:
+ * NEW/IMPROVED:
    * #2702907 - "CSR Processes: Enable termination of multiple processes"
    * #2702909 - "CSR Processes: Show process name when confirming termination"
    * #2702911 - "Show process name when terminating process in properties"
