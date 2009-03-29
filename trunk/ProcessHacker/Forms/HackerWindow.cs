@@ -555,7 +555,7 @@ namespace ProcessHacker
 
                     terminateItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Terminate(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
@@ -563,7 +563,7 @@ namespace ProcessHacker
 
                     suspendItem.Click += new EventHandler((sender_, e_) =>
                     {
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Suspend(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
@@ -572,7 +572,7 @@ namespace ProcessHacker
                     resumeItem.Click += new EventHandler((sender_, e_) =>
                     {
 
-                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Tag;
+                        ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
                         ProcessActions.Resume(this, new int[] { item.PID }, new string[] { item.Name }, true);
                     });
