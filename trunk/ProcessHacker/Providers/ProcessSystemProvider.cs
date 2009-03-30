@@ -586,8 +586,8 @@ namespace ProcessHacker
                         else if (procs.ContainsKey(item.ParentPid))
                         {
                             // check the parent's creation time to see if it's actually the parent
-                            long parentStartTime = procs[item.ParentPid].Process.CreateTime;
-                            long thisStartTime = processInfo.CreateTime;
+                            ulong parentStartTime = (ulong)procs[item.ParentPid].Process.CreateTime;
+                            ulong thisStartTime = (ulong)processInfo.CreateTime;
 
                             if (parentStartTime > thisStartTime)
                                 item.HasParent = false;
