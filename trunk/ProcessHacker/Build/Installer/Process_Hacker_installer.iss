@@ -37,7 +37,7 @@ VersionInfoProductVersion={#= app_version}
 AppVersion={#= app_version}
 MinVersion=0,5.01.2600
 AppReadmeFile={app}\README.txt
-InfoBeforeFile=..\..\..\LICENSE.txt
+LicenseFile=..\..\..\LICENSE.txt
 InfoAfterFile=..\..\..\CHANGELOG.txt
 SetupIconFile=Icons\ProcessHacker.ico
 UninstallDisplayIcon={app}\ProcessHacker.exe
