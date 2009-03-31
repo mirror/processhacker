@@ -127,6 +127,9 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\JobProperties.resx">
+      <DependentUpon>JobProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\NetworkList.resx">
       <DependentUpon>NetworkList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -322,6 +325,12 @@
     </Compile>
     <Compile Include="Components\ColorModifier.Designer.cs">
       <DependentUpon>ColorModifier.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\JobProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\JobProperties.Designer.cs">
+      <DependentUpon>JobProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\NetworkList.cs">
       <SubType>UserControl</SubType>

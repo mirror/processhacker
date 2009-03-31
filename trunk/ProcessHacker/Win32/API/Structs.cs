@@ -266,8 +266,8 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct JOBOBJECT_EXTENDED_LIMIT_INFORMATION
         {
-            JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
-            IO_COUNTERS IoInfo;
+            public JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
+            public IO_COUNTERS IoInfo;
             public int ProcessMemoryLimit;
             public int JobMemoryLimit;
             public int PeakProcessMemoryUsed;

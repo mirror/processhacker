@@ -45,6 +45,7 @@ namespace ProcessHacker
         private HandleProvider _handleP;
 
         private TokenProperties _tokenProps;
+        private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
 
         private string _realCurrentDirectory;
@@ -239,6 +240,12 @@ namespace ProcessHacker
                 (_tokenProps.Object as Win32.ProcessHandle).Dispose();
             }
 
+            if (_jobProps != null)
+            {
+                _jobProps.SaveSettings();
+                _jobProps.JobObject.Dispose();
+            }
+
             if (_serviceProps != null)
             {
                 _serviceProps.SaveSettings();
@@ -422,6 +429,25 @@ namespace ProcessHacker
                 _tokenProps = new TokenProperties(new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights));
                 _tokenProps.Dock = DockStyle.Fill;
                 tabToken.Controls.Add(_tokenProps);
+            }
+            catch
+            { }
+
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                {
+                    var jhandle = phandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY);
+
+                    if (jhandle.GetBasicLimitInformation().LimitFlags != 
+                        Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
+                    {
+                        _jobProps = new JobProperties(jhandle);
+
+                        _jobProps.Dock = DockStyle.Fill;
+                        tabJob.Controls.Add(_jobProps);
+                    }
+                }
             }
             catch
             { }

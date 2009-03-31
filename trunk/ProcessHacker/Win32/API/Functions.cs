@@ -99,6 +99,10 @@ namespace ProcessHacker
         public static extern bool QueryInformationJobObject(int JobHandle, JOB_OBJECT_INFORMATION_CLASS JobInformationClass,
             IntPtr JobInformation, int JobInformationLength, out int ReturnLength);
 
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool QueryInformationJobObject(int JobHandle, JOB_OBJECT_INFORMATION_CLASS JobInformationClass,
+            out JOB_OBJECT_BASIC_UI_RESTRICTIONS JobInformation, int JobInformationLength, out int ReturnLength);
+
         #endregion
 
         #region Kernel

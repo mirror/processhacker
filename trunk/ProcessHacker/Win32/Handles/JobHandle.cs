@@ -114,11 +114,9 @@ namespace ProcessHacker
                 List<int> processIds = new List<int>();
                 int retLength;
 
-                using (MemoryAlloc data = new MemoryAlloc(8))
+                // FIXME: Fixed buffer
+                using (MemoryAlloc data = new MemoryAlloc(0x1000))
                 {
-                    QueryInformationJobObject(this, JOB_OBJECT_INFORMATION_CLASS.JobObjectBasicProcessIdList, data, data.Size, out retLength);
-                    data.Resize(data.ReadStruct<JOBOBJECT_BASIC_PROCESS_ID_LIST>().NumberOfAssignedProcesses * 4 + 8);
-
                     if (!QueryInformationJobObject(this, JOB_OBJECT_INFORMATION_CLASS.JobObjectBasicProcessIdList, 
                         data, data.Size, out retLength))
                         ThrowLastWin32Error();
@@ -136,7 +134,14 @@ namespace ProcessHacker
 
             public JOB_OBJECT_BASIC_UI_RESTRICTIONS GetBasicUiRestrictions()
             {
-                return this.QueryStruct<JOB_OBJECT_BASIC_UI_RESTRICTIONS>(JOB_OBJECT_INFORMATION_CLASS.JobObjectBasicUIRestrictions);
+                JOB_OBJECT_BASIC_UI_RESTRICTIONS uiRestrictions;
+                int retLength;
+
+                if (!QueryInformationJobObject(this, JOB_OBJECT_INFORMATION_CLASS.JobObjectBasicUIRestrictions,
+                    out uiRestrictions, 4, out retLength))
+                    ThrowLastWin32Error();
+
+                return uiRestrictions;
             }
 
             public JOBOBJECT_EXTENDED_LIMIT_INFORMATION GetExtendedLimitInformatin()
