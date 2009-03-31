@@ -82,16 +82,16 @@ namespace ProcessHacker
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_AFFINITY) != 0)
                     this.AddLimit("Affinity", extendedLimits.BasicLimitInformation.Affinity.ToString("x"));
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_BREAKAWAY_OK) != 0)
-                    this.AddLimit("Breakaway OK", "");
+                    this.AddLimit("Breakaway OK", "Enabled");
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION) != 0)
-                    this.AddLimit("Die on Unhandled Exception", "");
+                    this.AddLimit("Die on Unhandled Exception", "Enabled");
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_JOB_MEMORY) != 0)
                     this.AddLimit("Job Memory", Misc.GetNiceSizeName(extendedLimits.JobMemoryLimit));
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_JOB_TIME) != 0)
                     this.AddLimit("Job Time",
                         Misc.GetNiceTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerJobUserTimeLimit)));
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE) != 0)
-                    this.AddLimit("Kill on Job Close", "");
+                    this.AddLimit("Kill on Job Close", "Enabled");
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_PRIORITY_CLASS) != 0)
                     this.AddLimit("Priority Class",
                         ((System.Diagnostics.ProcessPriorityClass)extendedLimits.BasicLimitInformation.PriorityClass).ToString());
@@ -103,7 +103,7 @@ namespace ProcessHacker
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SCHEDULING_CLASS) != 0)
                     this.AddLimit("Scheduling Class", extendedLimits.BasicLimitInformation.SchedulingClass.ToString());
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK) != 0)
-                    this.AddLimit("Silent Breakaway OK", "");
+                    this.AddLimit("Silent Breakaway OK", "Enabled");
                 if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_WORKINGSET) != 0)
                 {
                     this.AddLimit("Minimum Working Set", Misc.GetNiceSizeName(extendedLimits.BasicLimitInformation.MinimumWorkingSetSize));
