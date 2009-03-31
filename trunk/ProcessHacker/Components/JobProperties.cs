@@ -42,6 +42,18 @@ namespace ProcessHacker
 
             try
             {
+                string name = _jobObject.GetHandleName();
+
+                if (string.IsNullOrEmpty(name))
+                    textJobName.Text = "Unnamed";
+                else
+                    textJobName.Text = name;
+            }
+            catch
+            { }
+
+            try
+            {
                 foreach (int pid in _jobObject.GetProcessIdList())
                 {
                     ListViewItem item = new ListViewItem();

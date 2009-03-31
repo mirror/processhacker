@@ -179,6 +179,7 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabServices);
                 tabControl.TabPages.Remove(tabThreads);
                 tabControl.TabPages.Remove(tabToken);
+                tabControl.TabPages.Remove(tabJob);
                 tabControl.TabPages.Remove(tabEnvironment);
             }
 
@@ -439,18 +440,23 @@ namespace ProcessHacker
                 {
                     var jhandle = phandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY);
 
-                    if (jhandle.GetBasicLimitInformation().LimitFlags != 
+                    if (jhandle.GetBasicLimitInformation().LimitFlags !=
                         Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
                     {
                         _jobProps = new JobProperties(jhandle);
-
                         _jobProps.Dock = DockStyle.Fill;
                         tabJob.Controls.Add(_jobProps);
+                    }
+                    else
+                    {
+                        tabControl.TabPages.Remove(tabJob);
                     }
                 }
             }
             catch
-            { }
+            {
+                tabControl.TabPages.Remove(tabJob);
+            }
 
             _serviceProps = new ServiceProperties(
                 Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
