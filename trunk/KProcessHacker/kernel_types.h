@@ -142,7 +142,7 @@ typedef struct _KPROCESS2
         UCHAR ExecuteOptions;
     };
     ULONG StackCount;
-    LIST_ENTRY ProcessListEntry;
+    /* LIST_ENTRY ProcessListEntry; */
     ULONGLONG CycleTime;
 } KPROCESS2, *PKPROCESS2;
 
@@ -440,8 +440,8 @@ typedef struct _EPROCESS2
     PVOID AweInfo;
     SE_AUDIT_PROCESS_CREATION_INFO SeAuditProcessCreationInfo;
     MMSUPPORT Vm;
-    /* to make ProtectedProcess the right offset... */
-    /* LIST_ENTRY MmProcessLinks;
+    LIST_ENTRY MmProcessLinks;
+    /* to make ProtectedProcess the right offset...
     ULONG ModifiedPageCount; */
     ULONG Flags2;
     ULONG JobNotReallyActive: 1;

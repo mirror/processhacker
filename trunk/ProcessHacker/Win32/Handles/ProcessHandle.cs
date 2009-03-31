@@ -425,6 +425,15 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Opens the job associated with the process.
+            /// </summary>
+            /// <returns>A job handle.</returns>
+            public JobHandle GetJob(JOB_OBJECT_RIGHTS access)
+            {
+                return new JobHandle(this, access);
+            }
+
+            /// <summary>
             /// Gets the main module of the process. This requires the 
             /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
             /// </summary>

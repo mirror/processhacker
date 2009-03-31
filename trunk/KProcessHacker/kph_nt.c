@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   custom versions of certain APIs
+ *   custom APIs
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -28,6 +28,7 @@
 
 extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
+extern POBJECT_TYPE *PsJobType;
 extern POBJECT_TYPE *SeTokenObjectType;
 
 NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
@@ -279,10 +280,13 @@ NTSTATUS KphOpenProcessTokenEx(
     
     accessState.RemainingDesiredAccess = 0;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
+    {
+        SeDeleteAccessState(&accessState);
         return status;
+    }
     
     tokenObject = PsReferencePrimaryToken(processObject);
     ObDereferenceObject(processObject);
@@ -301,6 +305,75 @@ NTSTATUS KphOpenProcessTokenEx(
     
     if (NT_SUCCESS(status))
         *TokenHandle = tokenHandle;
+    
+    return status;
+}
+
+NTSTATUS KphOpenProcessJob(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    PHANDLE JobHandle,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    PVOID jobObject;
+    HANDLE jobHandle;
+    ACCESS_STATE accessState;
+    char auxData[0x34];
+    
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)((PCHAR)*PsJobType + 52)
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= JOB_OBJECT_ALL_ACCESS;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+    {
+        SeDeleteAccessState(&accessState);
+        return status;
+    }
+    
+    jobObject = ((PEPROCESS2)processObject)->Job;
+    ObDereferenceObject(processObject);
+    
+    if (jobObject == NULL)
+    {
+        SeDeleteAccessState(&accessState);
+        return STATUS_NO_SUCH_FILE;
+    }
+    
+    ObReferenceObject(jobObject);
+    status = ObOpenObjectByPointer(
+        jobObject,
+        0,
+        &accessState,
+        0,
+        *PsJobType,
+        AccessMode,
+        &jobHandle
+        );
+    SeDeleteAccessState(&accessState);
+    ObDereferenceObject(jobObject);
+    
+    if (NT_SUCCESS(status))
+        *JobHandle = jobHandle;
     
     return status;
 }

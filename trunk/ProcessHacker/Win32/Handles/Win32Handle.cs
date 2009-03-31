@@ -32,7 +32,6 @@ namespace ProcessHacker
         /// </summary>
         public class Win32Handle : IDisposable
         {
-            private object _disposeLock = new object();
             private bool _owned = true;
             private bool _disposed = false;
             private int _handle;
@@ -115,6 +114,38 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the handle's name.
+            /// </summary>
+            /// <returns>A string.</returns>
+            public string GetHandleName()
+            {
+                int retLength;
+
+                ZwQueryObject(this, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                      IntPtr.Zero, 0, out retLength);
+
+                if (retLength > 0)
+                {
+                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                    {
+                        if (ZwQueryObject(this, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                            oniMem.Memory, oniMem.Size, out retLength) != 0)
+                            ThrowLastWin32Error();
+
+                        OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
+
+                        return ReadUnicodeString(oni.Name);
+                    }
+                }
+                else
+                {
+                    ThrowLastWin32Error();
+                }
+
+                return null;
+            }
+
+            /// <summary>
             /// Sets certain information about the handle.
             /// </summary>
             /// <param name="mask">Specifies which flags to set.</param>
@@ -145,7 +176,7 @@ namespace ProcessHacker
             /// </summary>
             public void Dispose()
             {
-                lock (_disposeLock)
+                lock (this)
                 {
                     if (!_disposed && _owned)
                     {

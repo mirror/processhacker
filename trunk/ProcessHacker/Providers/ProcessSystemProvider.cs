@@ -52,6 +52,7 @@ namespace ProcessHacker
         public FileVersionInfo VersionInfo;
         public string Name;
         public string Username;
+        public string JobName;
         public Win32.SYSTEM_PROCESS_INFORMATION Process;
         public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
 
@@ -626,8 +627,31 @@ namespace ProcessHacker
                                 catch
                                 { }
 
-                                try { item.IsInJob = queryLimitedHandle.IsInJob(); }
-                                catch { }
+                                if (Program.KPH != null)
+                                {
+                                    try
+                                    {
+                                        using (var jhandle = queryLimitedHandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY))
+                                        {
+                                            var limits = jhandle.GetBasicLimitInformation();
+
+                                            if (limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
+                                            {
+                                                item.IsInJob = true;
+                                                item.JobName = jhandle.GetHandleName();
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        item.IsInJob = false;
+                                    }
+                                }
+                                else
+                                {
+                                    try { item.IsInJob = queryLimitedHandle.IsInJob(); }
+                                    catch { }
+                                }
                             }
                         }
                         catch

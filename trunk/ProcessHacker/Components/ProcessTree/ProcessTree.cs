@@ -243,6 +243,8 @@ namespace ProcessHacker
             else if (Properties.Settings.Default.UseColorElevatedProcesses && 
                 p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                 return Properties.Settings.Default.ColorElevatedProcesses;
+            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInJob)
+                return Properties.Settings.Default.ColorJobProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && 
                 Properties.Settings.Default.VerifySignatures &&
                 Program.ImposterNames.Contains(p.Name.ToLower()) &&
@@ -270,8 +272,6 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorSystemProcesses;
             else if (Properties.Settings.Default.UseColorOwnProcesses && p.Username == Program.CurrentUsername)
                 return Properties.Settings.Default.ColorOwnProcesses;
-            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInJob)
-                return Properties.Settings.Default.ColorJobProcesses;
             else
                 return SystemColors.Window;
         }

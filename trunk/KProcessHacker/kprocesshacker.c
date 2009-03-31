@@ -250,8 +250,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "Read";
     else if (ControlCode == KPH_WRITE)
         return "Write";
-    else if (ControlCode == KPH_GETOBJECTNAME)
-        return "Get Object Name";
+    else if (ControlCode == KPH_GETFILEOBJECTNAME)
+        return "Get File Object Name";
     else if (ControlCode == KPH_OPENPROCESS)
         return "KphOpenProcess";
     else if (ControlCode == KPH_OPENTHREAD)
@@ -274,6 +274,12 @@ char *GetIoControlName(ULONG ControlCode)
         return "Set Process Token";
     else if (ControlCode == KPH_GETTHREADWIN32STARTADDRESS)
         return "Get Thread Win32 Start Address";
+    else if (ControlCode == KPH_GETOBJECTNAME)
+        return "Get Object Name";
+    else if (ControlCode == KPH_GETHANDLEOBJECTNAME)
+        return "Get Handle Object Name";
+    else if (ControlCode == KPH_OPENPROCESSJOB)
+        return "KphOpenProcessJob";
     else
         return "Unknown";
 }
@@ -370,7 +376,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
-        case KPH_GETOBJECTNAME:
+        case KPH_GETFILEOBJECTNAME:
         {
             HANDLE inHandle;
             PVOID inObject;
@@ -706,7 +712,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             HANDLE threadHandle;
             PETHREAD2 threadObject;
             
-            if (inLength < 4)
+            if (inLength < 4 || outLength < 4)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -720,6 +726,67 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
             ObDereferenceObject(threadObject);
+            retLength = 4;
+        }
+        break;
+        
+        case KPH_GETOBJECTNAME:
+        {
+            PVOID object;
+            
+            if (inLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            object = *(PVOID *)dataBuffer;
+            ObReferenceObject(object);
+            status = ObQueryNameString(object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
+            ObDereferenceObject(object);
+        }
+        break;
+        
+        case KPH_GETHANDLEOBJECTNAME:
+        {
+            HANDLE handle;
+            PVOID object;
+            
+            if (inLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            handle = *(HANDLE *)dataBuffer;
+            status = ObReferenceObjectByHandle(handle, 0, 0, KernelMode, &object, NULL);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = ObQueryNameString(object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
+            ObDereferenceObject(object);
+        }
+        break;
+        
+        case KPH_OPENPROCESSJOB:
+        {
+            HANDLE processHandle;
+            int desiredAccess;
+            
+            if (inLength < 8 || outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            desiredAccess = *(int *)(dataBuffer + 4);
+            status = KphOpenProcessJob(processHandle, desiredAccess, (PHANDLE)dataBuffer, UserMode);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
             retLength = 4;
         }
         break;

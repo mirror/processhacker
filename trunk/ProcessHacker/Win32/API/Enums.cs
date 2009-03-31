@@ -225,6 +225,62 @@ namespace ProcessHacker
             LF32_MOVEABLE = 0x00000004
         }
 
+        [Flags]
+        public enum JOB_OBJECT_INFORMATION_CLASS : int
+        {
+            JobObjectBasicAccountingInformation = 1,
+            JobObjectBasicLimitInformation = 2,
+            JobObjectBasicProcessIdList = 3,
+            JobObjectBasicUIRestrictions = 4,
+            JobObjectSecurityLimitInformation = 5,
+            JobObjectBasicAndIoAccountingInformation = 8,
+            JobObjectExtendedLimitInformation = 9,
+            JobObjectGroupInformation = 11
+        }
+
+        [Flags]
+        public enum JOB_OBJECT_LIMIT_FLAGS : uint
+        {
+            JOB_OBJECT_LIMIT_WORKINGSET = 0x1,
+            JOB_OBJECT_LIMIT_PROCESS_TIME = 0x2,
+            JOB_OBJECT_LIMIT_JOB_TIME = 0x4,
+            JOB_OBJECT_LIMIT_ACTIVE_PROCESS = 0x8,
+            JOB_OBJECT_LIMIT_AFFINITY = 0x10,
+            JOB_OBJECT_LIMIT_PRIORITY_CLASS = 0x20, 
+            JOB_OBJECT_LIMIT_PRESERVE_JOB_TIME = 0x40,
+            JOB_OBJECT_LIMIT_SCHEDULING_CLASS = 0x80,
+            JOB_OBJECT_LIMIT_PROCESS_MEMORY = 0x100, 
+            JOB_OBJECT_LIMIT_JOB_MEMORY = 0x200,
+            JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION = 0x400,
+            JOB_OBJECT_LIMIT_BREAKAWAY_OK = 0x800,
+            JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK = 0x1000,
+            JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000,
+        }
+
+        [Flags]
+        public enum JOB_OBJECT_RIGHTS : uint
+        {
+            JOB_OBJECT_ASSIGN_PROCESS = 0x0001,
+            JOB_OBJECT_SET_ATTRIBUTES = 0x0002,
+            JOB_OBJECT_QUERY = 0x0004,
+            JOB_OBJECT_TERMINATE = 0x0008,
+            JOB_OBJECT_SET_SECURITY_ATTRIBUTES = 0x0010,
+            JOB_OBJECT_ALL_ACCESS = STANDARD_RIGHTS.STANDARD_RIGHTS_REQUIRED | STANDARD_RIGHTS.SYNCHRONIZE | 0x1f
+        }
+
+        [Flags]
+        public enum JOB_OBJECT_BASIC_UI_RESTRICTIONS : uint
+        {
+            JOB_OBJECT_UILIMIT_HANDLES = 0x1,
+            JOB_OBJECT_UILIMIT_READCLIPBOARD = 0x2,
+            JOB_OBJECT_UILIMIT_WRITECLIPBOARD = 0x4, 
+            JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS = 0x8,
+            JOB_OBJECT_UILIMIT_DISPLAYSETTINGS = 0x10,
+            JOB_OBJECT_UILIMIT_GLOBALATOMS = 0x20,
+            JOB_OBJECT_UILIMIT_DESKTOP = 0x40,
+            JOB_OBJECT_UILIMIT_EXITWINDOWS = 0x80
+        }
+
         public enum KWAIT_REASON : int
         {
             Executive = 0,

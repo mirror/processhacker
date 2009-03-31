@@ -32,7 +32,6 @@ namespace ProcessHacker
     /// </summary>
     public class MemoryAlloc : IDisposable
     {
-        private object _disposeLock = new object();
         private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
         private bool _disposed = false;
         private IntPtr _memory;
@@ -225,7 +224,7 @@ namespace ProcessHacker
         /// </summary>
         public void Dispose()
         {
-            lock (_disposeLock)
+            lock (this)
             {
                 if (!_disposed)
                 {

@@ -216,6 +216,65 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_BASIC_ACCOUNTING_INFORMATION
+        {
+            public long TotalUserTime;
+            public long TotalKernelTime;
+            public long ThisPeriodTotalUserTime;
+            public long ThisPeriodTotalKernelTime;
+            public int TotalPageFaultCount;
+            public int TotalProcesses;
+            public int ActiveProcesses;
+            public int TotalTerminatedProcesses;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_BASIC_AND_IO_ACCOUNTING_INFORMATION
+        {
+            public JOBOBJECT_BASIC_ACCOUNTING_INFORMATION BasicInfo;
+            public IO_COUNTERS IoInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_BASIC_LIMIT_INFORMATION
+        {
+            public long PerProcessUserTimeLimit;
+            public long PerJobUserTimeLimit;
+            public JOB_OBJECT_LIMIT_FLAGS LimitFlags;
+            public int MinimumWorkingSetSize;
+            public int MaximumWorkingSetSize;
+            public int ActiveProcessLimit;
+            public int Affinity;
+            public int PriorityClass;
+            public int SchedulingClass;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_BASIC_PROCESS_ID_LIST
+        {
+            public int NumberOfAssignedProcesses;
+            public int NumberOfProcessIdsInList;
+            /* an array follows */
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_END_OF_JOB_TIME_INFORMATION
+        {
+            public int EndOfJobTimeAction; // 0: Terminate, 1: Post
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct JOBOBJECT_EXTENDED_LIMIT_INFORMATION
+        {
+            JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
+            IO_COUNTERS IoInfo;
+            public int ProcessMemoryLimit;
+            public int JobMemoryLimit;
+            public int PeakProcessMemoryUsed;
+            public int PeakJobMemoryUsed;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct KDHELP64
         {
             public long Thread;

@@ -87,6 +87,13 @@ NTSTATUS KphOpenProcessTokenEx(
     KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphOpenProcessJob(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    PHANDLE JobHandle,
+    KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS KphSuspendProcess(
     HANDLE ProcessHandle
     );

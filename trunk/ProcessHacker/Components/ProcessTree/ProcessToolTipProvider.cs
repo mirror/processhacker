@@ -154,6 +154,12 @@ namespace ProcessHacker
                             otherNotes += "\n    Process is using the name of a known process but its signature could not be verified.";
                     }
 
+                    if (pNode.ProcessItem.IsInJob)
+                        otherNotes += "\n    Process is in a job with limits.";
+
+                    if (pNode.ProcessItem.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+                        otherNotes += "\n    Process is elevated.";
+
                     if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;
                 }

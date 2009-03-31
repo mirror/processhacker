@@ -606,7 +606,7 @@ namespace ProcessHacker
                 if (Program.KPH != null && info.TypeName == "File")
                 {
                     // use KProcessHacker for files
-                    info.OrigName = Program.KPH.GetObjectName(handle);
+                    info.OrigName = Program.KPH.GetFileObjectName(handle);
                 }
                 else if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
                 {

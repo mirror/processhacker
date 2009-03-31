@@ -16,6 +16,7 @@ Process Hacker
    * Less memory usage
    * Confirmation dialogs are now consistent and use new Vista interfaces where possible
    * KProcessHacker now retrieves thread start addresses
+   * Displays job information for processes
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

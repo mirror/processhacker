@@ -90,6 +90,17 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Jobs
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int OpenJobObject(JOB_OBJECT_RIGHTS DesiredAccess, bool Inherit, string Name);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool QueryInformationJobObject(int JobHandle, JOB_OBJECT_INFORMATION_CLASS JobInformationClass,
+            IntPtr JobInformation, int JobInformationLength, out int ReturnLength);
+
+        #endregion
+
         #region Kernel
 
         [DllImport("psapi.dll", SetLastError = true)]

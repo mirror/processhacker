@@ -43,7 +43,7 @@ namespace ProcessHacker
         {
             Read = 0,
             Write,
-            GetObjectName,
+            GetFileObjectName,
             KphOpenProcess,
             KphOpenThread,
             KphOpenProcessToken,
@@ -54,7 +54,10 @@ namespace ProcessHacker
             KphResumeProcess,
             ReadProcessMemory,
             SetProcessToken,
-            GetThreadWin32StartAddress
+            GetThreadWin32StartAddress,
+            GetObjectName,
+            GetHandleObjectName,
+            KphOpenProcessJob
         }
 
         private string _deviceName;
@@ -133,7 +136,7 @@ namespace ProcessHacker
             _fileHandle.Dispose();
         }
 
-        public string GetObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)
+        public string GetFileObjectName(Win32.SYSTEM_HANDLE_INFORMATION handle)
         {
             byte[] buffer = new byte[12];
             byte[] outBuffer = new byte[2048];
@@ -144,7 +147,41 @@ namespace ProcessHacker
 
             try
             {
-                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName), buffer, outBuffer);
+                int len = _fileHandle.IoControl(CtlCode(Control.GetFileObjectName), buffer, outBuffer);
+
+                return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8).TrimEnd('\0');
+            }
+            catch
+            { }
+
+            return null;
+        }
+
+        public string GetHandleObjectName(Win32.Win32Handle handle)
+        {
+            byte[] outBuffer = new byte[2048];
+
+            try
+            {
+                int len = _fileHandle.IoControl(CtlCode(Control.GetHandleObjectName),
+                    Misc.IntToBytes(handle, Misc.Endianness.Little), outBuffer);
+
+                return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8).TrimEnd('\0');
+            }
+            catch
+            { }
+
+            return null;
+        }
+
+        public string GetObjectName(int obj)
+        {
+            byte[] outBuffer = new byte[2048];
+
+            try
+            {
+                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName),
+                    Misc.IntToBytes(obj, Misc.Endianness.Little), outBuffer);
 
                 return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8).TrimEnd('\0');
             }
@@ -183,6 +220,19 @@ namespace ProcessHacker
             Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
 
             _fileHandle.IoControl(CtlCode(Control.KphOpenProcess), inData, outData);
+
+            return Misc.BytesToInt(outData, Misc.Endianness.Little);
+        }
+
+        public int KphOpenProcessJob(Win32.ProcessHandle processHandle, Win32.JOB_OBJECT_RIGHTS desiredAccess)
+        {
+            byte[] inData = new byte[8];
+            byte[] outData = new byte[4];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inData, 0, 4);
+            Array.Copy(Misc.UIntToBytes((uint)desiredAccess, Misc.Endianness.Little), 0, inData, 4, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenProcessJob), inData, outData);
 
             return Misc.BytesToInt(outData, Misc.Endianness.Little);
         }
