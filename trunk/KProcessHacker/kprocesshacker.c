@@ -35,12 +35,12 @@
 
 #define ALLOW_UNLOAD
 
-#pragma alloc_text(PAGE, KPHCreate)
-#pragma alloc_text(PAGE, KPHClose)
-#pragma alloc_text(PAGE, KPHIoControl)
-#pragma alloc_text(PAGE, KPHRead)
-#pragma alloc_text(PAGE, KPHWrite)
-#pragma alloc_text(PAGE, KPHUnsupported)
+#pragma alloc_text(PAGE, KphCreate)
+#pragma alloc_text(PAGE, KphClose)
+#pragma alloc_text(PAGE, KphIoControl)
+#pragma alloc_text(PAGE, KphRead)
+#pragma alloc_text(PAGE, KphWrite)
+#pragma alloc_text(PAGE, KphUnsupported)
 #pragma alloc_text(PAGE, IsStringNullTerminated)
 
 RTL_OSVERSIONINFOW WindowsVersion;
@@ -97,10 +97,10 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     for (i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
         DriverObject->MajorFunction[i] = NULL;
     
-    DriverObject->MajorFunction[IRP_MJ_CLOSE] = KPHClose;
-    DriverObject->MajorFunction[IRP_MJ_CREATE] = KPHCreate;
-    DriverObject->MajorFunction[IRP_MJ_READ] = KPHRead;
-    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KPHIoControl;
+    DriverObject->MajorFunction[IRP_MJ_CLOSE] = KphClose;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] = KphCreate;
+    DriverObject->MajorFunction[IRP_MJ_READ] = KphRead;
+    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KphIoControl;
     
 #ifdef ALLOW_UNLOAD
     DriverObject->DriverUnload = DriverUnload;
@@ -170,7 +170,7 @@ NTSTATUS SetProcessToken(HANDLE sourcePid, HANDLE targetPid)
     return status;
 }
 
-NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
@@ -180,7 +180,7 @@ NTSTATUS KPHCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return status;
 }
 
-NTSTATUS KPHClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
@@ -272,11 +272,13 @@ char *GetIoControlName(ULONG ControlCode)
         return "Read Process Memory";
     else if (ControlCode == KPH_SETPROCESSTOKEN)
         return "Set Process Token";
+    else if (ControlCode == KPH_GETTHREADWIN32STARTADDRESS)
+        return "Get Thread Win32 Start Address";
     else
         return "Unknown";
 }
 
-NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
@@ -659,7 +661,7 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processHandle = *(HANDLE *)dataBuffer;
             baseAddress = *(PVOID *)(dataBuffer + 4);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, 0);
+            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -699,6 +701,29 @@ NTSTATUS KPHIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        case KPH_GETTHREADWIN32STARTADDRESS:
+        {
+            HANDLE threadHandle;
+            PETHREAD2 threadObject;
+            
+            if (inLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadHandle = *(HANDLE *)dataBuffer;
+            status = ObReferenceObjectByHandle(threadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
+            ObDereferenceObject(threadObject);
+            retLength = 4;
+        }
+        break;
+        
         default:
         {
             dprintf("KProcessHacker: unrecognized IOCTL code 0x%08x\n", controlCode);
@@ -716,7 +741,7 @@ IoControlEnd:
     return status;
 }
 
-NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
@@ -752,7 +777,7 @@ NTSTATUS KPHRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return status;
 }
 
-NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
@@ -775,7 +800,7 @@ NTSTATUS KPHWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return status;
 }
 
-NTSTATUS KPHUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     DbgPrint("KProcessHacker: Unsupported function called\n");
     

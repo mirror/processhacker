@@ -234,7 +234,7 @@ namespace ProcessHacker
             if (address == 0)
             {
                 level = FoundLevel.Invalid;
-                return "(invalid)";
+                return "0x0";
             }
 
             // go through each loaded library

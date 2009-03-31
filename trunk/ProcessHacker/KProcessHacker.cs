@@ -53,7 +53,8 @@ namespace ProcessHacker
             KphSuspendProcess,
             KphResumeProcess,
             ReadProcessMemory,
-            SetProcessToken
+            SetProcessToken,
+            GetThreadWin32StartAddress
         }
 
         private string _deviceName;
@@ -161,6 +162,16 @@ namespace ProcessHacker
                 Misc.IntToBytes(pid, Misc.Endianness.Little), result);
 
             return result[0] != 0;
+        }
+
+        public uint GetThreadWin32StartAddress(Win32.ThreadHandle threadHandle)
+        {
+            byte[] buffer = new byte[4];
+
+            _fileHandle.IoControl(CtlCode(Control.GetThreadWin32StartAddress),
+                Misc.IntToBytes(threadHandle, Misc.Endianness.Little), buffer);
+
+            return Misc.BytesToUInt(buffer, Misc.Endianness.Little);
         }
 
         public int KphOpenProcess(int pid, Win32.PROCESS_RIGHTS desiredAccess)

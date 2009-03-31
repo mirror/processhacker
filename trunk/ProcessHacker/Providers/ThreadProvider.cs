@@ -172,21 +172,39 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    if (Program.KPH != null && item.ThreadQueryLimitedHandle != null)
+                    {
+                        try
+                        {
+                            item.StartAddressI = Program.KPH.GetThreadWin32StartAddress(item.ThreadQueryLimitedHandle);
+                        }
+                        catch
+                        { }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            using (Win32.ThreadHandle thandle =
+                                new Win32.ThreadHandle(tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                            {
+                                int retLen;
+
+                                Win32.ZwQueryInformationThread(thandle,
+                                    Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
+                                    out item.StartAddressI, 4, out retLen);
+                            }
+                        }
+                        catch
+                        { }
+                    }
+
                     try
                     {
-                        using (Win32.ThreadHandle thandle =
-                            new Win32.ThreadHandle(tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
-                        {
-                            int retLen;
-
-                            Win32.ZwQueryInformationThread(thandle.Handle,
-                                Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
-                                out item.StartAddressI, 4, out retLen);
-                        }
-
                         item.StartAddress = _symbols.GetNameFromAddress(item.StartAddressI);
                     }
-                    catch { }
+                    catch
+                    { }
 
                     newdictionary.Add(tid, item);
                     this.CallDictionaryAdded(item);
