@@ -977,16 +977,30 @@ namespace ProcessHacker
         /// <returns>A dictionary, indexed by process ID.</returns>
         public static Dictionary<int, SystemProcess> EnumProcesses()
         {
-            int retLength = 0;
+            int retLength;
             Dictionary<int, SystemProcess> returnProcesses;
 
-            ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, IntPtr.Zero,
-                0, out retLength);
-
-            using (MemoryAlloc data = new MemoryAlloc(retLength))
+            using (MemoryAlloc data = new MemoryAlloc(0x4000))
             {
-                ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
-                    data.Size, out retLength);
+                int attempts = 0;
+
+                while (true)
+                {
+                    attempts++;
+
+                    if (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
+                        data.Size, out retLength) != 0)
+                    {
+                        if (attempts > 3)
+                            ThrowLastWin32Error();
+
+                        data.Resize(retLength);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
                 returnProcesses = new Dictionary<int, SystemProcess>();
 

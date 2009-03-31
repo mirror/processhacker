@@ -19,6 +19,7 @@ Process Hacker
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"
    * #2713087 - "Processes: Copy should copy only the columns currently used"
+   * #2716815 - "PH crashes during EnumProcesses"
    * Network connections would be readded if their state changed
    * Integer overflows in the process provider and system statistics
    * Memory leaks with various windows
