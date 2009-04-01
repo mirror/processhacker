@@ -1068,6 +1068,13 @@ namespace ProcessHacker
             UDP_TABLE_OWNER_MODULE
         }
 
+        public enum WaitResult : int
+        {
+            Object0 = 0x0,
+            Abandoned = 0x80,
+            Timeout = 0x102
+        }
+
         public enum WindowMessage : uint
         {
             Null = 0x00,

@@ -440,7 +440,7 @@ namespace ProcessHacker
             int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int WaitForSingleObject(int Object, int Timeout);
+        public static extern WaitResult WaitForSingleObject(int Object, uint Timeout);
 
         #endregion
 

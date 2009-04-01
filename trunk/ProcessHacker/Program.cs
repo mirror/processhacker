@@ -339,7 +339,7 @@ namespace ProcessHacker
                 args, successAction, Win32.ShowWindowType.Show, hWnd);
         }
 
-        public static int StartProcessHackerAdminWait(string args, IntPtr hWnd, int timeout)
+        public static Win32.WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
         {
             Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
 
@@ -353,7 +353,7 @@ namespace ProcessHacker
 
             if (Win32.ShellExecuteEx(ref info))
             {
-                int result = Win32.WaitForSingleObject(info.hProcess, timeout);
+                var result = Win32.WaitForSingleObject(info.hProcess, timeout);
 
                 Win32.CloseHandle(info.hProcess);
 
@@ -362,7 +362,7 @@ namespace ProcessHacker
             else
             {
                 // An error occured - the user probably canceled the elevation dialog.
-                return Win32.WAIT_ABANDONED;
+                return Win32.WaitResult.Abandoned;
             }
         }
 

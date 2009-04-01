@@ -38,7 +38,7 @@ namespace ProcessHacker
         /// time a query or set function is called, this lets the users control 
         /// when they want to open handles with certain permissions. This 
         /// means that handles can be cached (by the users).</remarks>
-        public class ProcessHandle : Win32Handle, IWithToken
+        public class ProcessHandle : Win32Handle, ISynchronizable, IWithToken
         {
             /// <summary>
             /// Specifies an offset in a process' process environment block (PEB).
@@ -720,11 +720,18 @@ namespace ProcessHacker
             /// <summary>
             /// Waits for the process to terminate.
             /// </summary>
-            /// <param name="Timeout">The timeout of the wait.</param>
-            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
-            public int Wait(int Timeout)
+            public WaitResult Wait()
             {
-                return WaitForSingleObject(this, Timeout);
+                return WaitForSingleObject(this, 0xffffffff);
+            }
+
+            /// <summary>
+            /// Waits for the process to terminate.
+            /// </summary>
+            /// <param name="Timeout">The timeout of the wait.</param>
+            public WaitResult Wait(uint timeout)
+            {
+                return WaitForSingleObject(this, timeout);
             }
 
             /// <summary>

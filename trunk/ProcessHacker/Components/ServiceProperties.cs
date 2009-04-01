@@ -353,9 +353,9 @@ namespace ProcessHacker
                     if (password != null)
                         args += " -servicepassword \"" + password.Replace("\"", "\\\"") + "\"";
 
-                    int result = Program.StartProcessHackerAdminWait(args, this.Handle, 2000);
+                    var result = Program.StartProcessHackerAdminWait(args, this.Handle, 2000);
 
-                    if (result == Win32.WAIT_ABANDONED || result == Win32.WAIT_TIMEOUT)
+                    if (result == Win32.WaitResult.Timeout || result == Win32.WaitResult.Abandoned)
                         return;
                 }
 

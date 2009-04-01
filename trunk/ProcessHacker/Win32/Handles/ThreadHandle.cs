@@ -30,7 +30,7 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a handle to a Windows thread.
         /// </summary>
-        public class ThreadHandle : Win32Handle, IWithToken
+        public class ThreadHandle : Win32Handle, ISynchronizable, IWithToken
         {
             /// <summary>
             /// Creates a thread handle using an existing handle. 
@@ -209,13 +209,20 @@ namespace ProcessHacker
             }
 
             /// <summary>
-            /// Waits for the thread.
+            /// Waits for the thread to terminate.
+            /// </summary>
+            public WaitResult Wait()
+            {
+                return WaitForSingleObject(this, 0xffffffff);
+            }
+
+            /// <summary>
+            /// Waits for the thread to terminate.
             /// </summary>
             /// <param name="Timeout">The timeout of the wait.</param>
-            /// <returns>Either WAIT_OBJECT_0, WAIT_TIMEOUT or WAIT_FAILED.</returns>
-            public int Wait(int Timeout)
+            public WaitResult Wait(uint timeout)
             {
-                return WaitForSingleObject(this, Timeout);
+                return WaitForSingleObject(this, timeout);
             }
 
             /// <summary>

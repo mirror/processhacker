@@ -176,11 +176,11 @@ namespace ProcessHacker
 
                 if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
                 {
-                    int result = Program.StartProcessHackerAdminWait(
+                    var result = Program.StartProcessHackerAdminWait(
                         "-e -type processhacker -action runas -obj \"" + binPath.Replace("\"", "\\\"") + "\" " +
                         "-hwnd " + this.Handle.ToString(), this.Handle, 5000);
 
-                    if (result == 0)
+                    if (result == Win32.WaitResult.Object0)
                         this.Close();
                 }
                 else

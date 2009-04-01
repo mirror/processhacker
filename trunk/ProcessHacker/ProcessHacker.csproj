@@ -698,6 +698,7 @@
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
+    <Compile Include="Win32\Handles\ISynchronizable.cs" />
     <Compile Include="Win32\Handles\JobHandle.cs" />
     <Compile Include="Win32\Handles\FileHandle.cs" />
     <Compile Include="Win32\Handles\TokenWithLinkedToken.cs" />
