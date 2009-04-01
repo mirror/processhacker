@@ -268,8 +268,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphSuspendProcess";
     else if (ControlCode == KPH_RESUMEPROCESS)
         return "KphResumeProcess";
-    else if (ControlCode == KPH_READPROCESSMEMORY)
-        return "Read Process Memory";
+    else if (ControlCode == KPH_READVIRTUALMEMORY)
+        return "KphReadVirtualMemory";
     else if (ControlCode == KPH_SETPROCESSTOKEN)
         return "Set Process Token";
     else if (ControlCode == KPH_GETTHREADWIN32STARTADDRESS)
@@ -651,41 +651,26 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
-        case KPH_READPROCESSMEMORY:
+        case KPH_READVIRTUALMEMORY:
         {
             HANDLE processHandle;
             PVOID baseAddress;
-            PKPROCESS processObject;
-            KAPC_STATE apcState;
+            PVOID buffer;
+            ULONG bufferLength;
             
-            if (inLength < 8)
+            if (inLength < 8 || outLength < 4)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
             processHandle = *(HANDLE *)dataBuffer;
-            baseAddress = *(PVOID *)(dataBuffer + 4);
+            baseAddress = *(PVOID *)(dataBuffer + 0x4);
+            buffer = *(PVOID *)(dataBuffer + 0x8);
+            bufferLength = *(PULONG)(dataBuffer + 0xc);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
-            
-            if (!NT_SUCCESS(status))
-                goto IoControlEnd;
-            
-            KeStackAttachProcess(processObject, &apcState);
-            
-            __try
-            {
-                RtlCopyMemory(dataBuffer, baseAddress, outLength);
-                retLength = outLength;
-            }
-            __except (EXCEPTION_EXECUTE_HANDLER)
-            {
-                status = STATUS_ACCESS_VIOLATION;
-            }
-            
-            KeUnstackDetachProcess(&apcState);
-            ObDereferenceObject(processObject);
+            status = KphReadVirtualMemory(processHandle, baseAddress, buffer, bufferLength, (PULONG)dataBuffer, UserMode);
+            retLength = 4;
         }
         break;
         

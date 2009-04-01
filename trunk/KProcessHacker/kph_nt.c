@@ -457,3 +457,41 @@ NTSTATUS KphTerminateProcess(
     
     return status;
 }
+
+NTSTATUS KphReadVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    ULONG returnLength = 0;
+    
+    if (BufferLength)
+    {
+        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+        
+        if (!NT_SUCCESS(status))
+            return status;
+        
+        status = MmCopyVirtualMemory(
+            processObject,
+            BaseAddress,
+            PsGetCurrentProcess(),
+            Buffer,
+            BufferLength,
+            AccessMode,
+            &returnLength
+            );
+        ObDereferenceObject(processObject);
+    }
+    
+    if (ReturnLength)
+        *ReturnLength = returnLength;
+    
+    return status;
+}

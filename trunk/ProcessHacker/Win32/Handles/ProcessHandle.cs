@@ -643,8 +643,15 @@ namespace ProcessHacker
                 byte[] buf = new byte[length];
                 int readLen;
 
-                if (!ReadProcessMemory(this, offset, buf, length, out readLen))
-                    ThrowLastWin32Error();
+                if (Program.KPH != null)
+                {
+                    Program.KPH.KphReadVirtualMemory(this, offset, buf, length, out readLen);
+                }
+                else
+                {
+                    if (!ReadProcessMemory(this, offset, buf, length, out readLen))
+                        ThrowLastWin32Error();
+                }
 
                 return buf;
             }

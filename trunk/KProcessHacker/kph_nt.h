@@ -26,7 +26,6 @@
 #include "kprocesshacker.h"
 #include "kernel_types.h"
 
-/* Kernel API */
 NTSTATUS NTAPI ObOpenObjectByName(
     POBJECT_ATTRIBUTES ObjectAttributes,
     POBJECT_TYPE ObjectType,
@@ -35,6 +34,16 @@ NTSTATUS NTAPI ObOpenObjectByName(
     ACCESS_MASK DesiredAccess,
     PVOID ParseContext,
     PHANDLE Handle
+    );
+
+NTSTATUS NTAPI MmCopyVirtualMemory(
+    PEPROCESS FromProcess,
+    PVOID FromAddress,
+    PEPROCESS ToProcess,
+    PVOID ToAddress,
+    ULONG BufferLength,
+    KPROCESSOR_MODE AccessMode,
+    PULONG ReturnLength
     );
 
 NTSTATUS NTAPI PsLookupProcessThreadByCid(
@@ -62,7 +71,7 @@ NTSTATUS PsResumeProcess(
     PEPROCESS Process
     );
 
-/* KProcessHacker versions */
+/* KProcessHacker */
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
@@ -105,6 +114,15 @@ NTSTATUS KphResumeProcess(
 NTSTATUS KphTerminateProcess(
     HANDLE ProcessHandle,
     NTSTATUS ExitStatus
+    );
+
+NTSTATUS KphReadVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS OpenProcess(

@@ -52,7 +52,7 @@ namespace ProcessHacker
             KphTerminateProcess,
             KphSuspendProcess,
             KphResumeProcess,
-            ReadProcessMemory,
+            KphReadVirtualMemory,
             SetProcessToken,
             GetThreadWin32StartAddress,
             GetObjectName,
@@ -261,6 +261,24 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.KphOpenThread), inData, outData);
 
             return Misc.BytesToInt(outData, Misc.Endianness.Little);
+        }  
+
+        public unsafe void KphReadVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
+        {
+            byte[] data = new byte[16];
+            byte[] result = new byte[4];
+
+            fixed (byte* bufferPointer = buffer)
+            {
+                Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
+                Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
+                Array.Copy(Misc.IntToBytes((int)bufferPointer, Misc.Endianness.Little), 0, data, 8, 4);
+                Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 12, 4);
+
+                _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), data, result);
+
+                bytesRead = Misc.BytesToInt(result, Misc.Endianness.Little);
+            }
         }
 
         public void KphResumeProcess(Win32.ProcessHandle processHandle)
@@ -302,19 +320,6 @@ namespace ProcessHacker
             _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
 
             return buffer;
-        }
-
-        public byte[] ReadProcessMemory(Win32.ProcessHandle processHandle, int baseAddress, int length)
-        {
-            byte[] data = new byte[8];
-            byte[] readData = new byte[length];
-
-            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
-            Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
-
-            _fileHandle.IoControl(CtlCode(Control.ReadProcessMemory), data, readData);
-
-            return readData;
         }
 
         public void SetProcessProtected(int pid, bool protecte)
