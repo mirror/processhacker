@@ -144,7 +144,7 @@ namespace ProcessHacker
                 return uiRestrictions;
             }
 
-            public JOBOBJECT_EXTENDED_LIMIT_INFORMATION GetExtendedLimitInformatin()
+            public JOBOBJECT_EXTENDED_LIMIT_INFORMATION GetExtendedLimitInformation()
             {
                 return this.QueryStruct<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>(JOB_OBJECT_INFORMATION_CLASS.JobObjectExtendedLimitInformation);
             }

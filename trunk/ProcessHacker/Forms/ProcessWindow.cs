@@ -1175,9 +1175,22 @@ namespace ProcessHacker
             {
                 this.UpdateStatistics();
             }
-            else if (tabControl.SelectedTab == tabPerformance)
+
+            if (tabControl.SelectedTab == tabPerformance)
             {
                 this.UpdatePerformance();
+            }
+
+            if (_jobProps != null)
+            {
+                if (tabControl.SelectedTab == tabJob)
+                {
+                    _jobProps.UpdateEnabled = true;
+                }
+                else
+                {
+                    _jobProps.UpdateEnabled = false;
+                }
             }
         }
 

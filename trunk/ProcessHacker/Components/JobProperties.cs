@@ -39,13 +39,15 @@ namespace ProcessHacker
             InitializeComponent();
 
             _jobObject = jobObject;
+            timerUpdate.Interval = Properties.Settings.Default.RefreshInterval;
+            this.UpdateStatistics();
 
             try
             {
                 string name = _jobObject.GetHandleName();
 
                 if (string.IsNullOrEmpty(name))
-                    textJobName.Text = "Unnamed";
+                    textJobName.Text = "(unnamed job)";
                 else
                     textJobName.Text = name;
             }
@@ -73,7 +75,7 @@ namespace ProcessHacker
 
             try
             {
-                var extendedLimits = _jobObject.GetExtendedLimitInformatin();
+                var extendedLimits = _jobObject.GetExtendedLimitInformation();
                 var uiRestrictions = _jobObject.GetBasicUiRestrictions();
                 var flags = extendedLimits.BasicLimitInformation.LimitFlags;
 
@@ -141,9 +143,51 @@ namespace ProcessHacker
             get { return _jobObject; }
         }
 
+        public bool UpdateEnabled
+        {
+            get { return timerUpdate.Enabled; }
+            set { timerUpdate.Enabled = value; }
+        }
+
         public void SaveSettings()
         {
             
+        }
+
+        private void UpdateStatistics()
+        {
+            try
+            {
+                var accounting = _jobObject.GetBasicAndIoAccountingInformation();
+                var limits = _jobObject.GetExtendedLimitInformation();
+
+                labelGeneralActiveProcesses.Text = accounting.BasicInfo.ActiveProcesses.ToString("N0");
+                labelGeneralTotalProcesses.Text = accounting.BasicInfo.TotalProcesses.ToString("N0");
+                labelGeneralTerminatedProcesses.Text = accounting.BasicInfo.TotalTerminatedProcesses.ToString("N0");
+
+                labelTimeUserTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.TotalUserTime));
+                labelTimeKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.TotalKernelTime));   
+                labelTimeUserTimePeriod.Text = Misc.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalUserTime));
+                labelTimeKernelTimePeriod.Text = Misc.GetNiceTimeSpan(new TimeSpan(accounting.BasicInfo.ThisPeriodTotalKernelTime));
+
+                labelMemoryPageFaults.Text = accounting.BasicInfo.TotalPageFaultCount.ToString("N0");
+                labelMemoryPeakProcessUsage.Text = Misc.GetNiceSizeName(limits.PeakProcessMemoryUsed);
+                labelMemoryPeakJobUsage.Text = Misc.GetNiceSizeName(limits.PeakJobMemoryUsed);
+
+                labelIOReads.Text = accounting.IoInfo.ReadOperationCount.ToString("N0");
+                labelIOReadBytes.Text = Misc.GetNiceSizeName(accounting.IoInfo.ReadTransferCount);
+                labelIOWrites.Text = accounting.IoInfo.WriteOperationCount.ToString("N0");
+                labelIOWriteBytes.Text = Misc.GetNiceSizeName(accounting.IoInfo.WriteTransferCount);
+                labelIOOther.Text = accounting.IoInfo.OtherOperationCount.ToString("N0");
+                labelIOOtherBytes.Text = Misc.GetNiceSizeName(accounting.IoInfo.OtherTransferCount);
+            }
+            catch
+            { }
+        }
+
+        private void timerUpdate_Tick(object sender, EventArgs e)
+        {
+            this.UpdateStatistics();
         }
     }
 }
