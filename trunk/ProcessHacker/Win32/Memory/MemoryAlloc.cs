@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -32,8 +33,9 @@ namespace ProcessHacker
     /// </summary>
     public class MemoryAlloc : IDisposable
     {
-        private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
+        private object _disposeLock = new object();
         private bool _disposed = false;
+        private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
         private IntPtr _memory;
         private int _size;
 
@@ -74,6 +76,11 @@ namespace ProcessHacker
         {
             _memory = Marshal.AllocHGlobal(size);
             _size = size;
+        }
+
+        ~MemoryAlloc()
+        {
+            this.Dispose(false);
         }
 
         /// <summary>
@@ -214,9 +221,24 @@ namespace ProcessHacker
             Marshal.FreeHGlobal(this);
         }
 
-        ~MemoryAlloc()
+        private void Dispose(bool disposing)
         {
-            this.Dispose();
+            try
+            {
+                if (disposing)
+                    Monitor.Enter(_disposeLock);
+
+                if (!_disposed)
+                {
+                    _disposed = true;
+                    this.Free();
+                }
+            }
+            finally
+            {
+                if (disposing)
+                    Monitor.Exit(_disposeLock);
+            }
         }
 
         /// <summary>
@@ -224,14 +246,8 @@ namespace ProcessHacker
         /// </summary>
         public void Dispose()
         {
-            lock (this)
-            {
-                if (!_disposed)
-                {
-                    _disposed = true;
-                    this.Free();
-                }
-            }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

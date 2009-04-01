@@ -22,6 +22,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -32,6 +33,7 @@ namespace ProcessHacker
         /// </summary>
         public class Win32Handle : IDisposable
         {
+            private object _disposeLock = new object();
             private bool _owned = true;
             private bool _disposed = false;
             private int _handle;
@@ -168,7 +170,27 @@ namespace ProcessHacker
 
             ~Win32Handle()
             {
-                this.Dispose();
+                this.Dispose(false);
+            }
+
+            private void Dispose(bool disposing)
+            {
+                try
+                {
+                    if (disposing)
+                        Monitor.Enter(_disposeLock);
+
+                    if (!_disposed && _owned)
+                    {
+                        _disposed = true;
+                        this.Close();
+                    }
+                }
+                finally
+                {
+                    if (disposing)
+                        Monitor.Exit(_disposeLock);
+                }
             }
 
             /// <summary>
@@ -176,15 +198,8 @@ namespace ProcessHacker
             /// </summary>
             public void Dispose()
             {
-                lock (this)
-                {
-                    if (!_disposed && _owned)
-                    {
-                        _disposed = true;
-                        this.Close();
-                        GC.SuppressFinalize(this);
-                    }
-                }
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
             }
         }
     }

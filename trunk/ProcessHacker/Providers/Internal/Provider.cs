@@ -143,40 +143,61 @@ namespace ProcessHacker
 
         ~Provider()
         {
-            this.Dispose();
+            this.Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    Monitor.Enter(_disposeLock);
+                    Monitor.Enter(_busyLock);
+                }
+
+                if (!_disposed)
+                {
+                    _disposed = true;
+
+                    if (_thread != null)
+                    {
+                        _thread.Abort();
+                        _thread = null;
+                    }
+
+                    if (this.Killed != null)
+                        this.Killed();
+
+                    if (disposing)
+                    {
+                        lock (_asyncThreads)
+                        {
+                            foreach (Thread t in _asyncThreads)
+                            {
+                                t.Abort();
+                            }
+
+                            _asyncThreads.Clear();
+                            _asyncThreads = null;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (disposing)
+                {
+                    Monitor.Exit(_busyLock);
+                    Monitor.Exit(_disposeLock);
+                }
+            }
         }
 
         public void Dispose()
         {
-            lock (_disposeLock)
-            {
-                lock (_busyLock)
-                {
-                    if (!_disposed)
-                    {
-                        _disposed = true;
-
-                        if (_thread != null)
-                        {
-                            _thread.Abort();
-                            _thread = null;
-                        }
-
-                        foreach (Thread t in _asyncThreads)
-                        {
-                            t.Abort();
-                        }
-
-                        _asyncThreads.Clear();
-                        _asyncThreads = null;
-
-                        if (this.Killed != null)
-                            this.Killed();
-
-                        GC.SuppressFinalize(this);
-                    }
-                }
-            }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -317,10 +338,19 @@ namespace ProcessHacker
         {
             Thread t = null;
 
-            t = new Thread(new ThreadStart(delegate { this.RunOnce(); _asyncThreads.Remove(t); }));
+            t = new Thread(new ThreadStart(delegate
+                {
+                    this.RunOnce();
+
+                    lock (_asyncThreads)
+                        _asyncThreads.Remove(t);
+                }));
 
             t.SetApartmentState(ApartmentState.STA);
-            _asyncThreads.Add(t);
+
+            lock (_asyncThreads)
+                _asyncThreads.Add(t);
+
             t.Start();
         }
 
