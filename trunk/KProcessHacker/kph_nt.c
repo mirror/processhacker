@@ -350,7 +350,7 @@ NTSTATUS KphOpenProcessJob(
         return status;
     }
     
-    jobObject = ((PEPROCESS2)processObject)->Job;
+    jobObject = ((PEPROCESS2)processObject)->Job; /* 0x10c for Vista, 0x134 for XP */
     ObDereferenceObject(processObject);
     
     if (jobObject == NULL)
