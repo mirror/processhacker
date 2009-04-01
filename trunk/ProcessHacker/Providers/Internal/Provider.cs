@@ -194,7 +194,7 @@ namespace ProcessHacker
             }
         }
 
-        public sealed void Dispose()
+        public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);

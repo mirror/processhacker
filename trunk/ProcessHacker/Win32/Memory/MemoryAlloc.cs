@@ -244,7 +244,7 @@ namespace ProcessHacker
         /// <summary>
         /// Frees the allocated memory.
         /// </summary>
-        public sealed void Dispose()
+        public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);

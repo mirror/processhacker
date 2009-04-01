@@ -724,7 +724,11 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
+            if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
+                *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
+            else
+                *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x228);
+            
             ObDereferenceObject(threadObject);
             retLength = 4;
         }

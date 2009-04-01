@@ -26,6 +26,7 @@
 #include "kph_nt.h"
 #include "debug.h"
 
+extern RTL_OSVERSIONINFOW WindowsVersion;
 extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
 extern POBJECT_TYPE *PsJobType;
@@ -350,7 +351,11 @@ NTSTATUS KphOpenProcessJob(
         return status;
     }
     
-    jobObject = ((PEPROCESS2)processObject)->Job; /* 0x10c for Vista, 0x134 for XP */
+    if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
+        jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
+    else
+        jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
+    
     ObDereferenceObject(processObject);
     
     if (jobObject == NULL)

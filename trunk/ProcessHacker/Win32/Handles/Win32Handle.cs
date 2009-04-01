@@ -196,7 +196,7 @@ namespace ProcessHacker
             /// <summary>
             /// Closes the handle.
             /// </summary>
-            public sealed void Dispose()
+            public void Dispose()
             {
                 this.Dispose(true);
                 GC.SuppressFinalize(this);

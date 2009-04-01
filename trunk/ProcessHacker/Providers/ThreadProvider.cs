@@ -172,8 +172,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista && 
-                        item.ThreadQueryLimitedHandle != null)
+                    if (Program.KPH != null && item.ThreadQueryLimitedHandle != null)
                     {
                         try
                         {
