@@ -2315,5 +2315,18 @@ namespace ProcessHacker
         {
             treeProcesses.Draw = this.Visible;
         }
+
+        protected override void OnResize(EventArgs e)
+        {
+            //
+            // Size grip bug fix as per
+            // http://jelle.druyts.net/2003/10/20/StatusBarResizeBug.aspx
+            //
+            if (statusBar != null)
+            {
+                statusBar.SizingGrip = (WindowState == FormWindowState.Normal);
+            }
+            base.OnResize(e);
+        }
     }
 }
