@@ -744,7 +744,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            if (WindowsVersion == WINDOWS_XP)
+            if (WindowsVersion == WINDOWS_VISTA)
                 *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
             else
                 *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x228);

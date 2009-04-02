@@ -567,13 +567,18 @@ namespace ProcessHacker
                         break;
 
                     this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LDR_MODULE)));
-                    modules.Add(new ProcessModule(
-                        new IntPtr(currentModule->BaseAddress),
-                        currentModule->SizeOfImage,
-                        new IntPtr(currentModule->EntryPoint),
-                        Win32.ReadUnicodeString(this, currentModule->BaseDllName),
-                        Win32.ReadUnicodeString(this, currentModule->FullDllName)
-                        ));
+
+                    if (currentModule->BaseAddress != 0)
+                    {
+                        modules.Add(new ProcessModule(
+                            new IntPtr(currentModule->BaseAddress),
+                            currentModule->SizeOfImage,
+                            new IntPtr(currentModule->EntryPoint),
+                            Win32.ReadUnicodeString(this, currentModule->BaseDllName),
+                            Win32.ReadUnicodeString(this, currentModule->FullDllName)
+                            ));
+                    }
+
                     currentLink = currentModule->InLoadOrderModuleList.Flink;
                     i++;
                 }

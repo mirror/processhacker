@@ -259,9 +259,7 @@ namespace ProcessHacker
                             {
                                 try
                                 {
-                                    Program.KPH.KphReadVirtualMemory(Win32.ProcessHandle.FromHandle(processHandle),
-                                        baseAddress, buffer, size, out bytesRead);
-                                    bytesRead = size;
+                                    bytesRead = Win32.ProcessHandle.FromHandle(processHandle).ReadMemory(baseAddress, buffer, size);
                                     return true;
                                 }
                                 catch
