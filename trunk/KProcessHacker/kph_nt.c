@@ -26,11 +26,51 @@
 #include "kph_nt.h"
 #include "debug.h"
 
-extern RTL_OSVERSIONINFOW WindowsVersion;
+extern int WindowsVersion;
 extern ACCESS_MASK ProcessAllAccess;
 extern ACCESS_MASK ThreadAllAccess;
 extern POBJECT_TYPE *PsJobType;
 extern POBJECT_TYPE *SeTokenObjectType;
+
+_PsGetProcessJob PsGetProcessJob = NULL;
+_PsSuspendProcess PsSuspendProcess = NULL;
+_PsResumeProcess PsResumeProcess = NULL;
+_MmCopyVirtualMemory MmCopyVirtualMemory = NULL;
+
+PVOID GetSystemRoutineAddress(WCHAR *Name)
+{
+    UNICODE_STRING routineName;
+    PVOID routineAddress = NULL;
+    
+    RtlInitUnicodeString(&routineName, Name);
+    
+    __try
+    {
+        routineAddress = MmGetSystemRoutineAddress(&routineName);
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        routineAddress = NULL;
+    }
+    
+    return routineAddress;
+}
+
+NTSTATUS KphNtInit()
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    
+    if (WindowsVersion == WINDOWS_VISTA)
+    {
+        /* Functions available only on Windows Vista */
+        PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
+        PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
+        PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
+        MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
+    }
+    
+    return status;
+}
 
 NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
 {
@@ -351,10 +391,17 @@ NTSTATUS KphOpenProcessJob(
         return status;
     }
     
-    if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
-        jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
+    if (PsGetProcessJob)
+    {
+        jobObject = PsGetProcessJob(processObject);
+    }
     else
-        jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
+    {
+        if (WindowsVersion == WINDOWS_VISTA)
+            jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
+        else
+            jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
+    }
     
     ObDereferenceObject(processObject);
     
@@ -390,13 +437,15 @@ NTSTATUS KphSuspendProcess(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     
+    if (PsSuspendProcess == NULL)
+        return STATUS_NOT_SUPPORTED;
+    
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;
     
-    /* XP ntoskrnl does NOT export this - loading the driver fails because of this */
-    /* status = PsSuspendProcess(processObject); */
+    status = PsSuspendProcess(processObject);
     ObDereferenceObject(processObject);
     
     return status;
@@ -409,12 +458,15 @@ NTSTATUS KphResumeProcess(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     
+    if (PsResumeProcess == NULL)
+        return STATUS_NOT_SUPPORTED;
+    
     status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;
     
-    /* status = PsResumeProcess(processObject); */
+    status = PsResumeProcess(processObject);
     ObDereferenceObject(processObject);
     
     return status;
@@ -470,6 +522,9 @@ NTSTATUS KphReadVirtualMemory(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     ULONG returnLength = 0;
+    
+    if (MmCopyVirtualMemory == NULL)
+        return STATUS_NOT_SUPPORTED;
     
     if (AccessMode != KernelMode)
     {
@@ -538,6 +593,9 @@ NTSTATUS KphWriteVirtualMemory(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     ULONG returnLength = 0;
+    
+    if (MmCopyVirtualMemory == NULL)
+        return STATUS_NOT_SUPPORTED;
     
     if (AccessMode != KernelMode)
     {

@@ -199,7 +199,7 @@ namespace ProcessHacker
                 MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
             }
 
-            if (KPH != null)
+            if (KPH != null && WindowsVersion == WindowsVersion.Vista)
             {
                 MinProcessReadMemoryRights = MinProcessQueryRights;
                 MinProcessWriteMemoryRights = MinProcessQueryRights;

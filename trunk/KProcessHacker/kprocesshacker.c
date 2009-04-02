@@ -43,7 +43,8 @@
 #pragma alloc_text(PAGE, KphUnsupported)
 #pragma alloc_text(PAGE, IsStringNullTerminated)
 
-RTL_OSVERSIONINFOW WindowsVersion;
+int WindowsVersion;
+RTL_OSVERSIONINFOW RtlWindowsVersion;
 ACCESS_MASK ProcessAllAccess;
 ACCESS_MASK ThreadAllAccess;
 
@@ -65,21 +66,23 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
     
-    WindowsVersion.dwOSVersionInfoSize = sizeof(WindowsVersion);
-    status = RtlGetVersion(&WindowsVersion);
+    RtlWindowsVersion.dwOSVersionInfoSize = sizeof(RtlWindowsVersion);
+    status = RtlGetVersion(&RtlWindowsVersion);
     
     if (!NT_SUCCESS(status))
         return status;
     
     /* Windows XP */
-    if (WindowsVersion.dwMajorVersion == 5 && WindowsVersion.dwMinorVersion == 1)
+    if (RtlWindowsVersion.dwMajorVersion == 5 && RtlWindowsVersion.dwMinorVersion == 1)
     {
+        WindowsVersion = WINDOWS_XP;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
     }
     /* Windows Vista */
-    else if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
+    else if (RtlWindowsVersion.dwMajorVersion == 6 && RtlWindowsVersion.dwMinorVersion == 0)
     {
+        WindowsVersion = WINDOWS_VISTA;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
     }
@@ -87,6 +90,11 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     {
         return STATUS_NOT_IMPLEMENTED;
     }
+    
+    status = KphNtInit();
+    
+    if (!NT_SUCCESS(status))
+        return status;
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -123,7 +131,7 @@ NTSTATUS SetProcessToken(HANDLE sourcePid, HANDLE targetPid)
 {
     NTSTATUS status;
     int queryAccess = 
-        WindowsVersion.dwMajorVersion == 6 ? 
+        WindowsVersion == WINDOWS_VISTA ? 
         PROCESS_QUERY_LIMITED_INFORMATION : 
         PROCESS_QUERY_INFORMATION;
     HANDLE source;
@@ -736,7 +744,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            if (WindowsVersion.dwMajorVersion == 6 && WindowsVersion.dwMinorVersion == 0)
+            if (WindowsVersion == WINDOWS_XP)
                 *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
             else
                 *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x228);

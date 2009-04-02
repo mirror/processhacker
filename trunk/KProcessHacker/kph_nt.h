@@ -36,16 +36,6 @@ NTSTATUS NTAPI ObOpenObjectByName(
     PHANDLE Handle
     );
 
-NTSTATUS NTAPI MmCopyVirtualMemory(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
-    );
-
 NTSTATUS NTAPI PsLookupProcessThreadByCid(
     PCLIENT_ID ClientId,
     PEPROCESS *Process,
@@ -63,15 +53,33 @@ NTKERNELAPI VOID NTAPI SeDeleteAccessState(
     PACCESS_STATE AccessState
     );
 
-NTSTATUS PsSuspendProcess(
+/* Dynamically linked API defs */
+
+typedef NTSTATUS (NTAPI *_MmCopyVirtualMemory)(
+    PEPROCESS FromProcess,
+    PVOID FromAddress,
+    PEPROCESS ToProcess,
+    PVOID ToAddress,
+    ULONG BufferLength,
+    KPROCESSOR_MODE AccessMode,
+    PULONG ReturnLength
+    );
+
+typedef PVOID (NTAPI *_PsGetProcessJob)(
     PEPROCESS Process
     );
 
-NTSTATUS PsResumeProcess(
+typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
+    PEPROCESS Process
+    );
+
+typedef NTSTATUS (NTAPI *_PsResumeProcess)(
     PEPROCESS Process
     );
 
 /* KProcessHacker */
+NTSTATUS KphNtInit();
+
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
