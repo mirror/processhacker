@@ -38,7 +38,7 @@ FOR /f "delims=" %%a IN (
 
 IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
  "..\..\Build\Installer\Process_Hacker_installer.iss"&&(
-	ECHO:Instaler compiled successfully!)) ELSE (ECHO:%M_%)
+	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
 
 :CLEANUP
 ::Clean up the .pdb files in "Release" folder
