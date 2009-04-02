@@ -31,6 +31,7 @@ Process Hacker
    * Crash when saving with the I/O or CPU History column visible
    * Inconsistent Copy menu after columns are modified
    * Crash when F5 (Refresh) is held down
+   * Resizable statusbar
  * REMOVED:
    * Disassembler - not used very often
 

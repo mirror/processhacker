@@ -106,11 +106,6 @@ namespace ProcessHacker
         [STAThread]
         public static void Main(string[] args)
         {
-            using (var phandle = new Win32.ProcessHandle(4388))
-            {
-                phandle.GetModules();
-            }
-
             Dictionary<string, string> pArgs = null;
 
             Application.EnableVisualStyles();
