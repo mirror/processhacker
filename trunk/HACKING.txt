@@ -63,7 +63,7 @@ NOTES
  * Similarly, do not use OpenService - use ServiceHandle instead.
 
 TODO
- * Clean up state highlighting - have one master class with ONE timer controlling 
-   multiple providers.
+ * Add memory probing to KProcessHacker and migrate to direct I/O instead of 
+   buffered I/O
  * Make ComboBoxPickerWindow more flexible and get rid of EditDEPWindow.
  * Get dbghelp working so we can use Microsoft's own symbols.

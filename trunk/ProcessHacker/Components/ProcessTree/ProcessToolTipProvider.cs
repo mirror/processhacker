@@ -155,7 +155,7 @@ namespace ProcessHacker
                     }
 
                     if (pNode.ProcessItem.IsInJob)
-                        otherNotes += "\n    Process is in a job with limits.";
+                        otherNotes += "\n    Process is in a job.";
 
                     if (pNode.ProcessItem.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                         otherNotes += "\n    Process is elevated.";

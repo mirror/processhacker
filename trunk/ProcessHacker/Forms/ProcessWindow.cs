@@ -271,6 +271,11 @@ namespace ProcessHacker
                 Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
+        private void ProcessWindow_SizeChanged(object sender, EventArgs e)
+        {
+            this.Invalidate(true);
+        }
+
         public void ApplyFont(Font f)
         {
             listThreads.List.Font = f;
@@ -440,17 +445,9 @@ namespace ProcessHacker
                 {
                     var jhandle = phandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY);
 
-                    if (jhandle.GetBasicLimitInformation().LimitFlags !=
-                        Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
-                    {
-                        _jobProps = new JobProperties(jhandle);
-                        _jobProps.Dock = DockStyle.Fill;
-                        tabJob.Controls.Add(_jobProps);
-                    }
-                    else
-                    {
-                        tabControl.TabPages.Remove(tabJob);
-                    }
+                    _jobProps = new JobProperties(jhandle);
+                    _jobProps.Dock = DockStyle.Fill;
+                    tabJob.Controls.Add(_jobProps);
                 }
             }
             catch

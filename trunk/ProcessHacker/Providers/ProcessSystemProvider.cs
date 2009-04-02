@@ -61,6 +61,7 @@ namespace ProcessHacker
         public bool IsDotNet;
         public bool IsElevated;
         public bool IsInJob;
+        public bool IsInSignificantJob;
         public bool IsPacked;
         public int SessionId;
         public bool HasParent;
@@ -635,16 +636,19 @@ namespace ProcessHacker
                                         {
                                             var limits = jhandle.GetBasicLimitInformation();
 
+                                            item.IsInJob = true;
+                                            item.JobName = jhandle.GetHandleName();
+
                                             if (limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
                                             {
-                                                item.IsInJob = true;
-                                                item.JobName = jhandle.GetHandleName();
+                                                item.IsInSignificantJob = true;
                                             }
                                         }
                                     }
                                     catch
                                     {
                                         item.IsInJob = false;
+                                        item.IsInSignificantJob = false;
                                     }
                                 }
                                 else

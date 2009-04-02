@@ -243,7 +243,7 @@ namespace ProcessHacker
             else if (Properties.Settings.Default.UseColorElevatedProcesses && 
                 p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
                 return Properties.Settings.Default.ColorElevatedProcesses;
-            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInJob)
+            else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInSignificantJob)
                 return Properties.Settings.Default.ColorJobProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && 
                 Properties.Settings.Default.VerifySignatures &&
