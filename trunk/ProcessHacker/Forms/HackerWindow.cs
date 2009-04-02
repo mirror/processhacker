@@ -815,7 +815,7 @@ namespace ProcessHacker
                 try
                 {
                     using (var phandle = new Win32.ProcessHandle(processSelectedPID,
-                        Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
                         string currentDirectory = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
                         string cmdLine = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CommandLine);

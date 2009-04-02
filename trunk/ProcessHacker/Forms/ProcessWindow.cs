@@ -560,7 +560,7 @@ namespace ProcessHacker
             try
             {
                 using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid,
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Program.MinProcessReadMemoryRights))
                 {
                     foreach (var pair in phandle.GetEnvironmentVariables())
                     {
@@ -826,44 +826,6 @@ namespace ProcessHacker
         }
 
         #region Buttons
-
-        private void buttonPEBStrings_Click(object sender, EventArgs e)
-        {
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
-
-            try
-            {
-                using (Win32.ProcessHandle ph
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
-                {
-                    list.Add(new KeyValuePair<string, string>("Command Line",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.CommandLine)));
-                    list.Add(new KeyValuePair<string, string>("Current Directory Path",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath)));
-                    list.Add(new KeyValuePair<string, string>("Desktop Name",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.DesktopName)));
-                    list.Add(new KeyValuePair<string, string>("Path",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.DllPath)));
-                    list.Add(new KeyValuePair<string, string>("Image File Name",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.ImagePathName)));
-                    list.Add(new KeyValuePair<string, string>("Runtime Data",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.RuntimeData)));
-                    list.Add(new KeyValuePair<string, string>("Shell Info",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.ShellInfo)));
-                    list.Add(new KeyValuePair<string, string>("Window Title",
-                        ph.GetPebString(Win32.ProcessHandle.PebOffset.WindowTitle)));
-                }
-
-                ListWindow window = new ListWindow(list);
-
-                window.TopMost = this.TopMost;
-                window.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {

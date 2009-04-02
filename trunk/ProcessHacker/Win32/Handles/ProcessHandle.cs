@@ -440,6 +440,11 @@ namespace ProcessHacker
             /// <returns>A ProcessModule.</returns>
             public ProcessModule GetMainModule()
             {
+                return this.GetMainModuleNative();
+            }
+
+            private ProcessModule GetMainModuleApi()
+            {
                 IntPtr[] moduleHandles;
                 int requiredSize;
 
@@ -466,12 +471,41 @@ namespace ProcessHacker
                     );
             }
 
+            private unsafe ProcessModule GetMainModuleNative()
+            {
+                int loaderData = Misc.BytesToInt(
+                    this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, 4), Misc.Endianness.Little);
+                PEB_LDR_DATA* data = stackalloc PEB_LDR_DATA[1];
+
+                this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PEB_LDR_DATA)));
+
+                if (data->Initialized == 0)
+                    throw new Exception("Loader data is not initialized.");
+
+                LDR_MODULE* mainModule = stackalloc LDR_MODULE[1];
+
+                this.ReadMemory(data->InLoadOrderModuleList.Flink, mainModule, Marshal.SizeOf(typeof(LDR_MODULE)));
+
+                return new ProcessModule(
+                    new IntPtr(mainModule->BaseAddress),
+                    mainModule->SizeOfImage,
+                    new IntPtr(mainModule->EntryPoint),
+                    Win32.ReadUnicodeString(this, mainModule->BaseDllName),
+                    Win32.ReadUnicodeString(this, mainModule->FullDllName)
+                    );
+            }
+
             /// <summary>
             /// Gets the modules loaded by the process. This requires the 
             /// PROCESS_QUERY_INFORMATION and PROCESS_VM_READ permissions.
             /// </summary>
             /// <returns>An array of ProcessModule objects.</returns>
             public ProcessModule[] GetModules()
+            {
+                return this.GetModulesNative();
+            }
+
+            private ProcessModule[] GetModulesApi()
             {
                 IntPtr[] moduleHandles;
                 int requiredSize;
@@ -504,6 +538,42 @@ namespace ProcessHacker
                 }
 
                 return moduleList;
+            }
+
+            private unsafe ProcessModule[] GetModulesNative()
+            {
+                int loaderData = Misc.BytesToInt(
+                    this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, 4), Misc.Endianness.Little);
+                PEB_LDR_DATA* data = stackalloc PEB_LDR_DATA[1];
+
+                this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PEB_LDR_DATA)));
+
+                if (data->Initialized == 0)
+                    throw new Exception("Loader data is not initialized.");
+
+                List<ProcessModule> modules = new List<ProcessModule>();
+                IntPtr currentLink = data->InLoadOrderModuleList.Flink;
+                IntPtr startLink = currentLink;
+                LDR_MODULE* currentModule = stackalloc LDR_MODULE[1];
+
+                while (currentLink != IntPtr.Zero)
+                {
+                    // Stop when we have reached the beginning of the linked list
+                    if (modules.Count > 0 && currentLink == startLink)
+                        break;
+
+                    this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LDR_MODULE)));
+                    modules.Add(new ProcessModule(
+                        new IntPtr(currentModule->BaseAddress),
+                        currentModule->SizeOfImage,
+                        new IntPtr(currentModule->EntryPoint),
+                        Win32.ReadUnicodeString(this, currentModule->BaseDllName),
+                        Win32.ReadUnicodeString(this, currentModule->FullDllName)
+                        ));
+                    currentLink = currentModule->InLoadOrderModuleList.Flink;
+                }
+
+                return modules.ToArray();
             }
 
             /// <summary>
@@ -640,20 +710,61 @@ namespace ProcessHacker
             /// <returns>An array of bytes</returns>
             public byte[] ReadMemory(int offset, int length)
             {
-                byte[] buf = new byte[length];
+                byte[] buffer = new byte[length];
+
+                this.ReadMemory(offset, buffer, length);
+
+                return buffer;
+            }
+
+            /// <summary>
+            /// Reads data from the process' virtual memory.
+            /// </summary>
+            /// <param name="offset">The offset at which to begin reading.</param>
+            /// <param name="length">The length, in bytes, to read.</param>
+            /// <returns>An array of bytes</returns>
+            public byte[] ReadMemory(IntPtr offset, int length)
+            {
+                return this.ReadMemory(offset.ToInt32(), length);
+            }
+
+            public int ReadMemory(int offset, byte[] buffer, int length)
+            {
                 int readLen;
 
                 if (Program.KPH != null)
                 {
-                    Program.KPH.KphReadVirtualMemory(this, offset, buf, length, out readLen);
+                    Program.KPH.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
                 }
                 else
                 {
-                    if (!ReadProcessMemory(this, offset, buf, length, out readLen))
+                    if (!ReadProcessMemory(this, offset, buffer, length, out readLen))
                         ThrowLastWin32Error();
                 }
 
-                return buf;
+                return readLen;
+            }
+
+            public unsafe int ReadMemory(int offset, void* buffer, int length)
+            {
+                int readLen;
+
+                if (Program.KPH != null)
+                {
+                    Program.KPH.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
+                }
+                else
+                {
+                    if (!ReadProcessMemory(this, offset, buffer, length, out readLen))
+                        ThrowLastWin32Error();
+                }
+
+                return readLen;
+            }
+
+            public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
+            {
+                return this.ReadMemory(offset.ToInt32(), buffer, length);
             }
 
             /// <summary>

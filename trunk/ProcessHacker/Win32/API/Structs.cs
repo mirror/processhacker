@@ -291,6 +291,31 @@ namespace ProcessHacker
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct LDR_MODULE
+        {
+            public LIST_ENTRY InLoadOrderModuleList;
+            public LIST_ENTRY InMemoryOrderModuleList;
+            public LIST_ENTRY InInitializationOrderModuleList;
+            public int BaseAddress;
+            public int EntryPoint;
+            public int SizeOfImage;
+            public UNICODE_STRING FullDllName;
+            public UNICODE_STRING BaseDllName;
+            public int Flags;
+            public short LoadCount;
+            public short TlsIndex;
+            public LIST_ENTRY HashTableEntry;
+            public int TimeDateStamp;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LIST_ENTRY
+        {
+            public IntPtr Flink;
+            public IntPtr Blink;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct LSA_UNICODE_STRING
         {
             public ushort Length;
@@ -536,6 +561,17 @@ namespace ProcessHacker
             public POOL_TYPE PoolType;
             public uint PagedPoolUsage;
             public uint NonPagedPoolUsage;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PEB_LDR_DATA
+        {
+            public int Length;
+            public char Initialized;
+            public int SsHandle;
+            public LIST_ENTRY InLoadOrderModuleList;
+            public LIST_ENTRY InMemoryOrderModuleList;
+            public LIST_ENTRY InInitializationOrderModuleList;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -1412,7 +1448,6 @@ namespace ProcessHacker
         {
             public ushort Length;
             public ushort MaximumLength;
-
             public int Buffer;
         }
 

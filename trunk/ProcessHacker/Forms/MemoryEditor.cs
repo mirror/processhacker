@@ -163,22 +163,12 @@ namespace ProcessHacker
 
         private void ReadMemory()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessReadMemoryRights))
             {
-                int readmemory = 0;
-
                 _data = new byte[_length];
 
-                if (!Win32.ReadProcessMemory(phandle, _address,
-                    _data, _length, out readmemory))
-                {
-                    throw new Exception();
-                }
-
-                if (readmemory == 0)
-                {
-                    throw new Exception();
-                }
+                if (phandle.ReadMemory(_address, _data, _length) == 0)
+                    Win32.ThrowLastWin32Error();
 
                 hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);
             }
@@ -186,26 +176,14 @@ namespace ProcessHacker
 
         private void WriteMemory()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
-                Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessWriteMemoryRights))
             {
-                int wrotememory = 0;
-
                 for (long i = 0; i < hexBoxMemory.ByteProvider.Length; i++)
                 {
                     _data[i] = hexBoxMemory.ByteProvider.ReadByte(i);
                 }
 
-                if (!Win32.WriteProcessMemory(phandle, _address,
-                    _data, _length, out wrotememory))
-                {
-                    MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
-                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    return;
-                }
-
-                if (wrotememory == 0)
+                if (phandle.WriteMemory(_address, _data) == 0)
                 {
                     MessageBox.Show("Could not write to process memory:\n\n" + Win32.GetLastErrorMessage(),
                         "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);

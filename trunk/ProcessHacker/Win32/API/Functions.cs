@@ -174,6 +174,9 @@ namespace ProcessHacker
         public static extern bool ReadProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesRead);
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public unsafe static extern bool ReadProcessMemory(int Process, int BaseAddress, void* Buffer, int Size, out int BytesRead);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool WriteProcessMemory(int Process, int BaseAddress, IntPtr Buffer, int Size, out int BytesWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]

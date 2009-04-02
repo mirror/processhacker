@@ -266,20 +266,25 @@ namespace ProcessHacker
 
         public unsafe void KphReadVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
         {
+            fixed (byte* bufferPointer = buffer)
+            {
+                this.KphReadVirtualMemory(processHandle, baseAddress, bufferPointer, length, out bytesRead);
+            }
+        }
+
+        public unsafe void KphReadVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        {
             byte[] data = new byte[0x14];
             int returnLength;
 
-            fixed (byte* bufferPointer = buffer)
-            {
-                Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
-                Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
-                Array.Copy(Misc.IntToBytes((int)bufferPointer, Misc.Endianness.Little), 0, data, 8, 4);
-                Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 12, 4);
-                Array.Copy(Misc.IntToBytes((int)&returnLength, Misc.Endianness.Little), 0, data, 16, 4);
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
+            Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
+            Array.Copy(Misc.IntToBytes((int)buffer, Misc.Endianness.Little), 0, data, 8, 4);
+            Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 12, 4);
+            Array.Copy(Misc.IntToBytes((int)&returnLength, Misc.Endianness.Little), 0, data, 16, 4);
 
-                _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), data, null);
-                bytesRead = returnLength;
-            }
+            _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), data, null);
+            bytesRead = returnLength;
         }
 
         public void KphResumeProcess(Win32.ProcessHandle processHandle)

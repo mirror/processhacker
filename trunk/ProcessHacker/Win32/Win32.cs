@@ -855,7 +855,25 @@ namespace ProcessHacker
                 return null;
 
             return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length / 2);
-        } 
+        }
+
+        public static string ReadUnicodeString(ProcessHandle processHandle, UNICODE_STRING str)
+        {
+            if (str.Length == 0)
+                return null;
+
+            byte[] strData = processHandle.ReadMemory(str.Buffer, str.Length);
+            GCHandle strDataHandle = GCHandle.Alloc(strData, GCHandleType.Pinned);
+
+            try
+            {
+                return Marshal.PtrToStringUni(strDataHandle.AddrOfPinnedObject(), str.Length / 2);
+            }
+            finally
+            {
+                strDataHandle.Free();
+            }
+        }
 
         public static void ShowProperties(string fileName)
         {

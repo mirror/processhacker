@@ -56,7 +56,7 @@ namespace ProcessHacker
             {
                 phandle = new Win32.ProcessHandle(PID, 
                     Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+                    Program.MinProcessReadMemoryRights);
             }
             catch
             {

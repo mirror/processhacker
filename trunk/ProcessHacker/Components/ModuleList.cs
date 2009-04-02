@@ -162,8 +162,8 @@ namespace ProcessHacker
                         else
                         {
                             using (var phandle =
-                                new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights |
-                                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                                new Win32.ProcessHandle(_pid, 
+                                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                                 _mainModule = Misc.GetRealPath(phandle.GetMainModule().FileName);
                         }
 

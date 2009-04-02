@@ -181,8 +181,7 @@ namespace ProcessHacker
             {
                 using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
                     Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | 
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE))
+                    Program.MinProcessWriteMemoryRights))
                 {
                     Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
                     int address = 0;

@@ -58,12 +58,19 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid,
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+                _processHandle = new Win32.ProcessHandle(_pid, 
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Program.MinProcessReadMemoryRights);
             }
             catch
-            { }
+            {
+                try
+                {
+                    _processHandle = new Win32.ProcessHandle(_pid,
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
+                }
+                catch
+                { }
+            }
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Killed += () => { if (_processHandle != null) _processHandle.Dispose(); };
@@ -212,7 +219,14 @@ namespace ProcessHacker
                     ModuleItem item = new ModuleItem();
 
                     item.Name = m.BaseName;
-                    item.FileName = Misc.GetRealPath(m.FileName);
+
+                    try
+                    {
+                        item.FileName = Misc.GetRealPath(m.FileName);
+                    }
+                    catch
+                    { }
+
                     item.BaseAddress = b;
                     item.Size = m.Size;
 

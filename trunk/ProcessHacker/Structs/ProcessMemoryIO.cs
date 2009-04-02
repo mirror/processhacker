@@ -33,12 +33,11 @@ namespace ProcessHacker.Structs
 
         public ProcessMemoryIO(int pid)
         {
-            try { _phandleR = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_VM_READ); }
+            try { _phandleR = new Win32.ProcessHandle(pid, Program.MinProcessReadMemoryRights); }
             catch { }
             try
             {
-                _phandleW = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE);
+                _phandleW = new Win32.ProcessHandle(pid, Program.MinProcessWriteMemoryRights);
             }
             catch { }
         }

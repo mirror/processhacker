@@ -19,7 +19,7 @@ struct UNICODE_STRING
     wstr* Buffer[Length / 2]; /* Length is in bytes, and each wchar is 2 bytes */
 }
 
-/* A doubly-linked list.  */
+/* A doubly-linked list. */
 struct LIST_ENTRY
 {
     LIST_ENTRY* Flink;

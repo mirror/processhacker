@@ -19,6 +19,7 @@ Process Hacker
    * KProcessHacker now retrieves thread start addresses
    * KProcessHacker now performs memory manipulation (allowing the command lines of more 
      processes to be displayed)
+   * Custom module information querying; can now display the modules for protected processes
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"
