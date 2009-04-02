@@ -471,6 +471,27 @@ NTSTATUS KphReadVirtualMemory(
     PEPROCESS processObject;
     ULONG returnLength = 0;
     
+    if (AccessMode != KernelMode)
+    {
+        if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
+            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+        
+        __try
+        {
+            if (ReturnLength)
+                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+    }
+    
     if (BufferLength)
     {
         status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
@@ -491,7 +512,84 @@ NTSTATUS KphReadVirtualMemory(
     }
     
     if (ReturnLength)
-        *ReturnLength = returnLength;
+    {
+        __try
+        {
+            *ReturnLength = returnLength;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            status = STATUS_ACCESS_VIOLATION;
+        }
+    }
+    
+    return status;
+}
+
+NTSTATUS KphWriteVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    ULONG returnLength = 0;
+    
+    if (AccessMode != KernelMode)
+    {
+        if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
+            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+        
+        __try
+        {
+            if (ReturnLength)
+                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+    }
+    
+    if (BufferLength)
+    {
+        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+        
+        if (!NT_SUCCESS(status))
+            return status;
+        
+        status = MmCopyVirtualMemory(
+            PsGetCurrentProcess(),
+            Buffer,
+            processObject,
+            BaseAddress,
+            BufferLength,
+            AccessMode,
+            &returnLength
+            );
+        ObDereferenceObject(processObject);
+    }
+    
+    if (ReturnLength)
+    {
+        __try
+        {
+            *ReturnLength = returnLength;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            status = STATUS_ACCESS_VIOLATION;
+        }
+    }
     
     return status;
 }

@@ -270,6 +270,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphResumeProcess";
     else if (ControlCode == KPH_READVIRTUALMEMORY)
         return "KphReadVirtualMemory";
+    else if (ControlCode == KPH_WRITEVIRTUALMEMORY)
+        return "KphWriteVirtualMemory";
     else if (ControlCode == KPH_SETPROCESSTOKEN)
         return "Set Process Token";
     else if (ControlCode == KPH_GETTHREADWIN32STARTADDRESS)
@@ -657,8 +659,9 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             PVOID baseAddress;
             PVOID buffer;
             ULONG bufferLength;
+            PULONG returnLength;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < 0x14)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -668,9 +671,33 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             baseAddress = *(PVOID *)(dataBuffer + 0x4);
             buffer = *(PVOID *)(dataBuffer + 0x8);
             bufferLength = *(PULONG)(dataBuffer + 0xc);
+            returnLength = *(PULONG *)(dataBuffer + 0x10);
             
-            status = KphReadVirtualMemory(processHandle, baseAddress, buffer, bufferLength, (PULONG)dataBuffer, UserMode);
-            retLength = 4;
+            status = KphReadVirtualMemory(processHandle, baseAddress, buffer, bufferLength, returnLength, UserMode);
+        }
+        break;
+        
+        case KPH_WRITEVIRTUALMEMORY:
+        {
+            HANDLE processHandle;
+            PVOID baseAddress;
+            PVOID buffer;
+            ULONG bufferLength;
+            PULONG returnLength;
+            
+            if (inLength < 0x14)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            baseAddress = *(PVOID *)(dataBuffer + 0x4);
+            buffer = *(PVOID *)(dataBuffer + 0x8);
+            bufferLength = *(PULONG)(dataBuffer + 0xc);
+            returnLength = *(PULONG *)(dataBuffer + 0x10);
+            
+            status = KphWriteVirtualMemory(processHandle, baseAddress, buffer, bufferLength, returnLength, UserMode);
         }
         break;
         

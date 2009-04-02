@@ -53,6 +53,7 @@ namespace ProcessHacker
             KphSuspendProcess,
             KphResumeProcess,
             KphReadVirtualMemory,
+            KphWriteVirtualMemory,
             SetProcessToken,
             GetThreadWin32StartAddress,
             GetObjectName,
@@ -265,8 +266,8 @@ namespace ProcessHacker
 
         public unsafe void KphReadVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
         {
-            byte[] data = new byte[16];
-            byte[] result = new byte[4];
+            byte[] data = new byte[0x14];
+            int returnLength;
 
             fixed (byte* bufferPointer = buffer)
             {
@@ -274,10 +275,10 @@ namespace ProcessHacker
                 Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
                 Array.Copy(Misc.IntToBytes((int)bufferPointer, Misc.Endianness.Little), 0, data, 8, 4);
                 Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 12, 4);
+                Array.Copy(Misc.IntToBytes((int)&returnLength, Misc.Endianness.Little), 0, data, 16, 4);
 
-                _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), data, result);
-
-                bytesRead = Misc.BytesToInt(result, Misc.Endianness.Little);
+                _fileHandle.IoControl(CtlCode(Control.KphReadVirtualMemory), data, null);
+                bytesRead = returnLength;
             }
         }
 
@@ -310,6 +311,24 @@ namespace ProcessHacker
                 // so we do it now.
                 if (ex.ErrorCode == 112)
                     Process.GetCurrentProcess().Kill();
+            }
+        }
+
+        public unsafe void KphWriteVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesWritten)
+        {
+            byte[] data = new byte[0x14];
+            int returnLength;
+
+            fixed (byte* bufferPointer = buffer)
+            {
+                Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0, 4);
+                Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 4, 4);
+                Array.Copy(Misc.IntToBytes((int)bufferPointer, Misc.Endianness.Little), 0, data, 8, 4);
+                Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 12, 4);
+                Array.Copy(Misc.IntToBytes((int)&returnLength, Misc.Endianness.Little), 0, data, 16, 4);
+
+                _fileHandle.IoControl(CtlCode(Control.KphWriteVirtualMemory), data, null);
+                bytesWritten = returnLength;
             }
         }
 

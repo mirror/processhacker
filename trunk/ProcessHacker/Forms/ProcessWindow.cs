@@ -366,7 +366,7 @@ namespace ProcessHacker
             try
             {
                 using (Win32.ProcessHandle phandle
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                 {
                     fileCurrentDirectory.Text =
                         phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
@@ -1222,7 +1222,7 @@ namespace ProcessHacker
             try
             {
                 using (var phandle
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                 {
                     _realCurrentDirectory  =
                         phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);

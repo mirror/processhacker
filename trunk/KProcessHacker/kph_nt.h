@@ -125,6 +125,15 @@ NTSTATUS KphReadVirtualMemory(
     KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphWriteVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS OpenProcess(
     PHANDLE ProcessHandle,
     int DesiredAccess,

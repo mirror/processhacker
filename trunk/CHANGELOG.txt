@@ -8,6 +8,7 @@ Process Hacker
    * #2702929 - "Add a Cancel button in Options"
    * #2713088 - "Network: Ctrl+A and Ctrl+C should copy the processes' names"
    * #2714130 - "Option to disable/enable all highlighting colors"
+   * Job information
    * Statistics times in System Information and process properties
    * Highlighting system
    * Configurable max. samples and plotter step size
@@ -16,7 +17,8 @@ Process Hacker
    * Less memory usage
    * Confirmation dialogs are now consistent and use new Vista interfaces where possible
    * KProcessHacker now retrieves thread start addresses
-   * Displays job information for processes
+   * KProcessHacker now performs memory manipulation (allowing the command lines of more 
+     processes to be displayed)
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

@@ -749,12 +749,19 @@ namespace ProcessHacker
             /// <returns>The length, in bytes, that was written.</returns>
             public int WriteMemory(int offset, byte[] data)
             {
-                int writLen;
+                int writtenLen;
 
-                if (!WriteProcessMemory(this, offset, data, data.Length, out writLen))
-                    ThrowLastWin32Error();
+                if (Program.KPH != null)
+                {
+                    Program.KPH.KphWriteVirtualMemory(this, offset, data, data.Length, out writtenLen);
+                }
+                else
+                {
+                    if (!WriteProcessMemory(this, offset, data, data.Length, out writtenLen))
+                        ThrowLastWin32Error();
+                }
 
-                return writLen;
+                return writtenLen;
             }
 
             /// <summary>
