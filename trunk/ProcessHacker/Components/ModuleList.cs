@@ -401,10 +401,15 @@ namespace ProcessHacker
                 if (freeLibrary == 0)
                     throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
 
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
+                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights | 
+                    Program.MinProcessWriteMemoryRights | Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
                 {
-                    var thread = phandle.CreateThread(freeLibrary, ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                    int baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
+
+                    phandle.SetModuleReferenceCount(baseAddress, 1);
+
+                    var thread = phandle.CreateThread(freeLibrary, baseAddress, Win32.THREAD_RIGHTS.THREAD_ALL_ACCESS);
 
                     thread.Wait(1000);
 

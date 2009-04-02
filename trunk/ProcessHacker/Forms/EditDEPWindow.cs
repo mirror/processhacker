@@ -100,7 +100,7 @@ namespace ProcessHacker
                 using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
                 {
                     var thread = phandle.CreateThread(setProcessDEPPolicy, (int)flags,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                        Win32.THREAD_RIGHTS.THREAD_ALL_ACCESS);
 
                     thread.Wait(1000);
 

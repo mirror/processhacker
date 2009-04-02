@@ -213,9 +213,9 @@ namespace ProcessHacker
             /// <param name="parameter">The parameter to pass to the function.</param>
             /// <param name="access">The desired access to the new thread.</param>
             /// <returns>A handle to the new thread.</returns>
-            public ThreadHandle CreateThread(int startAddress, int parameter, PROCESS_RIGHTS access)
+            public ThreadHandle CreateThread(int startAddress, int parameter, THREAD_RIGHTS access)
             {
-                return new ThreadHandle(this.CreateThread(startAddress, parameter));
+                return new ThreadHandle(this.CreateThread(startAddress, parameter), access);
             }
 
             /// <summary>
@@ -555,11 +555,15 @@ namespace ProcessHacker
                 IntPtr currentLink = data->InLoadOrderModuleList.Flink;
                 IntPtr startLink = currentLink;
                 LDR_MODULE* currentModule = stackalloc LDR_MODULE[1];
+                int i = 0;
 
                 while (currentLink != IntPtr.Zero)
                 {
                     // Stop when we have reached the beginning of the linked list
                     if (modules.Count > 0 && currentLink == startLink)
+                        break;
+                    // Safety guard
+                    if (i > 0x800)
                         break;
 
                     this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LDR_MODULE)));
@@ -571,6 +575,7 @@ namespace ProcessHacker
                         Win32.ReadUnicodeString(this, currentModule->FullDllName)
                         ));
                     currentLink = currentModule->InLoadOrderModuleList.Flink;
+                    i++;
                 }
 
                 return modules.ToArray();
@@ -780,6 +785,43 @@ namespace ProcessHacker
                 {
                     if (ZwResumeProcess(this) != 0)
                         ThrowLastWin32Error();
+                }
+            }
+
+            public unsafe void SetModuleReferenceCount(int baseAddress, ushort count)
+            {
+                int loaderData = Misc.BytesToInt(
+                    this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, 4), Misc.Endianness.Little);
+                PEB_LDR_DATA* data = stackalloc PEB_LDR_DATA[1];
+
+                this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PEB_LDR_DATA)));
+
+                if (data->Initialized == 0)
+                    throw new Exception("Loader data is not initialized.");
+
+                List<ProcessModule> modules = new List<ProcessModule>();
+                IntPtr currentLink = data->InLoadOrderModuleList.Flink;
+                IntPtr startLink = currentLink;
+                LDR_MODULE* currentModule = stackalloc LDR_MODULE[1];
+                int i = 0;
+
+                while (currentLink != IntPtr.Zero)
+                {
+                    if (modules.Count > 0 && currentLink == startLink)
+                        break;
+                    if (i > 0x800)
+                        break;
+
+                    this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LDR_MODULE)));
+
+                    if (currentModule->BaseAddress == baseAddress)
+                    {
+                        this.WriteMemory(currentLink.ToInt32() + 0x38, Misc.UShortToBytes(count, Misc.Endianness.Little));
+                        break;
+                    }
+
+                    currentLink = currentModule->InLoadOrderModuleList.Flink;
+                    i++;
                 }
             }
 

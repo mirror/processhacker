@@ -33,6 +33,7 @@ Process Hacker
    * Inconsistent Copy menu after columns are modified
    * Crash when F5 (Refresh) is held down
    * Resizable statusbar
+   * Module unloading now works properly
  * REMOVED:
    * Disassembler - not used very often
 
