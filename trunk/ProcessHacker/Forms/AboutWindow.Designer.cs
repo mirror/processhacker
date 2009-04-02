@@ -44,6 +44,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.linkTaskDialog = new System.Windows.Forms.LinkLabel();
             this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
             this.label8 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -51,7 +52,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
-            this.linkTaskDialog = new System.Windows.Forms.LinkLabel();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -100,7 +101,7 @@
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(6, 68);
+            this.linkFamFamFam.Location = new System.Drawing.Point(6, 81);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -111,7 +112,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(6, 81);
+            this.linkVistaMenu.Location = new System.Drawing.Point(6, 94);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -122,7 +123,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(6, 55);
+            this.linkHexBox.Location = new System.Drawing.Point(6, 68);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -165,7 +166,7 @@
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
-            this.linkAsm.Location = new System.Drawing.Point(6, 94);
+            this.linkAsm.Location = new System.Drawing.Point(6, 107);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;
@@ -176,7 +177,7 @@
             // linkTreeViewAdv
             // 
             this.linkTreeViewAdv.AutoSize = true;
-            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 107);
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 120);
             this.linkTreeViewAdv.Name = "linkTreeViewAdv";
             this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
             this.linkTreeViewAdv.TabIndex = 12;
@@ -193,6 +194,7 @@
             this.flowCredits.Controls.Add(this.label5);
             this.flowCredits.Controls.Add(this.label6);
             this.flowCredits.Controls.Add(this.label1);
+            this.flowCredits.Controls.Add(this.label9);
             this.flowCredits.Controls.Add(this.label7);
             this.flowCredits.Controls.Add(this.linkHexBox);
             this.flowCredits.Controls.Add(this.linkFamFamFam);
@@ -244,16 +246,27 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 42);
+            this.label7.Location = new System.Drawing.Point(6, 55);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(142, 13);
             this.label7.TabIndex = 18;
             this.label7.Text = "Uday Shanbhag - Developer";
             // 
+            // linkTaskDialog
+            // 
+            this.linkTaskDialog.AutoSize = true;
+            this.linkTaskDialog.Location = new System.Drawing.Point(6, 133);
+            this.linkTaskDialog.Name = "linkTaskDialog";
+            this.linkTaskDialog.Size = new System.Drawing.Size(114, 13);
+            this.linkTaskDialog.TabIndex = 21;
+            this.linkTaskDialog.TabStop = true;
+            this.linkTaskDialog.Text = "KevinGre - TaskDialog";
+            this.linkTaskDialog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTaskDialog_LinkClicked);
+            // 
             // linkICSharpCode
             // 
             this.linkICSharpCode.AutoSize = true;
-            this.linkICSharpCode.Location = new System.Drawing.Point(6, 133);
+            this.linkICSharpCode.Location = new System.Drawing.Point(6, 146);
             this.linkICSharpCode.Name = "linkICSharpCode";
             this.linkICSharpCode.Size = new System.Drawing.Size(144, 13);
             this.linkICSharpCode.TabIndex = 19;
@@ -264,7 +277,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 146);
+            this.label8.Location = new System.Drawing.Point(6, 159);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(100, 13);
             this.label8.TabIndex = 20;
@@ -273,7 +286,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 159);
+            this.label4.Location = new System.Drawing.Point(6, 172);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(199, 26);
             this.label4.TabIndex = 16;
@@ -282,7 +295,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 185);
+            this.label3.Location = new System.Drawing.Point(6, 198);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(202, 26);
             this.label3.TabIndex = 15;
@@ -291,7 +304,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 211);
+            this.label2.Location = new System.Drawing.Point(6, 224);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(193, 26);
             this.label2.TabIndex = 14;
@@ -300,7 +313,7 @@
             // labelFiller
             // 
             this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 237);
+            this.labelFiller.Location = new System.Drawing.Point(6, 250);
             this.labelFiller.Name = "labelFiller";
             this.labelFiller.Size = new System.Drawing.Size(31, 13);
             this.labelFiller.TabIndex = 17;
@@ -318,16 +331,14 @@
             this.buttonChangelog.UseVisualStyleBackColor = true;
             this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
             // 
-            // linkTaskDialog
+            // label9
             // 
-            this.linkTaskDialog.AutoSize = true;
-            this.linkTaskDialog.Location = new System.Drawing.Point(6, 120);
-            this.linkTaskDialog.Name = "linkTaskDialog";
-            this.linkTaskDialog.Size = new System.Drawing.Size(114, 13);
-            this.linkTaskDialog.TabIndex = 21;
-            this.linkTaskDialog.TabStop = true;
-            this.linkTaskDialog.Text = "KevinGre - TaskDialog";
-            this.linkTaskDialog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTaskDialog_LinkClicked);
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 42);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(127, 13);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Mikalai Chaly - Developer";
             // 
             // AboutWindow
             // 
@@ -387,6 +398,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button buttonChangelog;
         private System.Windows.Forms.LinkLabel linkTaskDialog;
+        private System.Windows.Forms.Label label9;
 
     }
 }
