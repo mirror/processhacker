@@ -1,33 +1,35 @@
 @ECHO OFF
-::Original script by wj32.
-::Modifications and additions by XhmikosR and Yzöwl.
+:: Original script by wj32.
+:: Modifications and additions by XhmikosR and Yzöwl.
 SETLOCAL
 SET outd=%~p1
 PUSHD %outd%
 
-::Copy CHANGELOG.txt, LICENSE.txt, README.txt and kprocesshacker.sys to the
-::"Release" folder
+:: Copy CHANGELOG.txt, LICENSE.txt, README.txt and kprocesshacker.sys to the
+:: "Release" folder
 FOR %%a IN (
 	"CHANGELOG.txt" "LICENSE.txt" "README.txt" "KProcessHacker\i386\kprocesshacker.sys"
 	) DO COPY "..\..\..\%%a" >NUL
 
-::Clear older files present in "Release" folder
+:: Clear older files present in "Release" folder
 DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^
  "ProcessHacker_in.exe" "processhacker-bin.zip" >NUL 2>&1
 
-::Check if ILMerge is present in the default installation location or in PATH
+:: Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
 IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 		SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
 			ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
 
-::Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
+:: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
 REN "ProcessHacker.exe" "ProcessHacker_in.exe"
+ECHO.
+
 %ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe"^
  "Aga.Controls.dll"&&ECHO:ILMerge completed successfully!^
  &&DEL/f/a "ProcessHacker_in.exe" "Aga.Controls.dll" >NUL 2>&1
 
-::Set the path of Inno Setup and compile installer
+:: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 SET "I_=Inno Setup"
 SET "A_=%I_% 5"
@@ -41,10 +43,10 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
 
 :CLEANUP
-::Clean up the .pdb files in "Release" folder
+:: Clean up the .pdb files in "Release" folder
 DEL /f/a/q *.pdb >NUL 2>&1
 
-::ZIP the binaries
+:: ZIP the binaries
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip^
  "processhacker-bin.zip" "*" -x!*setup.exe -mx=9 >NUL&&(
 	ECHO:ZIP created successfully!))
