@@ -639,8 +639,7 @@ namespace ProcessHacker
                                             item.IsInJob = true;
                                             item.JobName = jhandle.GetHandleName();
 
-                                            if (limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK && 
-                                                limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_BREAKAWAY_OK)
+                                            if (limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
                                             {
                                                 item.IsInSignificantJob = true;
                                             }
