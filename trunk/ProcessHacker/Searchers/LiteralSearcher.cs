@@ -95,10 +95,17 @@ namespace ProcessHacker
                     CallSearchProgressChanged(
                         String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress, count));
 
-                    Win32.ReadProcessMemory(phandle, info.BaseAddress, data, info.RegionSize, out bytesRead);
+                    try
+                    {
+                        bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
 
-                    if (bytesRead == 0)
+                        if (bytesRead == 0)
+                            continue;
+                    }
+                    catch
+                    {
                         continue;
+                    }
 
                     for (int i = 0; i < bytesRead; i++)
                     {
