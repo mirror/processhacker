@@ -110,10 +110,10 @@ namespace ProcessHacker
         public delegate bool EnumThreadWndProc(IntPtr hWnd, int param);
         public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
         public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
-        public delegate bool ReadProcessMemoryProc64(int ProcessHandle, int BaseAddress, byte[] Buffer,
+        public delegate bool ReadProcessMemoryProc64(int ProcessHandle, ulong BaseAddress, byte[] Buffer,
             int Size, out int BytesRead);
-        public delegate int FunctionTableAccessProc64(int ProcessHandle, int AddrBase);
-        public delegate int GetModuleBaseProc64(int ProcessHandle, int Address);
+        public delegate int FunctionTableAccessProc64(int ProcessHandle, long AddrBase);
+        public delegate int GetModuleBaseProc64(int ProcessHandle, long Address);
 
         /// <summary>
         /// A cache for type names; QuerySystemInformation with ALL_TYPES_INFORMATION fails for some 

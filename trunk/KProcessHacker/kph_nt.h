@@ -29,17 +29,29 @@
 NTSTATUS NTAPI ObOpenObjectByName(
     POBJECT_ATTRIBUTES ObjectAttributes,
     POBJECT_TYPE ObjectType,
-    KPROCESSOR_MODE AccessMode,
+    KPROCESSOR_MODE PreviousMode,
     PACCESS_STATE AccessState,
     ACCESS_MASK DesiredAccess,
     PVOID ParseContext,
     PHANDLE Handle
     );
 
+NTSTATUS PsGetContextThread(
+    PETHREAD Thread,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE PreviousMode
+    );
+
 NTSTATUS NTAPI PsLookupProcessThreadByCid(
     PCLIENT_ID ClientId,
     PEPROCESS *Process,
     PETHREAD *Thread
+    );
+
+NTSTATUS PsSetContextThread(
+    PETHREAD Thread,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE PreviousMode
     );
 
 NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
@@ -69,16 +81,28 @@ typedef PVOID (NTAPI *_PsGetProcessJob)(
     PEPROCESS Process
     );
 
-typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
+typedef NTSTATUS (NTAPI *_PsResumeProcess)(
     PEPROCESS Process
     );
 
-typedef NTSTATUS (NTAPI *_PsResumeProcess)(
+typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
     PEPROCESS Process
     );
 
 /* KProcessHacker */
 NTSTATUS KphNtInit();
+
+NTSTATUS OpenProcess(
+    PHANDLE ProcessHandle,
+    int DesiredAccess,
+    HANDLE ProcessId
+    );
+
+NTSTATUS KphGetContextThread(
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE AccessMode
+    );
 
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
@@ -88,11 +112,10 @@ NTSTATUS KphOpenProcess(
     KPROCESSOR_MODE AccessMode
     );
 
-NTSTATUS KphOpenThread(
-    PHANDLE ThreadHandle,
+NTSTATUS KphOpenProcessJob(
+    HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId,
+    PHANDLE JobHandle,
     KPROCESSOR_MODE AccessMode
     );
 
@@ -104,24 +127,12 @@ NTSTATUS KphOpenProcessTokenEx(
     KPROCESSOR_MODE AccessMode
     );
 
-NTSTATUS KphOpenProcessJob(
-    HANDLE ProcessHandle,
+NTSTATUS KphOpenThread(
+    PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
-    PHANDLE JobHandle,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PCLIENT_ID ClientId,
     KPROCESSOR_MODE AccessMode
-    );
-
-NTSTATUS KphSuspendProcess(
-    HANDLE ProcessHandle
-    );
-
-NTSTATUS KphResumeProcess(
-    HANDLE ProcessHandle
-    );
-
-NTSTATUS KphTerminateProcess(
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
     );
 
 NTSTATUS KphReadVirtualMemory(
@@ -133,6 +144,25 @@ NTSTATUS KphReadVirtualMemory(
     KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphResumeProcess(
+    HANDLE ProcessHandle
+    );
+
+NTSTATUS KphSetContextThread(
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphSuspendProcess(
+    HANDLE ProcessHandle
+    );
+
+NTSTATUS KphTerminateProcess(
+    HANDLE ProcessHandle,
+    NTSTATUS ExitStatus
+    );
+
 NTSTATUS KphWriteVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
@@ -140,12 +170,6 @@ NTSTATUS KphWriteVirtualMemory(
     ULONG BufferLength,
     PULONG ReturnLength,
     KPROCESSOR_MODE AccessMode
-    );
-
-NTSTATUS OpenProcess(
-    PHANDLE ProcessHandle,
-    int DesiredAccess,
-    HANDLE ProcessId
     );
 
 #endif

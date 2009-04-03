@@ -95,8 +95,7 @@ namespace ProcessHacker
             public int Esp;
             public int SegSs;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAXIMUM_SUPPORTED_EXTENSION)]
-            public byte[] ExtendedRegisters;
+            public unsafe fixed byte ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -143,8 +142,7 @@ namespace ProcessHacker
             public int DataOffset;
             public int DataSelector;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = SIZE_OF_80387_REGISTERS)]
-            public byte[] RegisterArea;
+            public unsafe fixed byte RegisterArea[SIZE_OF_80387_REGISTERS];
 
             public int Cr0NpxState;
         }

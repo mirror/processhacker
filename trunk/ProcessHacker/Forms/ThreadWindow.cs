@@ -138,7 +138,7 @@ namespace ProcessHacker
 
             try
             {
-                _phandle = new Win32.ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
+                _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
             }
             catch (Exception ex)
             {
@@ -252,23 +252,14 @@ namespace ProcessHacker
                 {
                     Win32.ReadProcessMemoryProc64 readMemoryProc = null;
 
-                    if (_pid == 4 && Program.KPH != null)
-                    {
-                        readMemoryProc = new Win32.ReadProcessMemoryProc64(
-                            delegate(int processHandle, int baseAddress, byte[] buffer, int size, out int bytesRead)
-                            {
-                                try
-                                {
-                                    bytesRead = Win32.ProcessHandle.FromHandle(processHandle).ReadMemory(baseAddress, buffer, size);
-                                    return true;
-                                }
-                                catch
-                                {
-                                    bytesRead = 0;
-                                    return false;
-                                }
-                            });
-                    }
+                    //if (Program.KPH != null)
+                    //{
+                    //    readMemoryProc = new Win32.ReadProcessMemoryProc64(
+                    //        delegate(int processHandle, ulong baseAddress, byte[] buffer, int size, out int bytesRead)
+                    //        {
+                    //            return Win32.ReadProcessMemory(processHandle, (int)baseAddress, buffer, size, out bytesRead);
+                    //        });
+                    //}
 
                     if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
                         ref stackFrame, ref context, readMemoryProc, null, null, 0))

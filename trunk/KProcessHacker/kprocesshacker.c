@@ -290,6 +290,10 @@ char *GetIoControlName(ULONG ControlCode)
         return "Get Handle Object Name";
     else if (ControlCode == KPH_OPENPROCESSJOB)
         return "KphOpenProcessJob";
+    else if (ControlCode == KPH_GETCONTEXTTHREAD)
+        return "KphGetContextThread";
+    else if (ControlCode == KPH_SETCONTEXTTHREAD)
+        return "KphSetContextThread";
     else
         return "Unknown";
 }
@@ -812,6 +816,40 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             retLength = 4;
+        }
+        break;
+        
+        case KPH_GETCONTEXTTHREAD:
+        {
+            HANDLE threadHandle;
+            PCONTEXT threadContext;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadHandle = *(HANDLE *)dataBuffer;
+            threadContext = *(PCONTEXT *)(dataBuffer + 4);
+            status = KphGetContextThread(threadHandle, threadContext, UserMode);
+        }
+        break;
+        
+        case KPH_SETCONTEXTTHREAD:
+        {
+            HANDLE threadHandle;
+            PCONTEXT threadContext;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadHandle = *(HANDLE *)dataBuffer;
+            threadContext = *(PCONTEXT *)(dataBuffer + 4);
+            status = KphSetContextThread(threadHandle, threadContext, UserMode);
         }
         break;
         

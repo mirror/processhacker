@@ -63,11 +63,12 @@ NTSTATUS KphNtInit()
     if (WindowsVersion == WINDOWS_VISTA)
     {
         /* Functions available only on Windows Vista */
-        PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
         PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
         PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
         MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
     }
+    
+    PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
     
     return status;
 }
@@ -82,6 +83,26 @@ NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
     clientId.UniqueProcess = (HANDLE)ProcessId;
     
     return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
+}
+
+NTSTATUS KphGetContextThread(
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsGetContextThread(threadObject, ThreadContext, AccessMode);
+    ObDereferenceObject(threadObject);
+    
+    return status;
 }
 
 NTSTATUS KphOpenProcess(
@@ -192,6 +213,149 @@ NTSTATUS KphOpenProcess(
     return status;
 }
 
+NTSTATUS KphOpenProcessJob(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    PHANDLE JobHandle,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    PVOID jobObject;
+    HANDLE jobHandle;
+    ACCESS_STATE accessState;
+    char auxData[0x34];
+    
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)((PCHAR)*PsJobType + 52)
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= JOB_OBJECT_ALL_ACCESS;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+    {
+        SeDeleteAccessState(&accessState);
+        return status;
+    }
+    
+    if (PsGetProcessJob)
+    {
+        jobObject = PsGetProcessJob(processObject);
+    }
+    else
+    {
+        if (WindowsVersion == WINDOWS_VISTA)
+            jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
+        else
+            jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
+    }
+    
+    ObDereferenceObject(processObject);
+    
+    if (jobObject == NULL)
+    {
+        SeDeleteAccessState(&accessState);
+        return STATUS_NO_SUCH_FILE;
+    }
+    
+    ObReferenceObject(jobObject);
+    status = ObOpenObjectByPointer(
+        jobObject,
+        0,
+        &accessState,
+        0,
+        *PsJobType,
+        AccessMode,
+        &jobHandle
+        );
+    SeDeleteAccessState(&accessState);
+    ObDereferenceObject(jobObject);
+    
+    if (NT_SUCCESS(status))
+        *JobHandle = jobHandle;
+    
+    return status;
+}
+
+NTSTATUS KphOpenProcessTokenEx(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    ULONG ObjectAttributes,
+    PHANDLE TokenHandle,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    PVOID tokenObject;
+    HANDLE tokenHandle;
+    ACCESS_STATE accessState;
+    char auxData[0x34];
+    
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)((PCHAR)*SeTokenObjectType + 52)
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= TOKEN_ALL_ACCESS;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+    {
+        SeDeleteAccessState(&accessState);
+        return status;
+    }
+    
+    tokenObject = PsReferencePrimaryToken(processObject);
+    ObDereferenceObject(processObject);
+    
+    status = ObOpenObjectByPointer(
+        tokenObject,
+        ObjectAttributes,
+        &accessState,
+        0,
+        *SeTokenObjectType,
+        AccessMode,
+        &tokenHandle
+        );
+    SeDeleteAccessState(&accessState);
+    ObDereferenceObject(tokenObject);
+    
+    if (NT_SUCCESS(status))
+        *TokenHandle = tokenHandle;
+    
+    return status;
+}
+
 NTSTATUS KphOpenThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
@@ -287,229 +451,6 @@ NTSTATUS KphOpenThread(
     return status;
 }
 
-NTSTATUS KphOpenProcessTokenEx(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG ObjectAttributes,
-    PHANDLE TokenHandle,
-    KPROCESSOR_MODE AccessMode
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    PVOID tokenObject;
-    HANDLE tokenHandle;
-    ACCESS_STATE accessState;
-    char auxData[0x34];
-    
-    status = SeCreateAccessState(
-        &accessState,
-        (PAUX_ACCESS_DATA)auxData,
-        DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*SeTokenObjectType + 52)
-        );
-    
-    if (!NT_SUCCESS(status))
-    {
-        return status;
-    }
-    
-    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
-        accessState.PreviouslyGrantedAccess |= TOKEN_ALL_ACCESS;
-    else
-        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
-    
-    accessState.RemainingDesiredAccess = 0;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-    {
-        SeDeleteAccessState(&accessState);
-        return status;
-    }
-    
-    tokenObject = PsReferencePrimaryToken(processObject);
-    ObDereferenceObject(processObject);
-    
-    status = ObOpenObjectByPointer(
-        tokenObject,
-        ObjectAttributes,
-        &accessState,
-        0,
-        *SeTokenObjectType,
-        AccessMode,
-        &tokenHandle
-        );
-    SeDeleteAccessState(&accessState);
-    ObDereferenceObject(tokenObject);
-    
-    if (NT_SUCCESS(status))
-        *TokenHandle = tokenHandle;
-    
-    return status;
-}
-
-NTSTATUS KphOpenProcessJob(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    PHANDLE JobHandle,
-    KPROCESSOR_MODE AccessMode
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    PVOID jobObject;
-    HANDLE jobHandle;
-    ACCESS_STATE accessState;
-    char auxData[0x34];
-    
-    status = SeCreateAccessState(
-        &accessState,
-        (PAUX_ACCESS_DATA)auxData,
-        DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*PsJobType + 52)
-        );
-    
-    if (!NT_SUCCESS(status))
-    {
-        return status;
-    }
-    
-    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
-        accessState.PreviouslyGrantedAccess |= JOB_OBJECT_ALL_ACCESS;
-    else
-        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
-    
-    accessState.RemainingDesiredAccess = 0;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-    {
-        SeDeleteAccessState(&accessState);
-        return status;
-    }
-    
-    if (PsGetProcessJob)
-    {
-        jobObject = PsGetProcessJob(processObject);
-    }
-    else
-    {
-        if (WindowsVersion == WINDOWS_VISTA)
-            jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
-        else
-            jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
-    }
-    
-    ObDereferenceObject(processObject);
-    
-    if (jobObject == NULL)
-    {
-        SeDeleteAccessState(&accessState);
-        return STATUS_NO_SUCH_FILE;
-    }
-    
-    ObReferenceObject(jobObject);
-    status = ObOpenObjectByPointer(
-        jobObject,
-        0,
-        &accessState,
-        0,
-        *PsJobType,
-        AccessMode,
-        &jobHandle
-        );
-    SeDeleteAccessState(&accessState);
-    ObDereferenceObject(jobObject);
-    
-    if (NT_SUCCESS(status))
-        *JobHandle = jobHandle;
-    
-    return status;
-}
-
-NTSTATUS KphSuspendProcess(
-    HANDLE ProcessHandle
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    
-    if (PsSuspendProcess == NULL)
-        return STATUS_NOT_SUPPORTED;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
-    status = PsSuspendProcess(processObject);
-    ObDereferenceObject(processObject);
-    
-    return status;
-}
-
-NTSTATUS KphResumeProcess(
-    HANDLE ProcessHandle
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    
-    if (PsResumeProcess == NULL)
-        return STATUS_NOT_SUPPORTED;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
-    status = PsResumeProcess(processObject);
-    ObDereferenceObject(processObject);
-    
-    return status;
-}
-
-NTSTATUS KphTerminateProcess(
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    OBJECT_ATTRIBUTES objectAttributes = { 0 };
-    CLIENT_ID clientId;
-    HANDLE newProcessHandle;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-        return status;
-    
-    /* Can't terminate ourself. Get user-mode to do it. */
-    if (PsGetProcessId(processObject) == PsGetCurrentProcessId())
-    {
-        ObDereferenceObject(processObject);
-        return STATUS_DISK_FULL;
-    }
-    
-    /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
-    clientId.UniqueThread = 0;
-    clientId.UniqueProcess = PsGetProcessId(processObject);
-    status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
-    ObDereferenceObject(processObject);
-    
-    if (NT_SUCCESS(status))
-    {
-        status = ZwTerminateProcess(newProcessHandle, ExitStatus);
-        ZwClose(newProcessHandle);
-    }
-    
-    return status;
-}
-
 NTSTATUS KphReadVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
@@ -576,6 +517,106 @@ NTSTATUS KphReadVirtualMemory(
         {
             status = STATUS_ACCESS_VIOLATION;
         }
+    }
+    
+    return status;
+}
+
+NTSTATUS KphResumeProcess(
+    HANDLE ProcessHandle
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    if (PsResumeProcess == NULL)
+        return STATUS_NOT_SUPPORTED;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsResumeProcess(processObject);
+    ObDereferenceObject(processObject);
+    
+    return status;
+}
+
+NTSTATUS KphSetContextThread(
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsSetContextThread(threadObject, ThreadContext, AccessMode);
+    ObDereferenceObject(threadObject);
+    
+    return status;
+}
+
+NTSTATUS KphSuspendProcess(
+    HANDLE ProcessHandle
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    if (PsSuspendProcess == NULL)
+        return STATUS_NOT_SUPPORTED;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsSuspendProcess(processObject);
+    ObDereferenceObject(processObject);
+    
+    return status;
+}
+
+NTSTATUS KphTerminateProcess(
+    HANDLE ProcessHandle,
+    NTSTATUS ExitStatus
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    OBJECT_ATTRIBUTES objectAttributes = { 0 };
+    CLIENT_ID clientId;
+    HANDLE newProcessHandle;
+    
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Can't terminate ourself. Get user-mode to do it. */
+    if (PsGetProcessId(processObject) == PsGetCurrentProcessId())
+    {
+        ObDereferenceObject(processObject);
+        return STATUS_DISK_FULL;
+    }
+    
+    /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
+    clientId.UniqueThread = 0;
+    clientId.UniqueProcess = PsGetProcessId(processObject);
+    status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
+    ObDereferenceObject(processObject);
+    
+    if (NT_SUCCESS(status))
+    {
+        status = ZwTerminateProcess(newProcessHandle, ExitStatus);
+        ZwClose(newProcessHandle);
     }
     
     return status;
