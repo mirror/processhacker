@@ -21,6 +21,7 @@ Process Hacker
      processes to be displayed)
    * KProcessHacker now performs process suspending/resuming on Windows Vista
    * Custom module information querying; can now display the modules for protected processes
+   * Displays service DLL paths
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

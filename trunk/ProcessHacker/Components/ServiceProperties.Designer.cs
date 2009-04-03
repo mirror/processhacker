@@ -38,6 +38,8 @@
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
             this.columnStatus = new System.Windows.Forms.ColumnHeader();
             this.panelService = new System.Windows.Forms.Panel();
+            this.textServiceDll = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.checkChangePassword = new System.Windows.Forms.CheckBox();
             this.textPassword = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -80,7 +82,7 @@
             this.listServices.MultiSelect = false;
             this.listServices.Name = "listServices";
             this.listServices.ShowItemToolTips = true;
-            this.listServices.Size = new System.Drawing.Size(387, 163);
+            this.listServices.Size = new System.Drawing.Size(387, 136);
             this.listServices.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listServices.TabIndex = 3;
             this.listServices.UseCompatibleStateImageBehavior = false;
@@ -106,6 +108,8 @@
             // 
             this.panelService.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelService.Controls.Add(this.textServiceDll);
+            this.panelService.Controls.Add(this.label8);
             this.panelService.Controls.Add(this.checkChangePassword);
             this.panelService.Controls.Add(this.textPassword);
             this.panelService.Controls.Add(this.label7);
@@ -129,11 +133,30 @@
             this.panelService.Controls.Add(this.textServiceBinaryPath);
             this.panelService.Controls.Add(this.labelServiceDisplayName);
             this.panelService.Controls.Add(this.labelServiceName);
-            this.panelService.Location = new System.Drawing.Point(3, 172);
+            this.panelService.Location = new System.Drawing.Point(3, 145);
             this.panelService.Name = "panelService";
             this.panelService.Padding = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.panelService.Size = new System.Drawing.Size(387, 285);
+            this.panelService.Size = new System.Drawing.Size(387, 312);
             this.panelService.TabIndex = 2;
+            // 
+            // textServiceDll
+            // 
+            this.textServiceDll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textServiceDll.Location = new System.Drawing.Point(107, 249);
+            this.textServiceDll.Name = "textServiceDll";
+            this.textServiceDll.ReadOnly = true;
+            this.textServiceDll.Size = new System.Drawing.Size(274, 20);
+            this.textServiceDll.TabIndex = 23;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 252);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(69, 13);
+            this.label8.TabIndex = 22;
+            this.label8.Text = "Service DLL:";
             // 
             // checkChangePassword
             // 
@@ -173,7 +196,7 @@
             // 
             this.buttonDependents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDependents.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependents.Location = new System.Drawing.Point(107, 256);
+            this.buttonDependents.Location = new System.Drawing.Point(107, 283);
             this.buttonDependents.Name = "buttonDependents";
             this.buttonDependents.Size = new System.Drawing.Size(85, 23);
             this.buttonDependents.TabIndex = 18;
@@ -185,7 +208,7 @@
             // 
             this.buttonDependencies.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDependencies.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDependencies.Location = new System.Drawing.Point(198, 256);
+            this.buttonDependencies.Location = new System.Drawing.Point(198, 283);
             this.buttonDependencies.Name = "buttonDependencies";
             this.buttonDependencies.Size = new System.Drawing.Size(102, 23);
             this.buttonDependencies.TabIndex = 18;
@@ -211,7 +234,7 @@
             // 
             this.buttonStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonStart.Image = global::ProcessHacker.Properties.Resources.control_play_blue;
-            this.buttonStart.Location = new System.Drawing.Point(36, 255);
+            this.buttonStart.Location = new System.Drawing.Point(36, 282);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(24, 24);
             this.buttonStart.TabIndex = 16;
@@ -223,7 +246,7 @@
             // 
             this.buttonStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonStop.Image = global::ProcessHacker.Properties.Resources.control_stop_blue;
-            this.buttonStop.Location = new System.Drawing.Point(6, 255);
+            this.buttonStop.Location = new System.Drawing.Point(6, 282);
             this.buttonStop.Name = "buttonStop";
             this.buttonStop.Size = new System.Drawing.Size(24, 24);
             this.buttonStop.TabIndex = 16;
@@ -307,7 +330,7 @@
             // 
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(306, 256);
+            this.buttonApply.Location = new System.Drawing.Point(306, 283);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 7;
@@ -415,5 +438,7 @@
         private System.Windows.Forms.TextBox textPassword;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox checkChangePassword;
+        private System.Windows.Forms.TextBox textServiceDll;
+        private System.Windows.Forms.Label label8;
     }
 }

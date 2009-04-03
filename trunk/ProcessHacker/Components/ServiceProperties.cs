@@ -247,6 +247,20 @@ namespace ProcessHacker
                         textDescription.Text = "";
                     }
 
+                    textServiceDll.Text = "";
+
+                    if (item.Config.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
+                    {
+                        try
+                        {
+                            var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\" + item.Status.ServiceName + "\\Parameters");
+
+                            textServiceDll.Text = Environment.ExpandEnvironmentVariables((string)key.GetValue("ServiceDll"));
+                        }
+                        catch
+                        { }
+                    }
+
                     try
                     {
                         using (ServiceController controller = new ServiceController(
@@ -285,6 +299,7 @@ namespace ProcessHacker
             textPassword.Text = "password";
             textLoadOrderGroup.Text = "";
             textDescription.Text = "";
+            textServiceDll.Text = "";
         }
 
         private void buttonApply_Click(object sender, EventArgs e)
