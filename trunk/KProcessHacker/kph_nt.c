@@ -60,15 +60,10 @@ NTSTATUS KphNtInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    if (WindowsVersion == WINDOWS_VISTA)
-    {
-        /* Functions available only on Windows Vista */
-        PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
-        PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
-        MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
-    }
-    
+    MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
     PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
+    PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
+    PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     
     return status;
 }
