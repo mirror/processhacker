@@ -1,6 +1,6 @@
 Process Hacker
 
-1.3.6.3
+1.3.6.5
  * NEW/IMPROVED:
    * #2702907 - "CSR Processes: Enable termination of multiple processes"
    * #2702909 - "CSR Processes: Show process name when confirming termination"
@@ -22,6 +22,7 @@ Process Hacker
    * KProcessHacker now performs process suspending/resuming on Windows Vista
    * Custom module information querying; can now display the modules for protected processes
    * Displays service DLL paths
+   * Thread list displays cycles instead of context switches on Windows Vista
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

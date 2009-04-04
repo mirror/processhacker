@@ -327,6 +327,9 @@ namespace ProcessHacker
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool QueryProcessCycleTime(int ProcessHandle, out ulong CycleTime);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool SetPriorityClass(int ProcessHandle, int Priority);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -802,6 +805,9 @@ namespace ProcessHacker
         #endregion
 
         #region Threads
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool QueryThreadCycleTime(int ThreadHandle, out ulong CycleTime);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool QueueUserAPC(int APC, int ThreadHandle, int Data);

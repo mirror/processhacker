@@ -42,8 +42,26 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
+            // Use Cycles instead of Context Switches on Vista
+            if (Program.WindowsVersion != WindowsVersion.XP)
+                listThreads.Columns[1].Text = "Cycles Delta";
+
             _highlightingContext = new HighlightingContext(listThreads);
             listThreads.ListViewItemSorter = new SortedListComparer(listThreads);
+
+            (listThreads.ListViewItemSorter as SortedListComparer).CustomSorters.Add(1,
+                (x, y) =>
+                {
+                    if (Program.WindowsVersion == WindowsVersion.XP)
+                    {
+                        return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
+                    }
+                    else
+                    {
+                        return (x.Tag as ThreadItem).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
+                    }
+                });
+
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);
             listThreads.MouseUp += new MouseEventHandler(listThreads_MouseUp);
@@ -257,6 +275,7 @@ namespace ProcessHacker
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
+            litem.Tag = item;
 
             litem.NormalColor = GetThreadColor(item);
 
@@ -272,13 +291,24 @@ namespace ProcessHacker
                 if (litem == null)
                     return;
 
-                if (newItem.ContextSwitchesDelta == 0)
-                    litem.SubItems[1].Text = "";
+                if (Program.WindowsVersion == WindowsVersion.XP)
+                {
+                    if (newItem.ContextSwitchesDelta == 0)
+                        litem.SubItems[1].Text = "";
+                    else
+                        litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
+                }
                 else
-                    litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString();
+                {
+                    if (newItem.CyclesDelta == 0)
+                        litem.SubItems[1].Text = "";
+                    else
+                        litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
+                }
 
                 litem.SubItems[2].Text = newItem.StartAddress;
                 litem.SubItems[3].Text = newItem.Priority;
+                litem.Tag = newItem;
 
                 (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
                 listThreads.Sort();

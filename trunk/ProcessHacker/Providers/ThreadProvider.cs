@@ -40,6 +40,8 @@ namespace ProcessHacker
 
         public long ContextSwitches;
         public long ContextSwitchesDelta;
+        public ulong Cycles;
+        public ulong CyclesDelta;
         public string Priority;
         public uint StartAddressI;
         public string StartAddress;
@@ -167,6 +169,16 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+
+                        if (Program.WindowsVersion != WindowsVersion.XP)
+                        {
+                            try
+                            {
+                                item.Cycles = item.ThreadQueryLimitedHandle.GetCycleTime();
+                            }
+                            catch
+                            { }
+                        }
                     }
                     catch
                     { }
@@ -225,6 +237,19 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    if (Program.WindowsVersion != WindowsVersion.XP)
+                    {
+                        try
+                        {
+                            ulong thisCycles = newitem.ThreadQueryLimitedHandle.GetCycleTime();
+
+                            newitem.CyclesDelta = thisCycles - newitem.Cycles;
+                            newitem.Cycles = thisCycles;
+                        }
+                        catch
+                        { }
+                    }
+
                     try
                     {
                         SymbolProvider.FoundLevel level;
@@ -239,6 +264,8 @@ namespace ProcessHacker
                     if (                  
                         newitem.ContextSwitches != item.ContextSwitches || 
                         newitem.ContextSwitchesDelta != item.ContextSwitchesDelta ||
+                        newitem.Cycles != item.Cycles || 
+                        newitem.CyclesDelta != item.CyclesDelta || 
                         newitem.Priority != item.Priority || 
                         newitem.StartAddress != item.StartAddress ||
                         newitem.WaitReason != item.WaitReason

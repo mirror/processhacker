@@ -113,6 +113,19 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the number of processor cycles consumed by the thread.
+            /// </summary>
+            public ulong GetCycleTime()
+            {
+                ulong cycles;
+
+                if (!QueryThreadCycleTime(this, out cycles))
+                    ThrowLastWin32Error();
+
+                return cycles;
+            }
+
+            /// <summary>
             /// Gets the thread's exit code.
             /// </summary>
             /// <returns>A number.</returns>

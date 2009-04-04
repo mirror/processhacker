@@ -275,6 +275,19 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Gets the number of processor cycles consumed by the process' threads.
+            /// </summary>
+            public ulong GetCycleTime()
+            {
+                ulong cycles;
+
+                if (!QueryProcessCycleTime(this, out cycles))
+                    ThrowLastWin32Error();
+
+                return cycles;
+            }
+
+            /// <summary>
             /// Gets the process' DEP policy.
             /// </summary>
             /// <returns>A DEPStatus enum.</returns>
