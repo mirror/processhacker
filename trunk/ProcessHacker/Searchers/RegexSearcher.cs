@@ -41,7 +41,7 @@ namespace ProcessHacker
             Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
             int count = 0;
 
-            RegexOptions options = RegexOptions.Singleline;
+            RegexOptions options = RegexOptions.Singleline | RegexOptions.Compiled;
             Regex rx = null;
 
             bool opt_priv = (bool)Params["private"];
