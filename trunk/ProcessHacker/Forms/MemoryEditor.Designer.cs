@@ -22,10 +22,11 @@ namespace ProcessHacker
 
             _data = null;
             hexBoxMemory.ByteProvider = null;
-            GC.Collect();
 
             Program.MemoryEditors.Remove(this.Id);
             Program.UpdateWindows();
+
+            Program.CollectGarbage();
 
             base.Dispose(disposing);
         }

@@ -186,8 +186,6 @@ namespace ProcessHacker
 
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 
-            ThreadPool.SetMaxThreads(32, 64);
-
             if (Environment.OSVersion.Version.Major <= 5)
                 WindowsVersion = WindowsVersion.XP;
             else if (Environment.OSVersion.Version.Major >= 6)
@@ -440,12 +438,14 @@ namespace ProcessHacker
 
         public static void CollectGarbage()
         {
+            /* Garbage collections */
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
 
+            /* Compact the native heaps */
             int[] heaps = new int[128];
             int count = Win32.GetProcessHeaps(heaps.Length, heaps);
 
@@ -454,6 +454,18 @@ namespace ProcessHacker
                 for (int i = 0; i < count; i++)
                     Win32.HeapCompact(heaps[i], false);
             }
+
+            /* Terminate any unused threadpool threads */
+            int workerThreads, completionPortThreads, maxWorkerThreads, maxCompletionPortThreads;
+
+            ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+            ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+
+            workerThreads = maxWorkerThreads - workerThreads;
+            completionPortThreads = maxCompletionPortThreads - completionPortThreads;
+
+            ThreadPool.SetMaxThreads(0, 0);
+            ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

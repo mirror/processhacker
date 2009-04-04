@@ -24,11 +24,12 @@ namespace ProcessHacker
                 _searchThread.Abort();
 
             _so = null;
-            GC.Collect();
 
             Program.ResultsWindows.Remove(Id);
             Program.ResultsIds.Push(_id);
             Program.UpdateWindows();
+
+            Program.CollectGarbage();
 
             base.Dispose(disposing);
         }

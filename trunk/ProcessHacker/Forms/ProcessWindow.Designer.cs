@@ -59,7 +59,7 @@
             Program.UpdateWindows();
 
             // A temporary fix for any handle/memory leaks
-            System.GC.Collect();
+            Program.CollectGarbage();
 
             base.Dispose(disposing);
         }
