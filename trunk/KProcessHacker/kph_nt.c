@@ -100,6 +100,48 @@ NTSTATUS KphGetContextThread(
     return status;
 }
 
+NTSTATUS KphGetThreadWin32Thread(
+    HANDLE ThreadHandle,
+    PVOID *Win32Thread,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    PVOID win32Thread;
+    
+    if (AccessMode == UserMode)
+    {
+        __try
+        {
+            ProbeForWrite(Win32Thread, sizeof(PVOID), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+    }
+    
+    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    win32Thread = PsGetThreadWin32Thread(threadObject);
+    ObDereferenceObject(threadObject);
+    
+    __try
+    {
+        *Win32Thread = win32Thread;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return STATUS_ACCESS_VIOLATION;
+    }
+    
+    return status;
+}
+
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,

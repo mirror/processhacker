@@ -23,6 +23,8 @@ Process Hacker
    * Custom module information querying; can now display the modules for protected processes
    * Displays service DLL paths
    * Thread list displays cycles instead of context switches on Windows Vista
+   * GUI threads are highlighted (with KProcessHacker)
+   * Suspended and GUI thread highlighting can be configured
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"

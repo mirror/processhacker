@@ -260,8 +260,10 @@ namespace ProcessHacker
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {
-            if (titem.WaitReason == Win32.KWAIT_REASON.Suspended)
-                return System.Drawing.Color.LightGray;
+            if (Properties.Settings.Default.UseColorSuspended && titem.WaitReason == Win32.KWAIT_REASON.Suspended)
+                return Properties.Settings.Default.ColorSuspended;
+            else if (Properties.Settings.Default.UseColorGuiThreads && titem.IsGuiThread)
+                return Properties.Settings.Default.ColorGuiThreads;
 
             return System.Drawing.SystemColors.Window;
         }

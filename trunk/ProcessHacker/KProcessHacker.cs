@@ -60,7 +60,8 @@ namespace ProcessHacker
             GetHandleObjectName,
             KphOpenProcessJob,
             KphGetContextThread,
-            KphSetContextThread
+            KphSetContextThread,
+            KphGetThreadWin32Thread
         }
 
         private string _deviceName;
@@ -222,6 +223,16 @@ namespace ProcessHacker
             Array.Copy(Misc.IntToBytes((int)context, Misc.Endianness.Little), 0, data, 4, 4);
 
             _fileHandle.IoControl(CtlCode(Control.KphGetContextThread), data, null);
+        }
+
+        public int KphGetThreadWin32Thread(Win32.ThreadHandle threadHandle)
+        {
+            byte[] inData = Misc.IntToBytes(threadHandle, Misc.Endianness.Little);
+            byte[] outData = new byte[4];
+
+            _fileHandle.IoControl(CtlCode(Control.KphGetThreadWin32Thread), inData, outData);
+
+            return Misc.BytesToInt(outData, Misc.Endianness.Little);
         }
 
         public int KphOpenProcess(int pid, Win32.PROCESS_RIGHTS desiredAccess)

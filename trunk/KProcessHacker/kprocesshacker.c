@@ -294,6 +294,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphGetContextThread";
     else if (ControlCode == KPH_SETCONTEXTTHREAD)
         return "KphSetContextThread";
+    else if (ControlCode == KPH_GETTHREADWIN32THREAD)
+        return "KphGetThreadWin32Thread";
     else
         return "Unknown";
 }
@@ -850,6 +852,26 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             threadHandle = *(HANDLE *)dataBuffer;
             threadContext = *(PCONTEXT *)(dataBuffer + 4);
             status = KphSetContextThread(threadHandle, threadContext, UserMode);
+        }
+        break;
+        
+        case KPH_GETTHREADWIN32THREAD:
+        {
+            HANDLE threadHandle;
+            
+            if (inLength < 4 || outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadHandle = *(HANDLE *)dataBuffer;
+            status = KphGetThreadWin32Thread(threadHandle, (PVOID *)dataBuffer, KernelMode);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            retLength = 4;
         }
         break;
         

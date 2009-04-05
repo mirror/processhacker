@@ -36,10 +36,14 @@ NTSTATUS NTAPI ObOpenObjectByName(
     PHANDLE Handle
     );
 
-NTSTATUS PsGetContextThread(
+NTSTATUS NTAPI PsGetContextThread(
     PETHREAD Thread,
     PCONTEXT ThreadContext,
     KPROCESSOR_MODE PreviousMode
+    );
+
+PVOID NTAPI PsGetThreadWin32Thread(
+    PETHREAD Thread
     );
 
 NTSTATUS NTAPI PsLookupProcessThreadByCid(
@@ -48,7 +52,7 @@ NTSTATUS NTAPI PsLookupProcessThreadByCid(
     PETHREAD *Thread
     );
 
-NTSTATUS PsSetContextThread(
+NTSTATUS NTAPI PsSetContextThread(
     PETHREAD Thread,
     PCONTEXT ThreadContext,
     KPROCESSOR_MODE PreviousMode
@@ -101,6 +105,12 @@ NTSTATUS OpenProcess(
 NTSTATUS KphGetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphGetThreadWin32Thread(
+    HANDLE ThreadHandle,
+    PVOID *Win32Thread,
     KPROCESSOR_MODE AccessMode
     );
 

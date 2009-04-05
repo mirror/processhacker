@@ -86,10 +86,10 @@
     <Setting Name="SearchEngine" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://www.google.com/search?q=%s</Value>
     </Setting>
-    <Setting Name="ColorNewProcesses" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="ColorNew" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Chartreuse</Value>
     </Setting>
-    <Setting Name="ColorRemovedProcesses" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="ColorRemoved" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">255, 60, 40</Value>
     </Setting>
     <Setting Name="ColorOwnProcesses" Type="System.Drawing.Color" Scope="User">
@@ -295,6 +295,18 @@
     </Setting>
     <Setting Name="ServiceMiniListColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ColorSuspended" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Silver</Value>
+    </Setting>
+    <Setting Name="UseColorSuspended" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ColorGuiThreads" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 255, 128</Value>
+    </Setting>
+    <Setting Name="UseColorGuiThreads" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

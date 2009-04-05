@@ -362,24 +362,24 @@ namespace ProcessHacker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Chartreuse")]
-        public global::System.Drawing.Color ColorNewProcesses {
+        public global::System.Drawing.Color ColorNew {
             get {
-                return ((global::System.Drawing.Color)(this["ColorNewProcesses"]));
+                return ((global::System.Drawing.Color)(this["ColorNew"]));
             }
             set {
-                this["ColorNewProcesses"] = value;
+                this["ColorNew"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("255, 60, 40")]
-        public global::System.Drawing.Color ColorRemovedProcesses {
+        public global::System.Drawing.Color ColorRemoved {
             get {
-                return ((global::System.Drawing.Color)(this["ColorRemovedProcesses"]));
+                return ((global::System.Drawing.Color)(this["ColorRemoved"]));
             }
             set {
-                this["ColorRemovedProcesses"] = value;
+                this["ColorRemoved"] = value;
             }
         }
         
@@ -1198,6 +1198,54 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["ServiceMiniListColumns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
+        public global::System.Drawing.Color ColorSuspended {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorSuspended"]));
+            }
+            set {
+                this["ColorSuspended"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorSuspended {
+            get {
+                return ((bool)(this["UseColorSuspended"]));
+            }
+            set {
+                this["UseColorSuspended"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 255, 128")]
+        public global::System.Drawing.Color ColorGuiThreads {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorGuiThreads"]));
+            }
+            set {
+                this["ColorGuiThreads"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorGuiThreads {
+            get {
+                return ((bool)(this["UseColorGuiThreads"]));
+            }
+            set {
+                this["UseColorGuiThreads"] = value;
             }
         }
     }

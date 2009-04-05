@@ -65,8 +65,8 @@ namespace ProcessHacker
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
-            colorNewProcesses.Color = Properties.Settings.Default.ColorNewProcesses;
-            colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemovedProcesses;
+            colorNewProcesses.Color = Properties.Settings.Default.ColorNew;
+            colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemoved;
             this.InitializeHighlightingColors();
 
             checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
@@ -193,6 +193,10 @@ namespace ProcessHacker
                 "Executables are sometimes \"packed\" to reduce their size.\n" +
                 "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
                 "processes with the name of a system process.");
+            AddToList("ColorSuspended", "Suspended Threads",
+                "Threads that are suspended from execution.");
+            AddToList("ColorGuiThreads", "GUI Threads",
+                "Threads that have made at least one GUI-related system call.");
 
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
@@ -280,8 +284,8 @@ namespace ProcessHacker
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
             Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
-            Properties.Settings.Default.ColorNewProcesses = colorNewProcesses.Color;
-            Properties.Settings.Default.ColorRemovedProcesses = colorRemovedProcesses.Color;
+            Properties.Settings.Default.ColorNew = colorNewProcesses.Color;
+            Properties.Settings.Default.ColorRemoved = colorRemovedProcesses.Color;
 
             foreach (ListViewItem item in listHighlightingColors.Items)
             {
@@ -299,10 +303,10 @@ namespace ProcessHacker
 
             // apply the settings immediately if we can
             HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
-            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
-            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
 
             if (checkReplaceTaskManager.Enabled)
             {

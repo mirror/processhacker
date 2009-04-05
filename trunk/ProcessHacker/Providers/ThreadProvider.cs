@@ -46,6 +46,7 @@ namespace ProcessHacker
         public uint StartAddressI;
         public string StartAddress;
         public Win32.KWAIT_REASON WaitReason;
+        public bool IsGuiThread;
 
         public Win32.ThreadHandle ThreadQueryLimitedHandle;
     }
@@ -170,6 +171,16 @@ namespace ProcessHacker
                         catch
                         { }
 
+                        if (Program.KPH != null)
+                        {
+                            try
+                            {
+                                item.IsGuiThread = Program.KPH.KphGetThreadWin32Thread(item.ThreadQueryLimitedHandle) != 0;
+                            }
+                            catch
+                            { }
+                        }
+
                         if (Program.WindowsVersion != WindowsVersion.XP)
                         {
                             try
@@ -237,6 +248,16 @@ namespace ProcessHacker
                     catch
                     { }
 
+                    if (Program.KPH != null)
+                    {
+                        try
+                        {
+                            newitem.IsGuiThread = Program.KPH.KphGetThreadWin32Thread(newitem.ThreadQueryLimitedHandle) != 0;
+                        }
+                        catch
+                        { }
+                    }
+
                     if (Program.WindowsVersion != WindowsVersion.XP)
                     {
                         try
@@ -266,6 +287,7 @@ namespace ProcessHacker
                         newitem.ContextSwitchesDelta != item.ContextSwitchesDelta ||
                         newitem.Cycles != item.Cycles || 
                         newitem.CyclesDelta != item.CyclesDelta || 
+                        newitem.IsGuiThread != item.IsGuiThread || 
                         newitem.Priority != item.Priority || 
                         newitem.StartAddress != item.StartAddress ||
                         newitem.WaitReason != item.WaitReason

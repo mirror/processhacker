@@ -1799,10 +1799,10 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceListViewColumns, listServices.List);
             ColumnSettings.LoadSettings(Properties.Settings.Default.NetworkListViewColumns, listNetwork.List);
 
-            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNewProcesses;
-            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNewProcesses;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemovedProcesses;
+            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
 
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
 
