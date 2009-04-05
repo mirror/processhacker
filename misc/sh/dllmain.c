@@ -18,4 +18,3 @@ BOOL APIENTRY DllMain(
 
 	return TRUE;
 }
-
