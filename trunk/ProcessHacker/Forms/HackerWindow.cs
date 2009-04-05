@@ -935,6 +935,31 @@ namespace ProcessHacker
             { }
         }
 
+        private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(processSelectedPID,
+                        Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD |
+                        Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION |
+                        Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE))
+                    {
+                        phandle.InjectDll(ofd.FileName, 2000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
         {
             ProcessPickerWindow picker = new ProcessPickerWindow();

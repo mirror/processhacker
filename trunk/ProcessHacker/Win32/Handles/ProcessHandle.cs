@@ -694,6 +694,32 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Forces the process to load the specified library.
+            /// </summary>
+            /// <param name="path">The path to the library.</param>
+            public void InjectDll(string path)
+            {
+                this.InjectDll(path, 0xffffffff);
+            }
+
+            /// <summary>
+            /// Forces the process to load the specified library.
+            /// </summary>
+            /// <param name="path">The path to the library.</param>
+            /// <param name="timeout">The timeout, in seconds, for the process to load the library.</param>
+            public void InjectDll(string path, uint timeout)
+            {
+                int stringPage = this.AllocMemory(path.Length * 2 + 2, MEMORY_PROTECTION.PAGE_EXECUTE_READWRITE);
+
+                this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
+
+                this.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "LoadLibraryW"), 
+                    stringPage, THREAD_RIGHTS.THREAD_ALL_ACCESS).Wait(timeout);
+
+                this.FreeMemory(stringPage, path.Length * 2 + 2, false);
+            }
+
+            /// <summary>
             /// Gets whether the process is currently being debugged. This requires 
             /// the PROCESS_QUERY_INFORMATION permission.
             /// </summary>

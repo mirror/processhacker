@@ -9,6 +9,7 @@ Process Hacker
    * #2713088 - "Network: Ctrl+A and Ctrl+C should copy the processes' names"
    * #2714130 - "Option to disable/enable all highlighting colors"
    * Job information
+   * "Inject DLL" function
    * Statistics times in System Information and process properties
    * Highlighting system
    * Configurable max. samples and plotter step size
