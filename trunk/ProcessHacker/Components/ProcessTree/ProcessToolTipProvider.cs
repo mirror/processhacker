@@ -97,6 +97,32 @@ namespace ProcessHacker
                     { }
                 }
 
+                string dllhostText = "";
+
+                if (pNode.ProcessItem.FileName != null &&
+                    pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\dllhost.exe",
+                    StringComparison.InvariantCultureIgnoreCase) &&
+                    pNode.ProcessItem.CmdLine != null)
+                {
+                    try
+                    {
+                        string clsid = pNode.ProcessItem.CmdLine.ToLowerInvariant().Split(
+                            new string[] { "/processid:" }, StringSplitOptions.None)[1].Split(' ')[0];
+                        var key = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey("CLSID\\" + clsid);
+                        var inprocServer32 = key.OpenSubKey("InprocServer32");
+                        string name = key.GetValue("") as string;
+                        string fileName = inprocServer32.GetValue("") as string;
+
+                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
+
+                        dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " + 
+                            info.FileName + "\n    " +
+                            info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
+                    }
+                    catch
+                    { }
+                }
+
                 string servicesText = "";
 
                 try
@@ -166,7 +192,7 @@ namespace ProcessHacker
                 catch
                 { }
 
-                return (cmdText + fileText + otherNotes + runDllText + servicesText).Trim(' ', '\n', '\r');
+                return (cmdText + fileText + otherNotes + runDllText + dllhostText + servicesText).Trim(' ', '\n', '\r');
             }
             catch
             { }

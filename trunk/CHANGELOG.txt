@@ -25,6 +25,7 @@ Process Hacker
    * Thread list displays cycles instead of context switches on Windows Vista
    * GUI threads are highlighted (with KProcessHacker)
    * Suspended and GUI thread highlighting can be configured
+   * Special tooltip information for dllhost.exe (shows COM target)
  * FIXED:
    * #2642442 - "System Information label text gets clipped"
    * #2694437 - "Crash when sorting the process list"
