@@ -298,6 +298,46 @@ namespace ProcessHacker
             Application.Run();
         }
 
+        public static void Unhook()
+        {
+            PE.PEFile file = new ProcessHacker.PE.PEFile(Environment.SystemDirectory + "\\ntdll.dll");
+            System.IO.BinaryReader br = new System.IO.BinaryReader(
+                new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read));
+            int ntdll = Win32.GetModuleHandle("ntdll.dll");
+            int old;
+
+            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.COFFOptionalHeader.SizeOfCode, (int)Win32.MEMORY_PROTECTION.PAGE_EXECUTE_READWRITE, out old);
+
+            for (int i = 0; i < file.ExportData.ExportOrdinalTable.Count; i++)
+            {
+                ushort ordinal = file.ExportData.ExportOrdinalTable[i];
+
+                if (ordinal >= file.ExportData.ExportAddressTable.Count)
+                    continue;
+
+                uint address = file.ExportData.ExportAddressTable[ordinal].ExportRVA;
+                int fileAddress = (int)file.RvaToVa(address);
+
+                string name = file.ExportData.ExportNameTable[i];
+
+                if (!name.StartsWith("Nt") || name.StartsWith("Ntdll"))
+                    continue;
+
+                byte[] fileData = new byte[5];
+
+                br.BaseStream.Seek(fileAddress, System.IO.SeekOrigin.Begin);
+
+                for (int j = 0; j < 5; j++)
+                {
+                    System.Runtime.InteropServices.Marshal.WriteByte(new IntPtr(ntdll + address + j), br.ReadByte());
+                }
+            }
+
+            br.Close();
+
+            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.Sections[0].VirtualSize, old, out old);
+        }
+
         private static void CheckForPreviousInstance()
         {
             bool found = false;
