@@ -1947,9 +1947,9 @@ namespace ProcessHacker
 
         private void Exit()
         {
-            processP.Dispose();
-            serviceP.Dispose();
-            networkP.Dispose();
+            //processP.Dispose();
+            //serviceP.Dispose();
+            //networkP.Dispose();
 
             notifyIcon.Visible = false;
 
