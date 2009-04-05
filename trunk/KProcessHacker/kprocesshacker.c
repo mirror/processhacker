@@ -307,7 +307,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     PCHAR dataBuffer;
     int controlCode;
     unsigned int inLength, outLength;
-    int retLength;
+    int retLength = 0;
     
     Irp->IoStatus.Status = STATUS_SUCCESS;
     Irp->IoStatus.Information = 0;
