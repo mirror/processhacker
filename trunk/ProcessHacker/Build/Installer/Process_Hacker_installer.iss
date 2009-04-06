@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "27"
+#define installer_build_number "28"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -84,6 +84,7 @@ Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversio
 Source: ..\..\bin\Release\README.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\structs.txt; DestDir: {app}; Flags: ignoreversion
 Source: Icons\uninstall.ico; DestDir: {app}; Flags: ignoreversion
+Source: ngen.bat; DestDir: {tmp}; Flags: ignoreversion
 
 [Tasks]
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
@@ -154,6 +155,7 @@ Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellex
 Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; StatusMsg: {cm:msg_stopkprocesshacker}; Check: KProcessHackerStateCheck(); Flags: runhidden runascurrentuser
 Filename: {cmd}; Parameters: "/C ""sc create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"""; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {cmd}; Parameters: "/C ""sc start KProcessHacker"""; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {tmp}\ngen.bat; WorkingDir: {tmp}; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
