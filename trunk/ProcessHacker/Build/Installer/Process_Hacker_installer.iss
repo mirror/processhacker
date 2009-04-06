@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "28"
+#define installer_build_number "29"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -151,17 +151,17 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 [Run]
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
 Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser
-Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; Check: KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {cmd}; Parameters: "/C ""sc create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"""; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {cmd}; Parameters: "/C ""sc start KProcessHacker"""; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
 
 [UninstallRun]
-Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; Check: KProcessHackerStateCheck(); Flags: runhidden
-Filename: {cmd}; Parameters: "/C ""sc delete KProcessHacker"""; Check: KProcessHackerStateCheck(); Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden
 
 [Code]
 // Create a mutex for the installer
