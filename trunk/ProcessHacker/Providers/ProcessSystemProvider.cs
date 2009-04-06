@@ -360,6 +360,8 @@ namespace ProcessHacker
 
             lock (_fpResults)
                 _fpResults.Enqueue(fpResult);
+
+            Program.CollectGarbage();
         }
 
         public void QueueFileProcessing(int pid)

@@ -99,6 +99,7 @@ namespace ProcessHacker
         public static KProcessHacker KPH;
         public static SharedThreadProvider SharedThreadProvider;
         public static SharedThreadProvider SecondarySharedThreadProvider;
+        private static object CollectWorkerThreadsLock = new object();
 
         /// <summary>
         /// The main entry point for the application.
@@ -496,16 +497,24 @@ namespace ProcessHacker
             }
 
             /* Terminate any unused threadpool threads */
-            int workerThreads, completionPortThreads, maxWorkerThreads, maxCompletionPortThreads;
+            CollectWorkerThreads();
+        }
 
-            ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
-            ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+        public static void CollectWorkerThreads()
+        {
+            lock (CollectWorkerThreadsLock)
+            {
+                int workerThreads, completionPortThreads, maxWorkerThreads, maxCompletionPortThreads;
 
-            workerThreads = maxWorkerThreads - workerThreads;
-            completionPortThreads = maxCompletionPortThreads - completionPortThreads;
+                ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+                ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
 
-            ThreadPool.SetMaxThreads(0, 0);
-            ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
+                workerThreads = maxWorkerThreads - workerThreads;
+                completionPortThreads = maxCompletionPortThreads - completionPortThreads;
+
+                ThreadPool.SetMaxThreads(0, 0);
+                ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
+            }
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

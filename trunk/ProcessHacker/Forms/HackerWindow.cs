@@ -1182,6 +1182,8 @@ namespace ProcessHacker
             try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
             catch { }
 
+            Program.CollectGarbage();
+
             if (processP.RunCount >= 1)
                 this.Invoke(new MethodInvoker(delegate
                 {

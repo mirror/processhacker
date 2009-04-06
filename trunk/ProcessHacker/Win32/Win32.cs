@@ -301,7 +301,7 @@ namespace ProcessHacker
                 if (!CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
                     return VerifyResult.NoSignature;
 
-                StringBuilder memberTag = new StringBuilder();
+                StringBuilder memberTag = new StringBuilder(hashLength * 2);
 
                 for (int i = 0; i < hashLength; i++)
                     memberTag.Append(hash[i].ToString("X2"));
