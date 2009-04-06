@@ -1,11 +1,12 @@
-#ifndef _SH_H
-#define _SH_H
+#ifndef _HOOK_H
+#define _HOOK_H
 
 #include <ntstatus.h>
                                              
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_NO_STATUS /* Need ntstatus.h instead */
 #include <windows.h>
+#include <stdlib.h>
 
 #define NTSTATUS LONG
 
@@ -46,11 +47,7 @@ typedef struct _HOOK
     ULONG ReplacedLength;
 } HOOK, *PHOOK;
 
-VOID ShInit();
-
-VOID ShDeinit();
-
-VOID ShUnpatchCall(
+NTSTATUS ShUnpatchCall(
     PHOOK Hook
     );
 

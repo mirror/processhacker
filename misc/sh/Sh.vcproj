@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SH_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;SH_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -114,7 +114,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SH_EXPORTS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;SH_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -171,6 +171,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\apilog.c"
+				>
+			</File>
+			<File
+				RelativePath=".\common.c"
+				>
+			</File>
+			<File
 				RelativePath=".\dllmain.c"
 				>
 				<FileConfiguration
@@ -193,11 +201,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\nthooks.c"
+				RelativePath=".\hook.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sh.c"
+				RelativePath=".\nthook.c"
 				>
 			</File>
 		</Filter>
@@ -207,11 +215,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\nthooks.h"
+				RelativePath=".\apilog.h"
 				>
 			</File>
 			<File
-				RelativePath=".\sh.h"
+				RelativePath=".\common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\hook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\nthook.h"
 				>
 			</File>
 		</Filter>

@@ -1,4 +1,4 @@
-#include "sh.h"
+#include "apilog.h"
 
 BOOL APIENTRY DllMain(
     HMODULE hModule,
@@ -9,10 +9,10 @@ BOOL APIENTRY DllMain(
 	switch (ul_reason_for_call)
 	{
 	    case DLL_PROCESS_ATTACH:
-            ShInit();
+            AlInit();
             return TRUE;
 	    case DLL_PROCESS_DETACH:
-            ShDeinit();
+            AlDeinit();
 		    return FALSE;
 	}
 

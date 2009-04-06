@@ -1,7 +1,7 @@
-#ifndef _NTHOOKS_H
-#define _NTHOOKS_H
+#ifndef _NTHOOK_H
+#define _NTHOOK_H
 
-#include "sh.h"
+#include "hook.h"
 
 typedef struct _NT_HOOK
 {
@@ -10,22 +10,18 @@ typedef struct _NT_HOOK
     USHORT ArgumentLength;
 } NT_HOOK, *PNT_HOOK;
 
-VOID ShNtPatch();
-
-VOID ShNtUnpatch();
-
-NTSTATUS ShNtSystemCall(
+NTSTATUS ShNtCall(
     PNT_HOOK NtHook,
     PVOID FirstArgument
     );
 
-VOID ShPatchNtCall(
+NTSTATUS ShNtPatchCall(
     PSTR Name,
     PVOID Target,
     PNT_HOOK NtHook
     );
 
-VOID ShNtUnpatchCall(
+NTSTATUS ShNtUnpatchCall(
     PNT_HOOK NtHook
     );
 

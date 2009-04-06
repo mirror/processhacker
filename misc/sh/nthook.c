@@ -1,6 +1,6 @@
-#include "nthooks.h"
+#include "nthook.h"
 
-__declspec(naked) NTSTATUS ShNtSystemCall(
+__declspec(naked) NTSTATUS ShNtCall(
     PNT_HOOK NtHook,
     PVOID FirstArgument
     )
@@ -12,14 +12,18 @@ __declspec(naked) NTSTATUS ShNtSystemCall(
         push    esi
         push    edi
 
-        /* Allocate space for the arguments. */
+        /* Allocate space for the arguments, if necessary. */
+        mov     esi, [FirstArgument]
+        test    esi, esi
+        jz      NoArguments
         mov     eax, [NtHook]
         movzx   ecx, word ptr [eax+NT_HOOK.ArgumentLength]
         sub     esp, ecx
         /* Copy the arguments. */
-        mov     esi, [FirstArgument]
         mov     edi, esp
         repne   movs [edi], [esi]
+
+NoArguments:
         /* Allocate 4 bytes because that is where the return address normally should be. 
            The system service dispatcher skips it. */
         sub     esp, 4
@@ -30,11 +34,16 @@ __declspec(naked) NTSTATUS ShNtSystemCall(
         call    [edx]
         /* Deallocate the 4 bytes */
         add     esp, 4
-        /* Deallocate the space we allocated for the arguments */
+
+        /* Deallocate the space we allocated for the arguments, if necessary. */
+        mov     esi, [FirstArgument]
+        test    esi, esi
+        jz      NoArguments2
         mov     edx, [NtHook]
         movzx   ecx, word ptr [edx+NT_HOOK.ArgumentLength]
         add     esp, ecx
 
+NoArguments2:
         pop     edi
         pop     esi
         mov     esp, ebp
@@ -95,34 +104,9 @@ NTSTATUS ShNtPatchCall(
     return STATUS_SUCCESS;
 }
 
-VOID ShNtUnpatchCall(
+NTSTATUS ShNtUnpatchCall(
     PNT_HOOK NtHook
     )
 {
-    ShUnpatchCall(&NtHook->Hook);
-}
-
-NT_HOOK ShNtOpenProcessHook;
-
-NTSTATUS NTAPI ShNtOpenProcess(
-    PHANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId
-    )
-{
-    if (ClientId->UniqueProcess == 4)
-        return STATUS_ACCESS_DENIED;
-
-    return ShNtSystemCall(&ShNtOpenProcessHook, &ProcessHandle);
-}
-
-VOID ShNtPatch()
-{
-    ShNtPatchCall("NtOpenProcess", ShNtOpenProcess, &ShNtOpenProcessHook);
-}
-
-VOID ShNtUnpatch()
-{
-    ShNtUnpatchCall(&ShNtOpenProcessHook);
+    return ShUnpatchCall(&NtHook->Hook);
 }
