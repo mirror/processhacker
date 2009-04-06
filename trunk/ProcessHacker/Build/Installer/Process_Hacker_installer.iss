@@ -50,13 +50,13 @@ Compression=lzma/ultra64
 SolidCompression=True
 InternalCompressLevel=ultra64
 EnableDirDoesntExistWarning=False
-DirExistsWarning=no
+DirExistsWarning=No
 ShowTasksTreeLines=True
 AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
-PrivilegesRequired=admin
-ShowLanguageDialog=auto
+PrivilegesRequired=Admin
+ShowLanguageDialog=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
@@ -149,9 +149,9 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
 
 [Run]
-Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser; WorkingDir: {app}
-Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser; WorkingDir: {app}
-Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; StatusMsg: {cm:msg_stopkprocesshacker}; Check: KProcessHackerStateCheck(); Flags: runhidden runascurrentuser
+Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
+Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser
+Filename: {cmd}; Parameters: "/C ""sc stop KProcessHacker"""; Check: KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {cmd}; Parameters: "/C ""sc create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"""; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {cmd}; Parameters: "/C ""sc start KProcessHacker"""; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
