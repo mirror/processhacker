@@ -413,7 +413,7 @@ namespace ProcessHacker
                 {
                     this.SaveSettings();
                     Program.HackerWindow.NotifyIcon.Visible = false;
-                    System.Diagnostics.Process.GetCurrentProcess().Kill();
+                    Win32.ExitProcess(0);
                 }, this.Handle);
         }
 

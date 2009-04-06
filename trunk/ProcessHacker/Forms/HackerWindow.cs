@@ -212,7 +212,7 @@ namespace ProcessHacker
                 {
                     this.SaveSettings();
                     notifyIcon.Visible = false;
-                    Process.GetCurrentProcess().Kill();
+                    Win32.ExitProcess(0);
                 }, this.Handle);
         }
 
@@ -1987,7 +1987,7 @@ namespace ProcessHacker
 
             try
             {
-                Process.GetCurrentProcess().Kill();
+                Win32.ExitProcess(0);
             }
             catch
             { }
@@ -2050,7 +2050,7 @@ namespace ProcessHacker
                     }
                 }
 
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Win32.ExitProcess(0);
             }
         }
 

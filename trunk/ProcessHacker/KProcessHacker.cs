@@ -370,7 +370,7 @@ namespace ProcessHacker
                 // STATUS_DISK_FULL means we tried to terminate ourself. Kernel-mode can't do it, 
                 // so we do it now.
                 if (ex.ErrorCode == 112)
-                    Process.GetCurrentProcess().Kill();
+                    Win32.ExitProcess(exitStatus);
             }
         }
 

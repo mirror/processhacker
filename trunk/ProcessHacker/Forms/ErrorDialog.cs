@@ -67,7 +67,7 @@ namespace ProcessHacker
             catch
             { }
 
-            Process.GetCurrentProcess().Kill();
+            Win32.ExitProcess(1);
         }
     }
 }

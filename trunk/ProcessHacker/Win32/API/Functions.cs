@@ -327,6 +327,9 @@ namespace ProcessHacker
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern void ExitProcess(int ExitCode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool QueryProcessCycleTime(int ProcessHandle, out ulong CycleTime);
 
         [DllImport("kernel32.dll", SetLastError = true)]
