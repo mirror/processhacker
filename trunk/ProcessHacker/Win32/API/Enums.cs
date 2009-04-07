@@ -423,6 +423,33 @@ namespace ProcessHacker
         }
 
         [Flags]
+        public enum PIPE_ACCESS_MODE : uint
+        {
+            PIPE_ACCESS_INBOUND = 0x1,
+            PIPE_ACCESS_OUTBOUND = 0x2,
+            PIPE_ACCESS_DUPLEX = 0x3,
+            FILE_FLAG_FIRST_PIPE_INSTANCE = 0x80000,
+            FILE_FLAG_WRITE_THROUGH = 0x80000000,
+            FILE_FLAG_OVERLAPPED = 0x40000000,
+            WRITE_DAC = 0x40000,
+            WRITE_OWNER = 0x80000,
+            ACCESS_SYSTEM_SECURITY = 0x01000000
+        }
+
+        [Flags]
+        public enum PIPE_MODE : int
+        {
+            PIPE_TYPE_BYTE = 0x0,
+            PIPE_TYPE_MESSAGE = 0x4,
+            PIPE_READMODE_BYTE = 0x0,
+            PIPE_READMODE_MESSAGE = 0x2,
+            PIPE_WAIT = 0x0,
+            PIPE_NOWAIT = 0x1,
+            PIPE_ACCEPT_REMOTE_CLIENTS = 0x0,
+            PIPE_REJECT_REMOTE_CLIENTS = 0x8
+        }
+
+        [Flags]
         public enum PIPE_STATE : int
         {
             PIPE_NOWAIT = 0x1,

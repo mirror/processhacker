@@ -214,6 +214,27 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Named Pipes
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool DisconnectNamedPipe(int NamedPipe);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool ConnectNamedPipe(int NamedPipe, int Overlapped);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int CreateNamedPipe(string Name, PIPE_ACCESS_MODE OpenMode, PIPE_MODE PipeMode,
+            int MaxInstances, int OutBufferSize, int InBufferSize, int DefaultTimeOut, int SecurityAttributes);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetNamedPipeClientProcessId(int NamedPipeHandle, out int ServerProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, out PIPE_STATE State,
+            int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
+
+        #endregion
+
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -440,13 +461,6 @@ namespace ProcessHacker
         public static extern bool DuplicateHandle(int SourceProcessHandle,
            int SourceHandle, int TargetProcessHandle, out int TargetHandle,
            STANDARD_RIGHTS DesiredAccess, int InheritHandle, uint Options);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetNamedPipeClientProcessId(int NamedPipeHandle, out int ServerProcessId);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, out PIPE_STATE State,
-            int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern WaitResult WaitForSingleObject(int Object, uint Timeout);

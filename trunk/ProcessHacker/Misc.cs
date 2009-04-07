@@ -631,6 +631,36 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Reads a null-terminated Unicode string from a stream.
+        /// </summary>
+        /// <param name="s">The stream to read from.</param>
+        /// <returns>The read string.</returns>
+        public static string ReadUnicodeString(Stream s)
+        {
+            StringBuilder str = new StringBuilder();
+
+            while (true)
+            {
+                int b = s.ReadByte();
+
+                if (b == -1)
+                    break;
+
+                int b2 = s.ReadByte();
+
+                if (b2 == -1)
+                    break;
+
+                if (b == 0 && b2 == 0)
+                    break;
+
+                str.Append(UnicodeEncoding.Unicode.GetChars(new byte[] { (byte)b, (byte)b2 }));
+            }
+
+            return str.ToString();
+        }
+
+        /// <summary>
         /// Selects all of the specified items.
         /// </summary>
         /// <param name="items">The items.</param>

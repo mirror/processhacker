@@ -32,6 +32,9 @@ namespace ProcessHacker
         /// </summary>
         public class FileHandle : Win32Handle
         {
+            protected FileHandle()
+            { }
+
             public FileHandle(string fileName, FILE_RIGHTS desiredAccess, FILE_SHARE_MODE shareMode,
                 FILE_CREATION_DISPOSITION creationDisposition)
             {

@@ -295,7 +295,8 @@ namespace ProcessHacker
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 #endif
 
-            new HackerWindow();
+            //new HackerWindow();
+            (new Forms.ApiLogWindow()).Show();
             Application.Run();
         }
 
