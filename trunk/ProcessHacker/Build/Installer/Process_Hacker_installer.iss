@@ -118,10 +118,10 @@ Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
 
-;Remove other languages' shortcuts in Start Menu
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
 
+;Remove other languages' shortcuts in Start Menu
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
 Type: files; Name: {group}\Process Hacker on the Web.url
 Type: files; Name: {group}\Uninstall Process Hacker.lnk
@@ -150,21 +150,22 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
 
 [Run]
-Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
-Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
+
+Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
+Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
 
 [UninstallRun]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
 
 [Code]
 // Create a mutex for the installer
@@ -176,8 +177,8 @@ var
 	sPrevPath: String;
 begin
 	sPrevPath := '';
-	if not RegQueryStringValue( HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath) then
-		RegQueryStringValue( HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath);
+	if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath) then
+		RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath);
 
   Result := sPrevPath<>'';
 end;
@@ -275,7 +276,7 @@ begin
 		Result := True;
 		end
 		else begin
-			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = idYes;
+			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = IDYES;
 			if Result1 =False then begin
 			Result:=False;
 		end
