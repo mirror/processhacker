@@ -2355,5 +2355,10 @@ namespace ProcessHacker
             }
             base.OnResize(e);
         }
+
+        private void apiLoggerMenuItem_Click(object sender, EventArgs e)
+        {
+            (new Forms.ApiLogWindow()).Show();
+        }
     }
 }
