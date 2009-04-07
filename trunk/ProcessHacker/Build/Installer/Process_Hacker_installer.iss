@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "29"
+#define installer_build_number "30"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -96,7 +96,8 @@ Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: 
 Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
 Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
-Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Flags: unchecked dontinheritcheck
+Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: KPHServiceCheck; Flags: unchecked dontinheritcheck
+Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: NOT KPHServiceCheck; Flags: unchecked dontinheritcheck
 
 [INI]
 Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= app_updates_url}
@@ -155,6 +156,8 @@ Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerSt
 Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
@@ -192,7 +195,7 @@ end;
 function StartupRegCheck(): Boolean;
 begin
 	Result := True;
-	if RegValueExists(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Process Hacker') then
+	if RegValueExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Process Hacker') then
 	Result := False;
 end;
 
@@ -221,8 +224,20 @@ end;
 function KProcessHackerStateCheck(): Boolean;
 begin
 	Result := False;
-	if RegKeyExists(HKEY_LOCAL_MACHINE, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
+	if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
 	Result := True;
+end;
+
+// Check if KProcessHacker is installed as a service
+function KPHServiceCheck(): Boolean;
+var
+	dvalue: DWORD;
+begin
+	Result := True;
+	if RegQueryDWordValue(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker', 'Start', dvalue) then begin
+		if dvalue = 2 then
+		Result := False;
+	end;
 end;
 
 Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
