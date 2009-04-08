@@ -4,6 +4,7 @@ TARGETPATH=.\
 
 INCLUDES=$(DDK_INC_PATH)
 LIBS=%BUILD%\lib
+RC=resource.rc
 
 SOURCES= \
     kprocesshacker.c \
