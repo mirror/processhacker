@@ -25,6 +25,7 @@
 HANDLE AlLogPipeHandle = NULL;
 
 NT_HOOK AlNtOpenProcessHook;
+NT_HOOK AlNtOpenProcessTokenExHook;
 NT_HOOK AlNtOpenThreadHook;
 
 NTSTATUS NTAPI AlNtOpenProcess(
@@ -53,6 +54,33 @@ NTSTATUS NTAPI AlNewNtOpenProcess(
         );
 
     return AlNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
+}
+
+NTSTATUS NTAPI AlNtOpenProcessTokenEx(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PHANDLE TokenHandle
+    )
+{
+    return ShNtCall(&AlNtOpenProcessTokenExHook, &ProcessHandle);
+}
+
+NTSTATUS NTAPI AlNewNtOpenProcessTokenEx(
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PHANDLE TokenHandle
+    )
+{
+    AL_LOG_CALL(L"NtOpenProcessTokenEx", &AlNtOpenProcessTokenExHook, 4,
+        L"ProcessHandle", ProcessHandle,
+        L"DesiredAccess", DesiredAccess,
+        L"ObjectAttributes", ObjectAttributes,
+        L"TokenHandle", TokenHandle
+        );
+
+    return AlNtOpenProcessTokenEx(ProcessHandle, DesiredAccess, ObjectAttributes, TokenHandle);
 }
 
 NTSTATUS NTAPI AlNtOpenThread(
@@ -142,6 +170,7 @@ NTSTATUS AlPatch()
 
     status |= ShNtPatchCall("NtOpenProcess", AlNewNtOpenProcess, &AlNtOpenProcessHook);
     status |= ShNtPatchCall("NtOpenThread", AlNewNtOpenThread, &AlNtOpenThreadHook);
+    status |= ShNtPatchCall("NtOpenProcessTokenEx", AlNewNtOpenProcessTokenEx, &AlNtOpenProcessTokenExHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;
@@ -150,11 +179,12 @@ NTSTATUS AlPatch()
 }
 
 NTSTATUS AlUnpatch()
-{              
+{
     NTSTATUS status = STATUS_SUCCESS;
 
     status |= ShNtUnpatchCall(&AlNtOpenProcessHook);
     status |= ShNtUnpatchCall(&AlNtOpenThreadHook);
+    status |= ShNtUnpatchCall(&AlNtOpenProcessTokenExHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;
@@ -166,9 +196,9 @@ NTSTATUS AlInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
 
-    ShModifyThreads(TRUE);
+    //ShModifyThreads(TRUE);
     status = AlPatch();
-    ShModifyThreads(FALSE);
+    //ShModifyThreads(FALSE);
 
     return status;
 }
@@ -183,9 +213,9 @@ NTSTATUS AlDeinit()
         AlLogPipeHandle = NULL;
     }
 
-    ShModifyThreads(TRUE);
+    //ShModifyThreads(TRUE);
     status = AlUnpatch();
-    ShModifyThreads(FALSE);
+    //ShModifyThreads(FALSE);
 
     return status;
 }

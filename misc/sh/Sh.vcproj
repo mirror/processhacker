@@ -40,10 +40,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="0"
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="false"
-				FavorSizeOrSpeed="1"
+				FavorSizeOrSpeed="0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;SH_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -118,7 +118,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="false"
-				FavorSizeOrSpeed="1"
+				FavorSizeOrSpeed="0"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;SH_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -242,6 +242,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\resource.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
