@@ -20,9 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define DEBUG
-
-#ifdef DEBUG
+#ifdef DBG
 #define dprintf DbgPrint
 #else
 #define dprintf

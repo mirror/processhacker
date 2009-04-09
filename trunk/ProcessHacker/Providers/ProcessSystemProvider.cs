@@ -247,7 +247,7 @@ namespace ProcessHacker
             // or:
             // 1. the function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
-            // 2. it references more than 3 libraries
+            // 2. it references more than 3 libraries but less than 14 libraries.
             if (fileName != null)
             {
                 try
@@ -267,7 +267,7 @@ namespace ProcessHacker
 
                         if (
                             libraryTotal < 3 && funcTotal < 5 ||
-                            ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3
+                            ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3 && libraryTotal < 14
                             )
                             fpResult.IsPacked = true;
 
