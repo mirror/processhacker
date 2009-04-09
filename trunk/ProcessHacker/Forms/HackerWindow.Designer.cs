@@ -74,6 +74,7 @@
             this.showDetailsForAllProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.uacSeparatorMenuItem = new System.Windows.Forms.MenuItem();
             this.saveMenuItem = new System.Windows.Forms.MenuItem();
+            this.apiLoggerMenuItem = new System.Windows.Forms.MenuItem();
             this.findHandlesMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectPEFileMenuItem = new System.Windows.Forms.MenuItem();
             this.reloadStructsMenuItem = new System.Windows.Forms.MenuItem();
@@ -154,7 +155,6 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.apiLoggerMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -490,6 +490,13 @@
             this.saveMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
             this.saveMenuItem.Text = "Save...";
             this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
+            // 
+            // apiLoggerMenuItem
+            // 
+            this.apiLoggerMenuItem.Index = 7;
+            this.apiLoggerMenuItem.Text = "API Logger...";
+            this.apiLoggerMenuItem.Visible = false;
+            this.apiLoggerMenuItem.Click += new System.EventHandler(this.apiLoggerMenuItem_Click);
             // 
             // findHandlesMenuItem
             // 
@@ -1102,12 +1109,6 @@
             this.selectAllNetworkMenuItem.Index = 3;
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
-            // 
-            // apiLoggerMenuItem
-            // 
-            this.apiLoggerMenuItem.Index = 7;
-            this.apiLoggerMenuItem.Text = "API Logger...";
-            this.apiLoggerMenuItem.Click += new System.EventHandler(this.apiLoggerMenuItem_Click);
             // 
             // HackerWindow
             // 

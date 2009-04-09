@@ -712,17 +712,30 @@ namespace ProcessHacker
                 {
                     using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
                     {
-                        using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                        try
                         {
-                            if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
-                                virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                            using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                            {
+                                if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
+                                    virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
+                            }
                         }
+                        catch
+                        { }
                     }
                 }
                 catch
                 {
                     virtualizationProcessMenuItem.Enabled = false;
                 }
+
+                try
+                {
+                    if (processP.Dictionary[processSelectedPID].SessionId != Program.CurrentSessionId)
+                        injectDllProcessMenuItem.Enabled = false;
+                }
+                catch
+                { }
             }
             else
             {
