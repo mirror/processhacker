@@ -1,5 +1,8 @@
 Process Hacker
 
+1.3.6.6
+ * FIXED:
+   * Service properties Key handle leak
 1.3.6.5
  * NEW/IMPROVED:
    * #2702907 - "CSR Processes: Enable termination of multiple processes"

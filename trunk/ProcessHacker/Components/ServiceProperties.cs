@@ -253,9 +253,9 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services\\" + item.Status.ServiceName + "\\Parameters");
-
-                            textServiceDll.Text = Environment.ExpandEnvironmentVariables((string)key.GetValue("ServiceDll"));
+                            using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                                "SYSTEM\\CurrentControlSet\\Services\\" + item.Status.ServiceName + "\\Parameters"))
+                                textServiceDll.Text = Environment.ExpandEnvironmentVariables((string)key.GetValue("ServiceDll"));
                         }
                         catch
                         { }

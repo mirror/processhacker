@@ -107,12 +107,10 @@ namespace ProcessHacker
 
             try
             {
-                var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                     "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
                     false
-                    );
-
-                try
+                    ))
                 {
                     if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
                         Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
@@ -123,10 +121,6 @@ namespace ProcessHacker
                     {
                         checkReplaceTaskManager.Checked = false;
                     }
-                }
-                finally
-                {
-                    key.Close();
                 }
             }
             catch
@@ -313,12 +307,11 @@ namespace ProcessHacker
                 try
                 {
                     string fileName = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
-                    var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+
+                    using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                         "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",
                         true
-                        );
-
-                    try
+                        ))
                     {
                         if (checkReplaceTaskManager.Checked)
                         {
@@ -331,10 +324,6 @@ namespace ProcessHacker
                             else if (_oldTaskMgrDebugger != "")
                                 key.SetValue("Debugger", _oldTaskMgrDebugger);
                         }
-                    }
-                    finally
-                    {
-                        key.Close();
                     }
                 }
                 catch (Exception ex)
