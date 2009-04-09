@@ -20,14 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * This driver has two main purposes:
- * 
- * 1. To enable Process Hacker to (transparently) do anything without the 
- *    restriction of hooked calls, and 
- * 2. To enable Process Hacker to retrieve handle names for any file object.
- */
-
 #include "kprocesshacker.h"
 #include "kph_nt.h"
 #include "kernel_types.h"
