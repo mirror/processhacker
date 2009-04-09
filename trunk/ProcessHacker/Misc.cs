@@ -86,6 +86,29 @@ namespace ProcessHacker
 
         #endregion
 
+        public static T[] Concat<T>(params T[][] ap)
+        {
+            int tl = 0;
+
+            foreach (var array in ap)
+                if (array != null)
+                    tl += array.Length;
+
+            T[] na = new T[tl];
+            int i = 0;
+
+            foreach (var array in ap)
+            {
+                if (array != null)
+                {
+                    Array.Copy(array, 0, na, i, array.Length);
+                    i += array.Length;
+                }
+            }
+
+            return na;
+        }
+
         /// <summary>
         /// Swaps the order of the bytes in the argument.
         /// </summary>

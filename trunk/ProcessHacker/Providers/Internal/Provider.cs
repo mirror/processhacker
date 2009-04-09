@@ -354,16 +354,6 @@ namespace ProcessHacker
             t.Start();
         }
 
-        /// <summary>
-        /// Removes all handlers from the DictionaryAdded, Modified and Removed events.
-        /// </summary>
-        public void ClearEvents()
-        {
-            DictionaryAdded = null;
-            DictionaryModified = null;
-            DictionaryRemoved = null;
-        }
-
         private void CallEvent(Delegate e, TValue item, bool useInvoke)
         {
             if (useInvoke)
