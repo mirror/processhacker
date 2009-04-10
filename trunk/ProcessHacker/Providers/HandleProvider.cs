@@ -76,10 +76,11 @@ namespace ProcessHacker
             }
 
             // look for closed handles
-            foreach (short h in Dictionary.Keys)
+            foreach (short h in this.Dictionary.Keys)
             {
-                if (!processHandles.ContainsKey(h))
-                {                 
+                if (!processHandles.ContainsKey(h) ||
+                    processHandles[h].Object != this.Dictionary[h].Handle.Object)
+                {
                     this.CallDictionaryRemoved(this.Dictionary[h]);
                     newdictionary.Remove(h);
                 }
@@ -88,7 +89,7 @@ namespace ProcessHacker
             // look for new handles
             foreach (short h in processHandles.Keys)
             {
-                if (!Dictionary.ContainsKey(h))
+                if (!this.Dictionary.ContainsKey(h))
                 {
                     Win32.ObjectInformation info;
                     HandleItem item = new HandleItem();
@@ -114,7 +115,7 @@ namespace ProcessHacker
                 }
             }
 
-            Dictionary = newdictionary;
+            this.Dictionary = newdictionary;
         }
 
         public bool HideHandlesWithNoName { get; set; }
