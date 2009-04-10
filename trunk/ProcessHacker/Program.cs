@@ -91,6 +91,7 @@ namespace ProcessHacker
 
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
+        public static bool Aggressive = false;
         public static bool StartHidden = false;
         public static bool StartVisible = false;
         public static bool ShowOptions = false;
@@ -122,6 +123,7 @@ namespace ProcessHacker
                     "Usage: processhacker [-m]\n" +
                     "\t-m\tStarts Process Hacker hidden.\n" +
                     "\t-v\tStarts Process Hacker visible.\n" +
+                    "\t-a\tAggressive mode.\n" + 
                     "\t-o\tShows Options.\n" +
                     "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -260,6 +262,18 @@ namespace ProcessHacker
                     StartVisible = true;
                 if (pArgs.ContainsKey("-o"))
                     ShowOptions = true;
+
+                if (pArgs.ContainsKey("-a"))
+                {
+                    Aggressive = true;
+
+                    try
+                    {
+                        Unhook();
+                    }
+                    catch
+                    { }
+                }
 
                 if (pArgs.ContainsKey(""))
                     if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))

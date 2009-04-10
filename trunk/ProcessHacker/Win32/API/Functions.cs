@@ -307,40 +307,40 @@ namespace ProcessHacker
             ref PROCESS_BASIC_INFORMATION ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+        public static extern int ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
             int TargetProcessHandle, int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
+        public static extern int ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
             int TargetProcessHandle, out int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             ref SYSTEM_BASIC_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             ref SYSTEM_CACHE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             ref SYSTEM_PERFORMANCE_INFORMATION SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             [MarshalAs(UnmanagedType.LPArray)] SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] SystemInformation,
             int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
+        public static extern int ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
             ref SYSTEM_LOAD_AND_CALL_IMAGE SystemInformation, int SystemInformationLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern uint ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
+        public static extern int ZwQueryObject(int Handle, OBJECT_INFORMATION_CLASS ObjectInformationClass,
             IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
 
         #endregion

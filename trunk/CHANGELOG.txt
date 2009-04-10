@@ -1,6 +1,8 @@
 Process Hacker
 
 1.3.6.6
+ * NEW:
+   * Aggressive mode (start with "-a" command line option)
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection

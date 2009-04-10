@@ -62,13 +62,40 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the thread.</param>
             public ThreadHandle(int tid, THREAD_RIGHTS access)
             {
-                if (Program.KPH != null)
-                    this.Handle = Program.KPH.KphOpenThread(tid, access);
-                else
-                    this.Handle = OpenThread(access, 0, tid);
+                if (Program.Aggressive)
+                {
+                    if (Program.KPH != null)
+                        this.Handle = Program.KPH.KphOpenThread(tid, Program.MinThreadQueryRights);
+                    else
+                        this.Handle = OpenThread(Program.MinThreadQueryRights, 0, tid);
 
-                if (this.Handle == 0)
-                    ThrowLastWin32Error();
+                    if (this.Handle == 0)
+                        ThrowLastWin32Error();
+
+                    int newHandle;
+
+                    try
+                    {
+                        if (ZwDuplicateObject(-1, this.Handle, -1, out newHandle, (STANDARD_RIGHTS)access, 0, 0) < 0)
+                            ThrowLastWin32Error();
+                    }
+                    finally
+                    {
+                        CloseHandle(this.Handle);
+                    }
+
+                    this.Handle = newHandle;
+                }
+                else
+                {
+                    if (Program.KPH != null)
+                        this.Handle = Program.KPH.KphOpenThread(tid, access);
+                    else
+                        this.Handle = OpenThread(access, 0, tid);
+
+                    if (this.Handle == 0)
+                        ThrowLastWin32Error();
+                }
             }
 
             /// <summary>
@@ -76,7 +103,7 @@ namespace ProcessHacker
             /// </summary>
             public void Alert()
             {
-                if (ZwAlertThread(this) != 0)
+                if (ZwAlertThread(this) < 0)
                     ThrowLastWin32Error();
             }
 
@@ -90,7 +117,7 @@ namespace ProcessHacker
                 int retLen;
 
                 if (ZwQueryInformationThread(this, THREAD_INFORMATION_CLASS.ThreadBasicInformation,
-                    ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) != 0)
+                    ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) < 0)
                     ThrowLastWin32Error();
 
                 return basicInfo;

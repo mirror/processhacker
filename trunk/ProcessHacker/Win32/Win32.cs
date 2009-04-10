@@ -509,7 +509,7 @@ namespace ProcessHacker
                 // This is needed because ZwQuerySystemInformation with SystemHandleInformation doesn't 
                 // actually give a real return length when called with an insufficient buffer. This code 
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
+                while ((uint)ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
                     data.Size, out retLength) == STATUS_INFO_LENGTH_MISMATCH)
                 {
                     data.Resize(data.Size * 2);
@@ -551,7 +551,7 @@ namespace ProcessHacker
 
             // duplicates the handle so we can query it
             if (ZwDuplicateObject(process.Handle, handle.Handle,
-                Program.CurrentProcess, out objectHandle, 0, 0, 0) != 0)
+                Program.CurrentProcess, out objectHandle, 0, 0, 0) < 0)
                 throw new Exception("Could not duplicate object!");
 
             using (Win32Handle objectHandleAuto = new Win32Handle(objectHandle))
@@ -834,10 +834,10 @@ namespace ProcessHacker
                 laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
                 laci.ModuleName.MaximumLength = laci.ModuleName.Length;
 
-                uint ret;
+                int ret;
 
                 if ((ret = ZwSetSystemInformation(SYSTEM_INFORMATION_CLASS.SystemLoadAndCallImage,
-                    ref laci, Marshal.SizeOf(laci))) != 0)
+                    ref laci, Marshal.SizeOf(laci))) < 0)
                     throw new Exception("Failed to load the kernel image - error " + ret.ToString());
             }
         }

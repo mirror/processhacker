@@ -143,13 +143,40 @@ namespace ProcessHacker
             /// <param name="access">The desired access to the process.</param>
             public ProcessHandle(int pid, PROCESS_RIGHTS access)
             {
-                if (Program.KPH != null)
-                    this.Handle = Program.KPH.KphOpenProcess(pid, access);
-                else
-                    this.Handle = OpenProcess(access, 0, pid);
+                if (Program.Aggressive)
+                {
+                    if (Program.KPH != null)
+                        this.Handle = Program.KPH.KphOpenProcess(pid, Program.MinProcessQueryRights);
+                    else
+                        this.Handle = OpenProcess(Program.MinProcessQueryRights, 0, pid);
 
-                if (this.Handle == 0)
-                    ThrowLastWin32Error();
+                    if (this.Handle == 0)
+                        ThrowLastWin32Error();
+
+                    int newHandle;
+
+                    try
+                    {
+                        if (ZwDuplicateObject(-1, this.Handle, -1, out newHandle, (STANDARD_RIGHTS)access, 0, 0) < 0)
+                            ThrowLastWin32Error();
+                    }
+                    finally
+                    {
+                        CloseHandle(this.Handle);
+                    }
+
+                    this.Handle = newHandle;
+                }
+                else
+                {
+                    if (Program.KPH != null)
+                        this.Handle = Program.KPH.KphOpenProcess(pid, access);
+                    else
+                        this.Handle = OpenProcess(access, 0, pid);
+
+                    if (this.Handle == 0)
+                        ThrowLastWin32Error();
+                }
             }
 
             /// <summary>
@@ -258,7 +285,7 @@ namespace ProcessHacker
                 int retLen;
 
                 if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessBasicInformation,
-                    ref pbi, Marshal.SizeOf(pbi), out retLen) != 0)
+                    ref pbi, Marshal.SizeOf(pbi), out retLen) < 0)
                     ThrowLastWin32Error();
 
                 return pbi;
@@ -614,7 +641,7 @@ namespace ProcessHacker
                 using (MemoryAlloc data = new MemoryAlloc(retLen))
                 {
                     if (ZwQueryInformationProcess(this, PROCESS_INFORMATION_CLASS.ProcessImageFileName,
-                        data, retLen, out retLen) != 0)
+                        data, retLen, out retLen) < 0)
                         ThrowLastWin32Error();
 
                     UNICODE_STRING str = data.ReadStruct<UNICODE_STRING>();
@@ -827,7 +854,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    if (ZwResumeProcess(this) != 0)
+                    if (ZwResumeProcess(this) < 0)
                         ThrowLastWin32Error();
                 }
             }
@@ -890,7 +917,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    if (ZwSuspendProcess(this) != 0)
+                    if (ZwSuspendProcess(this) < 0)
                         ThrowLastWin32Error();
                 }
             }
