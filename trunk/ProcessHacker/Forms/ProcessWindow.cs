@@ -744,8 +744,12 @@ namespace ProcessHacker
         }
 
         private void UpdatePerformance()
-        {                                                       
+        {
             ProcessSystemProvider sysProvider = Program.HackerWindow.ProcessProvider;
+
+            if (!sysProvider.Dictionary.ContainsKey(_pid))
+                return;
+
             ProcessItem item = sysProvider.Dictionary[_pid];
 
             plotterCPUUsage.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
@@ -782,6 +786,9 @@ namespace ProcessHacker
 
         private void UpdateStatistics()
         {
+            if (!Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_pid))
+                return;
+
             ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
 
             labelCPUPriority.Text = item.Process.BasePriority.ToString();
