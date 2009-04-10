@@ -22,7 +22,7 @@
 
 #include "nthook.h"
 
-__declspec(naked) NTSTATUS NTAPI ShNtCall(
+SHAPI __declspec(naked) NTSTATUS __stdcall ShNtCall(
     PNT_HOOK NtHook,
     PVOID FirstArgument
     )
@@ -74,7 +74,7 @@ NoArguments2:
     }
 }
 
-NTSTATUS ShNtPatchCall(
+SHAPI NTSTATUS ShNtPatchCall(
     PSTR Name,
     PVOID Target,
     PNT_HOOK NtHook
@@ -110,6 +110,8 @@ NTSTATUS ShNtPatchCall(
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
+        VirtualProtect(callAddress, 10, oldProtection, NULL);
+
         __try
         {
             ShNtUnpatchCall(NtHook);
@@ -127,7 +129,7 @@ NTSTATUS ShNtPatchCall(
     return STATUS_SUCCESS;
 }
 
-NTSTATUS ShNtUnpatchCall(
+SHAPI NTSTATUS ShNtUnpatchCall(
     PNT_HOOK NtHook
     )
 {

@@ -1,6 +1,6 @@
 /*
  * Sh Hooking Library - 
- *   API logging
+ *   kernel32.dll hooks
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -20,40 +20,31 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _APILOG_H
-#define _APILOG_H
+#ifndef _KEHOOK_H
+#define _KEHOOK_H
 
-#include "nthook.h"
-#include "kehook.h"
-#include "common.h"
+#include "hook.h"
 
-#define AL_PIPE_NAME (L"\\\\.\\Pipe\\AlLogPipe")
+typedef struct _KE_HOOK
+{
+    HOOK Hook;
+    USHORT ArgumentLength;
+} KE_HOOK, *PKE_HOOK;
 
-#define AL_LOG_CALL(Name, NtHook, Length, ...) \
-    { \
-        PBYTE dictionary; \
-        ULONG dictionaryLength; \
-        \
-        dictionary = CmMakeDictStringULong(&dictionaryLength, Length, __VA_ARGS__); \
-        AlLogCall(Name, NtHook, dictionary, dictionaryLength); \
-        free(dictionary); \
-    }
-
-NTSTATUS AlWriteLogPipe(
-    PVOID Buffer,
-    ULONG BufferLength
+SHAPI ULONG ShKeCall(
+    PKE_HOOK KeHook,
+    PVOID FirstArgument
     );
 
-NTSTATUS AlLogCall(
-    PWSTR Name,
-    PNT_HOOK NtHook,
-    PBYTE Dictionary,
-    ULONG DictionaryLength
+SHAPI NTSTATUS ShKePatchCall(
+    PSTR Name,
+    PVOID Target,
+    USHORT ArgumentLength,
+    PKE_HOOK KeHook
     );
 
-NTSTATUS AlPatch();
-NTSTATUS AlUnpatch();
-NTSTATUS AlInit();
-NTSTATUS AlDeinit();
+SHAPI NTSTATUS ShKeUnpatchCall(
+    PKE_HOOK KeHook
+    );
 
 #endif

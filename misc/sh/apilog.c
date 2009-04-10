@@ -27,6 +27,7 @@ HANDLE AlLogPipeHandle = NULL;
 NT_HOOK AlNtOpenProcessHook;
 NT_HOOK AlNtOpenProcessTokenExHook;
 NT_HOOK AlNtOpenThreadHook;
+KE_HOOK AlCreateProcessWHook;
 
 NTSTATUS NTAPI AlNtOpenProcess(
     PHANDLE ProcessHandle,
@@ -111,6 +112,60 @@ NTSTATUS NTAPI AlNewNtOpenThread(
     return AlNtOpenThread(ThreadHandle, DesiredAccess, ObjectAttributes, ClientId);
 }
 
+BOOL WINAPI AlCreateProcessW(
+    LPCTSTR lpApplicationName,
+    LPTSTR lpCommandLine,
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    BOOL bInheritHandles,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCTSTR lpCurrentDirectory,
+    LPSTARTUPINFO lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInformation
+    )
+{
+    return (BOOL)ShKeCall(&AlCreateProcessWHook, (PVOID)&lpApplicationName);
+}
+
+BOOL WINAPI AlNewCreateProcessW(
+    LPCTSTR lpApplicationName,
+    LPTSTR lpCommandLine,
+    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    BOOL bInheritHandles,
+    DWORD dwCreationFlags,
+    LPVOID lpEnvironment,
+    LPCTSTR lpCurrentDirectory,
+    LPSTARTUPINFO lpStartupInfo,
+    LPPROCESS_INFORMATION lpProcessInformation
+    )
+{
+    int result = MessageBoxW(
+        NULL,
+        lpApplicationName == NULL ? lpCommandLine : lpApplicationName,
+        L"Program execution confirmation", 
+        MB_ICONEXCLAMATION | MB_YESNOCANCEL
+        );
+
+    if (result == IDNO)
+    {
+        SetLastError(ERROR_ACCESS_DENIED);
+
+        return FALSE;
+    }
+    else if (result == IDCANCEL)
+    {
+        ExitProcess(1);
+
+        return FALSE;
+    }
+
+    return AlCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
+        lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment,
+        lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
+
 NTSTATUS AlWriteLogPipe(
     PVOID Buffer,
     ULONG BufferLength
@@ -171,6 +226,7 @@ NTSTATUS AlPatch()
     status |= ShNtPatchCall("NtOpenProcess", AlNewNtOpenProcess, &AlNtOpenProcessHook);
     status |= ShNtPatchCall("NtOpenThread", AlNewNtOpenThread, &AlNtOpenThreadHook);
     status |= ShNtPatchCall("NtOpenProcessTokenEx", AlNewNtOpenProcessTokenEx, &AlNtOpenProcessTokenExHook);
+    status |= ShKePatchCall("CreateProcessW", AlNewCreateProcessW, 10 * 4, &AlCreateProcessWHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;
@@ -185,6 +241,7 @@ NTSTATUS AlUnpatch()
     status |= ShNtUnpatchCall(&AlNtOpenProcessHook);
     status |= ShNtUnpatchCall(&AlNtOpenThreadHook);
     status |= ShNtUnpatchCall(&AlNtOpenProcessTokenExHook);
+    status |= ShKeUnpatchCall(&AlCreateProcessWHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;

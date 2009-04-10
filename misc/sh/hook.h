@@ -34,9 +34,9 @@
 #define NT_SUCCESS(x) ((x) >= STATUS_SUCCESS)
 
 #ifdef SH_EXPORTS
-#define SH_API __declspec(dllexport)
+#define SHAPI __declspec(dllexport)
 #else
-#define SH_API __declspec(dllimport)
+#define SHAPI __declspec(dllimport)
 #endif
 
 typedef struct _CLIENT_ID
@@ -70,13 +70,13 @@ typedef struct _HOOK
     ULONG ReplacedLength;
 } HOOK, *PHOOK;
 
-NTSTATUS ShModifyThreads(BOOLEAN Suspend);
+NTSTATUS SHAPI ShModifyThreads(BOOLEAN Suspend);
 
-NTSTATUS ShUnpatchCall(
+NTSTATUS SHAPI ShUnpatchCall(
     PHOOK Hook
     );
 
-PVOID ShGetProcAddress(
+PVOID SHAPI ShGetProcAddress(
     PSTR LibraryName,
     PSTR ProcName
     );

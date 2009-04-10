@@ -32,18 +32,18 @@ typedef struct _NT_HOOK
     USHORT ArgumentLength;
 } NT_HOOK, *PNT_HOOK;
 
-NTSTATUS NTAPI ShNtCall(
+SHAPI NTSTATUS ShNtCall(
     PNT_HOOK NtHook,
     PVOID FirstArgument
     );
 
-NTSTATUS ShNtPatchCall(
+SHAPI NTSTATUS ShNtPatchCall(
     PSTR Name,
     PVOID Target,
     PNT_HOOK NtHook
     );
 
-NTSTATUS ShNtUnpatchCall(
+SHAPI NTSTATUS ShNtUnpatchCall(
     PNT_HOOK NtHook
     );
 

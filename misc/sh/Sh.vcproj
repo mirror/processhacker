@@ -51,6 +51,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
+				CallingConvention="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -125,6 +126,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
+				CallingConvention="2"
 				CompileAs="1"
 			/>
 			<Tool
@@ -211,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\kehook.c"
+				>
+			</File>
+			<File
 				RelativePath=".\nthook.c"
 				>
 			</File>
@@ -230,6 +236,10 @@
 			</File>
 			<File
 				RelativePath=".\hook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\kehook.h"
 				>
 			</File>
 			<File

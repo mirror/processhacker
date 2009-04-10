@@ -23,7 +23,7 @@
 #include "hook.h"
 #include "tlhelp32.h"
 
-PVOID ShGetProcAddress(
+PVOID SHAPI ShGetProcAddress(
     PSTR LibraryName,
     PSTR ProcName
     )
@@ -31,7 +31,7 @@ PVOID ShGetProcAddress(
     return (PVOID)GetProcAddress(GetModuleHandleA(LibraryName), ProcName);
 }
 
-NTSTATUS ShModifyThreads(
+NTSTATUS SHAPI ShModifyThreads(
     BOOLEAN Suspend
     )
 {
@@ -67,15 +67,30 @@ NTSTATUS ShModifyThreads(
     return STATUS_SUCCESS;
 }
 
-NTSTATUS ShUnpatchCall(
+NTSTATUS SHAPI ShUnpatchCall(
     PHOOK Hook
     )
 {
+    ULONG oldProtection;
+
     if (!Hook->Hooked)
         return STATUS_NOT_SUPPORTED;
 
-    memcpy(Hook->Address, Hook->ReplacedBytes, Hook->ReplacedLength);
-    Hook->Hooked = FALSE;
+    VirtualProtect(Hook->Address, Hook->ReplacedLength, PAGE_EXECUTE_READWRITE, &oldProtection);
+
+    __try
+    {
+        memcpy(Hook->Address, Hook->ReplacedBytes, Hook->ReplacedLength);
+        Hook->Hooked = FALSE;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        VirtualProtect(Hook->Address, Hook->ReplacedLength, oldProtection, NULL);
+
+        return GetExceptionCode();
+    }
+
+    VirtualProtect(Hook->Address, Hook->ReplacedLength, oldProtection, NULL);
 
     return STATUS_SUCCESS;
 }
