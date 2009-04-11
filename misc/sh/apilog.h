@@ -29,13 +29,13 @@
 
 #define AL_PIPE_NAME (L"\\\\.\\Pipe\\AlLogPipe")
 
-#define AL_LOG_CALL(Name, NtHook, Length, ...) \
+#define AL_LOG_CALL(Name, Hook, Length, ...) \
     { \
         PBYTE dictionary; \
         ULONG dictionaryLength; \
         \
-        dictionary = CmMakeDictStringULong(&dictionaryLength, Length, __VA_ARGS__); \
-        AlLogCall(Name, NtHook, dictionary, dictionaryLength); \
+        dictionary = CmMakeDictionary(&dictionaryLength, Length, __VA_ARGS__); \
+        AlLogCall(Name, Hook, dictionary, dictionaryLength); \
         free(dictionary); \
     }
 
@@ -46,7 +46,7 @@ NTSTATUS AlWriteLogPipe(
 
 NTSTATUS AlLogCall(
     PWSTR Name,
-    PNT_HOOK NtHook,
+    PHOOK NtHook,
     PBYTE Dictionary,
     ULONG DictionaryLength
     );

@@ -46,12 +46,12 @@ NTSTATUS NTAPI AlNewNtOpenProcess(
     PCLIENT_ID ClientId
     )
 {
-    AL_LOG_CALL(L"NtOpenProcess", &AlNtOpenProcessHook, 5,
-        L"ProcessHandle", ProcessHandle,
-        L"DesiredAccess", DesiredAccess,
-        L"ObjectAttributes", ObjectAttributes,
-        L"ClientId", ClientId,
-        L"UniqueProcess", ClientId->UniqueProcess
+    AL_LOG_CALL(L"NtOpenProcess", &AlNtOpenProcessHook.Hook, 5,
+        CmPVoid, 0, L"ProcessHandle", ProcessHandle,
+        CmInt32 | CmHex, 0, L"DesiredAccess", DesiredAccess,
+        CmPVoid, 0, L"ObjectAttributes", ObjectAttributes,
+        CmPVoid, 0, L"ClientId", ClientId,
+        CmInt32, 0, L"UniqueProcess", ClientId->UniqueProcess
         );
 
     return AlNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
@@ -74,11 +74,11 @@ NTSTATUS NTAPI AlNewNtOpenProcessTokenEx(
     PHANDLE TokenHandle
     )
 {
-    AL_LOG_CALL(L"NtOpenProcessTokenEx", &AlNtOpenProcessTokenExHook, 4,
-        L"ProcessHandle", ProcessHandle,
-        L"DesiredAccess", DesiredAccess,
-        L"ObjectAttributes", ObjectAttributes,
-        L"TokenHandle", TokenHandle
+    AL_LOG_CALL(L"NtOpenProcessTokenEx", &AlNtOpenProcessTokenExHook.Hook, 4,
+        CmInt32 | CmHex, 0, L"ProcessHandle", ProcessHandle,
+        CmInt32 | CmHex, 0, L"DesiredAccess", DesiredAccess,
+        CmPVoid, 0, L"ObjectAttributes", ObjectAttributes,
+        CmPVoid, 0, L"TokenHandle", TokenHandle
         );
 
     return AlNtOpenProcessTokenEx(ProcessHandle, DesiredAccess, ObjectAttributes, TokenHandle);
@@ -101,12 +101,12 @@ NTSTATUS NTAPI AlNewNtOpenThread(
     PCLIENT_ID ClientId
     )
 {
-    AL_LOG_CALL(L"NtOpenThread", &AlNtOpenThreadHook, 5,
-        L"ThreadHandle", ThreadHandle,
-        L"DesiredAccess", DesiredAccess,
-        L"ObjectAttributes", ObjectAttributes,
-        L"ClientId", ClientId,
-        L"UniqueThread", ClientId->UniqueThread
+    AL_LOG_CALL(L"NtOpenThread", &AlNtOpenThreadHook.Hook, 5,
+        CmPVoid, 0, L"ThreadHandle", ThreadHandle,
+        CmInt32 | CmHex, 0, L"DesiredAccess", DesiredAccess,
+        CmPVoid, 0, L"ObjectAttributes", ObjectAttributes,
+        CmPVoid, 0, L"ClientId", ClientId,
+        CmInt32, 0, L"UniqueThread", ClientId->UniqueThread
         );
 
     return AlNtOpenThread(ThreadHandle, DesiredAccess, ObjectAttributes, ClientId);
@@ -161,6 +161,19 @@ BOOL WINAPI AlNewCreateProcessW(
         return FALSE;
     }
 
+    AL_LOG_CALL(L"CreateProcessW", &AlCreateProcessWHook.Hook, 10,
+        CmString, 0, L"lpApplicationName", lpApplicationName,
+        CmString, 0, L"lpCommandLine", lpCommandLine,
+        CmPVoid, 0, L"lpProcessAttributes", lpProcessAttributes,
+        CmPVoid, 0, L"lpThreadAttributes", lpThreadAttributes,
+        CmBool, 0, L"bInheritHandles", bInheritHandles,
+        CmInt32 | CmHex, 0, L"dwCreationFlags", dwCreationFlags,
+        CmPVoid, 0, L"lpEnvironment", lpEnvironment,
+        CmString, 0, L"lpCurrentDirectory", lpCurrentDirectory,
+        CmPVoid, 0, L"lpStartupInfo", lpStartupInfo,
+        CmPVoid, 0, L"lpProcessInformation", lpProcessInformation
+        );
+
     return AlCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
         lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment,
         lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
@@ -197,21 +210,21 @@ NTSTATUS AlWriteLogPipe(
 
 NTSTATUS AlLogCall(
     PWSTR Name,
-    PNT_HOOK NtHook,
+    PHOOK Hook,
     PBYTE Dictionary,
     ULONG DictionaryLength
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
     ULONG nameLength = wcslen(Name);
-    ULONG bufferLength = sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR) + sizeof(NT_HOOK) + DictionaryLength;
+    ULONG bufferLength = sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR) + sizeof(HOOK) + DictionaryLength;
     PBYTE buffer = (PBYTE)malloc(bufferLength);
 
     *(PULONG)buffer = bufferLength;
     *(PULONG)(buffer + sizeof(ULONG)) = GetCurrentProcessId();
     wcscpy((PWSTR)(buffer + sizeof(ULONG) * 2), Name);
-    memcpy(buffer + sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR), NtHook, sizeof(NT_HOOK));
-    memcpy(buffer + sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR) + sizeof(NT_HOOK), Dictionary, DictionaryLength);
+    memcpy(buffer + sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR), Hook, sizeof(HOOK));
+    memcpy(buffer + sizeof(ULONG) * 2 + (nameLength + 1) * sizeof(WCHAR) + sizeof(HOOK), Dictionary, DictionaryLength);
 
     status = AlWriteLogPipe(buffer, bufferLength);
     free(buffer);
