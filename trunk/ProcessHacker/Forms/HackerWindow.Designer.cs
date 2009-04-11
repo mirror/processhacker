@@ -495,7 +495,6 @@
             // 
             this.apiLoggerMenuItem.Index = 7;
             this.apiLoggerMenuItem.Text = "API Logger...";
-            this.apiLoggerMenuItem.Visible = false;
             this.apiLoggerMenuItem.Click += new System.EventHandler(this.apiLoggerMenuItem_Click);
             // 
             // findHandlesMenuItem

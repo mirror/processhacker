@@ -12,19 +12,29 @@ namespace ProcessHacker.Forms
 {
     public partial class ApiLogWindow : Form
     {
+        [Flags]
+        private enum CM_TYPE : uint
+        {
+            CmVoid = 0,
+            CmBool,
+            CmByte,
+            CmInt16,
+            CmInt32,
+            CmPVoid,
+            CmBytes,
+            CmString,
+            CmType = 0x00ffffff,
+
+            CmHex = 0x01000000,
+            CmDisplayHint = 0xff000000
+        }
+
         private struct HOOK
         {
             public int Address;
             public char Hooked;
             public unsafe fixed byte ReplacedBytes[16];
             public int ReplacedLength;
-        }
-
-        private struct NT_HOOK
-        {
-            public HOOK Hook;
-            public int SystemCallIndex;
-            public short ArgumentLength;
         }
 
         private List<string[]> _items = new List<string[]>();
@@ -81,21 +91,79 @@ namespace ProcessHacker.Forms
 
                 int pid = br.ReadInt32();
                 string function = Misc.ReadUnicodeString(bsr);
-                bsr.Seek(System.Runtime.InteropServices.Marshal.SizeOf(typeof(NT_HOOK)), SeekOrigin.Current);
-                Dictionary<string, uint> dictionary = new Dictionary<string, uint>();
+                bsr.Seek(System.Runtime.InteropServices.Marshal.SizeOf(typeof(HOOK)), SeekOrigin.Current);
+                var dictionary = new Dictionary<string, KeyValuePair<CM_TYPE, object>>();
 
                 while (bsr.Position < bsr.Length)
                 {
                     string key = Misc.ReadUnicodeString(bsr);
-                    uint value = br.ReadUInt32();
+                    CM_TYPE type = (CM_TYPE)br.ReadUInt32();
+                    int valueLength = br.ReadInt32();
+                    object value = null;
 
-                    dictionary.Add(key, value);
+                    switch (type & CM_TYPE.CmType)
+                    {
+                        case CM_TYPE.CmBool:
+                            value = br.ReadChar() != 0;
+                            break;
+                        case CM_TYPE.CmByte:
+                            value = br.ReadByte();
+                            break;
+                        case CM_TYPE.CmInt16:
+                            value = br.ReadInt16();
+                            break;
+                        case CM_TYPE.CmInt32:
+                            value = br.ReadInt32();
+                            break;
+                        case CM_TYPE.CmPVoid:
+                            value = br.ReadInt32();
+                            break;
+                        case CM_TYPE.CmBytes:
+                            value = br.ReadBytes(valueLength);
+                            break;
+                        case CM_TYPE.CmString:
+                            value = Misc.ReadUnicodeString(bsr, valueLength);
+                            break;
+                        case CM_TYPE.CmVoid:
+                        default:
+                            break;
+                    }
+
+                    dictionary.Add(key, new KeyValuePair<CM_TYPE, object>(type, value));
                 }
 
                 StringBuilder args = new StringBuilder();
 
                 foreach (var kvp in dictionary)
-                    args.Append(kvp.Key + ": 0x" + kvp.Value.ToString("x8") + ", ");
+                {
+                    string str = null;
+
+                    switch (kvp.Value.Key & CM_TYPE.CmType)
+                    {
+                        case CM_TYPE.CmBool:
+                            str = ((bool)kvp.Value.Value).ToString();
+                            break;
+                        case CM_TYPE.CmByte:
+                        case CM_TYPE.CmInt16:
+                        case CM_TYPE.CmInt32:
+                            if ((kvp.Value.Key & CM_TYPE.CmHex) != 0)
+                                str = "0x" + ((int)kvp.Value.Value).ToString("x");
+                            else
+                                str = "0x" + ((int)kvp.Value.Value).ToString();
+                            break;
+                        case CM_TYPE.CmPVoid:
+                            str = "0x" + ((int)kvp.Value.Value).ToString("x8");
+                            break;
+                        case CM_TYPE.CmString:
+                            str = (string)kvp.Value.Value;
+                            break;
+                        default:
+                            str = "?";
+                            break;
+                    }
+
+                    args.Append(kvp.Key + ": " + str + ", ");
+                }
 
                 if (args.Length > 0)
                     args.Remove(args.Length - 2, 2);
