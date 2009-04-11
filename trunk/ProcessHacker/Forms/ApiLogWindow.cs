@@ -149,13 +149,13 @@ namespace ProcessHacker.Forms
                             if ((kvp.Value.Key & CM_TYPE.CmHex) != 0)
                                 str = "0x" + ((int)kvp.Value.Value).ToString("x");
                             else
-                                str = "0x" + ((int)kvp.Value.Value).ToString();
+                                str = ((int)kvp.Value.Value).ToString();
                             break;
                         case CM_TYPE.CmPVoid:
                             str = "0x" + ((int)kvp.Value.Value).ToString("x8");
                             break;
                         case CM_TYPE.CmString:
-                            str = (string)kvp.Value.Value;
+                            str = ((string)kvp.Value.Value).Replace("\0", "");
                             break;
                         default:
                             str = "?";
