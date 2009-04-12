@@ -1248,5 +1248,41 @@ namespace ProcessHacker.Properties {
                 this["UseColorGuiThreads"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dbghelp.dll")]
+        public string DbgHelpPath {
+            get {
+                return ((string)(this["DbgHelpPath"]));
+            }
+            set {
+                this["DbgHelpPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DbgHelpSearchPath {
+            get {
+                return ((string)(this["DbgHelpSearchPath"]));
+            }
+            set {
+                this["DbgHelpSearchPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DbgHelpUndecorate {
+            get {
+                return ((bool)(this["DbgHelpUndecorate"]));
+            }
+            set {
+                this["DbgHelpUndecorate"] = value;
+            }
+        }
     }
 }

@@ -23,9 +23,6 @@
             if (_thandle != null)
                 _thandle.Dispose();
 
-            Program.ThreadWindows.Remove(Id);
-            Program.UpdateWindows();
-
             base.Dispose(disposing);
         }
 
@@ -46,7 +43,6 @@
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
-            this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.listViewCallStack = new System.Windows.Forms.ListView();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
@@ -69,8 +65,7 @@
             // mainMenu
             // 
             this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.threadMenuItem,
-            this.windowMenuItem});
+            this.threadMenuItem});
             // 
             // threadMenuItem
             // 
@@ -119,11 +114,6 @@
             this.terminateMenuItem.Text = "&Terminate";
             this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
             // 
-            // windowMenuItem
-            // 
-            this.windowMenuItem.Index = 1;
-            this.windowMenuItem.Text = "&Window";
-            // 
             // timerUpdate
             // 
             this.timerUpdate.Enabled = true;
@@ -143,7 +133,7 @@
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
             this.listViewCallStack.ShowItemToolTips = true;
-            this.listViewCallStack.Size = new System.Drawing.Size(363, 137);
+            this.listViewCallStack.Size = new System.Drawing.Size(363, 140);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -170,7 +160,7 @@
             this.groupBoxCallStack.Controls.Add(this.listViewCallStack);
             this.groupBoxCallStack.Location = new System.Drawing.Point(12, 34);
             this.groupBoxCallStack.Name = "groupBoxCallStack";
-            this.groupBoxCallStack.Size = new System.Drawing.Size(375, 191);
+            this.groupBoxCallStack.Size = new System.Drawing.Size(375, 194);
             this.groupBoxCallStack.TabIndex = 1;
             this.groupBoxCallStack.TabStop = false;
             this.groupBoxCallStack.Text = "Call Stack";
@@ -179,7 +169,7 @@
             // 
             this.fileModule.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileModule.Location = new System.Drawing.Point(57, 161);
+            this.fileModule.Location = new System.Drawing.Point(57, 164);
             this.fileModule.Name = "fileModule";
             this.fileModule.ReadOnly = false;
             this.fileModule.Size = new System.Drawing.Size(231, 24);
@@ -189,7 +179,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 167);
+            this.label1.Location = new System.Drawing.Point(6, 170);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 4;
@@ -199,7 +189,7 @@
             // 
             this.buttonWalk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWalk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonWalk.Location = new System.Drawing.Point(294, 162);
+            this.buttonWalk.Location = new System.Drawing.Point(294, 165);
             this.buttonWalk.Name = "buttonWalk";
             this.buttonWalk.Size = new System.Drawing.Size(75, 23);
             this.buttonWalk.TabIndex = 3;
@@ -212,9 +202,9 @@
             this.groupRegisters.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupRegisters.Controls.Add(this.listViewRegisters);
-            this.groupRegisters.Location = new System.Drawing.Point(12, 231);
+            this.groupRegisters.Location = new System.Drawing.Point(12, 234);
             this.groupRegisters.Name = "groupRegisters";
-            this.groupRegisters.Size = new System.Drawing.Size(375, 153);
+            this.groupRegisters.Size = new System.Drawing.Size(375, 129);
             this.groupRegisters.TabIndex = 2;
             this.groupRegisters.TabStop = false;
             this.groupRegisters.Text = "Registers";
@@ -230,7 +220,7 @@
             this.listViewRegisters.FullRowSelect = true;
             this.listViewRegisters.Location = new System.Drawing.Point(6, 19);
             this.listViewRegisters.Name = "listViewRegisters";
-            this.listViewRegisters.Size = new System.Drawing.Size(363, 128);
+            this.listViewRegisters.Size = new System.Drawing.Size(363, 104);
             this.listViewRegisters.TabIndex = 0;
             this.listViewRegisters.UseCompatibleStateImageBehavior = false;
             this.listViewRegisters.View = System.Windows.Forms.View.Details;
@@ -261,13 +251,17 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(399, 396);
+            this.ClientSize = new System.Drawing.Size(399, 375);
             this.Controls.Add(this.labelThreadUser);
             this.Controls.Add(this.groupRegisters);
             this.Controls.Add(this.groupBoxCallStack);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Menu = this.mainMenu;
+            this.MinimizeBox = false;
             this.Name = "ThreadWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Thread";
             this.Load += new System.EventHandler(this.ThreadWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThreadWindow_FormClosing);
@@ -284,7 +278,6 @@
 
         private wyDay.Controls.VistaMenu vistaMenu;
         private System.Windows.Forms.MainMenu mainMenu;
-        private System.Windows.Forms.MenuItem windowMenuItem;
         private System.Windows.Forms.Timer timerUpdate;
         private System.Windows.Forms.GroupBox groupBoxCallStack;
         private System.Windows.Forms.ListView listViewCallStack;

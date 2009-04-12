@@ -308,5 +308,14 @@
     <Setting Name="UseColorGuiThreads" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="DbgHelpPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dbghelp.dll</Value>
+    </Setting>
+    <Setting Name="DbgHelpSearchPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DbgHelpUndecorate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

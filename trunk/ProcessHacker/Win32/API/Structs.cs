@@ -841,10 +841,7 @@ namespace ProcessHacker
         {
             public int SizeOfStruct;
             public int TypeIndex;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-            public long[] Reserved;
-
+            public unsafe fixed long Reserved[2];
             public int Index;
             public int Size;
             public long ModBase;
@@ -856,9 +853,7 @@ namespace ProcessHacker
             public int Tag;
             public int NameLen;
             public int MaxNameLen;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = SYMBOL_NAME_MAXSIZE)]
-            public string Name;
+            public char Name;
         } 
 
         [StructLayout(LayoutKind.Sequential)]

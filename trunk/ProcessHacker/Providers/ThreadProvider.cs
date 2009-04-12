@@ -47,14 +47,23 @@ namespace ProcessHacker
         public string StartAddress;
         public Win32.KWAIT_REASON WaitReason;
         public bool IsGuiThread;
+        public bool JustResolved;
 
         public Win32.ThreadHandle ThreadQueryLimitedHandle;
     }
 
     public class ThreadProvider : Provider<int, ThreadItem>
     {
-        private SymbolProvider _symbols = new SymbolProvider();
+        public delegate void LoadingStateChangedDelegate(bool loading);
+        private delegate void ResolveThreadStartAddressDelegate(int tid, long startAddress);
+
+        public event LoadingStateChangedDelegate LoadingStateChanged;
+
+        private Win32.ProcessHandle _processHandle;
+        private Symbols _symbols;
         private int _pid;
+        private int _loading = 0;
+        private Queue<KeyValuePair<int, string>> _resolveResults = new Queue<KeyValuePair<int,string>>();
 
         public ThreadProvider(int PID)
             : base()
@@ -67,50 +76,67 @@ namespace ProcessHacker
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Killed += new MethodInvoker(ThreadProvider_Killed);
 
-            // start loading symbols
-            ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
+            try
             {
-                try
+                _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights);
+                _symbols = new Symbols(_processHandle);
+
+                Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads | Win32.SYMBOL_OPTIONS.NoPrompts |
+                    (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
+
+                if (Properties.Settings.Default.DbgHelpSearchPath != "")
+                    _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
+
+                // start loading symbols
+                ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
                 {
-                    if (_pid != 4)
+                    try
                     {
-                        using (var phandle =
-                            new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                        if (_pid != 4)
                         {
-                            foreach (var module in phandle.GetModules())
+                            using (var phandle =
+                                new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                            {
+                                foreach (var module in phandle.GetModules())
+                                {
+                                    try
+                                    {
+                                        _symbols.LoadModule(module.FileName, module.BaseAddress.ToInt32(), module.Size);
+                                    }
+                                    catch
+                                    { }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // load driver symbols
+                            foreach (var module in Win32.EnumKernelModules())
                             {
                                 try
                                 {
-                                    _symbols.LoadSymbolsFromLibrary(module.FileName, (uint)module.BaseAddress.ToInt32());
+                                    _symbols.LoadModule(module.FileName, module.BaseAddress);
                                 }
                                 catch
                                 { }
                             }
                         }
                     }
-                    else
-                    {
-                        // load driver symbols
-                        foreach (var module in Win32.EnumKernelModules())
-                        {
-                            try
-                            {
-                                _symbols.LoadSymbolsFromLibrary(module.FileName, module.BaseAddress);
-                            }
-                            catch
-                            { }
-                        }
-                    }
-                }
-                catch
-                { }
-
-                Program.CollectGarbage();
-            }));
+                    catch
+                    { }
+                }));
+            }
+            catch
+            { }
         }
 
         private void ThreadProvider_Killed()
         {
+            if (_symbols != null)
+                _symbols.Dispose();
+            if (_processHandle != null)
+                _processHandle.Dispose();
+
             if (Win32.ProcessesWithThreads.ContainsKey(_pid))
                 Win32.ProcessesWithThreads.Remove(_pid);
 
@@ -120,6 +146,36 @@ namespace ProcessHacker
 
                 if (item.ThreadQueryLimitedHandle != null)
                     item.ThreadQueryLimitedHandle.Dispose();
+            }
+        }
+
+        private void ResolveThreadStartAddress(int tid, long startAddress)
+        {
+            string name = null;
+
+            try
+            {
+                _loading++;
+
+                if (this.LoadingStateChanged != null)
+                    this.LoadingStateChanged(_loading > 0);
+
+                try
+                {
+                    name = _symbols.GetSymbolFromAddress(startAddress);
+
+                    lock (_resolveResults)
+                        _resolveResults.Enqueue(new KeyValuePair<int, string>(tid, name));
+                }
+                catch
+                { }
+            }
+            finally
+            {
+                _loading--;
+
+                if (this.LoadingStateChanged != null)
+                    this.LoadingStateChanged(_loading > 0);
             }
         }
 
@@ -144,6 +200,20 @@ namespace ProcessHacker
 
                     this.CallDictionaryRemoved(item);
                     newdictionary.Remove(tid);
+                }
+            }
+
+            lock (_resolveResults)
+            {
+                while (_resolveResults.Count > 0)
+                {
+                    var result = _resolveResults.Dequeue();
+
+                    if (result.Value != null)
+                    {
+                        this.Dictionary[result.Key].StartAddress = result.Value;
+                        this.Dictionary[result.Key].JustResolved = true;
+                    }
                 }
             }
 
@@ -223,10 +293,20 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.StartAddress = _symbols.GetNameFromAddress(item.StartAddressI);
+                        long modBase;
+                        string fileName = _symbols.GetModuleFromAddress(item.StartAddressI, out modBase);
+
+                        if (fileName == null)
+                            item.StartAddress = "0x" + item.StartAddressI.ToString("x");
+                        else
+                            item.StartAddress = (new System.IO.FileInfo(fileName)).Name + "+0x" + 
+                                (item.StartAddressI - modBase).ToString("x");
                     }
                     catch
                     { }
+
+                    (new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress)).BeginInvoke(
+                        tid, item.StartAddressI, r => { }, null);
 
                     newdictionary.Add(tid, item);
                     this.CallDictionaryAdded(item);
@@ -237,6 +317,7 @@ namespace ProcessHacker
                     ThreadItem item = Dictionary[tid];
                     ThreadItem newitem = item.Clone() as ThreadItem;
 
+                    newitem.JustResolved = false;
                     newitem.ContextSwitchesDelta = t.ContextSwitchCount - newitem.ContextSwitches;
                     newitem.ContextSwitches = t.ContextSwitchCount;
                     newitem.WaitReason = t.WaitReason;
@@ -271,18 +352,7 @@ namespace ProcessHacker
                         { }
                     }
 
-                    try
-                    {
-                        SymbolProvider.FoundLevel level;
-
-                        string symName = _symbols.GetNameFromAddress(newitem.StartAddressI, out level);
-
-                        if (level != SymbolProvider.FoundLevel.Address)
-                            newitem.StartAddress = symName;
-                    }
-                    catch { }
-
-                    if (                  
+                    if (
                         newitem.ContextSwitches != item.ContextSwitches || 
                         newitem.ContextSwitchesDelta != item.ContextSwitchesDelta ||
                         newitem.Cycles != item.Cycles || 
@@ -290,7 +360,8 @@ namespace ProcessHacker
                         newitem.IsGuiThread != item.IsGuiThread || 
                         newitem.Priority != item.Priority || 
                         newitem.StartAddress != item.StartAddress ||
-                        newitem.WaitReason != item.WaitReason
+                        newitem.WaitReason != item.WaitReason || 
+                        item.JustResolved
                         )
                     {
                         newdictionary[tid] = newitem;
@@ -302,7 +373,7 @@ namespace ProcessHacker
             Dictionary = newdictionary;
         }
 
-        public SymbolProvider Symbols
+        public Symbols Symbols
         {
             get { return _symbols; }
         }

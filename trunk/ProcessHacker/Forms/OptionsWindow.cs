@@ -126,7 +126,16 @@ namespace ProcessHacker
             catch
             {
                 checkReplaceTaskManager.Enabled = false;
+            }      
+
+            try
+            {
+                textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
+                textSearchPath.Text = Properties.Settings.Default.DbgHelpSearchPath;
+                checkUndecorate.Checked = (Symbols.Options & Win32.SYMBOL_OPTIONS.UndName) != 0;
             }
+            catch
+            { }
 
             checkShowTrayIcon_CheckedChanged(null, null);
         }      
@@ -333,6 +342,15 @@ namespace ProcessHacker
                 }
             }
 
+            try
+            {
+                Properties.Settings.Default.DbgHelpPath = textDbghelpPath.Text;
+                Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
+                Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
+            }
+            catch
+            { }
+
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
@@ -416,6 +434,17 @@ namespace ProcessHacker
         {
             foreach (ListViewItem item in listHighlightingColors.Items)
                 item.Checked = false;
+        }
+
+        private void buttonDbghelpBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "dbghelp.dll|dbghelp.dll|DLL files (*.dll)|*.dll|All files (*.*)|*.*";
+            ofd.FileName = textDbghelpPath.Text;
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+                textDbghelpPath.Text = ofd.FileName;
         }
     }
 }

@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.6.6
  * NEW:
+   * Proper symbol support with dbghelp.dll
    * Aggressive mode (start with "-a" command line option)
  * FIXED:
    * Service properties Key handle leak

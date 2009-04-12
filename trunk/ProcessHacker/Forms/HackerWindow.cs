@@ -216,6 +216,11 @@ namespace ProcessHacker
                 }, this.Handle);
         }
 
+        private void apiLoggerMenuItem_Click(object sender, EventArgs e)
+        {
+            (new Forms.ApiLogWindow()).Show();
+        }
+
         private void findHandlesMenuItem_Click(object sender, EventArgs e)
         {
             if (HandleFilterWindow == null)
@@ -1851,6 +1856,8 @@ namespace ProcessHacker
 
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
+
+            Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
         }
 
         public void QueueMessage(string message)
@@ -2227,35 +2234,6 @@ namespace ProcessHacker
                 };
         }
 
-        private void LoadSymbols()
-        {
-            ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
-            {
-                try
-                {
-                    string[] modules =
-                    {
-                        "advapi32.dll", "comctl32.dll", "crypt32.dll", "dnsapi.dll",
-                        "gdi32.dll", "imagehlp.dll", "kernel32.dll", 
-                        "ntdll.dll", "ole32.dll", "psapi.dll", "rpcrt4.dll", "shell32.dll",
-                        "user32.dll", "winsta.dll", "wintrust.dll", "wtsapi32.dll" };
-
-                    foreach (string module in modules)
-                    {
-                        try
-                        {
-                            SymbolProvider.BaseInstance.LoadSymbolsFromLibrary(Environment.SystemDirectory + "\\" + module,
-                                (uint)Win32.GetModuleHandle(module));
-                        }
-                        catch
-                        { }
-                    }
-                }
-                catch
-                { }
-            }));
-        }
-
         private void LoadApplyCommandLineArgs()
         {
             tabControl.SelectedTab = tabControl.TabPages["tab" + Program.SelectTab];
@@ -2292,7 +2270,6 @@ namespace ProcessHacker
             this.LoadSettings();
             this.LoadControls();
             this.LoadAddShortcuts();
-            this.LoadSymbols();
             this.ResumeLayout();
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
@@ -2367,11 +2344,6 @@ namespace ProcessHacker
                 statusBar.SizingGrip = (WindowState == FormWindowState.Normal);
             }
             base.OnResize(e);
-        }
-
-        private void apiLoggerMenuItem_Click(object sender, EventArgs e)
-        {
-            (new Forms.ApiLogWindow()).Show();
         }
     }
 }

@@ -59,6 +59,8 @@
             this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.buttonDisableAll = new System.Windows.Forms.Button();
+            this.buttonEnableAll = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.listHighlightingColors = new System.Windows.Forms.ListView();
             this.columnDescription = new System.Windows.Forms.ColumnHeader();
@@ -84,11 +86,16 @@
             this.colorMemoryPB = new ProcessHacker.Components.ColorModifier();
             this.colorCPUUT = new ProcessHacker.Components.ColorModifier();
             this.colorCPUKT = new ProcessHacker.Components.ColorModifier();
+            this.tabSymbols = new System.Windows.Forms.TabPage();
+            this.checkUndecorate = new System.Windows.Forms.CheckBox();
+            this.textSearchPath = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.buttonDbghelpBrowse = new System.Windows.Forms.Button();
+            this.textDbghelpPath = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.buttonEnableAll = new System.Windows.Forms.Button();
-            this.buttonDisableAll = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -99,6 +106,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.textHighlightingDuration)).BeginInit();
             this.tabPlotting.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).BeginInit();
+            this.tabSymbols.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -207,6 +215,7 @@
             this.tabControl.Controls.Add(this.tabAdvanced);
             this.tabControl.Controls.Add(this.tabHighlighting);
             this.tabControl.Controls.Add(this.tabPlotting);
+            this.tabControl.Controls.Add(this.tabSymbols);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -522,6 +531,30 @@
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
             // 
+            // buttonDisableAll
+            // 
+            this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDisableAll.Location = new System.Drawing.Point(336, 312);
+            this.buttonDisableAll.Name = "buttonDisableAll";
+            this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
+            this.buttonDisableAll.TabIndex = 12;
+            this.buttonDisableAll.Text = "&Disable All";
+            this.buttonDisableAll.UseVisualStyleBackColor = true;
+            this.buttonDisableAll.Click += new System.EventHandler(this.buttonDisableAll_Click);
+            // 
+            // buttonEnableAll
+            // 
+            this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonEnableAll.Location = new System.Drawing.Point(255, 312);
+            this.buttonEnableAll.Name = "buttonEnableAll";
+            this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
+            this.buttonEnableAll.TabIndex = 12;
+            this.buttonEnableAll.Text = "&Enable All";
+            this.buttonEnableAll.UseVisualStyleBackColor = true;
+            this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -801,6 +834,84 @@
             this.colorCPUKT.Size = new System.Drawing.Size(40, 20);
             this.colorCPUKT.TabIndex = 11;
             // 
+            // tabSymbols
+            // 
+            this.tabSymbols.Controls.Add(this.checkUndecorate);
+            this.tabSymbols.Controls.Add(this.textSearchPath);
+            this.tabSymbols.Controls.Add(this.label10);
+            this.tabSymbols.Controls.Add(this.buttonDbghelpBrowse);
+            this.tabSymbols.Controls.Add(this.textDbghelpPath);
+            this.tabSymbols.Controls.Add(this.label9);
+            this.tabSymbols.Location = new System.Drawing.Point(4, 22);
+            this.tabSymbols.Name = "tabSymbols";
+            this.tabSymbols.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSymbols.Size = new System.Drawing.Size(417, 341);
+            this.tabSymbols.TabIndex = 4;
+            this.tabSymbols.Text = "Symbols";
+            this.tabSymbols.UseVisualStyleBackColor = true;
+            // 
+            // checkUndecorate
+            // 
+            this.checkUndecorate.AutoSize = true;
+            this.checkUndecorate.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkUndecorate.Location = new System.Drawing.Point(6, 60);
+            this.checkUndecorate.Name = "checkUndecorate";
+            this.checkUndecorate.Size = new System.Drawing.Size(128, 18);
+            this.checkUndecorate.TabIndex = 5;
+            this.checkUndecorate.Text = "Undecorate symbols";
+            this.toolTipProvider.SetToolTip(this.checkUndecorate, "If selected, C++ symbol names will be undecorated.");
+            this.checkUndecorate.UseVisualStyleBackColor = true;
+            // 
+            // textSearchPath
+            // 
+            this.textSearchPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textSearchPath.Location = new System.Drawing.Point(99, 34);
+            this.textSearchPath.Name = "textSearchPath";
+            this.textSearchPath.Size = new System.Drawing.Size(312, 20);
+            this.textSearchPath.TabIndex = 4;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 37);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(68, 13);
+            this.label10.TabIndex = 3;
+            this.label10.Text = "Search path:";
+            // 
+            // buttonDbghelpBrowse
+            // 
+            this.buttonDbghelpBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDbghelpBrowse.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDbghelpBrowse.Location = new System.Drawing.Point(336, 6);
+            this.buttonDbghelpBrowse.Name = "buttonDbghelpBrowse";
+            this.buttonDbghelpBrowse.Size = new System.Drawing.Size(75, 23);
+            this.buttonDbghelpBrowse.TabIndex = 2;
+            this.buttonDbghelpBrowse.Text = "Browse...";
+            this.buttonDbghelpBrowse.UseVisualStyleBackColor = true;
+            this.buttonDbghelpBrowse.Click += new System.EventHandler(this.buttonDbghelpBrowse_Click);
+            // 
+            // textDbghelpPath
+            // 
+            this.textDbghelpPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textDbghelpPath.Location = new System.Drawing.Point(99, 8);
+            this.textDbghelpPath.Name = "textDbghelpPath";
+            this.textDbghelpPath.Size = new System.Drawing.Size(231, 20);
+            this.textDbghelpPath.TabIndex = 1;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 11);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(87, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Dbghelp.dll path:";
+            this.toolTipProvider.SetToolTip(this.label9, "Select the most recent version of dbghelp.dll available, usually distributed with" +
+                    " Debugging Tools for Windows.");
+            // 
             // label22
             // 
             this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -830,30 +941,6 @@
             this.buttonCancel.Text = "&Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            // 
-            // buttonEnableAll
-            // 
-            this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableAll.Location = new System.Drawing.Point(255, 312);
-            this.buttonEnableAll.Name = "buttonEnableAll";
-            this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
-            this.buttonEnableAll.TabIndex = 12;
-            this.buttonEnableAll.Text = "&Enable All";
-            this.buttonEnableAll.UseVisualStyleBackColor = true;
-            this.buttonEnableAll.Click += new System.EventHandler(this.buttonEnableAll_Click);
-            // 
-            // buttonDisableAll
-            // 
-            this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableAll.Location = new System.Drawing.Point(336, 312);
-            this.buttonDisableAll.Name = "buttonDisableAll";
-            this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
-            this.buttonDisableAll.TabIndex = 12;
-            this.buttonDisableAll.Text = "&Disable All";
-            this.buttonDisableAll.UseVisualStyleBackColor = true;
-            this.buttonDisableAll.Click += new System.EventHandler(this.buttonDisableAll_Click);
             // 
             // OptionsWindow
             // 
@@ -889,6 +976,8 @@
             this.tabPlotting.ResumeLayout(false);
             this.tabPlotting.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.textStep)).EndInit();
+            this.tabSymbols.ResumeLayout(false);
+            this.tabSymbols.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -956,5 +1045,12 @@
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonDisableAll;
         private System.Windows.Forms.Button buttonEnableAll;
+        private System.Windows.Forms.TabPage tabSymbols;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox textSearchPath;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button buttonDbghelpBrowse;
+        private System.Windows.Forms.TextBox textDbghelpPath;
+        private System.Windows.Forms.CheckBox checkUndecorate;
     }
 }

@@ -109,11 +109,12 @@ namespace ProcessHacker
         public delegate bool EnumChildProc(IntPtr hWnd, int param);
         public delegate bool EnumThreadWndProc(IntPtr hWnd, int param);
         public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
-        public delegate int SymEnumSymbolsProc(SYMBOL_INFO pSymInfo, int SymbolSize, int UserContext);
+
+        public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
         public delegate bool ReadProcessMemoryProc64(int ProcessHandle, ulong BaseAddress, byte[] Buffer,
             int Size, out int BytesRead);
         public delegate int FunctionTableAccessProc64(int ProcessHandle, long AddrBase);
-        public delegate int GetModuleBaseProc64(int ProcessHandle, long Address);
+        public delegate long GetModuleBaseProc64(int ProcessHandle, long Address);
 
         /// <summary>
         /// A cache for type names; QuerySystemInformation with ALL_TYPES_INFORMATION fails for some 
@@ -140,7 +141,6 @@ namespace ProcessHacker
         public const int SID_SIZE = 0x1000;
         public const int SIZE_OF_80387_REGISTERS = 72;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
-        public const int SYMBOL_NAME_MAXSIZE = 255;
 
         #endregion    
 

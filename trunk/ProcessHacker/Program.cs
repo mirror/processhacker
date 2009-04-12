@@ -70,10 +70,6 @@ namespace ProcessHacker
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
 
-        public const bool ThreadWindowsThreaded = false;
-        public static Dictionary<string, ThreadWindow> ThreadWindows = new Dictionary<string, ThreadWindow>();
-        public static Dictionary<string, Thread> ThreadThreads = new Dictionary<string, Thread>();
-
         public const bool PEWindowsThreaded = false;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
@@ -736,68 +732,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Creates an instance of the thread window on a separate thread.
-        /// </summary>
-        public static ThreadWindow GetThreadWindow(int PID, int TID, SymbolProvider symbols)
-        {
-            return GetThreadWindow(PID, TID, symbols, new ThreadWindowInvokeAction(delegate { }));
-        }
-
-        /// <summary>
-        /// Creates an instance of the thread window on a separate thread and invokes an action on that thread.
-        /// </summary>
-        /// <param name="action">The action to be performed.</param>
-        public static ThreadWindow GetThreadWindow(int PID, int TID, SymbolProvider symbols, ThreadWindowInvokeAction action)
-        {
-            ThreadWindow tw = null;
-            string id = PID + "-" + TID;
-
-            if (ThreadWindows.ContainsKey(id))
-            {
-                tw = ThreadWindows[id];
-
-                tw.Invoke(action, tw);
-
-                return tw;
-            }
-
-            if (ThreadWindowsThreaded)
-            {
-                Thread t = new Thread(new ThreadStart(delegate
-                {
-                    tw = new ThreadWindow(PID, TID, symbols);
-
-                    id = tw.Id;
-
-                    action(tw);
-
-                    try
-                    {
-                        Application.Run(tw);
-                    }
-                    catch
-                    { }
-
-                    Program.ThreadThreads.Remove(id);
-                }));
-
-                t.SetApartmentState(ApartmentState.STA);
-                t.Start();
-
-                while (id == "") Thread.Sleep(1);
-                Program.ThreadThreads.Add(id, t);
-            }
-            else
-            {
-                tw = new ThreadWindow(PID, TID, symbols);
-                action(tw);
-                tw.Show();
-            }
-
-            return tw;
-        }
-
-        /// <summary>
         /// Creates an instance of the PE window on a separate thread.
         /// </summary>
         public static PEWindow GetPEWindow(string path)
@@ -1011,7 +945,6 @@ namespace ProcessHacker
 
             dics.Add(Program.MemoryEditors);
             dics.Add(Program.ResultsWindows);
-            dics.Add(Program.ThreadWindows);
             dics.Add(Program.PEWindows);
             dics.Add(Program.PWindows);
 

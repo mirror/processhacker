@@ -713,40 +713,74 @@ namespace ProcessHacker
 
         #region Symbols/Stack Walking
 
-        [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymCleanup(int ProcessHandle);
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern bool SymInitialize(int ProcessHandle, string UserSearchPath, bool InvadeProcess);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymEnumSymbols(int ProcessHandle, int BaseOfDll, int Mask,
-            [MarshalAs(UnmanagedType.FunctionPtr)] SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
+        public static extern bool SymCleanup(int ProcessHandle);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymEnumSymbols(int ProcessHandle, int BaseOfDll, string Mask,
-            [MarshalAs(UnmanagedType.FunctionPtr)] SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
+        public static extern SYMBOL_OPTIONS SymGetOptions();
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymFromAddr(int ProcessHandle, long Address, ref long Displacement, ref SYMBOL_INFO Symbol);
+        public static extern SYMBOL_OPTIONS SymSetOptions(SYMBOL_OPTIONS SymOptions);
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern bool SymGetSearchPath(int ProcessHandle, IntPtr SearchPath, int SearchPathLength);
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern bool SymSetSearchPath(int ProcessHandle, string SearchPath);
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern long SymLoadModule64(
+            int ProcessHandle,
+            int FileHandle,
+            string ImageName,
+            string ModuleName,
+            long BaseOfDll,
+            int SizeOfDll
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymFromIndex(int ProcessHandle, int BaseOfDll, int Index, ref SYMBOL_INFO Symbol);
+        public static extern int SymFunctionTableAccess64(int ProcessHandle, long AddrBase);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymFunctionTableAccess64(int ProcessHandle, int AddrBase);
+        public static extern long SymGetModuleBase64(int ProcessHandle, long Address);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymGetModuleBase64(int ProcessHandle, int dwAddr);
+        public static extern int SymEnumSymbols(
+            int ProcessHandle,
+            int BaseOfDll,
+            string Mask,
+            SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymInitialize(int ProcessHandle, int UserSearchPath, int InvadeProcess);
+        public static extern bool SymFromAddr(
+            int ProcessHandle,
+            long Address,
+            out long Displacement,
+            IntPtr Symbol);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern bool StackWalk64(MachineType MachineType, int ProcessHandle, int ThreadHandle,
-            [MarshalAs(UnmanagedType.Struct)] ref STACKFRAME64 StackFrame,
-            [MarshalAs(UnmanagedType.Struct)] ref CONTEXT ContextRecord,
-            [MarshalAs(UnmanagedType.FunctionPtr)] ReadProcessMemoryProc64 ReadMemoryRoutine,
-            [MarshalAs(UnmanagedType.FunctionPtr)] FunctionTableAccessProc64 FunctionTableAccessRoutine,
-            [MarshalAs(UnmanagedType.FunctionPtr)] GetModuleBaseProc64 GetModuleBaseRoutine,
-            int TranslateAddress);
+        public static extern bool SymFromIndex(
+            int ProcessHandle,
+            int BaseOfDll,
+            int Index,
+            IntPtr Symbol
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern bool StackWalk64(
+            MachineType MachineType,
+            int ProcessHandle,
+            int ThreadHandle,
+            ref STACKFRAME64 StackFrame,
+            ref CONTEXT ContextRecord,
+            ReadProcessMemoryProc64 ReadMemoryRoutine,
+            FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            GetModuleBaseProc64 GetModuleBaseRoutine,
+            int TranslateAddress
+            );
 
         #endregion
 

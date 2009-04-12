@@ -872,6 +872,37 @@ namespace ProcessHacker
         }
 
         [Flags]
+        public enum SYMBOL_OPTIONS : uint
+        {
+            AllowAbsoluteSymbols = 0x00000800,
+            AllowZeroAddress = 0x01000000,
+            AutoPublics = 0x00010000,
+            CaseInsensitive = 0x00000001,
+            Debug = 0x80000000,
+            DeferredLoads = 0x00000004,
+            DisableSymSrvAutodetect = 0x02000000,
+            ExactSymbols = 0x00000400,
+            FailCriticalErrors = 0x00000200,
+            FavorCompressed = 0x00800000,
+            FlatDirectory = 0x00400000,
+            IgnoreCvRec = 0x00000080,
+            IgnoreImageDir = 0x00200000,
+            IgnoreNtSymPath = 0x00001000,
+            Include32BitModules = 0x00002000,
+            LoadAnything = 0x00000040,
+            LoadLines = 0x00000010,
+            NoCpp = 0x00000008,
+            NoImageSearch = 0x00020000,
+            NoPrompts = 0x00080000,
+            NoPublics = 0x00008000,
+            NoUnqualifiedLoads = 0x00000100,
+            Overwrite = 0x00100000,
+            PublicsOnly = 0x00004000,
+            Secure = 0x00040000,
+            UndName = 0x00000002
+        }
+
+        [Flags]
         public enum SYNC_RIGHTS : int
         {
             EVENT_ALL_ACCESS = 0x1f0003,

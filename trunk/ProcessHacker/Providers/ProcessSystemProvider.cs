@@ -89,8 +89,6 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        private const bool CacheFileVerifyResults = false;
-
         public class FileProcessResult
         {
             public int PID;
@@ -110,7 +108,7 @@ namespace ProcessHacker
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
 
-        private delegate void ProcessFileDelegate(int pid, string fileName);
+        private delegate void ProcessFileDelegate(int pid, string fileName, bool useCache);
 
         public ProcessSystemProvider()
             : base()
@@ -233,7 +231,7 @@ namespace ProcessHacker
             this.Performance = performance;
         }
 
-        private void ProcessFile(int pid, string fileName)
+        private void ProcessFile(int pid, string fileName, bool forced)
         {
             FileProcessResult fpResult = new FileProcessResult();
 
@@ -248,7 +246,7 @@ namespace ProcessHacker
             // 1. the function-to-library ratio is lower than 4
             //   (on average less than 4 functions are imported from each library)
             // 2. it references more than 3 libraries but less than 14 libraries.
-            if (fileName != null)
+            if (fileName != null && (Properties.Settings.Default.VerifySignatures || forced))
             {
                 try
                 {
@@ -294,7 +292,7 @@ namespace ProcessHacker
 
             try
             {
-                if (Properties.Settings.Default.VerifySignatures)
+                if (Properties.Settings.Default.VerifySignatures || forced)
                 {
                     if (fileName != null)
                     {
@@ -302,7 +300,7 @@ namespace ProcessHacker
 
                         lock (_fileResults)
                         {
-                            if (CacheFileVerifyResults && _fileResults.ContainsKey(uniName))
+                            if (!forced && _fileResults.ContainsKey(uniName))
                             {
                                 fpResult.VerifyResult = _fileResults[uniName];
                             }
@@ -317,7 +315,10 @@ namespace ProcessHacker
                                     fpResult.VerifyResult = Win32.VerifyResult.NoSignature;
                                 }
 
-                                //_fileResults.Add(uniName, fpResult.VerifyResult);
+                                if (!_fileResults.ContainsKey(uniName))
+                                    _fileResults.Add(uniName, fpResult.VerifyResult);
+                                else
+                                    _fileResults[uniName] = fpResult.VerifyResult;
                             }
                         }
                     }
@@ -366,7 +367,7 @@ namespace ProcessHacker
 
         public void QueueFileProcessing(int pid)
         {
-            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, this.Dictionary[pid].FileName,
+            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, this.Dictionary[pid].FileName, true,
                                 r => { }, null);
         }
 
@@ -747,7 +748,7 @@ namespace ProcessHacker
 
                     if (pid > 0)
                     {
-                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
+                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName, false,
                             r => { }, null);
                     }
 
@@ -866,9 +867,9 @@ namespace ProcessHacker
 
                     if (pid > 0)
                     {
-                        if (item.IsPacked && item.ProcessingAttempts < 5)
+                        if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
-                            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName,
+                            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName, true,
                                 r => { }, null);
                             item.ProcessingAttempts++;
                         }

@@ -33,7 +33,7 @@ namespace ProcessHacker
         private int _tid;
         private Win32.ProcessHandle _phandle;
         private Win32.ThreadHandle _thandle;
-        private SymbolProvider _symbols;
+        private Symbols _symbols;
 
         public const string DisplayFormat = "0x{0:x8}";
 
@@ -45,7 +45,7 @@ namespace ProcessHacker
             get { return _pid + "-" + _tid; }
         }
 
-        public ThreadWindow(int PID, int TID, SymbolProvider symbols)
+        public ThreadWindow(int PID, int TID, Symbols symbols)
         {
             InitializeComponent();
 
@@ -54,8 +54,6 @@ namespace ProcessHacker
             _pid = PID;
             _tid = TID;
             _symbols = symbols;
-
-            Program.ThreadWindows.Add(Id, this);
 
             this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
     ") - Thread " + _tid.ToString();
@@ -109,16 +107,6 @@ namespace ProcessHacker
             { }
         }
 
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
-        }
-
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
             listViewCallStack.SetTheme("explorer");
@@ -169,8 +157,6 @@ namespace ProcessHacker
 
             this.Size = Properties.Settings.Default.ThreadWindowSize;
             ColumnSettings.LoadSettings(Properties.Settings.Default.CallStackColumns, listViewCallStack);
-
-            Program.UpdateWindows();
         }
 
         private void ThreadWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -262,7 +248,7 @@ namespace ProcessHacker
                     //}
 
                     if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
-                        ref stackFrame, ref context, readMemoryProc, null, null, 0))
+                        ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, 0))
                         break;
 
                     if (stackFrame.AddrPC.Offset == 0)
@@ -272,7 +258,7 @@ namespace ProcessHacker
 
                     ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
                         "0x" + addr.ToString("x8"),
-                        _symbols.GetNameFromAddress(addr)
+                        _symbols.GetSymbolFromAddress(addr)
                     }));
 
                     newItem.Tag = addr;
@@ -410,7 +396,10 @@ namespace ProcessHacker
         {
             if (listViewCallStack.SelectedItems.Count == 1)
             {
-                fileModule.Text = _symbols.GetModuleFromAddress((uint)listViewCallStack.SelectedItems[0].Tag);
+                string fileName;
+
+                _symbols.GetSymbolFromAddress((uint)listViewCallStack.SelectedItems[0].Tag, out fileName);
+                fileModule.Text = fileName;
                 fileModule.Enabled = true;
             }
             else

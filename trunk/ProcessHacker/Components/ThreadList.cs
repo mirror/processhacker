@@ -87,6 +87,8 @@ namespace ProcessHacker
 
         private void listThreads_SelectedIndexChanged(object sender, System.EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (listThreads.SelectedItems.Count == 1)
             {
                 try
@@ -94,9 +96,18 @@ namespace ProcessHacker
                     int tid = int.Parse(listThreads.SelectedItems[0].Name);
                     ProcessItem process = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
                     ProcessThread thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
+                    string fileName;
 
-                    fileModule.Text = _provider.Symbols.GetModuleFromAddress(_provider.Dictionary[tid].StartAddressI);
-                    fileModule.Enabled = true;
+                    try
+                    {
+                        _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI, out fileName);
+                        fileModule.Text = fileName;
+                        fileModule.Enabled = true;
+                    }
+                    catch
+                    {
+                        fileModule.Enabled = false;
+                    }
 
                     if (thread.ThreadState == ThreadState.Wait)
                     {
@@ -136,6 +147,8 @@ namespace ProcessHacker
 
             if (this.SelectedIndexChanged != null)
                 this.SelectedIndexChanged(sender, e);
+
+            this.Cursor = Cursors.Default;
         }
 
         private void ThreadList_KeyDown(object sender, KeyEventArgs e)
@@ -201,6 +214,7 @@ namespace ProcessHacker
                     _provider.DictionaryModified -= new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated -= new ThreadProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.LoadingStateChanged -= new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
                 }
 
                 _provider = value;
@@ -220,6 +234,7 @@ namespace ProcessHacker
                     _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new ThreadProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.LoadingStateChanged += new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
 
                     _pid = _provider.PID;
                     _process = Process.GetProcessById(_pid);
@@ -324,6 +339,17 @@ namespace ProcessHacker
             int selectedCount = listThreads.SelectedItems.Count;
 
             listThreads.Items[item.TID.ToString()].Remove();
+        }
+
+        private void provider_LoadingStateChanged(bool loading)
+        {
+            this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    if (loading)
+                        listThreads.Cursor = Cursors.AppStarting;
+                    else
+                        listThreads.Cursor = Cursors.Default;
+                }));
         }
 
         public void SaveSettings()
@@ -468,23 +494,13 @@ namespace ProcessHacker
                     return;
             }
 
-            ThreadWindow window;
-
             try
             {
-                window = Program.GetThreadWindow(_pid,
-                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
-                    _provider.Symbols,
-                    new Program.ThreadWindowInvokeAction(delegate(ThreadWindow f)
-                    {
-                        try
-                        {
-                            f.Show();
-                            f.Activate();
-                        }
-                        catch
-                        { }
-                    }));
+                (new ThreadWindow(
+                    _pid, 
+                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
+                    _provider.Symbols)
+                    ).ShowDialog(this);
             }
             catch
             { }

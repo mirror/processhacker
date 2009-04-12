@@ -609,6 +609,7 @@
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
     <Compile Include="Actions\ProcessActions.cs" />
     <Compile Include="Singleton.cs" />
+    <Compile Include="Symbols\Symbols.cs" />
     <Compile Include="UsageIcon.cs" />
     <Compile Include="GenericViewMenu.cs" />
     <Compile Include="PE\PEException.cs" />
@@ -704,7 +705,6 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
-    <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
