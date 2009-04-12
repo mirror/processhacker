@@ -210,7 +210,7 @@
       <Value Profile="(Default)">DeepPink</Value>
     </Setting>
     <Setting Name="VerifySignatures" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="NetworkListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
