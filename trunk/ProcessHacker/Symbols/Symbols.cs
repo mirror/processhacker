@@ -136,6 +136,8 @@ namespace ProcessHacker
             }
         }
 
+        public bool PreloadModules { get; set; }
+
         public static void ShowWarning(IWin32Window window, bool force)
         {
             if (Properties.Settings.Default.DbgHelpWarningShown && !force)
@@ -323,6 +325,20 @@ namespace ProcessHacker
 
                 Marshal.StructureToPtr(info, data, false);
 
+                try
+                {
+                    if (this.PreloadModules)
+                    {
+                        long b;
+
+                        this.GetModuleFromAddress(address, out b);
+                        Win32.SymFromAddr(_handle, b, out displacement, data);
+                        Marshal.StructureToPtr(info, data, false);
+                    }
+                }
+                catch
+                { }
+
                 lock (_callLock)
                 {
                     if (Win32.SymFromAddr(_handle, address, out displacement, data))
@@ -353,16 +369,33 @@ namespace ProcessHacker
                     return "0x" + address.ToString("x8");
                 }
 
-                FileInfo fi = new FileInfo(modFileName);
+                FileInfo fi = null;
 
-                fileName = fi.FullName;
+                fileName = modFileName;
+
+                try
+                {
+                    fi = new FileInfo(modFileName);
+                    fileName = fi.FullName;
+                }
+                catch
+                { }
 
                 if (info.NameLen == 0)
                 {
                     level = FoundLevel.Module;
                     flags = 0;
 
-                    return fi.Name + "+0x" + (address - modBase).ToString("x");
+                    if (fi != null)
+                    {
+                        return fi.Name + "+0x" + (address - modBase).ToString("x");
+                    }
+                    else
+                    {
+                        var s = modFileName.Split('\\');
+
+                        return s[s.Length - 1] + "+0x" + (address - modBase).ToString("x");
+                    }
                 }
 
                 string name = Marshal.PtrToStringAnsi(

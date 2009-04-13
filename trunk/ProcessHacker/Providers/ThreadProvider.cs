@@ -97,8 +97,8 @@ namespace ProcessHacker
                     _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
 
                 // start loading symbols
-                ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
-                {
+                //ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
+                //{
                     try
                     {
                         if (_pid != 4)
@@ -119,6 +119,9 @@ namespace ProcessHacker
                         }
                         else
                         {
+                            // hack for drivers, whose sizes never load properly because of dbghelp.dll's dumb implementation
+                            _symbols.PreloadModules = true;
+
                             // load driver symbols
                             foreach (var module in Win32.EnumKernelModules())
                             {
@@ -133,7 +136,7 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-                }));
+                //}));
             }
             catch
             { }
@@ -186,6 +189,17 @@ namespace ProcessHacker
                 if (this.LoadingStateChanged != null)
                     this.LoadingStateChanged(_loading > 0);
             }
+        }
+
+        public void QueueThreadResolveStartAddress(int tid)
+        {
+            this.QueueThreadResolveStartAddress(tid, this.Dictionary[tid].StartAddressI);
+        }
+
+        public void QueueThreadResolveStartAddress(int tid, long startAddress)
+        {
+            (new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress)).BeginInvoke(
+                        tid, startAddress, r => { }, null);
         }
 
         private void UpdateOnce()
@@ -314,8 +328,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    (new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress)).BeginInvoke(
-                        tid, item.StartAddressI, r => { }, null);
+                    this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
 
                     newdictionary.Add(tid, item);
                     this.CallDictionaryAdded(item);

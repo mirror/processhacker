@@ -807,7 +807,7 @@ namespace ProcessHacker
                 Win32.GetDeviceDriverBaseName(imageBases[i], name, name.Capacity * 2);
                 Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
 
-                kernelModules[i] = new KernelModule((uint)imageBases[i], name.ToString(), fileName.ToString());
+                kernelModules[i] = new KernelModule((uint)imageBases[i], name.ToString(), Misc.GetRealPath(fileName.ToString()));
             }
 
             return kernelModules;
