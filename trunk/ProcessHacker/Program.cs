@@ -83,7 +83,7 @@ namespace ProcessHacker
         public delegate void ThreadWindowInvokeAction(ThreadWindow f);
         public delegate void PEWindowInvokeAction(PEWindow f);
         public delegate void PWindowInvokeAction(ProcessWindow f);
-        public delegate void UpdateWindowAction(Form f, List<string> Texts, Dictionary<string, Form> TextToForm);
+        public delegate void UpdateWindowAction(Form f);
 
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
@@ -864,76 +864,44 @@ namespace ProcessHacker
             f.Activate();
         }
 
-        public static void UpdateWindow(Form f, List<string> Texts, Dictionary<string, Form> TextToForm)
+        public static void UpdateWindow(Form f)
         {
-            try
+            if (f.InvokeRequired)
             {
-                if (f.InvokeRequired)
-                {
-                    f.BeginInvoke(new UpdateWindowAction(UpdateWindow), f, Texts, TextToForm);
+                f.BeginInvoke(new UpdateWindowAction(UpdateWindow), f);
 
-                    return;
-                }
-
-                MenuItem windowMenuItem = (MenuItem)f.GetType().GetProperty("WindowMenuItem").GetValue(f, null);
-                wyDay.Controls.VistaMenu vistaMenu =
-                    (wyDay.Controls.VistaMenu)f.GetType().GetProperty("VistaMenu").GetValue(f, null);
-                MenuItem item;
-
-                lock (windowMenuItem)
-                {
-                    foreach (MenuItem menuItem in windowMenuItem.MenuItems)
-                    {
-                        vistaMenu.SetImage(menuItem, null);
-                        menuItem.Tag = null;
-                    }
-
-                    windowMenuItem.MenuItems.DisposeAndClear();
-
-                    foreach (string s in Texts)
-                    {
-                        Bitmap image = new Bitmap(16, 16);
-
-                        item = new MenuItem(s);
-                        item.Tag = TextToForm[s];
-                        item.Click += new EventHandler(windowItemClicked);
-
-                        if (item.Tag == f)
-                            item.DefaultItem = true;
-
-                        windowMenuItem.MenuItems.Add(item);
-
-                        // don't add icon on XP - doesn't work for some reason
-                        if (Program.WindowsVersion == WindowsVersion.Vista)
-                        {
-                            using (Graphics g = Graphics.FromImage(image))
-                            {
-                                g.DrawIcon(TextToForm[s].Icon, new Rectangle(0, 0, 16, 16));
-
-                                vistaMenu.SetImage(item, image);
-                            }
-                        }
-
-                        image.Dispose();
-                    }
-
-                    windowMenuItem.MenuItems.Add(new MenuItem("-"));
-
-                    item = new MenuItem("&Always On Top");
-                    item.Tag = f;
-                    item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
-                    item.Checked = f.TopMost;
-                    windowMenuItem.MenuItems.Add(item);
-
-                    item = new MenuItem("&Close");
-                    item.Tag = f;
-                    item.Click += new EventHandler(windowCloseItemClicked);
-                    windowMenuItem.MenuItems.Add(item);
-                    vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.application_delete);
-                }
+                return;
             }
-            catch
-            { }
+
+            MenuItem windowMenuItem = (MenuItem)f.GetType().GetProperty("WindowMenuItem").GetValue(f, null);
+            wyDay.Controls.VistaMenu vistaMenu =
+                (wyDay.Controls.VistaMenu)f.GetType().GetProperty("VistaMenu").GetValue(f, null);
+            MenuItem item;
+
+            lock (windowMenuItem)
+            {
+                WeakReference<Form> fRef = new WeakReference<Form>(f);
+
+                foreach (MenuItem menuItem in windowMenuItem.MenuItems)
+                {
+                    vistaMenu.SetImage(menuItem, null);
+                    menuItem.Tag = null;
+                }
+
+                windowMenuItem.MenuItems.DisposeAndClear();
+
+                item = new MenuItem("&Always On Top");
+                item.Tag = fRef;
+                item.Click += new EventHandler(windowAlwaysOnTopItemClicked);
+                item.Checked = f.TopMost;
+                windowMenuItem.MenuItems.Add(item);
+
+                item = new MenuItem("&Close");
+                item.Tag = fRef;
+                item.Click += new EventHandler(windowCloseItemClicked);
+                windowMenuItem.MenuItems.Add(item);
+                vistaMenu.SetImage(item, global::ProcessHacker.Properties.Resources.application_delete);
+            }
         }
 
         public static void UpdateWindows()
@@ -959,35 +927,18 @@ namespace ProcessHacker
                 }
             }
 
-            TextToForm.Add("Process Hacker", HackerWindow);
-            Texts.Add("Process Hacker");
+            forms.Add(Program.HackerWindow);
 
             foreach (Form f in forms)
-            {
-                TextToForm.Add(f.Text, f);
-                Texts.Add(f.Text);
-            }
-
-            Texts.Sort();
-
-            UpdateWindow(HackerWindow, Texts, TextToForm);
-
-            foreach (Form f in forms)
-            {
-                UpdateWindow(f, Texts, TextToForm);
-            }
-        }
-
-        private static void windowItemClicked(object sender, EventArgs e)
-        {
-            Form f = (Form)((MenuItem)sender).Tag;
-
-            Program.FocusWindow(f);
+                UpdateWindow(f);
         }
 
         private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
         {
-            Form f = (Form)((MenuItem)sender).Tag;
+            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
+
+            if (f == null)
+                return;
 
             f.Invoke(new MethodInvoker(delegate { f.TopMost = !f.TopMost; }));
 
@@ -996,7 +947,10 @@ namespace ProcessHacker
 
         private static void windowCloseItemClicked(object sender, EventArgs e)
         {
-            Form f = (Form)((MenuItem)sender).Tag;
+            Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
+
+            if (f == null)
+                return;
 
             f.Invoke(new MethodInvoker(delegate { f.Close(); }));
         }

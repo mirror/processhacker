@@ -8,6 +8,9 @@ Process Hacker
    * Service properties Key handle leak
    * Handle deletion detection
    * Unhandled exceptions when viewing performance/statistics for a non-existent process
+ * REMOVED:
+   * Useless Window menu items (PITA + causes memory leaks due to Microsoft's poor 
+     implementation of MenuItem)
 
 1.3.6.5
  * NEW/IMPROVED:

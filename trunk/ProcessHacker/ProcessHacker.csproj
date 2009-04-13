@@ -705,6 +705,7 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
+    <Compile Include="WeakReference.cs" />
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />
