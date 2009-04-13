@@ -94,7 +94,7 @@ namespace ProcessHacker
                         if (ex.Message.StartsWith("An attempt was made"))
                         {
                             labelThreadUser.Text = "Username: (Not Impersonating)"; 
-                            tokenMenuItem.Enabled = false;
+                            buttonToken.Enabled = false;
                         }
                         else
                         {
@@ -105,6 +105,35 @@ namespace ProcessHacker
             }
             catch
             { }
+
+            try
+            {
+                _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                this.Close();
+
+                return;
+            }
+
+            try
+            {
+                _thandle = new Win32.ThreadHandle(_tid, 
+                    Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                this.Close();
+
+                return;
+            }
         }
 
         private void ThreadWindow_Load(object sender, EventArgs e)
@@ -123,35 +152,6 @@ namespace ProcessHacker
                     if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listViewRegisters.Items);
                     if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewRegisters, -1);
                 };
-
-            try
-            {
-                _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not open process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                this.Close();
-
-                return;
-            }
-
-            try
-            {
-                _thandle = new Win32.ThreadHandle(_tid, Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT | 
-                    Win32.THREAD_RIGHTS.THREAD_TERMINATE | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not open thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                this.Close();
-
-                return;
-            }
 
             this.WalkCallStack();
 
@@ -327,69 +327,9 @@ namespace ProcessHacker
             }
         }
 
-        private void suspendMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                _thandle.Suspend();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error suspending thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                 MessageBoxIcon.Error);     
-            }
-        }
-
-        private void resumeMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                _thandle.Resume();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error resuming thread\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                  MessageBoxIcon.Error);
-            }
-        }
-
-        private void terminateMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                _thandle.Terminate();
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error terminating thread:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                  MessageBoxIcon.Error);
-            }
-        }
-
         private void buttonWalk_Click(object sender, EventArgs e)
         {
             this.WalkCallStack();
-        }
-
-        private void tokenMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Program.MinThreadQueryRights))
-                {
-                    TokenWindow tokForm = new TokenWindow(thread);
-
-                    tokForm.TopMost = this.TopMost;
-                    tokForm.Text = "Token - " + this.Text;
-                    tokForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (!ex.Message.StartsWith("Cannot access a disposed object"))
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void listViewCallStack_SelectedIndexChanged(object sender, EventArgs e)
@@ -406,6 +346,26 @@ namespace ProcessHacker
             {
                 fileModule.Text = "";
                 fileModule.Enabled = false;
+            }
+        }
+
+        private void buttonToken_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Program.MinThreadQueryRights))
+                {
+                    TokenWindow tokForm = new TokenWindow(thread);
+
+                    tokForm.TopMost = this.TopMost;
+                    tokForm.Text = "Token - " + this.Text;
+                    tokForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.StartsWith("Cannot access a disposed object"))
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
