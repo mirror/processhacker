@@ -530,8 +530,8 @@ namespace ProcessHacker
                     new IntPtr(mainModule->BaseAddress),
                     mainModule->SizeOfImage,
                     new IntPtr(mainModule->EntryPoint),
-                    Win32.ReadUnicodeString(this, mainModule->BaseDllName),
-                    Win32.ReadUnicodeString(this, mainModule->FullDllName)
+                    Win32.ReadUnicodeString(this, mainModule->BaseDllName).TrimEnd('\0'),
+                    Win32.ReadUnicodeString(this, mainModule->FullDllName).TrimEnd('\0')
                     );
             }
 
@@ -614,8 +614,8 @@ namespace ProcessHacker
                             new IntPtr(currentModule->BaseAddress),
                             currentModule->SizeOfImage,
                             new IntPtr(currentModule->EntryPoint),
-                            Win32.ReadUnicodeString(this, currentModule->BaseDllName),
-                            Win32.ReadUnicodeString(this, currentModule->FullDllName)
+                            Win32.ReadUnicodeString(this, currentModule->BaseDllName).TrimEnd('\0'),
+                            Win32.ReadUnicodeString(this, currentModule->FullDllName).TrimEnd('\0')
                             ));
                     }
 
