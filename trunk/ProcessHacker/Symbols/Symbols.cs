@@ -150,8 +150,23 @@ namespace ProcessHacker
             lock (_modules)
             {
                 _modules.Add(new KeyValuePair<long, string>(baseAddress, fileName));
-                _modules.Sort(new Comparison<KeyValuePair<long, string>>(
-                        (kvp1, kvp2) => kvp2.Key.CompareTo(kvp1.Key)));
+                _modules.Sort((kvp1, kvp2) => kvp2.Key.CompareTo(kvp1.Key));
+            }
+        }
+
+        public void UnloadModule(string fileName)
+        {
+            var pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
+
+            this.UnloadModule(pair.Key);
+        }
+
+        public void UnloadModule(long baseAddress)
+        {
+            lock (_callLock)
+            {
+                if (!Win32.SymUnloadModule64(_handle, baseAddress))
+                    Win32.ThrowLastWin32Error();
             }
         }
 
@@ -207,7 +222,7 @@ namespace ProcessHacker
 
         public string GetSymbolFromAddress(long address, out FoundLevel level, out Win32.SYMBOL_FLAGS flags, out string fileName)
         {
-            const int maxNameLen = 0x400;
+            const int maxNameLen = 0x100;
             long displacement;
 
             if (address == 0)
@@ -244,8 +259,7 @@ namespace ProcessHacker
                 else
                 {
                     modBase = info.ModBase;
-                    modFileName = _modules.Find(
-                        new Predicate<KeyValuePair<long,string>>(kvp => kvp.Key == info.ModBase)).Value;
+                    modFileName = _modules.Find(kvp => kvp.Key == info.ModBase).Value;
                 }
 
                 if (modFileName == null)
@@ -301,6 +315,7 @@ namespace ProcessHacker
                 {
                     _disposed = true;
                     Win32.SymCleanup(_handle);
+                    _idGen.Push(_handle);
                 }
             }
             finally

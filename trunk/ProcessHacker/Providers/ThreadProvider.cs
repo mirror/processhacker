@@ -81,7 +81,7 @@ namespace ProcessHacker
                 _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights);
                 _symbols = new Symbols(_processHandle);
 
-                Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads | Win32.SYMBOL_OPTIONS.NoPrompts |
+                Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads |
                     (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
 
                 if (Properties.Settings.Default.DbgHelpSearchPath != "")

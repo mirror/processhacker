@@ -742,6 +742,9 @@ namespace ProcessHacker
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern bool SymUnloadModule64(int ProcessHandle, long BaseOfDll);
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
         public static extern int SymFunctionTableAccess64(int ProcessHandle, long AddrBase);
 
         [DllImport("dbghelp.dll", SetLastError = true)]
