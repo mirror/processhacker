@@ -1858,6 +1858,25 @@ namespace ProcessHacker
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
             Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
+
+            try
+            {
+                var modules = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+
+                foreach (var module in modules)
+                {
+                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                    {
+                        var fi = new System.IO.FileInfo(module.FileName);
+
+                        Win32.LoadLibrary(fi.DirectoryName + "\\symsrv.dll");
+
+                        break;
+                    }
+                }
+            }
+            catch
+            { }
         }
 
         public void QueueMessage(string message)

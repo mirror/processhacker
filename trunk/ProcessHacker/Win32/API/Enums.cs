@@ -902,6 +902,13 @@ namespace ProcessHacker
             UndName = 0x00000002
         }
 
+        public enum SYMBOL_SERVER_OPTION
+        {
+            Callback = 0x01,
+            Unattended = 0x20,
+            ParentWin = 0x80,
+        }
+
         [Flags]
         public enum SYNC_RIGHTS : int
         {

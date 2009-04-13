@@ -204,7 +204,7 @@ namespace ProcessHacker
                                     "or could not be loaded. To ensure you have the latest version of dbghelp.dll, download " +
                                     "Debugging Tools for Windows and configure Process Hacker to use its version of dbghelp.dll. " +
                                     "If you have the latest version of dbghelp.dll, ensure that symsrv.dll resides in the same " +
-                                    "directory as dbghelp.dll", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                    "directory as dbghelp.dll.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             }
                         }
 

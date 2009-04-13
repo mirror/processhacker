@@ -785,6 +785,12 @@ namespace ProcessHacker
             int TranslateAddress
             );
 
+        [DllImport("symsrv.dll", SetLastError = true)]
+        public static extern bool SymbolServerSetOptions(
+            SYMBOL_SERVER_OPTION Options,
+            long Data
+            );
+
         #endregion
 
         #region TCP

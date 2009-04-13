@@ -84,6 +84,15 @@ namespace ProcessHacker
                 Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads | 
                     (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
 
+                try
+                {
+                    // Needed to display the EULA
+                    Win32.SymbolServerSetOptions(Win32.SYMBOL_SERVER_OPTION.Unattended, 0);
+                    Win32.SymbolServerSetOptions(Win32.SYMBOL_SERVER_OPTION.ParentWin, Program.HackerWindow.Handle.ToInt64());
+                }
+                catch
+                { }
+
                 if (Properties.Settings.Default.DbgHelpSearchPath != "")
                     _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
 
