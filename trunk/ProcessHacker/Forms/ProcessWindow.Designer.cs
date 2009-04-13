@@ -18,13 +18,17 @@
                 components.Dispose();
             }
 
+            Program.PWindows.Remove(_pid);
+            Program.UpdateWindows();
+
             if (_process != null)
                 _process.Close();
 
             if (_threadP != null)
             {
                 Program.SecondarySharedThreadProvider.Remove(_threadP);
-                _threadP.Dispose();
+                // May take a very, very long time
+                (new System.Windows.Forms.MethodInvoker(_threadP.Dispose)).BeginInvoke(r => { }, null);
                 _threadP = null;
             }
 
@@ -54,9 +58,6 @@
 
             if (_serviceProps != null)
                 _serviceProps.Dispose();
-
-            Program.PWindows.Remove(_pid);
-            Program.UpdateWindows();
 
             // A temporary fix for any handle/memory leaks
             Program.CollectGarbage();
