@@ -1284,5 +1284,17 @@ namespace ProcessHacker.Properties {
                 this["DbgHelpUndecorate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DbgHelpWarningShown {
+            get {
+                return ((bool)(this["DbgHelpWarningShown"]));
+            }
+            set {
+                this["DbgHelpWarningShown"] = value;
+            }
+        }
     }
 }

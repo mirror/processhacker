@@ -22,9 +22,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
+using Microsoft.Samples;
 
 namespace ProcessHacker
 {
@@ -132,6 +134,86 @@ namespace ProcessHacker
                 lock (_callLock)
                     Win32.SymSetSearchPath(_handle, value);
             }
+        }
+
+        public static void ShowWarning(IWin32Window window, bool force)
+        {
+            if (Properties.Settings.Default.DbgHelpWarningShown && !force)
+                return;
+
+            try
+            {
+                var modules = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+
+                foreach (var module in modules)
+                {
+                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                    {
+                        FileInfo fi = new FileInfo(module.FileName);
+
+                        if (!File.Exists(fi.DirectoryName + "\\symsrv.dll"))
+                        {
+                            if (!force)
+                                Properties.Settings.Default.DbgHelpWarningShown = true;
+
+                            if (Program.WindowsVersion != WindowsVersion.XP)
+                            {
+                                TaskDialog td = new TaskDialog();
+                                bool verificationChecked;
+
+                                td.CommonButtons = TaskDialogCommonButtons.Ok;
+                                td.WindowTitle = "Process Hacker";
+                                td.MainIcon = TaskDialogIcon.Warning;
+                                td.MainInstruction = "Microsoft Symbol Server not supported";
+                                td.Content = "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " + 
+                                    "or could not be loaded. " +
+                                    "To ensure you have the latest version of dbghelp.dll, download " +
+                                    "<a href=\"dbghelp\">Debugging " + 
+                                    "Tools for Windows</a> and configure Process Hacker to " +
+                                    "use its version of dbghelp.dll. If you have the latest version of dbghelp.dll, " +
+                                    "ensure that symsrv.dll resides in the same directory as dbghelp.dll.";
+                                td.EnableHyperlinks = true;
+                                td.Callback = (taskDialog, args, callbackData) =>
+                                    {
+                                        if (args.Notification == TaskDialogNotification.HyperlinkClicked)
+                                        {
+                                            try
+                                            {
+                                                System.Diagnostics.Process.Start(
+                                                    "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
+                                            }
+                                            catch
+                                            { }
+
+                                            return true;
+                                        }
+
+                                        return false;
+                                    };
+                                td.VerificationText = force ? null : "Do not display this warning again";
+                                td.VerificationFlagChecked = true;
+
+                                td.Show(window, out verificationChecked);
+
+                                if (!force)
+                                    Properties.Settings.Default.DbgHelpWarningShown = verificationChecked;
+                            }
+                            else
+                            {
+                                MessageBox.Show(window, "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " +
+                                    "or could not be loaded. To ensure you have the latest version of dbghelp.dll, download " +
+                                    "Debugging Tools for Windows and configure Process Hacker to use its version of dbghelp.dll. " +
+                                    "If you have the latest version of dbghelp.dll, ensure that symsrv.dll resides in the same " +
+                                    "directory as dbghelp.dll", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+            catch
+            { }
         }
 
         public void LoadModule(string fileName, long baseAddress)
@@ -271,7 +353,7 @@ namespace ProcessHacker
                     return "0x" + address.ToString("x8");
                 }
 
-                System.IO.FileInfo fi = new System.IO.FileInfo(modFileName);
+                FileInfo fi = new FileInfo(modFileName);
 
                 fileName = fi.FullName;
 

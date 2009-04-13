@@ -183,8 +183,6 @@ namespace ProcessHacker
             catch
             { }
 
-            ThreadPool.SetMaxThreads(3, 3);
-
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 
             if (Environment.OSVersion.Version.Major <= 5)

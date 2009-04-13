@@ -200,6 +200,8 @@ namespace ProcessHacker
                     this.BeginInvoke(new MethodInvoker(this.LoadStage2));
                 }),
                 null, 100, System.Threading.Timeout.Infinite);
+
+            Symbols.ShowWarning(this, false);
         }
 
         private void LoadStage2()

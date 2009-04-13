@@ -34,6 +34,7 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
+        private string _oldDbghelp;
         private string _oldTaskMgrDebugger;
         private bool _autoClosed = false;
         private Font _font;
@@ -130,7 +131,7 @@ namespace ProcessHacker
 
             try
             {
-                textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
+                _oldDbghelp = textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
                 textSearchPath.Text = Properties.Settings.Default.DbgHelpSearchPath;
                 checkUndecorate.Checked = (Symbols.Options & Win32.SYMBOL_OPTIONS.UndName) != 0;
             }
@@ -357,7 +358,11 @@ namespace ProcessHacker
             Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.SecondarySharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
-            Properties.Settings.Default.Save(); 
+            Properties.Settings.Default.Save();
+
+            if (_oldDbghelp != textDbghelpPath.Text)
+                MessageBox.Show("One or more options you have changed require a restart of Process Hacker.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ApplySettings()
