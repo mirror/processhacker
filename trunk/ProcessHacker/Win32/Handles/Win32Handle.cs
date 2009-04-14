@@ -31,7 +31,7 @@ namespace ProcessHacker
         /// <summary>
         /// Represents a generic Windows handle.
         /// </summary>
-        public class Win32Handle : IDisposable
+        public class Win32Handle : ISynchronizable, IDisposable
         {
             private object _disposeLock = new object();
             private bool _owned = true;
@@ -156,6 +156,23 @@ namespace ProcessHacker
             {
                 if (!Win32.SetHandleInformation(this, mask, flags))
                     ThrowLastWin32Error();
+            }
+
+            /// <summary>
+            /// Waits for the object.
+            /// </summary>
+            public WaitResult Wait()
+            {
+                return WaitForSingleObject(this, 0xffffffff);
+            }
+
+            /// <summary>
+            /// Waits for the object with a timeout.
+            /// </summary>
+            /// <param name="Timeout">The timeout of the wait.</param>
+            public WaitResult Wait(uint timeout)
+            {
+                return WaitForSingleObject(this, timeout);
             }
 
             /// <summary>

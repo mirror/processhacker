@@ -25,29 +25,26 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
-    public partial class Win32
+    /// <summary>
+    /// Represents a Windows object that contains a token.
+    /// </summary>
+    /// <remarks>
+    /// This interface is useful because both processes and threads have 
+    /// tokens, but the method used to open their tokens are different.
+    /// </remarks>
+    public interface IWithToken
     {
         /// <summary>
-        /// Represents a Windows object that contains a token.
+        /// Opens and returns the object's token.
         /// </summary>
-        /// <remarks>
-        /// This interface is useful because both processes and threads have 
-        /// tokens, but the method used to open their tokens are different.
-        /// </remarks>
-        public interface IWithToken
-        {
-            /// <summary>
-            /// Opens and returns the object's token.
-            /// </summary>
-            /// <returns>A handle to the token.</returns>
-            TokenHandle GetToken();
+        /// <returns>A handle to the token.</returns>
+        Win32.TokenHandle GetToken();
 
-            /// <summary>
-            /// Opens and returns the object's token.
-            /// </summary>
-            /// <param name="access">Specifies the desired access to the token.</param>
-            /// <returns>A handle to the token.</returns>
-            TokenHandle GetToken(TOKEN_RIGHTS access);
-        }
+        /// <summary>
+        /// Opens and returns the object's token.
+        /// </summary>
+        /// <param name="access">Specifies the desired access to the token.</param>
+        /// <returns>A handle to the token.</returns>
+        Win32.TokenHandle GetToken(Win32.TOKEN_RIGHTS access);
     }
 }

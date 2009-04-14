@@ -33,10 +33,10 @@ namespace ProcessHacker
 {
     public partial class TokenProperties : UserControl
     {
-        private Win32.IWithToken _object;
+        private IWithToken _object;
         private TokenGroups _groups;
 
-        public TokenProperties(Win32.IWithToken obj)
+        public TokenProperties(IWithToken obj)
         {
             InitializeComponent();
 
@@ -205,7 +205,7 @@ namespace ProcessHacker
                 };
         }
 
-        public Win32.IWithToken Object
+        public IWithToken Object
         {
             get { return _object; }
         }

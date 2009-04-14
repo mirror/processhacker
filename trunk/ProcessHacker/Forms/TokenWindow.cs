@@ -32,7 +32,7 @@ namespace ProcessHacker
     {
         TokenProperties _tokenProps;
 
-        public TokenWindow(Win32.IWithToken obj)
+        public TokenWindow(IWithToken obj)
         {
             InitializeComponent();
 

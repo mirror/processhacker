@@ -27,7 +27,7 @@ namespace ProcessHacker
 {
     public partial class Win32
     {
-        public class TokenWithLinkedToken : Win32.IWithToken
+        public class TokenWithLinkedToken : IWithToken
         {
             private Win32.TokenHandle _token;
 

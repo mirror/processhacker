@@ -45,6 +45,7 @@ namespace ProcessHacker
         public string Priority;
         public uint StartAddressI;
         public string StartAddress;
+        public Symbols.FoundLevel StartAddressLevel;
         public Win32.KWAIT_REASON WaitReason;
         public bool IsGuiThread;
         public bool JustResolved;
@@ -64,6 +65,8 @@ namespace ProcessHacker
         private int _pid;
         private int _loading = 0;
         private Queue<KeyValuePair<int, string>> _resolveResults = new Queue<KeyValuePair<int,string>>();
+        private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
+        private bool _waitedForLoad = false;
 
         public ThreadProvider(int PID)
             : base()
@@ -79,10 +82,6 @@ namespace ProcessHacker
             try
             {
                 _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights);
-                _symbols = new Symbols(_processHandle);
-
-                Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads | 
-                    (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
 
                 try
                 {
@@ -93,12 +92,17 @@ namespace ProcessHacker
                 catch
                 { }
 
-                if (Properties.Settings.Default.DbgHelpSearchPath != "")
-                    _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
+                // start loading symbols; avoid the UI blocking on the dbghelp call lock
+                ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
+                {
+                    _symbols = new Symbols(_processHandle);
 
-                // start loading symbols
-                //ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
-                //{
+                    Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads |
+                        (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
+
+                    if (Properties.Settings.Default.DbgHelpSearchPath != "")
+                        _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
+
                     try
                     {
                         if (_pid != 4)
@@ -136,7 +140,13 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-                //}));
+
+                    lock (_moduleLoadCompletedEvent)
+                    {
+                        if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
+                            _moduleLoadCompletedEvent.Set();
+                    }
+                }));
             }
             catch
             { }
@@ -149,6 +159,9 @@ namespace ProcessHacker
             if (_processHandle != null)
                 _processHandle.Dispose();
             _symbols = null;
+
+            lock (_moduleLoadCompletedEvent)
+                _moduleLoadCompletedEvent.Close();
 
             if (Win32.ProcessesWithThreads.ContainsKey(_pid))
                 Win32.ProcessesWithThreads.Remove(_pid);
@@ -165,6 +178,19 @@ namespace ProcessHacker
         private void ResolveThreadStartAddress(int tid, long startAddress)
         {
             string name = null;
+
+            if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
+            {
+                try
+                {
+                    _moduleLoadCompletedEvent.WaitOne();
+                }
+                catch
+                { }
+            }
+
+            if (_symbols == null)
+                return;
 
             try
             {
@@ -203,6 +229,18 @@ namespace ProcessHacker
                         tid, startAddress, r => { }, null);
         }
 
+        private string GetThreadBasicStartAddress(long startAddress)
+        {
+            long modBase;
+            string fileName = _symbols.GetModuleFromAddress(startAddress, out modBase);
+
+            if (fileName == null)
+                return "0x" + startAddress.ToString("x");
+            else
+                return (new System.IO.FileInfo(fileName)).Name + "+0x" +
+                    (startAddress - modBase).ToString("x");
+        }
+
         private void UpdateOnce()
         {
             Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> threads =
@@ -236,6 +274,7 @@ namespace ProcessHacker
                     if (result.Value != null)
                     {
                         this.Dictionary[result.Key].StartAddress = result.Value;
+                        this.Dictionary[result.Key].StartAddressLevel = Symbols.FoundLevel.Function; // Assume we found a good symbol
                         this.Dictionary[result.Key].JustResolved = true;
                     }
                 }
@@ -315,19 +354,27 @@ namespace ProcessHacker
                         { }
                     }
 
-                    try
+                    if (!_waitedForLoad)
                     {
-                        long modBase;
-                        string fileName = _symbols.GetModuleFromAddress(item.StartAddressI, out modBase);
+                        _waitedForLoad = true;
 
-                        if (fileName == null)
-                            item.StartAddress = "0x" + item.StartAddressI.ToString("x");
-                        else
-                            item.StartAddress = (new System.IO.FileInfo(fileName)).Name + "+0x" + 
-                                (item.StartAddressI - modBase).ToString("x");
+                        try
+                        {
+                            if (_moduleLoadCompletedEvent.WaitOne(500))
+                            {
+                                item.StartAddress = this.GetThreadBasicStartAddress(item.StartAddressI);
+                                item.StartAddressLevel = Symbols.FoundLevel.Module;
+                            }
+                        }
+                        catch
+                        { }
                     }
-                    catch
-                    { }
+
+                    if (string.IsNullOrEmpty(item.StartAddress))
+                    {
+                        item.StartAddress = "0x" + item.StartAddressI.ToString("x8");
+                        item.StartAddressLevel = Symbols.FoundLevel.Address;
+                    }
 
                     this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
 
@@ -373,6 +420,15 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
+
+                    if (newitem.StartAddressLevel == Symbols.FoundLevel.Address)
+                    {
+                        if (_moduleLoadCompletedEvent.WaitOne(0))
+                        {
+                            newitem.StartAddress = this.GetThreadBasicStartAddress(newitem.StartAddressI);
+                            newitem.StartAddressLevel = Symbols.FoundLevel.Module;
+                        }
                     }
 
                     if (

@@ -26,15 +26,12 @@ using System.Text;
 
 namespace ProcessHacker
 {
-    public partial class Win32
+    /// <summary>
+    /// Represents a Windows object that can be synchronized with.
+    /// </summary>
+    public interface ISynchronizable
     {
-        /// <summary>
-        /// Represents a Windows object that can be synchronized with.
-        /// </summary>
-        public interface ISynchronizable
-        {
-            WaitResult Wait();
-            WaitResult Wait(uint timeout);
-        }
+        Win32.WaitResult Wait();
+        Win32.WaitResult Wait(uint timeout);
     }
 }
