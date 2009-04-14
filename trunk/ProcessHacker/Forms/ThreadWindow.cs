@@ -161,10 +161,9 @@ namespace ProcessHacker
 
         private void ThreadWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.Visible = false;
-
             Properties.Settings.Default.ThreadWindowSize = this.Size;
             Properties.Settings.Default.CallStackColumns = ColumnSettings.SaveSettings(listViewCallStack);
+            _symbols = null;
         }
 
         private void AddOrModify(ListView lv, ListViewItem item)

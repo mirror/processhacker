@@ -240,7 +240,10 @@ namespace ProcessHacker
 
         public void UnloadModule(string fileName)
         {
-            var pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
+            KeyValuePair<long, string> pair;
+
+            lock (_modules)
+                pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
 
             this.UnloadModule(pair.Key);
         }
@@ -252,6 +255,9 @@ namespace ProcessHacker
                 if (!Win32.SymUnloadModule64(_handle, baseAddress))
                     Win32.ThrowLastWin32Error();
             }
+
+            lock (_modules)
+                _modules.RemoveAll(kvp => kvp.Key == baseAddress);
         }
 
         public string GetModuleFromAddress(long address, out long baseAddress)
@@ -332,7 +338,10 @@ namespace ProcessHacker
                         long b;
 
                         this.GetModuleFromAddress(address, out b);
-                        Win32.SymFromAddr(_handle, b, out displacement, data);
+
+                        lock (_callLock)
+                            Win32.SymFromAddr(_handle, b, out displacement, data);
+
                         Marshal.StructureToPtr(info, data, false);
                     }
                 }
@@ -357,7 +366,9 @@ namespace ProcessHacker
                 else
                 {
                     modBase = info.ModBase;
-                    modFileName = _modules.Find(kvp => kvp.Key == info.ModBase).Value;
+
+                    lock (_modules)
+                        modFileName = _modules.Find(kvp => kvp.Key == info.ModBase).Value;
                 }
 
                 if (modFileName == null)
@@ -428,9 +439,12 @@ namespace ProcessHacker
 
                 if (!_disposed)
                 {
-                    _disposed = true;
-                    Win32.SymCleanup(_handle);
+                    if (!Win32.SymCleanup(_handle))
+                        Win32.ThrowLastWin32Error();
+
                     _idGen.Push(_handle);
+ 
+                    _disposed = true;
                 }
             }
             finally

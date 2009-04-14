@@ -119,7 +119,7 @@ namespace ProcessHacker
                         }
                         else
                         {
-                            // hack for drivers, whose sizes never load properly because of dbghelp.dll's dumb implementation
+                            // hack for drivers, whose sizes never load properly because of dbghelp.dll's dumb guessing
                             _symbols.PreloadModules = true;
 
                             // load driver symbols
@@ -148,6 +148,7 @@ namespace ProcessHacker
                 _symbols.Dispose();
             if (_processHandle != null)
                 _processHandle.Dispose();
+            _symbols = null;
 
             if (Win32.ProcessesWithThreads.ContainsKey(_pid))
                 Win32.ProcessesWithThreads.Remove(_pid);

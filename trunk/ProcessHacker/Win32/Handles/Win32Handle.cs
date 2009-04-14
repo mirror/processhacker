@@ -182,8 +182,8 @@ namespace ProcessHacker
 
                     if (!_disposed && _owned)
                     {
-                        _disposed = true;
                         this.Close();
+                        _disposed = true;
                     }
                 }
                 finally

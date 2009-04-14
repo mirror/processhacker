@@ -230,8 +230,8 @@ namespace ProcessHacker
 
                 if (!_disposed)
                 {
-                    _disposed = true;
                     this.Free();
+                    _disposed = true;
                 }
             }
             finally
