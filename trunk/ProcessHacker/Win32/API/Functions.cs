@@ -666,7 +666,7 @@ namespace ProcessHacker
         #region Shell
 
         [DllImport("shell32.dll", EntryPoint = "#61", CharSet = CharSet.Unicode)]
-        public static extern int SHRunDialog(IntPtr owner, int unknown, int unknown2,
+        public static extern int RunFileDlg(IntPtr hWnd, int unknown, int unknown2,
             string title, string prompt, int flags);
 
         [DllImport("shell32.dll")]

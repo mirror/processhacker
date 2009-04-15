@@ -176,7 +176,7 @@ namespace ProcessHacker
 
         private void runMenuItem_Click(object sender, EventArgs e)
         {
-            Win32.SHRunDialog(this.Handle, 0, 0, null, null, 0);
+            Win32.RunFileDlg(this.Handle, 0, 0, null, null, 0);
         }
 
         private void runAsMenuItem_Click(object sender, EventArgs e)

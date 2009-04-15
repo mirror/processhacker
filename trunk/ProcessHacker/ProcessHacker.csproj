@@ -590,6 +590,7 @@
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="ColumnSettings.cs" />
     <Compile Include="DeltaManager.cs" />
+    <Compile Include="NProcessHacker.cs" />
     <Compile Include="Providers\Internal\IProvider.cs" />
     <Compile Include="Providers\Internal\SharedThreadProvider.cs" />
     <Compile Include="SharpDevelop\NDebugger.cs" />

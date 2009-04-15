@@ -146,7 +146,7 @@ namespace ProcessHacker
 
         #region Cryptography
 
-        public enum VerifyResult
+        public enum VerifyResult : int
         {
             Unknown = 0,
             NoSignature,
@@ -299,7 +299,12 @@ namespace ProcessHacker
                 int hashLength = 256;
 
                 if (!CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
-                    return VerifyResult.NoSignature;
+                {
+                    hash = new byte[hashLength];
+
+                    if (!CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
+                        return VerifyResult.NoSignature;
+                }
 
                 StringBuilder memberTag = new StringBuilder(hashLength * 2);
 
@@ -321,7 +326,13 @@ namespace ProcessHacker
                 }
 
                 CATALOG_INFO ci = new CATALOG_INFO();
-                CryptCATCatalogInfoFromContext(catInfo, ref ci, 0);
+
+                if (!CryptCATCatalogInfoFromContext(catInfo, ref ci, 0))
+                {
+                    CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                    CryptCATAdminReleaseContext(catAdmin, 0);
+                    return VerifyResult.NoSignature;
+                }
 
                 WINTRUST_CATALOG_INFO wci = new WINTRUST_CATALOG_INFO();
 
