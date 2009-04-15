@@ -93,9 +93,9 @@
             this.buttonDbghelpBrowse = new System.Windows.Forms.Button();
             this.textDbghelpPath = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonApply = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -152,7 +152,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(281, 385);
+            this.buttonOK.Location = new System.Drawing.Point(200, 385);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
@@ -912,16 +912,6 @@
             this.toolTipProvider.SetToolTip(this.label9, "Select the most recent version of dbghelp.dll available, usually distributed with" +
                     " Debugging Tools for Windows.");
             // 
-            // label22
-            // 
-            this.label22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(12, 390);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(234, 13);
-            this.label22.TabIndex = 10;
-            this.label22.Text = "Tip: Hover over an item to get a description of it.";
-            // 
             // toolTipProvider
             // 
             this.toolTipProvider.AutomaticDelay = 250;
@@ -934,7 +924,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(362, 385);
+            this.buttonCancel.Location = new System.Drawing.Point(281, 385);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 11;
@@ -942,14 +932,27 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
+            // buttonApply
+            // 
+            this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonApply.Enabled = false;
+            this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonApply.Location = new System.Drawing.Point(362, 385);
+            this.buttonApply.Name = "buttonApply";
+            this.buttonApply.Size = new System.Drawing.Size(75, 23);
+            this.buttonApply.TabIndex = 11;
+            this.buttonApply.Text = "&Apply";
+            this.buttonApply.UseVisualStyleBackColor = true;
+            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(449, 420);
+            this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.label22);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttonOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -979,7 +982,6 @@
             this.tabSymbols.ResumeLayout(false);
             this.tabSymbols.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1024,7 +1026,6 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button buttonFont;
         private System.Windows.Forms.ToolTip toolTipProvider;
-        private System.Windows.Forms.Label label22;
         private System.Windows.Forms.NumericUpDown textIconMenuProcesses;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.CheckBox checkHideWhenClosed;
@@ -1052,5 +1053,6 @@
         private System.Windows.Forms.Button buttonDbghelpBrowse;
         private System.Windows.Forms.TextBox textDbghelpPath;
         private System.Windows.Forms.CheckBox checkUndecorate;
+        private System.Windows.Forms.Button buttonApply;
     }
 }

@@ -27,6 +27,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -90,7 +91,6 @@ namespace ProcessHacker
         public static bool Aggressive = false;
         public static bool StartHidden = false;
         public static bool StartVisible = false;
-        public static bool ShowOptions = false;
         public static string SelectTab = "Processes";
         public static Win32.TOKEN_ELEVATION_TYPE ElevationType;
         public static KProcessHacker KPH;
@@ -129,7 +129,9 @@ namespace ProcessHacker
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
             try
             {
-                if (Properties.Settings.Default.AllowOnlyOneInstance && !pArgs.ContainsKey("-e"))
+                if (Properties.Settings.Default.AllowOnlyOneInstance && 
+                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o"))
+                    )
                     CheckForPreviousInstance();
             }
             catch
@@ -252,13 +254,6 @@ namespace ProcessHacker
             { }
 
             {
-                if (pArgs.ContainsKey("-m"))
-                    StartHidden = true;
-                if (pArgs.ContainsKey("-v"))
-                    StartVisible = true;
-                if (pArgs.ContainsKey("-o"))
-                    ShowOptions = true;
-
                 if (pArgs.ContainsKey("-a"))
                 {
                     Aggressive = true;
@@ -269,18 +264,6 @@ namespace ProcessHacker
                     }
                     catch
                     { }
-                }
-
-                if (pArgs.ContainsKey(""))
-                    if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
-                        StartVisible = true;
-
-                if (pArgs.ContainsKey("-t"))
-                {
-                    if (pArgs["-t"] == "0")
-                        SelectTab = "Processes";
-                    else if (pArgs["-t"] == "1")
-                        SelectTab = "Services";
                 }
 
                 if (pArgs.ContainsKey("-e"))
@@ -295,6 +278,51 @@ namespace ProcessHacker
                     }
 
                     return;
+                }
+
+                if (pArgs.ContainsKey("-o"))
+                {
+                    OptionsWindow options = new OptionsWindow(true)
+                    {
+                        StartPosition = FormStartPosition.CenterScreen
+                    };
+                    IWin32Window window;
+
+                    if (pArgs.ContainsKey("-hwnd"))
+                        window = new WindowFromHandle(new IntPtr(int.Parse(pArgs["-hwnd"])));
+                    else
+                        window = new WindowFromHandle(IntPtr.Zero);
+
+                    if (pArgs.ContainsKey("-rect"))
+                    {
+                        Rectangle rect = Misc.RectangleFromString(pArgs["-rect"]);
+
+                        options.Location = new Point(rect.X + 20, rect.Y + 20);
+                        options.StartPosition = FormStartPosition.Manual;
+                    }
+
+                    options.SelectedTab = options.TabPages["tabAdvanced"];
+                    options.Show(window);
+                    Application.Run(options);
+
+                    return;
+                }
+
+                if (pArgs.ContainsKey(""))
+                    if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
+                        StartVisible = true;
+
+                if (pArgs.ContainsKey("-m"))
+                    StartHidden = true;
+                if (pArgs.ContainsKey("-v"))
+                    StartVisible = true;
+
+                if (pArgs.ContainsKey("-t"))
+                {
+                    if (pArgs["-t"] == "0")
+                        SelectTab = "Processes";
+                    else if (pArgs["-t"] == "1")
+                        SelectTab = "Services";
                 }
             }
 
@@ -398,6 +426,11 @@ namespace ProcessHacker
 
         public static Win32.WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
         {
+            return StartProcessHackerAdminWait(args, null, hWnd, timeout);
+        }
+
+        public static Win32.WaitResult StartProcessHackerAdminWait(string args, MethodInvoker successAction, IntPtr hWnd, uint timeout)
+        {
             Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
 
             info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
@@ -410,6 +443,9 @@ namespace ProcessHacker
 
             if (Win32.ShellExecuteEx(ref info))
             {
+                if (successAction != null)
+                    successAction();
+
                 var result = Win32.WaitForSingleObject(info.hProcess, timeout);
 
                 Win32.CloseHandle(info.hProcess);

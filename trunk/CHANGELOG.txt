@@ -1,9 +1,11 @@
 Process Hacker
 
 1.3.6.6
- * NEW:
+ * NEW/IMPROVED:
    * Proper symbol support with dbghelp.dll
    * Aggressive mode (start with "-a" command line option)
+   * Elevation button in Options now spawns a child options window instead of 
+     restarting Process Hacker elevated
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection

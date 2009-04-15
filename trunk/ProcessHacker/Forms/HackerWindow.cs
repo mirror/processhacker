@@ -2257,18 +2257,6 @@ namespace ProcessHacker
         private void LoadApplyCommandLineArgs()
         {
             tabControl.SelectedTab = tabControl.TabPages["tab" + Program.SelectTab];
-
-            if (Program.ShowOptions)
-            {
-                OptionsWindow options = new OptionsWindow();
-
-                options.TopMost = this.TopMost;
-                options.ShowDialog();
-
-                processP.Interval = Properties.Settings.Default.RefreshInterval;
-                serviceP.Interval = Properties.Settings.Default.RefreshInterval;
-                networkP.Interval = Properties.Settings.Default.RefreshInterval;
-            }
         }
 
         public HackerWindow()
@@ -2293,7 +2281,7 @@ namespace ProcessHacker
             this.ResumeLayout();
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
-                Program.StartVisible || Program.ShowOptions)
+                Program.StartVisible)
             {
                 this.Visible = true;
             }

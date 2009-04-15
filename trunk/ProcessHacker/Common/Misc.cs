@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace ProcessHacker
 {
@@ -248,6 +249,20 @@ namespace ProcessHacker
             str = str.Replace("\"", "\\\"");
 
             return str;
+        }
+
+        public static Rectangle FitRectangle(Rectangle rect, Rectangle bounds)
+        {
+            if (rect.X < bounds.Left)
+                rect.X = bounds.Left;
+            if (rect.Y < bounds.Top)
+                rect.Y = bounds.Top;
+            if (rect.X + rect.Width > bounds.Width)
+                rect.X = bounds.Width - rect.Width;
+            if (rect.Y + rect.Height > bounds.Height)
+                rect.Y = bounds.Height - rect.Height;
+
+            return rect;
         }
 
         /// <summary>
@@ -711,6 +726,14 @@ namespace ProcessHacker
             }
 
             return str.ToString();
+        }
+
+        public static Rectangle RectangleFromString(string s)
+        {
+            var split = s.Split(',');
+
+            return new Rectangle(int.Parse(split[0]), int.Parse(split[1]), 
+                int.Parse(split[2]), int.Parse(split[3]));
         }
 
         /// <summary>

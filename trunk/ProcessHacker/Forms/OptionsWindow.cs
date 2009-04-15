@@ -27,6 +27,8 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Symbols;
 using ProcessHacker.UI;
+using ProcessHacker.Components;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -35,11 +37,166 @@ namespace ProcessHacker
         private string _oldDbghelp;
         private string _oldTaskMgrDebugger;
         private Font _font;
+        private bool _dontApply;
 
         public OptionsWindow()
+            : this(false)
+        { }
+
+        public OptionsWindow(bool dontApply)
         {
             InitializeComponent();
 
+            _dontApply = dontApply;
+            this.InitializeHighlightingColors();
+            this.LoadSettings();
+
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                foreach (Control c in tab.Controls)
+                {
+                    if (c is CheckBox || c is ListView)
+                        c.Click += (sender, e) => this.EnableApplyButton();
+                    else if (c is TextBox)
+                        (c as TextBox).TextChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is ComboBox)
+                        (c as ComboBox).SelectedIndexChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is NumericUpDown)
+                        (c as NumericUpDown).ValueChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is ColorModifier)
+                        (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is Button || c is Label)
+                        ; // Nothing
+                    else
+                        c.Click += (sender, e) => this.EnableApplyButton();
+                }
+            }
+        }
+
+        public TabPage SelectedTab
+        {
+            get { return tabControl.SelectedTab; }
+            set { tabControl.SelectedTab = value; }
+        }
+
+        public TabControl.TabPageCollection TabPages
+        {
+            get { return tabControl.TabPages; }
+        }
+
+        private void OptionsWindow_Load(object sender, EventArgs e)
+        {
+            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            {
+                buttonChangeReplaceTaskManager.SetShieldIcon(true);
+            }
+            else
+            {
+                buttonChangeReplaceTaskManager.Visible = false;
+            }
+        }
+
+        private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //if (!_autoClosed)
+            //{
+            //    var result = MessageBox.Show("Do you want to save any changes you have made?", "Process Hacker",
+            //        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+            //    if (result == DialogResult.Yes)
+            //        this.ApplySettings();
+            //    else if (result == DialogResult.Cancel)
+            //        e.Cancel = true;
+            //}
+        }
+
+        private void EnableApplyButton()
+        {
+            if (!_dontApply)
+                buttonApply.Enabled = true;
+        }
+
+        private void AddToList(string key, string description, string longDescription)
+        {
+            listHighlightingColors.Items.Add(new ListViewItem()
+                {
+                    Name = key,
+                    Text = description,
+                    ToolTipText = longDescription
+                });
+        }
+
+        private void InitializeHighlightingColors()
+        {
+            AddToList("ColorOwnProcesses", "Own Processes",
+                "Processes running under the same user account as Process Hacker.");
+            AddToList("ColorSystemProcesses", "System Processes",
+                "Processes running under the NT AUTHORITY\\SYSTEM user account.");
+            AddToList("ColorServiceProcesses", "Service Processes",
+                "Processes which host one or more services.");
+            AddToList("ColorDebuggedProcesses", "Debugged Processes",
+                "Processes that are currently being debugged.");
+            AddToList("ColorElevatedProcesses", "Elevated Processes",
+                "Processes with full privileges on a Windows Vista system with UAC enabled.");
+            AddToList("ColorJobProcesses", "Job Processes",
+                "Processes associated with a job.");
+            AddToList("ColorDotNetProcesses", ".NET Processes",
+                ".NET, or managed processes.");
+            AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
+                "Executables are sometimes \"packed\" to reduce their size.\n" +
+                "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
+                "processes with the name of a system process.");
+            AddToList("ColorSuspended", "Suspended Threads",
+                "Threads that are suspended from execution.");
+            AddToList("ColorGuiThreads", "GUI Threads",
+                "Threads that have made at least one GUI-related system call.");
+        }
+
+        private void listHighlightingColors_DoubleClick(object sender, EventArgs e)
+        {
+            listHighlightingColors.SelectedItems[0].Checked = !listHighlightingColors.SelectedItems[0].Checked;
+
+            ColorDialog cd = new ColorDialog();
+
+            cd.Color = listHighlightingColors.SelectedItems[0].BackColor;
+
+            if (cd.ShowDialog() == DialogResult.OK)
+                listHighlightingColors.SelectedItems[0].BackColor = cd.Color;
+        }
+
+        private void textUpdateInterval_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                Properties.Settings.Default.RefreshInterval = Int32.Parse(textUpdateInterval.Value.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                textUpdateInterval.Focus();
+            }
+        }
+
+        private void textIconMenuProcesses_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                Properties.Settings.Default.IconMenuProcessCount = Int32.Parse(textIconMenuProcesses.Value.ToString());
+            }
+            catch
+            {
+                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                textIconMenuProcesses.Focus();
+            }
+        }
+
+        private void LoadSettings()
+        {
+            // General
             _font = Properties.Settings.Default.Font;
             buttonFont.Font = _font;
             textUpdateInterval.Value = Properties.Settings.Default.RefreshInterval;
@@ -62,11 +219,21 @@ namespace ProcessHacker
 
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
+            // Highlighting       
             textHighlightingDuration.Value = Properties.Settings.Default.HighlightingDuration;
             colorNewProcesses.Color = Properties.Settings.Default.ColorNew;
             colorRemovedProcesses.Color = Properties.Settings.Default.ColorRemoved;
-            this.InitializeHighlightingColors();
 
+            foreach (ListViewItem item in listHighlightingColors.Items)
+            {
+                Color c = (Color)Properties.Settings.Default[item.Name];
+                bool use = (bool)Properties.Settings.Default["Use" + item.Name];
+
+                item.BackColor = c;
+                item.Checked = use;
+            }
+
+            // Plotting
             checkPlotterAntialias.Checked = Properties.Settings.Default.PlotterAntialias;
             colorCPUKT.Color = Properties.Settings.Default.PlotterCPUKernelColor;
             colorCPUUT.Color = Properties.Settings.Default.PlotterCPUUserColor;
@@ -75,6 +242,7 @@ namespace ProcessHacker
             colorIORO.Color = Properties.Settings.Default.PlotterIOROColor;
             colorIOW.Color = Properties.Settings.Default.PlotterIOWColor;
 
+            // Replace Task Manager
             // See if we can write to the key.
             try
             {
@@ -126,129 +294,17 @@ namespace ProcessHacker
                 checkReplaceTaskManager.Enabled = false;
             }
 
+            // Symbols
             try
             {
                 _oldDbghelp = textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
                 textSearchPath.Text = Properties.Settings.Default.DbgHelpSearchPath;
-                checkUndecorate.Checked = (SymbolProvider.Options & Win32.SYMBOL_OPTIONS.UndName) != 0;
+                checkUndecorate.Checked = Properties.Settings.Default.DbgHelpUndecorate;
             }
             catch
             { }
 
             checkShowTrayIcon_CheckedChanged(null, null);
-        }      
-
-        private void OptionsWindow_Load(object sender, EventArgs e)
-        {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
-            {
-                buttonChangeReplaceTaskManager.SetShieldIcon(true);
-            }
-            else
-            {
-                buttonChangeReplaceTaskManager.Visible = false;
-            }
-        }
-
-        private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //if (!_autoClosed)
-            //{
-            //    var result = MessageBox.Show("Do you want to save any changes you have made?", "Process Hacker",
-            //        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-
-            //    if (result == DialogResult.Yes)
-            //        this.ApplySettings();
-            //    else if (result == DialogResult.Cancel)
-            //        e.Cancel = true;
-            //}
-        }
-
-        private void AddToList(string key, string description, string longDescription)
-        {
-            listHighlightingColors.Items.Add(new ListViewItem()
-                {
-                    Name = key,
-                    Text = description,
-                    ToolTipText = longDescription
-                });
-        }
-
-        private void InitializeHighlightingColors()
-        {
-            AddToList("ColorOwnProcesses", "Own Processes",
-                "Processes running under the same user account as Process Hacker.");
-            AddToList("ColorSystemProcesses", "System Processes",
-                "Processes running under the NT AUTHORITY\\SYSTEM user account.");
-            AddToList("ColorServiceProcesses", "Service Processes",
-                "Processes which host one or more services.");
-            AddToList("ColorDebuggedProcesses", "Debugged Processes",
-                "Processes that are currently being debugged.");
-            AddToList("ColorElevatedProcesses", "Elevated Processes",
-                "Processes with full privileges on a Windows Vista system with UAC enabled.");
-            AddToList("ColorJobProcesses", "Job Processes",
-                "Processes associated with a job.");
-            AddToList("ColorDotNetProcesses", ".NET Processes",
-                ".NET, or managed processes.");
-            AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
-                "Executables are sometimes \"packed\" to reduce their size.\n" +
-                "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 
-                "processes with the name of a system process.");
-            AddToList("ColorSuspended", "Suspended Threads",
-                "Threads that are suspended from execution.");
-            AddToList("ColorGuiThreads", "GUI Threads",
-                "Threads that have made at least one GUI-related system call.");
-
-            foreach (ListViewItem item in listHighlightingColors.Items)
-            {
-                Color c = (Color)Properties.Settings.Default[item.Name];
-                bool use = (bool)Properties.Settings.Default["Use" + item.Name];
-
-                item.BackColor = c;
-                item.Checked = use;
-            }
-        }
-
-        private void listHighlightingColors_DoubleClick(object sender, EventArgs e)
-        {
-            listHighlightingColors.SelectedItems[0].Checked = !listHighlightingColors.SelectedItems[0].Checked;
-
-            ColorDialog cd = new ColorDialog();
-
-            cd.Color = listHighlightingColors.SelectedItems[0].BackColor;
-
-            if (cd.ShowDialog() == DialogResult.OK)
-                listHighlightingColors.SelectedItems[0].BackColor = cd.Color;
-        }
-
-        private void textUpdateInterval_Leave(object sender, EventArgs e)
-        {
-            try
-            {
-                Properties.Settings.Default.RefreshInterval = Int32.Parse(textUpdateInterval.Value.ToString());
-            }
-            catch
-            {
-                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                textUpdateInterval.Focus();
-            }
-        }
-
-        private void textIconMenuProcesses_Leave(object sender, EventArgs e)
-        {
-            try
-            {
-                Properties.Settings.Default.IconMenuProcessCount = Int32.Parse(textIconMenuProcesses.Value.ToString());
-            }
-            catch
-            {
-                MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                textIconMenuProcesses.Focus();
-            }
         }
 
         private void SaveSettings()
@@ -274,16 +330,6 @@ namespace ProcessHacker
             Properties.Settings.Default.PlotterStep = (int)textStep.Value;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
-            Program.ImposterNames = new System.Collections.Specialized.StringCollection();
-
-            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
-                Program.ImposterNames.Add(s.Trim());
-
-            Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
-            Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
-            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
-
             Properties.Settings.Default.HighlightingDuration = (int)textHighlightingDuration.Value;
             Properties.Settings.Default.ColorNew = colorNewProcesses.Color;
             Properties.Settings.Default.ColorRemoved = colorRemovedProcesses.Color;
@@ -302,12 +348,11 @@ namespace ProcessHacker
             Properties.Settings.Default.PlotterIOROColor = colorIORO.Color;
             Properties.Settings.Default.PlotterIOWColor = colorIOW.Color;
 
-            // apply the settings immediately if we can
-            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
-            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
-            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
-            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
+            Properties.Settings.Default.DbgHelpPath = textDbghelpPath.Text;
+            Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
+            Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
+
+            Properties.Settings.Default.Save();
 
             if (checkReplaceTaskManager.Enabled)
             {
@@ -339,15 +384,26 @@ namespace ProcessHacker
                         "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
 
-            try
-            {
-                Properties.Settings.Default.DbgHelpPath = textDbghelpPath.Text;
-                Properties.Settings.Default.DbgHelpSearchPath = textSearchPath.Text;
-                Properties.Settings.Default.DbgHelpUndecorate = checkUndecorate.Checked;
-            }
-            catch
-            { }
+        private void ApplySettings()
+        {
+            Program.ImposterNames = new System.Collections.Specialized.StringCollection();
+
+            foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
+                Program.ImposterNames.Add(s.Trim());
+
+            Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
+            Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
+
+            HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
+            HighlightingContext.Colors[ListViewItemState.New] = Properties.Settings.Default.ColorNew;
+            HighlightingContext.Colors[ListViewItemState.Removed] = Properties.Settings.Default.ColorRemoved;
+
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
+            TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
 
             Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
@@ -355,23 +411,21 @@ namespace ProcessHacker
             Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.SecondarySharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
-            Properties.Settings.Default.Save();
+            Program.HackerWindow.ProcessTree.RefreshItems();
+            Program.ApplyFont(Properties.Settings.Default.Font);
 
             if (_oldDbghelp != textDbghelpPath.Text)
                 MessageBox.Show("One or more options you have changed require a restart of Process Hacker.",
                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void ApplySettings()
-        {
-            this.SaveSettings();
-            Program.HackerWindow.ProcessTree.RefreshItems();
-            Program.ApplyFont(Properties.Settings.Default.Font);
-        }
-
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            this.ApplySettings();
+            this.SaveSettings();
+
+            if (!_dontApply)
+                this.ApplySettings();
+
             this.Close();
         }
 
@@ -411,17 +465,35 @@ namespace ProcessHacker
             {
                 _font = fd.Font;
                 buttonFont.Font = _font;
+                this.EnableApplyButton();
             }
         }
 
         private void buttonChangeReplaceTaskManager_Click(object sender, EventArgs e)
         {
-            Program.StartProcessHackerAdmin("-o", () =>
+            this.SaveSettings();
+            if (!_dontApply)
+                this.ApplySettings();
+            buttonApply.Enabled = false;
+
+            string args = "-o -hwnd " + this.Handle.ToString() +
+                " -rect " + this.Location.X.ToString() + "," + this.Location.Y.ToString() + "," +
+                this.Size.Width.ToString() + "," + this.Size.Height.ToString();
+
+            Thread t = new Thread(() =>
                 {
-                    this.SaveSettings();
-                    Program.HackerWindow.NotifyIcon.Visible = false;
-                    Win32.ExitProcess(0);
-                }, this.Handle);
+                    Program.StartProcessHackerAdminWait(args, this.Handle, 0xffffffff);
+
+                    this.BeginInvoke(new MethodInvoker(() =>
+                        {
+                            Properties.Settings.Default.Reload();
+                            this.LoadSettings();
+                            this.ApplySettings();
+                            buttonApply.Enabled = false;
+                        }));
+                });
+
+            t.Start();
         }
 
         private void buttonEnableAll_Click(object sender, EventArgs e)
@@ -445,6 +517,14 @@ namespace ProcessHacker
 
             if (ofd.ShowDialog() == DialogResult.OK)
                 textDbghelpPath.Text = ofd.FileName;
+        }
+
+        private void buttonApply_Click(object sender, EventArgs e)
+        {
+            this.SaveSettings();
+            this.ApplySettings();
+            buttonApply.Enabled = false;
+            buttonOK.Select();
         }
     }
 }

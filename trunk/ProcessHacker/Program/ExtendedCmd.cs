@@ -53,21 +53,6 @@ namespace ProcessHacker
             }
         }
 
-        public class WindowFromHWnd : IWin32Window
-        {
-            private IntPtr _handle;
-
-            public WindowFromHWnd(IntPtr handle)
-            {
-                _handle = handle;
-            }
-
-            public IntPtr Handle
-            {
-                get { return _handle; }
-            }
-        }
-
         public static void Run(IDictionary<string, string> args)
         {
             ThemingScope.Activate();
@@ -87,10 +72,10 @@ namespace ProcessHacker
 
             string action = args["-action"].ToLower();
 
-            WindowFromHWnd window = new WindowFromHWnd(IntPtr.Zero);
+            WindowFromHandle window = new WindowFromHandle(IntPtr.Zero);
 
             if (args.ContainsKey("-hwnd"))
-                window = new WindowFromHWnd(new IntPtr(int.Parse(args["-hwnd"])));
+                window = new WindowFromHandle(new IntPtr(int.Parse(args["-hwnd"])));
 
             try
             {

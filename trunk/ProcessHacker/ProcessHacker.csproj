@@ -586,6 +586,7 @@
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
+    <Compile Include="UI\WindowFromHandle.cs" />
     <Compile Include="UI\HighlightedListViewItem.cs" />
     <Compile Include="Common\HistoryManager.cs" />
     <Compile Include="Program\KProcessHacker.cs" />

@@ -31,6 +31,8 @@ namespace ProcessHacker.Components
 {
     public partial class ColorModifier : UserControl
     {
+        public event EventHandler ColorChanged;
+
         private Color _color;
 
         public ColorModifier()
@@ -48,6 +50,9 @@ namespace ProcessHacker.Components
             {
                 _color = cd.Color;
                 panelColor.BackColor = cd.Color;
+
+                if (this.ColorChanged != null)
+                    this.ColorChanged(this, new EventArgs());
             }
         }
 
@@ -58,6 +63,9 @@ namespace ProcessHacker.Components
             {
                 _color = value;
                 panelColor.BackColor = value;
+
+                if (this.ColorChanged != null)
+                    this.ColorChanged(this, new EventArgs());
             }
         }
 
