@@ -15,11 +15,6 @@ GUIDE TO DIRECTORY ORGANIZATION
   LOCAL SERVICE and NETWORK SERVICE. It also changes the session ID and 
   winstation/desktop names of the new process to be able to interact with 
   the user even though it is running as SYSTEM (just like PsExec).
-* Injector - (deprecated) this is a small program which uses remote thread 
-  injection to perform certain tasks like getting the command line of processes 
-  and forcing other processes to start programs of your choosing.
-  * The build script (build.cmd) assumes that you have MinGW installed and 
-    have added it to the PATH environment variable.
 * KProcessHacker - the kernel-mode component of Process Hacker. Provides 
   Process Hacker with handle names and provides custom versions of Nt* 
   API functions.
