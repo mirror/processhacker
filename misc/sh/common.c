@@ -22,6 +22,54 @@
 
 #include "common.h"
 
+ULONG CmGetTypeLength(CM_TYPE Type, PVOID Data, ULONG Length)
+{
+    ULONG length = 0;
+
+    switch (Type & CmType)
+    {
+    case CmBool:
+        length = sizeof(BOOLEAN);
+        break;
+    case CmByte:
+        length = sizeof(BYTE);
+        break;
+    case CmInt16:
+        length = sizeof(USHORT);
+        break;
+    case CmInt32:
+        length = sizeof(ULONG32);
+        break;
+    case CmPVoid:
+        length = sizeof(PVOID);
+        break;
+    case CmString:
+        if (Data)
+        {
+            if (!Length)
+                length = wcslen((PWSTR)Data) * sizeof(WCHAR);
+            else
+                length = Length;
+        }
+        else
+        {
+            length = 0;
+        }
+
+        break;
+    case CmBytes:
+        if (!Data)
+            length = 0;
+        else
+            length = Length;
+    case CmVoid:
+    default:
+        break;
+    }
+
+    return length;
+}
+
 PBYTE CmMakeDictionary(
     PULONG BufferLength,
     ULONG Length,
@@ -36,7 +84,7 @@ PBYTE CmMakeDictionary(
     CM_TYPE type;
     ULONG length;
     PWSTR key;
-    ULONG value;
+    PVOID value;
 
     va_start(ap, Length);
 
@@ -45,49 +93,12 @@ PBYTE CmMakeDictionary(
         type = va_arg(ap, CM_TYPE);
         length = va_arg(ap, ULONG);
         key = va_arg(ap, PWSTR);
-        value = va_arg(ap, ULONG);
-
-        switch (type & CmType)
-        {
-        case CmBool:
-            length = sizeof(BOOLEAN);
-            break;
-        case CmByte:
-            length = sizeof(BYTE);
-            break;
-        case CmInt16:
-            length = sizeof(USHORT);
-            break;
-        case CmInt32:
-            length = sizeof(ULONG32);
-            break;
-        case CmPVoid:
-            length = sizeof(PVOID);
-            break;
-        case CmString:
-            if (value)
-            {
-                if (!length)
-                    length = wcslen((PWSTR)value) * sizeof(WCHAR);
-            }
-            else
-            {
-                length = 0;
-            }
-
-            break;
-        case CmBytes:
-            if (!value)
-                length = 0;
-        case CmVoid:
-        default:
-            break;
-        }
+        value = va_arg(ap, PVOID);
 
         bufferLength += (wcslen(key) + 1) * sizeof(WCHAR);
         bufferLength += sizeof(CM_TYPE);
         bufferLength += sizeof(ULONG);
-        bufferLength += length;
+        bufferLength += CmGetTypeLength(type, value, length);
     }
 
     va_end(ap);
@@ -98,70 +109,51 @@ PBYTE CmMakeDictionary(
 
     for (i = 0; i < Length; i++)
     {
-        PULONG lengthw;
-        PVOID dataw;
+        PVOID data;
 
         type = va_arg(ap, CM_TYPE);
         length = va_arg(ap, ULONG);
         key = va_arg(ap, PWSTR);
-        value = va_arg(ap, ULONG);
+        value = va_arg(ap, PVOID);
 
         wcscpy((PWSTR)(buffer + j), key);
         j += (wcslen(key) + 1) * sizeof(WCHAR);
         *(PCM_TYPE)(buffer + j) = type;
         j += sizeof(CM_TYPE);
-        lengthw = (PULONG)(buffer + j);
+        *(PULONG)(buffer + j) = length = CmGetTypeLength(type, value, length);
         j += sizeof(ULONG);
-        dataw = buffer + j;
+        data = buffer + j;
 
         switch (type & CmType)
         {
         case CmBool:
-            *(PBOOLEAN)dataw = (BOOLEAN)value;
-            length = sizeof(BOOLEAN);
+            *(PBOOLEAN)data = (BOOLEAN)value;
             break;
         case CmByte:
-            *(PBYTE)dataw = (BYTE)value;
-            length = sizeof(BYTE);
+            *(PBYTE)data = (BYTE)value;
             break;
         case CmInt16:
-            *(PUSHORT)dataw = (USHORT)value;
-            length = sizeof(USHORT);
+            *(PUSHORT)data = (USHORT)value;
             break;
         case CmInt32:
-            *(PULONG32)dataw = (ULONG32)value;
-            length = sizeof(ULONG32);
+            *(PULONG32)data = (ULONG32)value;
             break;
         case CmPVoid:
-            *(PVOID *)dataw = (PVOID)value;
-            length = sizeof(PVOID);
+            *(PVOID *)data = (PVOID)value;
             break;
         case CmBytes:
             if (value)
-                memcpy(dataw, (PBYTE)value, length);
-            else
-                length = 0;
+                memcpy(data, (PBYTE)value, length);
             break;
         case CmString:
             if (value)
-            {
-                if (!length)
-                    memcpy(dataw, (PWSTR)value, length = wcslen((PWSTR)value) * sizeof(WCHAR));
-                else
-                    memcpy(dataw, (PWSTR)value, length);
-            }
-            else
-            {
-                length = 0;
-            }
-
+                memcpy(data, (PWSTR)value, length);
             break;
         case CmVoid:
         default:
             break;
         }
 
-        *lengthw = length;
         j += length;
     }
 

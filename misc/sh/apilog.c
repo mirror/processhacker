@@ -28,6 +28,8 @@ NT_HOOK AlNtOpenProcessHook;
 NT_HOOK AlNtOpenProcessTokenExHook;
 NT_HOOK AlNtOpenThreadHook;
 KE_HOOK AlCreateProcessWHook;
+KE_HOOK AlCopyFileWHook;
+KE_HOOK AlCopyFileExWHook;
 
 NTSTATUS NTAPI AlNtOpenProcess(
     PHANDLE ProcessHandle,
@@ -141,12 +143,25 @@ BOOL WINAPI AlNewCreateProcessW(
     LPPROCESS_INFORMATION lpProcessInformation
     )
 {
-    int result = MessageBoxW(
+    PWSTR appText = lpApplicationName == NULL ? lpCommandLine : lpApplicationName;
+    PWSTR preText = L"Allow the process to execute ";
+    PWSTR postText = L"?";
+    PWSTR confirmText = (PWSTR)malloc((wcslen(preText) + wcslen(appText) + wcslen(postText) + 1) * sizeof(WCHAR));
+    int result;
+
+    *confirmText = 0;
+    wcscat(confirmText, preText);
+    wcscat(confirmText, appText);
+    wcscat(confirmText, postText);
+
+    result = MessageBoxW(
         NULL,
-        lpApplicationName == NULL ? lpCommandLine : lpApplicationName,
+        confirmText,
         L"Program execution confirmation", 
         MB_ICONEXCLAMATION | MB_YESNOCANCEL
         );
+
+    free(confirmText);
 
     if (result == IDNO)
     {
@@ -156,7 +171,15 @@ BOOL WINAPI AlNewCreateProcessW(
     }
     else if (result == IDCANCEL)
     {
-        ExitProcess(1);
+        if (MessageBoxW(
+            NULL,
+            L"Are you sure you want to terminate the process?",
+            L"Process termination confirmation",
+            MB_ICONEXCLAMATION | MB_YESNO
+            ) == IDYES)
+            ExitProcess(1);
+
+        SetLastError(ERROR_CANCELLED);
 
         return FALSE;
     }
@@ -177,6 +200,86 @@ BOOL WINAPI AlNewCreateProcessW(
     return AlCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes,
         lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment,
         lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
+
+BOOL ConfirmCopyFile(
+   LPCTSTR lpExistingFileName,
+   LPCTSTR lpNewFileName)
+{
+    PWSTR preText = L"Allow the process to copy ";
+    PWSTR midText = L" to ";
+    PWSTR postText = L"?";
+    PWSTR confirmText = (PWSTR)malloc(
+        (wcslen(preText) + wcslen(lpExistingFileName) + wcslen(midText) + 
+        wcslen(lpNewFileName) + wcslen(postText) + 1) * sizeof(WCHAR));
+
+    *confirmText = 0;
+    wcscat(confirmText, preText);
+    wcscat(confirmText, lpExistingFileName);
+    wcscat(confirmText, midText);
+    wcscat(confirmText, lpNewFileName);
+    wcscat(confirmText, postText);
+
+    if (MessageBoxW(
+        NULL,
+        confirmText,
+        L"File move confirmation",
+        MB_ICONEXCLAMATION | MB_YESNO
+        ) == IDNO)
+        return FALSE;
+
+    free(confirmText);
+
+    return TRUE;
+}
+
+BOOL WINAPI AlCopyFileW(
+    LPCTSTR lpExistingFileName,
+    LPCTSTR lpNewFileName,
+    BOOL bFailIfExists
+    )
+{
+    return ShKeCall(&AlCopyFileWHook, (PVOID)&lpExistingFileName);
+}
+
+BOOL WINAPI AlNewCopyFileW(
+    LPCTSTR lpExistingFileName,
+    LPCTSTR lpNewFileName,
+    BOOL bFailIfExists
+    )
+{
+    if (!ConfirmCopyFile(lpExistingFileName, lpNewFileName))
+        return ERROR_ACCESS_DENIED;
+
+    return AlCopyFileW(lpExistingFileName, lpNewFileName, bFailIfExists);
+}
+
+BOOL WINAPI AlCopyFileExW(
+    LPCTSTR lpExistingFileName,
+    LPCTSTR lpNewFileName,
+    LPPROGRESS_ROUTINE lpProgressRoutine,
+    LPVOID lpData,
+    LPBOOL pbCancel,
+    DWORD dwCopyFlags
+    )
+{
+    return ShKeCall(&AlCopyFileExWHook, (PVOID)&lpExistingFileName);
+}
+
+BOOL WINAPI AlNewCopyFileExW(
+    LPCTSTR lpExistingFileName,
+    LPCTSTR lpNewFileName,
+    LPPROGRESS_ROUTINE lpProgressRoutine,
+    LPVOID lpData,
+    LPBOOL pbCancel,
+    DWORD dwCopyFlags
+    )
+{
+    if (!ConfirmCopyFile(lpExistingFileName, lpNewFileName))
+        return ERROR_ACCESS_DENIED;
+
+    return AlCopyFileExW(lpExistingFileName, lpNewFileName, lpProgressRoutine,
+        lpData, pbCancel, dwCopyFlags);
 }
 
 NTSTATUS AlWriteLogPipe(
@@ -240,6 +343,8 @@ NTSTATUS AlPatch()
     status |= ShNtPatchCall("NtOpenThread", AlNewNtOpenThread, &AlNtOpenThreadHook);
     status |= ShNtPatchCall("NtOpenProcessTokenEx", AlNewNtOpenProcessTokenEx, &AlNtOpenProcessTokenExHook);
     status |= ShKePatchCall("CreateProcessW", AlNewCreateProcessW, 10 * 4, &AlCreateProcessWHook);
+    status |= ShKePatchCall("CopyFileW", AlNewCopyFileW, 3 * 4, &AlCopyFileWHook);
+    status |= ShKePatchCall("CopyFileExW", AlNewCopyFileExW, 6 * 4, &AlCopyFileExWHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;
@@ -255,6 +360,8 @@ NTSTATUS AlUnpatch()
     status |= ShNtUnpatchCall(&AlNtOpenThreadHook);
     status |= ShNtUnpatchCall(&AlNtOpenProcessTokenExHook);
     status |= ShKeUnpatchCall(&AlCreateProcessWHook);
+    status |= ShKeUnpatchCall(&AlCopyFileWHook);
+    status |= ShKeUnpatchCall(&AlCopyFileExWHook);
 
     if (!NT_SUCCESS(status))
         return STATUS_UNSUCCESSFUL;
