@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace ProcessHacker
+namespace ProcessHacker.UI
 {
     /// <summary>
     /// Provides automatic sorting support for the ListView control.

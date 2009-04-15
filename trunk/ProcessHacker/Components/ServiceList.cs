@@ -25,8 +25,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class ServiceList : UserControl
     {

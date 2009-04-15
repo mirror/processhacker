@@ -30,6 +30,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {

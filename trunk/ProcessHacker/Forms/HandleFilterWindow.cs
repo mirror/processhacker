@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using ProcessHacker.FormHelper;
 using System.Collections;
 using System.Runtime.InteropServices;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {

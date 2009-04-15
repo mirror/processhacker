@@ -31,7 +31,7 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabLiteral = new System.Windows.Forms.TabPage();
             this.checkNoOverlap = new System.Windows.Forms.CheckBox();
-            this.utilitiesButtonLiteral = new ProcessHacker.UtilitiesButton();
+            this.utilitiesButtonLiteral = new ProcessHacker.Components.UtilitiesButton();
             this.hexBoxSearch = new Be.Windows.Forms.HexBox();
             this.tabRegex = new System.Windows.Forms.TabPage();
             this.checkIgnoreCase = new System.Windows.Forms.CheckBox();
@@ -400,7 +400,7 @@
         private System.Windows.Forms.TabPage tabString;
         private System.Windows.Forms.TabPage tabHeap;
         private Be.Windows.Forms.HexBox hexBoxSearch;
-        private UtilitiesButton utilitiesButtonLiteral;
+        private ProcessHacker.Components.UtilitiesButton utilitiesButtonLiteral;
         private System.Windows.Forms.CheckBox checkPrivate;
         private System.Windows.Forms.CheckBox checkImage;
         private System.Windows.Forms.CheckBox checkMapped;

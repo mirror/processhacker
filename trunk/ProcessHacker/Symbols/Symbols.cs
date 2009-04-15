@@ -26,41 +26,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using Microsoft.Samples;
+using ProcessHacker.Components;
 
-namespace ProcessHacker
+namespace ProcessHacker.Symbols
 {
-    public class Symbols : IDisposable
+    public class SymbolProvider : IDisposable
     {
-        /// <summary>
-        /// Specifies the detail with which the address's name was resolved.
-        /// </summary>
-        public enum FoundLevel
-        {
-            /// <summary>
-            /// Indicates that the address was resolved to a module, a function and possibly an offset. 
-            /// For example: mymodule.dll!MyExportedFunction+0x123
-            /// </summary>
-            Function,
-
-            /// <summary>
-            /// Indicates that the address was resolved to a module and an offset.
-            /// For example: mymodule.dll+0x4321
-            /// </summary>
-            Module,
-
-            /// <summary>
-            /// Indicates that the address was not resolved.
-            /// For example: 0x12345678
-            /// </summary>
-            Address,
-
-            /// <summary>
-            /// Indicates that the address was invalid (for example, 0x0).
-            /// </summary>
-            Invalid
-        }
-
         private static object _callLock = new object();
         private static IdGenerator _idGen = new IdGenerator();
 
@@ -85,7 +56,7 @@ namespace ProcessHacker
         private int _handle;
         private List<KeyValuePair<long, string>> _modules = new List<KeyValuePair<long, string>>();
 
-        public Symbols()
+        public SymbolProvider()
         {
             _handle = _idGen.Pop();
 
@@ -96,7 +67,7 @@ namespace ProcessHacker
             }
         }
 
-        public Symbols(Win32.ProcessHandle processHandle)
+        public SymbolProvider(Win32.ProcessHandle processHandle)
         {
             _processHandle = processHandle;
             _handle = processHandle;
@@ -286,7 +257,7 @@ namespace ProcessHacker
             return this.GetSymbolFromAddress(address, out flags);
         }
 
-        public string GetSymbolFromAddress(long address, out FoundLevel level)
+        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level)
         {
             Win32.SYMBOL_FLAGS flags;
             string fileName;
@@ -296,7 +267,7 @@ namespace ProcessHacker
 
         public string GetSymbolFromAddress(long address, out Win32.SYMBOL_FLAGS flags)
         {
-            FoundLevel level;
+            SymbolResolveLevel level;
             string fileName;
 
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
@@ -304,20 +275,20 @@ namespace ProcessHacker
 
         public string GetSymbolFromAddress(long address, out string fileName)
         {
-            FoundLevel level;
+            SymbolResolveLevel level;
             Win32.SYMBOL_FLAGS flags;
 
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out FoundLevel level, out Win32.SYMBOL_FLAGS flags, out string fileName)
+        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level, out Win32.SYMBOL_FLAGS flags, out string fileName)
         {
             const int maxNameLen = 0x100;
             long displacement;
 
             if (address == 0)
             {
-                level = FoundLevel.Invalid;
+                level = SymbolResolveLevel.Invalid;
                 flags = 0;
                 fileName = null;
             }
@@ -373,7 +344,7 @@ namespace ProcessHacker
 
                 if (modFileName == null)
                 {
-                    level = FoundLevel.Address;
+                    level = SymbolResolveLevel.Address;
                     flags = 0;
                     fileName = null;
 
@@ -394,7 +365,7 @@ namespace ProcessHacker
 
                 if (info.NameLen == 0)
                 {
-                    level = FoundLevel.Module;
+                    level = SymbolResolveLevel.Module;
                     flags = 0;
 
                     if (fi != null)
@@ -412,7 +383,7 @@ namespace ProcessHacker
                 string name = Marshal.PtrToStringAnsi(
                     new IntPtr(data + Marshal.OffsetOf(typeof(Win32.SYMBOL_INFO), "Name").ToInt32()), info.NameLen);
 
-                level = FoundLevel.Function;
+                level = SymbolResolveLevel.Function;
                 flags = info.Flags;
 
                 if (displacement == 0)
@@ -422,7 +393,7 @@ namespace ProcessHacker
             }
         }
 
-        ~Symbols()
+        ~SymbolProvider()
         {
             this.Dispose(false);
         }

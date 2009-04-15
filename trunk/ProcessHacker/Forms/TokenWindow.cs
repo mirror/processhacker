@@ -21,10 +21,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {

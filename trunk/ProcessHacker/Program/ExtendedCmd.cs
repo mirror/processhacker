@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using ProcessHacker.UI;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {

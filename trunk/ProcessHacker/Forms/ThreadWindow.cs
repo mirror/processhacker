@@ -24,6 +24,8 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Symbols;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -33,7 +35,7 @@ namespace ProcessHacker
         private int _tid;
         private Win32.ProcessHandle _phandle;
         private Win32.ThreadHandle _thandle;
-        private Symbols _symbols;
+        private SymbolProvider _symbols;
 
         public const string DisplayFormat = "0x{0:x8}";
 
@@ -45,7 +47,7 @@ namespace ProcessHacker
             get { return _pid + "-" + _tid; }
         }
 
-        public ThreadWindow(int PID, int TID, Symbols symbols)
+        public ThreadWindow(int PID, int TID, SymbolProvider symbols)
         {
             InitializeComponent();
 

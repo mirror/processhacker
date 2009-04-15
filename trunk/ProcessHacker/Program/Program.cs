@@ -22,11 +22,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Forms;
 using System.Drawing;
 using System.Security.Principal;
-using Microsoft.Samples;
+using System.Threading;
+using System.Windows.Forms;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {

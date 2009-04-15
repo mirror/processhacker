@@ -28,6 +28,7 @@ using System.Text;
 using System.Windows.Forms;
 using ProcessHacker.PE;
 using System.IO;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {

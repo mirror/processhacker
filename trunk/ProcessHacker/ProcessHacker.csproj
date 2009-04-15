@@ -76,7 +76,7 @@
     <Compile Include="Forms\HackerWindow.Designer.cs">
       <DependentUpon>HackerWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Program\Program.cs" />
     <Compile Include="Forms\PromptBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -321,9 +321,9 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
-    <Compile Include="Actions\ServiceActions.cs" />
-    <Compile Include="ByteStreamReader.cs" />
-    <Compile Include="CircularBuffer.cs" />
+    <Compile Include="UI\Actions\ServiceActions.cs" />
+    <Compile Include="Common\ByteStreamReader.cs" />
+    <Compile Include="Common\CircularBuffer.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -433,12 +433,12 @@
     <Compile Include="Components\VerticleProgressBar.Designer.cs">
       <DependentUpon>VerticleProgressBar.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExtendedCmd.cs" />
-    <Compile Include="ExtensionAttribute.cs" />
-    <Compile Include="FormHelper\AsyncUtils.cs">
+    <Compile Include="Program\ExtendedCmd.cs" />
+    <Compile Include="Common\ExtensionAttribute.cs" />
+    <Compile Include="UI\Async\AsyncUtils.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FormHelper\HandleFilter.cs">
+    <Compile Include="UI\Async\HandleFilter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ApiLogWindow.cs">
@@ -585,12 +585,13 @@
     <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="HighlightedListViewItem.cs" />
-    <Compile Include="HistoryManager.cs" />
-    <Compile Include="KProcessHacker.cs" />
-    <Compile Include="ColumnSettings.cs" />
-    <Compile Include="DeltaManager.cs" />
-    <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Symbols\SymbolResolveLevel.cs" />
+    <Compile Include="UI\HighlightedListViewItem.cs" />
+    <Compile Include="Common\HistoryManager.cs" />
+    <Compile Include="Program\KProcessHacker.cs" />
+    <Compile Include="UI\ColumnSettings.cs" />
+    <Compile Include="Common\DeltaManager.cs" />
+    <Compile Include="Program\NProcessHacker.cs" />
     <Compile Include="Providers\Internal\IProvider.cs" />
     <Compile Include="Providers\Internal\SharedThreadProvider.cs" />
     <Compile Include="SharpDevelop\NDebugger.cs" />
@@ -608,11 +609,11 @@
     <Compile Include="SharpDevelop\Wrappers\NativeMethods.cs" />
     <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
-    <Compile Include="Actions\ProcessActions.cs" />
-    <Compile Include="Singleton.cs" />
+    <Compile Include="UI\Actions\ProcessActions.cs" />
+    <Compile Include="Common\Singleton.cs" />
     <Compile Include="Symbols\Symbols.cs" />
-    <Compile Include="UsageIcon.cs" />
-    <Compile Include="GenericViewMenu.cs" />
+    <Compile Include="Program\UsageIcon.cs" />
+    <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="PE\PEException.cs" />
     <Compile Include="PE\ImageRelocationType.cs" />
     <Compile Include="PE\RelocData.cs" />
@@ -668,16 +669,16 @@
     <Compile Include="Forms\ThreadWindow.Designer.cs">
       <DependentUpon>ThreadWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="BaseConverter.cs" />
-    <Compile Include="IdGenerator.cs" />
-    <Compile Include="Misc.cs" />
+    <Compile Include="Common\BaseConverter.cs" />
+    <Compile Include="Common\IdGenerator.cs" />
+    <Compile Include="Common\Misc.cs" />
     <Compile Include="Providers\Internal\Provider.cs" />
-    <Compile Include="Save.cs" />
+    <Compile Include="Program\Save.cs" />
     <Compile Include="Searchers\StructSearcher.cs" />
     <Compile Include="Searchers\HeapSearcher.cs" />
     <Compile Include="Searchers\RegexSearcher.cs" />
     <Compile Include="Searchers\StringSearcher.cs" />
-    <Compile Include="SearchOptions.cs" />
+    <Compile Include="Searchers\SearchOptions.cs" />
     <Compile Include="Searchers\LiteralSearcher.cs" />
     <Compile Include="Searchers\Searcher.cs" />
     <Compile Include="Forms\AboutWindow.cs">
@@ -698,7 +699,7 @@
     <Compile Include="Forms\InformationBox.Designer.cs">
       <DependentUpon>InformationBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="SortedListComparer.cs" />
+    <Compile Include="UI\SortedListComparer.cs" />
     <Compile Include="Structs\ProcessMemoryIO.cs" />
     <Compile Include="Structs\FieldValue.cs" />
     <Compile Include="Structs\FieldType.cs" />
@@ -706,7 +707,7 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
-    <Compile Include="WeakReference.cs" />
+    <Compile Include="Common\WeakReference.cs" />
     <Compile Include="Win32\API\Enums.cs" />
     <Compile Include="Win32\API\Structs.cs" />
     <Compile Include="Win32\API\Functions.cs" />

@@ -25,8 +25,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections.Generic;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class MemoryList : UserControl
     {

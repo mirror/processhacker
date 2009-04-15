@@ -1,4 +1,4 @@
-﻿namespace ProcessHacker
+﻿namespace ProcessHacker.Components
 {
     partial class UtilitiesButton
     {

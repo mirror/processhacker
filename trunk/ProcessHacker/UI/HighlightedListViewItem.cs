@@ -26,7 +26,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ProcessHacker
+namespace ProcessHacker.UI
 {
     public enum ListViewItemState
     {

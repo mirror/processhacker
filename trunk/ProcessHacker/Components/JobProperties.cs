@@ -28,7 +28,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class JobProperties : UserControl
     {

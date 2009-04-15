@@ -27,8 +27,9 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class TokenGroups : UserControl
     {

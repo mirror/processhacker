@@ -22,13 +22,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
+using ProcessHacker.Components;
+using ProcessHacker.Symbols;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
 namespace ProcessHacker
 {
@@ -201,7 +201,7 @@ namespace ProcessHacker
                 }),
                 null, 100, System.Threading.Timeout.Infinite);
 
-            Symbols.ShowWarning(this, false);
+            SymbolProvider.ShowWarning(this, false);
         }
 
         private void LoadStage2()

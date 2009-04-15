@@ -25,8 +25,9 @@ using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Windows.Forms;
 using ProcessHacker.UI;
+using ProcessHacker.UI.Actions;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class ServiceProperties : UserControl
     {

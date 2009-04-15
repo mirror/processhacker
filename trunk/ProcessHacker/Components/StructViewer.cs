@@ -29,8 +29,9 @@ using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Structs;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class StructViewer : UserControl
     {

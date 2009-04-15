@@ -6,7 +6,7 @@
 // <remarks/>
 //------------------------------------------------------------------
 
-namespace Microsoft.Samples
+namespace ProcessHacker.Components
 {
     using System;
     using System.Windows.Forms;

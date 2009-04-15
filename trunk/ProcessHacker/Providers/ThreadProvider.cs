@@ -22,10 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Symbols;
 
 namespace ProcessHacker
 {
@@ -45,7 +44,7 @@ namespace ProcessHacker
         public string Priority;
         public uint StartAddressI;
         public string StartAddress;
-        public Symbols.FoundLevel StartAddressLevel;
+        public Symbols.SymbolResolveLevel StartAddressLevel;
         public Win32.KWAIT_REASON WaitReason;
         public bool IsGuiThread;
         public bool JustResolved;
@@ -61,7 +60,7 @@ namespace ProcessHacker
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
         private Win32.ProcessHandle _processHandle;
-        private Symbols _symbols;
+        private SymbolProvider _symbols;
         private int _pid;
         private int _loading = 0;
         private Queue<KeyValuePair<int, string>> _resolveResults = new Queue<KeyValuePair<int,string>>();
@@ -95,9 +94,9 @@ namespace ProcessHacker
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
                 ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
                 {
-                    _symbols = new Symbols(_processHandle);
+                    _symbols = new SymbolProvider(_processHandle);
 
-                    Symbols.Options = Win32.SYMBOL_OPTIONS.DeferredLoads |
+                    SymbolProvider.Options = Win32.SYMBOL_OPTIONS.DeferredLoads |
                         (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
 
                     if (Properties.Settings.Default.DbgHelpSearchPath != "")
@@ -274,7 +273,7 @@ namespace ProcessHacker
                     if (result.Value != null)
                     {
                         this.Dictionary[result.Key].StartAddress = result.Value;
-                        this.Dictionary[result.Key].StartAddressLevel = Symbols.FoundLevel.Function; // Assume we found a good symbol
+                        this.Dictionary[result.Key].StartAddressLevel = SymbolResolveLevel.Function; // Assume we found a good symbol
                         this.Dictionary[result.Key].JustResolved = true;
                     }
                 }
@@ -363,7 +362,7 @@ namespace ProcessHacker
                             if (_moduleLoadCompletedEvent.WaitOne(500))
                             {
                                 item.StartAddress = this.GetThreadBasicStartAddress(item.StartAddressI);
-                                item.StartAddressLevel = Symbols.FoundLevel.Module;
+                                item.StartAddressLevel = SymbolResolveLevel.Module;
                             }
                         }
                         catch
@@ -373,7 +372,7 @@ namespace ProcessHacker
                     if (string.IsNullOrEmpty(item.StartAddress))
                     {
                         item.StartAddress = "0x" + item.StartAddressI.ToString("x8");
-                        item.StartAddressLevel = Symbols.FoundLevel.Address;
+                        item.StartAddressLevel = SymbolResolveLevel.Address;
                     }
 
                     this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
@@ -422,12 +421,12 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (newitem.StartAddressLevel == Symbols.FoundLevel.Address)
+                    if (newitem.StartAddressLevel == SymbolResolveLevel.Address)
                     {
                         if (_moduleLoadCompletedEvent.WaitOne(0))
                         {
                             newitem.StartAddress = this.GetThreadBasicStartAddress(newitem.StartAddressI);
-                            newitem.StartAddressLevel = Symbols.FoundLevel.Module;
+                            newitem.StartAddressLevel = SymbolResolveLevel.Module;
                         }
                     }
 
@@ -452,7 +451,7 @@ namespace ProcessHacker
             Dictionary = newdictionary;
         }
 
-        public Symbols Symbols
+        public SymbolProvider Symbols
         {
             get { return _symbols; }
         }

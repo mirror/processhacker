@@ -59,7 +59,7 @@ namespace ProcessHacker
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.buttonStruct = new System.Windows.Forms.Button();
             this.hexBoxMemory = new Be.Windows.Forms.HexBox();
-            this.utilitiesButtonMemory = new ProcessHacker.UtilitiesButton();
+            this.utilitiesButtonMemory = new ProcessHacker.Components.UtilitiesButton();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -290,7 +290,7 @@ namespace ProcessHacker
 
         #endregion
 
-        private UtilitiesButton utilitiesButtonMemory;
+        private ProcessHacker.Components.UtilitiesButton utilitiesButtonMemory;
         private System.Windows.Forms.TextBox labelHexSelection;
         private System.Windows.Forms.Button buttonValues;
         private System.Windows.Forms.Button buttonGoToMemory;

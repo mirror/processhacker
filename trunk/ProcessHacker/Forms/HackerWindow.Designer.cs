@@ -110,9 +110,9 @@
             this.tabProcesses = new System.Windows.Forms.TabPage();
             this.treeProcesses = new ProcessHacker.ProcessTree();
             this.tabServices = new System.Windows.Forms.TabPage();
-            this.listServices = new ProcessHacker.ServiceList();
+            this.listServices = new ProcessHacker.Components.ServiceList();
             this.tabNetwork = new System.Windows.Forms.TabPage();
-            this.listNetwork = new ProcessHacker.NetworkList();
+            this.listNetwork = new ProcessHacker.Components.NetworkList();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.optionsToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -1188,7 +1188,7 @@
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabProcesses;
         private System.Windows.Forms.TabPage tabServices;
-        private ServiceList listServices;
+        private ProcessHacker.Components.ServiceList listServices;
         private System.Windows.Forms.ContextMenu menuService;
         private System.Windows.Forms.MenuItem propertiesServiceMenuItem;
         private System.Windows.Forms.MenuItem startServiceMenuItem;
@@ -1227,7 +1227,7 @@
         private System.Windows.Forms.StatusBarPanel statusMemory;
         private System.Windows.Forms.MenuItem reloadStructsMenuItem;
         private System.Windows.Forms.TabPage tabNetwork;
-        private NetworkList listNetwork;
+        private ProcessHacker.Components.NetworkList listNetwork;
         private System.Windows.Forms.MenuItem sysInformationIconMenuItem;
         private System.Windows.Forms.MenuItem csrProcessesMenuItem;
         private System.Windows.Forms.MenuItem viewMenuItem;

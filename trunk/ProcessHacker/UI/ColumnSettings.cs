@@ -27,7 +27,7 @@ using System.Collections;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 
-namespace ProcessHacker
+namespace ProcessHacker.UI
 {
     /// <summary>
     /// Provides methods for loading and saving ListView column settings.

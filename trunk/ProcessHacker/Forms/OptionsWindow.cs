@@ -22,13 +22,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Symbols;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -36,7 +34,6 @@ namespace ProcessHacker
     {
         private string _oldDbghelp;
         private string _oldTaskMgrDebugger;
-        private bool _autoClosed = false;
         private Font _font;
 
         public OptionsWindow()
@@ -127,13 +124,13 @@ namespace ProcessHacker
             catch
             {
                 checkReplaceTaskManager.Enabled = false;
-            }      
+            }
 
             try
             {
                 _oldDbghelp = textDbghelpPath.Text = Properties.Settings.Default.DbgHelpPath;
                 textSearchPath.Text = Properties.Settings.Default.DbgHelpSearchPath;
-                checkUndecorate.Checked = (Symbols.Options & Win32.SYMBOL_OPTIONS.UndName) != 0;
+                checkUndecorate.Checked = (SymbolProvider.Options & Win32.SYMBOL_OPTIONS.UndName) != 0;
             }
             catch
             { }
@@ -374,14 +371,12 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            _autoClosed = true;
             this.ApplySettings();
             this.Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)
         {
-            _autoClosed = true;
             this.Close();
         }
 

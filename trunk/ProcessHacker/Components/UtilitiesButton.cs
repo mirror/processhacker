@@ -27,7 +27,7 @@ using System.Text;
 using System.Windows.Forms;
 using Be.Windows.Forms;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class UtilitiesButton : UserControl
     {

@@ -27,7 +27,7 @@ using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.UI
 {
     public static class GenericViewMenu
     {

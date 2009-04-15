@@ -26,8 +26,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class NetworkList : UserControl
     {

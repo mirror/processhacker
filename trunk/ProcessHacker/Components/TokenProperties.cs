@@ -28,8 +28,9 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using ProcessHacker.UI;
 
-namespace ProcessHacker
+namespace ProcessHacker.Components
 {
     public partial class TokenProperties : UserControl
     {
