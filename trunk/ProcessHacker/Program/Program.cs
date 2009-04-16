@@ -133,7 +133,8 @@ namespace ProcessHacker
             try
             {
                 if (Properties.Settings.Default.AllowOnlyOneInstance && 
-                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") || pArgs.ContainsKey("-pw"))
+                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
+                    pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
                     )
                     CheckForPreviousInstance();
             }
@@ -288,9 +289,8 @@ namespace ProcessHacker
                     return;
                 }
 
-                if (pArgs.ContainsKey("-pw") || true)
+                if (pArgs.ContainsKey("-pw"))
                 {
-                    pArgs["-pw"] = "4";
                     int pid = int.Parse(pArgs["-pw"]);
 
                     SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
@@ -323,6 +323,23 @@ namespace ProcessHacker
                     ServiceProvider.Dispose();
 
                     Environment.Exit(0);
+
+                    return;
+                }
+
+                if (pArgs.ContainsKey("-pt"))
+                {
+                    int pid = int.Parse(pArgs["-pt"]);
+
+                    try
+                    {
+                        using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
+                            Application.Run(new TokenWindow(phandle));
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
 
                     return;
                 }
