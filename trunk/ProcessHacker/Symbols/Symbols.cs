@@ -316,8 +316,10 @@ namespace ProcessHacker.Symbols
                         Marshal.StructureToPtr(info, data, false);
                     }
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
 
                 lock (_callLock)
                 {
@@ -360,8 +362,10 @@ namespace ProcessHacker.Symbols
                     fi = new FileInfo(modFileName);
                     fileName = fi.FullName;
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
 
                 if (info.NameLen == 0)
                 {

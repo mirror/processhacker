@@ -570,18 +570,18 @@ namespace ProcessHacker
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Logging.Log(e.ExceptionObject as Exception);
             UnhandledException(e.ExceptionObject as Exception);
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            Logging.Log(e.Exception as Exception);
             UnhandledException(e.Exception);
         }
 
         private static void UnhandledException(Exception ex)
         {
+            Logging.Log(Logging.Importance.Critical, ex.ToString());
+
             if (false)
             {
                 TaskDialog td = new TaskDialog();

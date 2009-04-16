@@ -423,7 +423,15 @@ namespace ProcessHacker
             int error = Marshal.GetLastWin32Error();
 
             if (error != 0)
-                throw new WindowsException(error);
+            {
+                var ex = new WindowsException(error);
+
+#if DEBUG
+                Logging.Log(Logging.Importance.Error, ex.ToString() + Environment.StackTrace);
+#endif
+
+                throw ex;
+            }
         }
 
         #endregion

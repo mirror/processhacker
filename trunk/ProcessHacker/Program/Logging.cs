@@ -44,7 +44,16 @@ namespace ProcessHacker
         [Conditional("DEBUG")]
         public static void Log(Importance importance, string message)
         {
-            OutputDebugString("ProcessHacker: (" + importance.ToString() + ") " + message);
+            string debugMessage = "ProcessHacker: (" + importance.ToString() + ") " + message;
+
+            OutputDebugString(debugMessage);
+
+            try
+            {
+                Program.HackerWindow.QueueMessage(debugMessage);
+            }
+            catch
+            { }
         }
 
         [Conditional("DEBUG")]

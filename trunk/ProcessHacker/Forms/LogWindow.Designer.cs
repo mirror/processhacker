@@ -58,6 +58,7 @@
             this.listLog.UseCompatibleStateImageBehavior = false;
             this.listLog.View = System.Windows.Forms.View.Details;
             this.listLog.VirtualMode = true;
+            this.listLog.DoubleClick += new System.EventHandler(this.listLog_DoubleClick);
             this.listLog.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listLog_RetrieveVirtualItem);
             // 
             // columnTime

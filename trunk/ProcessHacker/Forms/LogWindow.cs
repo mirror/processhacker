@@ -149,5 +149,12 @@ namespace ProcessHacker
         {
             Program.HackerWindow.ClearLog();
         }
+
+        private void listLog_DoubleClick(object sender, EventArgs e)
+        {
+            InformationBox info = new InformationBox(Program.HackerWindow.Log[listLog.SelectedIndices[0]].Value);
+
+            info.ShowDialog();
+        }
     }
 }
