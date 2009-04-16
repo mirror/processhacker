@@ -366,8 +366,7 @@ namespace ProcessHacker
                     }
 
                     options.SelectedTab = options.TabPages["tabAdvanced"];
-                    options.Show(window);
-                    Application.Run(options);
+                    options.ShowDialog(window);
 
                     return;
                 }

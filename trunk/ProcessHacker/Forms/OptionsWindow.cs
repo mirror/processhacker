@@ -98,16 +98,7 @@ namespace ProcessHacker
 
         private void OptionsWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //if (!_autoClosed)
-            //{
-            //    var result = MessageBox.Show("Do you want to save any changes you have made?", "Process Hacker",
-            //        MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-
-            //    if (result == DialogResult.Yes)
-            //        this.ApplySettings();
-            //    else if (result == DialogResult.Cancel)
-            //        e.Cancel = true;
-            //}
+            //e.Cancel = !buttonCancel.Enabled;
         }
 
         private void EnableApplyButton()
@@ -488,8 +479,10 @@ namespace ProcessHacker
                         {
                             Properties.Settings.Default.Reload();
                             this.LoadSettings();
-                            this.ApplySettings();
+                            if (!_dontApply)
+                                this.ApplySettings();
                             buttonApply.Enabled = false;
+                            buttonOK.Select();
                         }));
                 });
 

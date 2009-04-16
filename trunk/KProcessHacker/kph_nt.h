@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   custom versions of certain APIs - header file
+ *   custom APIs
  * 
  * Copyright (C) 2009 wj32
  * 
