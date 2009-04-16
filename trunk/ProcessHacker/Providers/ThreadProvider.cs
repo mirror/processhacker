@@ -243,7 +243,7 @@ namespace ProcessHacker
         private void UpdateOnce()
         {
             Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> threads =
-                Program.HackerWindow.ProcessProvider.Dictionary[_pid].Threads;
+                Program.ProcessProvider.Dictionary[_pid].Threads;
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
             if (threads == null)

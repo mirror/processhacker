@@ -24,24 +24,44 @@ namespace ProcessHacker
 
         ~SharedThreadProvider()
         {
-            this.Dispose();
+            this.Dispose(false);
         }
 
         public void Dispose()
         {
-            lock (_disposeLock)
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            try
             {
+                if (disposing)
+                {
+                    Monitor.Enter(_disposeLock);
+                    Monitor.Enter(_providers);
+                }
+
                 if (!_disposed)
                 {
-                    _disposed = true;
-
                     _thread.Abort();
                     _thread = null;
 
-                    foreach (IProvider provider in _providers)
+                    IProvider[] providers = _providers.ToArray();
+
+                    foreach (IProvider provider in providers)
                         this.Remove(provider);
 
-                    GC.SuppressFinalize(this);
+                    _disposed = true;
+                }
+            }
+            finally
+            {
+                if (disposing)
+                {
+                    Monitor.Exit(_disposeLock);
+                    Monitor.Exit(_providers);
                 }
             }
         }

@@ -699,8 +699,8 @@ namespace ProcessHacker
                                     if ((processId = GetProcessId(processHandle)) == 0)
                                         ThrowLastWin32Error();
 
-                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
-                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                    if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
                                             " (" + processId.ToString() + ")";
                                     else
                                         info.BestName = "Non-existent process (" + processId.ToString() + ")";
@@ -728,8 +728,8 @@ namespace ProcessHacker
                                     if ((processId = GetProcessIdOfThread(threadHandle)) == 0)
                                         ThrowLastWin32Error();
 
-                                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(processId))
-                                        info.BestName = Program.HackerWindow.ProcessProvider.Dictionary[processId].Name +
+                                    if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
+                                        info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
                                             " (" + processId.ToString() + "): " + threadId.ToString();
                                     else
                                         info.BestName = "Non-existent process (" + processId.ToString() + "): " +

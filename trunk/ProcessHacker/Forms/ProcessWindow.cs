@@ -84,19 +84,19 @@ namespace ProcessHacker
                 ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
                 "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
                 "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
+                Program.ProcessProvider.TimeHistory[i].ToString();
             plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
             plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
             plotterMemory.GetToolTip = i =>
                 "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
                 "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
+                Program.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
             plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
             plotterIO.GetToolTip = i =>
                 "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
+                Program.ProcessProvider.TimeHistory[i].ToString();
         }
 
         public MenuItem WindowMenuItem
@@ -187,7 +187,7 @@ namespace ProcessHacker
                 textFileDescription.Text = "System Idle Process";
 
             // add our handler to the process provider
-            Program.HackerWindow.ProcessProvider.Updated += 
+            Program.ProcessProvider.Updated += 
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
             // HACK: Delay loading
@@ -262,7 +262,7 @@ namespace ProcessHacker
                 _processImage.Dispose();
             }
 
-            Program.HackerWindow.ProcessProvider.Updated -=
+            Program.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
             Properties.Settings.Default.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
@@ -397,10 +397,10 @@ namespace ProcessHacker
 
             if (_processItem.HasParent)
             {
-                if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPid))
+                if (Program.ProcessProvider.Dictionary.ContainsKey(_processItem.ParentPid))
                 {
                     textParent.Text =
-                        Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPid].Name +
+                        Program.ProcessProvider.Dictionary[_processItem.ParentPid].Name +
                         " (" + _processItem.ParentPid.ToString() + ")";
                 }
                 else
@@ -456,13 +456,20 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabJob);
             }
 
-            _serviceProps = new ServiceProperties(
-                Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
-                Program.HackerWindow.ProcessServices[_pid].ToArray() :
-                new string[0]);
-            _serviceProps.Dock = DockStyle.Fill;
-            _serviceProps.PID = _pid;
-            tabServices.Controls.Add(_serviceProps);
+            if (Program.HackerWindow != null)
+            {
+                _serviceProps = new ServiceProperties(
+                    Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
+                    Program.HackerWindow.ProcessServices[_pid].ToArray() :
+                    new string[0]);
+                _serviceProps.Dock = DockStyle.Fill;
+                _serviceProps.PID = _pid;
+                tabServices.Controls.Add(_serviceProps);
+            }
+            else
+            {
+                tabControl.TabPages.Remove(tabServices);
+            }
 
             listEnvironment.ListViewItemSorter = new SortedListComparer(listEnvironment);
             listEnvironment.SetDoubleBuffered(true);
@@ -746,7 +753,7 @@ namespace ProcessHacker
 
         private void UpdatePerformance()
         {
-            ProcessSystemProvider sysProvider = Program.HackerWindow.ProcessProvider;
+            ProcessSystemProvider sysProvider = Program.ProcessProvider;
 
             if (!sysProvider.Dictionary.ContainsKey(_pid))
                 return;
@@ -787,10 +794,10 @@ namespace ProcessHacker
 
         private void UpdateStatistics()
         {
-            if (!Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(_pid))
+            if (!Program.ProcessProvider.Dictionary.ContainsKey(_pid))
                 return;
 
-            ProcessItem item = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+            ProcessItem item = Program.ProcessProvider.Dictionary[_pid];
 
             labelCPUPriority.Text = item.Process.BasePriority.ToString();
             labelCPUKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
@@ -908,7 +915,7 @@ namespace ProcessHacker
             try
             {
                 ProcessWindow pForm = Program.GetProcessWindow(
-                    Program.HackerWindow.ProcessProvider.Dictionary[_processItem.ParentPid],
+                    Program.ProcessProvider.Dictionary[_processItem.ParentPid],
                     new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                     {
                         f.Show();

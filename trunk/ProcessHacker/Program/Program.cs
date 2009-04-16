@@ -86,6 +86,9 @@ namespace ProcessHacker
         public delegate void PWindowInvokeAction(ProcessWindow f);
         public delegate void UpdateWindowAction(Form f);
 
+        public static ProcessSystemProvider ProcessProvider;
+        public static ServiceProvider ServiceProvider;
+        public static NetworkProvider NetworkProvider;
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
         public static bool Aggressive = false;
@@ -130,7 +133,7 @@ namespace ProcessHacker
             try
             {
                 if (Properties.Settings.Default.AllowOnlyOneInstance && 
-                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o"))
+                    !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") || pArgs.ContainsKey("-pw"))
                     )
                     CheckForPreviousInstance();
             }
@@ -285,6 +288,45 @@ namespace ProcessHacker
                     return;
                 }
 
+                if (pArgs.ContainsKey("-pw") || true)
+                {
+                    pArgs["-pw"] = "4";
+                    int pid = int.Parse(pArgs["-pw"]);
+
+                    SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+                    SecondarySharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+
+                    ProcessProvider = new ProcessSystemProvider();
+                    ServiceProvider = new ServiceProvider();
+                    SharedThreadProvider.Add(ProcessProvider);
+                    SharedThreadProvider.Add(ServiceProvider);
+                    ProcessProvider.RunOnce();
+                    ServiceProvider.RunOnce();
+                    ProcessProvider.Enabled = true;
+                    ServiceProvider.Enabled = true;
+
+                    Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
+
+                    if (!ProcessProvider.Dictionary.ContainsKey(pid))
+                    {
+                        MessageBox.Show("The process (PID " + pid.ToString() + ") does not exist.",
+                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    ProcessWindow pw = new ProcessWindow(ProcessProvider.Dictionary[pid]);
+
+                    Application.Run(pw);
+
+                    SharedThreadProvider.Dispose();
+                    ProcessProvider.Dispose();
+                    ServiceProvider.Dispose();
+
+                    Environment.Exit(0);
+
+                    return;
+                }
+
                 if (pArgs.ContainsKey("-o"))
                 {
                     OptionsWindow options = new OptionsWindow(true)
@@ -337,6 +379,10 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 #endif
+
+            ProcessProvider = new ProcessSystemProvider();
+            ServiceProvider = new ServiceProvider();
+            NetworkProvider = new NetworkProvider();
 
             new HackerWindow();
             Application.Run();
@@ -970,7 +1016,8 @@ namespace ProcessHacker
                 }
             }
 
-            forms.Add(Program.HackerWindow);
+            if (Program.HackerWindow != null)
+                forms.Add(Program.HackerWindow);
 
             foreach (Form f in forms)
                 UpdateWindow(f);

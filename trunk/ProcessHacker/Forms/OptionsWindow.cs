@@ -394,7 +394,7 @@ namespace ProcessHacker
                 Program.ImposterNames.Add(s.Trim());
 
             Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
-            Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
 
@@ -405,7 +405,7 @@ namespace ProcessHacker
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.New] = Properties.Settings.Default.ColorNew;
             TreeNodeAdv.StateColors[TreeNodeAdv.NodeState.Removed] = Properties.Settings.Default.ColorRemoved;
 
-            Program.HackerWindow.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
+            Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.SharedThreadProvider.Interval = Properties.Settings.Default.RefreshInterval;

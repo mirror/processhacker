@@ -50,10 +50,9 @@ namespace ProcessHacker
 
         Thread sysInfoThread;
         public SysInfoWindow SysInfoWindow;
-
-        ProcessSystemProvider processP = new ProcessSystemProvider();
-        ServiceProvider serviceP = new ServiceProvider();
-        NetworkProvider networkP = new NetworkProvider();
+        ProcessSystemProvider processP;
+        ServiceProvider serviceP;
+        NetworkProvider networkP;
 
         Bitmap uacShieldIcon;
         UsageIcon cpuUsageIcon;
@@ -2284,6 +2283,9 @@ namespace ProcessHacker
         public HackerWindow()
         {
             Program.HackerWindow = this;
+            processP = Program.ProcessProvider;
+            serviceP = Program.ServiceProvider;
+            networkP = Program.NetworkProvider;
 
             this.LoadVerifySettings();
 

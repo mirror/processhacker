@@ -76,15 +76,15 @@ namespace ProcessHacker
 
             plotterCPU.BackColor = Color.FromArgb(255, 0, 0, 0);
             plotterCPU.Draw();
-            plotterCPU.Data1 = Program.HackerWindow.ProcessProvider.FloatHistory["Kernel"];      
-            plotterCPU.Data2 = Program.HackerWindow.ProcessProvider.FloatHistory["User"];
+            plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];      
+            plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
 
             plotterIO.BackColor = Color.FromArgb(255, 0, 0, 0);
             plotterIO.Draw();
-            plotterIO.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoReadOther];
-            plotterIO.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoWrite];
+            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
+            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
 
-            Program.HackerWindow.ProcessProvider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
 
         public void RenewTimer()
@@ -107,7 +107,7 @@ namespace ProcessHacker
 
         private void MiniSysInfo_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Program.HackerWindow.ProcessProvider.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
+            Program.ProcessProvider.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
 
         private void ProcessProvider_Updated()

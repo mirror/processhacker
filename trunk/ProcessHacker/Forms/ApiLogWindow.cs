@@ -173,8 +173,8 @@ namespace ProcessHacker.Forms
                 _items.Add(new string[]
                 {
                     DateTime.Now.ToString(),
-                    Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(pid) ? 
-                    Program.HackerWindow.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")" : 
+                    Program.ProcessProvider.Dictionary.ContainsKey(pid) ? 
+                    Program.ProcessProvider.Dictionary[pid].Name + " (" + pid.ToString() + ")" : 
                     "(" + pid.ToString() + ")",
                     function,
                     args.ToString()

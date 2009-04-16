@@ -31,9 +31,9 @@ namespace ProcessHacker
     public partial class SysInfoWindow : Form
     {
         private Components.Plotter[] _cpuPlotters;
-        private uint _noOfCPUs = Program.HackerWindow.ProcessProvider.System.NumberOfProcessors;
-        private uint _pages = (uint)Program.HackerWindow.ProcessProvider.System.NumberOfPhysicalPages;
-        private uint _pageSize = (uint)Program.HackerWindow.ProcessProvider.System.PageSize;
+        private uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
+        private uint _pages = (uint)Program.ProcessProvider.System.NumberOfPhysicalPages;
+        private uint _pageSize = (uint)Program.ProcessProvider.System.PageSize;
 
         public SysInfoWindow()
         {
@@ -42,27 +42,27 @@ namespace ProcessHacker
             this.Location = Properties.Settings.Default.SysInfoWindowLocation;
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
 
-            plotterCPU.Data1 = Program.HackerWindow.ProcessProvider.FloatHistory["Kernel"];
-            plotterCPU.Data2 = Program.HackerWindow.ProcessProvider.FloatHistory["User"];
+            plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
+            plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
             plotterCPU.GetToolTip = i => 
-                Program.HackerWindow.ProcessProvider.MostCpuHistory[i] + "\n" + 
+                Program.ProcessProvider.MostCpuHistory[i] + "\n" + 
                 ((plotterCPU.Data1[i] + plotterCPU.Data2[i]) * 100).ToString("N2") + 
                 "% (K " + (plotterCPU.Data1[i] * 100).ToString("N2") + 
                 "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)" + "\n" + 
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
-            plotterIO.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoReadOther];
-            plotterIO.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.IoWrite];
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
+            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
             plotterIO.GetToolTip = i =>
-                Program.HackerWindow.ProcessProvider.MostIoHistory[i] + "\n" +
+                Program.ProcessProvider.MostIoHistory[i] + "\n" +
                 "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.Commit];
-            plotterMemory.LongData2 = Program.HackerWindow.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterMemory.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.Commit];
+            plotterMemory.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
             plotterMemory.GetToolTip = i =>
                 "Commit: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
                 "Phys. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
-                Program.HackerWindow.ProcessProvider.TimeHistory[i].ToString();
+                Program.ProcessProvider.TimeHistory[i].ToString();
 
             // create a plotter per CPU
             _cpuPlotters = new Plotter[_noOfCPUs];
@@ -80,14 +80,14 @@ namespace ProcessHacker
                 plotter.Dock = DockStyle.Fill;
                 plotter.Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0);
                 plotter.UseSecondLine = true;
-                plotter.Data1 = Program.HackerWindow.ProcessProvider.FloatHistory[i.ToString() + " Kernel"];
-                plotter.Data2 = Program.HackerWindow.ProcessProvider.FloatHistory[i.ToString() + " User"];
+                plotter.Data1 = Program.ProcessProvider.FloatHistory[i.ToString() + " Kernel"];
+                plotter.Data2 = Program.ProcessProvider.FloatHistory[i.ToString() + " User"];
                 plotter.GetToolTip = j =>
-                    Program.HackerWindow.ProcessProvider.MostCpuHistory[j] + "\n" +
+                    Program.ProcessProvider.MostCpuHistory[j] + "\n" +
                     ((plotter.Data1[j] + plotter.Data2[j]) * 100).ToString("N2") +
                     "% (K " + (plotter.Data1[j] * 100).ToString("N2") +
                     "%, U " + (plotter.Data2[j] * 100).ToString("N2") + "%)" + "\n" +
-                    Program.HackerWindow.ProcessProvider.TimeHistory[j].ToString();
+                    Program.ProcessProvider.TimeHistory[j].ToString();
                 tableCPUs.Controls.Add(plotter, i, 0);
             }
 
@@ -101,7 +101,7 @@ namespace ProcessHacker
             this.UpdateGraphs();
             this.UpdateInfo();
 
-            Program.HackerWindow.ProcessProvider.Updated +=
+            Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
 
@@ -113,7 +113,7 @@ namespace ProcessHacker
                 Properties.Settings.Default.SysInfoWindowSize = this.Size;
             }
             
-            Program.HackerWindow.ProcessProvider.Updated -=
+            Program.ProcessProvider.Updated -=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
             Properties.Settings.Default.ShowOneGraphPerCPU = checkShowOneGraphPerCPU.Checked;   
         }
@@ -160,7 +160,7 @@ namespace ProcessHacker
 
         private void UpdateInfo()
         {
-            Win32.SYSTEM_PERFORMANCE_INFORMATION perfInfo = Program.HackerWindow.ProcessProvider.Performance;
+            Win32.SYSTEM_PERFORMANCE_INFORMATION perfInfo = Program.ProcessProvider.Performance;
             Win32.PERFORMANCE_INFORMATION info = new Win32.PERFORMANCE_INFORMATION();
 
             Win32.GetPerformanceInfo(ref info, System.Runtime.InteropServices.Marshal.SizeOf(info));
@@ -211,7 +211,7 @@ namespace ProcessHacker
             labelIOOB.Text = Misc.GetNiceSizeName(perfInfo.IoOtherTransferCount);
 
             labelCPUContextSwitches.Text = ((ulong)perfInfo.ContextSwitches).ToString("N0");
-            labelCPUInterrupts.Text = ((ulong)Program.HackerWindow.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");
+            labelCPUInterrupts.Text = ((ulong)Program.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");
             labelCPUSystemCalls.Text = ((ulong)perfInfo.SystemCalls).ToString("N0");
         }
 

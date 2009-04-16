@@ -208,17 +208,17 @@ namespace ProcessHacker.Components
             litem.Name = item.ID;
             litem.Tag = item.PID;
 
-            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(item.PID))
+            if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
             {
                 if (imageList.Images.ContainsKey(item.PID.ToString()))
                     imageList.Images.RemoveByKey(item.PID.ToString());
 
                 litem.ImageKey = item.PID.ToString();
-                imageList.Images.Add(item.PID.ToString(), Program.HackerWindow.ProcessProvider.Dictionary[item.PID].Icon);
+                imageList.Images.Add(item.PID.ToString(), Program.ProcessProvider.Dictionary[item.PID].Icon);
             }
 
-            if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(item.PID))
-                litem.Text = Program.HackerWindow.ProcessProvider.Dictionary[item.PID].Name;
+            if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
+                litem.Text = Program.ProcessProvider.Dictionary[item.PID].Name;
             else
                 litem.Text = "(" + item.PID.ToString() + ")";
 

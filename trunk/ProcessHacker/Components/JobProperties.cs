@@ -60,8 +60,8 @@ namespace ProcessHacker.Components
                 {
                     ListViewItem item = new ListViewItem();
 
-                    if (Program.HackerWindow.ProcessProvider.Dictionary.ContainsKey(pid))
-                        item.Text = Program.HackerWindow.ProcessProvider.Dictionary[pid].Name;
+                    if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
+                        item.Text = Program.ProcessProvider.Dictionary[pid].Name;
                     else
                         item.Text = "(unknown)";
 

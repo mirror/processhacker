@@ -49,7 +49,7 @@ namespace ProcessHacker
         private void ProcessPickerWindow_Load(object sender, EventArgs e)
         {
             treeProcesses.Tree.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Single;
-            treeProcesses.Provider = Program.HackerWindow.ProcessProvider;
+            treeProcesses.Provider = Program.ProcessProvider;
         }
 
         private void ProcessPickerWindow_FormClosing(object sender, FormClosingEventArgs e)

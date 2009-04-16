@@ -288,7 +288,7 @@ namespace ProcessHacker.Components
 
                         tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
                             short.Parse(listHandles.SelectedItems[0].Name),
-                            Program.HackerWindow.ProcessProvider.Dictionary[_pid].Name,
+                            Program.ProcessProvider.Dictionary[_pid].Name,
                             _pid);
                         tokForm.ShowDialog();
                     }

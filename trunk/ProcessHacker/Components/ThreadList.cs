@@ -95,7 +95,7 @@ namespace ProcessHacker.Components
                 try
                 {
                     int tid = int.Parse(listThreads.SelectedItems[0].Name);
-                    ProcessItem process = Program.HackerWindow.ProcessProvider.Dictionary[_pid];
+                    ProcessItem process = Program.ProcessProvider.Dictionary[_pid];
                     ProcessThread thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
                     string fileName;
 
