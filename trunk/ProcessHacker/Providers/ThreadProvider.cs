@@ -359,7 +359,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            if (_moduleLoadCompletedEvent.WaitOne(500))
+                            if (_moduleLoadCompletedEvent.WaitOne(500, false))
                             {
                                 item.StartAddress = this.GetThreadBasicStartAddress(item.StartAddressI);
                                 item.StartAddressLevel = SymbolResolveLevel.Module;
@@ -423,7 +423,7 @@ namespace ProcessHacker
 
                     if (newitem.StartAddressLevel == SymbolResolveLevel.Address)
                     {
-                        if (_moduleLoadCompletedEvent.WaitOne(0))
+                        if (_moduleLoadCompletedEvent.WaitOne(0, false))
                         {
                             newitem.StartAddress = this.GetThreadBasicStartAddress(newitem.StartAddressI);
                             newitem.StartAddressLevel = SymbolResolveLevel.Module;

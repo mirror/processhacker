@@ -173,6 +173,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\process.c"
+				>
+			</File>
+			<File
 				RelativePath=".\verify.c"
 				>
 			</File>
@@ -184,6 +188,10 @@
 			>
 			<File
 				RelativePath=".\nph.h"
+				>
+			</File>
+			<File
+				RelativePath=".\process.h"
 				>
 			</File>
 			<File
