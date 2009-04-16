@@ -6,6 +6,7 @@ Process Hacker
    * Aggressive mode (start with "-a" command line option)
    * Elevation button in Options now spawns a child options window instead of 
      restarting Process Hacker elevated
+   * Private, Shared and Shareable Working Set columns
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection
