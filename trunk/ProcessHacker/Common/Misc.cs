@@ -310,8 +310,10 @@ namespace ProcessHacker
                     if (kernel)
                         return ImageBases[i];
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
 
             return 0;
@@ -362,8 +364,10 @@ namespace ProcessHacker
                     if (kernel)
                         return realname;
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
 
             return "";
@@ -554,7 +558,7 @@ namespace ProcessHacker
                     foreach (string s in Misc.DangerousNames)
                     {
                         if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())), 
+                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())),
                             StringComparison.InvariantCultureIgnoreCase))
                         {
                             return true;
@@ -562,7 +566,8 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch { }
+            catch
+            { }
 
             return false;
         }

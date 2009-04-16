@@ -75,8 +75,10 @@ namespace ProcessHacker.Components
             {
                 this.Render(e.Graphics);
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         public void Render(Graphics g)
@@ -234,8 +236,10 @@ namespace ProcessHacker.Components
 
                         _lastToolTip = currentToolTip;
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
                 else
                 {

@@ -346,7 +346,10 @@ namespace ProcessHacker
                                 _treeModel.Remove(item);
                                 this.RefreshItems();
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
                         }));
 
                         treeProcesses.Invalidate();
@@ -368,8 +371,10 @@ namespace ProcessHacker
 
                         node.BackColor = this.GetProcessColor(item);
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
             }
         }

@@ -350,8 +350,10 @@ namespace ProcessHacker.Components
                             f.Show();
                             f.Activate();
                         }
-                        catch
-                        { }
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
+                        }
                     }));
             }
             catch (Exception ex)

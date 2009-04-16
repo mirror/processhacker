@@ -116,8 +116,10 @@ namespace ProcessHacker
                 {
                     _tree.FindTreeNode(n).ExpandAll();
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
 
             _tree.Invalidate();

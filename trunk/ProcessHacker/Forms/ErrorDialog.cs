@@ -64,8 +64,10 @@ namespace ProcessHacker
             {
                 Properties.Settings.Default.Save();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             Win32.ExitProcess(1);
         }

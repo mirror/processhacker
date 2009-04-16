@@ -243,8 +243,10 @@ namespace ProcessHacker
                     {
                         f.Show();
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }));
             }
         }
@@ -475,8 +477,10 @@ namespace ProcessHacker
 
                 tabControl.SelectedTab = tabProcesses;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
@@ -740,8 +744,10 @@ namespace ProcessHacker
                     if (processP.Dictionary[processSelectedPID].SessionId != Program.CurrentSessionId)
                         injectDllProcessMenuItem.Enabled = false;
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
             else
             {
@@ -950,8 +956,10 @@ namespace ProcessHacker
                 affForm.TopMost = this.TopMost;
                 affForm.ShowDialog();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
@@ -1021,8 +1029,10 @@ namespace ProcessHacker
                 run.TopMost = this.TopMost;
                 run.ShowDialog();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void launchAsThisUserProcessMenuItem_Click(object sender, EventArgs e)
@@ -1035,8 +1045,10 @@ namespace ProcessHacker
                 run.UsePID(processSelectedPID);
                 run.ShowDialog();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         #endregion
@@ -1177,8 +1189,10 @@ namespace ProcessHacker
             {
                 processP.QueueFileProcessing(processSelectedPID);
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }   
 
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
@@ -1250,8 +1264,10 @@ namespace ProcessHacker
 
                     parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
 
             this.QueueMessage("New Process: " + item.Name + " (PID " + item.PID.ToString() + ")" + parentText, item.Icon);
@@ -1533,8 +1549,10 @@ namespace ProcessHacker
 
                 tabControl.SelectedTab = tabProcesses;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void startServiceMenuItem_Click(object sender, EventArgs e)
@@ -2069,8 +2087,10 @@ namespace ProcessHacker
             {
                 var a = Properties.Settings.Default.AlwaysOnTop;
             }
-            catch
+            catch (Exception ex)
             {
+                Logging.Log(ex);
+
                 if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
                     "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Exclamation) == DialogResult.Yes)
@@ -2082,8 +2102,10 @@ namespace ProcessHacker
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         Process.Start(Application.ExecutablePath);
                     }
-                    catch
+                    catch (Exception ex2)
                     {
+                        Logging.Log(ex2);
+
                         MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
                             "'wj32' in your Application Data/Local Application Data directories.",
                             "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

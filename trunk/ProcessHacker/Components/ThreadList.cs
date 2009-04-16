@@ -498,13 +498,15 @@ namespace ProcessHacker.Components
             try
             {
                 (new ThreadWindow(
-                    _pid, 
-                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
+                    _pid,
+                    Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
                     _provider.Symbols)
                     ).ShowDialog(this);
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
@@ -698,8 +700,10 @@ namespace ProcessHacker.Components
                                 sw.Show();
                                 sw.Activate();
                             }
-                            catch
-                            { }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
                         }));
                 }
             }

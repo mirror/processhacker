@@ -146,8 +146,9 @@ namespace ProcessHacker
                     {
                         Properties.Settings.Default.Upgrade();
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Logging.Log(ex);
                         MessageBox.Show("Process Hacker could not upgrade its settings from a previous version.", "Process Hacker",
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
@@ -232,8 +233,10 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             CurrentUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 
@@ -250,8 +253,10 @@ namespace ProcessHacker
                 CurrentSessionId = Win32.GetProcessSessionId(System.Diagnostics.Process.GetCurrentProcess().Id);
                 System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             {
                 if (pArgs.ContainsKey("-a"))
@@ -565,11 +570,13 @@ namespace ProcessHacker
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            Logging.Log(e.ExceptionObject as Exception);
             UnhandledException(e.ExceptionObject as Exception);
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
+            Logging.Log(e.Exception as Exception);
             UnhandledException(e.Exception);
         }
 

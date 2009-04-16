@@ -49,7 +49,7 @@ namespace ProcessHacker
                 try
                 {
                     string filename = "";
-                                                                                          
+
                     if (pNode.PID == 4)
                     {
                         filename = Misc.GetRealPath(Misc.GetKernelFileName());
@@ -73,9 +73,9 @@ namespace ProcessHacker
 
                 string runDllText = "";
 
-                if (pNode.ProcessItem.FileName != null && 
-                    pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\rundll32.exe", 
-                    StringComparison.InvariantCultureIgnoreCase) && 
+                if (pNode.ProcessItem.FileName != null &&
+                    pNode.ProcessItem.FileName.Equals(Environment.SystemDirectory + "\\rundll32.exe",
+                    StringComparison.InvariantCultureIgnoreCase) &&
                     pNode.ProcessItem.CmdLine != null)
                 {
                     try
@@ -87,14 +87,16 @@ namespace ProcessHacker
                         if (!targetFile.Contains(":"))
                             targetFile = Environment.SystemDirectory + "\\" + targetFile;
 
-                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(targetFile); 
+                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(targetFile);
 
                         runDllText = "\nRunDLL target:\n    " + info.FileName + "\n    " +
                             info.FileDescription + " " + info.FileVersion + "\n    " +
                             info.CompanyName;
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
 
                 string dllhostText = "";
@@ -115,12 +117,14 @@ namespace ProcessHacker
 
                         FileVersionInfo info = FileVersionInfo.GetVersionInfo(Environment.ExpandEnvironmentVariables(fileName));
 
-                        dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " + 
+                        dllhostText = "\nCOM Target:\n    " + name + " (" + clsid.ToUpper() + ")\n    " +
                             info.FileName + "\n    " +
                             info.FileDescription + " " + info.FileVersion + "\n    " + info.CompanyName;
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
 
                 string servicesText = "";
@@ -148,8 +152,10 @@ namespace ProcessHacker
                         servicesText = "\nServices:\n" + servicesText.TrimEnd('\n');
                     }
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
 
                 string otherNotes = "";
 
@@ -193,13 +199,17 @@ namespace ProcessHacker
                     if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
 
                 return (cmdText + fileText + otherNotes + runDllText + dllhostText + servicesText).Trim(' ', '\n', '\r');
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             return string.Empty;
         }

@@ -321,6 +321,7 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
+    <Compile Include="Program\Logging.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Common\ByteStreamReader.cs" />
     <Compile Include="Common\CircularBuffer.cs" />
