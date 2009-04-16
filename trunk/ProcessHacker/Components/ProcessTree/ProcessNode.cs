@@ -37,7 +37,7 @@ namespace ProcessHacker
         public ProcessNode(ProcessItem pitem)
         {
             _pitem = pitem;
-            this.Tag = pitem.PID;
+            this.Tag = pitem.Pid;
 
             if (_pitem.Icon == null)
             {
@@ -151,8 +151,8 @@ namespace ProcessHacker
         {
             get
             {
-                if (_pitem.PID >= 0)
-                    return _pitem.PID.ToString();
+                if (_pitem.Pid >= 0)
+                    return _pitem.Pid.ToString();
                 else
                     return "";
             }
@@ -160,12 +160,12 @@ namespace ProcessHacker
 
         public int PID
         {
-            get { return _pitem.PID; }
+            get { return _pitem.Pid; }
         }
 
         public int PPID
         {
-            get { if (_pitem.PID == _pitem.ParentPid) return -1; else return _pitem.ParentPid; }
+            get { if (_pitem.Pid == _pitem.ParentPid) return -1; else return _pitem.ParentPid; }
         }
 
         public string PvtMemory
@@ -175,12 +175,72 @@ namespace ProcessHacker
 
         public string WorkingSet
         {
-            get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.WorkingSetSize); }
+            get
+            {
+                return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.WorkingSetSize);
+            }
         }
 
         public string PeakWorkingSet
         {
             get { return Misc.GetNiceSizeName(_pitem.Process.VirtualMemoryCounters.PeakWorkingSetSize); }
+        }
+
+        private int GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS WsInformationClass)
+        {
+            int wsInfo;
+            int retLen;
+
+            try
+            {
+                using (var phandle = new Win32.ProcessHandle(_pitem.Pid,
+                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                {
+                    if ((retLen = NProcessHacker.PhpQueryProcessWs(phandle, WsInformationClass, out wsInfo,
+                        4, out retLen)) == 0)
+                        return wsInfo * Program.ProcessProvider.System.PageSize;
+                }
+            }
+            catch
+            { }
+
+            return 0;
+        }
+
+        public int WorkingSetNumber
+        {
+            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsCount); }
+        }
+
+        public int PrivateWorkingSetNumber
+        {
+            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsPrivateCount); }
+        }
+
+        public string PrivateWorkingSet
+        {
+            get { return Misc.GetNiceSizeName(this.PrivateWorkingSetNumber); }
+        }
+
+        public int SharedWorkingSetNumber
+        {
+            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsSharedCount); }
+        }
+
+        public string SharedWorkingSet
+        {
+            get { return Misc.GetNiceSizeName(this.SharedWorkingSetNumber); }
+        }
+
+        public int ShareableWorkingSetNumber
+        {
+            get { return this.GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS.WsShareableCount); }
+        }
+
+        public string ShareableWorkingSet
+        {
+            get { return Misc.GetNiceSizeName(this.ShareableWorkingSetNumber); }
         }
 
         public string VirtualSize

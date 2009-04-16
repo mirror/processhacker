@@ -43,7 +43,7 @@ namespace ProcessHacker
             return base.MemberwiseClone();
         }
 
-        public int PID;
+        public int Pid;
 
         public Icon Icon;
         public string CmdLine;
@@ -542,7 +542,7 @@ namespace ProcessHacker
                         catch { }
                     }
 
-                    item.PID = pid;
+                    item.Pid = pid;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
                     item.Threads = procs[pid].Threads;

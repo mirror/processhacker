@@ -31,7 +31,6 @@ typedef enum _WS_INFORMATION_CLASS
     WsPrivateCount,
     WsSharedCount,
     WsShareableCount,
-    WsLockedCount,
     WsAllCounts
 } WS_INFORMATION_CLASS, *PWS_INFORMATION_CLASS;
 
@@ -41,7 +40,6 @@ typedef struct _WS_ALL_COUNTS
     ULONG PrivateCount;
     ULONG SharedCount;
     ULONG ShareableCount;
-    ULONG LockedCount;
 } WS_ALL_COUNTS, *PWS_ALL_COUNTS;
 
 #endif

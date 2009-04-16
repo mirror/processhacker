@@ -48,14 +48,14 @@ namespace ProcessHacker
             else
                 _roots.Add(itemNode);
 
-            _processes.Add(item.PID, itemNode);
+            _processes.Add(item.Pid, itemNode);
 
             ProcessNode[] rootNodes = _roots.ToArray();
 
             // find this process' children
             foreach (ProcessNode node in rootNodes)
             {
-                if (node.ProcessItem.HasParent && node.PPID == item.PID)
+                if (node.ProcessItem.HasParent && node.PPID == item.Pid)
                 {
                     _roots.Remove(node);
                     itemNode.Children.Add(node);
@@ -67,7 +67,7 @@ namespace ProcessHacker
 
         public void Modify(ProcessItem oldItem, ProcessItem newItem)
         {
-            ProcessNode node = _processes[newItem.PID];
+            ProcessNode node = _processes[newItem.Pid];
 
             node.ProcessItem = newItem;
 
@@ -79,7 +79,7 @@ namespace ProcessHacker
 
         public void Remove(ProcessItem item)
         {
-            ProcessNode targetNode = _processes[item.PID];
+            ProcessNode targetNode = _processes[item.Pid];
             ProcessNode[] nodes = _roots.ToArray();
             ProcessNode[] targetChildren = null;
 
@@ -87,7 +87,7 @@ namespace ProcessHacker
 
             foreach (ProcessNode node in nodes)
             {
-                if (node.PID == item.PID)
+                if (node.PID == item.Pid)
                 {
                     _roots.Remove(node);
                     this.MoveChildrenToRoot(node);
@@ -107,7 +107,7 @@ namespace ProcessHacker
                 }
             }
 
-            _processes.Remove(item.PID);
+            _processes.Remove(item.Pid);
             this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
 
             foreach (ProcessNode n in targetChildren)

@@ -34,6 +34,7 @@
             this.columnPvtMemory = new Aga.Controls.Tree.TreeColumn();
             this.columnWorkingSet = new Aga.Controls.Tree.TreeColumn();
             this.columnPeakWorkingSet = new Aga.Controls.Tree.TreeColumn();
+            this.columnPrivateWorkingSet = new Aga.Controls.Tree.TreeColumn();
             this.columnVirtualSize = new Aga.Controls.Tree.TreeColumn();
             this.columnPeakVirtualSize = new Aga.Controls.Tree.TreeColumn();
             this.columnPagefileUsage = new Aga.Controls.Tree.TreeColumn();
@@ -80,6 +81,11 @@
             this.nodeIoTotal = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeIoReadOther = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeIoWrite = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePrivateWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnSharedWorkingSet = new Aga.Controls.Tree.TreeColumn();
+            this.columnShareableWorkingSet = new Aga.Controls.Tree.TreeColumn();
+            this.nodeSharedWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeShareableWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -91,6 +97,9 @@
             this.treeProcesses.Columns.Add(this.columnPvtMemory);
             this.treeProcesses.Columns.Add(this.columnWorkingSet);
             this.treeProcesses.Columns.Add(this.columnPeakWorkingSet);
+            this.treeProcesses.Columns.Add(this.columnPrivateWorkingSet);
+            this.treeProcesses.Columns.Add(this.columnSharedWorkingSet);
+            this.treeProcesses.Columns.Add(this.columnShareableWorkingSet);
             this.treeProcesses.Columns.Add(this.columnVirtualSize);
             this.treeProcesses.Columns.Add(this.columnPeakVirtualSize);
             this.treeProcesses.Columns.Add(this.columnPagefileUsage);
@@ -129,6 +138,9 @@
             this.treeProcesses.NodeControls.Add(this.nodePeakWorkingSet);
             this.treeProcesses.NodeControls.Add(this.nodeVirtualSize);
             this.treeProcesses.NodeControls.Add(this.nodePeakVirtualSize);
+            this.treeProcesses.NodeControls.Add(this.nodePrivateWorkingSet);
+            this.treeProcesses.NodeControls.Add(this.nodeSharedWorkingSet);
+            this.treeProcesses.NodeControls.Add(this.nodeShareableWorkingSet);
             this.treeProcesses.NodeControls.Add(this.nodePagefileUsage);
             this.treeProcesses.NodeControls.Add(this.nodePeakPagefileUsage);
             this.treeProcesses.NodeControls.Add(this.nodePageFaults);
@@ -201,6 +213,16 @@
             this.columnPeakWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnPeakWorkingSet.TooltipText = null;
             this.columnPeakWorkingSet.Width = 70;
+            // 
+            // columnPrivateWorkingSet
+            // 
+            this.columnPrivateWorkingSet.Header = "Private WS";
+            this.columnPrivateWorkingSet.IsVisible = false;
+            this.columnPrivateWorkingSet.Sortable = true;
+            this.columnPrivateWorkingSet.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPrivateWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnPrivateWorkingSet.TooltipText = null;
+            this.columnPrivateWorkingSet.Width = 70;
             // 
             // columnVirtualSize
             // 
@@ -640,6 +662,56 @@
             this.nodeIoWrite.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeIoWrite.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodePrivateWorkingSet
+            // 
+            this.nodePrivateWorkingSet.DataPropertyName = "PrivateWorkingSet";
+            this.nodePrivateWorkingSet.EditEnabled = false;
+            this.nodePrivateWorkingSet.IncrementalSearchEnabled = true;
+            this.nodePrivateWorkingSet.LeftMargin = 3;
+            this.nodePrivateWorkingSet.ParentColumn = this.columnPrivateWorkingSet;
+            this.nodePrivateWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePrivateWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // columnSharedWorkingSet
+            // 
+            this.columnSharedWorkingSet.Header = "Shared WS";
+            this.columnSharedWorkingSet.IsVisible = false;
+            this.columnSharedWorkingSet.Sortable = true;
+            this.columnSharedWorkingSet.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnSharedWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnSharedWorkingSet.TooltipText = null;
+            this.columnSharedWorkingSet.Width = 70;
+            // 
+            // columnShareableWorkingSet
+            // 
+            this.columnShareableWorkingSet.Header = "Shareable WS";
+            this.columnShareableWorkingSet.IsVisible = false;
+            this.columnShareableWorkingSet.Sortable = true;
+            this.columnShareableWorkingSet.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnShareableWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnShareableWorkingSet.TooltipText = null;
+            this.columnShareableWorkingSet.Width = 70;
+            // 
+            // nodeSharedWorkingSet
+            // 
+            this.nodeSharedWorkingSet.DataPropertyName = "SharedWorkingSet";
+            this.nodeSharedWorkingSet.EditEnabled = false;
+            this.nodeSharedWorkingSet.IncrementalSearchEnabled = true;
+            this.nodeSharedWorkingSet.LeftMargin = 3;
+            this.nodeSharedWorkingSet.ParentColumn = this.columnSharedWorkingSet;
+            this.nodeSharedWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeSharedWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeShareableWorkingSet
+            // 
+            this.nodeShareableWorkingSet.DataPropertyName = "ShareableWorkingSet";
+            this.nodeShareableWorkingSet.EditEnabled = false;
+            this.nodeShareableWorkingSet.IncrementalSearchEnabled = true;
+            this.nodeShareableWorkingSet.LeftMargin = 3;
+            this.nodeShareableWorkingSet.ParentColumn = this.columnShareableWorkingSet;
+            this.nodeShareableWorkingSet.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeShareableWorkingSet.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -706,5 +778,11 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoTotal;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoReadOther;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoWrite;
+        private Aga.Controls.Tree.TreeColumn columnPrivateWorkingSet;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodePrivateWorkingSet;
+        private Aga.Controls.Tree.TreeColumn columnSharedWorkingSet;
+        private Aga.Controls.Tree.TreeColumn columnShareableWorkingSet;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeSharedWorkingSet;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeShareableWorkingSet;
     }
 }

@@ -265,8 +265,8 @@ namespace ProcessHacker
             else if (Properties.Settings.Default.UseColorPackedProcesses && p.IsPacked)
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Properties.Settings.Default.UseColorServiceProcesses && 
-                Program.HackerWindow.ProcessServices.ContainsKey(p.PID) &&
-                Program.HackerWindow.ProcessServices[p.PID].Count > 0)
+                Program.HackerWindow.ProcessServices.ContainsKey(p.Pid) &&
+                Program.HackerWindow.ProcessServices[p.Pid].Count > 0)
                 return Properties.Settings.Default.ColorServiceProcesses;
             else if (Properties.Settings.Default.UseColorSystemProcesses && p.Username == "NT AUTHORITY\\SYSTEM")
                 return Properties.Settings.Default.ColorSystemProcesses;
@@ -284,7 +284,7 @@ namespace ProcessHacker
                 {
                     _treeModel.Add(item);
 
-                    TreeNodeAdv node = this.FindTreeNode(item.PID);
+                    TreeNodeAdv node = this.FindTreeNode(item.Pid);
 
                     if (node != null)
                     {
@@ -316,7 +316,7 @@ namespace ProcessHacker
 
                     if (newItem.FullUpdate)
                     {
-                        TreeNodeAdv node = this.FindTreeNode(newItem.PID);
+                        TreeNodeAdv node = this.FindTreeNode(newItem.Pid);
 
                         if (node != null)
                         {
@@ -333,7 +333,7 @@ namespace ProcessHacker
             {
                 lock (_listLock)
                 {
-                    TreeNodeAdv node = this.FindTreeNode(item.PID);
+                    TreeNodeAdv node = this.FindTreeNode(item.Pid);
 
                     if (node != null)
                     {

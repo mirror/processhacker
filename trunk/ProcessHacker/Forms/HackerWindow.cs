@@ -511,7 +511,7 @@ namespace ProcessHacker
             {
                 foreach (var process in processP.Dictionary.Values)
                 {
-                    if (process.PID > 0)
+                    if (process.Pid > 0)
                     {
                         processes.Add(process);
                     }
@@ -548,14 +548,14 @@ namespace ProcessHacker
                     MenuItem resumeItem = new MenuItem();
                     MenuItem propertiesItem = new MenuItem();
 
-                    processItem.Text = process.Name + " (" + process.PID.ToString() + ")";
+                    processItem.Text = process.Name + " (" + process.Pid.ToString() + ")";
                     processItem.Tag = process;
 
                     terminateItem.Click += new EventHandler((sender_, e_) =>
                     {
                         ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                        ProcessActions.Terminate(this, new int[] { item.PID }, new string[] { item.Name }, true);
+                        ProcessActions.Terminate(this, new int[] { item.Pid }, new string[] { item.Name }, true);
                     });
                     terminateItem.Text = "Terminate";
 
@@ -563,7 +563,7 @@ namespace ProcessHacker
                     {
                         ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                        ProcessActions.Suspend(this, new int[] { item.PID }, new string[] { item.Name }, true);
+                        ProcessActions.Suspend(this, new int[] { item.Pid }, new string[] { item.Name }, true);
                     });
                     suspendItem.Text = "Suspend";
 
@@ -571,7 +571,7 @@ namespace ProcessHacker
                     {
                         ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                        ProcessActions.Resume(this, new int[] { item.PID }, new string[] { item.Name }, true);
+                        ProcessActions.Resume(this, new int[] { item.Pid }, new string[] { item.Name }, true);
                     });
                     resumeItem.Text = "Resume";
 
@@ -581,7 +581,7 @@ namespace ProcessHacker
                         {
                             ProcessItem item = (ProcessItem)((MenuItem)sender_).Parent.Tag;
 
-                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[item.PID],
+                            ProcessWindow pForm = Program.GetProcessWindow(processP.Dictionary[item.Pid],
                                 new Program.PWindowInvokeAction(delegate(ProcessWindow f)
                             {
                                 f.Show();
@@ -599,7 +599,7 @@ namespace ProcessHacker
                     processItem.MenuItems.AddRange(new MenuItem[] { terminateItem, suspendItem, resumeItem, propertiesItem });
                     processesMenuItem.MenuItems.Add(processItem);
 
-                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.PID].Icon);
+                    vistaMenu.SetImage(processItem, (treeProcesses.Tree.Model as ProcessTreeModel).Nodes[process.Pid].Icon);
                 }
             }
             catch
@@ -1261,7 +1261,7 @@ namespace ProcessHacker
                 {
                     parent = processP.Dictionary[item.ParentPid];
 
-                    parentText += " started by " + parent.Name + " (PID " + parent.PID.ToString() + ")";
+                    parentText += " started by " + parent.Name + " (PID " + parent.Pid.ToString() + ")";
                 }
                 catch (Exception ex)
                 {
@@ -1269,25 +1269,25 @@ namespace ProcessHacker
                 }
             }
 
-            this.QueueMessage("New Process: " + item.Name + " (PID " + item.PID.ToString() + ")" + parentText, item.Icon);
+            this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText, item.Icon);
 
             if (NPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "New Process",
-                    "The process " + item.Name + " (" + item.PID.ToString() + 
+                    "The process " + item.Name + " (" + item.Pid.ToString() + 
                     ") was started" + ((parentText != "") ? " by " + 
-                    parent.Name + " (PID " + parent.PID.ToString() + ")" : "") + ".", ToolTipIcon.Info);
+                    parent.Name + " (PID " + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
         }
 
         public void processP_DictionaryRemoved(ProcessItem item)
         {
-            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.PID.ToString() + ")", null);
+            this.QueueMessage("Terminated Process: " + item.Name + " (PID " + item.Pid.ToString() + ")", null);
 
-            if (processServices.ContainsKey(item.PID))
-                processServices.Remove(item.PID);
+            if (processServices.ContainsKey(item.Pid))
+                processServices.Remove(item.Pid);
 
             if (TPMenuItem.Checked)
                 notifyIcon.ShowBalloonTip(2000, "Terminated Process",
-                    "The process " + item.Name + " (" + item.PID.ToString() + ") was terminated.", ToolTipIcon.Info);
+                    "The process " + item.Name + " (" + item.Pid.ToString() + ") was terminated.", ToolTipIcon.Info);
         }
 
         private void serviceP_Updated()

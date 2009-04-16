@@ -21,7 +21,7 @@
 
 #include "process.h"
 
-NTSTATUS PhpQueryProcessWs(
+NPHAPI NTSTATUS PhpQueryProcessWs(
     HANDLE ProcessHandle,
     WS_INFORMATION_CLASS WsInformationClass,
     PVOID WsInformation,
@@ -32,25 +32,22 @@ NTSTATUS PhpQueryProcessWs(
     switch (WsInformationClass)
     {
     case WsCount:
-    case WsValidCount:
     case WsPrivateCount:
     case WsSharedCount:
     case WsShareableCount:
-    case WsLockedCount:
         if (WsInformationLength < 4)
             return STATUS_BUFFER_TOO_SMALL;
+		goto WsCounters;
     case WsAllCounts:
         if (WsInformationLength < sizeof(WS_ALL_COUNTS))
             return STATUS_BUFFER_TOO_SMALL;
-
+WsCounters:
         {
             PROCESS_MEMORY_COUNTERS procMem;
             ULONG count = 0;
-            ULONG validCount = 0;
             ULONG privateCount = 0;
             ULONG sharedCount = 0;
             ULONG shareableCount = 0;
-            ULONG lockedCount = 0;
             PPSAPI_WORKING_SET_INFORMATION wsInfo;
             ULONG wsInfoLength;
             ULONG i;
@@ -75,10 +72,46 @@ NTSTATUS PhpQueryProcessWs(
 
                 count++;
 
-                if (block.
+                if (block.ShareCount > 1)
+					sharedCount++;
+				if (block.ShareCount == 0)
+					privateCount++;
+				if (block.Shared)
+					shareableCount++;
             }
+
+			PhFree(wsInfo);
+
+			switch (WsInformationClass)
+			{
+		    case WsCount:
+				*(PULONG)WsInformation = count;
+				break;
+			case WsPrivateCount:
+				*(PULONG)WsInformation = privateCount;
+				break;
+			case WsSharedCount:
+				*(PULONG)WsInformation = sharedCount;
+				break;
+			case WsShareableCount:
+				*(PULONG)WsInformation = shareableCount;
+				break;
+			case WsAllCounts:
+				{
+					PWS_ALL_COUNTS allCounts = (PWS_ALL_COUNTS)WsInformation;
+
+					allCounts->Count = count;
+					allCounts->PrivateCount = privateCount;
+					allCounts->SharedCount = sharedCount;
+					allCounts->ShareableCount = shareableCount;
+					break;
+				}
+			}
+
+			return STATUS_SUCCESS;
         }
-    default:
+		break;
+    default: 
         return STATUS_INVALID_PARAMETER;
     }
 }

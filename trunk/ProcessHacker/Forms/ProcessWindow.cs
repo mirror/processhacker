@@ -55,7 +55,7 @@ namespace ProcessHacker
             InitializeComponent();
 
             _processItem = process;
-            _pid = process.PID;
+            _pid = process.Pid;
 
             this.Text = process.Name + " (PID " + _pid.ToString() + ")";
 
@@ -844,7 +844,7 @@ namespace ProcessHacker
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            ProcessActions.Terminate(this, new int[] { _processItem.PID }, new string[] { _processItem.Name }, true);
+            ProcessActions.Terminate(this, new int[] { _processItem.Pid }, new string[] { _processItem.Name }, true);
         }
 
         private void buttonEditDEP_Click(object sender, EventArgs e)

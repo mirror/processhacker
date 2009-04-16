@@ -29,7 +29,43 @@ namespace ProcessHacker
 {
     public class NProcessHacker
     {
+        public enum WS_INFORMATION_CLASS
+        {
+            WsCount = 0,
+            WsPrivateCount,
+            WsSharedCount,
+            WsShareableCount,
+            WsAllCounts
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WS_ALL_COUNTS
+        {
+            public int Count;
+            public int PrivateCount;
+            public int SharedCount;
+            public int ShareableCount;
+        }
+
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern Win32.VerifyResult PhvVerifyFile(string FileName);
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern int PhpQueryProcessWs(
+            int ProcessHandle,
+            WS_INFORMATION_CLASS WsInformationClass,
+            out int WsInformation,
+            int WsInformationLength,
+            out int ReturnLength
+            );
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern int PhpQueryProcessWs(
+            int ProcessHandle,
+            WS_INFORMATION_CLASS WsInformationClass,
+            out WS_ALL_COUNTS WsInformation,
+            int WsInformationLength,
+            out int ReturnLength
+            );
     }
 }

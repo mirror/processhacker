@@ -911,9 +911,9 @@ namespace ProcessHacker
         {
             ProcessWindow pw = null;
 
-            if (PWindows.ContainsKey(process.PID))
+            if (PWindows.ContainsKey(process.Pid))
             {
-                pw = PWindows[process.PID];
+                pw = PWindows[process.Pid];
 
                 pw.Invoke(action, pw);
 
@@ -935,13 +935,13 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    Program.PThreads.Remove(process.PID);
+                    Program.PThreads.Remove(process.Pid);
                 }));
 
                 t.SetApartmentState(ApartmentState.STA);
                 t.Start();
 
-                Program.PThreads.Add(process.PID, t);
+                Program.PThreads.Add(process.Pid, t);
             }
             else
             {
