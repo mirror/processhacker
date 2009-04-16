@@ -131,7 +131,7 @@ namespace ProcessHacker.UI.Actions
                     TaskDialog td = new TaskDialog();
 
                     td.WindowTitle = "Process Hacker";
-                    td.MainIcon = TaskDialogIcon.Shield;
+                    td.MainIcon = TaskDialogIcon.Warning;
                     td.MainInstruction = "Do you want to elevate the action?";
                     td.Content = "The action cannot be performed in the current security context. " +
                         "Do you want Process Hacker to prompt for the appropriate credentials and elevate the action?";

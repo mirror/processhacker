@@ -213,8 +213,17 @@ namespace ProcessHacker.Components
                 if (imageList.Images.ContainsKey(item.PID.ToString()))
                     imageList.Images.RemoveByKey(item.PID.ToString());
 
-                litem.ImageKey = item.PID.ToString();
-                imageList.Images.Add(item.PID.ToString(), Program.ProcessProvider.Dictionary[item.PID].Icon);
+                var icon = Program.ProcessProvider.Dictionary[item.PID].Icon;
+
+                if (icon != null)
+                {
+                    imageList.Images.Add(item.PID.ToString(), icon);
+                    litem.ImageKey = item.PID.ToString();
+                }
+                else
+                {
+                    litem.ImageKey = "generic_process";
+                }
             }
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
@@ -279,12 +288,19 @@ namespace ProcessHacker.Components
             ListViewItem litem = listNetwork.Items[item.ID];
             bool imageStillUsed = false;
 
-            foreach (ListViewItem lvItem in listNetwork.Items)
+            if (litem.ImageKey == "generic_process")
             {
-                if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                imageStillUsed = true;
+            }
+            else
+            {
+                foreach (ListViewItem lvItem in listNetwork.Items)
                 {
-                    imageStillUsed = true;
-                    break;
+                    if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                    {
+                        imageStillUsed = true;
+                        break;
+                    }
                 }
             }
 

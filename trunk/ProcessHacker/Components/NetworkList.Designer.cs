@@ -33,6 +33,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NetworkList));
             this.listNetwork = new System.Windows.Forms.ListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnLocal = new System.Windows.Forms.ColumnHeader();
@@ -91,9 +92,9 @@
             // 
             // imageList
             // 
-            this.imageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "generic_process");
             // 
             // NetworkList
             // 
