@@ -208,7 +208,7 @@ namespace ProcessHacker
 
             if (KPH != null)
             {
-                //MinProcessGetHandleInformationRights = MinProcessQueryRights;
+                MinProcessGetHandleInformationRights = MinProcessQueryRights;
             }
 
             if (KPH != null && WindowsVersion == WindowsVersion.Vista)

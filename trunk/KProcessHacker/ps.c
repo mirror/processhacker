@@ -378,7 +378,7 @@ NTSTATUS KphResumeProcess(
     if (PsResumeProcess == NULL)
         return STATUS_NOT_SUPPORTED;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -419,7 +419,7 @@ NTSTATUS KphSuspendProcess(
     if (PsSuspendProcess == NULL)
         return STATUS_NOT_SUPPORTED;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -441,7 +441,7 @@ NTSTATUS KphTerminateProcess(
     CLIENT_ID clientId;
     HANDLE newProcessHandle;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, 0, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
     
     if (!NT_SUCCESS(status))
         return status;

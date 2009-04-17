@@ -290,8 +290,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphGetThreadWin32Thread";
     else if (ControlCode == KPH_DUPLICATEOBJECT)
         return "KphDuplicateObject";
-    else if (ControlCode == KPH_GETOBJECTTYPENAME)
-        return "Get Object Type Name";
+    else if (ControlCode == KPH_ZWQUERYOBJECT)
+        return "ZwQueryObject";
     else
         return "Unknown";
 }
@@ -796,7 +796,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processHandle = *(HANDLE *)dataBuffer;
             handle = *(HANDLE *)(dataBuffer + 4);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, NULL);
+            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -808,7 +808,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             ObDereferenceObject(processObject);
-            status = ObReferenceObjectByHandle(handle, 0, 0, KernelMode, &object, NULL);
+            status = ObReferenceObjectByHandle(handle, 0, NULL, KernelMode, &object, NULL);
             if (attached)
                 KeUnstackDetachProcess(&apcState);
             
@@ -933,18 +933,17 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
-        case KPH_GETOBJECTTYPENAME:
+        case KPH_ZWQUERYOBJECT:
         {
+            NTSTATUS status2 = STATUS_SUCCESS;
             HANDLE processHandle;
             HANDLE handle;
+            ULONG objectInformationClass;
             BOOLEAN attached = FALSE;
             KAPC_STATE apcState;
             PEPROCESS processObject;
-            PVOID object;
-            POBJECT_TYPE objectType;
-            UNICODE_STRING typeName;
             
-            if (inLength < 8)
+            if (inLength < 0xc || outLength < 12)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -952,8 +951,9 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             processHandle = *(HANDLE *)dataBuffer;
             handle = *(HANDLE *)(dataBuffer + 4);
+            objectInformationClass = *(ULONG *)(dataBuffer + 8);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, NULL);
+            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -965,44 +965,27 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             ObDereferenceObject(processObject);
-            status = ObReferenceObjectByHandle(handle, 0, 0, KernelMode, &object, NULL);
+            
+            status2 = ZwQueryObject(
+                handle,
+                objectInformationClass,
+                (PCHAR)dataBuffer + 12,
+                outLength - 12,
+                &retLength
+                );
+            
+            *(PULONG)(dataBuffer + 4) = retLength;
+            *(PCHAR *)(dataBuffer + 8) = (PCHAR)dataBuffer + 12;
+            
+            if (NT_SUCCESS(status2))
+                retLength += 12;
+            else
+                retLength = 12;
+            
+            *(PNTSTATUS)dataBuffer = status2;
+            
             if (attached)
                 KeUnstackDetachProcess(&apcState);
-            
-            if (!NT_SUCCESS(status))
-                goto IoControlEnd;
-            
-            objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
-            
-            if (objectType)
-            {
-                if (WindowsVersion == WINDOWS_XP)
-                {
-                    typeName = *(PUNICODE_STRING)((PCHAR)objectType + 0x40);
-                }
-                else
-                {
-                    /* Mutex field was removed in Vista */
-                    typeName = *(PUNICODE_STRING)((PCHAR)objectType + 0x8);
-                }
-                
-                if (typeName.Length > outLength)
-                {
-                    status = STATUS_BUFFER_TOO_SMALL;
-                    retLength = 0;
-                }
-                else
-                {
-                    RtlCopyMemory(dataBuffer, typeName.Buffer, typeName.Length);
-                    retLength = typeName.Length;
-                }
-            }
-            else
-            {
-                status = STATUS_INVALID_HANDLE;
-            }
-            
-            ObDereferenceObject(object);
         }
         break;
         
@@ -1088,4 +1071,3 @@ NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     return STATUS_NOT_IMPLEMENTED;
 }
-                                        

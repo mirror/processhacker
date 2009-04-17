@@ -63,7 +63,7 @@ namespace ProcessHacker
             KphSetContextThread,
             KphGetThreadWin32Thread,
             KphDuplicateObject,
-            GetObjectTypeName
+            ZwQueryObject
         }
 
         private string _deviceName;
@@ -199,27 +199,6 @@ namespace ProcessHacker
             { }
 
             return null;
-        }
-
-        public string GetObjectTypeName(Win32.ProcessHandle processHandle, int handle)
-        {
-            byte[] inBuffer = new byte[8];
-            byte[] outBuffer = new byte[64];
-
-            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inBuffer, 0, 4);
-            Array.Copy(Misc.IntToBytes(handle, Misc.Endianness.Little), 0, inBuffer, 4, 4);
-
-            try
-            {
-                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectTypeName),
-                    inBuffer, outBuffer);
-
-                return UnicodeEncoding.Unicode.GetString(outBuffer, 0, len);
-            }
-            catch
-            { }
-
-            return null;  
         }
 
         public bool GetProcessProtected(int pid)
@@ -507,6 +486,40 @@ namespace ProcessHacker
             Array.Copy(data, 0, newData, 4, data.Length);
 
             return _fileHandle.IoControl(CtlCode(Control.Write), newData, null);
+        }
+
+        public unsafe int ZwQueryObject(
+            Win32.ProcessHandle processHandle,
+            int handle,
+            Win32.OBJECT_INFORMATION_CLASS objectInformationClass,
+            IntPtr buffer,
+            int bufferLength,
+            out int returnLength,
+            out int baseAddress
+            )
+        {
+            byte[] inBuffer = new byte[12];
+            byte[] outBuffer = new byte[bufferLength + 12];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inBuffer, 0, 4);
+            Array.Copy(Misc.IntToBytes(handle, Misc.Endianness.Little), 0, inBuffer, 4, 4);
+            Array.Copy(Misc.IntToBytes((int)objectInformationClass, Misc.Endianness.Little), 0, inBuffer, 8, 4);
+
+            _fileHandle.IoControl(CtlCode(Control.ZwQueryObject), inBuffer, outBuffer);
+
+            fixed (byte* outBufferPtr = outBuffer)
+            {
+                int status;
+
+                status = *(int*)outBufferPtr;
+                returnLength = *(int*)(outBufferPtr + 4);
+                baseAddress = *(int*)(outBufferPtr + 8);
+
+                if (buffer != IntPtr.Zero)
+                    Marshal.Copy(outBuffer, 12, buffer, bufferLength);
+
+                return status;
+            }
         }
     }
 }

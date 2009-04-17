@@ -627,14 +627,14 @@ namespace ProcessHacker
             if (handle.Handle == 0 || handle.Handle == -1 || handle.Handle == -2)
                 throw new WindowsException(6);
 
-            //// Duplicate the handle if we're not using KPH
-            //if (Program.KPH == null)
-            //{
+            // Duplicate the handle if we're not using KPH
+            if (Program.KPH == null)
+            {
                 if (ZwDuplicateObject(process, handle.Handle, -1, out objectHandleI, 0, 0, 0) < 0)
                     ThrowLastWin32Error();
 
                 objectHandle = new Win32Handle(objectHandleI);
-            //}
+            }
 
             ObjectInformation info = new ObjectInformation();
 
@@ -648,31 +648,46 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    //if (Program.KPH != null)
-                    //{
-                    //    info.TypeName = Program.KPH.GetObjectTypeName(process, handle.Handle);
-                    //    ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
-                    //}
-                    //else
-                    //{
+                    int baseAddress = 0;
+
+                    if (Program.KPH != null)
+                    {
+                        Program.KPH.ZwQueryObject(process, handle.Handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                            IntPtr.Zero, 0, out retLength, out baseAddress);
+                    }
+                    else
+                    {
                         ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
                             IntPtr.Zero, 0, out retLength);
+                    }
 
-                        if (retLength > 0)
+                    if (retLength > 0)
+                    {
+                        using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
                         {
-                            using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
+                            if (Program.KPH != null)
+                            {
+                                if (Program.KPH.ZwQueryObject(process, handle.Handle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
+                                    otiMem, otiMem.Size, out retLength, out baseAddress) < 0)
+                                    throw new Exception("ZwQueryObject failed.");
+                            }
+                            else
                             {
                                 if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectTypeInformation,
-                                    otiMem.Memory, otiMem.Size, out retLength) != 0)
-                                    throw new Exception("ZwQueryObject failed");
-
-                                OBJECT_TYPE_INFORMATION oti = otiMem.ReadStruct<OBJECT_TYPE_INFORMATION>();
-
-                                info.TypeName = ReadUnicodeString(oti.Name);
-                                ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
+                                    otiMem, otiMem.Size, out retLength) < 0)
+                                    throw new Exception("ZwQueryObject failed.");
                             }
+
+                            var oti = otiMem.ReadStruct<OBJECT_TYPE_INFORMATION>();
+                            var str = oti.Name;
+
+                            if (Program.KPH != null)
+                                str.Buffer += -baseAddress + otiMem;
+
+                            info.TypeName = ReadUnicodeString(str);
+                            ObjectTypes.Add(handle.ObjectTypeNumber, info.TypeName);
                         }
-                    //}
+                    }
                 }
             }
 
@@ -683,30 +698,47 @@ namespace ProcessHacker
             }
             else if (info.TypeName == "File" && (int)handle.GrantedAccess == 0x0012019f)
             {
-                // KProcessHacker not available, fall back to using hack
+                // KProcessHacker not available, fall back to using hack (i.e. not querying the name at all)
             }
-            // Can't use KPH for this, too buggy.
-            //else if (Program.KPH != null)
-            //{
-            //    // use KProcessHacker for other object types
-            //    info.OrigName = Program.KPH.GetHandleObjectName(process, handle.Handle);
-            //}
             else
             {
-                ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                    IntPtr.Zero, 0, out retLength);
+                int baseAddress = 0;
+
+                if (Program.KPH != null)
+                {
+                    Program.KPH.ZwQueryObject(process, handle.Handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                        IntPtr.Zero, 0, out retLength, out baseAddress);
+                }
+                else
+                {
+                    ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                        IntPtr.Zero, 0, out retLength);
+                }
 
                 if (retLength > 0)
                 {
                     using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                     {
-                        if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
-                            oniMem.Memory, oniMem.Size, out retLength) != 0)
-                            throw new Exception("ZwQueryObject failed");
+                        if (Program.KPH != null)
+                        {
+                            if (Program.KPH.ZwQueryObject(process, handle.Handle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                                oniMem, oniMem.Size, out retLength, out baseAddress) < 0)
+                                throw new Exception("ZwQueryObject failed.");
+                        }
+                        else
+                        {
+                            if (ZwQueryObject(objectHandle, OBJECT_INFORMATION_CLASS.ObjectNameInformation,
+                                oniMem, oniMem.Size, out retLength) < 0)
+                                throw new Exception("ZwQueryObject failed.");
+                        }
 
-                        OBJECT_NAME_INFORMATION oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
+                        var oni = oniMem.ReadStruct<OBJECT_NAME_INFORMATION>();
+                        var str = oni.Name;
 
-                        info.OrigName = ReadUnicodeString(oni.Name);
+                        if (Program.KPH != null)
+                            str.Buffer += -baseAddress + oniMem;
+
+                        info.OrigName = ReadUnicodeString(str);
                     }
                 }
             }
