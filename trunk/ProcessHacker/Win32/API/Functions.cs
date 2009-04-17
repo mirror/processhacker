@@ -308,11 +308,11 @@ namespace ProcessHacker
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+            int TargetProcessHandle, int TargetHandle, int DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, out int TargetHandle, STANDARD_RIGHTS DesiredAccess, int Attributes, int Options);
+            int TargetProcessHandle, out int TargetHandle, int DesiredAccess, int Attributes, int Options);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,
@@ -456,11 +456,6 @@ namespace ProcessHacker
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(int Handle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool DuplicateHandle(int SourceProcessHandle,
-           int SourceHandle, int TargetProcessHandle, out int TargetHandle,
-           STANDARD_RIGHTS DesiredAccess, int InheritHandle, uint Options);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern WaitResult WaitForSingleObject(int Object, uint Timeout);

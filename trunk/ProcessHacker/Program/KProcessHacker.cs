@@ -61,7 +61,9 @@ namespace ProcessHacker
             KphOpenProcessJob,
             KphGetContextThread,
             KphSetContextThread,
-            KphGetThreadWin32Thread
+            KphGetThreadWin32Thread,
+            KphDuplicateObject,
+            GetObjectTypeName
         }
 
         private string _deviceName;
@@ -161,14 +163,18 @@ namespace ProcessHacker
             return null;
         }
 
-        public string GetHandleObjectName(Win32.Win32Handle handle)
+        public string GetHandleObjectName(Win32.ProcessHandle processHandle, int handle)
         {
+            byte[] inBuffer = new byte[8];
             byte[] outBuffer = new byte[2048];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inBuffer, 0, 4);
+            Array.Copy(Misc.IntToBytes(handle, Misc.Endianness.Little), 0, inBuffer, 4, 4);
 
             try
             {
                 int len = _fileHandle.IoControl(CtlCode(Control.GetHandleObjectName),
-                    Misc.IntToBytes(handle, Misc.Endianness.Little), outBuffer);
+                    inBuffer, outBuffer);
 
                 return UnicodeEncoding.Unicode.GetString(outBuffer, 8, len - 8).TrimEnd('\0');
             }
@@ -195,6 +201,27 @@ namespace ProcessHacker
             return null;
         }
 
+        public string GetObjectTypeName(Win32.ProcessHandle processHandle, int handle)
+        {
+            byte[] inBuffer = new byte[8];
+            byte[] outBuffer = new byte[64];
+
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, inBuffer, 0, 4);
+            Array.Copy(Misc.IntToBytes(handle, Misc.Endianness.Little), 0, inBuffer, 4, 4);
+
+            try
+            {
+                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectTypeName),
+                    inBuffer, outBuffer);
+
+                return UnicodeEncoding.Unicode.GetString(outBuffer, 0, len);
+            }
+            catch
+            { }
+
+            return null;  
+        }
+
         public bool GetProcessProtected(int pid)
         {
             byte[] result = new byte[1];
@@ -213,6 +240,57 @@ namespace ProcessHacker
                 Misc.IntToBytes(threadHandle, Misc.Endianness.Little), buffer);
 
             return Misc.BytesToUInt(buffer, Misc.Endianness.Little);
+        }
+
+        public unsafe void KphDuplicateObject(
+            int sourceProcessHandle,
+            int sourceHandle,
+            int targetProcessHandle,
+            out int targetHandle,
+            int desiredAccess,
+            int handleAttributes,
+            int options
+            )
+        {
+            int handle;
+
+            KphDuplicateObject(
+                sourceProcessHandle,
+                sourceHandle,
+                targetProcessHandle,
+                (int)&handle,
+                desiredAccess,
+                handleAttributes,
+                options
+                );
+
+            targetHandle = handle;
+        }
+
+        public unsafe void KphDuplicateObject(
+            int sourceProcessHandle,
+            int sourceHandle,
+            int targetProcessHandle,
+            int targetHandle,
+            int desiredAccess,
+            int handleAttributes,
+            int options
+            )
+        {
+            byte[] data = new byte[7 * sizeof(int)];
+
+            fixed (byte* dataPtr = data)
+            {
+                *(int*)(dataPtr + 0x0) = sourceProcessHandle;
+                *(int*)(dataPtr + 0x4) = sourceHandle;
+                *(int*)(dataPtr + 0x8) = targetProcessHandle;
+                *(int*)(dataPtr + 0xc) = targetHandle;
+                *(int*)(dataPtr + 0x10) = desiredAccess;
+                *(int*)(dataPtr + 0x14) = handleAttributes;
+                *(int*)(dataPtr + 0x18) = options;
+
+                _fileHandle.IoControl(CtlCode(Control.KphDuplicateObject), data, null);
+            }
         }
 
         public unsafe void KphGetContextThread(Win32.ThreadHandle threadHandle, Win32.CONTEXT* context)

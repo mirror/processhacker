@@ -89,7 +89,7 @@ namespace ProcessHacker
                     int dupHandle;
 
                     if (Win32.ZwDuplicateObject(csrProcesses[handle.ProcessId], handle.Handle,
-                        -1, out dupHandle, (Win32.STANDARD_RIGHTS)Program.MinProcessQueryRights, 0, 0) != 0)
+                        -1, out dupHandle, (int)Program.MinProcessQueryRights, 0, 0) != 0)
                         continue;
 
                     using (Win32.Win32Handle dupHandleAuto = new Win32.Win32Handle(dupHandle))

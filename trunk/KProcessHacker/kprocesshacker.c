@@ -290,6 +290,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphGetThreadWin32Thread";
     else if (ControlCode == KPH_DUPLICATEOBJECT)
         return "KphDuplicateObject";
+    else if (ControlCode == KPH_GETOBJECTTYPENAME)
+        return "Get Object Type Name";
     else
         return "Unknown";
 }
@@ -391,11 +393,12 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             HANDLE inHandle;
             PVOID inObject;
             HANDLE inProcessId;
-            HANDLE processHandle;
-            HANDLE dupHandle;
+            BOOLEAN attached = FALSE;
+            KAPC_STATE apcState;
+            PEPROCESS processObject;
             PVOID object;
             
-            if (inLength < 8)
+            if (inLength < 0xc)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -405,25 +408,29 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             inObject = *(PVOID *)(dataBuffer + 4);
             inProcessId = *(HANDLE *)(dataBuffer + 8);
             
-            status = OpenProcess(&processHandle, PROCESS_DUP_HANDLE, inProcessId);
+            status = PsLookupProcessByProcessId(inProcessId, &processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             __try
             {
-                ZwDuplicateObject(processHandle, inHandle, (HANDLE)-1, &dupHandle, 0, 0, 0);
-                ZwClose(processHandle);
+                if (processObject != PsGetCurrentProcess())
+                {
+                    KeStackAttachProcess(processObject, &apcState);
+                    attached = TRUE;
+                }
                 
-                status = ObReferenceObjectByHandle(dupHandle, 0x80000000, 
+                ObDereferenceObject(processObject);
+                status = ObReferenceObjectByHandle(inHandle, 0, 
                     *IoFileObjectType, KernelMode, &object, 0);
+                if (attached)
+                    KeUnstackDetachProcess(&apcState);
                 
                 if (!NT_SUCCESS(status))
                 {
                     goto IoControlEnd;
                 }
-                
-                ZwClose(dupHandle);
                 
                 if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
                 {
@@ -773,17 +780,37 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_GETHANDLEOBJECTNAME:
         {
+            HANDLE processHandle;
             HANDLE handle;
+            BOOLEAN attached = FALSE;
+            KAPC_STATE apcState;
+            PEPROCESS processObject;
             PVOID object;
             
-            if (inLength < 4)
+            if (inLength < 8)
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            handle = *(HANDLE *)dataBuffer;
+            processHandle = *(HANDLE *)dataBuffer;
+            handle = *(HANDLE *)(dataBuffer + 4);
+            
+            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, NULL);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            if (processObject != PsGetCurrentProcess())
+            {
+                KeStackAttachProcess(processObject, &apcState);
+                attached = TRUE;
+            }
+            
+            ObDereferenceObject(processObject);
             status = ObReferenceObjectByHandle(handle, 0, 0, KernelMode, &object, NULL);
+            if (attached)
+                KeUnstackDetachProcess(&apcState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -906,6 +933,79 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        case KPH_GETOBJECTTYPENAME:
+        {
+            HANDLE processHandle;
+            HANDLE handle;
+            BOOLEAN attached = FALSE;
+            KAPC_STATE apcState;
+            PEPROCESS processObject;
+            PVOID object;
+            POBJECT_TYPE objectType;
+            UNICODE_STRING typeName;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            handle = *(HANDLE *)(dataBuffer + 4);
+            
+            status = ObReferenceObjectByHandle(processHandle, 0, 0, KernelMode, &processObject, NULL);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            if (processObject != PsGetCurrentProcess())
+            {
+                KeStackAttachProcess(processObject, &apcState);
+                attached = TRUE;
+            }
+            
+            ObDereferenceObject(processObject);
+            status = ObReferenceObjectByHandle(handle, 0, 0, KernelMode, &object, NULL);
+            if (attached)
+                KeUnstackDetachProcess(&apcState);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
+            
+            if (objectType)
+            {
+                if (WindowsVersion == WINDOWS_XP)
+                {
+                    typeName = *(PUNICODE_STRING)((PCHAR)objectType + 0x40);
+                }
+                else
+                {
+                    /* Mutex field was removed in Vista */
+                    typeName = *(PUNICODE_STRING)((PCHAR)objectType + 0x8);
+                }
+                
+                if (typeName.Length > outLength)
+                {
+                    status = STATUS_BUFFER_TOO_SMALL;
+                    retLength = 0;
+                }
+                else
+                {
+                    RtlCopyMemory(dataBuffer, typeName.Buffer, typeName.Length);
+                    retLength = typeName.Length;
+                }
+            }
+            else
+            {
+                status = STATUS_INVALID_HANDLE;
+            }
+            
+            ObDereferenceObject(object);
+        }
+        break;
+        
         default:
         {
             dprintf("KProcessHacker: unrecognized IOCTL code 0x%08x\n", controlCode);
@@ -988,3 +1088,4 @@ NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     return STATUS_NOT_IMPLEMENTED;
 }
+                                        

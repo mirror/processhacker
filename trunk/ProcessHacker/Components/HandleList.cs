@@ -253,12 +253,11 @@ namespace ProcessHacker.Components
                     int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
 
                     using (Win32.ProcessHandle process =
-                           new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                           new Win32.ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                     {
-                        if (Win32.ZwDuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                        Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0,
                             0x1 // DUPLICATE_CLOSE_SOURCE
-                            ) != 0)
-                            Win32.ThrowLastWin32Error();
+                            );
                     }
                 }
                 catch (Exception ex)

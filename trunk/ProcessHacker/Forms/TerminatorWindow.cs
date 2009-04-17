@@ -250,10 +250,12 @@ namespace ProcessHacker
                     if (i >= 0x1000)
                         break;
 
-                    int handle;
-
-                    Win32.DuplicateHandle(phandle, i, Program.CurrentProcess, out handle, 0, 0, 0x1 // close source
-                        );
+                    try
+                    {
+                        Win32.DuplicateObject(phandle, i, -1, 0, 0, 0, 0x1);
+                    }
+                    catch
+                    { }
 
                     i++;
                 }

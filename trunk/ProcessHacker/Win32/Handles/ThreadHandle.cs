@@ -76,8 +76,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        if (ZwDuplicateObject(-1, this.Handle, -1, out newHandle, (STANDARD_RIGHTS)access, 0, 0) < 0)
-                            ThrowLastWin32Error();
+                        ZwDuplicateObject(-1, this.Handle, -1, out newHandle, (int)access, 0, 0);
                     }
                     finally
                     {

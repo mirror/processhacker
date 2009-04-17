@@ -49,7 +49,10 @@ namespace ProcessHacker
 
         public static Win32.PROCESS_RIGHTS MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION;
         public static Win32.PROCESS_RIGHTS MinProcessReadMemoryRights = Win32.PROCESS_RIGHTS.PROCESS_VM_READ;
-        public static Win32.PROCESS_RIGHTS MinProcessWriteMemoryRights = Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION;
+        public static Win32.PROCESS_RIGHTS MinProcessWriteMemoryRights = 
+            Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION;
+        public static Win32.PROCESS_RIGHTS MinProcessGetHandleInformationRights =
+            Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE;
         public static Win32.THREAD_RIGHTS MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION;
 
         public static int CurrentProcess;
@@ -201,6 +204,11 @@ namespace ProcessHacker
             {
                 MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
                 MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
+            }
+
+            if (KPH != null)
+            {
+                //MinProcessGetHandleInformationRights = MinProcessQueryRights;
             }
 
             if (KPH != null && WindowsVersion == WindowsVersion.Vista)

@@ -23,6 +23,24 @@
 #ifndef _EX_H
 #define _EX_H
 
+#include "types.h"
+
+struct _HANDLE_TABLE;
+struct _HANDLE_TABLE_ENTRY;
+
+typedef BOOLEAN (NTAPI *PEX_ENUM_HANDLE_CALLBACK)(
+    struct _HANDLE_TABLE_ENTRY *HandleTableEntry,
+    HANDLE Handle,
+    PVOID Context
+    );
+
+BOOLEAN NTAPI ExEnumHandleTable(
+    struct _HANDLE_TABLE *HandleTable,
+    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    PVOID Context,
+    PHANDLE Handle
+    );
+
 typedef struct _KGDTENTRY
 {
     SHORT LimitLow;

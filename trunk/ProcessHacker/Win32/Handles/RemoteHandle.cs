@@ -53,14 +53,11 @@ namespace ProcessHacker
             /// </remarks>
             public int GetHandle(int rights)
             {
-                int new_handle = 0;
+                int newHandle = 0;
 
-                if (ZwDuplicateObject(_phandle.Handle, _handle,
-                    Program.CurrentProcess, out new_handle,
-                    (STANDARD_RIGHTS)rights, 0, 0) != 0)
-                    throw new Exception("Could not duplicate token handle!");
+                ZwDuplicateObject(_phandle, _handle, -1, out newHandle, rights, 0, 0);
 
-                return new_handle;
+                return newHandle;
             }
         }
     }

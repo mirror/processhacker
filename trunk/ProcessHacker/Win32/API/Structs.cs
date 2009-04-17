@@ -537,28 +537,27 @@ namespace ProcessHacker
         public struct OBJECT_TYPE_INFORMATION
         {
             public UNICODE_STRING Name;
-            public uint HandleCount;
-            public uint ObjectCount;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-            public byte[] Reserved1;
-
-            public uint PeakHandleCount;
-            public uint PeakObjectCount;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-            public byte[] Reserved2;
-
-            public STANDARD_RIGHTS InvalidAttributes;
+            public int TotalNumberOfObjects;
+            public int TotalNumberOfHandles;
+            public int TotalPagedPoolUsage;
+            public int TotalNonPagedPoolUsage;
+            public int TotalNamePoolUsage;
+            public int TotalHandleTableUsage;
+            public int HighWaterNumberOfObjects;
+            public int HighWaterNumberOfHandles;
+            public int HighWaterPagedPoolUsage;
+            public int HighWaterNonPagedPoolUsage;
+            public int HighWaterNamePoolUsage;
+            public int HighWaterHandleTableUsage;
+            public int InvalidAttributes;
             public GENERIC_MAPPING GenericMapping;
-            public STANDARD_RIGHTS ValidAccess;
+            public int ValidAccess;
             public byte SecurityRequired;
             public byte MaintainHandleCount;
             public ushort MaintainTypeList;
-
             public POOL_TYPE PoolType;
-            public uint PagedPoolUsage;
-            public uint NonPagedPoolUsage;
+            public int PagedPoolUsage;
+            public int NonPagedPoolUsage;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -917,18 +916,15 @@ namespace ProcessHacker
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_OBJECT_TYPE_INFORMATION
         {
-            public uint NextEntryOffset;
-            public uint ObjectCount;
-            public uint HandleCount;
-            public uint TypeNumber;
-            public uint InvalidAttributes;
+            public int NextEntryOffset;
+            public UNICODE_STRING Name;
+            public int ObjectCount;
+            public int HandleCount;
+            public int TypeNumber;
+            public int InvalidAttributes;
             public GENERIC_MAPPING GenericMapping;
             public STANDARD_RIGHTS ValidAccessMask;
             public POOL_TYPE PoolType;
-            public byte Unknown;
-
-            [MarshalAs(UnmanagedType.Struct)]
-            public UNICODE_STRING Name;
         }
 
         [StructLayout(LayoutKind.Sequential)]

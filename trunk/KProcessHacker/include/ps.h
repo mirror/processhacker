@@ -132,8 +132,7 @@ typedef struct _KPROCESS2
         UCHAR ExecuteOptions;
     };
     ULONG StackCount;
-    /* LIST_ENTRY ProcessListEntry; */
-    ULONGLONG CycleTime;
+    LIST_ENTRY ProcessListEntry;
 } KPROCESS2, *PKPROCESS2;
 
 typedef struct _PEB2

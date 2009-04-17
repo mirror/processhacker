@@ -38,6 +38,7 @@ extern _PsResumeProcess PsResumeProcess;
 extern _MmCopyVirtualMemory MmCopyVirtualMemory;
 
 /* KProcessHacker */
+
 NTSTATUS KphNtInit();
 
 PVOID GetSystemRoutineAddress(
@@ -59,6 +60,13 @@ NTSTATUS KphDuplicateObject(
     ULONG HandleAttributes,
     ULONG Options,
     KPROCESSOR_MODE AccessMode
+    );
+
+BOOLEAN KphEnumProcessHandleTable(
+    PEPROCESS Process,
+    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    PVOID Context,
+    PHANDLE Handle
     );
 
 NTSTATUS KphGetContextThread(
@@ -141,6 +149,8 @@ NTSTATUS KphWriteVirtualMemory(
     KPROCESSOR_MODE AccessMode
     );
 
+/* OB */
+
 NTSTATUS KphObDuplicateObject(
     PEPROCESS SourceProcess,
     PEPROCESS TargetProcess,
@@ -150,6 +160,14 @@ NTSTATUS KphObDuplicateObject(
     ULONG HandleAttributes,
     ULONG Options,
     KPROCESSOR_MODE AccessMode
+    );
+
+PHANDLE_TABLE KphObReferenceProcessHandleTable(
+    PEPROCESS Process
+    );
+
+VOID KphObDereferenceProcessHandleTable(
+    PEPROCESS Process
     );
 
 #endif

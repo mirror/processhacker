@@ -111,6 +111,37 @@ NTSTATUS KphDuplicateObject(
     return status;
 }
 
+BOOLEAN KphEnumProcessHandleTable(
+    PEPROCESS Process,
+    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    PVOID Context,
+    PHANDLE Handle
+    )
+{
+    BOOLEAN result = FALSE;
+    PHANDLE_TABLE handleTable = NULL;
+    
+    handleTable = KphObReferenceProcessHandleTable(Process);
+    
+    if (!handleTable)
+        return FALSE;
+    
+    result = ExEnumHandleTable(
+        handleTable,
+        EnumHandleProcedure,
+        Context,
+        Handle);
+    KphObDereferenceProcessHandleTable(Process);
+    return result;
+}
+
+VOID KphObDereferenceProcessHandleTable(
+    PEPROCESS Process
+    )
+{
+    ExReleaseRundownProtection(&((PEPROCESS2)Process)->RundownProtect);
+}
+
 NTSTATUS KphObDuplicateObject(
     PEPROCESS SourceProcess,
     PEPROCESS TargetProcess,
@@ -123,6 +154,8 @@ NTSTATUS KphObDuplicateObject(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
+    BOOLEAN sourceAttached = FALSE;
+    BOOLEAN targetAttached = FALSE;
     KAPC_STATE apcState;
     PVOID object;
     HANDLE objectHandle;
@@ -136,13 +169,17 @@ NTSTATUS KphObDuplicateObject(
     
     /* Check if we need to attach to the source process */
     if (SourceProcess != PsGetCurrentProcess())
+    {
         KeStackAttachProcess(SourceProcess, &apcState);
+        sourceAttached = TRUE;
+    }
     
     /* If the caller wants us to close the source handle, do it now */
     if (Options & DUPLICATE_CLOSE_SOURCE)
     {
         status = NtClose(SourceHandle);
-        KeUnstackDetachProcess(&apcState);
+        if (sourceAttached)
+            KeUnstackDetachProcess(&apcState);
         
         return status;
     }
@@ -156,26 +193,61 @@ NTSTATUS KphObDuplicateObject(
         &object,
         NULL
         );
-    KeUnstackDetachProcess(&apcState);
+    if (sourceAttached)
+        KeUnstackDetachProcess(&apcState);
     
     if (!NT_SUCCESS(status))
         return status;
     
     /* Check if we need to attach to the target process */
     if (TargetProcess != PsGetCurrentProcess())
+    {
         KeStackAttachProcess(TargetProcess, &apcState);
+        targetAttached = TRUE;
+    }
     
     /* Open the object and detach from the target process */
-    status = ObOpenObjectByPointer(
-        object,
-        HandleAttributes,
-        NULL,
-        DesiredAccess,
-        OBJECT_TO_OBJECT_HEADER(object)->Type,
-        AccessMode,
-        &objectHandle
-        );
-    KeUnstackDetachProcess(&apcState);
+    {
+        POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
+        ACCESS_STATE accessState;
+        char auxData[0x34];
+        
+        if (!objectType && AccessMode != KernelMode)
+        {
+            status = STATUS_INVALID_HANDLE;
+            goto OpenObjectEnd;
+        }
+        
+        status = SeCreateAccessState(
+            &accessState,
+            (PAUX_ACCESS_DATA)auxData,
+            DesiredAccess,
+            (PGENERIC_MAPPING)((PCHAR)objectType + 52)
+            );
+        
+        if (!NT_SUCCESS(status))
+            goto OpenObjectEnd;
+        
+        accessState.PreviouslyGrantedAccess |= 0xffffffff; /* HACK, doesn't work properly */
+        accessState.RemainingDesiredAccess = 0;
+        
+        status = ObOpenObjectByPointer(
+            object,
+            HandleAttributes,
+            &accessState,
+            DesiredAccess,
+            objectType,
+            AccessMode,
+            &objectHandle
+            );
+        SeDeleteAccessState(&accessState);
+    }
+    
+OpenObjectEnd:
+    ObDereferenceObject(object);
+    
+    if (targetAttached)
+        KeUnstackDetachProcess(&apcState);
     
     if (NT_SUCCESS(status))
         *TargetHandle = objectHandle;
@@ -183,4 +255,21 @@ NTSTATUS KphObDuplicateObject(
         *TargetHandle = 0;
     
     return status;
+}
+
+PHANDLE_TABLE KphObReferenceProcessHandleTable(
+    PEPROCESS Process
+    )
+{
+    PHANDLE_TABLE handleTable = NULL;
+    
+    if (ExAcquireRundownProtection(&((PEPROCESS2)Process)->RundownProtect))
+    {
+        handleTable = ((PEPROCESS2)Process)->ObjectTable;
+        
+        if (!handleTable)
+            ExReleaseRundownProtection(&((PEPROCESS2)Process)->RundownProtect);
+    }
+    
+    return handleTable;
 }

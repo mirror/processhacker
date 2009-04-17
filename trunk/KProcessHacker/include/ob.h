@@ -42,6 +42,12 @@ NTSTATUS NTAPI ObOpenObjectByName(
 
 /* STRUCTS */
 
+typedef struct _SET_HANDLE_GRANTED_ACCESS_DATA
+{
+    HANDLE Handle;
+    ACCESS_MASK GrantedAccess;
+} SET_HANDLE_GRANTED_ACCESS_DATA, *PSET_HANDLE_GRANTED_ACCESS_DATA;
+
 typedef struct _OBJECT_CREATE_INFORMATION
 {
     ULONG Attributes;
@@ -58,14 +64,14 @@ typedef struct _OBJECT_CREATE_INFORMATION
 
 typedef struct _OBJECT_HEADER
 {
+    LONG PointerCount;
     union
     {
         struct
         {
-            LONG PointerCount;
             LONG HandleCount;
         };
-        LIST_ENTRY Entry;
+        PVOID NextToFree;
     };
     POBJECT_TYPE Type;
     UCHAR NameInfoOffset;
@@ -178,8 +184,11 @@ typedef struct _HANDLE_TABLE
     EX_PUSH_LOCK HandleContentionEvent;
     PHANDLE_TRACE_DEBUG_INFO DebugInfo;
     LONG ExtraInfoPages;
-    ULONG Flags;
-    ULONG StrictFIFO: 1;
+    union
+    {
+        ULONG Flags;
+        ULONG StrictFIFO: 1;
+    };
     LONG FirstFreeHandle;
     PHANDLE_TABLE_ENTRY LastFreeHandleEntry;
     LONG HandleCount;

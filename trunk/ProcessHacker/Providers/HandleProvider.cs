@@ -51,7 +51,7 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+                _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights);
             }
             catch
             { }
