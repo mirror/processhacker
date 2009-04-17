@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
@@ -2008,12 +2009,17 @@ namespace ProcessHacker
                     {
                         if (m.WParam.ToInt32() == 0xf020) // SC_MINIMIZE
                         {
-                            if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                            try
                             {
-                                this.Visible = false;
+                                if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                                {
+                                    this.Visible = false;
 
-                                return;
+                                    return;
+                                }
                             }
+                            catch
+                            { }
                         }
                     }
                     break;
@@ -2021,7 +2027,8 @@ namespace ProcessHacker
                 case (int)Win32.WindowMessage.Activate:
                 case (int)Win32.WindowMessage.KillFocus:
                     {
-                        treeProcesses.Tree.Invalidate();
+                        if (treeProcesses != null && treeProcesses.Tree != null)
+                            treeProcesses.Tree.Invalidate();
                     }
                     break;
             }
@@ -2090,24 +2097,92 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
 
-                if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
-                    "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                {
-                    try
-                    {
-                        this.DeleteSettings();
-                        MessageBox.Show("Process Hacker has reset your settings and will now restart.", "Process Hacker",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        Process.Start(Application.ExecutablePath);
-                    }
-                    catch (Exception ex2)
-                    {
-                        Logging.Log(ex2);
+                try { ThemingScope.Activate(); }
+                catch { }
 
-                        MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
-                            "'wj32' in your Application Data/Local Application Data directories.",
-                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (Program.WindowsVersion == WindowsVersion.Vista)
+                {
+                    TaskDialog td = new TaskDialog();
+
+                    td.WindowTitle = "Process Hacker";
+                    td.MainInstruction = "Process Hacker could not initialize the configuration manager";
+                    td.Content = "The Process Hacker configuration file is corrupt or the configuration manager " +
+                        "could not be initialized. Do you want Process Hacker to reset your settings?";
+                    td.MainIcon = TaskDialogIcon.Warning;
+                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                    td.Buttons = new TaskDialogButton[]
+                    {
+                        new TaskDialogButton((int)DialogResult.Yes, "Yes, reset the settings and restart Process Hacker"),
+                        new TaskDialogButton((int)DialogResult.No, "No, attempt to start Process Hacker anyway"),
+                        new TaskDialogButton((int)DialogResult.Retry, "Show me the error message")
+                    };
+                    td.UseCommandLinks = true;
+                    td.Callback = (taskDialog, args, userData) =>
+                        {
+                            if (args.Notification == TaskDialogNotification.ButtonClicked)
+                            {
+                                if (args.ButtonId == (int)DialogResult.Yes)
+                                {
+                                    taskDialog.SetMarqueeProgressBar(true);
+                                    taskDialog.SetProgressBarMarquee(true, 1000);
+
+                                    try
+                                    {
+                                        this.DeleteSettings();
+                                        Process.Start(Application.ExecutablePath);
+                                    }
+                                    catch (Exception ex2)
+                                    {
+                                        taskDialog.SetProgressBarMarquee(false, 1000);
+                                        MessageBox.Show("The settings could not be reset:\r\n\r\n" + ex.ToString(), 
+                                            "Process Hacker", 
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return true;
+                                    }
+
+                                    return false;
+                                }
+                                else if (args.ButtonId == (int)DialogResult.Retry)
+                                {
+                                    InformationBox box = new InformationBox(ex.ToString());
+
+                                    box.ShowDialog();
+
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        };
+
+                    int result = td.Show(this);
+
+                    if (result == (int)DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
+                        "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            this.DeleteSettings();
+                            MessageBox.Show("Process Hacker has reset your settings and will now restart.", "Process Hacker",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            Process.Start(Application.ExecutablePath);
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logging.Log(ex2);
+
+                            MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
+                                "'wj32' in your Application Data/Local Application Data directories.",
+                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
                     }
                 }
 

@@ -49,15 +49,13 @@ namespace ProcessHacker
                 ed = Program.GetMemoryEditor(pid, address, size,
                     new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
                     {
-                        try
+                        if (!f.IsDisposed)
                         {
                             f.ReadOnly = RO;
                             f.Show();
                             action(f);
                             f.Activate();
                         }
-                        catch
-                        { }
                     }));
 
                 return ed;
