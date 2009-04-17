@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   custom APIs
+ *   processes and threads
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -20,62 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "kph_nt.h"
-#include "debug.h"
-
-extern int WindowsVersion;
-extern ACCESS_MASK ProcessAllAccess;
-extern ACCESS_MASK ThreadAllAccess;
-extern POBJECT_TYPE *PsJobType;
-extern POBJECT_TYPE *SeTokenObjectType;
-
-_PsGetProcessJob PsGetProcessJob = NULL;
-_PsSuspendProcess PsSuspendProcess = NULL;
-_PsResumeProcess PsResumeProcess = NULL;
-_MmCopyVirtualMemory MmCopyVirtualMemory = NULL;
-
-PVOID GetSystemRoutineAddress(WCHAR *Name)
-{
-    UNICODE_STRING routineName;
-    PVOID routineAddress = NULL;
-    
-    RtlInitUnicodeString(&routineName, Name);
-    
-    __try
-    {
-        routineAddress = MmGetSystemRoutineAddress(&routineName);
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        routineAddress = NULL;
-    }
-    
-    return routineAddress;
-}
-
-NTSTATUS KphNtInit()
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    
-    MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
-    PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
-    PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
-    PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
-    
-    return status;
-}
-
-NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
-{
-    OBJECT_ATTRIBUTES objAttr = { 0 };
-    CLIENT_ID clientId;
-    
-    objAttr.Length = sizeof(objAttr);
-    clientId.UniqueThread = 0;
-    clientId.UniqueProcess = (HANDLE)ProcessId;
-    
-    return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
-}
+#include "include/kph.h"
+#include "include/ps.h"
 
 NTSTATUS KphGetContextThread(
     HANDLE ThreadHandle,
@@ -327,69 +273,6 @@ NTSTATUS KphOpenProcessJob(
     return status;
 }
 
-NTSTATUS KphOpenProcessTokenEx(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG ObjectAttributes,
-    PHANDLE TokenHandle,
-    KPROCESSOR_MODE AccessMode
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    PVOID tokenObject;
-    HANDLE tokenHandle;
-    ACCESS_STATE accessState;
-    char auxData[0x34];
-    
-    status = SeCreateAccessState(
-        &accessState,
-        (PAUX_ACCESS_DATA)auxData,
-        DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*SeTokenObjectType + 52)
-        );
-    
-    if (!NT_SUCCESS(status))
-    {
-        return status;
-    }
-    
-    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
-        accessState.PreviouslyGrantedAccess |= TOKEN_ALL_ACCESS;
-    else
-        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
-    
-    accessState.RemainingDesiredAccess = 0;
-    
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
-    
-    if (!NT_SUCCESS(status))
-    {
-        SeDeleteAccessState(&accessState);
-        return status;
-    }
-    
-    tokenObject = PsReferencePrimaryToken(processObject);
-    ObDereferenceObject(processObject);
-    
-    status = ObOpenObjectByPointer(
-        tokenObject,
-        ObjectAttributes,
-        &accessState,
-        0,
-        *SeTokenObjectType,
-        AccessMode,
-        &tokenHandle
-        );
-    SeDeleteAccessState(&accessState);
-    ObDereferenceObject(tokenObject);
-    
-    if (NT_SUCCESS(status))
-        *TokenHandle = tokenHandle;
-    
-    return status;
-}
-
 NTSTATUS KphOpenThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
@@ -480,77 +363,6 @@ NTSTATUS KphOpenThread(
     if (NT_SUCCESS(status))
     {
         *ThreadHandle = threadHandle;
-    }
-    
-    return status;
-}
-
-NTSTATUS KphReadVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    ULONG returnLength = 0;
-    
-    if (MmCopyVirtualMemory == NULL)
-        return STATUS_NOT_SUPPORTED;
-    
-    if (AccessMode != KernelMode)
-    {
-        if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
-            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
-        {
-            return STATUS_ACCESS_VIOLATION;
-        }
-        
-        __try
-        {
-            if (ReturnLength)
-                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            return STATUS_ACCESS_VIOLATION;
-        }
-    }
-    
-    if (BufferLength)
-    {
-        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
-        
-        if (!NT_SUCCESS(status))
-            return status;
-        
-        status = MmCopyVirtualMemory(
-            processObject,
-            BaseAddress,
-            PsGetCurrentProcess(),
-            Buffer,
-            BufferLength,
-            AccessMode,
-            &returnLength
-            );
-        ObDereferenceObject(processObject);
-    }
-    
-    if (ReturnLength)
-    {
-        __try
-        {
-            *ReturnLength = returnLength;
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            status = STATUS_ACCESS_VIOLATION;
-        }
     }
     
     return status;
@@ -651,77 +463,6 @@ NTSTATUS KphTerminateProcess(
     {
         status = ZwTerminateProcess(newProcessHandle, ExitStatus);
         ZwClose(newProcessHandle);
-    }
-    
-    return status;
-}
-
-NTSTATUS KphWriteVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
-    )
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PEPROCESS processObject;
-    ULONG returnLength = 0;
-    
-    if (MmCopyVirtualMemory == NULL)
-        return STATUS_NOT_SUPPORTED;
-    
-    if (AccessMode != KernelMode)
-    {
-        if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
-            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
-        {
-            return STATUS_ACCESS_VIOLATION;
-        }
-        
-        __try
-        {
-            if (ReturnLength)
-                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            return STATUS_ACCESS_VIOLATION;
-        }
-    }
-    
-    if (BufferLength)
-    {
-        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
-        
-        if (!NT_SUCCESS(status))
-            return status;
-        
-        status = MmCopyVirtualMemory(
-            PsGetCurrentProcess(),
-            Buffer,
-            processObject,
-            BaseAddress,
-            BufferLength,
-            AccessMode,
-            &returnLength
-            );
-        ObDereferenceObject(processObject);
-    }
-    
-    if (ReturnLength)
-    {
-        __try
-        {
-            *ReturnLength = returnLength;
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            status = STATUS_ACCESS_VIOLATION;
-        }
     }
     
     return status;

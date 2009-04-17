@@ -24,82 +24,41 @@
 #define _KPH_NT_H
 
 #include "kprocesshacker.h"
-#include "kernel_types.h"
+#include "debug.h"
+#include "mm.h"
+#include "ps.h"
 
-NTSTATUS NTAPI ObOpenObjectByName(
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    POBJECT_TYPE ObjectType,
-    KPROCESSOR_MODE PreviousMode,
-    PACCESS_STATE AccessState,
-    ACCESS_MASK DesiredAccess,
-    PVOID ParseContext,
-    PHANDLE Handle
-    );
+extern int WindowsVersion;
+extern ACCESS_MASK ProcessAllAccess;
+extern ACCESS_MASK ThreadAllAccess;
 
-NTSTATUS NTAPI PsGetContextThread(
-    PETHREAD Thread,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE PreviousMode
-    );
-
-PVOID NTAPI PsGetThreadWin32Thread(
-    PETHREAD Thread
-    );
-
-NTSTATUS NTAPI PsLookupProcessThreadByCid(
-    PCLIENT_ID ClientId,
-    PEPROCESS *Process,
-    PETHREAD *Thread
-    );
-
-NTSTATUS NTAPI PsSetContextThread(
-    PETHREAD Thread,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE PreviousMode
-    );
-
-NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
-    PACCESS_STATE AccessState,
-    PAUX_ACCESS_DATA AuxData,
-    ACCESS_MASK DesiredAccess,
-    PGENERIC_MAPPING Mapping
-    );
-
-NTKERNELAPI VOID NTAPI SeDeleteAccessState(
-    PACCESS_STATE AccessState
-    );
-
-/* Dynamically linked API defs */
-
-typedef NTSTATUS (NTAPI *_MmCopyVirtualMemory)(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
-    );
-
-typedef PVOID (NTAPI *_PsGetProcessJob)(
-    PEPROCESS Process
-    );
-
-typedef NTSTATUS (NTAPI *_PsResumeProcess)(
-    PEPROCESS Process
-    );
-
-typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
-    PEPROCESS Process
-    );
+extern _PsGetProcessJob PsGetProcessJob;
+extern _PsSuspendProcess PsSuspendProcess;
+extern _PsResumeProcess PsResumeProcess;
+extern _MmCopyVirtualMemory MmCopyVirtualMemory;
 
 /* KProcessHacker */
 NTSTATUS KphNtInit();
+
+PVOID GetSystemRoutineAddress(
+    WCHAR *Name
+    );
 
 NTSTATUS OpenProcess(
     PHANDLE ProcessHandle,
     int DesiredAccess,
     HANDLE ProcessId
+    );
+
+NTSTATUS KphDuplicateObject(
+    HANDLE SourceProcessHandle,
+    HANDLE SourceHandle,
+    HANDLE TargetProcessHandle,
+    PHANDLE TargetHandle,
+    ACCESS_MASK DesiredAccess,
+    ULONG HandleAttributes,
+    ULONG Options,
+    KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphGetContextThread(
@@ -179,6 +138,17 @@ NTSTATUS KphWriteVirtualMemory(
     PVOID Buffer,
     ULONG BufferLength,
     PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphObDuplicateObject(
+    PEPROCESS SourceProcess,
+    PEPROCESS TargetProcess,
+    HANDLE SourceHandle,
+    PHANDLE TargetHandle,
+    ACCESS_MASK DesiredAccess,
+    ULONG HandleAttributes,
+    ULONG Options,
     KPROCESSOR_MODE AccessMode
     );
 

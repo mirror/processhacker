@@ -1,22 +1,75 @@
-#ifndef _KERNEL_TYPES_H
-#define _KERNEL_TYPES_H
+/*
+ * Process Hacker Driver - 
+ *   processes and threads
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-#include <ntddk.h>
+#ifndef _PS_H
+#define _PS_H
 
-typedef struct _KGDTENTRY
-{
-    SHORT LimitLow;
-    SHORT BaseLow;
-    ULONG HighWord;
-} KGDTENTRY, *PKGDTENTRY;
+#include "types.h"
+#include "ex.h"
+#include "mm.h"
+#include "ob.h"
+#include "se.h"
 
-typedef struct _KIDTENTRY
-{
-    SHORT Offset;
-    SHORT Selector;
-    SHORT Access;
-    SHORT ExtendedOffset;
-} KIDTENTRY, *PKIDTENTRY;
+extern POBJECT_TYPE *PsJobType;
+
+/* FUNCTION DEFS */
+
+NTSTATUS NTAPI PsGetContextThread(
+    PETHREAD Thread,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE PreviousMode
+    );
+
+PVOID NTAPI PsGetThreadWin32Thread(
+    PETHREAD Thread
+    );
+
+NTSTATUS NTAPI PsLookupProcessThreadByCid(
+    PCLIENT_ID ClientId,
+    PEPROCESS *Process,
+    PETHREAD *Thread
+    );
+
+NTSTATUS NTAPI PsSetContextThread(
+    PETHREAD Thread,
+    PCONTEXT ThreadContext,
+    KPROCESSOR_MODE PreviousMode
+    );
+
+/* FUNCTION TYPEDEFS */
+
+typedef PVOID (NTAPI *_PsGetProcessJob)(
+    PEPROCESS Process
+    );
+
+typedef NTSTATUS (NTAPI *_PsResumeProcess)(
+    PEPROCESS Process
+    );
+
+typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
+    PEPROCESS Process
+    );
+
+/* STRUCTS */
 
 typedef struct _KEXECUTE_OPTIONS
 {
@@ -29,69 +82,6 @@ typedef struct _KEXECUTE_OPTIONS
     ULONG Spare: 2;
 } KEXECUTE_OPTIONS, *PKEXECUTE_OPTIONS;
 
-typedef struct _HANDLE_TRACE_DB_ENTRY
-{
-    CLIENT_ID ClientId;
-    PVOID Handle;
-    ULONG Type;
-    VOID *StackTrace[16];
-} HANDLE_TRACE_DB_ENTRY, *PHANDLE_TRACE_DB_ENTRY;
-
-typedef struct _HANDLE_TRACE_DEBUG_INFO
-{
-    LONG RefCount;
-    ULONG TableSize;
-    ULONG BitMaskFlags;
-    FAST_MUTEX CloseCompactionLock;
-    ULONG CurrentStackIndex;
-    HANDLE_TRACE_DB_ENTRY TraceDb[1];
-} HANDLE_TRACE_DEBUG_INFO, *PHANDLE_TRACE_DEBUG_INFO;
-
-typedef struct _HANDLE_TABLE_ENTRY_INFO
-{
-    ULONG AuditMask;
-} HANDLE_TABLE_ENTRY_INFO, *PHANDLE_TABLE_ENTRY_INFO;
-
-typedef struct _HANDLE_TABLE_ENTRY
-{
-    union
-    {
-        PVOID Object;
-        ULONG ObAttributes;
-        PHANDLE_TABLE_ENTRY_INFO InfoTable;
-        ULONG Value;
-    };
-    union
-    {
-        ULONG GrantedAccess;
-        struct
-        {
-            SHORT GrantedAccessIndex;
-            SHORT CreatorBackTraceIndex;
-        };
-        LONG NextFreeTableEntry;
-    };
-} HANDLE_TABLE_ENTRY, *PHANDLE_TABLE_ENTRY;
-
-typedef struct _HANDLE_TABLE
-{
-    ULONG TableCode;
-    PEPROCESS QuotaProcess;
-    PVOID UniqueProcessId;
-    EX_PUSH_LOCK HandleLock;
-    LIST_ENTRY HandleTableList;
-    EX_PUSH_LOCK HandleContentionEvent;
-    PHANDLE_TRACE_DEBUG_INFO DebugInfo;
-    LONG ExtraInfoPages;
-    ULONG Flags;
-    ULONG StrictFIFO: 1;
-    LONG FirstFreeHandle;
-    PHANDLE_TABLE_ENTRY LastFreeHandleEntry;
-    LONG HandleCount;
-    ULONG NextHandleNeedingPool;
-} HANDLE_TABLE, *PHANDLE_TABLE;
-
-/* from ReactOS */
 typedef struct _KPROCESS2
 {
     DISPATCHER_HEADER Header;
@@ -145,104 +135,6 @@ typedef struct _KPROCESS2
     /* LIST_ENTRY ProcessListEntry; */
     ULONGLONG CycleTime;
 } KPROCESS2, *PKPROCESS2;
-
-typedef struct _EX_FAST_REF
-{
-    union
-    {
-        PVOID Object;
-        ULONG RefCnt: 3;
-        ULONG Value;
-    };
-} EX_FAST_REF, *PEX_FAST_REF;
-
-typedef struct _MMADDRESS_NODE
-{
-    ULONG u1;
-    struct _MMADDRESS_NODE *LeftChild;
-    struct _MMADDRESS_NODE *RightChild;
-    ULONG StartingVpn;
-    ULONG EndingVpn;
-} MMADDRESS_NODE, *PMMADDRESS_NODE;
-
-typedef struct _MM_AVL_TABLE
-{
-    MMADDRESS_NODE BalancedRoot;
-    ULONG DepthOfTree: 5;
-    ULONG Unused: 3;
-    ULONG NumberGenericTableElements: 24;
-    PVOID NodeHint;
-    PVOID NodeFreeHint;
-} MM_AVL_TABLE, *PMM_AVL_TABLE;
-
-typedef struct _HARDWARE_PTE
-{
-    union
-    {
-        ULONG Valid: 1;
-        ULONG Write: 1;
-        ULONG Owner: 1;
-        ULONG WriteThrough: 1;
-        ULONG CacheDisable: 1;
-        ULONG Accessed: 1;
-        ULONG Dirty: 1;
-        ULONG LargePage: 1;
-        ULONG Global: 1;
-        ULONG CopyOnWrite: 1;
-        ULONG Prototype: 1;
-        ULONG reserved0: 1;
-        ULONG PageFrameNumber: 26;
-        ULONG reserved1: 26;
-        ULONG LowPart;
-    };
-    ULONG HighPart;
-} HARDWARE_PTE, *PHARDWARE_PTE;
-
-typedef struct _SE_AUDIT_PROCESS_CREATION_INFO
-{
-    POBJECT_NAME_INFORMATION ImageFileName;
-} SE_AUDIT_PROCESS_CREATION_INFO, *PSE_AUDIT_PROCESS_CREATION_INFO;
-
-typedef struct _MMSUPPORT_FLAGS
-{
-    ULONG SessionSpace: 1;
-    ULONG ModwriterAttached: 1;
-    ULONG TrimHard: 1;
-    ULONG MaximumWorkingSetHard: 1;
-    ULONG ForceTrim: 1;
-    ULONG MinimumWorkingSetHard: 1;
-    ULONG SessionMaster: 1;
-    ULONG TrimmerAttached: 1;
-    ULONG TrimmerDetaching: 1;
-    ULONG Reserved: 7;
-    ULONG MemoryPriority: 8;
-    ULONG WsleDeleted: 1;
-    ULONG VmExiting: 1;
-    ULONG Available: 6;
-} MMSUPPORT_FLAGS, *PMMSUPPORT_FLAGS;
-
-typedef struct _MMSUPPORT
-{
-    LIST_ENTRY WorkingSetExpansionLinks;
-    SHORT LastTrimStamp;
-    SHORT NextPageColor;
-    MMSUPPORT_FLAGS Flags;
-    ULONG PageFaultCount;
-    ULONG PeakWorkingSetSize;
-    ULONG Spare0;
-    ULONG MinimumWorkingSetSize;
-    ULONG MaximumWorkingSetSize;
-    /* PMMWSL VmWorkingSetList; */
-    PVOID VmWorkingSetList;
-    ULONG Claim;
-    ULONG Spare[1];
-    ULONG WorkingSetPrivateSize;
-    ULONG WorkingSetSizeOverhead;
-    ULONG WorkingSetSize;
-    PKEVENT ExitEvent;
-    EX_PUSH_LOCK WorkingSetMutex;
-    PVOID AccessLog;
-} MMSUPPORT, *PMMSUPPORT;
 
 typedef struct _PEB2
 {
@@ -505,49 +397,6 @@ typedef struct _EPROCESS2
     ULONG Cookie;
     ALPC_PROCESS_CONTEXT AlpcContext;
 } EPROCESS2, *PEPROCESS2;
-
-typedef struct _OBJECT_TYPE_INITIALIZER
-{
-	USHORT Length;
-	UCHAR ObjectTypeFlags;
-	ULONG CaseInsensitive: 1;
-	ULONG UnnamedObjectsOnly: 1;
-	ULONG UseDefaultObject: 1;
-	ULONG SecurityRequired: 1;
-	ULONG MaintainHandleCount: 1;
-	ULONG MaintainTypeList: 1;
-	ULONG ObjectTypeCode;
-	ULONG InvalidAttributes;
-	GENERIC_MAPPING GenericMapping;
-	ULONG ValidAccessMask;
-	POOL_TYPE PoolType;
-    ULONG DefaultPagedPoolCharge;
-    ULONG DefaultNonPagedPoolCharge;
-    PVOID DumpProcedure;
-    PVOID OpenProcedure;
-    PVOID CloseProcedure;
-    PVOID DeleteProcedure;
-    PVOID ParseProcedure;
-    PVOID SecurityProcedure;
-    PVOID QueryNameProcedure;
-    PVOID OkayToCloseProcedure;
-} OBJECT_TYPE_INITIALIZER, *POBJECT_TYPE_INITIALIZER;
-
-typedef struct _OBJECT_TYPE
-{
-    ERESOURCE Mutex;
-    LIST_ENTRY TypeList;
-    UNICODE_STRING Name;
-    PVOID DefaultObject;
-    ULONG Index;
-    ULONG TotalNumberOfObjects;
-    ULONG TotalNumberOfHandles;
-    ULONG HighWaterNumberOfObjects;
-    ULONG HighWaterNumberOfHandles;
-    OBJECT_TYPE_INITIALIZER TypeInfo;
-    ULONG Key;
-    EX_PUSH_LOCK ObjectLocks[32];
-} OBJECT_TYPE;
 
 typedef struct _EXCEPTION_REGISTRATION_RECORD
 {
@@ -898,66 +747,5 @@ typedef struct _ETHREAD2
     LIST_ENTRY AlpcWaitListEntry;
     ULONG CacheManagerCount;
 } ETHREAD2, *PETHREAD2;
-
-typedef struct _EX_PUSH_LOCK2
-{
-    union
-    {
-        struct
-        {
-            ULONG_PTR Locked:1;
-            ULONG_PTR Waiting:1;
-            ULONG_PTR Waking:1;
-            ULONG_PTR MultipleShared:1;
-            ULONG_PTR Shared: sizeof(ULONG_PTR) * 8 - 4;
-        };
-        ULONG_PTR Value;
-        PVOID Ptr;
-    };
-} EX_PUSH_LOCK2, *PEX_PUSH_LOCK2;
-
-typedef struct _OBJECT_CREATE_INFORMATION
-{
-    ULONG Attributes;
-    PVOID RootDirectory;
-    PVOID ParseContext;
-    CHAR ProbeMode;
-    ULONG PagedPoolCharge;
-    ULONG NonPagedPoolCharge;
-    ULONG SecurityDescriptorCharge;
-    PVOID SecurityDescriptor;
-    PSECURITY_QUALITY_OF_SERVICE SecurityQos;
-    SECURITY_QUALITY_OF_SERVICE SecurityQualityOfService;
-} OBJECT_CREATE_INFORMATION, *POBJECT_CREATE_INFORMATION;
-
-typedef struct _OBJECT_HEADER
-{
-    LONG PointerCount;
-    union
-    {
-        LONG HandleCount;
-        PVOID NextToFree;
-    };
-    POBJECT_TYPE Type;
-    UCHAR NameInfoOffset;
-    UCHAR HandleInfoOffset;
-    UCHAR QuotaInfoOffset;
-    UCHAR Flags;
-    union
-    {
-        POBJECT_CREATE_INFORMATION ObjectCreateInfo;
-        PVOID QuotaBlockCharged;
-    };
-    PVOID SecurityDescriptor;
-    QUAD Body;
-} OBJECT_HEADER, *POBJECT_HEADER;
-
-typedef struct _AUX_ACCESS_DATA
-{
-    /* PPRIVILEGE_SET PrivilegeSet; */
-    PVOID PrivilegeSet;
-    GENERIC_MAPPING GenericMapping;
-    ULONG Reserved;
-} AUX_ACCESS_DATA, *PAUX_ACCESS_DATA;
 
 #endif

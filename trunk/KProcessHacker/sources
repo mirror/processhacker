@@ -7,5 +7,9 @@ LIBS=%BUILD%\lib
 
 SOURCES= \
     kprocesshacker.c \
-    kph_nt.c \
+    kph.c \
+    mm.c \
+    ob.c \
+    ps.c \
+    se.c \
     resource.rc

@@ -20,10 +20,10 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "kprocesshacker.h"
-#include "kph_nt.h"
-#include "kernel_types.h"
-#include "debug.h"
+#include "include/kprocesshacker.h"
+#include "include/kph.h"
+#include "include/ps.h"
+#include "include/debug.h"
 
 #define ALLOW_UNLOAD
 
@@ -288,6 +288,8 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphSetContextThread";
     else if (ControlCode == KPH_GETTHREADWIN32THREAD)
         return "KphGetThreadWin32Thread";
+    else if (ControlCode == KPH_DUPLICATEOBJECT)
+        return "KphDuplicateObject";
     else
         return "Unknown";
 }
@@ -864,6 +866,43 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             retLength = 4;
+        }
+        break;
+        
+        case KPH_DUPLICATEOBJECT:
+        {
+            HANDLE sourceProcessHandle;
+            HANDLE sourceHandle;
+            HANDLE targetProcessHandle;
+            PHANDLE targetHandle;
+            ACCESS_MASK desiredAccess;
+            ULONG handleAttributes;
+            ULONG options;
+            
+            if (inLength < 7 * 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            sourceProcessHandle = *(HANDLE *)dataBuffer;
+            sourceHandle = *(HANDLE *)(dataBuffer + 0x4);
+            targetProcessHandle = *(HANDLE *)(dataBuffer + 0x8);
+            targetHandle = *(PHANDLE *)(dataBuffer + 0xc);
+            desiredAccess = *(ACCESS_MASK *)(dataBuffer + 0x10);
+            handleAttributes = *(ULONG *)(dataBuffer + 0x14);
+            options = *(ULONG *)(dataBuffer + 0x18);
+            
+            status = KphDuplicateObject(
+                sourceProcessHandle,
+                sourceHandle,
+                targetProcessHandle,
+                targetHandle,
+                desiredAccess,
+                handleAttributes,
+                options,
+                UserMode
+                );
         }
         break;
         
