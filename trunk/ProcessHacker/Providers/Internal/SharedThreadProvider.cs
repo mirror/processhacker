@@ -66,6 +66,11 @@ namespace ProcessHacker
             }
         }
 
+        public int Count
+        {
+            get { return _providers.Count; }
+        }
+
         public int Interval
         {
             get { return _interval; }
