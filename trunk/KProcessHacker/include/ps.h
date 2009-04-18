@@ -332,9 +332,9 @@ typedef struct _EPROCESS2
     SE_AUDIT_PROCESS_CREATION_INFO SeAuditProcessCreationInfo;
     MMSUPPORT Vm;
     LIST_ENTRY MmProcessLinks;
-    /* to make ProtectedProcess the right offset...
-    ULONG ModifiedPageCount; */
+    ULONG ModifiedPageCount;
     ULONG Flags2;
+    ULONG FILLER_HACK_HACK_HACK_HACK;
     ULONG JobNotReallyActive: 1;
     ULONG AccountingFolded: 1;
     ULONG NewProcessReported: 1;

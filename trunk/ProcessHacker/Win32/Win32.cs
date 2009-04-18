@@ -783,7 +783,7 @@ namespace ProcessHacker
                             int processHandle;
                             int processId;
 
-                            ZwDuplicateObject(process, handle.Handle, -1, out processHandle,
+                            DuplicateObject(process, handle.Handle, -1, out processHandle,
                                 (int)Program.MinProcessQueryRights, 0, 0);
 
                             using (Win32Handle processHandleAuto = new Win32Handle(processHandle))
@@ -807,7 +807,7 @@ namespace ProcessHacker
                             int processId;
                             int threadId;
 
-                            ZwDuplicateObject(process, handle.Handle, -1, out threadHandle,
+                            DuplicateObject(process, handle.Handle, -1, out threadHandle,
                                 (int)Program.MinThreadQueryRights, 0, 0);
 
                             using (Win32Handle threadHandleAuto = new Win32Handle(threadHandle))
@@ -833,7 +833,7 @@ namespace ProcessHacker
                         {
                             int tokenHandle;
 
-                            ZwDuplicateObject(process, handle.Handle, -1, out tokenHandle,
+                            DuplicateObject(process, handle.Handle, -1, out tokenHandle,
                                 (int)TOKEN_RIGHTS.TOKEN_QUERY, 0, 0);
 
                             using (Win32Handle tokenHandleAuto = new Win32Handle(tokenHandle))
