@@ -55,6 +55,8 @@ EXT ULONG OffEtStartAddress;
 EXT ULONG OffEtWin32StartAddress;
 EXT ULONG OffEpJob;
 EXT ULONG OffEpObjectTable;
+EXT ULONG OffEpProtectedProcessOff;
+EXT ULONG OffEpProtectedProcessBit;
 EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOtiGenericMapping;
 

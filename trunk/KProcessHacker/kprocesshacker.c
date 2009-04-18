@@ -471,7 +471,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         case KPH_GETPROCESSPROTECTED:
         {
             HANDLE processId;
-            PEPROCESS2 processObject;
+            PEPROCESS processObject;
             
             if (inLength < 4 || outLength < 1)
             {
@@ -481,12 +481,16 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             processId = *(HANDLE *)dataBuffer;
             
-            status = PsLookupProcessByProcessId(processId, &(PEPROCESS)processObject);
+            status = PsLookupProcessByProcessId(processId, &processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PCHAR)dataBuffer = (CHAR)processObject->ProtectedProcess;
+            *(PCHAR)dataBuffer = 
+                (CHAR)GET_BIT(
+                    *(PULONG)KVOFF(processObject, OffEpProtectedProcessOff),
+                    OffEpProtectedProcessBit
+                    );
             ObDereferenceObject(processObject);
             retLength = 1;
         }
@@ -496,7 +500,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         {
             HANDLE processId;
             CHAR protected;
-            PEPROCESS2 processObject;
+            PEPROCESS processObject;
             
             if (inLength < 5)
             {
@@ -512,7 +516,21 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            processObject->ProtectedProcess = protected;
+            if (protected)
+            {
+                SET_BIT(
+                    *(PULONG)KVOFF(processObject, OffEpProtectedProcessOff),
+                    OffEpProtectedProcessBit
+                    );
+            }
+            else
+            {
+                CLEAR_BIT(
+                    *(PULONG)KVOFF(processObject, OffEpProtectedProcessOff),
+                    OffEpProtectedProcessBit
+                    );
+            }
+            
             ObDereferenceObject(processObject);
         }
         break;

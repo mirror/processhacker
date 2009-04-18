@@ -58,6 +58,10 @@
 #define KPH_GETPROCESSID KPH_CTL_CODE(23)
 #define KPH_GETTHREADID KPH_CTL_CODE(24)
 
+#define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
+#define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
+#define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
+
 NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
