@@ -3,7 +3,7 @@
  *   handle filter user interface
  * 
  * Copyright (C) 2008 Dean
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -23,13 +23,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Components;
 using ProcessHacker.FormHelper;
-using System.Collections;
-using System.Runtime.InteropServices;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -84,7 +80,7 @@ namespace ProcessHacker
 
                 string type = listHandles.SelectedItems[0].SubItems[1].Text;
 
-                if (type == "Token" || type == "File" || type == "Event" || type == "Mutant" || type == "Section")
+                if (HandleList.HasHandleProperties(type))
                     propertiesMenuItem.Enabled = true;
             }
             else
@@ -181,96 +177,14 @@ namespace ProcessHacker
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)
         {
-            string type = listHandles.SelectedItems[0].SubItems[1].Text;
-
             try
             {
-                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text);
-                int pid = (int)listHandles.SelectedItems[0].Tag;
-
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(
-                    pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
-                {
-                    if (type == "Token")
-                    {
-                        TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle, handle));
-
-                        tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
-                            short.Parse(listHandles.SelectedItems[0].Tag.ToString()),
-                            Program.ProcessProvider.Dictionary[pid].Name,
-                            pid);
-                        tokForm.ShowDialog();
-                    }
-                    else if (type == "File")
-                    {
-                        Win32.ShowProperties(listHandles.SelectedItems[0].SubItems[2].Text);
-                    }
-                    else if (type == "Event")
-                    {
-                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                        int event_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.EVENT_QUERY_STATE);
-                        Win32.EVENT_BASIC_INFORMATION ebi = new Win32.EVENT_BASIC_INFORMATION();
-                        int retLen;
-
-                        Win32.ZwQueryEvent(event_handle, Win32.EVENT_INFORMATION_CLASS.EventBasicInformation,
-                            ref ebi, Marshal.SizeOf(ebi), out retLen);
-
-                        InformationBox info = new InformationBox(
-                            "Type: " + ebi.EventType.ToString().Replace("Event", "") +
-                            "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
-
-                        info.ShowDialog();
-
-                        Win32.CloseHandle(event_handle);
-                    }
-                    else if (type == "Mutant")
-                    {
-                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                        int mutant_handle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.MUTEX_MODIFY_STATE);
-                        Win32.MUTANT_BASIC_INFORMATION mbi = new Win32.MUTANT_BASIC_INFORMATION();
-                        int retLen;
-
-                        Win32.ZwQueryMutant(mutant_handle, Win32.MUTANT_INFORMATION_CLASS.MutantBasicInformation,
-                            ref mbi, Marshal.SizeOf(mbi), out retLen);
-
-                        InformationBox info = new InformationBox(
-                            "Count: " + mbi.CurrentCount +
-                            "\r\nOwned by Caller: " + (mbi.OwnedByCaller != 0 ? "True" : "False") +
-                            "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
-
-                        info.ShowDialog();
-
-                        Win32.CloseHandle(mutant_handle);
-                    }
-                    else if (type == "Section")
-                    {
-                        Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                        int section_handle = rhandle.GetHandle((int)Win32.SECTION_RIGHTS.SECTION_QUERY);
-                        Win32.SECTION_BASIC_INFORMATION sbi = new Win32.SECTION_BASIC_INFORMATION();
-                        Win32.SECTION_IMAGE_INFORMATION sii = new Win32.SECTION_IMAGE_INFORMATION();
-                        int retLen;
-                        int retVal;
-
-                        Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionBasicInformation,
-                            ref sbi, Marshal.SizeOf(sbi), out retLen);
-                        retVal = Win32.ZwQuerySection(section_handle, Win32.SECTION_INFORMATION_CLASS.SectionImageInformation,
-                            ref sii, Marshal.SizeOf(sii), out retLen);
-
-                        InformationBox info = new InformationBox(
-                            "Attributes: " + Misc.FlagsToString(typeof(Win32.SECTION_ATTRIBUTES), (long)sbi.SectionAttributes) +
-                            "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" +
-
-                            (retVal == 0 ? ("\r\n\r\nImage Entry Point: 0x" + sii.EntryPoint.ToString("x8") +
-                            "\r\nImage Machine Type: " + ((PE.MachineType)sii.ImageMachineType).ToString() +
-                            "\r\nImage Characteristics: " + ((PE.ImageCharacteristics)sii.ImageCharacteristics).ToString() +
-                            "\r\nImage Subsystem: " + ((PE.ImageSubsystem)sii.ImageSubsystem).ToString() +
-                            "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
-
-                        info.ShowDialog();
-
-                        Win32.CloseHandle(section_handle);
-                    }
-                }
+                HandleList.ShowHandleProperties(
+                    (int)listHandles.SelectedItems[0].Tag,
+                    listHandles.SelectedItems[0].SubItems[1].Text,
+                    (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text),
+                    listHandles.SelectedItems[0].SubItems[2].Text
+                    );
             }
             catch (Exception ex)
             {

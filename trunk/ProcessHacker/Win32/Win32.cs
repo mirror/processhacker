@@ -583,11 +583,13 @@ namespace ProcessHacker
 
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
+                int returnCode;
+
                 // This is needed because ZwQuerySystemInformation with SystemHandleInformation doesn't 
                 // actually give a real return length when called with an insufficient buffer. This code 
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while ((uint)ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, data.Memory,
-                    data.Size, out retLength) == STATUS_INFO_LENGTH_MISMATCH)
+                while ((uint)(returnCode = ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemHandleInformation, 
+                    data.Memory, data.Size, out retLength)) == STATUS_INFO_LENGTH_MISMATCH)
                 {
                     data.Resize(data.Size * 2);
 
@@ -595,6 +597,9 @@ namespace ProcessHacker
                     if (data.Size > 16 * 1024 * 1024)
                         throw new OutOfMemoryException();
                 }
+
+                if (returnCode < 0)
+                    ThrowLastWin32Error();
 
                 // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
                 // structures.
@@ -1135,7 +1140,7 @@ namespace ProcessHacker
                     attempts++;
 
                     if (ZwQuerySystemInformation(SYSTEM_INFORMATION_CLASS.SystemProcessesAndThreadsInformation, data.Memory,
-                        data.Size, out retLength) != 0)
+                        data.Size, out retLength) < 0)
                     {
                         if (attempts > 3)
                             ThrowLastWin32Error();

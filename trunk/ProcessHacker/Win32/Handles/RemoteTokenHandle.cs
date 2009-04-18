@@ -41,6 +41,16 @@ namespace ProcessHacker
                 : base(phandle, handle)
             { }
 
+            public virtual int GetHandle(int rights)
+            {
+                int newHandle = 0;
+
+                // We can use KPH here. RemoteHandle doesn't.
+                DuplicateObject(this.ProcessHandle, this.Handle, -1, out newHandle, rights, 0, 0);
+
+                return newHandle;
+            }
+
             public TokenHandle GetToken()
             {
                 return GetToken(TOKEN_RIGHTS.TOKEN_ALL_ACCESS);

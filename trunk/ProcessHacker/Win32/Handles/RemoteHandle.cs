@@ -41,6 +41,16 @@ namespace ProcessHacker
                 _handle = handle;
             }
 
+            public ProcessHandle ProcessHandle
+            {
+                get { return _phandle; }
+            }
+
+            public int Handle
+            {
+                get { return _handle; }
+            }
+
             /// <summary>
             /// Duplicates the handle owned by the process.
             /// </summary>
@@ -51,7 +61,7 @@ namespace ProcessHacker
             /// restrictions. Specifically, we can only specify that the type must have a
             /// constructor with 0 arguments, but no more.
             /// </remarks>
-            public int GetHandle(int rights)
+            public virtual int GetHandle(int rights)
             {
                 int newHandle = 0;
 
