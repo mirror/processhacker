@@ -26,10 +26,10 @@
 #include "include/ps.h"
 #include "include/version.h"
 
-#pragma alloc_text(PAGE, KphCreate)
-#pragma alloc_text(PAGE, KphClose)
-#pragma alloc_text(PAGE, KphIoControl)
-#pragma alloc_text(PAGE, KphRead)
+#pragma alloc_text(PAGE, KphDispatchCreate)
+#pragma alloc_text(PAGE, KphDispatchClose)
+#pragma alloc_text(PAGE, KphDispatchDeviceControl)
+#pragma alloc_text(PAGE, KphDispatchRead)
 #pragma alloc_text(PAGE, KphUnsupported)
 
 VOID DriverUnload(PDRIVER_OBJECT DriverObject)
@@ -69,10 +69,10 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     for (i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
         DriverObject->MajorFunction[i] = NULL;
     
-    DriverObject->MajorFunction[IRP_MJ_CLOSE] = KphClose;
-    DriverObject->MajorFunction[IRP_MJ_CREATE] = KphCreate;
-    DriverObject->MajorFunction[IRP_MJ_READ] = KphRead;
-    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KphIoControl;
+    DriverObject->MajorFunction[IRP_MJ_CLOSE] = KphDispatchClose;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] = KphDispatchCreate;
+    DriverObject->MajorFunction[IRP_MJ_READ] = KphDispatchRead;
+    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KphDispatchDeviceControl;
     DriverObject->DriverUnload = DriverUnload;
     
     deviceObject->Flags |= DO_BUFFERED_IO;
@@ -85,7 +85,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return STATUS_SUCCESS;
 }
 
-NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
@@ -95,7 +95,7 @@ NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return status;
 }
 
-NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
@@ -215,7 +215,7 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "Unknown";
 }
 
-NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
@@ -956,7 +956,7 @@ IoControlEnd:
     return status;
 }
 
-NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
+NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;

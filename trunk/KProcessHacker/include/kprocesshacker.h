@@ -62,10 +62,10 @@
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
 #define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
 
-NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
-NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
-NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
-NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 
 #endif

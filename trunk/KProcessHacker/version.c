@@ -27,19 +27,25 @@
 NTSTATUS KvInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
+    ULONG majorVersion, minorVersion, servicePack;
     
     RtlWindowsVersion.dwOSVersionInfoSize = sizeof(RtlWindowsVersion);
-    status = RtlGetVersion(&RtlWindowsVersion);
+    status = RtlGetVersion((PRTL_OSVERSIONINFOW)&RtlWindowsVersion);
     
     if (!NT_SUCCESS(status))
         return status;
     
+    majorVersion = RtlWindowsVersion.dwMajorVersion;
+    minorVersion = RtlWindowsVersion.dwMinorVersion;
+    servicePack = RtlWindowsVersion.wServicePackMajor;
+    
     /* Windows XP */
-    if (RtlWindowsVersion.dwMajorVersion == 5 && RtlWindowsVersion.dwMinorVersion == 1)
+    if (majorVersion == 5 && minorVersion == 1)
     {
         WindowsVersion = WINDOWS_XP;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
+        
         OffEtClientId = 0x1ec;
         OffEtStartAddress = 0x224;
         OffEtWin32StartAddress = 0x228;
@@ -48,11 +54,12 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0;
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
-        OffOtiGenericMapping = 0x68;
-        dprintf("Initialized version-specific data for Windows XP\n");
+        OffOtiGenericMapping = 0x60 + 0x8;
+        
+        dprintf("Initialized version-specific data for Windows XP SP%d\n", servicePack);
     }
     /* Windows Vista */
-    else if (RtlWindowsVersion.dwMajorVersion == 6 && RtlWindowsVersion.dwMinorVersion == 0)
+    else if (majorVersion == 6 && minorVersion == 0)
     {
         WindowsVersion = WINDOWS_VISTA;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -65,8 +72,24 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0x224;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
-        OffOtiGenericMapping = 0x34;
-        dprintf("Initialized version-specific data for Windows Vista\n");
+        
+        /* SP0 */
+        if (servicePack == 0)
+        {
+            OffOtiGenericMapping = 0x60 + 0xc;
+        }
+        /* SP1 */
+        else if (servicePack == 1)
+        {
+            /* They got rid of the Mutex (an ERESOURCE) */
+            OffOtiGenericMapping = 0x28 + 0xc;
+        }
+        else
+        {
+            return STATUS_NOT_SUPPORTED;
+        }
+        
+        dprintf("Initialized version-specific data for Windows Vista SP%d\n", servicePack);
     }
     else
     {

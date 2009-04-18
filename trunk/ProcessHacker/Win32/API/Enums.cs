@@ -408,11 +408,12 @@ namespace ProcessHacker
 
         public enum OBJECT_INFORMATION_CLASS : int
         {
-            ObjectBasicInformation,
-            ObjectNameInformation,
-            ObjectTypeInformation,
-            ObjectAllTypesInformation,
-            ObjectHandleInformation
+            ObjectBasicInformation = 0,
+            ObjectNameInformation = 1,
+            ObjectTypeInformation = 2,
+            ObjectTypesInformation = 3,
+            ObjectHandleFlagInformation = 4,
+            ObjectSessionInformation = 5
         }
 
         public enum PeekMessageFlags : int

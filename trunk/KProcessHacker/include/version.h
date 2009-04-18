@@ -39,7 +39,7 @@ NTSTATUS KvInit();
 #endif
 
 EXT ULONG WindowsVersion;
-EXT RTL_OSVERSIONINFOW RtlWindowsVersion;
+EXT RTL_OSVERSIONINFOEXW RtlWindowsVersion;
 EXT ACCESS_MASK ProcessAllAccess;
 EXT ACCESS_MASK ThreadAllAccess;
 
