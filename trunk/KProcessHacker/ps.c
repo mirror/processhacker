@@ -32,7 +32,13 @@ NTSTATUS KphGetContextThread(
     NTSTATUS status = STATUS_SUCCESS;
     PETHREAD threadObject;
     
-    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        THREAD_GET_CONTEXT,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -83,6 +89,50 @@ NTSTATUS KphGetThreadWin32Thread(
     }
     
     return status;
+}
+
+HANDLE KphGetProcessId(
+    HANDLE ProcessHandle
+    )
+{
+    PEPROCESS processObject;
+    HANDLE processId;
+    
+    if (!NT_SUCCESS(ObReferenceObjectByHandle(ProcessHandle, 0,
+        *PsProcessType, KernelMode, &processObject, NULL)))
+        return 0;
+    
+    processId = PsGetProcessId(processObject);
+    ObDereferenceObject(processObject);
+    
+    return processId;
+}
+
+HANDLE KphGetThreadId(
+    HANDLE ThreadHandle,
+    PHANDLE ProcessId
+    )
+{
+    PETHREAD threadObject;
+    CLIENT_ID clientId;
+    
+    if (!NT_SUCCESS(ObReferenceObjectByHandle(ThreadHandle, 0, 
+        *PsThreadType, KernelMode, &threadObject, NULL)))
+        return 0;
+    
+    if (WindowsVersion == WINDOWS_VISTA)
+        clientId = *(PCLIENT_ID)((PCHAR)threadObject + 0x20c);
+    else
+        clientId = *(PCLIENT_ID)((PCHAR)threadObject + 0x1ec);
+    
+    ObDereferenceObject(threadObject);
+    
+    if (ProcessId)
+    {
+        *ProcessId = clientId.UniqueProcess;
+    }
+    
+    return clientId.UniqueThread;
 }
 
 NTSTATUS KphOpenProcess(
@@ -378,7 +428,13 @@ NTSTATUS KphResumeProcess(
     if (PsResumeProcess == NULL)
         return STATUS_NOT_SUPPORTED;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        PROCESS_SUSPEND_RESUME,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -398,7 +454,13 @@ NTSTATUS KphSetContextThread(
     NTSTATUS status = STATUS_SUCCESS;
     PETHREAD threadObject;
     
-    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        THREAD_SET_CONTEXT,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -419,7 +481,13 @@ NTSTATUS KphSuspendProcess(
     if (PsSuspendProcess == NULL)
         return STATUS_NOT_SUPPORTED;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        PROCESS_SUSPEND_RESUME,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL);
     
     if (!NT_SUCCESS(status))
         return status;
@@ -441,7 +509,13 @@ NTSTATUS KphTerminateProcess(
     CLIENT_ID clientId;
     HANDLE newProcessHandle;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        PROCESS_TERMINATE,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL);
     
     if (!NT_SUCCESS(status))
         return status;

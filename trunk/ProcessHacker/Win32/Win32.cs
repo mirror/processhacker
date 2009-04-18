@@ -780,51 +780,73 @@ namespace ProcessHacker
 
                     case "Process":
                         {
-                            int processHandle;
                             int processId;
 
-                            DuplicateObject(process, handle.Handle, -1, out processHandle,
-                                (int)Program.MinProcessQueryRights, 0, 0);
-
-                            using (Win32Handle processHandleAuto = new Win32Handle(processHandle))
+                            if (Program.KPH != null)
                             {
-                                if ((processId = GetProcessId(processHandle)) == 0)
-                                    ThrowLastWin32Error();
+                                processId = Program.KPH.KphGetProcessId(process, handle.Handle);
 
-                                if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
-                                    info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
-                                        " (" + processId.ToString() + ")";
-                                else
-                                    info.BestName = "Non-existent process (" + processId.ToString() + ")";
+                                if (processId == 0)
+                                    throw new Exception("Invalid PID");
                             }
+                            else
+                            {
+                                int processHandle;
+
+                                DuplicateObject(process, handle.Handle, -1, out processHandle,
+                                    (int)Program.MinProcessQueryRights, 0, 0);
+
+                                using (Win32Handle processHandleAuto = new Win32Handle(processHandle))
+                                {
+                                    if ((processId = GetProcessId(processHandle)) == 0)
+                                        ThrowLastWin32Error();
+                                }
+                            }
+
+                            if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
+                                info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
+                                    " (" + processId.ToString() + ")";
+                            else
+                                info.BestName = "Non-existent process (" + processId.ToString() + ")";
                         }
 
                         break;
 
                     case "Thread":
                         {
-                            int threadHandle;
                             int processId;
                             int threadId;
 
-                            DuplicateObject(process, handle.Handle, -1, out threadHandle,
-                                (int)Program.MinThreadQueryRights, 0, 0);
-
-                            using (Win32Handle threadHandleAuto = new Win32Handle(threadHandle))
+                            if (Program.KPH != null)
                             {
-                                if ((threadId = GetThreadId(threadHandle)) == 0)
-                                    ThrowLastWin32Error();
+                                threadId = Program.KPH.KphGetThreadId(process, handle.Handle, out processId);
 
-                                if ((processId = GetProcessIdOfThread(threadHandle)) == 0)
-                                    ThrowLastWin32Error();
-
-                                if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
-                                    info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
-                                        " (" + processId.ToString() + "): " + threadId.ToString();
-                                else
-                                    info.BestName = "Non-existent process (" + processId.ToString() + "): " +
-                                        threadId.ToString();
+                                if (threadId == 0 || processId == 0)
+                                    throw new Exception("Invalid TID or PID");
                             }
+                            else
+                            {
+                                int threadHandle;
+
+                                DuplicateObject(process, handle.Handle, -1, out threadHandle,
+                                    (int)Program.MinThreadQueryRights, 0, 0);
+
+                                using (Win32Handle threadHandleAuto = new Win32Handle(threadHandle))
+                                {
+                                    if ((threadId = GetThreadId(threadHandle)) == 0)
+                                        ThrowLastWin32Error();
+
+                                    if ((processId = GetProcessIdOfThread(threadHandle)) == 0)
+                                        ThrowLastWin32Error();
+                                }
+                            }
+
+                            if (Program.ProcessProvider.Dictionary.ContainsKey(processId))
+                                info.BestName = Program.ProcessProvider.Dictionary[processId].Name +
+                                    " (" + processId.ToString() + "): " + threadId.ToString();
+                            else
+                                info.BestName = "Non-existent process (" + processId.ToString() + "): " +
+                                    threadId.ToString();
                         }
 
                         break;

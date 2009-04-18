@@ -4,11 +4,12 @@ Process Hacker
  * NEW/IMPROVED:
    * Proper symbol support with dbghelp.dll
    * Private, Shared and Shareable Working Set columns
-   * Handle viewing uses KProcessHacker
+   * Improved handle viewing (KProcessHacker) - more object types are visible
+   * Better start addresses on Windows XP (KProcessHacker)
    * Elevation button in Options now spawns a child options window instead of 
      restarting Process Hacker elevated
    * Aggressive mode (start with "-a" command line option)
-   * Better "could not initialize configuration" message for Vista
+   * Better "could not initialize configuration" message for Windows Vista
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection

@@ -58,7 +58,81 @@ NTSTATUS KphNtInit()
     return status;
 }
 
-NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
+VOID KphAttachProcess(
+    PEPROCESS Process,
+    PKPH_ATTACH_STATE AttachState
+    )
+{
+    AttachState->Attached = FALSE;
+    
+    if (Process != PsGetCurrentProcess())
+    {
+        KeStackAttachProcess(Process, &AttachState->ApcState);
+        AttachState->Attached = TRUE;
+    }
+}
+
+NTSTATUS KphAttachProcessHandle(
+    HANDLE ProcessHandle,
+    PKPH_ATTACH_STATE AttachState
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    AttachState->Attached = FALSE;
+    
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        0,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    KphAttachProcess(processObject, AttachState);
+    ObDereferenceObject(processObject);
+    
+    return status;
+}
+
+NTSTATUS KphAttachProcessId(
+    HANDLE ProcessId,
+    PKPH_ATTACH_STATE AttachState
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    
+    AttachState->Attached = FALSE;
+    
+    status = PsLookupProcessByProcessId(ProcessId, &processObject);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    KphAttachProcess(processObject, AttachState);
+    ObDereferenceObject(processObject);
+    
+    return status;
+}
+
+VOID KphDetachProcess(
+    PKPH_ATTACH_STATE AttachState
+    )
+{
+    if (AttachState->Attached)
+        KeUnstackDetachProcess(&AttachState->ApcState);
+}
+
+NTSTATUS OpenProcess(
+    PHANDLE ProcessHandle,
+    ULONG DesiredAccess,
+    HANDLE ProcessId)
 {
     OBJECT_ATTRIBUTES objAttr = { 0 };
     CLIENT_ID clientId;
@@ -68,4 +142,61 @@ NTSTATUS OpenProcess(PHANDLE ProcessHandle, int DesiredAccess, HANDLE ProcessId)
     clientId.UniqueProcess = (HANDLE)ProcessId;
     
     return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
+}
+
+/* If you've seen Hacker Defender's source code,
+ * this may look familiar...
+ */
+NTSTATUS SetProcessToken(
+    HANDLE sourcePid,
+    HANDLE targetPid
+    )
+{
+    NTSTATUS status;
+    int queryAccess = 
+        WindowsVersion == WINDOWS_VISTA ? 
+        PROCESS_QUERY_LIMITED_INFORMATION : 
+        PROCESS_QUERY_INFORMATION;
+    HANDLE source;
+    
+    if (NT_SUCCESS(status = OpenProcess(&source, queryAccess, sourcePid)))
+    {
+        HANDLE target;
+        
+        if (NT_SUCCESS(status = OpenProcess(&target, queryAccess | 
+            PROCESS_SET_INFORMATION, targetPid)))
+        {
+            HANDLE sourceToken;
+            
+            if (NT_SUCCESS(status = KphOpenProcessTokenEx(source, TOKEN_DUPLICATE, 0, 
+                &sourceToken, UserMode)))
+            {
+                HANDLE dupSourceToken;
+                OBJECT_ATTRIBUTES objectAttributes = { 0 };
+                
+                objectAttributes.Length = sizeof(objectAttributes);
+                
+                if (NT_SUCCESS(status = ZwDuplicateToken(sourceToken, TOKEN_ASSIGN_PRIMARY, &objectAttributes,
+                    FALSE, TokenPrimary, &dupSourceToken)))
+                {
+                    PROCESS_ACCESS_TOKEN token;
+                    
+                    token.Token = dupSourceToken;
+                    token.Thread = 0;
+                    
+                    status = ZwSetInformationProcess(target, ProcessAccessToken, &token, sizeof(token));
+                }
+                
+                ZwClose(dupSourceToken);
+            }
+            
+            ZwClose(sourceToken);
+        }
+        
+        ZwClose(target);
+    }
+    
+    ZwClose(source);
+    
+    return status;
 }

@@ -116,60 +116,6 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return STATUS_SUCCESS;
 }
 
-/* If you've seen Hacker Defender's source code,
- * this may look familiar...
- */
-NTSTATUS SetProcessToken(HANDLE sourcePid, HANDLE targetPid)
-{
-    NTSTATUS status;
-    int queryAccess = 
-        WindowsVersion == WINDOWS_VISTA ? 
-        PROCESS_QUERY_LIMITED_INFORMATION : 
-        PROCESS_QUERY_INFORMATION;
-    HANDLE source;
-    
-    if (NT_SUCCESS(status = OpenProcess(&source, queryAccess, sourcePid)))
-    {
-        HANDLE target;
-        
-        if (NT_SUCCESS(status = OpenProcess(&target, queryAccess | 
-            PROCESS_SET_INFORMATION, targetPid)))
-        {
-            HANDLE sourceToken;
-            
-            if (NT_SUCCESS(status = KphOpenProcessTokenEx(source, TOKEN_DUPLICATE, 0, 
-                &sourceToken, UserMode)))
-            {
-                HANDLE dupSourceToken;
-                OBJECT_ATTRIBUTES objectAttributes = { 0 };
-                
-                objectAttributes.Length = sizeof(objectAttributes);
-                
-                if (NT_SUCCESS(status = ZwDuplicateToken(sourceToken, TOKEN_ASSIGN_PRIMARY, &objectAttributes,
-                    FALSE, TokenPrimary, &dupSourceToken)))
-                {
-                    PROCESS_ACCESS_TOKEN token;
-                    
-                    token.Token = dupSourceToken;
-                    token.Thread = 0;
-                    
-                    status = ZwSetInformationProcess(target, ProcessAccessToken, &token, sizeof(token));
-                }
-                
-                ZwClose(dupSourceToken);
-            }
-            
-            ZwClose(sourceToken);
-        }
-        
-        ZwClose(target);
-    }
-    
-    ZwClose(source);
-    
-    return status;
-}
-
 NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -292,6 +238,10 @@ char *GetIoControlName(ULONG ControlCode)
         return "KphDuplicateObject";
     else if (ControlCode == KPH_ZWQUERYOBJECT)
         return "ZwQueryObject";
+    else if (ControlCode == KPH_GETPROCESSID)
+        return "KphGetProcessId";
+    else if (ControlCode == KPH_GETTHREADID)
+        return "KphGetThreadId";
     else
         return "Unknown";
 }
@@ -371,20 +321,10 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             /* any interrupts happening while we're writing is... bad. */
             __asm cli;
-            
-            __try
-            {
-                RtlCopyMemory(address, dataBuffer + 4, inLength - 4);
-                retLength = inLength;
-            }
-            __except (EXCEPTION_EXECUTE_HANDLER)
-            {
-                __asm sti;
-                status = STATUS_ACCESS_VIOLATION;
-                goto IoControlEnd;
-            }
-            
+            RtlCopyMemory(address, dataBuffer + 4, inLength - 4);
             __asm sti;
+            
+            retLength = inLength;
         }
         break;
         
@@ -393,9 +333,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             HANDLE inHandle;
             PVOID inObject;
             HANDLE inProcessId;
-            BOOLEAN attached = FALSE;
-            KAPC_STATE apcState;
-            PEPROCESS processObject;
+            KPH_ATTACH_STATE attachState;
             PVOID object;
             
             if (inLength < 0xc)
@@ -408,30 +346,22 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             inObject = *(PVOID *)(dataBuffer + 4);
             inProcessId = *(HANDLE *)(dataBuffer + 8);
             
-            status = PsLookupProcessByProcessId(inProcessId, &processObject);
+            status = KphAttachProcessId(inProcessId, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            status = ObReferenceObjectByHandle(inHandle, 0, 
+                *IoFileObjectType, KernelMode, &object, 0);
+            KphDetachProcess(&attachState);
+            
+            if (!NT_SUCCESS(status))
+            {
+                goto IoControlEnd;
+            }
+            
             __try
             {
-                if (processObject != PsGetCurrentProcess())
-                {
-                    KeStackAttachProcess(processObject, &apcState);
-                    attached = TRUE;
-                }
-                
-                ObDereferenceObject(processObject);
-                status = ObReferenceObjectByHandle(inHandle, 0, 
-                    *IoFileObjectType, KernelMode, &object, 0);
-                if (attached)
-                    KeUnstackDetachProcess(&apcState);
-                
-                if (!NT_SUCCESS(status))
-                {
-                    goto IoControlEnd;
-                }
-                
                 if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
                 {
                     ObDereferenceObject(object);
@@ -738,6 +668,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         {
             HANDLE threadHandle;
             PETHREAD2 threadObject;
+            PVOID startAddress;
             
             if (inLength < 4 || outLength < 4)
             {
@@ -751,11 +682,22 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
+            /* Get the Win32StartAddress */
             if (WindowsVersion == WINDOWS_VISTA)
-                *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x240);
+                startAddress = *(PVOID *)((PCHAR)threadObject + 0x240);
             else
-                *(PVOID *)dataBuffer = *(PVOID *)((PCHAR)threadObject + 0x228);
+                startAddress = *(PVOID *)((PCHAR)threadObject + 0x228);
             
+            /* If that failed, get the StartAddress */
+            if (!startAddress)
+            {
+                if (WindowsVersion == WINDOWS_VISTA)
+                    startAddress = *(PVOID *)((PCHAR)threadObject + 0x1f8);
+                else
+                    startAddress = *(PVOID *)((PCHAR)threadObject + 0x224);
+            }
+            
+            *(PVOID *)dataBuffer = startAddress;
             ObDereferenceObject(threadObject);
             retLength = 4;
         }
@@ -782,9 +724,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         {
             HANDLE processHandle;
             HANDLE handle;
-            BOOLEAN attached = FALSE;
-            KAPC_STATE apcState;
-            PEPROCESS processObject;
+            KPH_ATTACH_STATE attachState;
             PVOID object;
             
             if (inLength < 8)
@@ -796,21 +736,13 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             processHandle = *(HANDLE *)dataBuffer;
             handle = *(HANDLE *)(dataBuffer + 4);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+            status = KphAttachProcessHandle(processHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            if (processObject != PsGetCurrentProcess())
-            {
-                KeStackAttachProcess(processObject, &apcState);
-                attached = TRUE;
-            }
-            
-            ObDereferenceObject(processObject);
             status = ObReferenceObjectByHandle(handle, 0, NULL, KernelMode, &object, NULL);
-            if (attached)
-                KeUnstackDetachProcess(&apcState);
+            KphDetachProcess(&attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
@@ -939,9 +871,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             HANDLE processHandle;
             HANDLE handle;
             ULONG objectInformationClass;
-            BOOLEAN attached = FALSE;
-            KAPC_STATE apcState;
-            PEPROCESS processObject;
+            KPH_ATTACH_STATE attachState;
             
             if (inLength < 0xc || outLength < 12)
             {
@@ -953,18 +883,10 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             handle = *(HANDLE *)(dataBuffer + 4);
             objectInformationClass = *(ULONG *)(dataBuffer + 8);
             
-            status = ObReferenceObjectByHandle(processHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+            status = KphAttachProcessHandle(processHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
-            
-            if (processObject != PsGetCurrentProcess())
-            {
-                KeStackAttachProcess(processObject, &apcState);
-                attached = TRUE;
-            }
-            
-            ObDereferenceObject(processObject);
             
             status2 = ZwQueryObject(
                 handle,
@@ -973,6 +895,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 outLength - 12,
                 &retLength
                 );
+            KphDetachProcess(&attachState);
             
             *(PULONG)(dataBuffer + 4) = retLength;
             *(PCHAR *)(dataBuffer + 8) = (PCHAR)dataBuffer + 12;
@@ -983,9 +906,58 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 retLength = 12;
             
             *(PNTSTATUS)dataBuffer = status2;
+        }
+        break;
+        
+        case KPH_GETPROCESSID:
+        {
+            HANDLE processHandle;
+            HANDLE handle;
+            KPH_ATTACH_STATE attachState;
             
-            if (attached)
-                KeUnstackDetachProcess(&apcState);
+            if (inLength < 8 || outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            handle = *(HANDLE *)(dataBuffer + 4);
+            
+            status = KphAttachProcessHandle(processHandle, &attachState);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            *(PHANDLE)dataBuffer = KphGetProcessId(handle);
+            KphDetachProcess(&attachState);
+            retLength = 4;
+        }
+        break;
+        
+        case KPH_GETTHREADID:
+        {
+            HANDLE processHandle;
+            HANDLE handle;
+            KPH_ATTACH_STATE attachState;
+            
+            if (inLength < 8 || outLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            processHandle = *(HANDLE *)dataBuffer;
+            handle = *(HANDLE *)(dataBuffer + 4);
+            
+            status = KphAttachProcessHandle(processHandle, &attachState);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            *(PHANDLE)dataBuffer = KphGetThreadId(handle, (PHANDLE)((PCHAR)dataBuffer + 4));
+            KphDetachProcess(&attachState);
+            retLength = 8;
         }
         break;
         

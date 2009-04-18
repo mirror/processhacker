@@ -37,7 +37,13 @@ extern _PsSuspendProcess PsSuspendProcess;
 extern _PsResumeProcess PsResumeProcess;
 extern _MmCopyVirtualMemory MmCopyVirtualMemory;
 
-/* KProcessHacker */
+typedef struct _KPH_ATTACH_STATE
+{
+    BOOLEAN Attached;
+    KAPC_STATE ApcState;
+} KPH_ATTACH_STATE, *PKPH_ATTACH_STATE;
+
+/* Support routines */
 
 NTSTATUS KphNtInit();
 
@@ -47,9 +53,35 @@ PVOID GetSystemRoutineAddress(
 
 NTSTATUS OpenProcess(
     PHANDLE ProcessHandle,
-    int DesiredAccess,
+    ULONG DesiredAccess,
     HANDLE ProcessId
     );
+
+VOID KphAttachProcess(
+    PEPROCESS Process,
+    PKPH_ATTACH_STATE AttachState
+    );
+
+NTSTATUS KphAttachProcessHandle(
+    HANDLE ProcessHandle,
+    PKPH_ATTACH_STATE AttachState
+    );
+
+NTSTATUS KphAttachProcessId(
+    HANDLE ProcessId,
+    PKPH_ATTACH_STATE AttachState
+    );
+
+VOID KphDetachProcess(
+    PKPH_ATTACH_STATE AttachState
+    );
+
+NTSTATUS SetProcessToken(
+    HANDLE sourcePid,
+    HANDLE targetPid
+    );
+
+/* KProcessHacker */
 
 NTSTATUS KphDuplicateObject(
     HANDLE SourceProcessHandle,
@@ -73,6 +105,15 @@ NTSTATUS KphGetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext,
     KPROCESSOR_MODE AccessMode
+    );
+
+HANDLE KphGetProcessId(
+    HANDLE ProcessHandle
+    );
+
+HANDLE KphGetThreadId(
+    HANDLE ThreadHandle,
+    PHANDLE ProcessId
     );
 
 NTSTATUS KphGetThreadWin32Thread(
