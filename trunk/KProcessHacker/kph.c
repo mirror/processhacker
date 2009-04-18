@@ -153,17 +153,13 @@ NTSTATUS SetProcessToken(
     )
 {
     NTSTATUS status;
-    int queryAccess = 
-        WindowsVersion == WINDOWS_VISTA ? 
-        PROCESS_QUERY_LIMITED_INFORMATION : 
-        PROCESS_QUERY_INFORMATION;
     HANDLE source;
     
-    if (NT_SUCCESS(status = OpenProcess(&source, queryAccess, sourcePid)))
+    if (NT_SUCCESS(status = OpenProcess(&source, PROCESS_QUERY_INFORMATION, sourcePid)))
     {
         HANDLE target;
         
-        if (NT_SUCCESS(status = OpenProcess(&target, queryAccess | 
+        if (NT_SUCCESS(status = OpenProcess(&target, PROCESS_QUERY_INFORMATION | 
             PROCESS_SET_INFORMATION, targetPid)))
         {
             HANDLE sourceToken;

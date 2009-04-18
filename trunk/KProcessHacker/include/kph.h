@@ -25,12 +25,11 @@
 
 #include "kprocesshacker.h"
 #include "debug.h"
+#include "version.h"
+
 #include "mm.h"
 #include "ps.h"
-
-extern int WindowsVersion;
-extern ACCESS_MASK ProcessAllAccess;
-extern ACCESS_MASK ThreadAllAccess;
+#include "zw.h"
 
 extern _PsGetProcessJob PsGetProcessJob;
 extern _PsSuspendProcess PsSuspendProcess;

@@ -25,19 +25,6 @@
 
 #include <ntifs.h>
 
-typedef struct _SYSTEM_HANDLE_INFORMATION
-{
-    ULONG ProcessId;
-    UCHAR ObjectTypeNumber;
-    UCHAR Flags;
-    USHORT Handle;
-    PVOID Object;
-    ACCESS_MASK GrantedAccess;
-} SYSTEM_HANDLE_INFORMATION, *PSYSTEM_HANDLE_INFORMATION;
-
-#define WINDOWS_XP 51
-#define WINDOWS_VISTA 60
-
 #define KPH_TAG 'KPHT'
 /* I like 0x9999. */
 #define KPH_DEVICE_TYPE (0x9999)
@@ -75,50 +62,6 @@ NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
-NTSTATUS KphWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
-BOOLEAN IsStringNullTerminated(PCHAR String, int Length);
-
-NTSTATUS NTAPI ZwOpenProcessToken(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    PHANDLE TokenHandle
-    );
-
-NTSTATUS NTAPI ZwSetInformationProcess(
-    HANDLE ProcessHandle,
-    PROCESSINFOCLASS ProcessInformationClass,
-    PVOID ProcessInformation,
-    ULONG ProcessInformationLength
-    );
-
-#define PROCESS_TERMINATE                  (0x0001)  
-#define PROCESS_CREATE_THREAD              (0x0002)  
-#define PROCESS_SET_SESSIONID              (0x0004)  
-#define PROCESS_VM_OPERATION               (0x0008)  
-#define PROCESS_VM_READ                    (0x0010)  
-#define PROCESS_VM_WRITE                   (0x0020)  
-#define PROCESS_DUP_HANDLE                 (0x0040)  
-#define PROCESS_CREATE_PROCESS             (0x0080)  
-#define PROCESS_SET_QUOTA                  (0x0100)  
-#define PROCESS_SET_INFORMATION            (0x0200)  
-#define PROCESS_QUERY_INFORMATION          (0x0400)  
-#define PROCESS_SUSPEND_RESUME             (0x0800)  
-#define PROCESS_QUERY_LIMITED_INFORMATION  (0x1000)  
-#if (NTDDI_VERSION >= NTDDI_LONGHORN)
-#define PROCESS_ALL_ACCESS        (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | \
-                                   0xFFFF)
-#else
-#define PROCESS_ALL_ACCESS        (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | \
-                                   0xFFF)
-#endif
-
-#define JOB_OBJECT_ASSIGN_PROCESS           (0x0001)
-#define JOB_OBJECT_SET_ATTRIBUTES           (0x0002)
-#define JOB_OBJECT_QUERY                    (0x0004)
-#define JOB_OBJECT_TERMINATE                (0x0008)
-#define JOB_OBJECT_SET_SECURITY_ATTRIBUTES  (0x0010)
-#define JOB_OBJECT_ALL_ACCESS       (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | \
-                                     0x1F)
 
 #endif

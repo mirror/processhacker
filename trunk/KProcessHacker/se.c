@@ -42,7 +42,7 @@ NTSTATUS KphOpenProcessTokenEx(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*SeTokenObjectType + 52)
+        (PGENERIC_MAPPING)KVOFF(*SeTokenObjectType, OffOtiGenericMapping)
         );
     
     if (!NT_SUCCESS(status))
@@ -57,7 +57,14 @@ NTSTATUS KphOpenProcessTokenEx(
     
     accessState.RemainingDesiredAccess = 0;
     
-    status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, 0);
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        0,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL
+        );
     
     if (!NT_SUCCESS(status))
     {

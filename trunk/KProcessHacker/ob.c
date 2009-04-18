@@ -222,7 +222,7 @@ NTSTATUS KphObDuplicateObject(
             &accessState,
             (PAUX_ACCESS_DATA)auxData,
             DesiredAccess,
-            (PGENERIC_MAPPING)((PCHAR)objectType + 52)
+            (PGENERIC_MAPPING)KVOFF(objectType, OffOtiGenericMapping)
             );
         
         if (!NT_SUCCESS(status))

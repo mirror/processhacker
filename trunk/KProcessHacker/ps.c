@@ -120,10 +120,7 @@ HANDLE KphGetThreadId(
         *PsThreadType, KernelMode, &threadObject, NULL)))
         return 0;
     
-    if (WindowsVersion == WINDOWS_VISTA)
-        clientId = *(PCLIENT_ID)((PCHAR)threadObject + 0x20c);
-    else
-        clientId = *(PCLIENT_ID)((PCHAR)threadObject + 0x1ec);
+    clientId = *(PCLIENT_ID)KVOFF(threadObject, OffEtClientId);
     
     ObDereferenceObject(threadObject);
     
@@ -167,7 +164,7 @@ NTSTATUS KphOpenProcess(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*PsProcessType + 52)
+        (PGENERIC_MAPPING)KVOFF(*PsProcessType, OffOtiGenericMapping)
         );
     
     if (!NT_SUCCESS(status))
@@ -261,7 +258,7 @@ NTSTATUS KphOpenProcessJob(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*PsJobType + 52)
+        (PGENERIC_MAPPING)KVOFF(*PsJobType, OffOtiGenericMapping)
         );
     
     if (!NT_SUCCESS(status))
@@ -290,10 +287,7 @@ NTSTATUS KphOpenProcessJob(
     }
     else
     {
-        if (WindowsVersion == WINDOWS_VISTA)
-            jobObject = *(PVOID *)((PCHAR)processObject + 0x10c);
-        else
-            jobObject = *(PVOID *)((PCHAR)processObject + 0x134);
+        jobObject = *(PVOID *)((PCHAR)processObject + OffEpJob);
     }
     
     ObDereferenceObject(processObject);
@@ -346,7 +340,7 @@ NTSTATUS KphOpenThread(
         &accessState,
         (PAUX_ACCESS_DATA)auxData,
         DesiredAccess,
-        (PGENERIC_MAPPING)((PCHAR)*PsThreadType + 52)
+        (PGENERIC_MAPPING)KVOFF(*PsThreadType, OffOtiGenericMapping)
         );
     
     if (!NT_SUCCESS(status))

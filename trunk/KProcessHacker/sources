@@ -7,6 +7,7 @@ LIBS=%BUILD%\lib
 
 SOURCES= \
     kprocesshacker.c \
+    version.c \
     kph.c \
     mm.c \
     ob.c \

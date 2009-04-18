@@ -1,6 +1,6 @@
 /*
  * Process Hacker Driver - 
- *   debug definitions
+ *   Windows version-specific data
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -20,12 +20,41 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef DBG
-#define dprintf(fs, ...) DbgPrint("KProcessHacker: " fs, __VA_ARGS__)
-#define dfprintf DbgPrint
+#ifndef _VERSION_H
+#define _VERSION_H
+
+#include "kprocesshacker.h"
+
+#define WINDOWS_XP 51
+#define WINDOWS_VISTA 60
+
+#define KVOFF(object, offset) ((PCHAR)(object) + offset)
+
+NTSTATUS KvInit();
+
+#ifdef KPH_VERSION_PRIVATE
+#define EXT
 #else
-#define dprintf
-#define dfprintf DbgPrint
+#define EXT extern
 #endif
 
-#define dwprintf DbgPrint
+EXT ULONG WindowsVersion;
+EXT RTL_OSVERSIONINFOW RtlWindowsVersion;
+EXT ACCESS_MASK ProcessAllAccess;
+EXT ACCESS_MASK ThreadAllAccess;
+
+/* Offsets */
+/*
+ * Et: ETHREAD
+ * Ep: EPROCESS
+ * Ot: OBJECT_TYPE
+ * Oti: OBJECT_TYPE_INITIALIZER, offset measured from an OBJECT_TYPE
+ */
+EXT ULONG OffEtClientId;
+EXT ULONG OffEtStartAddress;
+EXT ULONG OffEtWin32StartAddress;
+EXT ULONG OffEpJob;
+EXT ULONG OffOtiGenericMapping;
+
+#endif
+

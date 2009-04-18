@@ -21,26 +21,18 @@
  */
 
 #include "include/kprocesshacker.h"
+#include "include/debug.h"
 #include "include/kph.h"
 #include "include/ps.h"
-#include "include/debug.h"
-
-#define ALLOW_UNLOAD
+#include "include/version.h"
 
 #pragma alloc_text(PAGE, KphCreate)
 #pragma alloc_text(PAGE, KphClose)
 #pragma alloc_text(PAGE, KphIoControl)
 #pragma alloc_text(PAGE, KphRead)
-#pragma alloc_text(PAGE, KphWrite)
 #pragma alloc_text(PAGE, KphUnsupported)
-#pragma alloc_text(PAGE, IsStringNullTerminated)
 
-int WindowsVersion;
-RTL_OSVERSIONINFOW RtlWindowsVersion;
-ACCESS_MASK ProcessAllAccess;
-ACCESS_MASK ThreadAllAccess;
-
-void DriverUnload(PDRIVER_OBJECT DriverObject)
+VOID DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     UNICODE_STRING dosDeviceName;
     
@@ -48,7 +40,7 @@ void DriverUnload(PDRIVER_OBJECT DriverObject)
     IoDeleteSymbolicLink(&dosDeviceName);
     IoDeleteDevice(DriverObject->DeviceObject);
     
-    dprintf("KProcessHacker: Driver unloaded\n");
+    dprintf("Driver unloaded\n");
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
@@ -58,33 +50,13 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     PDEVICE_OBJECT deviceObject = NULL;
     UNICODE_STRING deviceName, dosDeviceName;
     
-    RtlWindowsVersion.dwOSVersionInfoSize = sizeof(RtlWindowsVersion);
-    status = RtlGetVersion(&RtlWindowsVersion);
-    
+    /* Initialize version information */
+    status = KvInit();
     if (!NT_SUCCESS(status))
         return status;
     
-    /* Windows XP */
-    if (RtlWindowsVersion.dwMajorVersion == 5 && RtlWindowsVersion.dwMinorVersion == 1)
-    {
-        WindowsVersion = WINDOWS_XP;
-        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
-        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
-    }
-    /* Windows Vista */
-    else if (RtlWindowsVersion.dwMajorVersion == 6 && RtlWindowsVersion.dwMinorVersion == 0)
-    {
-        WindowsVersion = WINDOWS_VISTA;
-        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
-        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
-    }
-    else
-    {
-        return STATUS_NOT_IMPLEMENTED;
-    }
-    
+    /* Initialize NT KPH */
     status = KphNtInit();
-    
     if (!NT_SUCCESS(status))
         return status;
     
@@ -101,17 +73,14 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     DriverObject->MajorFunction[IRP_MJ_CREATE] = KphCreate;
     DriverObject->MajorFunction[IRP_MJ_READ] = KphRead;
     DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = KphIoControl;
-    
-#ifdef ALLOW_UNLOAD
     DriverObject->DriverUnload = DriverUnload;
-#endif
     
     deviceObject->Flags |= DO_BUFFERED_IO;
     deviceObject->Flags &= ~DO_DEVICE_INITIALIZING;
     
     IoCreateSymbolicLink(&dosDeviceName, &deviceName);
     
-    dprintf("KProcessHacker: Driver loaded\n");
+    dprintf("Driver loaded\n");
     
     return STATUS_SUCCESS;
 }
@@ -120,8 +89,8 @@ NTSTATUS KphCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    dprintf("KProcessHacker: Client (PID %d) connected\n", PsGetCurrentProcessId());
-    dprintf("KProcessHacker: Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
+    dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
+    dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
     return status;
 }
@@ -130,7 +99,7 @@ NTSTATUS KphClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    dprintf("KProcessHacker: Client disconnected\n");
+    dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
     return status;
 }
@@ -190,7 +159,7 @@ NTSTATUS GetObjectName(PFILE_OBJECT lpObject, PVOID lpBuffer, ULONG nBufferLengt
     return STATUS_SUCCESS;
 }
 
-char *GetIoControlName(ULONG ControlCode)
+PCHAR GetIoControlName(ULONG ControlCode)
 {
     if (ControlCode == KPH_READ)
         return "Read";
@@ -278,7 +247,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     outLength = ioStackIrp->Parameters.DeviceIoControl.OutputBufferLength;
     controlCode = ioStackIrp->Parameters.DeviceIoControl.IoControlCode;
     
-    dprintf("KProcessHacker: IoControl 0x%08x (%s)\n", controlCode, GetIoControlName(controlCode));
+    dprintf("IoControl 0x%08x (%s)\n", controlCode, GetIoControlName(controlCode));
     
     switch (controlCode)
     {
@@ -385,7 +354,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     ObDereferenceObject(inObject);
                     
                     if (NT_SUCCESS(status))
-                        dprintf("KProcessHacker: Resolved object name (indirect): %ws\n", 
+                        dprintf("Resolved object name (indirect): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
                 else
@@ -395,7 +364,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                     ObDereferenceObject(object);
                     
                     if (NT_SUCCESS(status))
-                        dprintf("KProcessHacker: Resolved object name (direct): %ws\n", 
+                        dprintf("Resolved object name (direct): %ws\n", 
                             (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
             }
@@ -683,19 +652,10 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             /* Get the Win32StartAddress */
-            if (WindowsVersion == WINDOWS_VISTA)
-                startAddress = *(PVOID *)((PCHAR)threadObject + 0x240);
-            else
-                startAddress = *(PVOID *)((PCHAR)threadObject + 0x228);
-            
+            startAddress = *(PVOID *)KVOFF(threadObject, OffEtWin32StartAddress);
             /* If that failed, get the StartAddress */
             if (!startAddress)
-            {
-                if (WindowsVersion == WINDOWS_VISTA)
-                    startAddress = *(PVOID *)((PCHAR)threadObject + 0x1f8);
-                else
-                    startAddress = *(PVOID *)((PCHAR)threadObject + 0x224);
-            }
+                startAddress = *(PVOID *)KVOFF(threadObject, OffEtStartAddress);
             
             *(PVOID *)dataBuffer = startAddress;
             ObDereferenceObject(threadObject);
@@ -963,7 +923,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         default:
         {
-            dprintf("KProcessHacker: unrecognized IOCTL code 0x%08x\n", controlCode);
+            dprintf("Unrecognized IOCTL code 0x%08x\n", controlCode);
             status = STATUS_INVALID_DEVICE_REQUEST;
         }
         break;
@@ -972,7 +932,7 @@ NTSTATUS KphIoControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 IoControlEnd:
     Irp->IoStatus.Information = retLength;
     Irp->IoStatus.Status = status;
-    dprintf("KProcessHacker: IOCTL 0x%08x result was 0x%08x\n", controlCode, status);
+    dprintf("IOCTL 0x%08x result was 0x%08x\n", controlCode, status);
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
     
     return status;
@@ -993,7 +953,7 @@ NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         if (readDataBuffer != NULL)
         {
-            dprintf("KProcessHacker: Client read %d bytes!\n", readLength);
+            dprintf("Client read %d bytes!\n", readLength);
             
             if (readLength == 4)
             {
@@ -1011,29 +971,6 @@ NTSTATUS KphRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     Irp->IoStatus.Status = status;
     IoCompleteRequest(Irp, IO_NO_INCREMENT);
     
-    return status;
-}
-
-NTSTATUS KphWrite(PDEVICE_OBJECT DeviceObject, PIRP Irp)
-{
-    NTSTATUS status = STATUS_SUCCESS;
-    PIO_STACK_LOCATION ioStackIrp = NULL;
-    PCHAR writeDataBuffer;
-    
-    ioStackIrp = IoGetCurrentIrpStackLocation(Irp);
-    
-    if (ioStackIrp != NULL)
-    {
-        writeDataBuffer = (PCHAR)Irp->AssociatedIrp.SystemBuffer;
-    
-        if (writeDataBuffer != NULL)
-        {
-            DbgPrint("KProcessHacker: Client wrote %d bytes!\n", ioStackIrp->Parameters.Write.Length);
-        }
-    }
-    
-    IoCompleteRequest(Irp, IO_NO_INCREMENT);
-
     return status;
 }
 
