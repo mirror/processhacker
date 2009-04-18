@@ -139,7 +139,7 @@ VOID KphObDereferenceProcessHandleTable(
     PEPROCESS Process
     )
 {
-    ExReleaseRundownProtection(&((PEPROCESS2)Process)->RundownProtect);
+    ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
 }
 
 NTSTATUS KphObDuplicateObject(
@@ -263,12 +263,12 @@ PHANDLE_TABLE KphObReferenceProcessHandleTable(
 {
     PHANDLE_TABLE handleTable = NULL;
     
-    if (ExAcquireRundownProtection(&((PEPROCESS2)Process)->RundownProtect))
+    if (ExAcquireRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect)))
     {
-        handleTable = ((PEPROCESS2)Process)->ObjectTable;
+        handleTable = *(PHANDLE_TABLE *)KVOFF(Process, OffEpObjectTable);
         
         if (!handleTable)
-            ExReleaseRundownProtection(&((PEPROCESS2)Process)->RundownProtect);
+            ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
     }
     
     return handleTable;

@@ -44,6 +44,8 @@ NTSTATUS KvInit()
         OffEtStartAddress = 0x224;
         OffEtWin32StartAddress = 0x228;
         OffEpJob = 0x134;
+        OffEpObjectTable = 0xc4;
+        OffEpRundownProtect = 0x80;
         OffOtiGenericMapping = 0x68;
         dprintf("Initialized version-specific data for Windows XP\n");
     }
@@ -57,6 +59,8 @@ NTSTATUS KvInit()
         OffEtStartAddress = 0x1f8;
         OffEtWin32StartAddress = 0x240;
         OffEpJob = 0x10c;
+        OffEpObjectTable = 0xdc;
+        OffEpRundownProtect = 0x98;
         OffOtiGenericMapping = 0x34;
         dprintf("Initialized version-specific data for Windows Vista\n");
     }

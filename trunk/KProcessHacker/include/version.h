@@ -54,6 +54,8 @@ EXT ULONG OffEtClientId;
 EXT ULONG OffEtStartAddress;
 EXT ULONG OffEtWin32StartAddress;
 EXT ULONG OffEpJob;
+EXT ULONG OffEpObjectTable;
+EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOtiGenericMapping;
 
 #endif
