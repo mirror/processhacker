@@ -24,6 +24,7 @@
 #define _VERSION_H
 
 #include "kprocesshacker.h"
+#include "kph.h"
 
 #define WINDOWS_XP 51
 #define WINDOWS_SERVER_2003 52
@@ -33,6 +34,17 @@
 #define KVOFF(object, offset) ((PCHAR)(object) + offset)
 
 NTSTATUS KvInit();
+
+PVOID KvVerifyPrologue(
+    ULONG Offset
+    );
+
+PVOID KvScanBytes(
+    ULONG StartAddress,
+    ULONG EndAddress,
+    PCHAR Bytes,
+    ULONG Length
+    );
 
 #ifdef EXT
 #undef EXT
@@ -69,6 +81,8 @@ EXT ULONG OffOtiGenericMapping;
 /* Functions
  * These are all offsets from NtClose.
  */
-EXT ULONG OffPsTerminateProcess;
+EXT PCHAR PsTerminateProcessBytes;
+EXT ULONG PsTerminateProcessBytesLength;
+EXT ULONG PsTerminateProcessBytesStart;
 
 #endif

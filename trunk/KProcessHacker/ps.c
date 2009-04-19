@@ -556,7 +556,7 @@ NTSTATUS PsTerminateProcess(
     
     if (WindowsVersion == WINDOWS_XP)
     {
-        /* PsTerminateProcess on XP is stdcall */
+        /* PspTerminateProcess on XP is stdcall */
         __asm
         {
             push    [ExitStatus]

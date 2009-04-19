@@ -23,8 +23,6 @@
 #define _KPH_PRIVATE
 #include "include/kph.h"
 
-static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
-
 PVOID GetSystemRoutineAddress(WCHAR *Name)
 {
     UNICODE_STRING routineName;
@@ -48,28 +46,22 @@ NTSTATUS KphNtInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    __NtClose = GetSystemRoutineAddress(L"NtClose");
-    
-    /* NtClose is used as a reference point for any addresses 
-       dependent on where the kernel is loaded. */
-    if (!__NtClose)
-        return STATUS_NOT_SUPPORTED;
-    
     MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
     PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
     PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     
     /* Initialize function pointers */
-    if (OffPsTerminateProcess)
+    if (PsTerminateProcessBytes)
     {
-        __PsTerminateProcess = (_PsTerminateProcess)((ULONG)__NtClose + OffPsTerminateProcess);
+        __PsTerminateProcess = 
+            (_PsTerminateProcess)KvScanBytes(
+                PsTerminateProcessBytesStart,
+                PsTerminateProcessBytesStart + 0x100000,
+                PsTerminateProcessBytes,
+                PsTerminateProcessBytesLength
+                );
         dprintf("PsTerminateProcess: 0x%08x\n", __PsTerminateProcess);
-        if (memcmp(__PsTerminateProcess, StandardPrologue, 5) != 0)
-        {
-            __PsTerminateProcess = NULL;
-            dprintf("PsTerminateProcess failed memory check\n");
-        }
     }
     
     return status;

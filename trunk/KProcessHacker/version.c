@@ -24,6 +24,23 @@
 #include "include/version.h"
 #include "include/debug.h"
 
+static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
+static char PspTerminateProcess51[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x56, 0x64, 0xa1,
+    0x24, 0x01, 0x00, 0x00, 0x8b, 0x75, 0x08, 0x3b
+};
+static char PsTerminateProcess60[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
+    0x33, 0xd2, 0x6a, 0x08, 0x42, 0x5e, 0x8d, 0xb9
+};
+static char PsTerminateProcess61[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
+    0x33, 0xd2, 0x6a, 0x08, 0x42, 0x5e, 0x8d, 0xb9
+};
+
 /* The following offsets took me a long time to work out, so 
    please do not steal them. If you want to use them, please 
    license your project under the GNU GPL (although you are 
@@ -32,7 +49,7 @@
 NTSTATUS KvInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
-    ULONG majorVersion, minorVersion, servicePack;
+    ULONG majorVersion, minorVersion, servicePack, buildNumber;
     
     RtlWindowsVersion.dwOSVersionInfoSize = sizeof(RtlWindowsVersion);
     status = RtlGetVersion((PRTL_OSVERSIONINFOW)&RtlWindowsVersion);
@@ -43,6 +60,18 @@ NTSTATUS KvInit()
     majorVersion = RtlWindowsVersion.dwMajorVersion;
     minorVersion = RtlWindowsVersion.dwMinorVersion;
     servicePack = RtlWindowsVersion.wServicePackMajor;
+    buildNumber = RtlWindowsVersion.dwBuildNumber;
+    dprintf("Windows %d.%d, SP%d.%d, build %d\n",
+        majorVersion, minorVersion, servicePack,
+        RtlWindowsVersion.wServicePackMinor, buildNumber
+        );
+    
+    __NtClose = GetSystemRoutineAddress(L"NtClose");
+    
+    /* NtClose is used as a reference point for any addresses 
+       dependent on where the kernel is loaded. */
+    if (!__NtClose)
+        return STATUS_NOT_SUPPORTED;
     
     /* Windows XP */
     if (majorVersion == 5 && minorVersion == 1)
@@ -61,6 +90,14 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0x80;
         OffOtiGenericMapping = 0x60 + 0x8;
         
+        /* We are scanning for PspTerminateProcess which has 
+           the same signature as PsTerminateProcess because 
+           PsTerminateProcess is simply a wrapper.
+         */
+        PsTerminateProcessBytes = PspTerminateProcess51;
+        PsTerminateProcessBytesLength = 16;
+        PsTerminateProcessBytesStart = (ULONG)__NtClose;
+        
         /* Windows XP SP0 and 1 are not supported */
         if (servicePack == 0)
         {
@@ -72,12 +109,9 @@ NTSTATUS KvInit()
         }
         else if (servicePack == 2)
         {
-            /* Seems to be OK for both ntkrnlpa and ntkrpamp */
-            OffPsTerminateProcess = 0x16576;
         }
         else if (servicePack == 3)
         {
-            OffPsTerminateProcess = 0x1676c;
         }
         else
         {
@@ -109,17 +143,19 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
         
+        PsTerminateProcessBytes = PsTerminateProcess60;
+        PsTerminateProcessBytesLength = 16;
+        PsTerminateProcessBytesStart = (ULONG)__NtClose;
+        
         /* SP0 */
         if (servicePack == 0)
         {
             OffOtiGenericMapping = 0x60 + 0xc;
-            OffPsTerminateProcess = 0x29b83;
         }
         /* SP1 */
         else if (servicePack == 1)
         {
             OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
-            OffPsTerminateProcess = 0x7768a;
         }
         else
         {
@@ -144,12 +180,13 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0xb0;
         OffOtiGenericMapping = 0x28 + 0xc;
         
+        PsTerminateProcessBytes = PsTerminateProcess61;
+        PsTerminateProcessBytesLength = 16;
+        PsTerminateProcessBytesStart = (ULONG)__NtClose + 0xfff80000; /* negative */
+        
         /* SP0 */
         if (servicePack == 0)
         {
-            /* In Windows 7 PsTerminateProcess is before 
-               NtClose, so we have a negative number here. */
-            OffPsTerminateProcess = 0xfff80dc2;
         }
         else
         {
@@ -164,4 +201,34 @@ NTSTATUS KvInit()
     }
     
     return status;
+}
+
+PVOID KvVerifyPrologue(
+    ULONG Offset
+    )
+{
+    PVOID address = (PVOID)((ULONG)__NtClose + Offset);
+    
+    if (memcmp(address, StandardPrologue, 5) == 0)
+        return address;
+    else
+        return NULL;
+}
+
+PVOID KvScanBytes(
+    ULONG StartAddress,
+    ULONG EndAddress,
+    PCHAR Bytes,
+    ULONG Length
+    )
+{
+    ULONG i;
+    
+    for (i = StartAddress; i < EndAddress; i++)
+    {
+        if (memcmp((PVOID)i, Bytes, Length) == 0)
+            return (PVOID)i;
+    }
+    
+    return NULL;
 }
