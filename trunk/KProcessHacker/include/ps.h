@@ -69,6 +69,11 @@ typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
     PEPROCESS Process
     );
 
+typedef NTSTATUS (__fastcall *_PsTerminateProcess)(
+    PEPROCESS Process,
+    NTSTATUS ExitStatus
+    );
+
 /* STRUCTS */
 
 typedef struct _KEXECUTE_OPTIONS

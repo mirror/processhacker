@@ -20,10 +20,15 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define KPH_VERSION_PRIVATE
+#define _VERSION_PRIVATE
 #include "include/version.h"
 #include "include/debug.h"
 
+/* The following offsets took me a long time to work out, so 
+   please do not steal them. If you want to use them, please 
+   license your project under the GNU GPL (although you are 
+   not legally required to).
+ */
 NTSTATUS KvInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -58,15 +63,26 @@ NTSTATUS KvInit()
         
         /* Windows XP SP0 and 1 are not supported */
         if (servicePack == 0)
+        {
             return STATUS_NOT_SUPPORTED;
+        }
         else if (servicePack == 1)
+        {
             return STATUS_NOT_SUPPORTED;
+        }
         else if (servicePack == 2)
-            ;
+        {
+            /* Seems to be OK for both ntkrnlpa and ntkrpamp */
+            OffPsTerminateProcess = 0x16576;
+        }
         else if (servicePack == 3)
-            ;
+        {
+            OffPsTerminateProcess = 0x1676c;
+        }
         else
+        {
             return STATUS_NOT_SUPPORTED;
+        }
         
         dprintf("Initialized version-specific data for Windows XP SP%d\n", servicePack);
     }
@@ -97,12 +113,13 @@ NTSTATUS KvInit()
         if (servicePack == 0)
         {
             OffOtiGenericMapping = 0x60 + 0xc;
+            OffPsTerminateProcess = 0x29b83;
         }
         /* SP1 */
         else if (servicePack == 1)
         {
-            /* They got rid of the Mutex (an ERESOURCE) */
-            OffOtiGenericMapping = 0x28 + 0xc;
+            OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
+            OffPsTerminateProcess = 0x7768a;
         }
         else
         {
@@ -129,9 +146,15 @@ NTSTATUS KvInit()
         
         /* SP0 */
         if (servicePack == 0)
-            ;
+        {
+            /* In Windows 7 PsTerminateProcess is before 
+               NtClose, so we have a negative number here. */
+            OffPsTerminateProcess = 0xfff80dc2;
+        }
         else
+        {
             return STATUS_NOT_SUPPORTED;
+        }
         
         dprintf("Initialized version-specific data for Windows 7 SP%d\n", servicePack);
     }

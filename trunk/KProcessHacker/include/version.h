@@ -25,16 +25,20 @@
 
 #include "kprocesshacker.h"
 
-#define WINDOWS_XP '0051'
-#define WINDOWS_SERVER_2003 '0052'
-#define WINDOWS_VISTA '0060'
-#define WINDOWS_7 '0061'
+#define WINDOWS_XP 51
+#define WINDOWS_SERVER_2003 52
+#define WINDOWS_VISTA 60
+#define WINDOWS_7 61
 
 #define KVOFF(object, offset) ((PCHAR)(object) + offset)
 
 NTSTATUS KvInit();
 
-#ifdef KPH_VERSION_PRIVATE
+#ifdef EXT
+#undef EXT
+#endif
+
+#ifdef _VERSION_PRIVATE
 #define EXT
 #else
 #define EXT extern
@@ -46,7 +50,7 @@ EXT ACCESS_MASK ProcessAllAccess;
 EXT ACCESS_MASK ThreadAllAccess;
 
 /* Offsets */
-/*
+/* Structures
  * Et: ETHREAD
  * Ep: EPROCESS
  * Ot: OBJECT_TYPE
@@ -61,5 +65,10 @@ EXT ULONG OffEpProtectedProcessOff;
 EXT ULONG OffEpProtectedProcessBit;
 EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOtiGenericMapping;
+
+/* Functions
+ * These are all offsets from NtClose.
+ */
+EXT ULONG OffPsTerminateProcess;
 
 #endif

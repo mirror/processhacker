@@ -81,7 +81,7 @@ NTSTATUS KphDuplicateObject(
     }
     
     /* Call the internal function */
-    status = KphObDuplicateObject(
+    status = ObDuplicateObject(
         sourceProcess,
         targetProcess,
         SourceHandle,
@@ -121,7 +121,7 @@ BOOLEAN KphEnumProcessHandleTable(
     BOOLEAN result = FALSE;
     PHANDLE_TABLE handleTable = NULL;
     
-    handleTable = KphObReferenceProcessHandleTable(Process);
+    handleTable = ObReferenceProcessHandleTable(Process);
     
     if (!handleTable)
         return FALSE;
@@ -131,18 +131,18 @@ BOOLEAN KphEnumProcessHandleTable(
         EnumHandleProcedure,
         Context,
         Handle);
-    KphObDereferenceProcessHandleTable(Process);
+    ObDereferenceProcessHandleTable(Process);
     return result;
 }
 
-VOID KphObDereferenceProcessHandleTable(
+VOID ObDereferenceProcessHandleTable(
     PEPROCESS Process
     )
 {
     ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
 }
 
-NTSTATUS KphObDuplicateObject(
+NTSTATUS ObDuplicateObject(
     PEPROCESS SourceProcess,
     PEPROCESS TargetProcess,
     HANDLE SourceHandle,
@@ -257,7 +257,7 @@ OpenObjectEnd:
     return status;
 }
 
-PHANDLE_TABLE KphObReferenceProcessHandleTable(
+PHANDLE_TABLE ObReferenceProcessHandleTable(
     PEPROCESS Process
     )
 {

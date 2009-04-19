@@ -20,8 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _KPH_NT_H
-#define _KPH_NT_H
+#ifndef _KPH_H
+#define _KPH_H
 
 #include "kprocesshacker.h"
 #include "debug.h"
@@ -31,10 +31,24 @@
 #include "ps.h"
 #include "zw.h"
 
-extern _PsGetProcessJob PsGetProcessJob;
-extern _PsSuspendProcess PsSuspendProcess;
-extern _PsResumeProcess PsResumeProcess;
-extern _MmCopyVirtualMemory MmCopyVirtualMemory;
+#ifdef EXT
+#undef EXT
+#endif
+
+#ifdef _KPH_PRIVATE
+#define EXT
+#define EQNULL = NULL
+#else
+#define EXT extern
+#define EQNULL
+#endif
+
+EXT _MmCopyVirtualMemory MmCopyVirtualMemory EQNULL;
+EXT _NtClose __NtClose EQNULL;
+EXT _PsGetProcessJob PsGetProcessJob EQNULL;
+EXT _PsResumeProcess PsResumeProcess EQNULL;
+EXT _PsSuspendProcess PsSuspendProcess EQNULL;
+EXT _PsTerminateProcess __PsTerminateProcess EQNULL;
 
 typedef struct _KPH_ATTACH_STATE
 {
@@ -191,7 +205,7 @@ NTSTATUS KphWriteVirtualMemory(
 
 /* OB */
 
-NTSTATUS KphObDuplicateObject(
+NTSTATUS ObDuplicateObject(
     PEPROCESS SourceProcess,
     PEPROCESS TargetProcess,
     HANDLE SourceHandle,
@@ -202,12 +216,18 @@ NTSTATUS KphObDuplicateObject(
     KPROCESSOR_MODE AccessMode
     );
 
-PHANDLE_TABLE KphObReferenceProcessHandleTable(
+PHANDLE_TABLE ObReferenceProcessHandleTable(
     PEPROCESS Process
     );
 
-VOID KphObDereferenceProcessHandleTable(
+VOID ObDereferenceProcessHandleTable(
     PEPROCESS Process
+    );
+
+/* PS */
+NTSTATUS PsTerminateProcess(
+    PEPROCESS Process,
+    NTSTATUS ExitStatus
     );
 
 #endif

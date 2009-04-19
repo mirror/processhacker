@@ -419,7 +419,7 @@ NTSTATUS KphResumeProcess(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     
-    if (PsResumeProcess == NULL)
+    if (!PsResumeProcess)
         return STATUS_NOT_SUPPORTED;
     
     status = ObReferenceObjectByHandle(
@@ -472,7 +472,7 @@ NTSTATUS KphSuspendProcess(
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
     
-    if (PsSuspendProcess == NULL)
+    if (!PsSuspendProcess)
         return STATUS_NOT_SUPPORTED;
     
     status = ObReferenceObjectByHandle(
@@ -515,22 +515,73 @@ NTSTATUS KphTerminateProcess(
         return status;
     
     /* Can't terminate ourself. Get user-mode to do it. */
-    if (PsGetProcessId(processObject) == PsGetCurrentProcessId())
+    if (processObject == PsGetCurrentProcess())
     {
         ObDereferenceObject(processObject);
         return STATUS_DISK_FULL;
     }
     
-    /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
-    clientId.UniqueThread = 0;
-    clientId.UniqueProcess = PsGetProcessId(processObject);
-    status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
-    ObDereferenceObject(processObject);
-    
-    if (NT_SUCCESS(status))
+    if (__PsTerminateProcess)
     {
-        status = ZwTerminateProcess(newProcessHandle, ExitStatus);
-        ZwClose(newProcessHandle);
+        status = PsTerminateProcess(processObject, ExitStatus);
+    }
+    else
+    {
+        /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
+        clientId.UniqueThread = 0;
+        clientId.UniqueProcess = PsGetProcessId(processObject);
+        status = KphOpenProcess(&newProcessHandle, 0x1, &objectAttributes, &clientId, KernelMode);
+        ObDereferenceObject(processObject);
+        
+        if (NT_SUCCESS(status))
+        {
+            status = ZwTerminateProcess(newProcessHandle, ExitStatus);
+            ZwClose(newProcessHandle);
+        }
+    }
+    
+    return status;
+}
+
+NTSTATUS PsTerminateProcess(
+    PEPROCESS Process,
+    NTSTATUS ExitStatus
+    )
+{
+    PVOID psTerminateProcess = __PsTerminateProcess;
+    NTSTATUS status;
+    
+    if (!psTerminateProcess)
+        return STATUS_NOT_SUPPORTED;
+    
+    if (WindowsVersion == WINDOWS_XP)
+    {
+        /* PsTerminateProcess on XP is stdcall */
+        __asm
+        {
+            push    [ExitStatus]
+            push    [Process]
+            call    [psTerminateProcess]
+            mov     [status], eax
+        }
+    }
+    else if (
+        WindowsVersion == WINDOWS_VISTA || 
+        WindowsVersion == WINDOWS_7
+        )
+    {
+        /* PsTerminateProcess on Vista and above is thiscall */
+        __asm
+        {
+            push    [ExitStatus]
+            mov     ecx, [Process]
+            call    [psTerminateProcess]
+            mov     [status], eax
+        }
+    }
+    else
+    {
+        return STATUS_NOT_SUPPORTED;
     }
     
     return status;

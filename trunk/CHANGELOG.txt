@@ -2,6 +2,8 @@ Process Hacker
 
 1.3.6.6
  * NEW/IMPROVED:
+   * "Terminate process" now uses a special kernel-mode method to bypass 
+     almost all anti-termination methods
    * Basic support for Windows 7 in Process Hacker and KProcessHacker
    * Proper symbol support with dbghelp.dll
    * Private, Shared and Shareable Working Set columns

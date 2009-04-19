@@ -36,7 +36,7 @@ NTSTATUS KphReadVirtualMemory(
     PEPROCESS processObject;
     ULONG returnLength = 0;
     
-    if (MmCopyVirtualMemory == NULL)
+    if (!MmCopyVirtualMemory)
         return STATUS_NOT_SUPPORTED;
     
     if (AccessMode != KernelMode)
@@ -107,7 +107,7 @@ NTSTATUS KphWriteVirtualMemory(
     PEPROCESS processObject;
     ULONG returnLength = 0;
     
-    if (MmCopyVirtualMemory == NULL)
+    if (!MmCopyVirtualMemory)
         return STATUS_NOT_SUPPORTED;
     
     if (AccessMode != KernelMode)
