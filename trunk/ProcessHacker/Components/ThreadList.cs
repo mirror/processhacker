@@ -477,7 +477,16 @@ namespace ProcessHacker.Components
 
         private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (_pid == Process.GetCurrentProcess().Id)
+            if (_pid == 4)
+            {
+                MessageBox.Show(
+                    "Process Hacker does not currently support viewing kernel call stacks.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
+            if (_pid == Win32.GetCurrentProcessId())
             {
                 if (MessageBox.Show(
                     "Inspecting Process Hacker's threads will lead to instability. Are you sure you want to continue?",
