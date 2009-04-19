@@ -44,6 +44,16 @@ namespace ProcessHacker
                 return new JobHandle(Handle, false);
             }
 
+            public static JobHandle Create(string name)
+            {
+                int jobHandle = Win32.CreateJobObject(0, name);
+
+                if (jobHandle == 0)
+                    ThrowLastWin32Error();
+
+                return new JobHandle(jobHandle, true);
+            }
+
             private JobHandle(int Handle, bool Owned)
                 : base(Handle, Owned)
             { }
@@ -147,6 +157,17 @@ namespace ProcessHacker
             public JOBOBJECT_EXTENDED_LIMIT_INFORMATION GetExtendedLimitInformation()
             {
                 return this.QueryStruct<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>(JOB_OBJECT_INFORMATION_CLASS.JobObjectExtendedLimitInformation);
+            }
+
+            public void Terminate()
+            {
+                this.Terminate(0);
+            }
+
+            public void Terminate(int exitCode)
+            {
+                if (!TerminateJobObject(this, exitCode))
+                    ThrowLastWin32Error();
             }
         }
     }

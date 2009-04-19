@@ -13,6 +13,7 @@ Process Hacker
    * Can open process properties from the handle list
    * Aggressive mode (start with "-a" command line option)
    * Better "could not initialize configuration" message for Windows Vista
+   * New Terminator method: assigns a job object to the process and terminates it
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection

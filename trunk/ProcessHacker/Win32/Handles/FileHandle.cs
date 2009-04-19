@@ -40,7 +40,7 @@ namespace ProcessHacker
             {
                 this.Handle = CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, 0);
 
-                if (this.Handle == 0)
+                if (this.Handle == -1)
                     ThrowLastWin32Error();
             }
 

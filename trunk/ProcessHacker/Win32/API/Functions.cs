@@ -92,6 +92,15 @@ namespace ProcessHacker
 
         #region Jobs
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool TerminateJobObject(int JobHandle, int ExitCode);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool AssignProcessToJobObject(int JobHandle, int ProcessHandle);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern int CreateJobObject(int SecurityAttributes, string Name);
+
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int OpenJobObject(JOB_OBJECT_RIGHTS DesiredAccess, bool Inherit, string Name);
 

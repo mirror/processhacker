@@ -209,6 +209,18 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Assigns the process to a job object. The job handle must have the 
+            /// JOB_OBJECT_ASSIGN_PROCESS permission and the process handle must have 
+            /// the PROCESS_SET_QUOTA and PROCESS_TERMINATE permissions.
+            /// </summary>
+            /// <param name="job">The job object to assign the process to.</param>
+            public void AssignToJobObject(JobHandle job)
+            {
+                if (!AssignProcessToJobObject(job, this))
+                    ThrowLastWin32Error();
+            }
+
+            /// <summary>
             /// Creates a remote thread in the process.
             /// </summary>
             /// <param name="startAddress">The address at which to begin execution (e.g. a function). The 

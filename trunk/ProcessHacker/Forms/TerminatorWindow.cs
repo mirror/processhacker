@@ -42,11 +42,13 @@ namespace ProcessHacker
 
             this.AddTest("TP1", "Terminates the process using TerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
+            this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
             this.AddTest("M1", "Writes garbage to the process' memory regions"); 
             this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
             this.AddTest("CH1", "Closes the process' handles");
+            this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
         }
 
         private void AddTest(string id, string description)
@@ -117,7 +119,11 @@ namespace ProcessHacker
         private void TP1()
         {
             using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
-                phandle.Terminate();
+            {
+                // don't use KPH
+                if (!Win32.TerminateProcess(phandle, 0))
+                    Win32.ThrowLastWin32Error();
+            }
         }
 
         private void TP2()
@@ -129,6 +135,22 @@ namespace ProcessHacker
             using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
                 if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
                     Win32.ThrowLastWin32Error();
+        }
+
+        private void TJ1()
+        {
+            using (var jhandle = Win32.JobHandle.Create(null))
+            {
+                using (Win32.ProcessHandle phandle =
+                    new Win32.ProcessHandle(_pid,
+                        Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA |
+                        Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                {
+                    phandle.AssignToJobObject(jhandle);
+                }
+
+                jhandle.Terminate();
+            }
         }
 
         private void TT1()
@@ -259,6 +281,14 @@ namespace ProcessHacker
 
                     i++;
                 }
+            }
+        }
+
+        private void TP3()
+        {
+            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+            {
+                phandle.Terminate();
             }
         }
 
