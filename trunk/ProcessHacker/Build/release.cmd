@@ -8,7 +8,8 @@ PUSHD %outd%
 :: Copy CHANGELOG.txt, LICENSE.txt, README.txt and kprocesshacker.sys to the
 :: "Release" folder
 FOR %%a IN (
-	"CHANGELOG.txt" "LICENSE.txt" "README.txt" "KProcessHacker\i386\kprocesshacker.sys"
+	"CHANGELOG.txt" "LICENSE.txt" "README.txt" "KProcessHacker\i386\kprocesshacker.sys" 
+    "NProcessHacker\Release\NProcessHacker.dll"
 	) DO COPY "..\..\..\%%a" >NUL
 
 :: Clear older files present in "Release" folder

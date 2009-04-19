@@ -80,6 +80,7 @@ Source: ..\..\bin\Release\CHANGELOG.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\Help.htm; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\LICENSE.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\kprocesshacker.sys; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\bin\Release\NProcessHacker.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\README.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\structs.txt; DestDir: {app}; Flags: ignoreversion
