@@ -178,38 +178,13 @@ namespace ProcessHacker
             //Asm.Lowercase = true;
             //Asm.ExtraSpace = true;
 
-            try
-            {
-                KPH = new KProcessHacker("KProcessHacker");
-            }
-            catch
-            { }
-
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 
             Version.Initialize();
 
-            if (Version.HasQueryLimitedInformation)
-            {
-                MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
-                MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
-            }
-
-            if (KPH != null)
-            {
-                MinProcessGetHandleInformationRights = MinProcessQueryRights;
-            }
-
-            if (KPH != null && Version.HasMmCopyVirtualMemory)
-            {
-                MinProcessReadMemoryRights = MinProcessQueryRights;
-                MinProcessWriteMemoryRights = MinProcessQueryRights;
-            }
-
             try
             {
-                using (var thandle = new Win32.ProcessHandle(System.Diagnostics.Process.GetCurrentProcess().Id,
-                        MinProcessQueryRights).GetToken())
+                using (var thandle = Win32.ProcessHandle.FromHandle(-1).GetToken())
                 {
                     try { thandle.SetPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
                     catch { }
@@ -239,19 +214,44 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
-            CurrentUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            try
+            {
+                KPH = new KProcessHacker("KProcessHacker");
+            }
+            catch
+            { }
 
-            CurrentProcess = Win32.OpenProcess(
-                Win32.PROCESS_RIGHTS.PROCESS_ALL_ACCESS, 0, 
-                System.Diagnostics.Process.GetCurrentProcess().Id);
+            if (Version.HasQueryLimitedInformation)
+            {
+                MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
+                MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
+            }
 
-            if (CurrentProcess == 0)
-                CurrentProcess = 
-                    System.Diagnostics.Process.GetCurrentProcess().Handle.ToInt32();
+            if (KPH != null)
+            {
+                MinProcessGetHandleInformationRights = MinProcessQueryRights;
+            }
+
+            if (KPH != null && Version.HasMmCopyVirtualMemory)
+            {
+                MinProcessReadMemoryRights = MinProcessQueryRights;
+                MinProcessWriteMemoryRights = MinProcessQueryRights;
+            }
 
             try
             {
-                CurrentSessionId = Win32.GetProcessSessionId(System.Diagnostics.Process.GetCurrentProcess().Id);
+                CurrentUsername = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+
+            CurrentProcess = Win32.GetCurrentProcess();
+
+            try
+            {
+                CurrentSessionId = Win32.GetProcessSessionId(Win32.GetCurrentProcessId());
                 System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }
             catch (Exception ex)
@@ -259,132 +259,8 @@ namespace ProcessHacker
                 Logging.Log(ex);
             }
 
-            {
-                if (pArgs.ContainsKey("-a"))
-                {
-                    Aggressive = true;
-
-                    try
-                    {
-                        Unhook();
-                    }
-                    catch
-                    { }
-                }
-
-                if (pArgs.ContainsKey("-e"))
-                {
-                    try
-                    {
-                        ExtendedCmd.Run(pArgs);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                    return;
-                }
-
-                if (pArgs.ContainsKey("-pw"))
-                {
-                    int pid = int.Parse(pArgs["-pw"]);
-
-                    SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
-                    SecondarySharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
-
-                    ProcessProvider = new ProcessSystemProvider();
-                    ServiceProvider = new ServiceProvider();
-                    SharedThreadProvider.Add(ProcessProvider);
-                    SharedThreadProvider.Add(ServiceProvider);
-                    ProcessProvider.RunOnce();
-                    ServiceProvider.RunOnce();
-                    ProcessProvider.Enabled = true;
-                    ServiceProvider.Enabled = true;
-
-                    Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
-
-                    if (!ProcessProvider.Dictionary.ContainsKey(pid))
-                    {
-                        MessageBox.Show("The process (PID " + pid.ToString() + ") does not exist.",
-                            "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    ProcessWindow pw = new ProcessWindow(ProcessProvider.Dictionary[pid]);
-
-                    Application.Run(pw);
-
-                    SharedThreadProvider.Dispose();
-                    ProcessProvider.Dispose();
-                    ServiceProvider.Dispose();
-
-                    Environment.Exit(0);
-
-                    return;
-                }
-
-                if (pArgs.ContainsKey("-pt"))
-                {
-                    int pid = int.Parse(pArgs["-pt"]);
-
-                    try
-                    {
-                        using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
-                            Application.Run(new TokenWindow(phandle));
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                    return;
-                }
-
-                if (pArgs.ContainsKey("-o"))
-                {
-                    OptionsWindow options = new OptionsWindow(true)
-                    {
-                        StartPosition = FormStartPosition.CenterScreen
-                    };
-                    IWin32Window window;
-
-                    if (pArgs.ContainsKey("-hwnd"))
-                        window = new WindowFromHandle(new IntPtr(int.Parse(pArgs["-hwnd"])));
-                    else
-                        window = new WindowFromHandle(IntPtr.Zero);
-
-                    if (pArgs.ContainsKey("-rect"))
-                    {
-                        Rectangle rect = Misc.RectangleFromString(pArgs["-rect"]);
-
-                        options.Location = new Point(rect.X + 20, rect.Y + 20);
-                        options.StartPosition = FormStartPosition.Manual;
-                    }
-
-                    options.SelectedTab = options.TabPages["tabAdvanced"];
-                    options.ShowDialog(window);
-
-                    return;
-                }
-
-                if (pArgs.ContainsKey(""))
-                    if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
-                        StartVisible = true;
-
-                if (pArgs.ContainsKey("-m"))
-                    StartHidden = true;
-                if (pArgs.ContainsKey("-v"))
-                    StartVisible = true;
-
-                if (pArgs.ContainsKey("-t"))
-                {
-                    if (pArgs["-t"] == "0")
-                        SelectTab = "Processes";
-                    else if (pArgs["-t"] == "1")
-                        SelectTab = "Services";
-                }
-            }
+            if (ProcessCommandLine(pArgs))
+                return;
 
 #if DEBUG
 #else
@@ -399,6 +275,137 @@ namespace ProcessHacker
 
             new HackerWindow();
             Application.Run();
+        }
+
+        private static bool ProcessCommandLine(Dictionary<string, string> pArgs)
+        {
+            if (pArgs.ContainsKey("-a"))
+            {
+                Aggressive = true;
+
+                try
+                {
+                    Unhook();
+                }
+                catch
+                { }
+            }
+
+            if (pArgs.ContainsKey("-e"))
+            {
+                try
+                {
+                    ExtendedCmd.Run(pArgs);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                return true;
+            }
+
+            if (pArgs.ContainsKey("-pw"))
+            {
+                int pid = int.Parse(pArgs["-pw"]);
+
+                SharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+                SecondarySharedThreadProvider = new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+
+                ProcessProvider = new ProcessSystemProvider();
+                ServiceProvider = new ServiceProvider();
+                SharedThreadProvider.Add(ProcessProvider);
+                SharedThreadProvider.Add(ServiceProvider);
+                ProcessProvider.RunOnce();
+                ServiceProvider.RunOnce();
+                ProcessProvider.Enabled = true;
+                ServiceProvider.Enabled = true;
+
+                Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
+
+                if (!ProcessProvider.Dictionary.ContainsKey(pid))
+                {
+                    MessageBox.Show("The process (PID " + pid.ToString() + ") does not exist.",
+                        "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Environment.Exit(0);
+                    return true;
+                }
+
+                ProcessWindow pw = new ProcessWindow(ProcessProvider.Dictionary[pid]);
+
+                Application.Run(pw);
+
+                SharedThreadProvider.Dispose();
+                ProcessProvider.Dispose();
+                ServiceProvider.Dispose();
+
+                Environment.Exit(0);
+
+                return true;
+            }
+
+            if (pArgs.ContainsKey("-pt"))
+            {
+                int pid = int.Parse(pArgs["-pt"]);
+
+                try
+                {
+                    using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
+                        Application.Run(new TokenWindow(phandle));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                return true;
+            }
+
+            if (pArgs.ContainsKey("-o"))
+            {
+                OptionsWindow options = new OptionsWindow(true)
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+                IWin32Window window;
+
+                if (pArgs.ContainsKey("-hwnd"))
+                    window = new WindowFromHandle(new IntPtr(int.Parse(pArgs["-hwnd"])));
+                else
+                    window = new WindowFromHandle(IntPtr.Zero);
+
+                if (pArgs.ContainsKey("-rect"))
+                {
+                    Rectangle rect = Misc.RectangleFromString(pArgs["-rect"]);
+
+                    options.Location = new Point(rect.X + 20, rect.Y + 20);
+                    options.StartPosition = FormStartPosition.Manual;
+                }
+
+                options.SelectedTab = options.TabPages["tabAdvanced"];
+                options.ShowDialog(window);
+
+                return true;
+            }
+
+            if (pArgs.ContainsKey(""))
+                if (pArgs[""].Replace("\"", "").Trim().ToLower().EndsWith("taskmgr.exe"))
+                    StartVisible = true;
+
+            if (pArgs.ContainsKey("-m"))
+                StartHidden = true;
+            if (pArgs.ContainsKey("-v"))
+                StartVisible = true;
+
+            if (pArgs.ContainsKey("-t"))
+            {
+                if (pArgs["-t"] == "0")
+                    SelectTab = "Processes";
+                else if (pArgs["-t"] == "1")
+                    SelectTab = "Services";
+            }
+
+            return false;
         }
 
         public static void Unhook()

@@ -118,7 +118,7 @@ namespace ProcessHacker.FormHelper
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
                     processHandles.Add(currhandle.ProcessId,
-                        new Win32.ProcessHandle(currhandle.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
+                        new Win32.ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
 
                 Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[currhandle.ProcessId], currhandle);
 

@@ -25,6 +25,9 @@
 
 #include <ntifs.h>
 
+/* KPH Configuration */
+//#define KPH_REQUIRE_DEBUG_PRIVILEGE
+
 #define KPH_TAG 'KPHT'
 /* I like 0x9999. */
 #define KPH_DEVICE_TYPE (0x9999)

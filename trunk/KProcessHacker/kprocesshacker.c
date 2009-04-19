@@ -95,6 +95,16 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
+#ifdef KPH_REQUIRE_DEBUG_PRIVILEGE
+    if (!SeSinglePrivilegeCheck(SeExports->SeDebugPrivilege, UserMode))
+    {
+        dprintf("Client (PID %d) was refused\n", PsGetCurrentProcessId());
+        Irp->IoStatus.Status = STATUS_PRIVILEGE_NOT_HELD;
+        
+        return STATUS_PRIVILEGE_NOT_HELD;
+    }
+#endif
+    
     dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
     
