@@ -183,9 +183,8 @@ namespace ProcessHacker.Components
                 this.Controls.Add(errorMessage);
             }
 
-            if (Program.WindowsVersion == WindowsVersion.XP)
+            if (!Version.HasUac)
             {
-                // XP obviously doesn't have UAC
                 labelElevated.Enabled = false;
                 textElevated.Enabled = false;
                 textElevated.Text = "";

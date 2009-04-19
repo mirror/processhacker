@@ -25,8 +25,10 @@
 
 #include "kprocesshacker.h"
 
-#define WINDOWS_XP 51
-#define WINDOWS_VISTA 60
+#define WINDOWS_XP '0051'
+#define WINDOWS_SERVER_2003 '0052'
+#define WINDOWS_VISTA '0060'
+#define WINDOWS_7 '0061'
 
 #define KVOFF(object, offset) ((PCHAR)(object) + offset)
 
@@ -61,4 +63,3 @@ EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOtiGenericMapping;
 
 #endif
-

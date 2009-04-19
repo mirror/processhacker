@@ -807,7 +807,7 @@ namespace ProcessHacker
             {
                 int readLen;
 
-                if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+                if (Program.KPH != null && Version.HasMmCopyVirtualMemory)
                 {
                     Program.KPH.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
                 }
@@ -824,7 +824,7 @@ namespace ProcessHacker
             {
                 int readLen;
 
-                if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+                if (Program.KPH != null && Version.HasMmCopyVirtualMemory)
                 {
                     Program.KPH.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
                 }
@@ -847,7 +847,7 @@ namespace ProcessHacker
             /// </summary>
             public void Resume()
             {
-                if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+                if (Program.KPH != null && Version.HasPsSuspendResumeProcess)
                 {
                     Program.KPH.KphResumeProcess(this);
                 }
@@ -910,7 +910,7 @@ namespace ProcessHacker
             /// </summary>
             public void Suspend()
             {
-                if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+                if (Program.KPH != null && Version.HasPsSuspendResumeProcess)
                 {
                     Program.KPH.KphSuspendProcess(this);
                 }
@@ -957,7 +957,7 @@ namespace ProcessHacker
             {
                 int writtenLen;
 
-                if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+                if (Program.KPH != null && Version.HasMmCopyVirtualMemory)
                 {
                     Program.KPH.KphWriteVirtualMemory(this, offset, data, data.Length, out writtenLen);
                 }

@@ -2100,7 +2100,7 @@ namespace ProcessHacker
                 try { ThemingScope.Activate(); }
                 catch { }
 
-                if (Program.WindowsVersion == WindowsVersion.Vista)
+                if (Version.HasTaskDialogs)
                 {
                     TaskDialog td = new TaskDialog();
 
@@ -2134,7 +2134,7 @@ namespace ProcessHacker
                                     catch (Exception ex2)
                                     {
                                         taskDialog.SetProgressBarMarquee(false, 1000);
-                                        MessageBox.Show("The settings could not be reset:\r\n\r\n" + ex.ToString(), 
+                                        MessageBox.Show("The settings could not be reset:\r\n\r\n" + ex2.ToString(), 
                                             "Process Hacker", 
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         return true;
@@ -2201,7 +2201,7 @@ namespace ProcessHacker
             if (Program.KPH == null)
                 csrProcessesMenuItem.Visible = false;
 
-            if (Program.KPH == null || Program.WindowsVersion != WindowsVersion.XP)
+            if (Program.KPH == null || !Version.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
         }
 
@@ -2416,7 +2416,7 @@ namespace ProcessHacker
 
             // If it's Vista and we're elevated, we should allow the magic window message to allow 
             // Allow only one instance to work.
-            if (Program.WindowsVersion == WindowsVersion.Vista &&
+            if (Version.HasUac &&
                 Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
             {
                 Win32.ChangeWindowMessageFilter((Win32.WindowMessage)0x9991, Win32.UipiFilterFlag.Add);

@@ -323,6 +323,7 @@
     <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Program\Logging.cs" />
     <Compile Include="Program\ThemingScope.cs" />
+    <Compile Include="Program\Version.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Common\ByteStreamReader.cs" />
     <Compile Include="Common\CircularBuffer.cs" />

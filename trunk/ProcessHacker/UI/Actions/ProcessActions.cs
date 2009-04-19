@@ -54,7 +54,7 @@ namespace ProcessHacker.UI.Actions
 
             DialogResult result = DialogResult.No;
 
-            if (Program.WindowsVersion == WindowsVersion.Vista)
+            if (Version.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
 
@@ -91,7 +91,7 @@ namespace ProcessHacker.UI.Actions
 
                 result = (DialogResult)td.Show(window);
             }
-            else if (Program.WindowsVersion == WindowsVersion.XP)
+            else
             {
                 if (dangerous)
                 {
@@ -114,7 +114,7 @@ namespace ProcessHacker.UI.Actions
         private static bool ElevateIfRequired(IWin32Window window, int[] pids, string[] names,
             Win32.PROCESS_RIGHTS access, string action)
         {
-            if (Program.WindowsVersion == WindowsVersion.Vista &&
+            if (Version.HasUac &&
                 Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
                 Program.KPH == null)
             {

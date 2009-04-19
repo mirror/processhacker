@@ -685,7 +685,7 @@ namespace ProcessHacker
                                 // if we couldn't get it or we couldn't resolve the \Device prefix,
                                 // we'll just use the normal method (which only works on Vista).
                                 if ((item.FileName == null || item.FileName.StartsWith("\\Device\\")) && 
-                                    Program.WindowsVersion == WindowsVersion.Vista)
+                                    Version.HasWin32ImageFileName)
                                 {
                                     try
                                     {

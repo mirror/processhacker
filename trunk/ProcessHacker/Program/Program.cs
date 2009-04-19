@@ -31,21 +31,12 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public enum WindowsVersion
-    {
-        Unknown,
-        XP,
-        Vista
-    }
-
     public static class Program
     {
         /// <summary>
         /// The main Process Hacker window instance
         /// </summary>
         public static HackerWindow HackerWindow;
-
-        public static WindowsVersion WindowsVersion = WindowsVersion.Unknown;
 
         public static Win32.PROCESS_RIGHTS MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION;
         public static Win32.PROCESS_RIGHTS MinProcessReadMemoryRights = Win32.PROCESS_RIGHTS.PROCESS_VM_READ;
@@ -195,12 +186,9 @@ namespace ProcessHacker
 
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 
-            if (Environment.OSVersion.Version.Major <= 5)
-                WindowsVersion = WindowsVersion.XP;
-            else if (Environment.OSVersion.Version.Major >= 6)
-                WindowsVersion = WindowsVersion.Vista;
+            Version.Initialize();
 
-            if (WindowsVersion == WindowsVersion.Vista)
+            if (Version.HasQueryLimitedInformation)
             {
                 MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
                 MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
@@ -211,7 +199,7 @@ namespace ProcessHacker
                 MinProcessGetHandleInformationRights = MinProcessQueryRights;
             }
 
-            if (KPH != null && WindowsVersion == WindowsVersion.Vista)
+            if (KPH != null && Version.HasMmCopyVirtualMemory)
             {
                 MinProcessReadMemoryRights = MinProcessQueryRights;
                 MinProcessWriteMemoryRights = MinProcessQueryRights;
@@ -227,7 +215,7 @@ namespace ProcessHacker
                     try { thandle.SetPrivilege("SeShutdownPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
                     catch { }
 
-                    if (Program.WindowsVersion == WindowsVersion.Vista)
+                    if (Version.HasUac)
                     {
                         try { ElevationType = thandle.GetElevationType(); }
                         catch { ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull; }

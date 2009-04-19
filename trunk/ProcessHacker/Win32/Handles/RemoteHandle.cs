@@ -61,7 +61,7 @@ namespace ProcessHacker
             /// restrictions. Specifically, we can only specify that the type must have a
             /// constructor with 0 arguments, but no more.
             /// </remarks>
-            public virtual int GetHandle(int rights)
+            public int GetHandle(int rights)
             {
                 int newHandle = 0;
 

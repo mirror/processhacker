@@ -313,7 +313,7 @@ namespace ProcessHacker
                             { }
                         }
 
-                        if (Program.WindowsVersion != WindowsVersion.XP)
+                        if (Version.HasCycleTime)
                         {
                             try
                             {
@@ -351,6 +351,13 @@ namespace ProcessHacker
                         }
                         catch
                         { }
+                    }
+
+                    // if the start address is less than the page size, it's wrong.
+                    if (item.StartAddressI < 0x1000)
+                    {
+                        // if that failed, use the start address supplied by ZwQuerySystemInformation
+                        item.StartAddressI = (uint)t.StartAddress;
                     }
 
                     if (!_waitedForLoad)
@@ -408,7 +415,7 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (Program.WindowsVersion != WindowsVersion.XP)
+                    if (Version.HasCycleTime)
                     {
                         try
                         {

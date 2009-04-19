@@ -41,7 +41,7 @@ namespace ProcessHacker
                 : base(phandle, handle)
             { }
 
-            public virtual int GetHandle(int rights)
+            public new int GetHandle(int rights)
             {
                 int newHandle = 0;
 

@@ -44,7 +44,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             // Use Cycles instead of Context Switches on Vista
-            if (Program.WindowsVersion != WindowsVersion.XP)
+            if (Version.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
 
             _highlightingContext = new HighlightingContext(listThreads);
@@ -53,13 +53,13 @@ namespace ProcessHacker.Components
             (listThreads.ListViewItemSorter as SortedListComparer).CustomSorters.Add(1,
                 (x, y) =>
                 {
-                    if (Program.WindowsVersion == WindowsVersion.XP)
+                    if (Version.HasCycleTime)
                     {
-                        return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
+                        return (x.Tag as ThreadItem).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
                     }
                     else
                     {
-                        return (x.Tag as ThreadItem).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
+                        return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
                     }
                 });
 
@@ -309,7 +309,7 @@ namespace ProcessHacker.Components
                 if (litem == null)
                     return;
 
-                if (Program.WindowsVersion == WindowsVersion.XP)
+                if (!Version.HasCycleTime)
                 {
                     if (newItem.ContextSwitchesDelta == 0)
                         litem.SubItems[1].Text = "";
@@ -365,7 +365,7 @@ namespace ProcessHacker.Components
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
                 using (var thandle = new Win32.ThreadHandle(tid,
-                    Program.WindowsVersion == WindowsVersion.Vista ? 
+                    Version.HasQueryLimitedInformation ? 
                     Win32.THREAD_RIGHTS.THREAD_SET_LIMITED_INFORMATION :
                     Win32.THREAD_RIGHTS.THREAD_SET_INFORMATION))
                     thandle.SetPriorityLevel(priority);

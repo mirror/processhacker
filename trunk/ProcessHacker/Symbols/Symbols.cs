@@ -129,7 +129,7 @@ namespace ProcessHacker.Symbols
                             if (!force)
                                 Properties.Settings.Default.DbgHelpWarningShown = true;
 
-                            if (Program.WindowsVersion != WindowsVersion.XP)
+                            if (Version.HasTaskDialogs)
                             {
                                 TaskDialog td = new TaskDialog();
                                 bool verificationChecked;

@@ -588,7 +588,7 @@ namespace ProcessHacker
             textProtected.Enabled = true;
             buttonEditProtected.Enabled = true;
 
-            if (Program.KPH != null && Program.WindowsVersion == WindowsVersion.Vista)
+            if (Program.KPH != null && Version.HasProtectedProcesses)
             {
                 try
                 {

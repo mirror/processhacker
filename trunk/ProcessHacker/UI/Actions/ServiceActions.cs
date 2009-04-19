@@ -32,7 +32,7 @@ namespace ProcessHacker.UI.Actions
         {
             DialogResult result = DialogResult.No;
 
-            if (Program.WindowsVersion == WindowsVersion.Vista)
+            if (Version.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
 
@@ -50,7 +50,7 @@ namespace ProcessHacker.UI.Actions
 
                 result = (DialogResult)td.Show(window);
             }
-            else if (Program.WindowsVersion == WindowsVersion.XP)
+            else
             {
                 result = MessageBox.Show("Are you sure you want to " + action + " " + service + "?",
                     "Process Hacker", MessageBoxButtons.YesNo,
@@ -63,7 +63,7 @@ namespace ProcessHacker.UI.Actions
         private static bool ElevateIfRequired(IWin32Window window, string service,
             Win32.SERVICE_RIGHTS access, string action)
         {
-            if (Program.WindowsVersion == WindowsVersion.Vista &&
+            if (Version.HasUac && 
                 Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
             {
                 try

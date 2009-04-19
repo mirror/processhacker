@@ -56,9 +56,29 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0x80;
         OffOtiGenericMapping = 0x60 + 0x8;
         
+        /* Windows XP SP0 and 1 are not supported */
+        if (servicePack == 0)
+            return STATUS_NOT_SUPPORTED;
+        else if (servicePack == 1)
+            return STATUS_NOT_SUPPORTED;
+        else if (servicePack == 2)
+            ;
+        else if (servicePack == 3)
+            ;
+        else
+            return STATUS_NOT_SUPPORTED;
+        
         dprintf("Initialized version-specific data for Windows XP SP%d\n", servicePack);
     }
-    /* Windows Vista */
+    /* Windows Server 2003 */
+    else if (majorVersion == 5 && minorVersion == 2)
+    {
+        WindowsVersion = WINDOWS_SERVER_2003;
+        
+        /* Not supported yet */
+        return STATUS_NOT_SUPPORTED;
+    }
+    /* Windows Vista, Windows Server 2008 */
     else if (majorVersion == 6 && minorVersion == 0)
     {
         WindowsVersion = WINDOWS_VISTA;
@@ -89,7 +109,31 @@ NTSTATUS KvInit()
             return STATUS_NOT_SUPPORTED;
         }
         
-        dprintf("Initialized version-specific data for Windows Vista SP%d\n", servicePack);
+        dprintf("Initialized version-specific data for Windows Vista SP%d/Windows Server 2008\n", servicePack);
+    }
+    /* Windows 7 */
+    else if (majorVersion == 6 && minorVersion == 1)
+    {
+        WindowsVersion = WINDOWS_7;
+        ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+        ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
+        OffEtClientId = 0x22c;
+        OffEtStartAddress = 0x218;
+        OffEtWin32StartAddress = 0x260;
+        OffEpJob = 0x124;
+        OffEpObjectTable = 0xf4;
+        OffEpProtectedProcessOff = 0x25c;
+        OffEpProtectedProcessBit = 0xb;
+        OffEpRundownProtect = 0xb0;
+        OffOtiGenericMapping = 0x28 + 0xc;
+        
+        /* SP0 */
+        if (servicePack == 0)
+            ;
+        else
+            return STATUS_NOT_SUPPORTED;
+        
+        dprintf("Initialized version-specific data for Windows 7 SP%d\n", servicePack);
     }
     else
     {

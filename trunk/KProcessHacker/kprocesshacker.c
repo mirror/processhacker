@@ -52,8 +52,14 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     /* Initialize version information */
     status = KvInit();
+    
     if (!NT_SUCCESS(status))
+    {
+        if (status == STATUS_NOT_SUPPORTED)
+            dprintf("Your operating system is not supported by KProcessHacker\n");
+        
         return status;
+    }
     
     /* Initialize NT KPH */
     status = KphNtInit();
