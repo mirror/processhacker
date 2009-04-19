@@ -457,7 +457,9 @@ namespace ProcessHacker
                 // STATUS_DISK_FULL means we tried to terminate ourself. Kernel-mode can't do it, 
                 // so we do it now.
                 if (ex.ErrorCode == 112)
-                    Win32.ExitProcess(exitStatus);
+                    Win32.TerminateProcess(-1, exitStatus);
+                else
+                    throw ex;
             }
         }
 
@@ -468,7 +470,17 @@ namespace ProcessHacker
             Array.Copy(Misc.IntToBytes(threadHandle, Misc.Endianness.Little), 0, data, 0, 4);
             Array.Copy(Misc.IntToBytes(exitStatus, Misc.Endianness.Little), 0, data, 4, 4);
 
-            _fileHandle.IoControl(CtlCode(Control.KphTerminateThread), data, null);
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphTerminateThread), data, null);
+            }
+            catch (WindowsException ex)
+            {
+                if (ex.ErrorCode == 112)
+                    Win32.TerminateThread(-2, exitStatus);
+                else
+                    throw ex;
+            }
         }
 
         public unsafe void KphWriteVirtualMemory(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesWritten)

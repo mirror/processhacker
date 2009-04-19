@@ -570,9 +570,12 @@ NTSTATUS KphTerminateThread(
         ObDereferenceObject(threadObject);
     }
     else
-    {
+    {/*
         ObDereferenceObject(threadObject);
-        status = PspTerminateThreadByPointer(PsGetCurrentThread(), ExitStatus);
+        status = PspTerminateThreadByPointer(PsGetCurrentThread(), ExitStatus); */
+        /* Leads to bugs, so don't terminate self. */
+        ObDereferenceObject(threadObject);
+        return STATUS_DISK_FULL;
     }
     
     return status;
