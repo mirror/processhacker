@@ -173,6 +173,7 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
+            ThreadPool.SetMaxThreads(10, 20);
             //Asm.LockedBus = 1;
             //Asm.Lowercase = true;
             //Asm.ExtraSpace = true;

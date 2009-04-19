@@ -84,9 +84,8 @@ namespace ProcessHacker
 
                 try
                 {
-                    // Needed to display the EULA
+                    // Needed (maybe) to display the EULA
                     Win32.SymbolServerSetOptions(Win32.SYMBOL_SERVER_OPTION.Unattended, 0);
-                    Win32.SymbolServerSetOptions(Win32.SYMBOL_SERVER_OPTION.ParentWin, Program.HackerWindow.Handle.ToInt64());
                 }
                 catch
                 { }
