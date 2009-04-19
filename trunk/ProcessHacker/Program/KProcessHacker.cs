@@ -399,26 +399,23 @@ namespace ProcessHacker
             bytesRead = returnLength;
         }
 
-        public unsafe bool KphReadVirtualMemorySafe(Win32.ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
+        public unsafe bool KphReadVirtualMemorySafe(Win32.ProcessHandle processHandle, int baseAddress, byte* buffer, int length, out int bytesRead)
         {
             byte[] data = new byte[0x15];
             int returnLength;
             int br;
 
-            fixed (byte* bufferPointer = buffer)
-            {
-                Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0x0, 4);
-                Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 0x4, 4);
-                Array.Copy(Misc.IntToBytes((int)bufferPointer, Misc.Endianness.Little), 0, data, 0x8, 4);
-                Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 0xc, 4);
-                Array.Copy(Misc.IntToBytes((int)&br, Misc.Endianness.Little), 0, data, 0x10, 4);
+            Array.Copy(Misc.IntToBytes(processHandle, Misc.Endianness.Little), 0, data, 0x0, 4);
+            Array.Copy(Misc.IntToBytes(baseAddress, Misc.Endianness.Little), 0, data, 0x4, 4);
+            Array.Copy(Misc.IntToBytes((int)buffer, Misc.Endianness.Little), 0, data, 0x8, 4);
+            Array.Copy(Misc.IntToBytes(length, Misc.Endianness.Little), 0, data, 0xc, 4);
+            Array.Copy(Misc.IntToBytes((int)&br, Misc.Endianness.Little), 0, data, 0x10, 4);
 
-                bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphReadVirtualMemory), data, data.Length, null, 0, out returnLength, 0);
-                
-                bytesRead = br;
+            bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphReadVirtualMemory), data, data.Length, null, 0, out returnLength, 0);
 
-                return r;
-            }
+            bytesRead = br;
+
+            return r;
         }
 
         public void KphResumeProcess(Win32.ProcessHandle processHandle)
@@ -486,6 +483,15 @@ namespace ProcessHacker
             byte[] buffer = new byte[length];
 
             _fileHandle.IoControl(CtlCode(Control.Read), Misc.IntToBytes(address, Misc.Endianness.Little), buffer);
+
+            return buffer;
+        }
+
+        public byte[] Read(uint address, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            _fileHandle.IoControl(CtlCode(Control.Read), Misc.UIntToBytes(address, Misc.Endianness.Little), buffer);
 
             return buffer;
         }

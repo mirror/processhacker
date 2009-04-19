@@ -353,8 +353,8 @@ namespace ProcessHacker
                         { }
                     }
 
-                    // if the start address is less than the page size, it's wrong.
-                    if (item.StartAddressI < 0x1000)
+                    // if the start address is less than 0x10000, it's wrong.
+                    if (item.StartAddressI < 0x10000)
                     {
                         // if that failed, use the start address supplied by ZwQuerySystemInformation
                         item.StartAddressI = (uint)t.StartAddress;

@@ -64,19 +64,6 @@ namespace ProcessHacker
                 BindingFlags.NonPublic | BindingFlags.Instance);
 
             property.SetValue(listViewCallStack, true, null);
-            property.SetValue(listViewRegisters, true, null);
-
-            foreach (string s in Registers)
-            {
-                ListViewItem item = new ListViewItem(s);
-                ListViewItem.ListViewSubItem subitem = new ListViewItem.ListViewSubItem();
-
-                subitem.Font = new Font(FontFamily.GenericMonospace, 10);
-
-                item.SubItems.Add(subitem);
-                
-                listViewRegisters.Items.Add(item);
-            }
 
             listViewCallStack.ContextMenu = listViewCallStack.GetCopyMenu();
 
@@ -110,7 +97,17 @@ namespace ProcessHacker
 
             try
             {
-                _phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_READ);
+                if (Program.KPH != null)
+                {
+                    _phandle = new Win32.ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
+                }
+                else
+                {
+                    _phandle = new Win32.ProcessHandle(_pid,
+                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                        Win32.PROCESS_RIGHTS.PROCESS_VM_READ
+                        );
+                }
             }
             catch (Exception ex)
             {
@@ -124,8 +121,19 @@ namespace ProcessHacker
 
             try
             {
-                _thandle = new Win32.ThreadHandle(_tid, 
-                    Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT | Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
+                if (Program.KPH != null)
+                {
+                    _thandle = new Win32.ThreadHandle(_tid,
+                        Program.MinThreadQueryRights |
+                        Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME
+                        );
+                }
+                else
+                {
+                    _thandle = new Win32.ThreadHandle(_tid,
+                        Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
+                        Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
+                }
             }
             catch (Exception ex)
             {
@@ -146,13 +154,6 @@ namespace ProcessHacker
                 {
                     if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listViewCallStack.Items);
                     if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewCallStack, -1);
-                };
-            listViewRegisters.SetTheme("explorer");
-            listViewRegisters.KeyDown +=
-                (sender_, e_) =>
-                {
-                    if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listViewRegisters.Items);
-                    if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewRegisters, -1);
                 };
 
             this.WalkCallStack();
@@ -199,7 +200,7 @@ namespace ProcessHacker
             return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3] << 0);
         }
 
-        private void WalkCallStack()
+        private unsafe void WalkCallStack()
         {
             Win32.CONTEXT context = new Win32.CONTEXT();
 
@@ -207,15 +208,28 @@ namespace ProcessHacker
 
             Win32.SuspendThread(_thandle);
 
-            if (Win32.GetThreadContext(_thandle, ref context))
+            if (Program.KPH != null)
             {
-                WalkCallStack(context);
+                try
+                {
+                    Program.KPH.KphGetContextThread(_thandle, &context);
+                    WalkCallStack(context);
+                }
+                catch
+                { }
+            }
+            else
+            {
+                if (Win32.GetThreadContext(_thandle, ref context))
+                {
+                    WalkCallStack(context);
+                }
             }
 
             Win32.ResumeThread(_thandle);
         }
 
-        private void WalkCallStack(Win32.CONTEXT context)
+        private unsafe void WalkCallStack(Win32.CONTEXT context)
         {
             /*  [ebp+8]... = args   
              *  [ebp+4] = ret addr  
@@ -239,14 +253,14 @@ namespace ProcessHacker
                 {
                     Win32.ReadProcessMemoryProc64 readMemoryProc = null;
 
-                    //if (Program.KPH != null)
-                    //{
-                    //    readMemoryProc = new Win32.ReadProcessMemoryProc64(
-                    //        delegate(int processHandle, ulong baseAddress, byte[] buffer, int size, out int bytesRead)
-                    //        {
-                    //            return Win32.ReadProcessMemory(processHandle, (int)baseAddress, buffer, size, out bytesRead);
-                    //        });
-                    //}
+                    if (Program.KPH != null && Version.HasMmCopyVirtualMemory)
+                    {
+                        readMemoryProc = new Win32.ReadProcessMemoryProc64(
+                            delegate(int processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
+                            {
+                                return Program.KPH.KphReadVirtualMemorySafe(Win32.ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
+                            });
+                    }
 
                     if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
                         ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, 0))
@@ -280,52 +294,6 @@ namespace ProcessHacker
             }
 
             listViewCallStack.EndUpdate();
-        }
-
-        private void timerUpdate_Tick(object sender, EventArgs e)
-        {
-            Win32.CONTEXT context;
-
-            try
-            {
-                context = _thandle.GetContext(Win32.CONTEXT_FLAGS.CONTEXT_ALL);
-            }
-            catch
-            {
-                if (listViewCallStack.Enabled)
-                {
-                    listViewCallStack.Enabled = false;
-                    listViewRegisters.Enabled = false;
-                    buttonWalk.Enabled = false;
-                }
-
-                return;
-            }
-
-            listViewCallStack.Enabled = true;
-            listViewRegisters.Enabled = true;
-            buttonWalk.Enabled = true;
-
-            foreach (ListViewItem item in listViewRegisters.Items)
-            {
-                FieldInfo field;
-                
-                field = context.GetType().GetField(
-                    item.Text[0].ToString().ToUpper() + item.Text.Substring(1));
-
-                if (field == null)
-                {
-                    field = context.GetType().GetField(
-                        "Seg" + item.Text[0].ToString().ToUpper() + item.Text.Substring(1));
-                }
-
-                if (field != null)
-                {
-                    item.SubItems[1].Text =
-                        String.Format(DisplayFormat,
-                        (int)field.GetValue(context));
-                }
-            }
         }
 
         private void buttonWalk_Click(object sender, EventArgs e)

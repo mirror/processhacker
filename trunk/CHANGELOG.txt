@@ -7,6 +7,7 @@ Process Hacker
    * Private, Shared and Shareable Working Set columns
    * Improved handle viewing (KProcessHacker) - more object types are visible
    * Better start addresses
+   * Stack viewing uses KProcessHacker on Windows Vista
    * Elevation button in Options now spawns a child options window instead of 
      restarting Process Hacker elevated
    * Can open process properties from the handle list
@@ -20,6 +21,7 @@ Process Hacker
  * REMOVED:
    * Useless Window menu items (PITA + causes memory leaks due to Microsoft's poor 
      implementation of MenuItem)
+   * Registers from the thread window
 
 1.3.6.5
  * NEW/IMPROVED:

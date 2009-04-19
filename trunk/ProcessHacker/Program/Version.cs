@@ -129,22 +129,22 @@ namespace ProcessHacker
 
         public static bool IsAbove(WindowsVersion version)
         {
-            return (int)version > (int)_windowsVersion;
+            return (int)_windowsVersion > (int)version;
         }
 
         public static bool IsAboveOrEqual(WindowsVersion version)
         {
-            return (int)version >= (int)_windowsVersion;
+            return (int)_windowsVersion >= (int)version;
         }
 
         public static bool IsBelowOrEqual(WindowsVersion version)
         {
-            return (int)version <= (int)_windowsVersion;
+            return (int)_windowsVersion <= (int)version;
         }
 
         public static bool IsBelow(WindowsVersion version)
         {
-            return (int)version < (int)_windowsVersion;
+            return (int)_windowsVersion < (int)version;
         }
     }
 }

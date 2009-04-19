@@ -111,7 +111,7 @@ namespace ProcessHacker
         public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
         public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
-        public delegate bool ReadProcessMemoryProc64(int ProcessHandle, ulong BaseAddress, byte[] Buffer,
+        public unsafe delegate bool ReadProcessMemoryProc64(int ProcessHandle, ulong BaseAddress, byte* Buffer,
             int Size, out int BytesRead);
         public delegate int FunctionTableAccessProc64(int ProcessHandle, long AddrBase);
         public delegate long GetModuleBaseProc64(int ProcessHandle, long Address);
