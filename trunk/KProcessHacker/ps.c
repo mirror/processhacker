@@ -499,9 +499,6 @@ NTSTATUS KphTerminateProcess(
 {
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
-    OBJECT_ATTRIBUTES objectAttributes = { 0 };
-    CLIENT_ID clientId;
-    HANDLE newProcessHandle;
     
     status = ObReferenceObjectByHandle(
         ProcessHandle,
@@ -524,9 +521,14 @@ NTSTATUS KphTerminateProcess(
     if (__PsTerminateProcess)
     {
         status = PsTerminateProcess(processObject, ExitStatus);
+        ObDereferenceObject(processObject);
     }
     else
     {
+        OBJECT_ATTRIBUTES objectAttributes = { 0 };
+        CLIENT_ID clientId;
+        HANDLE newProcessHandle;
+        
         /* We have to open it again because ZwTerminateProcess only accepts kernel handles. */
         clientId.UniqueThread = 0;
         clientId.UniqueProcess = PsGetProcessId(processObject);
@@ -538,6 +540,39 @@ NTSTATUS KphTerminateProcess(
             status = ZwTerminateProcess(newProcessHandle, ExitStatus);
             ZwClose(newProcessHandle);
         }
+    }
+    
+    return status;
+}
+
+NTSTATUS KphTerminateThread(
+    HANDLE ThreadHandle,
+    NTSTATUS ExitStatus
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        THREAD_TERMINATE,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL);
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    if (threadObject != PsGetCurrentThread())
+    {
+        status = PspTerminateThreadByPointer(threadObject, ExitStatus);
+        ObDereferenceObject(threadObject);
+    }
+    else
+    {
+        ObDereferenceObject(threadObject);
+        status = PspTerminateThreadByPointer(PsGetCurrentThread(), ExitStatus);
     }
     
     return status;
@@ -585,4 +620,37 @@ NTSTATUS PsTerminateProcess(
     }
     
     return status;
+}
+
+NTSTATUS PspTerminateThreadByPointer(
+    PETHREAD Thread,
+    NTSTATUS ExitStatus
+    )
+{
+    PVOID pspTerminateThreadByPointer = __PspTerminateThreadByPointer;
+    
+    if (!pspTerminateThreadByPointer)
+        return STATUS_NOT_SUPPORTED;
+    
+    if (WindowsVersion == WINDOWS_XP)
+    {
+        _PspTerminateThreadByPointer51 func = 
+            (_PspTerminateThreadByPointer51)pspTerminateThreadByPointer;
+        
+        return func(Thread, ExitStatus);
+    }
+    else if (
+        WindowsVersion == WINDOWS_VISTA || 
+        WindowsVersion == WINDOWS_7
+        )
+    {
+        _PspTerminateThreadByPointer60 func = 
+            (_PspTerminateThreadByPointer60)pspTerminateThreadByPointer;
+        
+        return func(Thread, ExitStatus, Thread == PsGetCurrentThread());
+    }
+    else
+    {
+        return STATUS_NOT_SUPPORTED;
+    }
 }

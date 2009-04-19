@@ -74,6 +74,17 @@ typedef NTSTATUS (__fastcall *_PsTerminateProcess)(
     NTSTATUS ExitStatus
     );
 
+typedef NTSTATUS (NTAPI *_PspTerminateThreadByPointer51)(
+    PETHREAD Thread,
+    NTSTATUS ExitStatus
+    );
+
+typedef NTSTATUS (NTAPI *_PspTerminateThreadByPointer60)(
+    PETHREAD Thread,
+    NTSTATUS ExitStatus,
+    BOOLEAN TerminateSelf
+    );
+
 /* STRUCTS */
 
 typedef struct _KEXECUTE_OPTIONS

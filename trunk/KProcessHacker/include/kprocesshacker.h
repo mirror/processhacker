@@ -60,6 +60,7 @@
 #define KPH_ZWQUERYOBJECT KPH_CTL_CODE(22)
 #define KPH_GETPROCESSID KPH_CTL_CODE(23)
 #define KPH_GETTHREADID KPH_CTL_CODE(24)
+#define KPH_TERMINATETHREAD KPH_CTL_CODE(25)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))

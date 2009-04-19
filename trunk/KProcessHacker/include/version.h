@@ -85,4 +85,8 @@ EXT PCHAR PsTerminateProcessBytes;
 EXT ULONG PsTerminateProcessBytesLength;
 EXT ULONG PsTerminateProcessBytesStart;
 
+EXT PCHAR PspTerminateThreadByPointerBytes;
+EXT ULONG PspTerminateThreadByPointerBytesLength;
+EXT ULONG PspTerminateThreadByPointerBytesStart;
+
 #endif

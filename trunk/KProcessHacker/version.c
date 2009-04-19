@@ -25,6 +25,7 @@
 #include "include/debug.h"
 
 static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
+
 static char PspTerminateProcess51[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x56, 0x64, 0xa1,
@@ -39,7 +40,24 @@ static char PsTerminateProcess61[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
     0x33, 0xd2, 0x6a, 0x08, 0x42, 0x5e, 0x8d, 0xb9
+}; /* same as 6.0 */
+
+static char PspTerminateThreadByPointer51[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xec, 0x0c,
+    0x83, 0x4d, 0xf8, 0xff, 0x56, 0x57, 0x8b, 0x7d
 };
+static char PspTerminateThreadByPointer60[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf8,
+    0x51, 0x53, 0x56, 0x8b, 0x75, 0x08, 0x57, 0x8d,
+    0xbe, 0x60, 0x02, 0x00, 0x00, 0xf6, 0x07, 0x40
+};
+static char PspTerminateThreadByPointer61[] =
+{
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf8,
+    0x51, 0x53, 0x56, 0x8b, 0x75, 0x08, 0x57, 0x8d
+}; /* same as 6.0 */
 
 /* The following offsets took me a long time to work out, so 
    please do not steal them. If you want to use them, please 
@@ -76,6 +94,8 @@ NTSTATUS KvInit()
     /* Windows XP */
     if (majorVersion == 5 && minorVersion == 1)
     {
+        ULONG searchOffset = (ULONG)__NtClose;
+        
         WindowsVersion = WINDOWS_XP;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x3ff;
@@ -96,7 +116,11 @@ NTSTATUS KvInit()
          */
         PsTerminateProcessBytes = PspTerminateProcess51;
         PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = (ULONG)__NtClose;
+        PsTerminateProcessBytesStart = searchOffset;
+        
+        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer51;
+        PspTerminateThreadByPointerBytesLength = 16;
+        PspTerminateThreadByPointerBytesStart = searchOffset;
         
         /* Windows XP SP0 and 1 are not supported */
         if (servicePack == 0)
@@ -131,6 +155,8 @@ NTSTATUS KvInit()
     /* Windows Vista, Windows Server 2008 */
     else if (majorVersion == 6 && minorVersion == 0)
     {
+        ULONG searchOffset = (ULONG)__NtClose;
+        
         WindowsVersion = WINDOWS_VISTA;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -145,7 +171,11 @@ NTSTATUS KvInit()
         
         PsTerminateProcessBytes = PsTerminateProcess60;
         PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = (ULONG)__NtClose;
+        PsTerminateProcessBytesStart = searchOffset;
+        
+        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer60;
+        PspTerminateThreadByPointerBytesLength = 24;
+        PspTerminateThreadByPointerBytesStart = searchOffset - 0x50000;
         
         /* SP0 */
         if (servicePack == 0)
@@ -167,6 +197,8 @@ NTSTATUS KvInit()
     /* Windows 7 */
     else if (majorVersion == 6 && minorVersion == 1)
     {
+        ULONG searchOffset = (ULONG)__NtClose + 0xfff00000; /* negative */
+        
         WindowsVersion = WINDOWS_7;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
         ThreadAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -182,7 +214,11 @@ NTSTATUS KvInit()
         
         PsTerminateProcessBytes = PsTerminateProcess61;
         PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = (ULONG)__NtClose + 0xfff80000; /* negative */
+        PsTerminateProcessBytesStart = searchOffset;
+        
+        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer60;
+        PspTerminateThreadByPointerBytesLength = 16;
+        PspTerminateThreadByPointerBytesStart = searchOffset;
         
         /* SP0 */
         if (servicePack == 0)

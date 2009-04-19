@@ -55,13 +55,14 @@ NTSTATUS KphNtInit()
     if (PsTerminateProcessBytes)
     {
         __PsTerminateProcess = 
-            (_PsTerminateProcess)KvScanBytes(
-                PsTerminateProcessBytesStart,
-                PsTerminateProcessBytesStart + 0x100000,
-                PsTerminateProcessBytes,
-                PsTerminateProcessBytesLength
-                );
+            (_PsTerminateProcess)SCAN_FUNC(PsTerminateProcess);
         dprintf("PsTerminateProcess: 0x%08x\n", __PsTerminateProcess);
+    }
+    
+    if (PspTerminateThreadByPointerBytes)
+    {
+        __PspTerminateThreadByPointer = SCAN_FUNC(PspTerminateThreadByPointer);
+        dprintf("PspTerminateThreadByPointer: 0x%08x\n", __PspTerminateThreadByPointer);
     }
     
     return status;

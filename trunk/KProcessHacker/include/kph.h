@@ -31,6 +31,11 @@
 #include "ps.h"
 #include "zw.h"
 
+#define SCAN_FUNC(func) (KvScanBytes( \
+    func##BytesStart, func##BytesStart + 0x100000, \
+    func##Bytes, func##BytesLength \
+    ))
+
 #ifdef EXT
 #undef EXT
 #endif
@@ -49,6 +54,7 @@ EXT _PsGetProcessJob PsGetProcessJob EQNULL;
 EXT _PsResumeProcess PsResumeProcess EQNULL;
 EXT _PsSuspendProcess PsSuspendProcess EQNULL;
 EXT _PsTerminateProcess __PsTerminateProcess EQNULL;
+EXT PVOID __PspTerminateThreadByPointer EQNULL;
 
 typedef struct _KPH_ATTACH_STATE
 {
@@ -194,6 +200,11 @@ NTSTATUS KphTerminateProcess(
     NTSTATUS ExitStatus
     );
 
+NTSTATUS KphTerminateThread(
+    HANDLE ThreadHandle,
+    NTSTATUS ExitStatus
+    );
+
 NTSTATUS KphWriteVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
@@ -227,6 +238,11 @@ VOID ObDereferenceProcessHandleTable(
 /* PS */
 NTSTATUS PsTerminateProcess(
     PEPROCESS Process,
+    NTSTATUS ExitStatus
+    );
+
+NTSTATUS PspTerminateThreadByPointer(
+    PETHREAD Thread,
     NTSTATUS ExitStatus
     );
 

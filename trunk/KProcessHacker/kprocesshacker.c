@@ -227,6 +227,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphGetProcessId";
     else if (ControlCode == KPH_GETTHREADID)
         return "KphGetThreadId";
+    else if (ControlCode == KPH_TERMINATETHREAD)
+        return "KphTerminateThread";
     else
         return "Unknown";
 }
@@ -952,6 +954,24 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             *(PHANDLE)dataBuffer = KphGetThreadId(handle, (PHANDLE)((PCHAR)dataBuffer + 4));
             KphDetachProcess(&attachState);
             retLength = 8;
+        }
+        break;
+        
+        case KPH_TERMINATETHREAD:
+        {
+            HANDLE threadHandle;
+            NTSTATUS exitStatus;
+            
+            if (inLength < 8)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            threadHandle = *(HANDLE *)dataBuffer;
+            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
+            
+            status = KphTerminateThread(threadHandle, exitStatus);
         }
         break;
         
