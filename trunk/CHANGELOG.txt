@@ -20,6 +20,8 @@ Process Hacker
    * Handle deletion detection
    * Unhandled exceptions when viewing performance/statistics for a non-existent process
    * Network connections for processes without icons would not be displayed
+   * Virtualization menu item visible on Windows XP
+   * When processes are terminated they are deselected (to provide feedback to the user)
  * REMOVED:
    * Useless Window menu items (PITA + causes memory leaks due to Microsoft's poor 
      implementation of MenuItem)

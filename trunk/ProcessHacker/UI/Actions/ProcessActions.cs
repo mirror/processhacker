@@ -184,16 +184,18 @@ namespace ProcessHacker.UI.Actions
             return false;
         }
 
-        public static void Terminate(IWin32Window window, int[] pids, string[] names, bool prompt)
+        public static bool Terminate(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
+            bool allGood = true;
+
             if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE, "terminate"))
-                return;
+                return false;
 
             if (prompt && !Prompt(window, pids, names, "terminate",
                 "Terminating a process will cause unsaved data to be lost. " +
                 "Terminating a system process will cause system instability. " +
                 "Are you sure you want to continue?", false))
-                return;
+                return false;
 
             for (int i = 0; i < pids.Length; i++)
             {
@@ -205,14 +207,18 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (Exception ex)
                 {
+                    allGood = false;
+
                     DialogResult r = MessageBox.Show(window, "Could not terminate process \"" + names[i] +
                         "\" with PID " + pids[i].ToString() + ":\n\n" +
                         ex.Message, "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (r == DialogResult.Cancel)
-                        return;
+                        return false;
                 }
             }
+
+            return allGood;
         }
 
         public static void Suspend(IWin32Window window, int[] pids, string[] names, bool prompt)

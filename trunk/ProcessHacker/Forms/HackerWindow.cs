@@ -795,7 +795,20 @@ namespace ProcessHacker
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
-            ProcessActions.Terminate(this, pids, names, true);
+            if (ProcessActions.Terminate(this, pids, names, true))
+            {
+                try
+                {
+                    TreeNodeAdv[] nodes = new TreeNodeAdv[treeProcesses.SelectedTreeNodes.Count];
+
+                    treeProcesses.SelectedTreeNodes.CopyTo(nodes, 0);
+
+                    foreach (TreeNodeAdv node in nodes)
+                        node.IsSelected = false;
+                }
+                catch
+                { }
+            }
         }
 
         private void suspendMenuItem_Click(object sender, EventArgs e)
