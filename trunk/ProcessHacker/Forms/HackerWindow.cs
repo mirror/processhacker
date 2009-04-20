@@ -2203,6 +2203,9 @@ namespace ProcessHacker
 
             if (Program.KPH == null || !Version.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
+
+            if (!Version.HasUac)
+                virtualizationProcessMenuItem.Visible = false;
         }
 
         private void LoadUac()
