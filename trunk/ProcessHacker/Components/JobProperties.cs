@@ -189,5 +189,45 @@ namespace ProcessHacker.Components
         {
             this.UpdateStatistics();
         }
+
+        private void buttonTerminate_Click(object sender, EventArgs e)
+        {
+            if (Version.HasTaskDialogs)
+            {
+                TaskDialog td = new TaskDialog();
+
+                td.WindowTitle = "Process Hacker";
+                td.MainIcon = TaskDialogIcon.Warning;
+                td.MainInstruction = "Do you want to terminate the job?";
+                td.Content = "Terminating a job will terminate all processes assigned to it. Are you sure " +
+                    "you want to continue?";
+                td.Buttons = new TaskDialogButton[] 
+                {
+                    new TaskDialogButton((int)DialogResult.Yes, "Terminate"),
+                    new TaskDialogButton((int)DialogResult.No, "Cancel")
+                };
+                td.DefaultButton = (int)DialogResult.No;
+
+                if (td.Show(this) == (int)DialogResult.No)
+                    return;
+            }
+            else
+            {
+                if (MessageBox.Show("Are you sure you want to terminate the job? This action will " +
+                    "terminate all processes associated with the job.", "Process Hacker",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                    return;
+            }
+
+            try
+            {
+                using (var jhandle2 = _jobObject.Duplicate((int)Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_TERMINATE))
+                    Win32.JobHandle.FromHandle(jhandle2).Terminate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

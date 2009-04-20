@@ -230,7 +230,7 @@
     <Setting Name="HideHandlesWithNoName" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="CSRProcessesColumns" Type="System.String" Scope="User">
+    <Setting Name="HiddenProcessesColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IconMenuProcessCount" Type="System.Int32" Scope="User">

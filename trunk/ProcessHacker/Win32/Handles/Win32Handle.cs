@@ -77,6 +77,31 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Creates a new handle by duplicating an existing handle.
+            /// </summary>
+            /// <param name="handle">The existing handle.</param>
+            /// <param name="desiredAccess">The desired access to the object.</param>
+            public Win32Handle(int handle, int desiredAccess)
+            {
+                if (Win32.ZwDuplicateObject(-1, handle, -1, out _handle, desiredAccess, 0, 0) < 0)
+                    ThrowLastWin32Error();
+                _owned = true;
+            }
+
+            /// <summary>
+            /// Creates a new handle by duplicating an existing handle from another process.
+            /// </summary>
+            /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
+            /// <param name="handle">The existing handle.</param>
+            /// <param name="desiredAccess">The desired access to the object.</param>
+            public Win32Handle(Win32.ProcessHandle processHandle, int handle, int desiredAccess)
+            {
+                if (Win32.ZwDuplicateObject(processHandle, handle, -1, out _handle, desiredAccess, 0, 0) < 0)
+                    ThrowLastWin32Error();
+                _owned = true;
+            }
+
+            /// <summary>
             /// Gets whether this handle is closed.
             /// </summary>
             public bool Disposed
@@ -99,6 +124,16 @@ namespace ProcessHacker
             {
                 get { return _handle; }
                 protected set { _handle = value; }
+            }
+
+            /// <summary>
+            /// Duplicates the handle.
+            /// </summary>
+            /// <param name="desiredAccess">The desired access to the object.</param>
+            /// <returns>A handle.</returns>
+            public Win32Handle Duplicate(int desiredAccess)
+            {
+                return new Win32Handle(this, desiredAccess);
             }
 
             /// <summary>

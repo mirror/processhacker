@@ -42,6 +42,7 @@
             this.columnName = new System.Windows.Forms.ColumnHeader();
             this.columnPid = new System.Windows.Forms.ColumnHeader();
             this.tabStatistics = new System.Windows.Forms.TabPage();
+            this.flowStatistics = new System.Windows.Forms.FlowLayoutPanel();
             this.groupGeneral = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label6 = new System.Windows.Forms.Label();
@@ -50,8 +51,6 @@
             this.labelGeneralActiveProcesses = new System.Windows.Forms.Label();
             this.labelGeneralTotalProcesses = new System.Windows.Forms.Label();
             this.labelGeneralTerminatedProcesses = new System.Windows.Forms.Label();
-            this.flowStatistics = new System.Windows.Forms.FlowLayoutPanel();
-            this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.groupTime = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label4 = new System.Windows.Forms.Label();
@@ -84,12 +83,14 @@
             this.labelIOWriteBytes = new System.Windows.Forms.Label();
             this.labelIOOther = new System.Windows.Forms.Label();
             this.labelIOOtherBytes = new System.Windows.Forms.Label();
+            this.timerUpdate = new System.Windows.Forms.Timer(this.components);
+            this.buttonTerminate = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.tabStatistics.SuspendLayout();
+            this.flowStatistics.SuspendLayout();
             this.groupGeneral.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.flowStatistics.SuspendLayout();
             this.groupTime.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupMemory.SuspendLayout();
@@ -111,6 +112,7 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.buttonTerminate);
             this.tabGeneral.Controls.Add(this.label3);
             this.tabGeneral.Controls.Add(this.label2);
             this.tabGeneral.Controls.Add(this.textJobName);
@@ -137,7 +139,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 33);
+            this.label2.Location = new System.Drawing.Point(6, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(76, 13);
             this.label2.TabIndex = 3;
@@ -150,7 +152,7 @@
             this.textJobName.Location = new System.Drawing.Point(50, 6);
             this.textJobName.Name = "textJobName";
             this.textJobName.ReadOnly = true;
-            this.textJobName.Size = new System.Drawing.Size(582, 20);
+            this.textJobName.Size = new System.Drawing.Size(501, 20);
             this.textJobName.TabIndex = 2;
             // 
             // label1
@@ -201,11 +203,11 @@
             this.columnPid});
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
-            this.listProcesses.Location = new System.Drawing.Point(6, 49);
+            this.listProcesses.Location = new System.Drawing.Point(6, 50);
             this.listProcesses.MultiSelect = false;
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(626, 97);
+            this.listProcesses.Size = new System.Drawing.Size(626, 96);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
@@ -230,6 +232,19 @@
             this.tabStatistics.TabIndex = 2;
             this.tabStatistics.Text = "Statistics";
             this.tabStatistics.UseVisualStyleBackColor = true;
+            // 
+            // flowStatistics
+            // 
+            this.flowStatistics.Controls.Add(this.groupGeneral);
+            this.flowStatistics.Controls.Add(this.groupTime);
+            this.flowStatistics.Controls.Add(this.groupMemory);
+            this.flowStatistics.Controls.Add(this.groupIO);
+            this.flowStatistics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowStatistics.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowStatistics.Location = new System.Drawing.Point(3, 3);
+            this.flowStatistics.Name = "flowStatistics";
+            this.flowStatistics.Size = new System.Drawing.Size(632, 402);
+            this.flowStatistics.TabIndex = 2;
             // 
             // groupGeneral
             // 
@@ -322,25 +337,6 @@
             this.labelGeneralTerminatedProcesses.Size = new System.Drawing.Size(33, 13);
             this.labelGeneralTerminatedProcesses.TabIndex = 1;
             this.labelGeneralTerminatedProcesses.Text = "value";
-            // 
-            // flowStatistics
-            // 
-            this.flowStatistics.Controls.Add(this.groupGeneral);
-            this.flowStatistics.Controls.Add(this.groupTime);
-            this.flowStatistics.Controls.Add(this.groupMemory);
-            this.flowStatistics.Controls.Add(this.groupIO);
-            this.flowStatistics.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowStatistics.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowStatistics.Location = new System.Drawing.Point(3, 3);
-            this.flowStatistics.Name = "flowStatistics";
-            this.flowStatistics.Size = new System.Drawing.Size(632, 402);
-            this.flowStatistics.TabIndex = 2;
-            // 
-            // timerUpdate
-            // 
-            this.timerUpdate.Enabled = true;
-            this.timerUpdate.Interval = 1000;
-            this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
             // 
             // groupTime
             // 
@@ -707,6 +703,24 @@
             this.labelIOOtherBytes.TabIndex = 1;
             this.labelIOOtherBytes.Text = "value";
             // 
+            // timerUpdate
+            // 
+            this.timerUpdate.Enabled = true;
+            this.timerUpdate.Interval = 1000;
+            this.timerUpdate.Tick += new System.EventHandler(this.timerUpdate_Tick);
+            // 
+            // buttonTerminate
+            // 
+            this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonTerminate.Location = new System.Drawing.Point(557, 6);
+            this.buttonTerminate.Name = "buttonTerminate";
+            this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
+            this.buttonTerminate.TabIndex = 5;
+            this.buttonTerminate.Text = "Terminate";
+            this.buttonTerminate.UseVisualStyleBackColor = true;
+            this.buttonTerminate.Click += new System.EventHandler(this.buttonTerminate_Click);
+            // 
             // JobProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -719,10 +733,10 @@
             this.tabGeneral.ResumeLayout(false);
             this.tabGeneral.PerformLayout();
             this.tabStatistics.ResumeLayout(false);
+            this.flowStatistics.ResumeLayout(false);
             this.groupGeneral.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.flowStatistics.ResumeLayout(false);
             this.groupTime.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
@@ -793,5 +807,6 @@
         private System.Windows.Forms.Label labelIOWriteBytes;
         private System.Windows.Forms.Label labelIOOther;
         private System.Windows.Forms.Label labelIOOtherBytes;
+        private System.Windows.Forms.Button buttonTerminate;
     }
 }

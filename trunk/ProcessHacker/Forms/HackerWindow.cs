@@ -43,9 +43,9 @@ namespace ProcessHacker
 
         #region Variables
 
-        public HelpWindow HelpForm;
+        public HelpWindow HelpWindow;
         public HandleFilterWindow HandleFilterWindow;
-        public CSRProcessesWindow CSRProcessesWindow;
+        public HiddenProcessesWindow HiddenProcessesWindow;
         public LogWindow LogWindow;
         public MiniSysInfo MiniSysInfoWindow;
 
@@ -326,11 +326,11 @@ namespace ProcessHacker
 
         private void helpMenuItem_Click(object sender, EventArgs e)
         {
-            if (HelpForm == null)
-                HelpForm = new HelpWindow();
+            if (HelpWindow == null)
+                HelpWindow = new HelpWindow();
 
-            HelpForm.Show();
-            HelpForm.Activate();
+            HelpWindow.Show();
+            HelpWindow.Activate();
         }
 
         private void exitMenuItem_Click(object sender, EventArgs e)
@@ -365,17 +365,17 @@ namespace ProcessHacker
             serviceP.Enabled = updateServicesMenuItem.Checked;
         }   
 
-        private void csrProcessesMenuItem_Click(object sender, EventArgs e)
+        private void hiddenProcessesMenuItem_Click(object sender, EventArgs e)
         {
-            if (CSRProcessesWindow == null || CSRProcessesWindow.IsDisposed)
-                CSRProcessesWindow = new CSRProcessesWindow();
+            if (HiddenProcessesWindow == null || HiddenProcessesWindow.IsDisposed)
+                HiddenProcessesWindow = new HiddenProcessesWindow();
 
-            CSRProcessesWindow.Show();
+            HiddenProcessesWindow.Show();
 
-            if (CSRProcessesWindow.WindowState == FormWindowState.Minimized)
-                CSRProcessesWindow.WindowState = FormWindowState.Normal;
+            if (HiddenProcessesWindow.WindowState == FormWindowState.Minimized)
+                HiddenProcessesWindow.WindowState = FormWindowState.Normal;
 
-            CSRProcessesWindow.Activate();
+            HiddenProcessesWindow.Activate();
         }
 
         private void verifyFileSignatureMenuItem_Click(object sender, EventArgs e)
@@ -2212,7 +2212,7 @@ namespace ProcessHacker
             }
 
             if (Program.KPH == null)
-                csrProcessesMenuItem.Visible = false;
+                hiddenProcessesMenuItem.Visible = false;
 
             if (Program.KPH == null || !Version.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;

@@ -940,12 +940,12 @@ namespace ProcessHacker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CSRProcessesColumns {
+        public string HiddenProcessesColumns {
             get {
-                return ((string)(this["CSRProcessesColumns"]));
+                return ((string)(this["HiddenProcessesColumns"]));
             }
             set {
-                this["CSRProcessesColumns"] = value;
+                this["HiddenProcessesColumns"] = value;
             }
         }
         

@@ -1,6 +1,6 @@
 ﻿namespace ProcessHacker
 {
-    partial class CSRProcessesWindow
+    partial class HiddenProcessesWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CSRProcessesWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HiddenProcessesWindow));
             this.listProcesses = new System.Windows.Forms.ListView();
             this.columnProcess = new System.Windows.Forms.ColumnHeader();
             this.columnPID = new System.Windows.Forms.ColumnHeader();
@@ -50,10 +50,10 @@
             this.columnPID});
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
-            this.listProcesses.Location = new System.Drawing.Point(12, 42);
+            this.listProcesses.Location = new System.Drawing.Point(12, 55);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(487, 297);
+            this.listProcesses.Size = new System.Drawing.Size(487, 284);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
@@ -112,11 +112,9 @@
             this.label2.AutoEllipsis = true;
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(487, 30);
+            this.label2.Size = new System.Drawing.Size(487, 43);
             this.label2.TabIndex = 3;
-            this.label2.Text = "This tool displays the processes running on your computer by scanning the handles" +
-                " of the Client Server Runtime processes. This can be used to identify hidden pro" +
-                "cesses.";
+            this.label2.Text = resources.GetString("label2.Text");
             // 
             // buttonTerminate
             // 
@@ -143,7 +141,7 @@
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // CSRProcessesWindow
+            // HiddenProcessesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -157,11 +155,11 @@
             this.Controls.Add(this.listProcesses);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.Name = "CSRProcessesWindow";
-            this.Text = "CSR Processes";
-            this.Load += new System.EventHandler(this.CSRProcessesWindow_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CSRProcessesWindow_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CSRProcessesWindow_KeyDown);
+            this.Name = "HiddenProcessesWindow";
+            this.Text = "Hidden Processes";
+            this.Load += new System.EventHandler(this.HiddenProcessesWindow_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HiddenProcessesWindow_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HiddenProcessesWindow_KeyDown);
             this.ResumeLayout(false);
 
         }

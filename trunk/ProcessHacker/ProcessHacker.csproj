@@ -199,8 +199,8 @@
     <EmbeddedResource Include="Forms\ComboBoxPickerWindow.resx">
       <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CSRProcesses.resx">
-      <DependentUpon>CSRProcesses.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\HiddenProcessesWindow.resx">
+      <DependentUpon>HiddenProcessesWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EditDEPWindow.resx">
       <DependentUpon>EditDEPWindow.cs</DependentUpon>
@@ -462,11 +462,11 @@
     <Compile Include="Forms\ComboBoxPickerWindow.Designer.cs">
       <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CSRProcesses.cs">
+    <Compile Include="Forms\HiddenProcessesWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\CSRProcesses.Designer.cs">
-      <DependentUpon>CSRProcesses.cs</DependentUpon>
+    <Compile Include="Forms\HiddenProcessesWindow.Designer.cs">
+      <DependentUpon>HiddenProcessesWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\EditDEPWindow.cs">
       <SubType>Form</SubType>

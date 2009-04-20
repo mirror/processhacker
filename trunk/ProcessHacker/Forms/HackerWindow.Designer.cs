@@ -90,7 +90,7 @@
             this.updateProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.updateServicesMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
-            this.csrProcessesMenuItem = new System.Windows.Forms.MenuItem();
+            this.hiddenProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.verifyFileSignatureMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenu = new System.Windows.Forms.MenuItem();
@@ -598,15 +598,15 @@
             // 
             this.toolsMenuItem.Index = 2;
             this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.csrProcessesMenuItem,
+            this.hiddenProcessesMenuItem,
             this.verifyFileSignatureMenuItem});
             this.toolsMenuItem.Text = "&Tools";
             // 
-            // csrProcessesMenuItem
+            // hiddenProcessesMenuItem
             // 
-            this.csrProcessesMenuItem.Index = 0;
-            this.csrProcessesMenuItem.Text = "&CSR Processes...";
-            this.csrProcessesMenuItem.Click += new System.EventHandler(this.csrProcessesMenuItem_Click);
+            this.hiddenProcessesMenuItem.Index = 0;
+            this.hiddenProcessesMenuItem.Text = "&Hidden Processes...";
+            this.hiddenProcessesMenuItem.Click += new System.EventHandler(this.hiddenProcessesMenuItem_Click);
             // 
             // verifyFileSignatureMenuItem
             // 
@@ -1229,7 +1229,7 @@
         private System.Windows.Forms.TabPage tabNetwork;
         private ProcessHacker.Components.NetworkList listNetwork;
         private System.Windows.Forms.MenuItem sysInformationIconMenuItem;
-        private System.Windows.Forms.MenuItem csrProcessesMenuItem;
+        private System.Windows.Forms.MenuItem hiddenProcessesMenuItem;
         private System.Windows.Forms.MenuItem viewMenuItem;
         private System.Windows.Forms.MenuItem updateNowMenuItem;
         private System.Windows.Forms.MenuItem updateProcessesMenuItem;

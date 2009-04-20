@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   CSR processes window
+ *   hidden processes scanner
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -32,9 +32,9 @@ using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
-    public partial class CSRProcessesWindow : Form
+    public partial class HiddenProcessesWindow : Form
     {
-        public CSRProcessesWindow()
+        public HiddenProcessesWindow()
         {
             InitializeComponent();
 
@@ -44,15 +44,15 @@ namespace ProcessHacker
             listProcesses.SetTheme("explorer");
         }
 
-        private void CSRProcessesWindow_Load(object sender, EventArgs e)
+        private void HiddenProcessesWindow_Load(object sender, EventArgs e)
         {
             buttonScan.Select();
-            ColumnSettings.LoadSettings(Properties.Settings.Default.CSRProcessesColumns, listProcesses);
+            ColumnSettings.LoadSettings(Properties.Settings.Default.HiddenProcessesColumns, listProcesses);
         }
 
-        private void CSRProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
+        private void HiddenProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.CSRProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
+            Properties.Settings.Default.HiddenProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
         }
 
         private void buttonScan_Click(object sender, EventArgs e)
@@ -60,72 +60,48 @@ namespace ProcessHacker
             listProcesses.Items.Clear();
 
             var processes = Win32.EnumProcesses();
-            var handles = Win32.EnumHandles();
 
-            // Step 1: Get the PIDs of csrss.exe processes and open them. There is one server for each session.   
-            var csrProcesses = new Dictionary<int, Win32.ProcessHandle>();
-
-            foreach (var process in processes.Values)
-            {
-                if (process.Name != null && process.Name.Equals("csrss.exe", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    try
-                    {
-                        csrProcesses.Add(process.Process.ProcessId, 
-                            new Win32.ProcessHandle(process.Process.ProcessId, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE));
-                    }
-                    catch
-                    { }
-                }
-            }
-
-            // Step 2: Get the handles which belong to the two csrss.exe processes and create a list of PIDs.
-            var processIds = new List<int>();
-
-            foreach (var handle in handles)
-            {
-                if (csrProcesses.ContainsKey(handle.ProcessId))
-                {
-                    int dupHandle;
-
-                    if (Win32.ZwDuplicateObject(csrProcesses[handle.ProcessId], handle.Handle,
-                        -1, out dupHandle, (int)Program.MinProcessQueryRights, 0, 0) != 0)
-                        continue;
-
-                    using (Win32.Win32Handle dupHandleAuto = new Win32.Win32Handle(dupHandle))
-                    {
-                        int processId = Win32.GetProcessId(dupHandle);
-
-                        if (processId == 0)
-                            continue;
-
-                        processIds.Add(processId);
-                    }
-                }
-            }
-
-            // Step 3: Add the processes to the list while highlighting hidden processes.
-            foreach (var pid in processIds)
+            for (int pid = 8; pid <= 8096; pid += 4)
             {
                 try
                 {
                     var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
+                    string fileName = phandle.GetNativeImageFileName();
+
+                    if (fileName != null)
+                        fileName = Win32.DeviceFileNameToDos(fileName);
+
                     var item = listProcesses.Items.Add(new ListViewItem(new string[]
                     {
-                        Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName()),
+                        fileName,
                         pid.ToString()
                     }));
 
-                    if (!processes.ContainsKey(pid))
+                    ulong[] times = new ulong[4];
+
+                    Win32.GetProcessTimes(phandle, out times[0], out times[1], out times[2], out times[3]);
+
+                    if (times[1] != 0)
                     {
-                        item.BackColor = Color.Red;
+                        item.BackColor = Color.DarkGray;
                         item.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        if (!processes.ContainsKey(pid))
+                        {
+                            item.BackColor = Color.Red;
+                            item.ForeColor = Color.White;
+                        }
                     }
 
                     phandle.Dispose();
                 }
-                catch (Exception ex)
+                catch (WindowsException ex)
                 {
+                    if (ex.ErrorCode == 87) // ERROR_INVALID_PARAMETER
+                        continue;
+
                     var item = listProcesses.Items.Add(new ListViewItem(new string[]
                     {
                         "(" + ex.Message + ")",
@@ -136,10 +112,6 @@ namespace ProcessHacker
                     item.ForeColor = Color.White;
                 }
             }
-
-            // Step 4: Clean up
-            foreach (var phandle in csrProcesses.Values)
-                phandle.Dispose();
         }
 
         private void buttonClose_Click(object sender, EventArgs e)
@@ -162,13 +134,28 @@ namespace ProcessHacker
 
                 foreach (ListViewItem item in listProcesses.SelectedItems)
                 {
+                    int pid = int.Parse(item.SubItems[1].Text);
+
                     try
                     {
                         using (var phandle = new Win32.ProcessHandle(
-                            int.Parse(item.SubItems[1].Text),
+                            pid,
                             Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
                             phandle.Terminate();
-                        remove.Add(item);
+
+                        // Check if the process still exists
+                        try
+                        {
+                            var phandle2 = new Win32.ProcessHandle(
+                                pid,
+                                Program.MinProcessQueryRights);
+                            phandle2.Dispose();
+                        }
+                        catch (WindowsException ex)
+                        {
+                            if (ex.ErrorCode == 87)
+                                remove.Add(item);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -190,7 +177,7 @@ namespace ProcessHacker
                 buttonTerminate.Enabled = true;
         }
 
-        private void CSRProcessesWindow_KeyDown(object sender, KeyEventArgs e)
+        private void HiddenProcessesWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.A)
                 Misc.SelectAll(listProcesses.Items);
@@ -200,7 +187,8 @@ namespace ProcessHacker
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
-            sfd.FileName = "CSR Processes.txt";
+            sfd.FileName = "Process Scan.txt";
+            sfd.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
             sfd.OverwritePrompt = true;
 
             if (sfd.ShowDialog() == DialogResult.OK)
