@@ -55,7 +55,7 @@ namespace ProcessHacker
             Properties.Settings.Default.HiddenProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
         }
 
-        private void buttonScan_Click(object sender, EventArgs e)
+        private void Scan()
         {
             listProcesses.Items.Clear();
 
@@ -114,6 +114,11 @@ namespace ProcessHacker
             }
         }
 
+        private void buttonScan_Click(object sender, EventArgs e)
+        {
+            this.Scan();
+        }
+
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -126,12 +131,12 @@ namespace ProcessHacker
             if (listProcesses.SelectedIndices.Count == 1)
                 promptMessage = listProcesses.SelectedItems[0].SubItems[0].Text;
 
-            if (MessageBox.Show("Are you sure you want to terminate " + promptMessage + "?",
+            if (MessageBox.Show("Are you sure you want to terminate " + promptMessage + "? " + 
+                "WARNING: Terminating a hidden process may cause the system to crash or become " +
+                "unstable because of modifications made by rootkit activity.",
                 "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                 MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
-                List<ListViewItem> remove = new List<ListViewItem>();
-
                 foreach (ListViewItem item in listProcesses.SelectedItems)
                 {
                     int pid = int.Parse(item.SubItems[1].Text);
@@ -142,20 +147,6 @@ namespace ProcessHacker
                             pid,
                             Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
                             phandle.Terminate();
-
-                        // Check if the process still exists
-                        try
-                        {
-                            var phandle2 = new Win32.ProcessHandle(
-                                pid,
-                                Program.MinProcessQueryRights);
-                            phandle2.Dispose();
-                        }
-                        catch (WindowsException ex)
-                        {
-                            if (ex.ErrorCode == 87)
-                                remove.Add(item);
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -164,8 +155,7 @@ namespace ProcessHacker
                     }
                 }
 
-                foreach (var item in remove)
-                    item.Remove();
+                this.Scan();
             }
         }
 
