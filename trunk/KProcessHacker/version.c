@@ -56,7 +56,8 @@ static char PspTerminateThreadByPointer60[] =
 static char PspTerminateThreadByPointer61[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf8,
-    0x51, 0x53, 0x56, 0x8b, 0x75, 0x08, 0x57, 0x8d
+    0x51, 0x53, 0x56, 0x8b, 0x75, 0x08, 0x57, 0x8d,
+    0xbe, 0x60, 0x02, 0x00, 0x00, 0xf6, 0x07, 0x40
 }; /* same as 6.0 */
 
 /* The following offsets took me a long time to work out, so 
@@ -216,8 +217,8 @@ NTSTATUS KvInit()
         PsTerminateProcessBytesLength = 16;
         PsTerminateProcessBytesStart = searchOffset;
         
-        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer60;
-        PspTerminateThreadByPointerBytesLength = 16;
+        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer61;
+        PspTerminateThreadByPointerBytesLength = 24;
         PspTerminateThreadByPointerBytesStart = searchOffset;
         
         /* SP0 */
