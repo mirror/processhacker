@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -160,15 +161,15 @@ namespace ProcessHacker
 
         private void UpdateInfo()
         {
-            Win32.SYSTEM_PERFORMANCE_INFORMATION perfInfo = Program.ProcessProvider.Performance;
-            Win32.PERFORMANCE_INFORMATION info = new Win32.PERFORMANCE_INFORMATION();
+            var perfInfo = Program.ProcessProvider.Performance;
+            var info = new PerformanceInformation();
 
             Win32.GetPerformanceInfo(ref info, System.Runtime.InteropServices.Marshal.SizeOf(info));
 
-            Win32.SYSTEM_CACHE_INFORMATION cacheInfo = new Win32.SYSTEM_CACHE_INFORMATION();
+            var cacheInfo = new SystemCacheInformation();
             int retLen;
 
-            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemFileCacheInformation,
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemFileCacheInformation,
                 ref cacheInfo, System.Runtime.InteropServices.Marshal.SizeOf(cacheInfo), out retLen);
 
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");

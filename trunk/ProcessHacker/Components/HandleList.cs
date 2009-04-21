@@ -24,6 +24,10 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -254,22 +258,22 @@ namespace ProcessHacker.Components
 
         public static void ShowHandleProperties(int pid, string type, int handle, string name)
         {
-            Win32.ProcessHandle phandle;
+            ProcessHandle phandle;
 
             try
             {
-                phandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+                phandle = new ProcessHandle(pid, ProcessHacker.Native.Security.ProcessAccess.DupHandle);
             }
             catch
             {
-                phandle = new Win32.ProcessHandle(pid, Program.MinProcessGetHandleInformationRights);
+                phandle = new ProcessHandle(pid, Program.MinProcessGetHandleInformationRights);
             }
 
             using (phandle)
             {
                 if (type == "Token")
                 {
-                    TokenWindow tokForm = new TokenWindow(new Win32.RemoteTokenHandle(phandle, handle));
+                    TokenWindow tokForm = new TokenWindow(new RemoteTokenHandle(phandle, handle));
 
                     tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
                         handle,
@@ -281,9 +285,9 @@ namespace ProcessHacker.Components
                 {
                     int processId;
 
-                    if (Program.KPH != null)
+                    if (KProcessHacker.Instance != null)
                     {
-                        processId = Program.KPH.KphGetProcessId(phandle, handle);
+                        processId = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
                     }
                     else
                     {
@@ -292,6 +296,13 @@ namespace ProcessHacker.Components
                         Win32.DuplicateObject(phandle, handle, -1, out newHandle, (int)Program.MinProcessQueryRights, 0, 0);
                         processId = Win32.GetProcessId(newHandle);
                         Win32.CloseHandle(newHandle);
+                    }
+
+                    if (!Program.ProcessProvider.Dictionary.ContainsKey(processId))
+                    {
+                        MessageBox.Show("The process does not exist.", "Process Hacker", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
 
                     ProcessWindow pForm = Program.GetProcessWindow(
@@ -303,16 +314,15 @@ namespace ProcessHacker.Components
                 }
                 else if (type == "File")
                 {
-                    Win32.ShowProperties(name);
+                    FileUtils.ShowProperties(name);
                 }
                 else if (type == "Event")
                 {
-                    Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                    int eventHandle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.EVENT_QUERY_STATE);
-                    Win32.EVENT_BASIC_INFORMATION ebi = new Win32.EVENT_BASIC_INFORMATION();
+                    var eventHandle = new Win32Handle<EventAccess>(phandle, handle, EventAccess.All);
+                    var ebi = new EventBasicInformation();
                     int retLen;
 
-                    Win32.ZwQueryEvent(eventHandle, Win32.EVENT_INFORMATION_CLASS.EventBasicInformation,
+                    Win32.NtQueryEvent(eventHandle, EventInformationClass.EventBasicInformation,
                         ref ebi, Marshal.SizeOf(ebi), out retLen);
 
                     InformationBox info = new InformationBox(
@@ -320,17 +330,15 @@ namespace ProcessHacker.Components
                         "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
 
                     info.ShowDialog();
-
-                    Win32.CloseHandle(eventHandle);
+                    eventHandle.Dispose();
                 }
                 else if (type == "Mutant")
                 {
-                    Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                    int mutantHandle = rhandle.GetHandle((int)Win32.SYNC_RIGHTS.MUTEX_MODIFY_STATE);
-                    Win32.MUTANT_BASIC_INFORMATION mbi = new Win32.MUTANT_BASIC_INFORMATION();
+                    var mutantHandle = new Win32Handle<MutexAccess>(phandle, handle, MutexAccess.All);
+                    var mbi = new MutantBasicInformation();
                     int retLen;
 
-                    Win32.ZwQueryMutant(mutantHandle, Win32.MUTANT_INFORMATION_CLASS.MutantBasicInformation,
+                    Win32.NtQueryMutant(mutantHandle, MutantInformationClass.MutantBasicInformation,
                         ref mbi, Marshal.SizeOf(mbi), out retLen);
 
                     InformationBox info = new InformationBox(
@@ -339,25 +347,23 @@ namespace ProcessHacker.Components
                         "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
 
                     info.ShowDialog();
-
-                    Win32.CloseHandle(mutantHandle);
+                    mutantHandle.Dispose();
                 }
                 else if (type == "Section")
                 {
-                    Win32.RemoteHandle rhandle = new Win32.RemoteHandle(phandle, handle);
-                    int sectionHandle = rhandle.GetHandle((int)Win32.SECTION_RIGHTS.SECTION_QUERY);
-                    Win32.SECTION_BASIC_INFORMATION sbi = new Win32.SECTION_BASIC_INFORMATION();
-                    Win32.SECTION_IMAGE_INFORMATION sii = new Win32.SECTION_IMAGE_INFORMATION();
+                    var sectionHandle = new Win32Handle<SectionAccess>(phandle, handle, SectionAccess.Query);
+                    var sbi = new SectionBasicInformation();
+                    var sii = new SectionImageInformation();
                     int retLen;
                     int retVal;
 
-                    Win32.ZwQuerySection(sectionHandle, Win32.SECTION_INFORMATION_CLASS.SectionBasicInformation,
+                    Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionBasicInformation,
                         ref sbi, Marshal.SizeOf(sbi), out retLen);
-                    retVal = Win32.ZwQuerySection(sectionHandle, Win32.SECTION_INFORMATION_CLASS.SectionImageInformation,
+                    retVal = Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionImageInformation,
                         ref sii, Marshal.SizeOf(sii), out retLen);
 
                     InformationBox info = new InformationBox(
-                        "Attributes: " + Misc.FlagsToString(typeof(Win32.SECTION_ATTRIBUTES), (long)sbi.SectionAttributes) +
+                        "Attributes: " + Misc.FlagsToString(typeof(SectionAttributes), (long)sbi.SectionAttributes) +
                         "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" +
 
                         (retVal == 0 ? ("\r\n\r\nImage Entry Point: 0x" + sii.EntryPoint.ToString("x8") +
@@ -367,8 +373,7 @@ namespace ProcessHacker.Components
                         "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
 
                     info.ShowDialog();
-
-                    Win32.CloseHandle(sectionHandle);
+                    sectionHandle.Dispose();
                 }
             }
         }
@@ -381,8 +386,8 @@ namespace ProcessHacker.Components
                 {
                     int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
 
-                    using (Win32.ProcessHandle process =
-                           new Win32.ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
+                    using (ProcessHandle process =
+                           new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                     {
                         Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0,
                             0x1 // DUPLICATE_CLOSE_SOURCE

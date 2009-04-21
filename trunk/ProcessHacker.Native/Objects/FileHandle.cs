@@ -1,0 +1,202 @@
+﻿/*
+ * Process Hacker - 
+ *   file handle
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
+
+namespace ProcessHacker.Native.Objects
+{
+    /// <summary>
+    /// Represents a handle to a file.
+    /// </summary>
+    public class FileHandle : Win32Handle<FileAccess>
+    {
+        protected FileHandle()
+        { }
+
+        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
+            FileCreationDisposition creationDisposition)
+        {
+            this.Handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, 0);
+
+            if (this.Handle == -1)
+                Win32.ThrowLastWin32Error();
+        }
+
+        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
+            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenExisting)
+        { }
+
+        public FileHandle(string fileName, FileAccess desiredAccess)
+            : this(fileName, desiredAccess, FileShareMode.Exclusive)
+        { }
+
+        /// <summary>
+        /// Sends an I/O control message to the device's associated driver.
+        /// </summary>
+        /// <param name="controlCode">The device-specific control code.</param>
+        /// <param name="inBuffer">The input.</param>
+        /// <param name="outBuffer">The output buffer.</param>
+        /// <returns>The bytes returned in the output buffer.</returns>
+        public int IoControl(uint controlCode, byte[] inBuffer, byte[] outBuffer)
+        {
+            int returnBytes;
+            byte[] inArr = inBuffer;
+            int inLen = inArr != null ? inBuffer.Length : 0;
+            byte[] outArr = outBuffer;
+            int outLen = outArr != null ? outBuffer.Length : 0;
+
+            if (!Win32.DeviceIoControl(this, (int)controlCode, inArr, inLen, outArr, outLen, out returnBytes, 0))
+                Win32.ThrowLastWin32Error();
+
+            return returnBytes;
+        }
+
+        public unsafe int IoControl(uint controlCode,
+            byte* inBuffer, int inBufferLength,
+            byte[] outBuffer)
+        {
+            int outLen = outBuffer != null ? outBuffer.Length : 0;
+
+            fixed (byte* outBufferPtr = outBuffer)
+            {
+                return this.IoControl(controlCode, inBuffer, inBufferLength, outBufferPtr, outLen);
+            }
+        }
+
+        public unsafe int IoControl(uint controlCode,
+            byte* inBuffer, int inBufferLength,
+            byte* outBuffer, int outBufferLength)
+        {
+            int returnBytes;
+            byte* dummy = stackalloc byte[0];
+            int inLen = inBuffer != null ? inBufferLength : 0;
+            int outLen = outBuffer != null ? outBufferLength : 0;
+
+            if (inBuffer == null)
+                inBuffer = dummy;
+            if (outBuffer == null)
+                outBuffer = dummy;
+
+            if (!Win32.DeviceIoControl(this, (int)controlCode, inBuffer, inLen, outBuffer, outLen, out returnBytes, 0))
+                Win32.ThrowLastWin32Error();
+
+            return returnBytes;
+        }
+
+        /// <summary>
+        /// Reads data from the file.
+        /// </summary>
+        /// <param name="buffer">The buffer to store the data in.</param>
+        /// <returns>The number of bytes read from the file.</returns>
+        public int Read(byte[] buffer)
+        {
+            int bytesRead;
+
+            if (!Win32.ReadFile(this, buffer, buffer.Length, out bytesRead, 0))
+                Win32.ThrowLastWin32Error();
+
+            return bytesRead;
+        }
+
+        /// <summary>
+        /// Reads data from the file.
+        /// </summary>
+        /// <param name="length">The length to read.</param>
+        /// <returns>The read data.</returns>
+        public byte[] Read(int length)
+        {
+            byte[] buffer = new byte[length];
+
+            this.Read(buffer);
+
+            return buffer;
+        }
+
+        /// <summary>
+        /// Writes data to the file.
+        /// </summary>
+        /// <param name="buffer">The data.</param>
+        /// <returns>The number of bytes written to the file.</returns>
+        public int Write(byte[] buffer)
+        {
+            int bytesWritten;
+
+            if (!Win32.WriteFile(this, buffer, buffer.Length, out bytesWritten, 0))
+                Win32.ThrowLastWin32Error();
+
+            return bytesWritten;
+        }
+    }
+
+    public enum FileCreationDisposition : uint
+    {
+        CreateNew = 1,
+        CreateAlways = 2,
+        OpenExisting = 3,
+        OpenAlways = 4,
+        TruncateExisting
+    }
+
+    [Flags]
+    public enum FileObjectFlags : int
+    {
+        FileOpen = 0x00000001,
+        SynchronousIo = 0x00000002,
+        AlertableIo = 0x00000004,
+        NoIntermediateBuffering = 0x00000008,
+        WriteThrough = 0x00000010,
+        SequentialOnly = 0x00000020,
+        CacheSupported = 0x00000040,
+        NamedPipe = 0x00000080,
+        StreamFile = 0x00000100,
+        MailSlot = 0x00000200,
+        GenerateAuditOnClose = 0x00000400,
+        QueueIrpToThread = GenerateAuditOnClose,
+        DirectDeviceOpen = 0x00000800,
+        FileModified = 0x00001000,
+        FileSizeChanged = 0x00002000,
+        CleanupComplete = 0x00004000,
+        TemporaryFile = 0x00008000,
+        DeleteOnClose = 0x00010000,
+        OpenedCaseSensitivity = 0x00020000,
+        HandleCreated = 0x00040000,
+        FileFastIoRead = 0x00080000,
+        RandomAccess = 0x00100000,
+        FileOpenCancelled = 0x00200000,
+        VolumeOpen = 0x00400000,
+        RemoteOrigin = 0x01000000,
+        SkipCompletionPort = 0x02000000,
+        SkipSetEvent = 0x04000000,
+        SkipSetFastIo = 0x08000000
+    }
+
+    [Flags]
+    public enum FileShareMode : uint
+    {
+        Exclusive = 0,
+        Read = 1,
+        Write = 2,
+        Delete = 4
+    }
+}

@@ -21,9 +21,10 @@
  */
 
 using System;
-using System.Reflection;
 using System.Windows.Forms;
-using System.Drawing;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -39,7 +40,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                using (ProcessHandle phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
                 {
                     uint systemMask = 0;
                     uint processMask = 0;
@@ -89,7 +90,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_SET_INFORMATION))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetInformation))
                 {
                     if (!Win32.SetProcessAffinityMask(phandle, newMask))
                         Win32.ThrowLastWin32Error();

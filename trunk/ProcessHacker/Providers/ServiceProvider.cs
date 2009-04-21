@@ -21,10 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -35,8 +35,8 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
-        public Win32.ENUM_SERVICE_STATUS_PROCESS Status;
-        public Win32.QUERY_SERVICE_CONFIG Config;
+        public EnumServiceStatusProcess Status;
+        public QueryServiceConfig Config;
     }
 
     public class ServiceProvider : Provider<string, ServiceItem>
@@ -47,7 +47,7 @@ namespace ProcessHacker
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
         }
 
-        public void UpdateServiceConfig(string name, Win32.QUERY_SERVICE_CONFIG config)
+        public void UpdateServiceConfig(string name, QueryServiceConfig config)
         {
             ServiceItem item = Dictionary[name];
 
@@ -62,8 +62,7 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            Dictionary<string, Win32.ENUM_SERVICE_STATUS_PROCESS> newdictionary
-                = Win32.EnumServices();
+            var newdictionary = Windows.GetServices();
 
             // check for removed services
             foreach (string s in Dictionary.Keys)
@@ -88,7 +87,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.Config = Win32.GetServiceConfig(s);
+                        using (var shandle = new ServiceHandle(s, ServiceAccess.QueryConfig))
+                            item.Config = shandle.GetConfig();
                     }
                     catch
                     { }

@@ -21,14 +21,17 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
-using System.Collections.Generic;
-using System.Drawing;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker
 {
@@ -553,12 +556,12 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                 {
                     foreach (string s in Misc.DangerousNames)
                     {
                         if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            Misc.GetRealPath(Win32.DeviceFileNameToDos(phandle.GetNativeImageFileName())),
+                            Misc.GetRealPath(FileUtils.DeviceFileNameToDos(phandle.GetNativeImageFileName())),
                             StringComparison.InvariantCultureIgnoreCase))
                         {
                             return true;
@@ -792,7 +795,7 @@ namespace ProcessHacker
         private static void SetShieldIconInternal(Button button, bool show)
         {
             Win32.SendMessage(button.Handle, 
-                Win32.WindowMessage.BcmSetShield, 0, show ? 1 : 0);
+                WindowMessage.BcmSetShield, 0, show ? 1 : 0);
         }
 
         /// <summary>

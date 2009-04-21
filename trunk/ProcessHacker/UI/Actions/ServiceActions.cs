@@ -23,6 +23,10 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.UI.Actions
 {
@@ -32,7 +36,7 @@ namespace ProcessHacker.UI.Actions
         {
             DialogResult result = DialogResult.No;
 
-            if (Version.HasTaskDialogs)
+            if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
 
@@ -61,14 +65,13 @@ namespace ProcessHacker.UI.Actions
         }
 
         private static bool ElevateIfRequired(IWin32Window window, string service,
-            Win32.SERVICE_RIGHTS access, string action)
+            ServiceAccess access, string action)
         {
-            if (Version.HasUac && 
-                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            if (OSVersion.HasUac && Program.ElevationType == TokenElevationType.Limited)
             {
                 try
                 {
-                    using (var shandle = new Win32.ServiceHandle(service, access))
+                    using (var shandle = new ServiceHandle(service, access))
                     { }
                 }
                 catch (WindowsException ex)
@@ -126,7 +129,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Start(IWin32Window window, string service, bool prompt)
         {
-            if (ElevateIfRequired(window, service, Win32.SERVICE_RIGHTS.SERVICE_START, "start"))
+            if (ElevateIfRequired(window, service, ServiceAccess.Start, "start"))
                 return;
 
             if (prompt && !Prompt(window, service, "start",
@@ -135,8 +138,7 @@ namespace ProcessHacker.UI.Actions
 
             try
             {
-                using (Win32.ServiceHandle shandle = new Win32.ServiceHandle(service,
-                    Win32.SERVICE_RIGHTS.SERVICE_START))
+                using (var shandle = new ServiceHandle(service, ServiceAccess.Start))
                     shandle.Start();
             }
             catch (Exception ex)
@@ -149,7 +151,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Continue(IWin32Window window, string service, bool prompt)
         {
-            if (ElevateIfRequired(window, service, Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE, "continue"))
+            if (ElevateIfRequired(window, service, ServiceAccess.PauseContinue, "continue"))
                 return;
 
             if (prompt && !Prompt(window, service, "continue",
@@ -158,9 +160,8 @@ namespace ProcessHacker.UI.Actions
 
             try
             {
-                using (Win32.ServiceHandle shandle = new Win32.ServiceHandle(service,
-                    Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE))
-                    shandle.Control(Win32.SERVICE_CONTROL.Continue);
+                using (var shandle = new ServiceHandle(service, ServiceAccess.PauseContinue))
+                    shandle.Control(ServiceControl.Continue);
             }
             catch (Exception ex)
             {
@@ -172,7 +173,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Pause(IWin32Window window, string service, bool prompt)
         {
-            if (ElevateIfRequired(window, service, Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE, "pause"))
+            if (ElevateIfRequired(window, service, ServiceAccess.PauseContinue, "pause"))
                 return;
 
             if (prompt && !Prompt(window, service, "pause",
@@ -181,9 +182,8 @@ namespace ProcessHacker.UI.Actions
 
             try
             {
-                using (Win32.ServiceHandle shandle = new Win32.ServiceHandle(service,
-                    Win32.SERVICE_RIGHTS.SERVICE_PAUSE_CONTINUE))
-                    shandle.Control(Win32.SERVICE_CONTROL.Pause);
+                using (var shandle = new ServiceHandle(service, ServiceAccess.PauseContinue))
+                    shandle.Control(ServiceControl.Pause);
             }
             catch (Exception ex)
             {
@@ -195,7 +195,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Stop(IWin32Window window, string service, bool prompt)
         {
-            if (ElevateIfRequired(window, service, Win32.SERVICE_RIGHTS.SERVICE_STOP, "stop"))
+            if (ElevateIfRequired(window, service, ServiceAccess.Stop, "stop"))
                 return;
 
             if (prompt && !Prompt(window, service, "stop",
@@ -204,9 +204,8 @@ namespace ProcessHacker.UI.Actions
 
             try
             {
-                using (Win32.ServiceHandle shandle = new Win32.ServiceHandle(service,
-                    Win32.SERVICE_RIGHTS.SERVICE_STOP))
-                    shandle.Control(Win32.SERVICE_CONTROL.Stop);
+                using (var shandle = new ServiceHandle(service, ServiceAccess.Stop))
+                    shandle.Control(ServiceControl.Stop);
             }
             catch (Exception ex)
             {
@@ -218,7 +217,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Delete(IWin32Window window, string service, bool prompt)
         {
-            if (ElevateIfRequired(window, service, (Win32.SERVICE_RIGHTS)Win32.STANDARD_RIGHTS.DELETE, "delete"))
+            if (ElevateIfRequired(window, service, (ServiceAccess)StandardRights.Delete, "delete"))
                 return;
 
             if (prompt && !Prompt(window, service, "delete",
@@ -228,8 +227,7 @@ namespace ProcessHacker.UI.Actions
 
             try
             {
-                using (Win32.ServiceHandle shandle = new Win32.ServiceHandle(service,
-                    (Win32.SERVICE_RIGHTS)Win32.STANDARD_RIGHTS.DELETE))
+                using (var shandle = new ServiceHandle(service, (ServiceAccess)StandardRights.Delete))
                     shandle.Delete();
             }
             catch (Exception ex)

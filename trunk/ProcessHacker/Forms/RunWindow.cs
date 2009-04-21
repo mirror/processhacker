@@ -24,6 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -38,7 +42,7 @@ namespace ProcessHacker
             textSessionID.Text = Program.CurrentSessionId.ToString();
             comboType.SelectedItem = "Interactive";
 
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            if (Program.ElevationType == TokenElevationType.Limited)
                 buttonOK.SetShieldIcon(true);
 
             List<string> users = new List<string>();
@@ -50,8 +54,7 @@ namespace ProcessHacker
             try
             {
                 using (var policy =
-                    new Win32.LsaPolicyHandle(Win32.POLICY_RIGHTS.POLICY_LOOKUP_NAMES |
-                        Win32.POLICY_RIGHTS.POLICY_VIEW_LOCAL_INFORMATION))
+                    new LsaPolicyHandle(PolicyAccess.LookupNames | PolicyAccess.ViewLocalInformation))
                 {
                     IntPtr sids;
                     int length;
@@ -63,10 +66,10 @@ namespace ProcessHacker
                             for (int i = 0; i < length; i++)
                             {
                                 int sid = System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4);
-                                Win32.SID_NAME_USE type = Win32.GetAccountType(sid);
+                                SidNameUse type = Windows.GetAccountType(sid);
 
-                                if (type == Win32.SID_NAME_USE.SidTypeUser)
-                                    users.Add(Win32.GetAccountName(sid, true));
+                                if (type == SidNameUse.User)
+                                    users.Add(Windows.GetAccountName(sid, true));
                             }
                         }
                     }
@@ -174,13 +177,13 @@ namespace ProcessHacker
                     textPassword.Text.Replace("\"", "\\\"") + "\" -s " + textSessionID.Text + " -c \"" +
                     textCmdLine.Text.Replace("\"", "\\\"") + "\"";
 
-                if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                if (Program.ElevationType == TokenElevationType.Limited)
                 {
                     var result = Program.StartProcessHackerAdminWait(
                         "-e -type processhacker -action runas -obj \"" + binPath.Replace("\"", "\\\"") + "\" " +
                         "-hwnd " + this.Handle.ToString(), this.Handle, 5000);
 
-                    if (result == Win32.WaitResult.Object0)
+                    if (result == WaitResult.Object0)
                         this.Close();
                 }
                 else
@@ -191,14 +194,14 @@ namespace ProcessHacker
                     for (int i = 0; i < 8; i++)
                         serviceName += (char)('A' + r.Next(25));
 
-                    using (var manager = new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE))
+                    using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {
                         using (var service = manager.CreateService(
                             serviceName,
                             serviceName + " (Process Hacker Assistant)",
-                            Win32.SERVICE_TYPE.Win32OwnProcess,
-                            Win32.SERVICE_START_TYPE.DemandStart,
-                            Win32.SERVICE_ERROR_CONTROL.Ignore,
+                            ServiceType.Win32OwnProcess,
+                            ServiceStartType.DemandStart,
+                            ServiceErrorControl.Ignore,
                             binPath,
                             "",
                             "LocalSystem",
@@ -242,7 +245,7 @@ namespace ProcessHacker
 
                     // hack for XP
                     if (comboUsername.Text.ToUpper() == "NT AUTHORITY\\SYSTEM" && 
-                        Version.IsBelowOrEqual(WindowsVersion.XP))
+                        OSVersion.IsBelowOrEqual(WindowsVersion.XP))
                         comboType.SelectedItem = "NewCredentials";
                 }
                 else
@@ -257,15 +260,15 @@ namespace ProcessHacker
         {
             ContextMenu menu = new ContextMenu();
 
-            foreach (Win32.WTS_SESSION_INFO session in Win32.TSEnumSessions())
+            foreach (var session in Win32.TSEnumSessions())
             {
                 MenuItem item = new MenuItem();
                 string user = null;
                 string domain = null;
                 int retLen;
                                                                                                                                    
-                Win32.WTSQuerySessionInformation(0, session.SessionID, Win32.WTS_INFO_CLASS.WTSUserName, out user, out retLen);
-                Win32.WTSQuerySessionInformation(0, session.SessionID, Win32.WTS_INFO_CLASS.WTSDomainName, out domain, out retLen);
+                Win32.WTSQuerySessionInformation(0, session.SessionID, WtsInformationClass.UserName, out user, out retLen);
+                Win32.WTSQuerySessionInformation(0, session.SessionID, WtsInformationClass.DomainName, out domain, out retLen);
 
                 string username = domain + "\\" + user;
                 string displayName = "";

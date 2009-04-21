@@ -21,9 +21,13 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Diagnostics;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -44,7 +48,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             // Use Cycles instead of Context Switches on Vista
-            if (Version.HasCycleTime)
+            if (OSVersion.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
 
             _highlightingContext = new HighlightingContext(listThreads);
@@ -53,7 +57,7 @@ namespace ProcessHacker.Components
             (listThreads.ListViewItemSorter as SortedListComparer).CustomSorters.Add(1,
                 (x, y) =>
                 {
-                    if (Version.HasCycleTime)
+                    if (OSVersion.HasCycleTime)
                     {
                         return (x.Tag as ThreadItem).CyclesDelta.CompareTo((y.Tag as ThreadItem).CyclesDelta);
                     }
@@ -126,7 +130,7 @@ namespace ProcessHacker.Components
                     labelBasePriority.Text = process.Threads[tid].BasePriority.ToString();
                     labelContextSwitches.Text = process.Threads[tid].ContextSwitchCount.ToString("N0");
 
-                    using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(tid))
+                    using (ThreadHandle thandle = new ThreadHandle(tid))
                         labelTEBAddress.Text = "0x" + thandle.GetBasicInformation().TebBaseAddress.ToString("x8");
                 }
                 catch
@@ -276,7 +280,7 @@ namespace ProcessHacker.Components
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {
-            if (Properties.Settings.Default.UseColorSuspended && titem.WaitReason == Win32.KWAIT_REASON.Suspended)
+            if (Properties.Settings.Default.UseColorSuspended && titem.WaitReason == KWaitReason.Suspended)
                 return Properties.Settings.Default.ColorSuspended;
             else if (Properties.Settings.Default.UseColorGuiThreads && titem.IsGuiThread)
                 return Properties.Settings.Default.ColorGuiThreads;
@@ -309,7 +313,7 @@ namespace ProcessHacker.Components
                 if (litem == null)
                     return;
 
-                if (!Version.HasCycleTime)
+                if (!OSVersion.HasCycleTime)
                 {
                     if (newItem.ContextSwitchesDelta == 0)
                         litem.SubItems[1].Text = "";
@@ -364,10 +368,7 @@ namespace ProcessHacker.Components
             {
                 int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
 
-                using (var thandle = new Win32.ThreadHandle(tid,
-                    Version.HasQueryLimitedInformation ? 
-                    Win32.THREAD_RIGHTS.THREAD_SET_LIMITED_INFORMATION :
-                    Win32.THREAD_RIGHTS.THREAD_SET_INFORMATION))
+                using (var thandle = new ThreadHandle(tid, OSVersion.MinThreadSetInfoAccess))
                     thandle.SetPriorityLevel(priority);
             }
             catch (Exception ex)
@@ -408,7 +409,7 @@ namespace ProcessHacker.Components
 
                 try
                 {
-                    using (var thandle = new Win32.ThreadHandle(
+                    using (var thandle = new ThreadHandle(
                         int.Parse(listThreads.SelectedItems[0].SubItems[0].Text), 
                         Program.MinThreadQueryRights))
                     {
@@ -530,14 +531,15 @@ namespace ProcessHacker.Components
                     return;
             }
 
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            if (Program.ElevationType == TokenElevationType.Limited && 
+                KProcessHacker.Instance == null)
             {
                 try
                 {
                     foreach (ListViewItem item in listThreads.SelectedItems)
                     {
-                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
-                            Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            ThreadAccess.Terminate))
                         { }
                     }
                 }
@@ -559,8 +561,8 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                        Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                        ThreadAccess.Terminate))
                         thandle.Terminate();
                 }
                 catch (Exception ex)
@@ -586,14 +588,15 @@ namespace ProcessHacker.Components
                     return;
             }
 
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            if (Program.ElevationType == TokenElevationType.Limited &&
+                KProcessHacker.Instance == null)
             {
                 try
                 {
                     foreach (ListViewItem item in listThreads.SelectedItems)
                     {
-                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
-                            Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            ThreadAccess.SuspendResume))
                         { }
                     }
                 }
@@ -615,8 +618,8 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                     Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                        ThreadAccess.SuspendResume))
                         thandle.Suspend();
                 }
                 catch (Exception ex)
@@ -642,14 +645,15 @@ namespace ProcessHacker.Components
                     return;
             }
 
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited && Program.KPH == null)
+            if (Program.ElevationType == TokenElevationType.Limited &&
+                KProcessHacker.Instance == null)
             {
                 try
                 {
                     foreach (ListViewItem item in listThreads.SelectedItems)
                     {
-                        using (var thandle = new Win32.ThreadHandle(int.Parse(item.SubItems[0].Text),
-                            Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                        using (var thandle = new ThreadHandle(int.Parse(item.SubItems[0].Text),
+                            ThreadAccess.SuspendResume))
                         { }
                     }
                 }
@@ -670,8 +674,8 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = new Win32.ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                    Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                        ThreadAccess.SuspendResume))
                         thandle.Resume();
                 }
                 catch (Exception ex)
@@ -696,7 +700,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text)))
+                using (ThreadHandle thandle = new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text)))
                 {
                     int tebBaseAddress = thandle.GetBasicInformation().TebBaseAddress;
 

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("wj32")]
 [assembly: AssemblyProduct("Process Hacker")]
-[assembly: AssemblyCopyright("Licensed under the GNU GPL.")]
+[assembly: AssemblyCopyright("Licensed under the GNU GPL, v3.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

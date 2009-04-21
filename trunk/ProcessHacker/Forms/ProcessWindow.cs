@@ -26,6 +26,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.Symbols;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
@@ -240,7 +244,7 @@ namespace ProcessHacker
             if (_tokenProps != null)
             {
                 _tokenProps.SaveSettings();
-                (_tokenProps.Object as Win32.ProcessHandle).Dispose();
+                (_tokenProps.Object as ProcessHandle).Dispose();
             }
 
             if (_jobProps != null)
@@ -310,7 +314,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    Icon icon = Win32.GetFileIcon(fileName, true);
+                    Icon icon = FileUtils.GetFileIcon(fileName, true);
                     
                     pictureIcon.Image = _processImage = icon.ToBitmap();
 
@@ -323,21 +327,21 @@ namespace ProcessHacker
 
                 var verifyResult = _processItem.VerifyResult;
 
-                if (verifyResult == Win32.VerifyResult.Unknown)
+                if (verifyResult == VerifyResult.Unknown)
                     textFileCompany.Text += "";
-                else if (verifyResult == Win32.VerifyResult.Trusted)
+                else if (verifyResult == VerifyResult.Trusted)
                     textFileCompany.Text += " (verified)";
-                else if (verifyResult == Win32.VerifyResult.TrustedInstaller)
+                else if (verifyResult == VerifyResult.TrustedInstaller)
                     textFileCompany.Text += " (verified, Windows component)";
-                else if (verifyResult == Win32.VerifyResult.NoSignature)
+                else if (verifyResult == VerifyResult.NoSignature)
                     textFileCompany.Text += " (not verified, no signature)";
-                else if (verifyResult == Win32.VerifyResult.Distrust)
+                else if (verifyResult == VerifyResult.Distrust)
                     textFileCompany.Text += " (not verified, distrusted)";
-                else if (verifyResult == Win32.VerifyResult.Expired)
+                else if (verifyResult == VerifyResult.Expired)
                     textFileCompany.Text += " (not verified, expired)";
-                else if (verifyResult == Win32.VerifyResult.Revoked)
+                else if (verifyResult == VerifyResult.Revoked)
                     textFileCompany.Text += " (not verified, revoked)";
-                else if (verifyResult == Win32.VerifyResult.SecuritySettings)
+                else if (verifyResult == VerifyResult.SecuritySettings)
                     textFileCompany.Text += " (not verified, security settings)";
                 else
                     textFileCompany.Text += " (not verified)";
@@ -366,11 +370,11 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                using (ProcessHandle phandle
+                    = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                 {
                     fileCurrentDirectory.Text =
-                        phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
+                        phandle.GetPebString(PebOffset.CurrentDirectoryPath);
                 }
 
                 fileCurrentDirectory.Enabled = true;
@@ -385,7 +389,7 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     textPEBAddress.Text = "0x" + phandle.GetBasicInformation().PebBaseAddress.ToString("x8");
                 }
@@ -433,7 +437,7 @@ namespace ProcessHacker
         {
             try
             {
-                _tokenProps = new TokenProperties(new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights));
+                _tokenProps = new TokenProperties(new ProcessHandle(_pid, Program.MinProcessQueryRights));
                 _tokenProps.Dock = DockStyle.Fill;
                 tabToken.Controls.Add(_tokenProps);
             }
@@ -442,9 +446,9 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    var jhandle = phandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY);
+                    var jhandle = phandle.GetJob(JobObjectAccess.Query);
 
                     _jobProps = new JobProperties(jhandle);
                     _jobProps.Dock = DockStyle.Fill;
@@ -567,8 +571,8 @@ namespace ProcessHacker
             listEnvironment.BeginUpdate();
             try
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid,
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Program.MinProcessReadMemoryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid,
+                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
                 {
                     foreach (var pair in phandle.GetEnvironmentVariables())
                     {
@@ -588,11 +592,11 @@ namespace ProcessHacker
             textProtected.Enabled = true;
             buttonEditProtected.Enabled = true;
 
-            if (Program.KPH != null && Version.HasProtectedProcesses)
+            if (KProcessHacker.Instance != null && OSVersion.HasProtectedProcesses)
             {
                 try
                 {
-                    textProtected.Text = Program.KPH.GetProcessProtected(_pid) ? "Protected" : "Not Protected";
+                    textProtected.Text = KProcessHacker.Instance.GetProcessProtected(_pid) ? "Protected" : "Not Protected";
                 }
                 catch (Exception ex)
                 {
@@ -614,12 +618,12 @@ namespace ProcessHacker
             textDEP.Enabled = true;
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                using (var phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
                     var depStatus = phandle.GetDepStatus();
                     string str;
 
-                    if ((depStatus & Win32.ProcessHandle.DepStatus.Enabled) != 0)
+                    if ((depStatus & DepStatus.Enabled) != 0)
                     {
                         str = "Enabled";
                     }
@@ -628,13 +632,13 @@ namespace ProcessHacker
                         str = "Disabled";
                     }
 
-                    if ((depStatus & Win32.ProcessHandle.DepStatus.Permanent) != 0)
+                    if ((depStatus & DepStatus.Permanent) != 0)
                     {
                         buttonEditDEP.Enabled = false;
                         str += ", Permanent";
                     }
 
-                    if ((depStatus & Win32.ProcessHandle.DepStatus.AtlThunkEmulationDisabled) != 0)
+                    if ((depStatus & DepStatus.AtlThunkEmulationDisabled) != 0)
                         str += ", DEP-ATL thunk emulation disabled";
 
                     textDEP.Text = str;
@@ -824,7 +828,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
                     labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
@@ -868,7 +872,7 @@ namespace ProcessHacker
 
                 if (picker.ShowDialog() == DialogResult.OK)
                 {
-                    Program.KPH.SetProcessProtected(_pid, picker.SelectedItem == "Protect");
+                    KProcessHacker.Instance.SetProcessProtected(_pid, picker.SelectedItem == "Protect");
                     this.UpdateProtected();
                 }
             }
@@ -885,7 +889,7 @@ namespace ProcessHacker
                 if (!Program.Structs.ContainsKey("PEB"))
                     throw new Exception("The struct 'PEB' has not been loaded. Make sure structs.txt was loaded successfully.");
 
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     int baseAddress = phandle.GetBasicInformation().PebBaseAddress;
 
@@ -1182,7 +1186,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                        using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                         {
                             this.Text += " (exited with code " + phandle.GetExitCode() + ")";
                         }
@@ -1199,10 +1203,10 @@ namespace ProcessHacker
             try
             {
                 using (var phandle
-                    = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    = new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                 {
                     _realCurrentDirectory  =
-                        phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
+                        phandle.GetPebString(PebOffset.CurrentDirectoryPath);
 
                     // we don't want to set the text if the user is selecting something in the textbox!
                     if (!fileCurrentDirectory.TextBoxFocused)

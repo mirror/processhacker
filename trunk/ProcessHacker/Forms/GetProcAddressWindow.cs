@@ -21,12 +21,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -54,7 +50,7 @@ namespace ProcessHacker
             if (loaded)
                 module = Win32.GetModuleHandle(_fileName);
             else
-                module = Win32.LoadLibraryEx(_fileName, 0, Win32.DONT_RESOLVE_DLL_REFERENCES);
+                module = Win32.LoadLibraryEx(_fileName, 0, Win32.DontResolveDllReferences);
 
             if (module == 0)
             {

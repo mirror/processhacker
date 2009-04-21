@@ -21,13 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -96,7 +93,7 @@ namespace ProcessHacker
         {        
             base.WndProc(ref m);
 
-            if (m.Msg == (int)Win32.WindowMessage.NcCalcSize)
+            if (m.Msg == (int)WindowMessage.NcCalcSize)
             {
                 if (m.WParam.ToInt32() != 0)
                 {

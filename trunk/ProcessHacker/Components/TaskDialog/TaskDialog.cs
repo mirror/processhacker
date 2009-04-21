@@ -9,10 +9,10 @@
 namespace ProcessHacker.Components
 {
     using System;
-    using System.Drawing;
-    using System.Windows.Forms;
-    using System.Runtime.InteropServices;
     using System.Diagnostics.CodeAnalysis;
+    using System.Drawing;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
 
     /// <summary>
     /// The signature of the callback that recieves notificaitons from the Task Dialog.

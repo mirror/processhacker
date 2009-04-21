@@ -27,6 +27,10 @@ using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -38,13 +42,11 @@ namespace ProcessHacker
         /// </summary>
         public static HackerWindow HackerWindow;
 
-        public static Win32.PROCESS_RIGHTS MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION;
-        public static Win32.PROCESS_RIGHTS MinProcessReadMemoryRights = Win32.PROCESS_RIGHTS.PROCESS_VM_READ;
-        public static Win32.PROCESS_RIGHTS MinProcessWriteMemoryRights = 
-            Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION;
-        public static Win32.PROCESS_RIGHTS MinProcessGetHandleInformationRights =
-            Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE;
-        public static Win32.THREAD_RIGHTS MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION;
+        public static ProcessAccess MinProcessQueryRights = ProcessAccess.QueryInformation;
+        public static ProcessAccess MinProcessReadMemoryRights = ProcessAccess.VmRead;
+        public static ProcessAccess MinProcessWriteMemoryRights = ProcessAccess.VmWrite | ProcessAccess.VmOperation;
+        public static ProcessAccess MinProcessGetHandleInformationRights = ProcessAccess.DupHandle;
+        public static ThreadAccess MinThreadQueryRights = ThreadAccess.QueryInformation;
 
         public static int CurrentProcess;
         public static int CurrentSessionId;
@@ -83,14 +85,13 @@ namespace ProcessHacker
         public static ProcessSystemProvider ProcessProvider;
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
+        public static Dictionary<int, object> ProcessesWithThreads = new Dictionary<int, object>();
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
-        public static bool Aggressive = false;
         public static bool StartHidden = false;
         public static bool StartVisible = false;
         public static string SelectTab = "Processes";
-        public static Win32.TOKEN_ELEVATION_TYPE ElevationType;
-        public static KProcessHacker KPH;
+        public static TokenElevationType ElevationType;
         public static SharedThreadProvider SharedThreadProvider;
         public static SharedThreadProvider SecondarySharedThreadProvider;
         private static object CollectWorkerThreadsLock = new object();
@@ -174,38 +175,33 @@ namespace ProcessHacker
             }
 
             ThreadPool.SetMaxThreads(10, 20);
-            //Asm.LockedBus = 1;
-            //Asm.Lowercase = true;
-            //Asm.ExtraSpace = true;
 
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 
-            Version.Initialize();
-
             try
             {
-                using (var thandle = Win32.ProcessHandle.FromHandle(-1).GetToken())
+                using (var thandle = ProcessHandle.FromHandle(-1).GetToken())
                 {
-                    try { thandle.SetPrivilege("SeDebugPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
+                    try { thandle.SetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled); }
                     catch { }
-                    try { thandle.SetPrivilege("SeShutdownPrivilege", Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED); }
+                    try { thandle.SetPrivilege("SeShutdownPrivilege", SePrivilegeAttributes.Enabled); }
                     catch { }
 
-                    if (Version.HasUac)
+                    if (OSVersion.HasUac)
                     {
                         try { ElevationType = thandle.GetElevationType(); }
-                        catch { ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull; }
+                        catch { ElevationType = TokenElevationType.Full; }
 
-                        if (ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault &&
+                        if (ElevationType == TokenElevationType.Default &&
                             !(new WindowsPrincipal(WindowsIdentity.GetCurrent())).
                                 IsInRole(WindowsBuiltInRole.Administrator))
-                            ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited;
-                        else if (ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
-                            ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+                            ElevationType = TokenElevationType.Limited;
+                        else if (ElevationType == TokenElevationType.Default)
+                            ElevationType = TokenElevationType.Full;
                     }
                     else
                     {
-                        ElevationType = Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+                        ElevationType = TokenElevationType.Full;
                     }
                 }
             }
@@ -216,23 +212,20 @@ namespace ProcessHacker
 
             try
             {
-                KPH = new KProcessHacker("KProcessHacker");
+                KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch
             { }
 
-            if (Version.HasQueryLimitedInformation)
-            {
-                MinProcessQueryRights = Win32.PROCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION;
-                MinThreadQueryRights = Win32.THREAD_RIGHTS.THREAD_QUERY_LIMITED_INFORMATION;
-            }
+            MinProcessQueryRights = OSVersion.MinProcessQueryInfoAccess;
+            MinThreadQueryRights = OSVersion.MinThreadQueryInfoAccess;
 
-            if (KPH != null)
+            if (KProcessHacker.Instance != null)
             {
                 MinProcessGetHandleInformationRights = MinProcessQueryRights;
             }
 
-            if (KPH != null && Version.HasMmCopyVirtualMemory)
+            if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
             {
                 MinProcessReadMemoryRights = MinProcessQueryRights;
                 MinProcessWriteMemoryRights = MinProcessQueryRights;
@@ -272,6 +265,7 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
+            Windows.GetProcessName = (pid) => ProcessProvider.Dictionary[pid].Name;
 
             new HackerWindow();
             Application.Run();
@@ -279,18 +273,6 @@ namespace ProcessHacker
 
         private static bool ProcessCommandLine(Dictionary<string, string> pArgs)
         {
-            if (pArgs.ContainsKey("-a"))
-            {
-                Aggressive = true;
-
-                try
-                {
-                    Unhook();
-                }
-                catch
-                { }
-            }
-
             if (pArgs.ContainsKey("-e"))
             {
                 try
@@ -350,7 +332,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                         Application.Run(new TokenWindow(phandle));
                 }
                 catch (Exception ex)
@@ -416,7 +398,7 @@ namespace ProcessHacker
             int ntdll = Win32.GetModuleHandle("ntdll.dll");
             int old;
 
-            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.COFFOptionalHeader.SizeOfCode, (int)Win32.MEMORY_PROTECTION.PAGE_EXECUTE_READWRITE, out old);
+            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.COFFOptionalHeader.SizeOfCode, (int)MemoryProtection.ExecuteReadWrite, out old);
 
             for (int i = 0; i < file.ExportData.ExportOrdinalTable.Count; i++)
             {
@@ -461,8 +443,8 @@ namespace ProcessHacker
                     {
                         int result;
 
-                        Win32.SendMessageTimeout(hWnd, (Win32.WindowMessage)0x9991, 0, 0,
-                            Win32.SmtoFlags.Block, 5000, out result);
+                        Win32.SendMessageTimeout(hWnd, (WindowMessage)0x9991, 0, 0,
+                            SmtoFlags.Block, 5000, out result);
 
                         if (result == 0x1119)
                         {
@@ -491,22 +473,22 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
         {
-            StartProgramAdmin(Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName,
-                args, successAction, Win32.ShowWindowType.Show, hWnd);
+            StartProgramAdmin(ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName,
+                args, successAction, ShowWindowType.Show, hWnd);
         }
 
-        public static Win32.WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
+        public static WaitResult StartProcessHackerAdminWait(string args, IntPtr hWnd, uint timeout)
         {
             return StartProcessHackerAdminWait(args, null, hWnd, timeout);
         }
 
-        public static Win32.WaitResult StartProcessHackerAdminWait(string args, MethodInvoker successAction, IntPtr hWnd, uint timeout)
+        public static WaitResult StartProcessHackerAdminWait(string args, MethodInvoker successAction, IntPtr hWnd, uint timeout)
         {
-            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+            var info = new ShellExecuteInfo();
 
-            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
-            info.lpFile = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
-            info.nShow = Win32.ShowWindowType.Show;
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
+            info.lpFile = ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+            info.nShow = ShowWindowType.Show;
             info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
             info.lpVerb = "runas";
             info.lpParameters = args;
@@ -526,16 +508,16 @@ namespace ProcessHacker
             else
             {
                 // An error occured - the user probably canceled the elevation dialog.
-                return Win32.WaitResult.Abandoned;
+                return WaitResult.Abandoned;
             }
         }
 
         public static void StartProgramAdmin(string program, string args, 
-            MethodInvoker successAction, Win32.ShowWindowType showType, IntPtr hWnd)
+            MethodInvoker successAction, ShowWindowType showType, IntPtr hWnd)
         {
-            Win32.SHELLEXECUTEINFO info = new Win32.SHELLEXECUTEINFO();
+            var info = new ShellExecuteInfo();
 
-            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(Win32.SHELLEXECUTEINFO));
+            info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
             info.lpFile = program;
             info.nShow = showType;
             info.lpVerb = "runas";

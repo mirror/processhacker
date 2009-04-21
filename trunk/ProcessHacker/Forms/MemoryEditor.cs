@@ -22,12 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using ProcessHacker.Structs;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker
 {
@@ -84,7 +81,7 @@ namespace ProcessHacker
 
             Program.MemoryEditors.Add(this.Id, this);
 
-            this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
+            this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 "), 0x" + _address.ToString("x8") + "-0x" +
                 (_address + _length).ToString("x8") + " - Memory Editor";
 
@@ -161,7 +158,7 @@ namespace ProcessHacker
 
         private void ReadMemory()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessReadMemoryRights))
+            using (var phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights))
             {
                 _data = new byte[_length];
 
@@ -174,7 +171,7 @@ namespace ProcessHacker
 
         private void WriteMemory()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessWriteMemoryRights))
+            using (var phandle = new ProcessHandle(_pid, Program.MinProcessWriteMemoryRights))
             {
                 for (long i = 0; i < hexBoxMemory.ByteProvider.Length; i++)
                 {
@@ -312,7 +309,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
                     string fileName = phandle.GetNativeImageFileName();
 

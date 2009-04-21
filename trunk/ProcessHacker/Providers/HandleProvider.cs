@@ -22,9 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker
 {
@@ -35,13 +34,13 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
-        public Win32.SYSTEM_HANDLE_INFORMATION Handle;
-        public Win32.ObjectInformation ObjectInfo;
+        public SystemHandleInformation Handle;
+        public ObjectInformation ObjectInfo;
     }
 
     public class HandleProvider : Provider<short, HandleItem>
     {
-        private Win32.ProcessHandle _processHandle;
+        private ProcessHandle _processHandle;
         private int _pid;
 
         public HandleProvider(int PID)
@@ -51,13 +50,13 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE);
+                _processHandle = new ProcessHandle(_pid, ProcessHacker.Native.Security.ProcessAccess.DupHandle);
             }
             catch
             {
                 try
                 {
-                    _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights);
+                    _processHandle = new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights);
                 }
                 catch
                 { }
@@ -69,12 +68,11 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            Win32.SYSTEM_HANDLE_INFORMATION[] handles = Win32.EnumHandles();
-            Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION> processHandles = 
-                new Dictionary<short, Win32.SYSTEM_HANDLE_INFORMATION>();
-            Dictionary<short, HandleItem> newdictionary = new Dictionary<short, HandleItem>(this.Dictionary);
+            var handles = Windows.GetHandles();
+            var processHandles = new Dictionary<short, SystemHandleInformation>();
+            var newdictionary = new Dictionary<short, HandleItem>(this.Dictionary);
 
-            foreach (Win32.SYSTEM_HANDLE_INFORMATION handle in handles)
+            foreach (var handle in handles)
             {
                 if (handle.ProcessId == _pid)
                 {
@@ -98,12 +96,12 @@ namespace ProcessHacker
             {
                 if (!this.Dictionary.ContainsKey(h))
                 {
-                    Win32.ObjectInformation info;
+                    ObjectInformation info;
                     HandleItem item = new HandleItem();
 
                     try
                     {
-                        info = Win32.GetHandleInfo(_processHandle, processHandles[h]);
+                        info = processHandles[h].GetHandleInfo(_processHandle);
 
                         if ((info.BestName == null || info.BestName == "") &&
                             HideHandlesWithNoName)

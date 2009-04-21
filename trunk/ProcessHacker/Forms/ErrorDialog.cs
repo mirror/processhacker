@@ -23,6 +23,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {

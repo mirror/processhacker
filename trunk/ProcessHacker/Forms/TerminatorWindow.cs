@@ -24,6 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -118,7 +122,7 @@ namespace ProcessHacker
 
         private void TP1()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.Terminate))
             {
                 // don't use KPH
                 if (!Win32.TerminateProcess(phandle, 0))
@@ -132,19 +136,17 @@ namespace ProcessHacker
             int exitProcess = Win32.GetProcAddress(kernel32, "ExitProcess");
             int threadId;
 
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
                 if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
                     Win32.ThrowLastWin32Error();
         }
 
         private void TJ1()
         {
-            using (var jhandle = Win32.JobHandle.Create(null))
+            using (var jhandle = JobObjectHandle.Create(null))
             {
-                using (Win32.ProcessHandle phandle =
-                    new Win32.ProcessHandle(_pid,
-                        Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA |
-                        Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                using (ProcessHandle phandle =
+                    new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
                 {
                     phandle.AssignToJobObject(jhandle);
                 }
@@ -159,7 +161,7 @@ namespace ProcessHacker
 
             foreach (System.Diagnostics.ProcessThread t in p.Threads)
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(t.Id, Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.Terminate))
                 {
                     try
                     {
@@ -173,21 +175,19 @@ namespace ProcessHacker
 
         private void TT2()
         {
-            Win32.CONTEXT context;
+            Context context;
             int exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
 
             System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
 
             foreach (System.Diagnostics.ProcessThread t in p.Threads)
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(t.Id, 
-                    Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
-                    Win32.THREAD_RIGHTS.THREAD_SET_CONTEXT))
+                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.GetContext | ThreadAccess.SetContext))
                 {
                     try
                     {
-                        context = thandle.GetContext(Win32.CONTEXT_FLAGS.CONTEXT_CONTROL);
-                        context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_CONTROL;
+                        context = thandle.GetContext(ContextFlags.Control);
+                        context.ContextFlags = ContextFlags.Control;
                         context.Eip = exitProcess;
                         thandle.SetContext(context);
                     }
@@ -197,34 +197,33 @@ namespace ProcessHacker
             }
         }
 
-        private void M1()
+        private unsafe void M1()
         {
             using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
             {
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | 
+                using (ProcessHandle phandle = new ProcessHandle(_pid, 
+                    ProcessAccess.QueryInformation | 
                     Program.MinProcessWriteMemoryRights))
                 {
-                    Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+                    var info = new MemoryBasicInformation();
                     int address = 0;
 
                     while (true)
                     {
                         if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                            Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
+                            Marshal.SizeOf(typeof(MemoryBasicInformation))))
                         {
                             break;
                         }
                         else
                         {
-                            int written;
                             int old;
 
                             Win32.VirtualProtectEx(phandle, info.BaseAddress, info.RegionSize,
-                                (int)Win32.MEMORY_PROTECTION.PAGE_READWRITE, out old);
+                                (int)MemoryProtection.ReadWrite, out old);
 
                             for (int i = 0; i < info.RegionSize; i += 0x1000)
-                                Win32.WriteProcessMemory(phandle, info.BaseAddress + i, alloc, 0x1000, out written);
+                                phandle.WriteMemory(info.BaseAddress + i, alloc, 0x1000);
 
                             address += info.RegionSize;
                         }
@@ -235,16 +234,16 @@ namespace ProcessHacker
 
         private void M2()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
-                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, 
+                ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
             {
-                Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+                var info = new MemoryBasicInformation();
                 int address = 0;
 
                 while (true)
                 {
                     if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                        Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
+                        Marshal.SizeOf(typeof(MemoryBasicInformation))))
                     {
                         break;
                     }
@@ -253,7 +252,7 @@ namespace ProcessHacker
                         int old;
 
                         Win32.VirtualProtectEx(phandle, info.BaseAddress, info.RegionSize,
-                            (int)Win32.MEMORY_PROTECTION.PAGE_NOACCESS, out old);
+                            (int)MemoryProtection.NoAccess, out old);
 
                         address += info.RegionSize;
                     }
@@ -263,7 +262,7 @@ namespace ProcessHacker
 
         private void CH1()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.DupHandle))
             {
                 int i = 0;
 
@@ -286,7 +285,7 @@ namespace ProcessHacker
 
         private void TP3()
         {
-            using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
             {
                 phandle.Terminate();
             }

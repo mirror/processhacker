@@ -29,9 +29,13 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
-using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
@@ -195,7 +199,7 @@ namespace ProcessHacker
 
             if (box.ShowDialog() == DialogResult.OK)
             {
-                Program.StartProgramAdmin(box.Value, "", null, Win32.ShowWindowType.Show, this.Handle);
+                Program.StartProgramAdmin(box.Value, "", null, ShowWindowType.Show, this.Handle);
             }
         }
 
@@ -390,30 +394,30 @@ namespace ProcessHacker
             {
                 try
                 {
-                    var result = Win32.VerifyFile(ofd.FileName);
+                    var result = Cryptography.VerifyFile(ofd.FileName);
                     string message = "";
 
                     switch (result)
                     {
-                        case Win32.VerifyResult.Distrust:
+                        case VerifyResult.Distrust:
                             message = "is not trusted";
                             break;
-                        case Win32.VerifyResult.Expired:
+                        case VerifyResult.Expired:
                             message = "has an expired certificate";
                             break;
-                        case Win32.VerifyResult.NoSignature:
+                        case VerifyResult.NoSignature:
                             message = "does not have a digital signature";
                             break;
-                        case Win32.VerifyResult.Revoked:
+                        case VerifyResult.Revoked:
                             message = "has a revoked certificate";
                             break;
-                        case Win32.VerifyResult.SecuritySettings:
+                        case VerifyResult.SecuritySettings:
                             message = "could not be verified due to security settings";
                             break;
-                        case Win32.VerifyResult.Trusted:
+                        case VerifyResult.Trusted:
                             message = "is trusted";
                             break;
-                        case Win32.VerifyResult.Unknown:
+                        case VerifyResult.Unknown:
                             message = "could not be verified";
                             break;
                         default:
@@ -682,7 +686,7 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
                     {
                         switch (phandle.GetPriorityClass())
                         {
@@ -720,11 +724,11 @@ namespace ProcessHacker
 
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                    using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
                     {
                         try
                         {
-                            using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                            using (var thandle = phandle.GetToken(TokenAccess.Query))
                             {
                                 if (virtualizationProcessMenuItem.Enabled = thandle.IsVirtualizationAllowed())
                                     virtualizationProcessMenuItem.Checked = thandle.IsVirtualizationEnabled();
@@ -852,15 +856,15 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(processSelectedPID,
+                    using (var phandle = new ProcessHandle(processSelectedPID,
                         Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                     {
-                        string currentDirectory = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CurrentDirectoryPath);
-                        string cmdLine = phandle.GetPebString(Win32.ProcessHandle.PebOffset.CommandLine);
+                        string currentDirectory = phandle.GetPebString(PebOffset.CurrentDirectoryPath);
+                        string cmdLine = phandle.GetPebString(PebOffset.CommandLine);
 
                         try
                         {
-                            using (var phandle2 = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                            using (var phandle2 = new ProcessHandle(processSelectedPID, ProcessAccess.Terminate))
                                 phandle2.Terminate();
                         }
                         catch (Exception ex)
@@ -872,8 +876,8 @@ namespace ProcessHacker
 
                         try
                         {
-                            Win32.STARTUPINFO startupInfo = new Win32.STARTUPINFO();
-                            Win32.PROCESS_INFORMATION procInfo = new Win32.PROCESS_INFORMATION();
+                            var startupInfo = new StartupInfo();
+                            var procInfo = new ProcessInformation();
 
                             startupInfo.Size = Marshal.SizeOf(startupInfo);
 
@@ -925,9 +929,9 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
+                using (var phandle = new ProcessHandle(processSelectedPID, Program.MinProcessQueryRights))
                 {
-                    using (var thandle = phandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_WRITE))
+                    using (var thandle = phandle.GetToken(TokenAccess.GenericWrite))
                     {
                         thandle.SetVirtualizationEnabled(!virtualizationProcessMenuItem.Checked);
                     }
@@ -985,10 +989,8 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(processSelectedPID,
-                        Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD |
-                        Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION |
-                        Win32.PROCESS_RIGHTS.PROCESS_VM_WRITE))
+                    using (var phandle = new ProcessHandle(processSelectedPID,
+                        ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
                     {
                         phandle.InjectDll(ofd.FileName, 2000);
                     }
@@ -1010,7 +1012,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    Program.KPH.SetProcessToken(picker.SelectedPid, processSelectedPID);
+                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPID);
                 }
                 catch (Exception ex)
                 {
@@ -1349,12 +1351,12 @@ namespace ProcessHacker
 
         public void serviceP_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
-            Win32.SERVICE_STATE oldState = oldItem.Status.ServiceStatusProcess.CurrentState;
-            Win32.SERVICE_STATE newState = newItem.Status.ServiceStatusProcess.CurrentState;
+            var oldState = oldItem.Status.ServiceStatusProcess.CurrentState;
+            var newState = newItem.Status.ServiceStatusProcess.CurrentState;
 
-            if ((oldState == Win32.SERVICE_STATE.Paused || oldState == Win32.SERVICE_STATE.Stopped ||
-                oldState == Win32.SERVICE_STATE.StartPending) &&
-                newState == Win32.SERVICE_STATE.Running)
+            if ((oldState == ServiceState.Paused || oldState == ServiceState.Stopped ||
+                oldState == ServiceState.StartPending) &&
+                newState == ServiceState.Running)
             {
                 this.QueueMessage("Service Started: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
@@ -1368,16 +1370,16 @@ namespace ProcessHacker
                         ToolTipIcon.Info);
             }
 
-            if (oldState == Win32.SERVICE_STATE.Running &&
-                newState == Win32.SERVICE_STATE.Paused)
+            if (oldState == ServiceState.Running &&
+                newState == ServiceState.Paused)
                 this.QueueMessage("Service Paused: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
                     ((newItem.Status.DisplayName != "") ?
                     " (" + newItem.Status.DisplayName + ")" :
                     ""), null);
 
-            if (oldState == Win32.SERVICE_STATE.Running &&
-                newState == Win32.SERVICE_STATE.Stopped)
+            if (oldState == ServiceState.Running &&
+                newState == ServiceState.Stopped)
             {
                 this.QueueMessage("Service Stopped: " + newItem.Status.ServiceName +
                     " (" + newItem.Status.ServiceStatusProcess.ServiceType.ToString() + ")" +
@@ -1487,7 +1489,7 @@ namespace ProcessHacker
                         goToProcessServiceMenuItem.Enabled = false;
                     }
                           
-                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.PauseContinue)
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.PauseContinue)
                         == 0)
                     {
                         continueServiceMenuItem.Visible = false;
@@ -1499,24 +1501,24 @@ namespace ProcessHacker
                         pauseServiceMenuItem.Visible = true;
                     }
 
-                    if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Paused)
+                    if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Paused)
                     {                                        
                         startServiceMenuItem.Enabled = false;
                         pauseServiceMenuItem.Enabled = false;
                     }
-                    else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    else if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
                     {
                         startServiceMenuItem.Enabled = false;
                         continueServiceMenuItem.Enabled = false;
                     }
-                    else if (item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Stopped)
+                    else if (item.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
                     {
                         pauseServiceMenuItem.Enabled = false;
                         stopServiceMenuItem.Enabled = false;
                     }
 
-                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & Win32.SERVICE_ACCEPT.Stop) == 0 &&
-                        item.Status.ServiceStatusProcess.CurrentState == Win32.SERVICE_STATE.Running)
+                    if ((item.Status.ServiceStatusProcess.ControlsAccepted & ServiceAccept.Stop) == 0 &&
+                        item.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
                     {
                         stopServiceMenuItem.Enabled = false;
                     }
@@ -1732,7 +1734,7 @@ namespace ProcessHacker
             };
 
             addMenuItem("Lock", (sender, e) => { Win32.LockWorkStation(); });
-            addMenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Logoff, 0); });
+            addMenuItem("Logoff", (sender, e) => { Win32.ExitWindowsEx(ExitWindowsFlags.Logoff, 0); });
             addMenuItem("-", null);
             addMenuItem("Sleep", (sender, e) => { Win32.SetSuspendState(false, false, false); });
             addMenuItem("Hibernate", (sender, e) => { Win32.SetSuspendState(true, false, false); });
@@ -1742,21 +1744,21 @@ namespace ProcessHacker
                 if (MessageBox.Show("Are you sure you want to restart your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Reboot, 0);
+                    Win32.ExitWindowsEx(ExitWindowsFlags.Reboot, 0);
             });
             addMenuItem("Shutdown", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to shutdown your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Shutdown, 0);
+                    Win32.ExitWindowsEx(ExitWindowsFlags.Shutdown, 0);
             });
             addMenuItem("Poweroff", (sender, e) =>
             {
                 if (MessageBox.Show("Are you sure you want to poweroff your computer?", "Process Hacker",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
                     MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                    Win32.ExitWindowsEx(Win32.ExitWindowsFlags.Poweroff, 0);
+                    Win32.ExitWindowsEx(ExitWindowsFlags.Poweroff, 0);
             });
         }
 
@@ -1893,7 +1895,7 @@ namespace ProcessHacker
 
             try
             {
-                var modules = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+                var modules = ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
 
                 foreach (var module in modules)
                 {
@@ -1988,7 +1990,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (var phandle = new Win32.ProcessHandle(processSelectedPID, Win32.PROCESS_RIGHTS.PROCESS_SET_INFORMATION))
+                using (var phandle = new ProcessHandle(processSelectedPID, ProcessAccess.SetInformation))
                     phandle.SetPriorityClass(priority);
             }
             catch (Exception ex)
@@ -2018,7 +2020,7 @@ namespace ProcessHacker
                     }
                     //break;
 
-                case (int)Win32.WindowMessage.SysCommand:
+                case (int)WindowMessage.SysCommand:
                     {
                         if (m.WParam.ToInt32() == 0xf020) // SC_MINIMIZE
                         {
@@ -2037,8 +2039,8 @@ namespace ProcessHacker
                     }
                     break;
 
-                case (int)Win32.WindowMessage.Activate:
-                case (int)Win32.WindowMessage.KillFocus:
+                case (int)WindowMessage.Activate:
+                case (int)WindowMessage.KillFocus:
                     {
                         if (treeProcesses != null && treeProcesses.Tree != null)
                             treeProcesses.Tree.Invalidate();
@@ -2059,8 +2061,8 @@ namespace ProcessHacker
 
             SaveSettings();
 
-            if (Program.KPH != null)
-                Program.KPH.Close();
+            if (KProcessHacker.Instance != null)
+                KProcessHacker.Instance.Close();
 
             try
             {
@@ -2113,7 +2115,7 @@ namespace ProcessHacker
                 try { ThemingScope.Activate(); }
                 catch { }
 
-                if (Version.HasTaskDialogs)
+                if (OSVersion.HasTaskDialogs)
                 {
                     TaskDialog td = new TaskDialog();
 
@@ -2211,19 +2213,19 @@ namespace ProcessHacker
                 runAsProcessMenuItem.Visible = false;
             }
 
-            if (Program.KPH == null)
+            if (KProcessHacker.Instance == null)
                 hiddenProcessesMenuItem.Visible = false;
 
-            if (Program.KPH == null || !Version.HasSetAccessToken)
+            if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
 
-            if (!Version.HasUac)
+            if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
         }
 
         private void LoadUac()
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            if (Program.ElevationType == TokenElevationType.Limited)
             {
                 uacShieldIcon = this.GetUacShieldIcon();
 
@@ -2423,19 +2425,19 @@ namespace ProcessHacker
             try
             {
                 this.Text +=
-                    " [" + Win32.ProcessHandle.FromHandle(Program.CurrentProcess).
-                    GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY).GetUser().GetName(true) +
-                    (Program.KPH != null ? "+" : "") + "]";
+                    " [" + ProcessHandle.FromHandle(Program.CurrentProcess).
+                    GetToken(TokenAccess.Query).GetUser().GetName(true) +
+                    (KProcessHacker.Instance != null ? "+" : "") + "]";
             }
             catch
             { }
 
             // If it's Vista and we're elevated, we should allow the magic window message to allow 
             // Allow only one instance to work.
-            if (Version.HasUac &&
-                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+            if (OSVersion.HasUac &&
+                Program.ElevationType == TokenElevationType.Full)
             {
-                Win32.ChangeWindowMessageFilter((Win32.WindowMessage)0x9991, Win32.UipiFilterFlag.Add);
+                Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             }
         }
 

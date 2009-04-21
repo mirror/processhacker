@@ -21,12 +21,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 
 namespace ProcessHacker.Components
 {
@@ -66,7 +62,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                Win32.ShowProperties(textFileName.Text);
+                FileUtils.ShowProperties(textFileName.Text);
             }
             catch (Exception ex)
             {

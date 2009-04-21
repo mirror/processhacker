@@ -24,6 +24,10 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -163,7 +167,7 @@ namespace ProcessHacker.Components
                         else
                         {
                             using (var phandle =
-                                new Win32.ProcessHandle(_pid, 
+                                new ProcessHandle(_pid, 
                                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                                 _mainModule = Misc.GetRealPath(phandle.GetMainModule().FileName);
                         }
@@ -335,7 +339,7 @@ namespace ProcessHacker.Components
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)
         {
-            Win32.ShowProperties(listModules.SelectedItems[0].ToolTipText);
+            FileUtils.ShowProperties(listModules.SelectedItems[0].ToolTipText);
         }
 
         private void inspectModuleMenuItem_Click(object sender, EventArgs e)
@@ -404,15 +408,15 @@ namespace ProcessHacker.Components
                 if (freeLibrary == 0)
                     throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
 
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
+                using (ProcessHandle phandle = new ProcessHandle(_pid, 
                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights | 
-                    Program.MinProcessWriteMemoryRights | Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+                    Program.MinProcessWriteMemoryRights | ProcessAccess.CreateThread))
                 {
                     int baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
 
                     phandle.SetModuleReferenceCount(baseAddress, 1);
 
-                    var thread = phandle.CreateThread(freeLibrary, baseAddress, Win32.THREAD_RIGHTS.THREAD_ALL_ACCESS);
+                    var thread = phandle.CreateThread(freeLibrary, baseAddress, ThreadAccess.All);
 
                     thread.Wait(1000);
 

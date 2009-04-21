@@ -21,12 +21,12 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.FormHelper
 {
@@ -62,9 +62,8 @@ namespace ProcessHacker.FormHelper
             // Stop if cancel
             if (!CancelRequested)
             {
-                Win32.SYSTEM_HANDLE_INFORMATION[] handles = null;
-                handles = Win32.EnumHandles();
-                Dictionary<int, Win32.ProcessHandle> processHandles = new Dictionary<int, Win32.ProcessHandle>();
+                var handles = Windows.GetHandles();
+                Dictionary<int, ProcessHandle> processHandles = new Dictionary<int, ProcessHandle>();
 
                 for (int i = 0; i < handles.Length; i++)
                 {
@@ -75,23 +74,25 @@ namespace ProcessHacker.FormHelper
                     if (i % 20 == 0)
                         OnMatchProgress(i, handles.Length);
 
-                    Win32.SYSTEM_HANDLE_INFORMATION handle = handles[i];
+                    var handle = handles[i];
 
                     CompareHandlerBestNameWithFilterString(processHandles, handle, strFilter);
                     // test Exception 
                     //if (i > 2000) throw new Exception("test");
                 }
                 OnMatchListView(null);
-                foreach (Win32.ProcessHandle phandle in processHandles.Values)
+                foreach (ProcessHandle phandle in processHandles.Values)
                     phandle.Dispose();
             }
         }
 
-        private void CompareHandlerBestNameWithFilterString(Dictionary<int, Win32.ProcessHandle> processHandles, Win32.SYSTEM_HANDLE_INFORMATION currhandle, string strFilter)
+        private void CompareHandlerBestNameWithFilterString(
+            Dictionary<int, ProcessHandle> processHandles,
+            SystemHandleInformation currhandle, string strFilter)
         {
             try
             {
-                if (Program.KPH == null)
+                if (KProcessHacker.Instance == null)
                 {
                     try
                     {
@@ -118,9 +119,9 @@ namespace ProcessHacker.FormHelper
 
                 if (!processHandles.ContainsKey(currhandle.ProcessId))
                     processHandles.Add(currhandle.ProcessId,
-                        new Win32.ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
+                        new ProcessHandle(currhandle.ProcessId, Program.MinProcessGetHandleInformationRights));
 
-                Win32.ObjectInformation info = Win32.GetHandleInfo(processHandles[currhandle.ProcessId], currhandle);
+                var info = currhandle.GetHandleInfo(processHandles[currhandle.ProcessId]);
 
                 if (!info.BestName.ToLower().Contains(strFilter.ToLower()))
                     return;
@@ -133,7 +134,7 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CallMatchListView(Win32.SYSTEM_HANDLE_INFORMATION handle, Win32.ObjectInformation info)
+        private void CallMatchListView(SystemHandleInformation handle, ObjectInformation info)
         {
             ListViewItem item = new ListViewItem();
             item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();

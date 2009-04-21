@@ -20,24 +20,22 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Structs
 {
     public class ProcessMemoryIO : IStructIOProvider
     {
-        private Win32.ProcessHandle _phandleR;
-        private Win32.ProcessHandle _phandleW;
+        private ProcessHandle _phandleR;
+        private ProcessHandle _phandleW;
 
         public ProcessMemoryIO(int pid)
         {
-            try { _phandleR = new Win32.ProcessHandle(pid, Program.MinProcessReadMemoryRights); }
+            try { _phandleR = new ProcessHandle(pid, Program.MinProcessReadMemoryRights); }
             catch { }
             try
             {
-                _phandleW = new Win32.ProcessHandle(pid, Program.MinProcessWriteMemoryRights);
+                _phandleW = new ProcessHandle(pid, Program.MinProcessWriteMemoryRights);
             }
             catch { }
         }

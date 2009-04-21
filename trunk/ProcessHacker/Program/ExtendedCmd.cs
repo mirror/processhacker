@@ -23,6 +23,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 
@@ -69,7 +73,7 @@ namespace ProcessHacker
                             {
                                 case "runas":
                                     {
-                                        using (var manager = new Win32.ServiceManagerHandle(Win32.SC_MANAGER_RIGHTS.SC_MANAGER_CREATE_SERVICE))
+                                        using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
                                         {
                                             Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
                                             string serviceName = "";
@@ -80,9 +84,9 @@ namespace ProcessHacker
                                             using (var service = manager.CreateService(
                                                 serviceName,
                                                 serviceName + " (Process Hacker Assistant)",
-                                                Win32.SERVICE_TYPE.Win32OwnProcess,
-                                                Win32.SERVICE_START_TYPE.DemandStart,
-                                                Win32.SERVICE_ERROR_CONTROL.Ignore,
+                                                ServiceType.Win32OwnProcess,
+                                                ServiceStartType.DemandStart,
+                                                ServiceErrorControl.Ignore,
                                                 obj,
                                                 "",
                                                 "LocalSystem",
@@ -103,7 +107,7 @@ namespace ProcessHacker
 
                     case "process":
                         {
-                            var processes = Win32.EnumProcesses();
+                            var processes = Windows.GetProcesses();
                             string[] pidStrings = obj.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                             int[] pids = new int[pidStrings.Length];
                             string[] names = new string[pidStrings.Length];
@@ -145,7 +149,7 @@ namespace ProcessHacker
                                             try
                                             {
                                                 using (var thandle =
-                                                    new Win32.ThreadHandle(int.Parse(tid), Win32.THREAD_RIGHTS.THREAD_TERMINATE))
+                                                    new ThreadHandle(int.Parse(tid), ThreadAccess.Terminate))
                                                     thandle.Terminate();
                                             }
                                             catch (Exception ex)
@@ -164,7 +168,7 @@ namespace ProcessHacker
                                             try
                                             {
                                                 using (var thandle =
-                                                    new Win32.ThreadHandle(int.Parse(tid), Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                                                    new ThreadHandle(int.Parse(tid), ThreadAccess.SuspendResume))
                                                     thandle.Suspend();
                                             }
                                             catch (Exception ex)
@@ -183,7 +187,7 @@ namespace ProcessHacker
                                             try
                                             {
                                                 using (var thandle =
-                                                    new Win32.ThreadHandle(int.Parse(tid), Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME))
+                                                    new ThreadHandle(int.Parse(tid), ThreadAccess.SuspendResume))
                                                     thandle.Resume();
                                             }
                                             catch (Exception ex)
@@ -235,22 +239,21 @@ namespace ProcessHacker
                                     break;
                                 case "config":
                                     {
-                                        using (Win32.ServiceHandle service = new Win32.ServiceHandle(obj,
-                                            Win32.SERVICE_RIGHTS.SERVICE_CHANGE_CONFIG))
+                                        using (ServiceHandle service = new ServiceHandle(obj, ServiceAccess.ChangeConfig))
                                         {
-                                            Win32.SERVICE_TYPE serviceType;
+                                            ServiceType serviceType;
 
                                             if (args["-servicetype"] == "Win32OwnProcess, InteractiveProcess")
-                                                serviceType = Win32.SERVICE_TYPE.Win32OwnProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                                                serviceType = ServiceType.Win32OwnProcess | ServiceType.InteractiveProcess;
                                             else if (args["-servicetype"] == "Win32ShareProcess, InteractiveProcess")
-                                                serviceType = Win32.SERVICE_TYPE.Win32ShareProcess | Win32.SERVICE_TYPE.InteractiveProcess;
+                                                serviceType = ServiceType.Win32ShareProcess | ServiceType.InteractiveProcess;
                                             else
-                                                serviceType = (Win32.SERVICE_TYPE)Enum.Parse(typeof(Win32.SERVICE_TYPE), args["-servicetype"]);
+                                                serviceType = (ServiceType)Enum.Parse(typeof(ServiceType), args["-servicetype"]);
 
-                                            var startType = (Win32.SERVICE_START_TYPE)
-                                                Enum.Parse(typeof(Win32.SERVICE_START_TYPE), args["-servicestarttype"]);
-                                            var errorControl = (Win32.SERVICE_ERROR_CONTROL)
-                                                Enum.Parse(typeof(Win32.SERVICE_ERROR_CONTROL), args["-serviceerrorcontrol"]);
+                                            var startType = (ServiceStartType)
+                                                Enum.Parse(typeof(ServiceStartType), args["-servicestarttype"]);
+                                            var errorControl = (ServiceErrorControl)
+                                                Enum.Parse(typeof(ServiceErrorControl), args["-serviceerrorcontrol"]);
 
                                             string binaryPath = null;
                                             string loadOrderGroup = null;
@@ -266,7 +269,7 @@ namespace ProcessHacker
                                             if (args.ContainsKey("-servicepassword"))
                                                 password = args["-servicepassword"];
 
-                                            if (!Win32.ChangeServiceConfig(service.Handle,
+                                            if (!Win32.ChangeServiceConfig(service,
                                                 serviceType, startType, errorControl,
                                                 binaryPath, loadOrderGroup, 0, 0, userAccount, password, null))
                                                 Win32.ThrowLastWin32Error();

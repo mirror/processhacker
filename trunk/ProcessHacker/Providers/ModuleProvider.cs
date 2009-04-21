@@ -22,12 +22,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
-using System.Text;
 using System.Runtime.InteropServices;
+using System.Text;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -48,7 +48,7 @@ namespace ProcessHacker
 
     public class ModuleProvider : Provider<int, ModuleItem>
     {
-        private Win32.ProcessHandle _processHandle;
+        private ProcessHandle _processHandle;
         private int _pid;
 
         public ModuleProvider(int PID)
@@ -58,14 +58,14 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid, 
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Program.MinProcessReadMemoryRights);
+                _processHandle = new ProcessHandle(_pid, 
+                    ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights);
             }
             catch
             {
                 try
                 {
-                    _processHandle = new Win32.ProcessHandle(_pid,
+                    _processHandle = new ProcessHandle(_pid,
                         Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights);
                 }
                 catch
@@ -135,7 +135,7 @@ namespace ProcessHacker
                         System.IO.FileInfo fi = new System.IO.FileInfo(item.FileName);
                         item.FileName = fi.FullName;
 
-                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(item.FileName);
+                        var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(item.FileName);
 
                         item.FileDescription = info.FileDescription;
                         item.FileVersion = info.FileVersion;
@@ -154,7 +154,7 @@ namespace ProcessHacker
         private void UpdateModules()
         {
             var processModules = _processHandle.GetModules();
-            var modules = new Dictionary<int, Win32.ProcessModule>();
+            var modules = new Dictionary<int, ProcessModule>();
             var newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);
 
             foreach (var m in processModules)
@@ -162,7 +162,7 @@ namespace ProcessHacker
 
             // add mapped files
             {
-                Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+                var info = new MemoryBasicInformation();
                 int address = 0;
 
                 while (true)
@@ -173,7 +173,7 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        if (info.Type == Win32.MEMORY_TYPE.MEM_MAPPED)
+                        if (info.Type == MemoryType.Mapped)
                         {
                             StringBuilder sb = new StringBuilder(0x400);
                             int length = Win32.GetMappedFileName(_processHandle, info.BaseAddress, sb, sb.Capacity);
@@ -183,12 +183,12 @@ namespace ProcessHacker
                                 string fileName = sb.ToString(0, length);
 
                                 if (fileName.StartsWith("\\"))
-                                    fileName = Win32.DeviceFileNameToDos(fileName);
+                                    fileName = FileUtils.DeviceFileNameToDos(fileName);
 
                                 System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
 
                                 modules.Add(info.BaseAddress,
-                                    new Win32.ProcessModule(
+                                    new ProcessModule(
                                         new IntPtr(info.BaseAddress),
                                         info.RegionSize, IntPtr.Zero,
                                         fi.Name, fi.FullName));
@@ -232,7 +232,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        FileVersionInfo info = FileVersionInfo.GetVersionInfo(item.FileName);
+                        var info = System.Diagnostics.FileVersionInfo.GetVersionInfo(item.FileName);
 
                         item.FileDescription = info.FileDescription;
                         item.FileVersion = info.FileVersion;

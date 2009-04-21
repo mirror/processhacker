@@ -9,10 +9,8 @@
 namespace ProcessHacker.Components
 {
     using System;
-    using System.Drawing;
-    using System.Windows.Forms;
-    using System.Runtime.InteropServices;
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Class to hold native code interop declarations.

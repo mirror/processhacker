@@ -21,10 +21,9 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Drawing;
+using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -202,12 +201,12 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
                 item.Status.ServiceStatusProcess.ProcessID == 0 ? "" : item.Status.ServiceStatusProcess.ProcessID.ToString()));
 
-            if ((item.Status.ServiceStatusProcess.ServiceType & Win32.SERVICE_TYPE.InteractiveProcess) != 0)
+            if ((item.Status.ServiceStatusProcess.ServiceType & ServiceType.InteractiveProcess) != 0)
                 litem.ImageKey = "Interactive";
-            else if (item.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32OwnProcess ||
-                item.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.Win32ShareProcess)
+            else if (item.Status.ServiceStatusProcess.ServiceType == ServiceType.Win32OwnProcess ||
+                item.Status.ServiceStatusProcess.ServiceType == ServiceType.Win32ShareProcess)
                 litem.ImageKey = "Win32";
-            else if (item.Status.ServiceStatusProcess.ServiceType == Win32.SERVICE_TYPE.FileSystemDriver)
+            else if (item.Status.ServiceStatusProcess.ServiceType == ServiceType.FileSystemDriver)
                 litem.ImageKey = "FS";
             else
                 litem.ImageKey = "Driver";

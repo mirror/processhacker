@@ -24,6 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.Symbols;
 
 namespace ProcessHacker
@@ -45,11 +49,11 @@ namespace ProcessHacker
         public uint StartAddressI;
         public string StartAddress;
         public Symbols.SymbolResolveLevel StartAddressLevel;
-        public Win32.KWAIT_REASON WaitReason;
+        public KWaitReason WaitReason;
         public bool IsGuiThread;
         public bool JustResolved;
 
-        public Win32.ThreadHandle ThreadQueryLimitedHandle;
+        public ThreadHandle ThreadQueryLimitedHandle;
     }
 
     public class ThreadProvider : Provider<int, ThreadItem>
@@ -59,7 +63,7 @@ namespace ProcessHacker
 
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
-        private Win32.ProcessHandle _processHandle;
+        private ProcessHandle _processHandle;
         private SymbolProvider _symbols;
         private int _pid;
         private int _loading = 0;
@@ -72,20 +76,20 @@ namespace ProcessHacker
         {
             _pid = PID;
 
-            if (!Win32.ProcessesWithThreads.ContainsKey(_pid))
-                Win32.ProcessesWithThreads.Add(_pid, null);
+            if (!Program.ProcessesWithThreads.ContainsKey(_pid))
+                Program.ProcessesWithThreads.Add(_pid, null);
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Killed += new MethodInvoker(ThreadProvider_Killed);
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights);
+                _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights);
 
                 try
                 {
                     // Needed (maybe) to display the EULA
-                    Win32.SymbolServerSetOptions(Win32.SYMBOL_SERVER_OPTION.Unattended, 0);
+                    Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
                 }
                 catch
                 { }
@@ -95,8 +99,8 @@ namespace ProcessHacker
                 {
                     _symbols = new SymbolProvider(_processHandle);
 
-                    SymbolProvider.Options = Win32.SYMBOL_OPTIONS.DeferredLoads |
-                        (Properties.Settings.Default.DbgHelpUndecorate ? Win32.SYMBOL_OPTIONS.UndName : 0);
+                    SymbolProvider.Options = SymbolOptions.DeferredLoads |
+                        (Properties.Settings.Default.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
 
                     if (Properties.Settings.Default.DbgHelpSearchPath != "")
                         _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
@@ -106,7 +110,7 @@ namespace ProcessHacker
                         if (_pid != 4)
                         {
                             using (var phandle =
-                                new Win32.ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                                new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
                                 foreach (var module in phandle.GetModules())
                                 {
@@ -125,7 +129,7 @@ namespace ProcessHacker
                             _symbols.PreloadModules = true;
 
                             // load driver symbols
-                            foreach (var module in Win32.EnumKernelModules())
+                            foreach (var module in Windows.GetKernelModules())
                             {
                                 try
                                 {
@@ -161,8 +165,8 @@ namespace ProcessHacker
             lock (_moduleLoadCompletedEvent)
                 _moduleLoadCompletedEvent.Close();
 
-            if (Win32.ProcessesWithThreads.ContainsKey(_pid))
-                Win32.ProcessesWithThreads.Remove(_pid);
+            if (Program.ProcessesWithThreads.ContainsKey(_pid))
+                Program.ProcessesWithThreads.Remove(_pid);
 
             foreach (int tid in this.Dictionary.Keys)
             {
@@ -241,12 +245,11 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> threads =
-                Program.ProcessProvider.Dictionary[_pid].Threads;
+            var threads = Program.ProcessProvider.Dictionary[_pid].Threads;
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
             if (threads == null)
-                threads = new Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION>();
+                threads = new Dictionary<int, SystemThreadInformation>();
 
             // look for dead threads
             foreach (int tid in Dictionary.Keys)
@@ -281,7 +284,7 @@ namespace ProcessHacker
             // look for new threads
             foreach (int tid in threads.Keys)
             {
-                Win32.SYSTEM_THREAD_INFORMATION t = threads[tid];
+                var t = threads[tid];
 
                 if (!Dictionary.ContainsKey(tid))
                 {
@@ -293,7 +296,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.ThreadQueryLimitedHandle = new Win32.ThreadHandle(tid, Program.MinThreadQueryRights);
+                        item.ThreadQueryLimitedHandle = new ThreadHandle(tid, Program.MinThreadQueryRights);
 
                         try
                         {
@@ -302,17 +305,17 @@ namespace ProcessHacker
                         catch
                         { }
 
-                        if (Program.KPH != null)
+                        if (KProcessHacker.Instance != null)
                         {
                             try
                             {
-                                item.IsGuiThread = Program.KPH.KphGetThreadWin32Thread(item.ThreadQueryLimitedHandle) != 0;
+                                item.IsGuiThread = KProcessHacker.Instance.KphGetThreadWin32Thread(item.ThreadQueryLimitedHandle) != 0;
                             }
                             catch
                             { }
                         }
 
-                        if (Version.HasCycleTime)
+                        if (OSVersion.HasCycleTime)
                         {
                             try
                             {
@@ -325,11 +328,11 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (Program.KPH != null && item.ThreadQueryLimitedHandle != null)
+                    if (KProcessHacker.Instance != null && item.ThreadQueryLimitedHandle != null)
                     {
                         try
                         {
-                            item.StartAddressI = Program.KPH.GetThreadWin32StartAddress(item.ThreadQueryLimitedHandle);
+                            item.StartAddressI = KProcessHacker.Instance.GetThreadWin32StartAddress(item.ThreadQueryLimitedHandle);
                         }
                         catch
                         { }
@@ -338,13 +341,13 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            using (Win32.ThreadHandle thandle =
-                                new Win32.ThreadHandle(tid, Win32.THREAD_RIGHTS.THREAD_QUERY_INFORMATION))
+                            using (ThreadHandle thandle =
+                                new ThreadHandle(tid, ThreadAccess.QueryInformation))
                             {
                                 int retLen;
 
-                                Win32.ZwQueryInformationThread(thandle,
-                                    Win32.THREAD_INFORMATION_CLASS.ThreadQuerySetWin32StartAddress,
+                                Win32.NtQueryInformationThread(thandle,
+                                    ThreadInformationClass.ThreadQuerySetWin32StartAddress,
                                     out item.StartAddressI, 4, out retLen);
                             }
                         }
@@ -355,7 +358,7 @@ namespace ProcessHacker
                     // if the start address is less than 0x10000, it's wrong.
                     if (item.StartAddressI < 0x10000)
                     {
-                        // if that failed, use the start address supplied by ZwQuerySystemInformation
+                        // if that failed, use the start address supplied by NtQuerySystemInformation
                         item.StartAddressI = (uint)t.StartAddress;
                     }
 
@@ -404,17 +407,17 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    if (Program.KPH != null)
+                    if (KProcessHacker.Instance != null)
                     {
                         try
                         {
-                            newitem.IsGuiThread = Program.KPH.KphGetThreadWin32Thread(newitem.ThreadQueryLimitedHandle) != 0;
+                            newitem.IsGuiThread = KProcessHacker.Instance.KphGetThreadWin32Thread(newitem.ThreadQueryLimitedHandle) != 0;
                         }
                         catch
                         { }
                     }
 
-                    if (Version.HasCycleTime)
+                    if (OSVersion.HasCycleTime)
                     {
                         try
                         {

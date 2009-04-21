@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -241,24 +243,24 @@ namespace ProcessHacker
             if (Properties.Settings.Default.UseColorDebuggedProcesses && p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorDebuggedProcesses;
             else if (Properties.Settings.Default.UseColorElevatedProcesses && 
-                p.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+                p.ElevationType == TokenElevationType.Full)
                 return Properties.Settings.Default.ColorElevatedProcesses;
             else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInSignificantJob)
                 return Properties.Settings.Default.ColorJobProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && 
                 Properties.Settings.Default.VerifySignatures &&
                 Program.ImposterNames.Contains(p.Name.ToLower()) &&
-                p.VerifyResult != Win32.VerifyResult.Trusted &&
-                p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
-                p.VerifyResult != Win32.VerifyResult.Unknown &&
+                p.VerifyResult != VerifyResult.Trusted &&
+                p.VerifyResult != VerifyResult.TrustedInstaller &&
+                p.VerifyResult != VerifyResult.Unknown &&
                 p.FileName != null)
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && 
                 Properties.Settings.Default.VerifySignatures &&
-                p.VerifyResult != Win32.VerifyResult.Trusted &&
-                p.VerifyResult != Win32.VerifyResult.TrustedInstaller &&
-                p.VerifyResult != Win32.VerifyResult.NoSignature &&
-                p.VerifyResult != Win32.VerifyResult.Unknown)
+                p.VerifyResult != VerifyResult.Trusted &&
+                p.VerifyResult != VerifyResult.TrustedInstaller &&
+                p.VerifyResult != VerifyResult.NoSignature &&
+                p.VerifyResult != VerifyResult.Unknown)
                 return Properties.Settings.Default.ColorPackedProcesses;
             else if (Properties.Settings.Default.UseColorDotNetProcesses && p.IsDotNet)
                 return Properties.Settings.Default.ColorDotNetProcesses;

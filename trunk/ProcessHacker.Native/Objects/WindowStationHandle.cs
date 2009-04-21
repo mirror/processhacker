@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
+
+namespace ProcessHacker.Native.Objects
+{
+    public class WindowStationHandle : Win32Handle<WindowStationAccess>
+    {
+        public static WindowStationHandle GetCurrent()
+        {
+            int handle = Win32.GetProcessWindowStation();
+
+            if (handle == 0)
+                Win32.ThrowLastWin32Error();
+
+            return new WindowStationHandle(handle, false);
+        }
+
+        public WindowStationHandle(string name, WindowStationAccess access)
+        {
+            this.Handle = Win32.OpenWindowStation(name, false, access);
+
+            if (this.Handle == 0)
+                Win32.ThrowLastWin32Error();
+        }
+
+        private WindowStationHandle(int handle, bool owned)
+            : base(handle, owned)
+        { }
+
+        protected override void Close()
+        {
+            Win32.CloseWindowStation(this);
+        }
+
+        public void SetCurrent()
+        {
+            if (!Win32.SetProcessWindowStation(this))
+                Win32.ThrowLastWin32Error();
+        }
+    }
+}

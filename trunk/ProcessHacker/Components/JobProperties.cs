@@ -21,20 +21,18 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Components
 {
     public partial class JobProperties : UserControl
     {
-        private Win32.JobHandle _jobObject;
+        private JobObjectHandle _jobObject;
 
-        public JobProperties(Win32.JobHandle jobObject)
+        public JobProperties(JobObjectHandle jobObject)
         {
             InitializeComponent();
 
@@ -79,54 +77,54 @@ namespace ProcessHacker.Components
                 var uiRestrictions = _jobObject.GetBasicUiRestrictions();
                 var flags = extendedLimits.BasicLimitInformation.LimitFlags;
 
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_ACTIVE_PROCESS) != 0)
+                if ((flags & JobObjectLimitFlags.ActiveProcess) != 0)
                     this.AddLimit("Active Processes", extendedLimits.BasicLimitInformation.ActiveProcessLimit.ToString());
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_AFFINITY) != 0)
+                if ((flags & JobObjectLimitFlags.Affinity) != 0)
                     this.AddLimit("Affinity", extendedLimits.BasicLimitInformation.Affinity.ToString("x"));
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_BREAKAWAY_OK) != 0)
+                if ((flags & JobObjectLimitFlags.BreakawayOk) != 0)
                     this.AddLimit("Breakaway OK", "Enabled");
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION) != 0)
+                if ((flags & JobObjectLimitFlags.DieOnUnhandledException) != 0)
                     this.AddLimit("Die on Unhandled Exception", "Enabled");
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_JOB_MEMORY) != 0)
+                if ((flags & JobObjectLimitFlags.JobMemory) != 0)
                     this.AddLimit("Job Memory", Misc.GetNiceSizeName(extendedLimits.JobMemoryLimit));
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_JOB_TIME) != 0)
+                if ((flags & JobObjectLimitFlags.JobTime) != 0)
                     this.AddLimit("Job Time",
                         Misc.GetNiceTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerJobUserTimeLimit)));
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE) != 0)
+                if ((flags & JobObjectLimitFlags.KillOnJobClose) != 0)
                     this.AddLimit("Kill on Job Close", "Enabled");
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_PRIORITY_CLASS) != 0)
+                if ((flags & JobObjectLimitFlags.PriorityClass) != 0)
                     this.AddLimit("Priority Class",
                         ((System.Diagnostics.ProcessPriorityClass)extendedLimits.BasicLimitInformation.PriorityClass).ToString());
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_PROCESS_MEMORY) != 0)
+                if ((flags & JobObjectLimitFlags.ProcessMemory) != 0)
                     this.AddLimit("Process Memory", Misc.GetNiceSizeName(extendedLimits.ProcessMemoryLimit));
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_PROCESS_TIME) != 0)
+                if ((flags & JobObjectLimitFlags.ProcessTime) != 0)
                     this.AddLimit("Process Time",
                         Misc.GetNiceTimeSpan(new TimeSpan(extendedLimits.BasicLimitInformation.PerProcessUserTimeLimit)));
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SCHEDULING_CLASS) != 0)
+                if ((flags & JobObjectLimitFlags.SchedulingClass) != 0)
                     this.AddLimit("Scheduling Class", extendedLimits.BasicLimitInformation.SchedulingClass.ToString());
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK) != 0)
+                if ((flags & JobObjectLimitFlags.SilentBreakawayOk) != 0)
                     this.AddLimit("Silent Breakaway OK", "Enabled");
-                if ((flags & Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_WORKINGSET) != 0)
+                if ((flags & JobObjectLimitFlags.WorkingSet) != 0)
                 {
                     this.AddLimit("Minimum Working Set", Misc.GetNiceSizeName(extendedLimits.BasicLimitInformation.MinimumWorkingSetSize));
                     this.AddLimit("Maximum Working Set", Misc.GetNiceSizeName(extendedLimits.BasicLimitInformation.MaximumWorkingSetSize));
                 }
 
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_DESKTOP) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.Desktop) != 0)
                     this.AddLimit("Desktop", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_DISPLAYSETTINGS) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.DisplaySettings) != 0)
                     this.AddLimit("Display Settings", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_EXITWINDOWS) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.ExitWindows) != 0)
                     this.AddLimit("Exit Windows", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_GLOBALATOMS) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.GlobalAtoms) != 0)
                     this.AddLimit("Global Atoms", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_HANDLES) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.Handles) != 0)
                     this.AddLimit("Handles", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_READCLIPBOARD) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.ReadClipboard) != 0)
                     this.AddLimit("Read Clipboard", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.SystemParameters) != 0)
                     this.AddLimit("System Parameters", "Limited");
-                if ((uiRestrictions & Win32.JOB_OBJECT_BASIC_UI_RESTRICTIONS.JOB_OBJECT_UILIMIT_WRITECLIPBOARD) != 0)
+                if ((uiRestrictions & JobObjectBasicUiRestrictions.WriteClipboard) != 0)
                     this.AddLimit("Write Clipboard", "Limited");
             }
             catch 
@@ -138,7 +136,7 @@ namespace ProcessHacker.Components
             listLimits.Items.Add(new ListViewItem(new string[] { name, value }));
         }
 
-        public Win32.JobHandle JobObject
+        public JobObjectHandle JobObject
         {
             get { return _jobObject; }
         }
@@ -192,7 +190,7 @@ namespace ProcessHacker.Components
 
         private void buttonTerminate_Click(object sender, EventArgs e)
         {
-            if (Version.HasTaskDialogs)
+            if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
 
@@ -221,8 +219,8 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (var jhandle2 = _jobObject.Duplicate((int)Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_TERMINATE))
-                    Win32.JobHandle.FromHandle(jhandle2).Terminate();
+                using (var jhandle2 = _jobObject.Duplicate(JobObjectAccess.Terminate))
+                    JobObjectHandle.FromHandle(jhandle2).Terminate();
             }
             catch (Exception ex)
             {

@@ -20,7 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -127,7 +126,7 @@ namespace ProcessHacker.Structs
             return readSize;
         }
 
-        private int ReadOnce(StructField field, int offset, out FieldValue valueOut)
+        private unsafe int ReadOnce(StructField field, int offset, out FieldValue valueOut)
         {
             FieldValue value = new FieldValue() { FieldType = field.Type, Name = field.Name };
             int readSize = 0;
@@ -152,9 +151,13 @@ namespace ProcessHacker.Structs
                     readSize = 2;
                     break;
                 case FieldType.Double:
-                    value.Value = Win32.Unsafe.Int64ToDouble(Misc.BytesToLong(
-                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little));
-                    readSize = 8;
+                    {
+                        long data = Misc.BytesToLong(
+                            IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+
+                        value.Value = *(double*)&data;
+                        readSize = 8;
+                    }
                     break;
                 case FieldType.Int16:
                     value.Value = (short)Misc.BytesToUShort(
@@ -177,9 +180,13 @@ namespace ProcessHacker.Structs
                     readSize = 1;
                     break;
                 case FieldType.Single:
-                    value.Value = Win32.Unsafe.Int32ToSingle(Misc.BytesToInt(
-                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little));
-                    readSize = 4;
+                    {
+                        int data = Misc.BytesToInt(
+                            IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+
+                        value.Value = *(float*)&data;
+                        readSize = 4;
+                    }
                     break;
                 case FieldType.StringASCII:
                     {

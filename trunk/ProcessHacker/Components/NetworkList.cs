@@ -21,11 +21,9 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Collections.Generic;
+using ProcessHacker.Native;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -144,7 +142,7 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    foreach (Win32.NetworkConnection item in _provider.Dictionary.Values)
+                    foreach (NetworkConnection item in _provider.Dictionary.Values)
                     {
                         provider_DictionaryAdded(item);
                     }
@@ -201,7 +199,7 @@ namespace ProcessHacker.Components
             _highlightingContext.Tick();
         }  
 
-        private void provider_DictionaryAdded(Win32.NetworkConnection item)
+        private void provider_DictionaryAdded(NetworkConnection item)
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
 
@@ -248,7 +246,7 @@ namespace ProcessHacker.Components
             this.ResetImageKeys();
         }
 
-        private void provider_DictionaryModified(Win32.NetworkConnection oldItem, Win32.NetworkConnection newItem)
+        private void provider_DictionaryModified(NetworkConnection oldItem, NetworkConnection newItem)
         {
             lock (listNetwork)
             {
@@ -280,7 +278,7 @@ namespace ProcessHacker.Components
             }
         }
 
-        private void provider_DictionaryRemoved(Win32.NetworkConnection item)
+        private void provider_DictionaryRemoved(NetworkConnection item)
         {
             int index = listNetwork.Items[item.ID].Index;
             bool selected = listNetwork.Items[item.ID].Selected;

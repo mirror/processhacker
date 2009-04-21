@@ -22,6 +22,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -34,15 +35,15 @@ namespace ProcessHacker
             Results.Clear();
 
             int snapshot;
-            Win32.HEAPLIST32 hlist = new Win32.HEAPLIST32();
-            Win32.HEAPENTRY32 heap = new Win32.HEAPENTRY32();
+            var hlist = new HeapList32();
+            var heap = new HeapEntry32();
             int minsize = (int)BaseConverter.ToNumberParse((string)Params["h_ms"]);
             int count = 0;
 
-            snapshot = Win32.CreateToolhelp32Snapshot(Win32.SnapshotFlags.HeapList, PID);
+            snapshot = Win32.CreateToolhelp32Snapshot(SnapshotFlags.HeapList, PID);
 
-            hlist.dwSize = Marshal.SizeOf(typeof(Win32.HEAPLIST32));
-            heap.dwSize = Marshal.SizeOf(typeof(Win32.HEAPENTRY32));
+            hlist.dwSize = Marshal.SizeOf(hlist);
+            heap.dwSize = Marshal.SizeOf(heap);
 
             if (snapshot != 0 && Marshal.GetLastWin32Error() == 0)
             {

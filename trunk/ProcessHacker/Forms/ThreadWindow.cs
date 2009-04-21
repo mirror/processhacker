@@ -21,9 +21,12 @@
  */
 
 using System;
-using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.Symbols;
 using ProcessHacker.UI;
 
@@ -33,8 +36,8 @@ namespace ProcessHacker
     {
         private int _pid;
         private int _tid;
-        private Win32.ProcessHandle _phandle;
-        private Win32.ThreadHandle _thandle;
+        private ProcessHandle _phandle;
+        private ThreadHandle _thandle;
         private SymbolProvider _symbols;
 
         public const string DisplayFormat = "0x{0:x8}";
@@ -57,8 +60,8 @@ namespace ProcessHacker
             _tid = TID;
             _symbols = symbols;
 
-            this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
-    ") - Thread " + _tid.ToString();
+            this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
+                ") - Thread " + _tid.ToString();
 
             PropertyInfo property = typeof(ListView).GetProperty("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance);
@@ -69,11 +72,11 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ThreadHandle thandle = new Win32.ThreadHandle(TID, Program.MinThreadQueryRights))
+                using (ThreadHandle thandle = new ThreadHandle(TID, Program.MinThreadQueryRights))
                 {
                     try
                     {
-                        using (Win32.TokenHandle token = thandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                        using (TokenHandle token = thandle.GetToken(TokenAccess.Query))
                         {
                             labelThreadUser.Text = "Username: " + token.GetUser().GetName(true);
                         }
@@ -97,15 +100,14 @@ namespace ProcessHacker
 
             try
             {
-                if (Program.KPH != null)
+                if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
                 {
-                    _phandle = new Win32.ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
+                    _phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
                 }
                 else
                 {
-                    _phandle = new Win32.ProcessHandle(_pid,
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
-                        Win32.PROCESS_RIGHTS.PROCESS_VM_READ
+                    _phandle = new ProcessHandle(_pid,
+                        ProcessAccess.QueryInformation | ProcessAccess.VmRead
                         );
                 }
             }
@@ -121,18 +123,15 @@ namespace ProcessHacker
 
             try
             {
-                if (Program.KPH != null)
+                if (KProcessHacker.Instance != null)
                 {
-                    _thandle = new Win32.ThreadHandle(_tid,
-                        Program.MinThreadQueryRights |
-                        Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME
+                    _thandle = new ThreadHandle(_tid,
+                        Program.MinThreadQueryRights | ThreadAccess.SuspendResume
                         );
                 }
                 else
                 {
-                    _thandle = new Win32.ThreadHandle(_tid,
-                        Win32.THREAD_RIGHTS.THREAD_GET_CONTEXT |
-                        Win32.THREAD_RIGHTS.THREAD_SUSPEND_RESUME);
+                    _thandle = new ThreadHandle(_tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume);
                 }
             }
             catch (Exception ex)
@@ -202,17 +201,17 @@ namespace ProcessHacker
 
         private unsafe void WalkCallStack()
         {
-            Win32.CONTEXT context = new Win32.CONTEXT();
+            var context = new Context();
 
-            context.ContextFlags = Win32.CONTEXT_FLAGS.CONTEXT_ALL;
+            context.ContextFlags = ContextFlags.All;
 
             Win32.SuspendThread(_thandle);
 
-            if (Program.KPH != null)
+            if (KProcessHacker.Instance != null)
             {
                 try
                 {
-                    Program.KPH.KphGetContextThread(_thandle, &context);
+                    KProcessHacker.Instance.KphGetContextThread(_thandle, &context);
                     WalkCallStack(context);
                 }
                 catch
@@ -229,7 +228,7 @@ namespace ProcessHacker
             Win32.ResumeThread(_thandle);
         }
 
-        private unsafe void WalkCallStack(Win32.CONTEXT context)
+        private unsafe void WalkCallStack(Context context)
         {
             /*  [ebp+8]... = args   
              *  [ebp+4] = ret addr  
@@ -238,13 +237,13 @@ namespace ProcessHacker
             listViewCallStack.BeginUpdate();
             listViewCallStack.Items.Clear();
 
-            Win32.STACKFRAME64 stackFrame = new Win32.STACKFRAME64();
+            var stackFrame = new StackFrame64();
 
-            stackFrame.AddrPC.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
             stackFrame.AddrPC.Offset = context.Eip;
-            stackFrame.AddrStack.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
             stackFrame.AddrStack.Offset = context.Esp;
-            stackFrame.AddrFrame.Mode = Win32.ADDRESS_MODE.AddrModeFlat;
+            stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
             stackFrame.AddrFrame.Offset = context.Ebp;
             
             while (true)
@@ -253,16 +252,17 @@ namespace ProcessHacker
                 {
                     Win32.ReadProcessMemoryProc64 readMemoryProc = null;
 
-                    if (Program.KPH != null && Version.HasMmCopyVirtualMemory)
+                    if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
                     {
                         readMemoryProc = new Win32.ReadProcessMemoryProc64(
                             delegate(int processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
                             {
-                                return Program.KPH.KphReadVirtualMemorySafe(Win32.ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
+                                return KProcessHacker.Instance.KphReadVirtualMemorySafe(
+                                    ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
                             });
                     }
 
-                    if (!Win32.StackWalk64(Win32.MachineType.IMAGE_FILE_MACHINE_i386, _phandle, _thandle,
+                    if (!Win32.StackWalk64(MachineType.I386, _phandle, _thandle,
                         ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, 0))
                         break;
 
@@ -322,7 +322,7 @@ namespace ProcessHacker
         {
             try
             {
-                using (Win32.ThreadHandle thread = new Win32.ThreadHandle(_tid, Program.MinThreadQueryRights))
+                using (ThreadHandle thread = new ThreadHandle(_tid, Program.MinThreadQueryRights))
                 {
                     TokenWindow tokForm = new TokenWindow(thread);
 

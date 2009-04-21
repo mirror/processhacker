@@ -22,6 +22,8 @@
 
 using System;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 using ProcessHacker.Structs;
 
 namespace ProcessHacker
@@ -34,9 +36,9 @@ namespace ProcessHacker
         {
             Results.Clear();
 
-            Win32.ProcessHandle phandle;
+            ProcessHandle phandle;
             int address = 0;
-            Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+            MemoryBasicInformation info = new MemoryBasicInformation();
             int count = 0;
 
             bool opt_priv = (bool)Params["private"];
@@ -59,7 +61,7 @@ namespace ProcessHacker
 
             try
             {
-                phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                phandle = new ProcessHandle(PID, ProcessHacker.Native.Security.ProcessAccess.QueryInformation);
             }
             catch
             {
@@ -70,7 +72,7 @@ namespace ProcessHacker
             while (true)
             {
                 if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                    Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
+                    Marshal.SizeOf(typeof(MemoryBasicInformation))))
                 {
                     break;
                 }
@@ -79,18 +81,18 @@ namespace ProcessHacker
                     address += info.RegionSize;
 
                     // skip unreadable areas
-                    if (info.Protect == Win32.MEMORY_PROTECTION.PAGE_ACCESS_DENIED)
+                    if (info.Protect == MemoryProtection.AccessDenied)
                         continue;
-                    if (info.State != Win32.MEMORY_STATE.MEM_COMMIT)
-                        continue;
-
-                    if ((!opt_priv) && (info.Type == Win32.MEMORY_TYPE.MEM_PRIVATE))
+                    if (info.State != MemoryState.Commit)
                         continue;
 
-                    if ((!opt_img) && (info.Type == Win32.MEMORY_TYPE.MEM_IMAGE))
+                    if ((!opt_priv) && (info.Type == MemoryType.Private))
                         continue;
 
-                    if ((!opt_map) && (info.Type == Win32.MEMORY_TYPE.MEM_MAPPED))
+                    if ((!opt_img) && (info.Type == MemoryType.Image))
+                        continue;
+
+                    if ((!opt_map) && (info.Type == MemoryType.Mapped))
                         continue;
 
                     CallSearchProgressChanged(

@@ -23,6 +23,9 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.UI.Actions
 {
@@ -54,7 +57,7 @@ namespace ProcessHacker.UI.Actions
 
             DialogResult result = DialogResult.No;
 
-            if (Version.HasTaskDialogs)
+            if (OSVersion.HasTaskDialogs)
             {
                 TaskDialog td = new TaskDialog();
 
@@ -112,17 +115,17 @@ namespace ProcessHacker.UI.Actions
         }
 
         private static bool ElevateIfRequired(IWin32Window window, int[] pids, string[] names,
-            Win32.PROCESS_RIGHTS access, string action)
+            ProcessAccess access, string action)
         {
-            if (Version.HasUac &&
-                Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited &&
-                Program.KPH == null)
+            if (OSVersion.HasUac &&
+                Program.ElevationType == ProcessHacker.Native.Api.TokenElevationType.Limited &&
+                KProcessHacker.Instance == null)
             {
                 try
                 {
                     foreach (int pid in pids)
                     {
-                        using (var phandle = new Win32.ProcessHandle(pid, access))
+                        using (var phandle = new ProcessHandle(pid, access))
                         { }
                     }
                 }
@@ -188,7 +191,7 @@ namespace ProcessHacker.UI.Actions
         {
             bool allGood = true;
 
-            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_TERMINATE, "terminate"))
+            if (ElevateIfRequired(window, pids, names, ProcessAccess.Terminate, "terminate"))
                 return false;
 
             if (prompt && !Prompt(window, pids, names, "terminate",
@@ -201,8 +204,8 @@ namespace ProcessHacker.UI.Actions
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pids[i],
-                        Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                    using (ProcessHandle phandle = 
+                        new ProcessHandle(pids[i], ProcessAccess.Terminate))
                         phandle.Terminate();
                 }
                 catch (Exception ex)
@@ -223,7 +226,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Suspend(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
-            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME, "suspend"))
+            if (ElevateIfRequired(window, pids, names, ProcessAccess.SuspendResume, "suspend"))
                 return;
 
             if (prompt && !Prompt(window, pids, names, "suspend",
@@ -236,8 +239,8 @@ namespace ProcessHacker.UI.Actions
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pids[i],
-                        Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
+                    using (ProcessHandle phandle =
+                        new ProcessHandle(pids[i], ProcessAccess.SuspendResume))
                         phandle.Suspend();
                 }
                 catch (Exception ex)
@@ -254,7 +257,7 @@ namespace ProcessHacker.UI.Actions
 
         public static void Resume(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
-            if (ElevateIfRequired(window, pids, names, Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME, "resume"))
+            if (ElevateIfRequired(window, pids, names, ProcessAccess.SuspendResume, "resume"))
                 return;
 
             if (prompt && !Prompt(window, pids, names, "resume",
@@ -267,8 +270,8 @@ namespace ProcessHacker.UI.Actions
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pids[i],
-                        Win32.PROCESS_RIGHTS.PROCESS_SUSPEND_RESUME))
+                    using (ProcessHandle phandle =
+                        new ProcessHandle(pids[i], ProcessAccess.SuspendResume))
                         phandle.Resume();
                 }
                 catch (Exception ex)
@@ -285,9 +288,8 @@ namespace ProcessHacker.UI.Actions
 
         public static void ReduceWorkingSet(IWin32Window window, int[] pids, string[] names, bool prompt)
         {
-            if (ElevateIfRequired(window, pids, names,
-                Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA, 
-                "reduceworkingset"))
+            if (ElevateIfRequired(window, pids, names, 
+                ProcessAccess.QueryInformation | ProcessAccess.SetQuota, "reduceworkingset"))
                 return;
 
             if (prompt && !Prompt(window, pids, names, "reduce the working set of",
@@ -299,8 +301,8 @@ namespace ProcessHacker.UI.Actions
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(pids[i],
-                        Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION | Win32.PROCESS_RIGHTS.PROCESS_SET_QUOTA))
+                    using (ProcessHandle phandle = 
+                        new ProcessHandle(pids[i], ProcessAccess.QueryInformation | ProcessAccess.SetQuota))
                         phandle.EmptyWorkingSet();
                 }
                 catch (Exception ex)

@@ -20,10 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
@@ -48,7 +46,7 @@ namespace ProcessHacker
         }
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern Win32.VerifyResult PhvVerifyFile(string FileName);
+        public static extern VerifyResult PhvVerifyFile(string FileName);
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern int PhpQueryProcessWs(

@@ -21,13 +21,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using System.Reflection;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -35,7 +34,7 @@ namespace ProcessHacker.Components
     public partial class TokenProperties : UserControl
     {
         private IWithToken _object;
-        private TokenGroups _groups;
+        private TokenGroupsList _groups;
 
         public TokenProperties(IWithToken obj)
         {
@@ -52,7 +51,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                using (Win32.TokenHandle thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                using (TokenHandle thandle = _object.GetToken(TokenAccess.Query))
                 {
                     try
                     {
@@ -77,13 +76,13 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Win32.TOKEN_ELEVATION_TYPE type = thandle.GetElevationType();
+                        var type = thandle.GetElevationType();
 
-                        if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault)
+                        if (type == TokenElevationType.Default)
                             textElevated.Text = "N/A";
-                        else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeFull)
+                        else if (type == TokenElevationType.Full)
                             textElevated.Text = "True";
-                        else if (type == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+                        else if (type == TokenElevationType.Limited)
                             textElevated.Text = "False";
                     }
                     catch (Exception ex)
@@ -93,7 +92,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Win32.TokenWithLinkedToken tokWLT = new Win32.TokenWithLinkedToken(thandle);
+                        TokenWithLinkedToken tokWLT = new TokenWithLinkedToken(thandle);
 
                         tokWLT.GetToken().Dispose();
                     }
@@ -121,9 +120,9 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        using (Win32.TokenHandle tokenSource = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY_SOURCE))
+                        using (TokenHandle tokenSource = _object.GetToken(TokenAccess.QuerySource))
                         {
-                            Win32.TOKEN_SOURCE source = tokenSource.GetSource();
+                            var source = tokenSource.GetSource();
 
                             textSourceName.Text = source.SourceName.TrimEnd('\0', '\r', '\n', ' ');
 
@@ -139,8 +138,8 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Win32.TokenHandle.TokenGroupsData groups = thandle.GetGroups();
-                        _groups = new TokenGroups(groups);
+                        TokenHandle.TokenGroupsData groups = thandle.GetGroups();
+                        _groups = new TokenGroupsList(groups);
 
                         _groups.Dock = DockStyle.Fill;
                         tabGroups.Controls.Add(_groups);
@@ -152,17 +151,17 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        Win32.TOKEN_PRIVILEGES privileges = thandle.GetPrivileges();
+                        var privileges = thandle.GetPrivileges();
 
                         for (int i = 0; i < privileges.PrivilegeCount; i++)
                         {
-                            string name = Win32.GetPrivilegeName(privileges.Privileges[i].Luid);
+                            string name = Windows.GetPrivilegeName(privileges.Privileges[i].Luid);
                             ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
 
                             item.BackColor = GetAttributeColor(privileges.Privileges[i].Attributes);
                             item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
                                 GetAttributeString(privileges.Privileges[i].Attributes)));
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Win32.GetPrivilegeDisplayName(name)));
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Windows.GetPrivilegeDisplayName(name)));
                         }
                     }
                     catch (Exception ex)
@@ -183,7 +182,7 @@ namespace ProcessHacker.Components
                 this.Controls.Add(errorMessage);
             }
 
-            if (!Version.HasUac)
+            if (!OSVersion.HasUac)
             {
                 labelElevated.Enabled = false;
                 textElevated.Enabled = false;
@@ -219,25 +218,25 @@ namespace ProcessHacker.Components
             Properties.Settings.Default.PrivilegeListColumns = ColumnSettings.SaveSettings(listPrivileges);
         }
 
-        private string GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES Attributes)
+        private string GetAttributeString(SePrivilegeAttributes Attributes)
         {
-            if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED_BY_DEFAULT) != 0)
+            if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return "Default Enabled";
-            else if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) != 0)
+            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return "Enabled";
-            else if (Attributes == Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED)
+            else if (Attributes == SePrivilegeAttributes.Disabled)
                 return "Disabled";
             else
                 return "Unknown";
         }
 
-        private Color GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES Attributes)
+        private Color GetAttributeColor(SePrivilegeAttributes Attributes)
         {
-            if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED_BY_DEFAULT) != 0)
+            if ((Attributes & SePrivilegeAttributes.EnabledByDefault) != 0)
                 return Color.FromArgb(0xc0f0c0);
-            else if ((Attributes & Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED) != 0)
+            else if ((Attributes & SePrivilegeAttributes.Enabled) != 0)
                 return Color.FromArgb(0xe0f0e0);
-            else if (Attributes == Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED)
+            else if (Attributes == SePrivilegeAttributes.Disabled)
                 return Color.FromArgb(0xf0e0e0);
             else
                 return Color.White;
@@ -270,13 +269,13 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
-                        thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                    using (var thandle = _object.GetToken(TokenAccess.AdjustPrivileges))
+                        thandle.SetPrivilege(item.Text, SePrivilegeAttributes.Enabled);
 
                     if (item.SubItems[1].Text != "Default Enabled")
                     {
-                        item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
-                        item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+                        item.BackColor = GetAttributeColor(SePrivilegeAttributes.Enabled);
+                        item.SubItems[1].Text = GetAttributeString(SePrivilegeAttributes.Enabled);
                     }
                 }
                 catch (Exception ex)
@@ -303,11 +302,11 @@ namespace ProcessHacker.Components
 
                 try
                 {
-                    using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
-                        thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
+                    using (var thandle = _object.GetToken(TokenAccess.AdjustPrivileges))
+                        thandle.SetPrivilege(item.Text, SePrivilegeAttributes.Disabled);
 
-                    item.BackColor = GetAttributeColor(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
-                    item.SubItems[1].Text = GetAttributeString(Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_DISABLED);
+                    item.BackColor = GetAttributeColor(SePrivilegeAttributes.Disabled);
+                    item.SubItems[1].Text = GetAttributeString(SePrivilegeAttributes.Disabled);
                 }
                 catch (Exception ex)
                 {
@@ -327,8 +326,8 @@ namespace ProcessHacker.Components
                 {
                     try
                     {
-                        using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_ADJUST_PRIVILEGES))
-                            thandle.SetPrivilege(item.Text, Win32.SE_PRIVILEGE_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
+                        using (var thandle = _object.GetToken(TokenAccess.AdjustPrivileges))
+                            thandle.SetPrivilege(item.Text, SePrivilegeAttributes.Removed);
 
                         item.Remove();
                     }
@@ -349,9 +348,9 @@ namespace ProcessHacker.Components
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)
         {
-            using (var thandle = _object.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+            using (var thandle = _object.GetToken(TokenAccess.Query))
             {
-                Win32.TokenWithLinkedToken token = new Win32.TokenWithLinkedToken(thandle);
+                var token = new TokenWithLinkedToken(thandle);
                 TokenWindow window = new TokenWindow(token);
 
                 window.ShowDialog();

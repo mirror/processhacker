@@ -21,12 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -69,8 +67,8 @@ namespace ProcessHacker
                     return;
                 }
 
-                using (Win32.ProcessHandle phandle =
-                    new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+                using (ProcessHandle phandle =
+                    new ProcessHandle(_pid, ProcessAccess.VmOperation))
                 {
                     if (!Win32.VirtualProtectEx(phandle, _address,
                         _size, newprotect, out old))

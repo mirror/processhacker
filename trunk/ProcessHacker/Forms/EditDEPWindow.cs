@@ -21,12 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -42,17 +40,17 @@ namespace ProcessHacker
 
             try
             {
-                using (Win32.ProcessHandle phandle
-                  = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                using (ProcessHandle phandle
+                  = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
                 {
                     var depStatus = phandle.GetDepStatus();
                     string str;
 
-                    if ((depStatus & Win32.ProcessHandle.DepStatus.Enabled) != 0)
+                    if ((depStatus & DepStatus.Enabled) != 0)
                     {
                         str = "Enabled";
 
-                        if ((depStatus & Win32.ProcessHandle.DepStatus.AtlThunkEmulationDisabled) != 0)
+                        if ((depStatus & DepStatus.AtlThunkEmulationDisabled) != 0)
                             str += ", DEP-ATL thunk emulation disabled";
                     }
                     else
@@ -75,14 +73,14 @@ namespace ProcessHacker
                     "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                     return;
 
-            Win32.DEPFLAGS flags = Win32.DEPFLAGS.PROCESS_DEP_ENABLE;
+            DepFlags flags = DepFlags.Enable;
 
             if (comboStatus.SelectedItem.ToString() == "Disabled")
-                flags = Win32.DEPFLAGS.PROCESS_DEP_DISABLE;
+                flags = DepFlags.Disable;
             else if (comboStatus.SelectedItem.ToString() == "Enabled")
-                flags = Win32.DEPFLAGS.PROCESS_DEP_ENABLE;
+                flags = DepFlags.Enable;
             else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
-                flags = Win32.DEPFLAGS.PROCESS_DEP_ENABLE | Win32.DEPFLAGS.PROCESS_DEP_DISABLE_ATL_THUNK_EMULATION;
+                flags = DepFlags.Enable | DepFlags.DisableAtlThunkEmulation;
             else
             {
                 MessageBox.Show("Invalid value!", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -97,11 +95,11 @@ namespace ProcessHacker
                 if (setProcessDEPPolicy == 0)
                     throw new Exception("This feature is not supported on your version of Windows.");
 
-                using (Win32.ProcessHandle phandle = new Win32.ProcessHandle(_pid, 
-                    Program.MinProcessQueryRights | Win32.PROCESS_RIGHTS.PROCESS_CREATE_THREAD))
+                using (ProcessHandle phandle = new ProcessHandle(_pid, 
+                    Program.MinProcessQueryRights | ProcessAccess.CreateThread))
                 {
                     var thread = phandle.CreateThread(setProcessDEPPolicy, (int)flags,
-                        Win32.THREAD_RIGHTS.THREAD_ALL_ACCESS);
+                        ThreadAccess.All);
 
                     thread.Wait(1000);
 

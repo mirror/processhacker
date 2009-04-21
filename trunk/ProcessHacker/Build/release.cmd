@@ -22,13 +22,22 @@ IF NOT EXIST %ILMergePath% (FOR %%a IN (ILMerge.exe) DO IF %%~$PATH:a' NEQ ' (
 		SET ILMergePath="%%~$PATH:a") ELSE (SET "N_=T"
 			ECHO:ILMerge IS NOT INSTALLED!!!&&(GOTO CLEANUP)))
 
-:: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
+:: Rename ProcessHacker.exe and Assistant.exe first
 REN "ProcessHacker.exe" "ProcessHacker_in.exe"
+REN "Assistant.exe" "Assistant_in.exe"
 ECHO.
 
+:: Merge ProcessHacker.Native.dll with Assistant.exe
+%ILMergePath% /t:winexe /out:"Assistant.exe" "Assistant_in.exe" ^
+ "ProcessHacker.Native.dll"
+
+:: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
 %ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe"^
- "Aga.Controls.dll"&&ECHO:ILMerge completed successfully!^
- &&DEL/f/a "ProcessHacker_in.exe" "Aga.Controls.dll" >NUL 2>&1
+ "ProcessHacker.Native.dll" "Aga.Controls.dll" && ^
+ ECHO:ILMerge completed successfully!
+
+DEL/f/a "ProcessHacker_in.exe" "Assistant_in.exe" "Aga.Controls.dll" ^
+ "ProcessHacker.Native.dll" >NUL 2>&1
 
 :: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"

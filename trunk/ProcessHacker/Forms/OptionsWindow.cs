@@ -23,12 +23,13 @@
 
 using System;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
-using ProcessHacker.Symbols;
-using ProcessHacker.UI;
 using ProcessHacker.Components;
-using System.Threading;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.UI;
 
 namespace ProcessHacker
 {
@@ -86,7 +87,7 @@ namespace ProcessHacker
 
         private void OptionsWindow_Load(object sender, EventArgs e)
         {
-            if (Program.ElevationType == Win32.TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited)
+            if (Program.ElevationType == TokenElevationType.Limited)
             {
                 buttonChangeReplaceTaskManager.SetShieldIcon(true);
             }
@@ -270,7 +271,7 @@ namespace ProcessHacker
                     ))
                 {
                     if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
-                        Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
+                        ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
                     {
                         checkReplaceTaskManager.Checked = true;
                     }
@@ -349,7 +350,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string fileName = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+                    string fileName = ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
 
                     using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                         "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",

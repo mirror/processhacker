@@ -22,10 +22,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -39,14 +39,14 @@ namespace ProcessHacker
         public int Address;
         public string ModuleName;
         public int Size;
-        public Win32.MEMORY_TYPE Type;
-        public Win32.MEMORY_STATE State;
-        public Win32.MEMORY_PROTECTION Protection;
+        public MemoryType Type;
+        public MemoryState State;
+        public MemoryProtection Protection;
     }
 
     public class MemoryProvider : Provider<int, MemoryItem>
     {
-        private Win32.ProcessHandle _processHandle;
+        private ProcessHandle _processHandle;
         private int _pid;
 
         public MemoryProvider(int PID)
@@ -56,7 +56,7 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
+                _processHandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation |
                     Program.MinProcessReadMemoryRights);
             }
             catch
@@ -68,7 +68,7 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            var modules = new Dictionary<int, Win32.ProcessModule>();
+            var modules = new Dictionary<int, ProcessModule>();
 
             try
             {
@@ -78,11 +78,11 @@ namespace ProcessHacker
             catch
             { }
 
-            Dictionary<int, Win32.MEMORY_BASIC_INFORMATION> memoryInfo = new Dictionary<int, Win32.MEMORY_BASIC_INFORMATION>();
+            var memoryInfo = new Dictionary<int, MemoryBasicInformation>();
             Dictionary<int, MemoryItem> newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
 
             {
-                Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
+                var info = new MemoryBasicInformation();
                 int address = 0;
 
                 while (true)
@@ -93,7 +93,7 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        if ((this.IgnoreFreeRegions && info.State != Win32.MEMORY_STATE.MEM_FREE) || 
+                        if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) || 
                             (!this.IgnoreFreeRegions))
                             memoryInfo.Add(info.BaseAddress, info);
 
@@ -118,7 +118,7 @@ namespace ProcessHacker
 
             foreach (int address in memoryInfo.Keys)
             {
-                Win32.MEMORY_BASIC_INFORMATION info = memoryInfo[address];
+                var info = memoryInfo[address];
 
                 if (!Dictionary.ContainsKey(address))
                 {

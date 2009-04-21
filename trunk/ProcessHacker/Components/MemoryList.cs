@@ -21,10 +21,12 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Collections.Generic;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
@@ -191,62 +193,62 @@ namespace ProcessHacker.Components
 
         #endregion
 
-        private string GetProtectStr(Win32.MEMORY_PROTECTION protect)
+        private string GetProtectStr(MemoryProtection protect)
         {
             string protectStr;
 
-            if (protect == Win32.MEMORY_PROTECTION.PAGE_ACCESS_DENIED)
+            if (protect == MemoryProtection.AccessDenied)
                 protectStr = "";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_EXECUTE) != 0)
+            else if ((protect & MemoryProtection.Execute) != 0)
                 protectStr = "X";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_EXECUTE_READ) != 0)
+            else if ((protect & MemoryProtection.ExecuteRead) != 0)
                 protectStr = "RX";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_EXECUTE_READWRITE) != 0)
+            else if ((protect & MemoryProtection.ExecuteReadWrite) != 0)
                 protectStr = "RWX";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_EXECUTE_WRITECOPY) != 0)
+            else if ((protect & MemoryProtection.ExecuteWriteCopy) != 0)
                 protectStr = "WCX";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_NOACCESS) != 0)
+            else if ((protect & MemoryProtection.NoAccess) != 0)
                 protectStr = "NA";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_READONLY) != 0)
+            else if ((protect & MemoryProtection.ReadOnly) != 0)
                 protectStr = "R";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_READWRITE) != 0)
+            else if ((protect & MemoryProtection.ReadWrite) != 0)
                 protectStr = "RW";
-            else if ((protect & Win32.MEMORY_PROTECTION.PAGE_WRITECOPY) != 0)
+            else if ((protect & MemoryProtection.WriteCopy) != 0)
                 protectStr = "WC";
             else
                 protectStr = "?";
 
-            if ((protect & Win32.MEMORY_PROTECTION.PAGE_GUARD) != 0)
+            if ((protect & MemoryProtection.Guard) != 0)
                 protectStr += "+G";
-            if ((protect & Win32.MEMORY_PROTECTION.PAGE_NOCACHE) != 0)
+            if ((protect & MemoryProtection.NoCache) != 0)
                 protectStr += "+NC";
-            if ((protect & Win32.MEMORY_PROTECTION.PAGE_WRITECOMBINE) != 0)
+            if ((protect & MemoryProtection.WriteCombine) != 0)
                 protectStr = "+WCM";
 
             return protectStr;
         }
 
-        private string GetStateStr(Win32.MEMORY_STATE state)
+        private string GetStateStr(MemoryState state)
         {
-            if (state == Win32.MEMORY_STATE.MEM_COMMIT)
+            if (state == MemoryState.Commit)
                 return "Commit";
-            else if (state == Win32.MEMORY_STATE.MEM_FREE)
+            else if (state == MemoryState.Free)
                 return "Free";
-            else if (state == Win32.MEMORY_STATE.MEM_RESERVE)
+            else if (state == MemoryState.Reserve)
                 return "Reserve";
-            else if (state == Win32.MEMORY_STATE.MEM_RESET)
+            else if (state == MemoryState.Reset)
                 return "Reset";
             else
                 return "Unknown";
         }
 
-        private string GetTypeStr(Win32.MEMORY_TYPE type)
+        private string GetTypeStr(MemoryType type)
         {
-            if (type == Win32.MEMORY_TYPE.MEM_IMAGE)
+            if (type == MemoryType.Image)
                 return "Image";
-            else if (type == Win32.MEMORY_TYPE.MEM_MAPPED)
+            else if (type == MemoryType.Mapped)
                 return "Mapped";
-            else if (type == Win32.MEMORY_TYPE.MEM_PRIVATE)
+            else if (type == MemoryType.Private)
                 return "Private";
             else
                 return "Unknown";
@@ -263,11 +265,11 @@ namespace ProcessHacker.Components
 
             litem.Name = item.Address.ToString();
 
-            if (item.State == Win32.MEMORY_STATE.MEM_FREE)
+            if (item.State == MemoryState.Free)
             {
                 litem.Text = "Free";
             }
-            else if (item.Type == Win32.MEMORY_TYPE.MEM_IMAGE)
+            else if (item.Type == MemoryType.Image)
             {
                 if (item.ModuleName != null)
                     litem.Text = item.ModuleName;
@@ -296,11 +298,11 @@ namespace ProcessHacker.Components
             {
                 ListViewItem litem = listMemory.Items[newItem.Address.ToString()];
 
-                if (newItem.State == Win32.MEMORY_STATE.MEM_FREE) 
+                if (newItem.State == MemoryState.Free) 
                 {
                     litem.Text = "Free";
                 }
-                else if (newItem.Type == Win32.MEMORY_TYPE.MEM_IMAGE)
+                else if (newItem.Type == MemoryType.Image)
                 {
                     if (newItem.ModuleName != null)
                         litem.Text = newItem.ModuleName;
@@ -350,8 +352,8 @@ namespace ProcessHacker.Components
 
                 MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
-                if (item.State != Win32.MEMORY_STATE.MEM_COMMIT ||
-                    item.Type != Win32.MEMORY_TYPE.MEM_PRIVATE)
+                if (item.State != MemoryState.Commit ||
+                    item.Type != MemoryType.Private)
                 {                                         
                     freeMenuItem.Enabled = false;
                     decommitMenuItem.Enabled = false;
@@ -474,8 +476,8 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle =
-                        new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+                    using (var phandle =
+                        new ProcessHandle(_pid, ProcessAccess.VmOperation))
                     {
                         MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 
@@ -497,8 +499,8 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    using (Win32.ProcessHandle phandle =
-                        new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_VM_OPERATION))
+                    using (ProcessHandle phandle =
+                        new ProcessHandle(_pid, ProcessAccess.VmOperation))
                     {
                         MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
 

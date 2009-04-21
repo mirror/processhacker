@@ -26,6 +26,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using ProcessHacker.Components;
 using ProcessHacker.FormHelper;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -97,8 +100,8 @@ namespace ProcessHacker
             {
                 int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text);
 
-                using (Win32.ProcessHandle process =
-                       new Win32.ProcessHandle((int)listHandles.SelectedItems[0].Tag, Win32.PROCESS_RIGHTS.PROCESS_DUP_HANDLE))
+                using (ProcessHandle process =
+                       new ProcessHandle((int)listHandles.SelectedItems[0].Tag, ProcessAccess.DupHandle))
                 {
                     Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0, 0x1);
                     listHandles.SelectedItems[0].Remove();

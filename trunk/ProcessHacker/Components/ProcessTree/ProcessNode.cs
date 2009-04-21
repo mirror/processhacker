@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Aga.Controls.Tree;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -193,9 +195,8 @@ namespace ProcessHacker
 
             try
             {
-                using (var phandle = new Win32.ProcessHandle(_pitem.Pid,
-                    Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION |
-                    Win32.PROCESS_RIGHTS.PROCESS_VM_READ))
+                using (var phandle = new ProcessHandle(_pitem.Pid, 
+                    ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                 {
                     if ((retLen = NProcessHacker.PhpQueryProcessWs(phandle, WsInformationClass, out wsInfo,
                         4, out retLen)) == 0)
@@ -402,7 +403,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                    using (var phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
                         return phandle.GetGuiResources(false);
                 }
                 catch
@@ -436,7 +437,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new Win32.ProcessHandle(PID, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION))
+                    using (var phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
                         return phandle.GetGuiResources(true);
                 }
                 catch

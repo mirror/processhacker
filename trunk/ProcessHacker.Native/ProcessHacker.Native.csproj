@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8A448157-E1A7-4DDF-954E-287F1117832B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProcessHacker.Native</RootNamespace>
+    <AssemblyName>ProcessHacker.Native</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cryptography.cs" />
+    <Compile Include="ExtensionAttribute.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="KProcessHacker.cs" />
+    <Compile Include="Memory\LocalMemoryAlloc.cs" />
+    <Compile Include="Objects\DesktopHandle.cs" />
+    <Compile Include="Objects\WindowStationHandle.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Api\Enums.cs" />
+    <Compile Include="Api\Functions.cs" />
+    <Compile Include="Api\Structs.cs" />
+    <Compile Include="Objects\FileHandle.cs" />
+    <Compile Include="Objects\ISynchronizable.cs" />
+    <Compile Include="Objects\IWithToken.cs" />
+    <Compile Include="Objects\JobObjectHandle.cs" />
+    <Compile Include="Objects\LsaHandle.cs" />
+    <Compile Include="Objects\LsaPolicyHandle.cs" />
+    <Compile Include="Objects\NamedPipeHandle.cs" />
+    <Compile Include="Objects\ProcessHandle.cs" />
+    <Compile Include="Objects\RemoteHandle.cs" />
+    <Compile Include="Objects\RemoteTokenHandle.cs" />
+    <Compile Include="Objects\ServiceBaseHandle.cs" />
+    <Compile Include="Objects\ServiceHandle.cs" />
+    <Compile Include="Objects\ServiceManagerHandle.cs" />
+    <Compile Include="Objects\ThreadHandle.cs" />
+    <Compile Include="Objects\TokenHandle.cs" />
+    <Compile Include="Objects\TokenWithLinkedToken.cs" />
+    <Compile Include="Objects\Win32Handle.cs" />
+    <Compile Include="Memory\HeapMemoryAlloc.cs" />
+    <Compile Include="Memory\LsaMemoryAlloc.cs" />
+    <Compile Include="Memory\MemoryAlloc.cs" />
+    <Compile Include="Memory\WtsMemoryAlloc.cs" />
+    <Compile Include="Security\DesktopAccess.cs" />
+    <Compile Include="Security\TimerAccess.cs" />
+    <Compile Include="Security\SemaphoreAccess.cs" />
+    <Compile Include="Security\MutexAccess.cs" />
+    <Compile Include="Security\EventAccess.cs" />
+    <Compile Include="Security\JobObjectAccess.cs" />
+    <Compile Include="Security\PolicyAccess.cs" />
+    <Compile Include="Security\ProcessAccess.cs" />
+    <Compile Include="Security\ScManagerAccess.cs" />
+    <Compile Include="Security\SectionAccess.cs" />
+    <Compile Include="Security\ServiceAccess.cs" />
+    <Compile Include="Security\StandardRights.cs" />
+    <Compile Include="Security\FileAccess.cs" />
+    <Compile Include="Security\ThreadAccess.cs" />
+    <Compile Include="Security\TokenAccess.cs" />
+    <Compile Include="Security\WindowStationAccess.cs" />
+    <Compile Include="Windows.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="OSVersion.cs" />
+    <Compile Include="Win32.cs" />
+    <Compile Include="WindowsException.cs" />
+    <Compile Include="WindowsSid.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -114,8 +114,6 @@
     <Compile Include="Components\VistaMenu\VistaMenu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Win32\Win32.cs">
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Components\Be.Windows.Forms.HexBox\HexBox.bmp" />
@@ -171,8 +169,8 @@
       <DependentUpon>ProcessTree.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\TokenGroups.resx">
-      <DependentUpon>TokenGroups.cs</DependentUpon>
+    <EmbeddedResource Include="Components\TokenGroupsList.resx">
+      <DependentUpon>TokenGroupsList.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\TokenProperties.resx">
@@ -323,7 +321,6 @@
     <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Program\Logging.cs" />
     <Compile Include="Program\ThemingScope.cs" />
-    <Compile Include="Program\Version.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Common\ByteStreamReader.cs" />
     <Compile Include="Common\CircularBuffer.cs" />
@@ -418,11 +415,11 @@
     <Compile Include="Components\ProcessTree\ProcessTree.Designer.cs">
       <DependentUpon>ProcessTree.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\TokenGroups.cs">
+    <Compile Include="Components\TokenGroupsList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Components\TokenGroups.Designer.cs">
-      <DependentUpon>TokenGroups.cs</DependentUpon>
+    <Compile Include="Components\TokenGroupsList.Designer.cs">
+      <DependentUpon>TokenGroupsList.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\TokenProperties.cs">
       <SubType>UserControl</SubType>
@@ -437,7 +434,6 @@
       <DependentUpon>VerticleProgressBar.cs</DependentUpon>
     </Compile>
     <Compile Include="Program\ExtendedCmd.cs" />
-    <Compile Include="Common\ExtensionAttribute.cs" />
     <Compile Include="UI\Async\AsyncUtils.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -592,7 +588,6 @@
     <Compile Include="UI\WindowFromHandle.cs" />
     <Compile Include="UI\HighlightedListViewItem.cs" />
     <Compile Include="Common\HistoryManager.cs" />
-    <Compile Include="Program\KProcessHacker.cs" />
     <Compile Include="UI\ColumnSettings.cs" />
     <Compile Include="Common\DeltaManager.cs" />
     <Compile Include="Program\NProcessHacker.cs" />
@@ -712,32 +707,6 @@
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
     <Compile Include="Common\WeakReference.cs" />
-    <Compile Include="Win32\API\Enums.cs" />
-    <Compile Include="Win32\API\Structs.cs" />
-    <Compile Include="Win32\API\Functions.cs" />
-    <Compile Include="Win32\Handles\NamedPipeHandle.cs" />
-    <Compile Include="Win32\Handles\ISynchronizable.cs" />
-    <Compile Include="Win32\Handles\JobHandle.cs" />
-    <Compile Include="Win32\Handles\FileHandle.cs" />
-    <Compile Include="Win32\Handles\TokenWithLinkedToken.cs" />
-    <Compile Include="Win32\Memory\HeapMemoryAlloc.cs" />
-    <Compile Include="Win32\Memory\LsaMemoryAlloc.cs" />
-    <Compile Include="Win32\Memory\WtsMemoryAlloc.cs" />
-    <Compile Include="Win32\Memory\MemoryAlloc.cs" />
-    <Compile Include="Win32\Handles\RemoteHandle.cs" />
-    <Compile Include="Win32\Handles\LsaPolicyHandle.cs" />
-    <Compile Include="Win32\Handles\LsaHandle.cs" />
-    <Compile Include="Win32\Handles\ServiceManagerHandle.cs" />
-    <Compile Include="Win32\Handles\ServiceBaseHandle.cs" />
-    <Compile Include="Win32\Handles\RemoteTokenHandle.cs" />
-    <Compile Include="Win32\Handles\TokenHandle.cs" />
-    <Compile Include="Win32\Handles\ServiceHandle.cs" />
-    <Compile Include="Win32\Handles\IWithToken.cs" />
-    <Compile Include="Win32\Handles\ThreadHandle.cs" />
-    <Compile Include="Win32\Handles\ProcessHandle.cs" />
-    <Compile Include="Win32\Handles\Win32Handle.cs" />
-    <Compile Include="Win32\WindowsException.cs" />
-    <Compile Include="Win32\WindowsSID.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />
@@ -805,6 +774,10 @@
     <None Include="Resources\tick.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ProcessHacker.Native\ProcessHacker.Native.csproj">
+      <Project>{8A448157-E1A7-4DDF-954E-287F1117832B}</Project>
+      <Name>ProcessHacker.Native</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TreeViewAdv\Aga.Controls.csproj">
       <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
       <Name>Aga.Controls</Name>

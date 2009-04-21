@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using System.Threading;
 using System.IO;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Forms
 {
@@ -39,8 +37,8 @@ namespace ProcessHacker.Forms
 
         private List<string[]> _items = new List<string[]>();
         private Thread _pipeThread;
-        private static Win32.NamedPipeHandle _namedPipe = new Win32.NamedPipeHandle("\\\\.\\Pipe\\AlLogPipe",
-            Win32.PIPE_ACCESS_MODE.PIPE_ACCESS_INBOUND,
+        private static NamedPipeHandle _namedPipe = new NamedPipeHandle("\\\\.\\Pipe\\AlLogPipe",
+            PipeAccessMode.Inbound,
             0,
             255, 0, 512, 1000);
 

@@ -21,13 +21,15 @@
  */
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using System.Collections.Generic;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using System.Drawing;
 
 namespace ProcessHacker
 {
@@ -60,7 +62,7 @@ namespace ProcessHacker
 
             Program.ResultsWindows.Add(Id, this);
 
-            this.Text = Win32.GetNameFromPID(_pid) + " (PID " + _pid.ToString() +
+            this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 ") - Results - " + _id;
 
             labelText.Text = "Ready.";
@@ -308,14 +310,14 @@ namespace ProcessHacker
                 int s_a = (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][0]) +
                     (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][1]);
 
-                Win32.MEMORY_BASIC_INFORMATION info = new Win32.MEMORY_BASIC_INFORMATION();
-                Win32.MEMORY_BASIC_INFORMATION info2 = new Win32.MEMORY_BASIC_INFORMATION();
+                var info = new MemoryBasicInformation();
+                var info2 = new MemoryBasicInformation();
                 int address = 0;
-                Win32.ProcessHandle phandle;
+                ProcessHandle phandle;
 
                 try
                 {
-                    phandle = new Win32.ProcessHandle(_pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                    phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation);
                 }
                 catch
                 {
@@ -326,7 +328,7 @@ namespace ProcessHacker
                 while (true)
                 {
                     if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                        Marshal.SizeOf(typeof(Win32.MEMORY_BASIC_INFORMATION))))
+                        Marshal.SizeOf(typeof(MemoryBasicInformation))))
                     {
                         break;
                     }

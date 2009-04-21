@@ -22,12 +22,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Collections.ObjectModel;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker
 {
@@ -53,10 +55,10 @@ namespace ProcessHacker
         public string Name;
         public string Username;
         public string JobName;
-        public Win32.SYSTEM_PROCESS_INFORMATION Process;
-        public Dictionary<int, Win32.SYSTEM_THREAD_INFORMATION> Threads;
+        public SystemProcessInformation Process;
+        public Dictionary<int, SystemThreadInformation> Threads;
 
-        public Win32.TOKEN_ELEVATION_TYPE ElevationType;
+        public TokenElevationType ElevationType;
         public bool IsBeingDebugged;
         public bool IsDotNet;
         public bool IsElevated;
@@ -67,14 +69,14 @@ namespace ProcessHacker
         public bool HasParent;
         public int ParentPid;
 
-        public Win32.VerifyResult VerifyResult;
+        public VerifyResult VerifyResult;
         public int ImportFunctions;
         public int ImportModules;
 
         public bool JustProcessed;
         public int ProcessingAttempts;
 
-        public Win32.ProcessHandle ProcessQueryHandle;
+        public ProcessHandle ProcessQueryHandle;
 
         public bool FullUpdate;
         public DeltaManager<ProcessStats, long> DeltaManager;
@@ -94,12 +96,12 @@ namespace ProcessHacker
             public int PID;
             public bool IsDotNet;
             public bool IsPacked;
-            public Win32.VerifyResult VerifyResult;
+            public VerifyResult VerifyResult;
             public int ImportFunctions;
             public int ImportModules;
         }
 
-        private Dictionary<string, Win32.VerifyResult> _fileResults = new Dictionary<string, Win32.VerifyResult>();
+        private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor);
         private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(Subtractor.Int64Subtractor);
@@ -115,13 +117,13 @@ namespace ProcessHacker
         {      
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
-            Win32.SYSTEM_BASIC_INFORMATION basic = new Win32.SYSTEM_BASIC_INFORMATION();
+            var basic = new SystemBasicInformation();
             int retLen;
 
-            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemBasicInformation, ref basic,
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, ref basic,
                 Marshal.SizeOf(basic), out retLen);
             this.System = basic;
-            this.ProcessorPerfArray = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[this.System.NumberOfProcessors];
+            this.ProcessorPerfArray = new SystemProcessorPerformanceInformation[this.System.NumberOfProcessors];
 
             this.UpdateProcessorPerf();
 
@@ -163,10 +165,10 @@ namespace ProcessHacker
             _longHistory.Add(SystemStats.PhysicalMemory);
         }
 
-        public Win32.SYSTEM_BASIC_INFORMATION System { get; private set; }
-        public Win32.SYSTEM_PERFORMANCE_INFORMATION Performance { get; private set; }
-        public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION ProcessorPerf { get; private set; }
-        public Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[] ProcessorPerfArray { get; private set; }
+        public SystemBasicInformation System { get; private set; }
+        public SystemPerformanceInformation Performance { get; private set; }
+        public SystemProcessorPerformanceInformation ProcessorPerf { get; private set; }
+        public SystemProcessorPerformanceInformation[] ProcessorPerfArray { get; private set; }
         public float CurrentCpuKernelUsage { get; private set; }
         public float CurrentCpuUserUsage { get; private set; }
         public float CurrentCpuUsage { get { return this.CurrentCpuKernelUsage + this.CurrentCpuUserUsage; } }
@@ -188,15 +190,15 @@ namespace ProcessHacker
         private void UpdateProcessorPerf()
         {
             using (MemoryAlloc data =
-                new MemoryAlloc(Marshal.SizeOf(typeof(Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION)) *
+                new MemoryAlloc(Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
                 this.ProcessorPerfArray.Length))
             {
                 int retLen;
 
-                Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemProcessorTimes,
+                Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorTimes,
                     data, data.Size, out retLen);
 
-                var newSums = new Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION();
+                var newSums = new SystemProcessorPerformanceInformation();
 
                 // Thanks to:
                 // http://www.netperf.org/svn/netperf2/trunk/src/netcpu_ntperf.c
@@ -205,7 +207,7 @@ namespace ProcessHacker
                 // This is why I love free software.
                 for (int i = 0; i < this.ProcessorPerfArray.Length; i++)
                 {
-                    var cpuPerf = data.ReadStruct<Win32.SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION>(i);
+                    var cpuPerf = data.ReadStruct<SystemProcessorPerformanceInformation>(i);
                     
                     cpuPerf.KernelTime -= cpuPerf.IdleTime + cpuPerf.DpcTime + cpuPerf.InterruptTime;
                     newSums.DpcTime += cpuPerf.DpcTime;
@@ -224,9 +226,9 @@ namespace ProcessHacker
         private void UpdatePerformance()
         {
             int retLen;
-            Win32.SYSTEM_PERFORMANCE_INFORMATION performance = new Win32.SYSTEM_PERFORMANCE_INFORMATION();
+            var performance = new SystemPerformanceInformation();
 
-            Win32.ZwQuerySystemInformation(Win32.SYSTEM_INFORMATION_CLASS.SystemPerformanceInformation,
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
                 ref performance, Marshal.SizeOf(performance), out retLen);
             this.Performance = performance;
         }
@@ -308,12 +310,12 @@ namespace ProcessHacker
                             {
                                 try
                                 {
-                                    fpResult.VerifyResult = Win32.VerifyFile(fileName);
+                                    fpResult.VerifyResult = Cryptography.VerifyFile(fileName);
                                     //fpResult.VerifyResult = NProcessHacker.PhvVerifyFile(fileName);
                                 }
                                 catch
                                 {
-                                    fpResult.VerifyResult = Win32.VerifyResult.NoSignature;
+                                    fpResult.VerifyResult = VerifyResult.NoSignature;
                                 }
 
                                 if (!_fileResults.ContainsKey(uniName))
@@ -378,10 +380,10 @@ namespace ProcessHacker
             this.UpdateProcessorPerf();
 
             if (this.RunCount % 3 == 0)
-                Win32.RefreshDriveDevicePrefixes();
+                FileUtils.RefreshDriveDevicePrefixes();
 
-            Dictionary<int, int> tsProcesses = new Dictionary<int, int>();
-            Dictionary<int, Win32.SystemProcess> procs = Win32.EnumProcesses();
+            var tsProcesses = new Dictionary<int, int>();
+            var procs = Windows.GetProcesses(Program.ProcessesWithThreads);
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
 
@@ -446,17 +448,17 @@ namespace ProcessHacker
             // set System Idle Process CPU time
             if (procs.ContainsKey(0))
             {
-                Win32.SystemProcess proc = procs[0];
+                var proc = procs[0];
 
                 proc.Process.KernelTime = this.ProcessorPerf.IdleTime;
                 procs.Remove(0);
                 procs.Add(0, proc);
             }
 
-            procs.Add(-2, new Win32.SystemProcess()
+            procs.Add(-2, new SystemProcess()
             {
                 Name = "DPCs",
-                Process = new Win32.SYSTEM_PROCESS_INFORMATION()
+                Process = new SystemProcessInformation()
                 {
                     ProcessId = -2,
                     InheritedFromProcessId = 0,
@@ -465,10 +467,10 @@ namespace ProcessHacker
                 }
             });
 
-            procs.Add(-3, new Win32.SystemProcess()
+            procs.Add(-3, new SystemProcess()
             {
                 Name = "Interrupts",
-                Process = new Win32.SYSTEM_PROCESS_INFORMATION()
+                Process = new SystemProcessInformation()
                 {
                     ProcessId = -3,
                     InheritedFromProcessId = 0,
@@ -525,20 +527,20 @@ namespace ProcessHacker
             // look for new processes
             foreach (int pid in procs.Keys)
             {
-                Win32.SYSTEM_PROCESS_INFORMATION processInfo = procs[pid].Process;
+                var processInfo = procs[pid].Process;
 
                 if (!Dictionary.ContainsKey(pid))
                 {
                     Process p = null;
                     ProcessItem item = new ProcessItem();
-                    Win32.ProcessHandle queryLimitedHandle = null;
+                    ProcessHandle queryLimitedHandle = null;
 
                     if (pid >= 0)
                     {
                         try { p = Process.GetProcessById(pid); }
                         catch { }
 
-                        try { queryLimitedHandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights); }
+                        try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
                         catch { }
                     }
 
@@ -601,7 +603,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            item.ProcessQueryHandle = new Win32.ProcessHandle(pid, Win32.PROCESS_RIGHTS.PROCESS_QUERY_INFORMATION);
+                            item.ProcessQueryHandle = new ProcessHandle(pid, ProcessAccess.QueryInformation);
 
                             try
                             {
@@ -619,7 +621,7 @@ namespace ProcessHacker
                             {
                                 try
                                 {
-                                    using (var thandle = queryLimitedHandle.GetToken(Win32.TOKEN_RIGHTS.TOKEN_QUERY))
+                                    using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
                                         try { item.Username = thandle.GetUser().GetName(true); }
                                         catch { }
@@ -632,18 +634,18 @@ namespace ProcessHacker
                                 catch
                                 { }
 
-                                if (Program.KPH != null)
+                                if (KProcessHacker.Instance != null)
                                 {
                                     try
                                     {
-                                        using (var jhandle = queryLimitedHandle.GetJob(Win32.JOB_OBJECT_RIGHTS.JOB_OBJECT_QUERY))
+                                        using (var jhandle = queryLimitedHandle.GetJob(JobObjectAccess.Query))
                                         {
                                             var limits = jhandle.GetBasicLimitInformation();
 
                                             item.IsInJob = true;
                                             item.JobName = jhandle.GetHandleName();
 
-                                            if (limits.LimitFlags != Win32.JOB_OBJECT_LIMIT_FLAGS.JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK)
+                                            if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
                                             {
                                                 item.IsInSignificantJob = true;
                                             }
@@ -677,7 +679,7 @@ namespace ProcessHacker
                                 try
                                 {
                                     item.FileName =
-                                        Win32.DeviceFileNameToDos(queryLimitedHandle.GetNativeImageFileName());
+                                        FileUtils.DeviceFileNameToDos(queryLimitedHandle.GetNativeImageFileName());
                                 }
                                 catch
                                 { }
@@ -685,7 +687,7 @@ namespace ProcessHacker
                                 // if we couldn't get it or we couldn't resolve the \Device prefix,
                                 // we'll just use the normal method (which only works on Vista).
                                 if ((item.FileName == null || item.FileName.StartsWith("\\Device\\")) && 
-                                    Version.HasWin32ImageFileName)
+                                    OSVersion.HasWin32ImageFileName)
                                 {
                                     try
                                     {
@@ -716,7 +718,7 @@ namespace ProcessHacker
                         {
                             try
                             {
-                                item.Icon = (Icon)Win32.GetFileIcon(item.FileName);
+                                item.Icon = (Icon)FileUtils.GetFileIcon(item.FileName);
                             }
                             catch
                             { }
@@ -771,7 +773,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            item.Username = Win32.GetAccountName(tsProcesses[pid], true);
+                            item.Username = Windows.GetAccountName(tsProcesses[pid], true);
                         }
                         catch
                         { }
@@ -779,7 +781,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (var phandle = new Win32.ProcessHandle(pid,
+                        using (var phandle = new ProcessHandle(pid,
                             Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             item.CmdLine = phandle.GetCommandLine();
                     }
@@ -821,7 +823,7 @@ namespace ProcessHacker
                     item.FullUpdate = false;
                     item.JustProcessed = false;
 
-                    if (Win32.ProcessesWithThreads.ContainsKey(pid))
+                    if (Program.ProcessesWithThreads.ContainsKey(pid))
                         item.Threads = procs[pid].Threads;
 
                     try

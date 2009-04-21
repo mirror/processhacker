@@ -27,6 +27,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Symbols
 {
@@ -35,7 +38,7 @@ namespace ProcessHacker.Symbols
         private static object _callLock = new object();
         private static IdGenerator _idGen = new IdGenerator();
 
-        public static Win32.SYMBOL_OPTIONS Options
+        public static SymbolOptions Options
         {
             get
             {
@@ -52,7 +55,7 @@ namespace ProcessHacker.Symbols
 
         private bool _disposed = false;
         private object _disposeLock = new object();
-        private Win32.ProcessHandle _processHandle;
+        private ProcessHandle _processHandle;
         private int _handle;
         private List<KeyValuePair<long, string>> _modules = new List<KeyValuePair<long, string>>();
 
@@ -67,7 +70,7 @@ namespace ProcessHacker.Symbols
             }
         }
 
-        public SymbolProvider(Win32.ProcessHandle processHandle)
+        public SymbolProvider(ProcessHandle processHandle)
         {
             _processHandle = processHandle;
             _handle = processHandle;
@@ -116,7 +119,7 @@ namespace ProcessHacker.Symbols
 
             try
             {
-                var modules = Win32.ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+                var modules = ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
 
                 foreach (var module in modules)
                 {
@@ -129,7 +132,7 @@ namespace ProcessHacker.Symbols
                             if (!force)
                                 Properties.Settings.Default.DbgHelpWarningShown = true;
 
-                            if (Version.HasTaskDialogs)
+                            if (OSVersion.HasTaskDialogs)
                             {
                                 TaskDialog td = new TaskDialog();
                                 bool verificationChecked;
@@ -252,20 +255,20 @@ namespace ProcessHacker.Symbols
 
         public string GetSymbolFromAddress(long address)
         {
-            Win32.SYMBOL_FLAGS flags;
+            SymbolFlags flags;
 
             return this.GetSymbolFromAddress(address, out flags);
         }
 
         public string GetSymbolFromAddress(long address, out SymbolResolveLevel level)
         {
-            Win32.SYMBOL_FLAGS flags;
+            SymbolFlags flags;
             string fileName;
 
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out Win32.SYMBOL_FLAGS flags)
+        public string GetSymbolFromAddress(long address, out SymbolFlags flags)
         {
             SymbolResolveLevel level;
             string fileName;
@@ -276,12 +279,12 @@ namespace ProcessHacker.Symbols
         public string GetSymbolFromAddress(long address, out string fileName)
         {
             SymbolResolveLevel level;
-            Win32.SYMBOL_FLAGS flags;
+            SymbolFlags flags;
 
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level, out Win32.SYMBOL_FLAGS flags, out string fileName)
+        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName)
         {
             const int maxNameLen = 0x100;
             long displacement;
@@ -293,9 +296,9 @@ namespace ProcessHacker.Symbols
                 fileName = null;
             }
 
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(Win32.SYMBOL_INFO)) + maxNameLen))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + maxNameLen))
             {
-                Win32.SYMBOL_INFO info = new Win32.SYMBOL_INFO();
+                var info = new SymbolInfo();
 
                 info.SizeOfStruct = Marshal.SizeOf(info);
                 info.MaxNameLen = maxNameLen - 1;
@@ -325,7 +328,7 @@ namespace ProcessHacker.Symbols
                 {
                     if (Win32.SymFromAddr(_handle, address, out displacement, data))
                     {
-                        info = data.ReadStruct<Win32.SYMBOL_INFO>();
+                        info = data.ReadStruct<SymbolInfo>();
                     }
                 }
 
@@ -385,7 +388,7 @@ namespace ProcessHacker.Symbols
                 }
 
                 string name = Marshal.PtrToStringAnsi(
-                    new IntPtr(data + Marshal.OffsetOf(typeof(Win32.SYMBOL_INFO), "Name").ToInt32()), info.NameLen);
+                    new IntPtr(data + Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32()), info.NameLen);
 
                 level = SymbolResolveLevel.Function;
                 flags = info.Flags;

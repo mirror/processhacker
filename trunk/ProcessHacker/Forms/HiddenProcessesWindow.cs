@@ -21,13 +21,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
+using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -59,17 +58,17 @@ namespace ProcessHacker
         {
             listProcesses.Items.Clear();
 
-            var processes = Win32.EnumProcesses();
+            var processes = Windows.GetProcesses();
 
             for (int pid = 8; pid <= 8096; pid += 4)
             {
                 try
                 {
-                    var phandle = new Win32.ProcessHandle(pid, Program.MinProcessQueryRights);
+                    var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights);
                     string fileName = phandle.GetNativeImageFileName();
 
                     if (fileName != null)
-                        fileName = Win32.DeviceFileNameToDos(fileName);
+                        fileName = FileUtils.DeviceFileNameToDos(fileName);
 
                     var item = listProcesses.Items.Add(new ListViewItem(new string[]
                     {
@@ -143,9 +142,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        using (var phandle = new Win32.ProcessHandle(
-                            pid,
-                            Win32.PROCESS_RIGHTS.PROCESS_TERMINATE))
+                        using (var phandle = 
+                            new ProcessHandle(pid, ProcessHacker.Native.Security.ProcessAccess.Terminate))
                             phandle.Terminate();
                     }
                     catch (Exception ex)
@@ -185,7 +183,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                    using (var sw = new StreamWriter(sfd.FileName))
                     {
                         foreach (ListViewItem item in listProcesses.Items)
                         {

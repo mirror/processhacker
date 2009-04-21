@@ -20,16 +20,13 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Net;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
-    public class NetworkProvider : Provider<string, Win32.NetworkConnection>
+    public class NetworkProvider : Provider<string, NetworkConnection>
     {
         public NetworkProvider()
             : base()
@@ -39,10 +36,10 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            var networkDict = Win32.GetNetworkConnections();
-            var preKeyDict = new Dictionary<string, KeyValuePair<int, Win32.NetworkConnection>>();
-            var keyDict = new Dictionary<string, Win32.NetworkConnection>();
-            var newDict = new Dictionary<string, Win32.NetworkConnection>(this.Dictionary);
+            var networkDict = Windows.GetNetworkConnections();
+            var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
+            var keyDict = new Dictionary<string, NetworkConnection>();
+            var newDict = new Dictionary<string, NetworkConnection>(this.Dictionary);
 
             // flattens list, assigns IDs and counts
             foreach (var list in networkDict.Values)
@@ -53,10 +50,10 @@ namespace ProcessHacker
                         (connection.Remote != null ? connection.Remote.ToString() : "") + "-" + connection.Protocol.ToString();
 
                     if (preKeyDict.ContainsKey(id))
-                        preKeyDict[id] = new KeyValuePair<int, Win32.NetworkConnection>(
+                        preKeyDict[id] = new KeyValuePair<int, NetworkConnection>(
                             preKeyDict[id].Key + 1, preKeyDict[id].Value);
                     else
-                        preKeyDict.Add(id, new KeyValuePair<int, Win32.NetworkConnection>(1, connection));
+                        preKeyDict.Add(id, new KeyValuePair<int, NetworkConnection>(1, connection));
                 }
             }
 
