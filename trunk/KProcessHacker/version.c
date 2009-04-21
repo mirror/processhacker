@@ -26,6 +26,21 @@
 
 static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
 
+static char ExpGetProcessInformation51[] =
+{
+    0x33, 0xff, 0x89, 0x7d, 0xe4, 0x89, 0x7d, 0xdc,
+    0x8b, 0x45, 0x10, 0x89, 0x38, 0x39, 0x7d, 0x0c
+};
+static char ExpGetProcessInformation60[] =
+{
+    0x8b, 0x45, 0x10, 0x33, 0xdb, 0x89, 0x5d, 0xdc,
+    0x89, 0x5d, 0xe4, 0x89, 0x5d, 0xe0, 0x3b, 0xc3
+};
+static char ExpGetProcessInformation61[] =
+{
+    0x8b, 0x45, 0x10, 0x33, 0xff, 0x89, 0x7d, 0xdc,
+    0x89, 0x7d, 0xe0, 0x89, 0x7d, 0xe4, 0x89, 0x7d
+};
 static char PspTerminateProcess51[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x56, 0x64, 0xa1,
@@ -115,13 +130,21 @@ NTSTATUS KvInit()
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper.
          */
-        PsTerminateProcessBytes = PspTerminateProcess51;
-        PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = searchOffset;
-        
-        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer51;
-        PspTerminateThreadByPointerBytesLength = 16;
-        PspTerminateThreadByPointerBytesStart = searchOffset;
+        INIT_SCAN(
+            ExpGetProcessInformationScan,
+            ExpGetProcessInformation51,
+            16, searchOffset - 0x100000, SCAN_LENGTH, -12
+            );
+        INIT_SCAN(
+            PsTerminateProcessScan,
+            PspTerminateProcess51,
+            16, searchOffset, SCAN_LENGTH, 0
+            );
+        INIT_SCAN(
+            PspTerminateThreadByPointerScan,
+            PspTerminateThreadByPointer51,
+            16, searchOffset, SCAN_LENGTH, 0
+            );
         
         /* Windows XP SP0 and 1 are not supported */
         if (servicePack == 0)
@@ -170,13 +193,21 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
         
-        PsTerminateProcessBytes = PsTerminateProcess60;
-        PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = searchOffset;
-        
-        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer60;
-        PspTerminateThreadByPointerBytesLength = 24;
-        PspTerminateThreadByPointerBytesStart = searchOffset - 0x50000;
+        INIT_SCAN(
+            ExpGetProcessInformationScan,
+            ExpGetProcessInformation60,
+            16, searchOffset - 0x200000, SCAN_LENGTH, -12
+            );
+        INIT_SCAN(
+            PsTerminateProcessScan,
+            PsTerminateProcess60,
+            16, searchOffset, SCAN_LENGTH, 0
+            );
+        INIT_SCAN(
+            PspTerminateThreadByPointerScan,
+            PspTerminateThreadByPointer60,
+            24, searchOffset - 0x50000, SCAN_LENGTH, 0
+            );
         
         /* SP0 */
         if (servicePack == 0)
@@ -213,13 +244,21 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0xb0;
         OffOtiGenericMapping = 0x28 + 0xc;
         
-        PsTerminateProcessBytes = PsTerminateProcess61;
-        PsTerminateProcessBytesLength = 16;
-        PsTerminateProcessBytesStart = searchOffset;
-        
-        PspTerminateThreadByPointerBytes = PspTerminateThreadByPointer61;
-        PspTerminateThreadByPointerBytesLength = 24;
-        PspTerminateThreadByPointerBytesStart = searchOffset;
+        INIT_SCAN(
+            ExpGetProcessInformationScan,
+            ExpGetProcessInformation61,
+            16, searchOffset - 0x50000, SCAN_LENGTH, -12
+            );
+        INIT_SCAN(
+            PsTerminateProcessScan,
+            PsTerminateProcess61,
+            16, searchOffset, SCAN_LENGTH, 0
+            );
+        INIT_SCAN(
+            PspTerminateThreadByPointerScan,
+            PspTerminateThreadByPointer61,
+            24, searchOffset, SCAN_LENGTH, 0
+            );
         
         /* SP0 */
         if (servicePack == 0)
@@ -252,19 +291,19 @@ PVOID KvVerifyPrologue(
         return NULL;
 }
 
-PVOID KvScanBytes(
-    ULONG StartAddress,
-    ULONG EndAddress,
-    PCHAR Bytes,
-    ULONG Length
+PVOID KvScanProc(
+    PKV_SCANPROC ScanProc
     )
 {
+    PCHAR bytes = ScanProc->Bytes;
+    ULONG length = ScanProc->Length;
+    ULONG endAddress = ScanProc->StartAddress + ScanProc->ScanLength;
     ULONG i;
     
-    for (i = StartAddress; i < EndAddress; i++)
+    for (i = ScanProc->StartAddress; i < endAddress; i++)
     {
-        if (memcmp((PVOID)i, Bytes, Length) == 0)
-            return (PVOID)i;
+        if (memcmp((PVOID)i, bytes, length) == 0)
+            return (PVOID)((PCHAR)i + ScanProc->Displacement);
     }
     
     return NULL;

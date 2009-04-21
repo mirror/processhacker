@@ -1239,7 +1239,7 @@ namespace ProcessHacker.Native.Api
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
         public long[] Reserved1;
 
-        public long CreateTime;
+        public long CreateTime; // 8
         public long UserTime;
         public long KernelTime;
         public UnicodeString ImageName;
@@ -1248,7 +1248,7 @@ namespace ProcessHacker.Native.Api
         public int InheritedFromProcessId;
         public int HandleCount;
         public int SessionId;
-        public int PageDirectoryBase;
+        public int ProcessObject;
         public VmCountersEx VirtualMemoryCounters;
         public IoCounters IoCounters;
     }
@@ -1275,9 +1275,9 @@ namespace ProcessHacker.Native.Api
         public ClientId ClientId;
         public int Priority;
         public int BasePriority;
-        public int ContextSwitchCount;
-        public int State;
-        public KWaitReason WaitReason;
+        public int ContextSwitchCount; // 12
+        public int State; // 13
+        public KWaitReason WaitReason; // 14
     }
 
     [StructLayout(LayoutKind.Sequential)]

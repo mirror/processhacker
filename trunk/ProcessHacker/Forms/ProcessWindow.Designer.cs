@@ -1368,6 +1368,7 @@
             // 
             // listThreads
             // 
+            this.listThreads.Cursor = System.Windows.Forms.Cursors.Default;
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.DoubleBuffered = true;
             this.listThreads.Highlight = false;

@@ -165,18 +165,23 @@ namespace ProcessHacker
                 {
                     if (info.Type == MemoryType.Mapped)
                     {
-                        string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
-
-                        if (fileName != null)
+                        try
                         {
-                            var fi = new System.IO.FileInfo(fileName);
+                            string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
 
-                            modules.Add(info.BaseAddress,
-                                new ProcessModule(
-                                    new IntPtr(info.BaseAddress),
-                                    info.RegionSize, IntPtr.Zero,
-                                    fi.Name, fi.FullName));
+                            if (fileName != null)
+                            {
+                                var fi = new System.IO.FileInfo(fileName);
+
+                                modules.Add(info.BaseAddress,
+                                    new ProcessModule(
+                                        new IntPtr(info.BaseAddress),
+                                        info.RegionSize, IntPtr.Zero,
+                                        fi.Name, fi.FullName));
+                            }
                         }
+                        catch
+                        { }
                     }
 
                     return true;

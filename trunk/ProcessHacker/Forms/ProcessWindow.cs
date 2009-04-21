@@ -156,7 +156,14 @@ namespace ProcessHacker
 
             try
             {
-                _process = Process.GetProcessById(_pid);
+                // May fail if the process is hidden
+                try
+                {
+                    _process = Process.GetProcessById(_pid);
+                }
+                catch
+                { }
+
                 this.UpdateProcessProperties();
             }
             catch
@@ -218,8 +225,10 @@ namespace ProcessHacker
             {
                 this.InitializeProviders();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
 
             this.UpdateEnvironmentVariables();
 
@@ -352,6 +361,20 @@ namespace ProcessHacker
                 textFileDescription.Text = "";
                 textFileCompany.Text = "";
             }
+
+            try
+            {
+                var processes = Windows.GetProcesses(null);
+
+                if (!processes.ContainsKey(_pid))
+                {
+                    textFileDescription.Text = "(HIDDEN PROCESS) " + textFileDescription.Text;
+                    textFileDescription.ForeColor = Color.Red;
+                    textFileCompany.ForeColor = Color.Red;
+                }
+            }
+            catch
+            { }
 
             if (_processItem.CmdLine != null)
                 textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
@@ -1178,27 +1201,30 @@ namespace ProcessHacker
 
         private void timerUpdate_Tick(object sender, EventArgs e)
         {
-            try
+            if (_process != null)
             {
-                if (_process.HasExited)
+                try
                 {
-                    timerUpdate.Enabled = false;
-
-                    try
+                    if (_process.HasExited)
                     {
-                        using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        {
-                            this.Text += " (exited with code " + phandle.GetExitCode() + ")";
-                        }
-                    }
-                    catch
-                    { }
+                        timerUpdate.Enabled = false;
 
-                    return;
+                        try
+                        {
+                            using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                            {
+                                this.Text += " (exited with code " + phandle.GetExitCode() + ")";
+                            }
+                        }
+                        catch
+                        { }
+
+                        return;
+                    }
                 }
+                catch
+                { }
             }
-            catch
-            { }
 
             try
             {

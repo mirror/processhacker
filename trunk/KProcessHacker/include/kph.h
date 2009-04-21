@@ -31,11 +31,6 @@
 #include "ps.h"
 #include "zw.h"
 
-#define SCAN_FUNC(func) (KvScanBytes( \
-    func##BytesStart, func##BytesStart + 0x100000, \
-    func##Bytes, func##BytesLength \
-    ))
-
 #ifdef EXT
 #undef EXT
 #endif
@@ -48,6 +43,7 @@
 #define EQNULL
 #endif
 
+EXT _ExpGetProcessInformation ExpGetProcessInformation EQNULL;
 EXT _MmCopyVirtualMemory MmCopyVirtualMemory EQNULL;
 EXT _NtClose __NtClose EQNULL;
 EXT _PsGetProcessJob PsGetProcessJob EQNULL;

@@ -52,16 +52,20 @@ NTSTATUS KphNtInit()
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     
     /* Initialize function pointers */
-    if (PsTerminateProcessBytes)
+    if (ExpGetProcessInformationScan.Initialized)
     {
-        __PsTerminateProcess = 
-            (_PsTerminateProcess)SCAN_FUNC(PsTerminateProcess);
+        ExpGetProcessInformation = KvScanProc(&ExpGetProcessInformationScan);
+        dprintf("ExpGetProcessInformation: 0x%08x\n", ExpGetProcessInformation);
+    }
+    if (PsTerminateProcessScan.Initialized)
+    {
+        __PsTerminateProcess = KvScanProc(&PsTerminateProcessScan);
         dprintf("PsTerminateProcess: 0x%08x\n", __PsTerminateProcess);
     }
     
-    if (PspTerminateThreadByPointerBytes)
+    if (PspTerminateThreadByPointerScan.Initialized)
     {
-        __PspTerminateThreadByPointer = SCAN_FUNC(PspTerminateThreadByPointer);
+        __PspTerminateThreadByPointer = KvScanProc(&PspTerminateThreadByPointerScan);
         dprintf("PspTerminateThreadByPointer: 0x%08x\n", __PspTerminateThreadByPointer);
     }
     

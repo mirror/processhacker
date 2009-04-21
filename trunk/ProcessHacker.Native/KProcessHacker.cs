@@ -73,13 +73,25 @@ namespace ProcessHacker.Native
             ZwQueryObject,
             KphGetProcessId,
             KphGetThreadId,
-            KphTerminateThread
+            KphTerminateThread,
+            GetFeatures,
+            ExpGetProcessInformation
+        }
+
+        [Flags]
+        public enum KphFeatures : int
+        {
+            MmCopyVirtualMemory = 0x1,
+            ExpGetProcessInformation = 0x2,
+            PsTerminateProcess = 0x4,
+            PspTerminateThreadByPointer = 0x8
         }
 
         private string _deviceName;
         private FileHandle _fileHandle;
         private uint _baseControlNumber;
         private ServiceHandle _service;
+        private KphFeatures _features;
 
         /// <summary>
         /// Creates a connection to KProcessHacker.
@@ -132,12 +144,24 @@ namespace ProcessHacker.Native
 
             fixed (byte* bytesPtr = bytes)
                 _baseControlNumber = *(uint*)bytesPtr;
+
+            try
+            {
+                _features = this.GetFeatures();
+            }
+            catch
+            { }
         }
 
         public string DeviceName
         {
             get { return _deviceName; }
-        }  
+        }
+
+        public KphFeatures Features
+        {
+            get { return _features; }
+        }
 
         private uint CtlCode(Control ctl)
         {
@@ -150,6 +174,47 @@ namespace ProcessHacker.Native
         public void Close()
         {
             _fileHandle.Dispose();
+        }
+
+        public bool ExpGetProcessInformation(
+            IntPtr buffer,
+            int bufferLength,
+            out int returnLength,
+            int sessionId,
+            bool extendedInformation
+            )
+        {
+            byte* inData = stackalloc byte[0x14];
+            int expReturnLength;
+            int ioReturnLength;
+
+            *(int*)inData = buffer.ToInt32();
+            *(int*)(inData + 0x4) = bufferLength;
+            *(int*)(inData + 0x8) = (int)&expReturnLength;
+            *(int*)(inData + 0xc) = sessionId;
+            *(int*)(inData + 0x10) = extendedInformation ? 1 : 0;
+
+            bool success = Win32.DeviceIoControl(
+                _fileHandle,
+                (int)CtlCode(Control.ExpGetProcessInformation),
+                inData, 0x14,
+                inData, 0,
+                out ioReturnLength,
+                0
+                );
+
+            returnLength = expReturnLength;
+
+            return success;
+        }
+
+        public KphFeatures GetFeatures()
+        {
+            byte* outData = stackalloc byte[4];
+
+            _fileHandle.IoControl(CtlCode(Control.GetFeatures), null, 0, outData, 4);
+
+            return (KphFeatures)(*(int*)outData);
         }
 
         public string GetFileObjectName(SystemHandleInformation handle)

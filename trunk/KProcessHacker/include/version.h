@@ -32,6 +32,27 @@
 #define WINDOWS_7 61
 
 #define KVOFF(object, offset) ((PCHAR)(object) + offset)
+#define SCAN_LENGTH 0x100000
+#define INIT_SCAN(scan, bytes, length, address, scanLength, displacement) \
+    ( \
+    ((scan).Initialized = TRUE), \
+    ((scan).Bytes = (bytes)), \
+    ((scan).Length = (length)), \
+    ((scan).StartAddress = (address)), \
+    ((scan).ScanLength = (scanLength)), \
+    ((scan).Displacement = (displacement)), \
+    bytes \
+    )
+
+typedef struct _KV_SCANPROC
+{
+    BOOLEAN Initialized;
+    PCHAR Bytes;
+    ULONG Length;
+    ULONG StartAddress;
+    ULONG ScanLength;
+    LONG Displacement;
+} KV_SCANPROC, *PKV_SCANPROC;
 
 NTSTATUS KvInit();
 
@@ -39,11 +60,8 @@ PVOID KvVerifyPrologue(
     ULONG Offset
     );
 
-PVOID KvScanBytes(
-    ULONG StartAddress,
-    ULONG EndAddress,
-    PCHAR Bytes,
-    ULONG Length
+PVOID KvScanProc(
+    PKV_SCANPROC ScanProc
     );
 
 #ifdef EXT
@@ -52,8 +70,10 @@ PVOID KvScanBytes(
 
 #ifdef _VERSION_PRIVATE
 #define EXT
+#define SCANNULL = { FALSE, NULL, 0, 0, 0, 0 }
 #else
 #define EXT extern
+#define SCANNULL
 #endif
 
 EXT ULONG WindowsVersion;
@@ -79,14 +99,9 @@ EXT ULONG OffEpRundownProtect;
 EXT ULONG OffOtiGenericMapping;
 
 /* Functions
- * These are all offsets from NtClose.
  */
-EXT PCHAR PsTerminateProcessBytes;
-EXT ULONG PsTerminateProcessBytesLength;
-EXT ULONG PsTerminateProcessBytesStart;
-
-EXT PCHAR PspTerminateThreadByPointerBytes;
-EXT ULONG PspTerminateThreadByPointerBytesLength;
-EXT ULONG PspTerminateThreadByPointerBytesStart;
+EXT KV_SCANPROC ExpGetProcessInformationScan SCANNULL;
+EXT KV_SCANPROC PsTerminateProcessScan SCANNULL;
+EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;
 
 #endif

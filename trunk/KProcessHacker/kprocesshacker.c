@@ -229,6 +229,10 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphGetThreadId";
     else if (ControlCode == KPH_TERMINATETHREAD)
         return "KphTerminateThread";
+    else if (ControlCode == KPH_GETFEATURES)
+        return "Get Features";
+    else if (ControlCode == KPH_EXPGETPROCESSINFORMATION)
+        return "ExpGetProcessInformation";
     else
         return "Unknown";
 }
@@ -972,6 +976,66 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             exitStatus = *(NTSTATUS *)(dataBuffer + 4);
             
             status = KphTerminateThread(threadHandle, exitStatus);
+        }
+        break;
+        
+        case KPH_GETFEATURES:
+        {
+            ULONG features = 0;
+            
+            if (outLength < 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            if (MmCopyVirtualMemory)
+                features |= KPHF_MMCOPYVIRTUALMEMORY;
+            if (ExpGetProcessInformation)
+                features |= KPHF_EXPGETPROCESSINFORMATION;
+            if (__PsTerminateProcess)
+                features |= KPHF_PSTERMINATEPROCESS;
+            if (__PspTerminateThreadByPointer)
+                features |= KPHF_PSPTERMINATETHREADBPYPOINTER;
+            
+            *(PULONG)dataBuffer = features;
+            retLength = 4;
+        }
+        break;
+        
+        case KPH_EXPGETPROCESSINFORMATION:
+        {
+            PVOID buffer;
+            ULONG bufferLength;
+            PULONG returnLength;
+            ULONG sessionId;
+            ULONG extendedInformation;
+            
+            if (!ExpGetProcessInformation)
+            {
+                status = STATUS_NOT_SUPPORTED;
+                goto IoControlEnd;
+            }
+            
+            if (inLength < 5 * 4)
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            buffer = *(PVOID *)dataBuffer;
+            bufferLength = *(ULONG *)(dataBuffer + 0x4);
+            returnLength = *(PULONG *)(dataBuffer + 0x8);
+            sessionId = *(ULONG *)(dataBuffer + 0xc);
+            extendedInformation = *(ULONG *)(dataBuffer + 0x10);
+            
+            status = ExpGetProcessInformation(
+                buffer,
+                bufferLength,
+                returnLength,
+                sessionId,
+                !!extendedInformation
+                );
         }
         break;
         
