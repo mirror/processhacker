@@ -56,6 +56,8 @@ namespace ProcessHacker
 
         private void Scan()
         {
+            this.Cursor = Cursors.WaitCursor;
+            listProcesses.BeginUpdate();
             listProcesses.Items.Clear();
 
             var processes = Windows.GetProcesses();
@@ -111,6 +113,9 @@ namespace ProcessHacker
                     item.ForeColor = Color.White;
                 }
             }
+
+            listProcesses.EndUpdate();
+            this.Cursor = Cursors.Default;
         }
 
         private void buttonScan_Click(object sender, EventArgs e)
@@ -153,11 +158,9 @@ namespace ProcessHacker
                     }
                 }
 
-                this.Cursor = Cursors.WaitCursor;
                 // Wait a bit to avoid BSODs
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(200);
                 this.Scan();
-                this.Cursor = Cursors.Default;
             }
         }
 
@@ -191,7 +194,9 @@ namespace ProcessHacker
                     {
                         foreach (ListViewItem item in listProcesses.Items)
                         {
-                            sw.WriteLine((item.BackColor == Color.Red ? "[Hidden] " : "") +
+                            sw.WriteLine(
+                                (item.BackColor == Color.Red ? "[HIDDEN] " : "") +
+                                (item.BackColor == Color.DarkGray ? "[Terminated] " : "") +
                                 item.SubItems[1].Text + ": " + item.SubItems[0].Text);
                         }
                     }
