@@ -90,6 +90,7 @@ namespace ProcessHacker
             {
                 menuHandle.EnableAll();
                 closeMenuItem.Enabled = false;
+                processPropertiesMenuItem.Enabled = false;
                 propertiesMenuItem.Enabled = false;
             }
         }
@@ -176,6 +177,23 @@ namespace ProcessHacker
         {
             progress.Value = currentValue;
             progress.Maximum = count;
+        }
+
+        private void processPropertiesMenuItem_Click(object sender, EventArgs e)
+        {
+            int pid = (int)listHandles.SelectedItems[0].Tag;
+
+            if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
+            {
+                Program.GetProcessWindow(
+                    Program.ProcessProvider.Dictionary[pid],
+                    (f) => Program.FocusWindow(f));
+            }
+            else
+            {
+                MessageBox.Show("The process does not exist.", "Process Hacker",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)

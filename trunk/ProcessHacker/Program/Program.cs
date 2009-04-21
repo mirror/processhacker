@@ -212,7 +212,8 @@ namespace ProcessHacker
 
             try
             {
-                KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
+                if (Properties.Settings.Default.EnableKPH)
+                    KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch
             { }

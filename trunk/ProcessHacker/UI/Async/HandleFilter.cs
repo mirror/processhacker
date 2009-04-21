@@ -32,7 +32,7 @@ namespace ProcessHacker.FormHelper
 {
     public sealed class HandleFilter : AsyncOperation
     {
-        private const int BufferSize = 100;
+        private const int BufferSize = 50;
 
         public delegate void MatchListViewEvent(List<ListViewItem> item);
         public delegate void MatchProgressEvent(int currentValue,int count);

@@ -272,37 +272,21 @@ namespace ProcessHacker
         /// Gets the base address of the currently running kernel.
         /// </summary>
         /// <returns>The kernel's base address.</returns>
-        public static int GetKernelBase()
+        public static uint GetKernelBase()
         {
-            int RequiredSize = 0;
-            int[] ImageBases;
+            uint kernelBase = 0;
 
-            Win32.EnumDeviceDrivers(null, 0, out RequiredSize);
-            ImageBases = new int[RequiredSize];
-            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), out RequiredSize);
-
-            for (int i = 0; i < RequiredSize; i++)
-            {
-                if (ImageBases[i] == 0)
-                    continue;
-
-                StringBuilder name = new StringBuilder(256);
-                StringBuilder filename = new StringBuilder(256);
-                string realname = "";
-
-                Win32.GetDeviceDriverBaseName(ImageBases[i], name, 255);
-                Win32.GetDeviceDriverFileName(ImageBases[i], filename, 255);
-
-                try
+            Windows.EnumKernelModules((module) =>
                 {
-                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(filename.ToString()));
+                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(module.FileName));
                     bool kernel = false;
+                    string realName;
 
-                    realname = fi.FullName;
+                    realName = fi.FullName;
 
                     foreach (string k in Misc.KernelNames)
                     {
-                        if (realname.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
+                        if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
                         {
                             kernel = true;
 
@@ -311,15 +295,15 @@ namespace ProcessHacker
                     }
 
                     if (kernel)
-                        return ImageBases[i];
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-            }
+                    {
+                        kernelBase = module.BaseAddress;
+                        return false;
+                    }
 
-            return 0;
+                    return true;
+                });
+
+            return kernelBase;
         }
 
         /// <summary>
@@ -328,35 +312,19 @@ namespace ProcessHacker
         /// <returns>The kernel file name.</returns>
         public static string GetKernelFileName()
         {
-            int RequiredSize = 0;
-            int[] ImageBases;
+            string kernelFileName = null;
 
-            Win32.EnumDeviceDrivers(null, 0, out RequiredSize);
-            ImageBases = new int[RequiredSize];
-            Win32.EnumDeviceDrivers(ImageBases, RequiredSize * sizeof(int), out RequiredSize);
-
-            for (int i = 0; i < RequiredSize; i++)
-            {
-                if (ImageBases[i] == 0)
-                    continue;
-
-                StringBuilder name = new StringBuilder(256);
-                StringBuilder filename = new StringBuilder(256);
-                string realname = "";
-
-                Win32.GetDeviceDriverBaseName(ImageBases[i], name, 255);
-                Win32.GetDeviceDriverFileName(ImageBases[i], filename, 255);
-
-                try
+            Windows.EnumKernelModules((module) =>
                 {
-                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(filename.ToString()));
+                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(module.FileName));
                     bool kernel = false;
+                    string realName;
 
-                    realname = fi.FullName;
+                    realName = fi.FullName;
 
                     foreach (string k in Misc.KernelNames)
                     {
-                        if (realname.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
+                        if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
                         {
                             kernel = true;
 
@@ -365,15 +333,15 @@ namespace ProcessHacker
                     }
 
                     if (kernel)
-                        return realname;
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
-            }
+                    {
+                        kernelFileName = realName;
+                        return false;
+                    }
 
-            return "";
+                    return true;
+                });
+
+            return kernelFileName;
         }
 
         /// <summary>

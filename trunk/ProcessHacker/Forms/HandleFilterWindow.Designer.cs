@@ -44,6 +44,7 @@
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.progress = new System.Windows.Forms.ProgressBar();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.processPropertiesMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -125,6 +126,7 @@
             // 
             this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.closeMenuItem,
+            this.processPropertiesMenuItem,
             this.propertiesMenuItem,
             this.copyMenuItem});
             this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
@@ -138,14 +140,14 @@
             // 
             // propertiesMenuItem
             // 
-            this.propertiesMenuItem.Index = 1;
+            this.propertiesMenuItem.Index = 2;
             this.propertiesMenuItem.Text = "&Properties...";
             this.propertiesMenuItem.Click += new System.EventHandler(this.propertiesMenuItem_Click);
             // 
             // copyMenuItem
             // 
             this.vistaMenu.SetImage(this.copyMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyMenuItem.Index = 2;
+            this.copyMenuItem.Index = 3;
             this.copyMenuItem.Text = "&Copy";
             // 
             // progress
@@ -161,6 +163,12 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            // 
+            // processPropertiesMenuItem
+            // 
+            this.processPropertiesMenuItem.Index = 1;
+            this.processPropertiesMenuItem.Text = "Process Properties...";
+            this.processPropertiesMenuItem.Click += new System.EventHandler(this.processPropertiesMenuItem_Click);
             // 
             // HandleFilterWindow
             // 
@@ -201,5 +209,6 @@
         private System.Windows.Forms.MenuItem copyMenuItem;
         private System.Windows.Forms.ProgressBar progress;
         private System.Windows.Forms.MenuItem propertiesMenuItem;
+        private System.Windows.Forms.MenuItem processPropertiesMenuItem;
     }
 }

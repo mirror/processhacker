@@ -130,7 +130,7 @@ namespace ProcessHacker
             if (listProcesses.SelectedIndices.Count == 1)
                 promptMessage = listProcesses.SelectedItems[0].SubItems[0].Text;
 
-            if (MessageBox.Show("Are you sure you want to terminate " + promptMessage + "? " + 
+            if (MessageBox.Show("Are you sure you want to terminate " + promptMessage + "?\n" + 
                 "WARNING: Terminating a hidden process may cause the system to crash or become " +
                 "unstable because of modifications made by rootkit activity.",
                 "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
@@ -153,7 +153,11 @@ namespace ProcessHacker
                     }
                 }
 
+                this.Cursor = Cursors.WaitCursor;
+                // Wait a bit to avoid BSODs
+                System.Threading.Thread.Sleep(1000);
                 this.Scan();
+                this.Cursor = Cursors.Default;
             }
         }
 

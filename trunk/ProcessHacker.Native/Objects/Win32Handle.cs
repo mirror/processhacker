@@ -134,7 +134,7 @@ namespace ProcessHacker.Native.Objects
         public Win32Handle(int handle, TAccess access)
         {
             Win32.DuplicateObject(-1, handle, -1, out _handle,
-                (int)Enum.Parse(typeof(TAccess), access.ToString()), 0, 0);
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             _owned = true;
         }
 
@@ -147,7 +147,7 @@ namespace ProcessHacker.Native.Objects
         public Win32Handle(ProcessHandle processHandle, int handle, TAccess access)
         {
             Win32.DuplicateObject(processHandle, handle, -1, out _handle,
-                (int)Enum.Parse(typeof(TAccess), access.ToString()), 0, 0);
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             _owned = true;
         }
 
