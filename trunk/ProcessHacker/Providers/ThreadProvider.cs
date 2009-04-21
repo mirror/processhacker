@@ -355,8 +355,8 @@ namespace ProcessHacker
                         { }
                     }
 
-                    // if the start address is less than 0x10000, it's wrong.
-                    if (item.StartAddressI < 0x10000)
+                    // if the start address is less than 0x40000, it's wrong.
+                    if (item.StartAddressI < 0x40000)
                     {
                         // if that failed, use the start address supplied by NtQuerySystemInformation
                         item.StartAddressI = (uint)t.StartAddress;
