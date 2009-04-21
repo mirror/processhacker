@@ -266,7 +266,10 @@ namespace ProcessHacker
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
             NetworkProvider = new NetworkProvider();
-            Windows.GetProcessName = (pid) => ProcessProvider.Dictionary[pid].Name;
+            Windows.GetProcessName = (pid) => 
+                ProcessProvider.Dictionary.ContainsKey(pid) ? 
+                ProcessProvider.Dictionary[pid].Name :
+                null;
 
             new HackerWindow();
             Application.Run();
