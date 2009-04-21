@@ -179,10 +179,10 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool VirtualQueryEx(int Process, int Address,
-            [MarshalAs(UnmanagedType.Struct)] ref MemoryBasicInformation Buffer, int Size);
+            [MarshalAs(UnmanagedType.Struct)] out MemoryBasicInformation Buffer, int Size);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualProtectEx(int Process, int Address, int Size, int NewProtect, out int OldProtect);
+        public static extern bool VirtualProtectEx(int Process, int Address, int Size, MemoryProtection NewProtect, out MemoryProtection OldProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int VirtualAllocEx(int Process, int Address, int Size, MemoryState Type, MemoryProtection Protect);

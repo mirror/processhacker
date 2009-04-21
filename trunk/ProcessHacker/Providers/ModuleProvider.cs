@@ -161,44 +161,26 @@ namespace ProcessHacker
                 modules.Add(m.BaseAddress.ToInt32(), m);
 
             // add mapped files
-            {
-                var info = new MemoryBasicInformation();
-                int address = 0;
-
-                while (true)
+            _processHandle.EnumMemory((info) =>
                 {
-                    if (!Win32.VirtualQueryEx(_processHandle, address, ref info, Marshal.SizeOf(info)))
+                    if (info.Type == MemoryType.Mapped)
                     {
-                        break;
-                    }
-                    else
-                    {
-                        if (info.Type == MemoryType.Mapped)
+                        string fileName = _processHandle.GetMappedFileName(info.BaseAddress);
+
+                        if (fileName != null)
                         {
-                            StringBuilder sb = new StringBuilder(0x400);
-                            int length = Win32.GetMappedFileName(_processHandle, info.BaseAddress, sb, sb.Capacity);
+                            var fi = new System.IO.FileInfo(fileName);
 
-                            if (length > 0)
-                            {
-                                string fileName = sb.ToString(0, length);
-
-                                if (fileName.StartsWith("\\"))
-                                    fileName = FileUtils.DeviceFileNameToDos(fileName);
-
-                                System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
-
-                                modules.Add(info.BaseAddress,
-                                    new ProcessModule(
-                                        new IntPtr(info.BaseAddress),
-                                        info.RegionSize, IntPtr.Zero,
-                                        fi.Name, fi.FullName));
-                            }
+                            modules.Add(info.BaseAddress,
+                                new ProcessModule(
+                                    new IntPtr(info.BaseAddress),
+                                    info.RegionSize, IntPtr.Zero,
+                                    fi.Name, fi.FullName));
                         }
-
-                        address += info.RegionSize;
                     }
-                }
-            }
+
+                    return true;
+                });
 
             // look for unloaded modules
             foreach (int b in Dictionary.Keys)

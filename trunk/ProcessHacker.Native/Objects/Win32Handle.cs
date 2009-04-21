@@ -183,7 +183,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle.</returns>
         public Win32Handle<TAccess> Duplicate(TAccess access)
         {
-            return new Win32Handle<TAccess>(ProcessHandle.FromHandle(-1), this, access);
+            return new Win32Handle<TAccess>(ProcessHandle.GetCurrent(), this, access);
         }
 
         /// <summary>

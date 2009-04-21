@@ -310,9 +310,7 @@ namespace ProcessHacker
                 int s_a = (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][0]) +
                     (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][1]);
 
-                var info = new MemoryBasicInformation();
-                var info2 = new MemoryBasicInformation();
-                int address = 0;
+                var lastInfo = new MemoryBasicInformation();
                 ProcessHandle phandle;
 
                 try
@@ -325,40 +323,33 @@ namespace ProcessHacker
                     return;
                 }
 
-                while (true)
-                {
-                    if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                        Marshal.SizeOf(typeof(MemoryBasicInformation))))
+                phandle.EnumMemory((info) =>
                     {
-                        break;
-                    }
-                    else
-                    {
-                        if (address > s_a)
+                        if (info.BaseAddress > s_a)
                         {
-                            int selectlength = 
+                            int selectlength =
                                 (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
 
-                            MemoryEditor ed = Program.GetMemoryEditor(_pid, info2.BaseAddress, info2.RegionSize,
+                            MemoryEditor ed = Program.GetMemoryEditor(_pid, lastInfo.BaseAddress, lastInfo.RegionSize,
                                 new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f)
                             {
                                 try
                                 {
                                     f.ReadOnly = false;
                                     f.Activate();
-                                    f.Select(s_a - info2.BaseAddress, selectlength);
+                                    f.Select(s_a - lastInfo.BaseAddress, selectlength);
                                 }
                                 catch
                                 { }
                             }));
 
-                            break;
+                            return false;
                         }
 
-                        info2 = info;
-                        address += info.RegionSize;
-                    }
-                }
+                        lastInfo = info;
+
+                        return true;
+                    });
             }
             catch { }
 

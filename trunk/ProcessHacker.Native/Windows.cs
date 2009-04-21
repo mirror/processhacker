@@ -12,6 +12,8 @@ namespace ProcessHacker.Native
 {
     public class Windows
     {
+        public delegate bool EnumKernelModulesDelegate(KernelModule kernelModule);
+
         public delegate string GetProcessNameCallback(int pid);
 
         public static GetProcessNameCallback GetProcessName;
@@ -22,32 +24,31 @@ namespace ProcessHacker.Native
         /// </summary>
         internal static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
 
-        /// <summary>
-        /// Loads an image into kernel-mode using NtSetSystemInformation 
-        /// with SystemLoadAndCallImage.
-        /// </summary>
-        /// <param name="fileName">The path to the driver.</param>
-        public static void LoadKernelImage(string fileName)
+        public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
-            FileInfo info = new FileInfo(fileName);
-            string ntFileName = "\\??\\" + info.FullName;
+            int requiredSize = 0;
+            int[] imageBases;
 
-            SystemLoadAndCallImage laci = new SystemLoadAndCallImage();
+            Win32.EnumDeviceDrivers(null, 0, out requiredSize);
+            imageBases = new int[requiredSize / 4];
+            Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
 
-            using (MemoryAlloc stringData = new MemoryAlloc(ntFileName.Length * 2 + 2))
+            for (int i = 0; i < imageBases.Length; i++)
             {
-                laci.ModuleName = new UnicodeString();
+                if (imageBases[i] == 0)
+                    continue;
 
-                stringData.WriteUnicodeString(0, ntFileName);
-                laci.ModuleName.Buffer = stringData;
-                laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
-                laci.ModuleName.MaximumLength = laci.ModuleName.Length;
+                StringBuilder name = new StringBuilder(0x400);
+                StringBuilder fileName = new StringBuilder(0x400);
 
-                int ret;
+                Win32.GetDeviceDriverBaseName(imageBases[i], name, name.Capacity * 2);
+                Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
 
-                if ((ret = Win32.NtSetSystemInformation(SystemInformationClass.SystemLoadAndCallImage,
-                    ref laci, Marshal.SizeOf(laci))) < 0)
-                    throw new Exception("Failed to load the kernel image - error " + ret.ToString());
+                if (!enumCallback(
+                    new KernelModule((uint)imageBases[i], 
+                        name.ToString(), 
+                        FileUtils.FixPath(fileName.ToString()))))
+                    break;
             }
         }
 
@@ -381,6 +382,35 @@ namespace ProcessHacker.Native
 
                     return dictionary;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Loads an image into kernel-mode using NtSetSystemInformation 
+        /// with SystemLoadAndCallImage.
+        /// </summary>
+        /// <param name="fileName">The path to the driver.</param>
+        public static void LoadKernelImage(string fileName)
+        {
+            FileInfo info = new FileInfo(fileName);
+            string ntFileName = "\\??\\" + info.FullName;
+
+            SystemLoadAndCallImage laci = new SystemLoadAndCallImage();
+
+            using (MemoryAlloc stringData = new MemoryAlloc(ntFileName.Length * 2 + 2))
+            {
+                laci.ModuleName = new UnicodeString();
+
+                stringData.WriteUnicodeString(0, ntFileName);
+                laci.ModuleName.Buffer = stringData;
+                laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
+                laci.ModuleName.MaximumLength = laci.ModuleName.Length;
+
+                int ret;
+
+                if ((ret = Win32.NtSetSystemInformation(SystemInformationClass.SystemLoadAndCallImage,
+                    ref laci, Marshal.SizeOf(laci))) < 0)
+                    throw new Exception("Failed to load the kernel image - error " + ret.ToString());
             }
         }
     }

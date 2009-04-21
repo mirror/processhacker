@@ -37,8 +37,6 @@ namespace ProcessHacker
             Results.Clear();
 
             ProcessHandle phandle;
-            int address = 0;
-            MemoryBasicInformation info = new MemoryBasicInformation();
             int count = 0;
 
             bool opt_priv = (bool)Params["private"];
@@ -69,31 +67,22 @@ namespace ProcessHacker
                 return;
             }
 
-            while (true)
-            {
-                if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                    Marshal.SizeOf(typeof(MemoryBasicInformation))))
+            phandle.EnumMemory((info) =>
                 {
-                    break;
-                }
-                else
-                {
-                    address += info.RegionSize;
-
                     // skip unreadable areas
                     if (info.Protect == MemoryProtection.AccessDenied)
-                        continue;
+                        return true;
                     if (info.State != MemoryState.Commit)
-                        continue;
+                        return true;
 
                     if ((!opt_priv) && (info.Type == MemoryType.Private))
-                        continue;
+                        return true;
 
                     if ((!opt_img) && (info.Type == MemoryType.Image))
-                        continue;
+                        return true;
 
                     if ((!opt_map) && (info.Type == MemoryType.Mapped))
-                        continue;
+                        return true;
 
                     CallSearchProgressChanged(
                         String.Format("Searching 0x{0:x8} ({1} found)...", info.BaseAddress, count));
@@ -104,7 +93,7 @@ namespace ProcessHacker
                         {
                             structDef.Offset = info.BaseAddress + i;
                             structDef.Read();
-                            
+
                             // read succeeded, add it to the results
                             Results.Add(new string[] { String.Format("0x{0:x8}", info.BaseAddress),
                                 String.Format("0x{0:x8}", i), structLen, "" });
@@ -113,8 +102,9 @@ namespace ProcessHacker
                         catch
                         { }
                     }
-                }
-            }
+
+                    return true;
+                });
 
             phandle.Dispose();
 

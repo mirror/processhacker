@@ -42,6 +42,13 @@ namespace ProcessHacker.Native.Objects
     public class ProcessHandle : Win32Handle<ProcessAccess>, IWithToken
     {
         /// <summary>
+        /// The callback for enumerating process memory regions.
+        /// </summary>
+        /// <param name="mbi">The basic information for the memory region.</param>
+        /// <returns>Return true to continue enumerating; return false to stop.</returns>
+        public delegate bool EnumMemoryDelegate(MemoryBasicInformation info);
+
+        /// <summary>
         /// Creates a process handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
@@ -50,6 +57,15 @@ namespace ProcessHacker.Native.Objects
         public static ProcessHandle FromHandle(int handle)
         {
             return new ProcessHandle(handle, false);
+        }
+
+        /// <summary>
+        /// Gets a handle to the current process.
+        /// </summary>
+        /// <returns>A process handle.</returns>
+        public static ProcessHandle GetCurrent()
+        {
+            return new ProcessHandle(-1, false);
         }
 
         internal ProcessHandle(int handle, bool owned)
@@ -166,6 +182,25 @@ namespace ProcessHacker.Native.Objects
         {
             if (!Win32.EmptyWorkingSet(this))
                 Win32.ThrowLastWin32Error();
+        }
+
+        /// <summary>
+        /// Enumerates the memory regions of the process.
+        /// </summary>
+        /// <param name="enumMemoryCallback">The callback for the enumeration.</param>
+        public void EnumMemory(EnumMemoryDelegate enumMemoryCallback)
+        {
+            int address = 0;
+            MemoryBasicInformation mbi = new MemoryBasicInformation();
+            int mbiSize = Marshal.SizeOf(mbi);
+
+            while (Win32.VirtualQueryEx(this, address, out mbi, mbiSize))
+            {
+                if (!enumMemoryCallback(mbi))
+                    break;
+
+                address += mbi.RegionSize;
+            }
         }
 
         /// <summary>
@@ -288,10 +323,8 @@ namespace ProcessHacker.Native.Objects
             int length = 0;
 
             {
-                MemoryBasicInformation mbi = new MemoryBasicInformation();
+                MemoryBasicInformation mbi = this.QueryMemory(envBase);
 
-                if (!Win32.VirtualQueryEx(this, envBase, ref mbi, Marshal.SizeOf(mbi)))
-                    Win32.ThrowLastWin32Error();
                 if (mbi.Protect == MemoryProtection.NoAccess)
                     throw new WindowsException();
 
@@ -451,6 +484,26 @@ namespace ProcessHacker.Native.Objects
                 Utils.ReadUnicodeString(this, mainModule->BaseDllName).TrimEnd('\0'),
                 FileUtils.FixPath(Utils.ReadUnicodeString(this, mainModule->FullDllName).TrimEnd('\0'))
                 );
+        }
+
+        public string GetMappedFileName(int address)
+        {
+            StringBuilder sb = new StringBuilder(0x400);
+            int length = Win32.GetMappedFileName(this, address, sb, sb.Capacity);
+
+            if (length > 0)
+            {
+                string fileName = sb.ToString(0, length);
+
+                if (fileName.StartsWith("\\"))
+                    fileName = FileUtils.DeviceFileNameToDos(fileName);
+
+                System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+
+                return fi.ToString();
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -698,6 +751,38 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastWin32Error();
 
             return result;
+        }
+
+        /// <summary>
+        /// Sets the protection for a page in the process.
+        /// </summary>
+        /// <param name="address">The address to modify.</param>
+        /// <param name="size">The number of bytes to modify.</param>
+        /// <param name="protection">The new memory protection.</param>
+        /// <returns>The old memory protection.</returns>
+        public MemoryProtection ProtectMemory(int address, int size, MemoryProtection protection)
+        {
+            MemoryProtection oldProtection;
+
+            if (!Win32.VirtualProtectEx(this,address, size, protection, out oldProtection))
+                Win32.ThrowLastWin32Error();
+
+            return oldProtection;
+        }
+
+        /// <summary>
+        /// Gets information about the memory region starting at the specified address.
+        /// </summary>
+        /// <param name="address">The address to query.</param>
+        /// <returns>A MEMORY_BASIC_INFORMATION structure.</returns>
+        public MemoryBasicInformation QueryMemory(int address)
+        {
+            MemoryBasicInformation mbi = new MemoryBasicInformation();
+
+            if (!Win32.VirtualQueryEx(this, address, out mbi, Marshal.SizeOf(mbi)))
+                Win32.ThrowLastWin32Error();
+
+            return mbi;
         }
 
         /// <summary>

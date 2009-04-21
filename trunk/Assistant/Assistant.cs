@@ -146,7 +146,7 @@ namespace Assistant
         {
             try
             {
-                using (var thandle = ProcessHandle.FromHandle(-1).GetToken(TokenAccess.AdjustPrivileges))
+                using (var thandle = ProcessHandle.GetCurrent().GetToken(TokenAccess.AdjustPrivileges))
                     thandle.SetPrivilege(name, SePrivilegeAttributes.Enabled);
                 return true;
             }

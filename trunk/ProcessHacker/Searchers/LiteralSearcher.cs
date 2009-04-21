@@ -38,8 +38,6 @@ namespace ProcessHacker
 
             byte[] text = (byte[])Params["text"];
             ProcessHandle phandle;
-            int address = 0;
-            var info = new MemoryBasicInformation();
             int count = 0;
 
             bool opt_priv = (bool)Params["private"];
@@ -66,31 +64,22 @@ namespace ProcessHacker
                 return;
             }
 
-            while (true)
-            {
-                if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                    Marshal.SizeOf(typeof(MemoryBasicInformation))))
+            phandle.EnumMemory((info) =>
                 {
-                    break;
-                }
-                else
-                {
-                    address += info.RegionSize;
-
                     // skip unreadable areas
                     if (info.Protect == MemoryProtection.AccessDenied)
-                        continue;
+                        return true;
                     if (info.State != MemoryState.Commit)
-                        continue;
+                        return true;
 
                     if ((!opt_priv) && (info.Type == MemoryType.Private))
-                        continue;
+                        return true;
 
                     if ((!opt_img) && (info.Type == MemoryType.Image))
-                        continue;
+                        return true;
 
                     if ((!opt_map) && (info.Type == MemoryType.Mapped))
-                        continue;
+                        return true;
 
                     byte[] data = new byte[info.RegionSize];
                     int bytesRead = 0;
@@ -103,11 +92,11 @@ namespace ProcessHacker
                         bytesRead = phandle.ReadMemory(info.BaseAddress, data, data.Length);
 
                         if (bytesRead == 0)
-                            continue;
+                            return true;
                     }
                     catch
                     {
-                        continue;
+                        return true;
                     }
 
                     for (int i = 0; i < bytesRead; i++)
@@ -139,8 +128,9 @@ namespace ProcessHacker
                     }
 
                     data = null;
-                }
-            }
+
+                    return true;
+                });
 
             phandle.Dispose();
 

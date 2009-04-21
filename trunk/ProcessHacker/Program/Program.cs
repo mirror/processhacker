@@ -180,7 +180,7 @@ namespace ProcessHacker
 
             try
             {
-                using (var thandle = ProcessHandle.FromHandle(-1).GetToken())
+                using (var thandle = ProcessHandle.GetCurrent().GetToken())
                 {
                     try { thandle.SetPrivilege("SeDebugPrivilege", SePrivilegeAttributes.Enabled); }
                     catch { }
@@ -396,9 +396,13 @@ namespace ProcessHacker
             System.IO.BinaryReader br = new System.IO.BinaryReader(
                 new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read));
             int ntdll = Win32.GetModuleHandle("ntdll.dll");
-            int old;
+            MemoryProtection oldProtection;
 
-            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.COFFOptionalHeader.SizeOfCode, (int)MemoryProtection.ExecuteReadWrite, out old);
+            oldProtection = ProcessHandle.GetCurrent().ProtectMemory(
+                ntdll,
+                (int)file.COFFOptionalHeader.SizeOfCode,
+                MemoryProtection.ExecuteReadWrite
+                );
 
             for (int i = 0; i < file.ExportData.ExportOrdinalTable.Count; i++)
             {
@@ -427,7 +431,11 @@ namespace ProcessHacker
 
             br.Close();
 
-            Win32.VirtualProtectEx(Win32.GetCurrentProcess(), ntdll, (int)file.Sections[0].VirtualSize, old, out old);
+            ProcessHandle.GetCurrent().ProtectMemory(
+                ntdll,
+                (int)file.COFFOptionalHeader.SizeOfCode,
+                oldProtection
+                );
         }
 
         private static void CheckForPreviousInstance()

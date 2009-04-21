@@ -43,6 +43,15 @@ namespace ProcessHacker.Native.Objects
             return new ThreadHandle(handle, false);
         }
 
+        /// <summary>
+        /// Gets a handle to the current thread.
+        /// </summary>
+        /// <returns>A thread handle.</returns>
+        public static ThreadHandle GetCurrent()
+        {
+            return new ThreadHandle(-2, false);
+        }
+
         internal ThreadHandle(int handle, bool owned)
             : base(handle, owned)
         { }
@@ -105,11 +114,27 @@ namespace ProcessHacker.Native.Objects
             Context context = new Context();
 
             context.ContextFlags = flags;
-
-            if (!Win32.GetThreadContext(this, ref context))
-                Win32.ThrowLastWin32Error();
+            this.GetContext(ref context);
 
             return context;
+        }
+
+        /// <summary>
+        /// Gets the thread's context.
+        /// </summary>
+        /// <param name="context">A Context structure. The ContextFlags must be set appropriately.</param>
+        public unsafe void GetContext(ref Context context)
+        {
+            if (KProcessHacker.Instance != null)
+            {
+                fixed (Context* contextPtr = &context)
+                    KProcessHacker.Instance.KphGetContextThread(this, contextPtr);
+            }
+            else
+            {
+                if (!Win32.GetThreadContext(this, ref context))
+                    Win32.ThrowLastWin32Error();
+            }
         }
 
         /// <summary>
@@ -169,10 +194,17 @@ namespace ProcessHacker.Native.Objects
         /// Sets the thread's context.
         /// </summary>
         /// <param name="context">A CONTEXT struct.</param>
-        public void SetContext(Context context)
+        public unsafe void SetContext(Context context)
         {
-            if (!Win32.SetThreadContext(this, ref context))
-                Win32.ThrowLastWin32Error();
+            if (KProcessHacker.Instance != null)
+            {
+                KProcessHacker.Instance.KphSetContextThread(this, &context);
+            }
+            else
+            {
+                if (!Win32.SetThreadContext(this, ref context))
+                    Win32.ThrowLastWin32Error();
+            }
         }
 
         /// <summary>

@@ -55,7 +55,6 @@ namespace ProcessHacker
         {
             try
             {
-                int old = 0;
                 int newprotect;
 
                 try
@@ -70,11 +69,14 @@ namespace ProcessHacker
                 using (ProcessHandle phandle =
                     new ProcessHandle(_pid, ProcessAccess.VmOperation))
                 {
-                    if (!Win32.VirtualProtectEx(phandle, _address,
-                        _size, newprotect, out old))
+                    try
+                    {
+                        phandle.ProtectMemory(_address, _size, (MemoryProtection)newprotect);
+                    }
+                    catch (Exception ex)
                     {
                         MessageBox.Show("There was an error setting memory protection:\n\n" +
-                            Win32.GetLastErrorMessage(), "Process Hacker",
+                            ex.Message, "Process Hacker",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }

@@ -81,26 +81,14 @@ namespace ProcessHacker
             var memoryInfo = new Dictionary<int, MemoryBasicInformation>();
             Dictionary<int, MemoryItem> newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
 
-            {
-                var info = new MemoryBasicInformation();
-                int address = 0;
-
-                while (true)
+            _processHandle.EnumMemory((info) =>
                 {
-                    if (!Win32.VirtualQueryEx(_processHandle, address, ref info, Marshal.SizeOf(info)))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) || 
-                            (!this.IgnoreFreeRegions))
-                            memoryInfo.Add(info.BaseAddress, info);
+                    if ((this.IgnoreFreeRegions && info.State != MemoryState.Free) ||
+                        !this.IgnoreFreeRegions)
+                        memoryInfo.Add(info.BaseAddress, info);
 
-                        address += info.RegionSize;
-                    }
-                }
-            }
+                    return true;
+                });
 
             // look for freed memory regions
             foreach (int address in Dictionary.Keys)

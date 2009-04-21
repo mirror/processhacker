@@ -205,29 +205,13 @@ namespace ProcessHacker
                     ProcessAccess.QueryInformation | 
                     Program.MinProcessWriteMemoryRights))
                 {
-                    var info = new MemoryBasicInformation();
-                    int address = 0;
-
-                    while (true)
-                    {
-                        if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                            Marshal.SizeOf(typeof(MemoryBasicInformation))))
+                    phandle.EnumMemory((info) =>
                         {
-                            break;
-                        }
-                        else
-                        {
-                            int old;
-
-                            Win32.VirtualProtectEx(phandle, info.BaseAddress, info.RegionSize,
-                                (int)MemoryProtection.ReadWrite, out old);
-
                             for (int i = 0; i < info.RegionSize; i += 0x1000)
                                 phandle.WriteMemory(info.BaseAddress + i, alloc, 0x1000);
 
-                            address += info.RegionSize;
-                        }
-                    }
+                            return true;
+                        });
                 }
             }
         }
@@ -237,26 +221,11 @@ namespace ProcessHacker
             using (ProcessHandle phandle = new ProcessHandle(_pid, 
                 ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
             {
-                var info = new MemoryBasicInformation();
-                int address = 0;
-
-                while (true)
-                {
-                    if (!Win32.VirtualQueryEx(phandle, address, ref info,
-                        Marshal.SizeOf(typeof(MemoryBasicInformation))))
+                phandle.EnumMemory((info) =>
                     {
-                        break;
-                    }
-                    else
-                    {
-                        int old;
-
-                        Win32.VirtualProtectEx(phandle, info.BaseAddress, info.RegionSize,
-                            (int)MemoryProtection.NoAccess, out old);
-
-                        address += info.RegionSize;
-                    }
-                }
+                        phandle.ProtectMemory(info.BaseAddress, info.RegionSize, MemoryProtection.NoAccess);
+                        return true;
+                    });
             }
         }
 
