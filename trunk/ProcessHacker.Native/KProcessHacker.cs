@@ -458,7 +458,7 @@ namespace ProcessHacker.Native
         public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
         {
             if (!KphReadVirtualMemorySafe(processHandle, baseAddress, buffer, length, out bytesRead))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         public bool KphReadVirtualMemorySafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)

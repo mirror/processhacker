@@ -24,6 +24,8 @@ Process Hacker
    * Network connections for processes without icons would not be displayed
    * Virtualization menu item visible on Windows XP
    * When processes are terminated they are deselected (to provide feedback to the user)
+   * When Native API calls failed they would pass through the exception handling 
+     code unchecked, causing random crashes (rarely)
  * REMOVED:
    * Useless Window menu items (PITA + causes memory leaks due to Microsoft's poor 
      implementation of MenuItem)

@@ -71,7 +71,7 @@ namespace ProcessHacker.Native
                     if (!Win32.LookupAccountSid(null, sid, name, out namelen, domain, out domainlen, out use))
                     {
                         if (name.ToString() == "" && domain.ToString() == "")
-                            Win32.ThrowLastWin32Error();
+                            Win32.ThrowLastError();
                     }
                 }
             }
@@ -127,12 +127,12 @@ namespace ProcessHacker.Native
 
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
-                int returnCode;
+                int status;
 
                 // This is needed because NtQuerySystemInformation with SystemHandleInformation doesn't 
                 // actually give a real return length when called with an insufficient buffer. This code 
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while ((uint)(returnCode = Win32.NtQuerySystemInformation(SystemInformationClass.SystemHandleInformation,
+                while ((uint)(status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemHandleInformation,
                     data.Memory, data.Size, out retLength)) == Win32.STATUS_INFO_LENGTH_MISMATCH)
                 {
                     data.Resize(data.Size * 2);
@@ -142,8 +142,8 @@ namespace ProcessHacker.Native
                         throw new OutOfMemoryException();
                 }
 
-                if (returnCode < 0)
-                    Win32.ThrowLastWin32Error();
+                if (status < 0)
+                    Win32.ThrowLastError(status);
 
                 // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
                 // structures.
@@ -198,7 +198,7 @@ namespace ProcessHacker.Native
             {
                 if (Win32.GetExtendedTcpTable(mem, ref length, false, 2,
                     TcpTableClass.OwnerPidAll, 0) != 0)
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 int count = mem.ReadInt32(0);
 
@@ -225,7 +225,7 @@ namespace ProcessHacker.Native
             using (var mem = new MemoryAlloc(length))
             {
                 if (Win32.GetExtendedUdpTable(mem, ref length, false, 2, UdpTableClass.OwnerPid, 0) != 0)
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 int count = mem.ReadInt32(0);
 
@@ -290,17 +290,18 @@ namespace ProcessHacker.Native
 
             using (MemoryAlloc data = new MemoryAlloc(0x4000))
             {
+                int status;
                 int attempts = 0;
 
                 while (true)
                 {
                     attempts++;
 
-                    if (Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessesAndThreadsInformation, data.Memory,
-                        data.Size, out retLength) < 0)
+                    if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
+                        data.Size, out retLength)) < 0)
                     {
                         if (attempts > 3)
-                            Win32.ThrowLastWin32Error();
+                            Win32.ThrowLastError(status);
 
                         data.Resize(retLength);
                     }
@@ -371,7 +372,7 @@ namespace ProcessHacker.Native
                         ServiceQueryState.All, data,
                         data.Size, out requiredSize, out servicesReturned,
                         out resume, 0))
-                        Win32.ThrowLastWin32Error();
+                        Win32.ThrowLastError();
 
                     for (int i = 0; i < servicesReturned; i++)
                     {
@@ -466,8 +467,10 @@ namespace ProcessHacker.Native
             // Duplicate the handle if we're not using KPH
             if (KProcessHacker.Instance == null)
             {
-                if (Win32.NtDuplicateObject(process, this.Handle, -1, out objectHandleI, 0, 0, 0) < 0)
-                    Win32.ThrowLastWin32Error();
+                int status;
+
+                if ((status = Win32.NtDuplicateObject(process, this.Handle, -1, out objectHandleI, 0, 0, 0)) < 0)
+                    Win32.ThrowLastError();
 
                 objectHandle = new Win32Handle(objectHandleI);
             }
@@ -631,7 +634,7 @@ namespace ProcessHacker.Native
                                     new Win32Handle(process, this.Handle, (int)OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
-                                        Win32.ThrowLastWin32Error();
+                                        Win32.ThrowLastError();
                                 }
                             }
 
@@ -663,10 +666,10 @@ namespace ProcessHacker.Native
                                     new Win32Handle(process, this.Handle, (int)OSVersion.MinThreadQueryInfoAccess))
                                 {
                                     if ((threadId = Win32.GetThreadId(threadHandle)) == 0)
-                                        Win32.ThrowLastWin32Error();
+                                        Win32.ThrowLastError();
 
                                     if ((processId = Win32.GetProcessIdOfThread(threadHandle)) == 0)
-                                        Win32.ThrowLastWin32Error();
+                                        Win32.ThrowLastError();
                                 }
                             }
 

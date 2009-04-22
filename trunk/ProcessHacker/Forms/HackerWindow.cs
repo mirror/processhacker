@@ -883,7 +883,7 @@ namespace ProcessHacker
 
                             if (!Win32.CreateProcess(null, cmdLine, 0, 0, false, 0, 0, currentDirectory,
                                 ref startupInfo, ref procInfo))
-                                Win32.ThrowLastWin32Error();
+                                Win32.ThrowLastError();
 
                             Win32.CloseHandle(procInfo.hProcess);
                             Win32.CloseHandle(procInfo.hThread);

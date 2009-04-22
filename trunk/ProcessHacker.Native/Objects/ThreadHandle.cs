@@ -77,7 +77,7 @@ namespace ProcessHacker.Native.Objects
                 this.Handle = Win32.OpenThread(access, 0, tid);
 
             if (this.Handle == 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace ProcessHacker.Native.Objects
         public void Alert()
         {
             if (Win32.NtAlertThread(this) < 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -95,12 +95,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
         public ThreadBasicInformation GetBasicInformation()
         {
+            int status;
             ThreadBasicInformation basicInfo = new ThreadBasicInformation();
             int retLen;
 
-            if (Win32.NtQueryInformationThread(this, ThreadInformationClass.ThreadBasicInformation,
-                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen) < 0)
-                Win32.ThrowLastWin32Error();
+            if ((status = Win32.NtQueryInformationThread(this, ThreadInformationClass.ThreadBasicInformation,
+                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen)) < 0)
+                Win32.ThrowLastError(status);
 
             return basicInfo;
         }
@@ -133,7 +134,7 @@ namespace ProcessHacker.Native.Objects
             else
             {
                 if (!Win32.GetThreadContext(this, ref context))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -145,7 +146,7 @@ namespace ProcessHacker.Native.Objects
             ulong cycles;
 
             if (!Win32.QueryThreadCycleTime(this, out cycles))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return cycles;
         }
@@ -159,7 +160,7 @@ namespace ProcessHacker.Native.Objects
             int exitCode;
 
             if (!Win32.GetExitCodeThread(this, out exitCode))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return exitCode;
         }
@@ -173,7 +174,7 @@ namespace ProcessHacker.Native.Objects
             int priority = Win32.GetThreadPriority(this);
 
             if (priority == 0x7fffffff)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return (ThreadPriorityLevel)priority;
         }
@@ -187,7 +188,7 @@ namespace ProcessHacker.Native.Objects
         public void QueueApc(int address, int parameter)
         {
             if (!Win32.QueueUserAPC(address, this, parameter))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -203,7 +204,7 @@ namespace ProcessHacker.Native.Objects
             else
             {
                 if (!Win32.SetThreadContext(this, ref context))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -214,7 +215,7 @@ namespace ProcessHacker.Native.Objects
         public void SetPriorityLevel(ThreadPriorityLevel priority)
         {
             if (!Win32.SetThreadPriority(this, (int)priority))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -223,7 +224,7 @@ namespace ProcessHacker.Native.Objects
         public void Suspend()
         {
             if (Win32.SuspendThread(this) == -1)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -232,7 +233,7 @@ namespace ProcessHacker.Native.Objects
         public void Resume()
         {
             if (Win32.ResumeThread(this) == -1)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -264,7 +265,7 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (!Win32.TerminateThread(this, ExitCode))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>

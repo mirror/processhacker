@@ -37,19 +37,19 @@ namespace ProcessHacker.Native.Objects
                 outBufferSize, inBufferSize, defaultTimeOut, 0);
 
             if (this.Handle == 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         public void Connect()
         {
             if (!Win32.ConnectNamedPipe(this, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         public void Disconnect()
         {
             if (!Win32.DisconnectNamedPipe(this))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
     }
 

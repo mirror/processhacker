@@ -232,9 +232,9 @@ namespace ProcessHacker.Native.Api
     [Flags]
     public enum MemExecuteOptions : int
     {
-        EnableDep = 0x1,
-        DisableDep = 0x2,
-        DisableAtlThunkEmulation = 0x4,
+        Enable = 0x1,
+        Disable = 0x2,
+        DisableThunkEmulation = 0x4,
         Permanent = 0x8
     }
 
@@ -335,7 +335,7 @@ namespace ProcessHacker.Native.Api
 
     public enum ProcessInformationClass : int
     {
-        ProcessBasicInformation,
+        ProcessBasicInformation, // 0
         ProcessQuotaLimits,
         ProcessIoCounters,
         ProcessVmCounters,
@@ -345,7 +345,7 @@ namespace ProcessHacker.Native.Api
         ProcessDebugPort,
         ProcessExceptionPort,
         ProcessAccessToken,
-        ProcessLdtInformation,
+        ProcessLdtInformation, // 10
         ProcessLdtSize,
         ProcessDefaultHardErrorMode,
         ProcessIoPortHandlers,
@@ -355,7 +355,7 @@ namespace ProcessHacker.Native.Api
         ProcessEnableAlignmentFaultFixup,
         ProcessPriorityClass,
         ProcessWx86Information,
-        ProcessHandleCount,
+        ProcessHandleCount, // 20
         ProcessAffinityMask,
         ProcessPriorityBoost,
         ProcessDeviceMap,
@@ -365,7 +365,7 @@ namespace ProcessHacker.Native.Api
         ProcessImageFileName,
         ProcessLUIDDeviceMapsEnabled,
         ProcessBreakOnTermination,
-        ProcessDebugObjectHandle,
+        ProcessDebugObjectHandle, // 30
         ProcessDebugFlags,
         ProcessHandleTracing,
         ProcessIoPriority,
@@ -375,7 +375,7 @@ namespace ProcessHacker.Native.Api
         ProcessImageInformation,
         ProcessCycleTime,
         ProcessPagePriority,
-        ProcessInstrumentationCallback,
+        ProcessInstrumentationCallback, // 40
         ProcessThreadStackAllocation,
         ProcessWorkingSetWatchEx,
         ProcessImageFileNameWin32,
@@ -417,11 +417,15 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum SectionAttributes : int
+    public enum SectionAttributes : uint
     {
         File = 0x800000,
         Image = 0x1000000,
-        Reserve = 0x4000000
+        Reserve = 0x4000000,
+        Commit = 0x8000000,
+        NoCache = 0x10000000,
+        Global = 0x20000000,
+        LargePages = 0x80000000
     }
 
     [Flags]
@@ -599,12 +603,12 @@ namespace ProcessHacker.Native.Api
         SystemPerformanceInformation,
         SystemTimeOfDayInformation,
         SystemNotImplemented1,
-        SystemProcessesAndThreadsInformation,
+        SystemProcessInformation,
         SystemCallCounts,
         SystemConfigurationInformation,
         SystemProcessorTimes,
         SystemGlobalFlag,
-        SystemNotImplemented2,
+        SystemNotImplemented2, // 10
         SystemModuleInformation,
         SystemLockInformation,
         SystemNotImplemented3,
@@ -614,7 +618,7 @@ namespace ProcessHacker.Native.Api
         SystemObjectInformation,
         SystemPagefileInformation,
         SystemInstructionEmulationCounts,
-        SystemInvalidInfoClass1,
+        SystemInvalidInfoClass1, // 20
         SystemFileCacheInformation,
         SystemPoolTagInformation,
         SystemProcessorStatistics,
@@ -624,7 +628,7 @@ namespace ProcessHacker.Native.Api
         SystemUnloadImage,
         SystemTimeAdjustment,
         SystemNotImplemented7,
-        SystemNotImplemented8,
+        SystemNotImplemented8, // 30
         SystemNotImplemented9,
         SystemCrashDumpInformation,
         SystemExceptionInformation,
@@ -634,7 +638,7 @@ namespace ProcessHacker.Native.Api
         SystemRegistryQuotaInformation,
         SystemLoadAndCallImage,
         SystemPrioritySeparation,
-        SystemNotImplemented10,
+        SystemNotImplemented10, // 40
         SystemNotImplemented11,
         SystemInvalidInfoClass2,
         SystemInvalidInfoClass3,
@@ -644,10 +648,64 @@ namespace ProcessHacker.Native.Api
         SystemCreateSession,
         SystemDeleteSession,
         SystemInvalidInfoClass4,
-        SystemRangeStartInformation,
+        SystemRangeStartInformation, // 50
         SystemVerifierInformation,
         SystemAddVerifier,
-        SystemSessionProcessesInformation
+        SystemSessionProcessInformation,
+        // At least on Vista, these additional classes exist. Not documented anywhere else :)
+        SystemNotImplemented12,
+        SystemNumaProcessorMap,
+        SystemPrefetcherInformation,
+        SystemExtendedProcessInformation,
+        SystemSharedDataAlignment,
+        SystemComPlusPackageInformation,
+        SystemNumaAvailableMemory, // 60
+        SystemProcessorInformationEx,
+        SystemBasicInformation2,
+        SystemProcessorInformation2,
+        SystemHandleInformationEx,
+        SystemProcessorInformation3,
+        SystemBigPoolInformation,
+        SystemSessionPoolTagInformation,
+        SystemSessionMappedViewInformation,
+        SystemHotpatchModuleInformation,
+        SystemSecurityMode, // 70
+        SystemNotImplemented14,
+        SystemWatchdogInformation,
+        SystemLogicalProcessorInformation,
+        SystemNotImplemented15,
+        SystemNotImplemented16,
+        SystemFirmwareTableInformation,
+        SystemModuleInformationEx,
+        SystemNotImplemented17,
+        SystemSuperfetchInformation,
+        SystemMemoryListInformation, // 80
+        SystemNotImplemented18,
+        SystemNotImplemented19,
+        SystemProcessorDebugInformation, // accessing dr6 register???
+        SystemVerifierInformation2,
+        SystemNotImplemented20,
+        SystemRefTraceInformation,
+        SystemSpecialPoolTag, // MmSpecialPoolTag, then MmSpecialPoolCatchOverruns != 0
+        SystemProcessImageName,
+        SystemNotImplemented21,
+        SystemBootEnvironmentInformation, // 90
+        SystemEnlightenmentInformation,
+        SystemVerifierInformationEx,
+        SystemNotImplemented22,
+        SystemNotImplemented23,
+        SystemCovInformation, // What is Cov?
+        SystemNotImplemented24,
+        SystemNotImplemented25,
+        SystemPartitionInformation,
+        SystemSystemDiskInformation, // this and SystemPartitionInformation both call IoQuerySystemDeviceName
+        SystemPerformanceDistributionInformation, // 100
+        SystemNumaProximityNodeInformation,
+        SystemTimeZoneInformation2,
+        SystemCodeIntegrityInformation,
+        SystemNotImplemented26,
+        SystemUnknownInformation, // No symbols for this case, very strange...
+        SystemVaInformation // 106, calls MmQuerySystemVaInformation
     }
 
     public enum TcpTableClass : int

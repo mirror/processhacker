@@ -272,7 +272,7 @@ namespace ProcessHacker
                                             if (!Win32.ChangeServiceConfig(service,
                                                 serviceType, startType, errorControl,
                                                 binaryPath, loadOrderGroup, 0, 0, userAccount, password, null))
-                                                Win32.ThrowLastWin32Error();
+                                                Win32.ThrowLastError();
                                         }
                                     }
                                     break;

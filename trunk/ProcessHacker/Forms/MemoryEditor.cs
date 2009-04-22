@@ -163,7 +163,7 @@ namespace ProcessHacker
                 _data = new byte[_length];
 
                 if (phandle.ReadMemory(_address, _data, _length) == 0)
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 hexBoxMemory.ByteProvider = new Be.Windows.Forms.DynamicByteProvider(_data);
             }

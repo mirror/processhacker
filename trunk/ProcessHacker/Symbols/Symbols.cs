@@ -66,7 +66,7 @@ namespace ProcessHacker.Symbols
             lock (_callLock)
             {
                 if (!Win32.SymInitialize(_handle, null, false))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -78,7 +78,7 @@ namespace ProcessHacker.Symbols
             lock (_callLock)
             {
                 if (!Win32.SymInitialize(_handle, null, false))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -202,7 +202,7 @@ namespace ProcessHacker.Symbols
             lock (_callLock)
             {
                 if (Win32.SymLoadModule64(_handle, 0, fileName, null, baseAddress, size) == 0)
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
 
             lock (_modules)
@@ -227,7 +227,7 @@ namespace ProcessHacker.Symbols
             lock (_callLock)
             {
                 if (!Win32.SymUnloadModule64(_handle, baseAddress))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
 
             lock (_modules)
@@ -418,7 +418,7 @@ namespace ProcessHacker.Symbols
                 if (!_disposed)
                 {
                     if (!Win32.SymCleanup(_handle))
-                        Win32.ThrowLastWin32Error();
+                        Win32.ThrowLastError();
 
                     _idGen.Push(_handle);
  

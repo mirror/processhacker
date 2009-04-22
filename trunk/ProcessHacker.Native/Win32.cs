@@ -108,13 +108,29 @@ namespace ProcessHacker.Native.Api
         /// <summary>
         /// Throws a Win32Exception with the last error that occurred.
         /// </summary>
-        public static void ThrowLastWin32Error()
+        public static void ThrowLastError()
         {
-            int error = Marshal.GetLastWin32Error();
+            ThrowLastError(Marshal.GetLastWin32Error(), false);
+        }
 
-            if (error != 0)
+        public static void ThrowLastError(int status)
+        {
+            ThrowLastError(status, true);
+        }
+
+        public static void ThrowLastError(int status, bool isNtStatus)
+        {
+            if (isNtStatus)
+                status = RtlNtStatusToDosError(status);
+
+            // No error, but the caller requested us throw an exception so do it anyway.
+            if (status == 0)
             {
-                var ex = new WindowsException(error);
+                throw new WindowsException();
+            }
+            else
+            {
+                var ex = new WindowsException(status);
 
                 throw ex;
             }
@@ -172,15 +188,17 @@ namespace ProcessHacker.Native.Api
             }
             else
             {
-                if (NtDuplicateObject(
+                int status;
+
+                if ((status = NtDuplicateObject(
                     sourceProcessHandle,
                     sourceHandle,
                     targetProcessHandle,
                     targetHandle,
                     desiredAccess,
                     handleAttributes,
-                    options) < 0)
-                    ThrowLastWin32Error();
+                    options)) < 0)
+                    ThrowLastError(status);
             }
         }
 
@@ -195,7 +213,7 @@ namespace ProcessHacker.Native.Api
             try
             {
                 if (!ProcessIdToSessionId(ProcessId, out sessionId))
-                    ThrowLastWin32Error();
+                    ThrowLastError();
             }
             catch
             {

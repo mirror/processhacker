@@ -68,7 +68,7 @@ namespace ProcessHacker.Native.Objects
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
                 if (this.Handle == 0)
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -81,7 +81,7 @@ namespace ProcessHacker.Native.Objects
             ServiceStatus status = new ServiceStatus();
 
             if (!Win32.ControlService(this.Handle, control, ref status))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace ProcessHacker.Native.Objects
         public void Delete()
         {
             if (!Win32.DeleteService(this.Handle))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace ProcessHacker.Native.Objects
             using (MemoryAlloc data = new MemoryAlloc(requiredSize))
             {
                 if (!Win32.QueryServiceConfig(this, data, data.Size, ref requiredSize))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 return data.ReadStruct<QueryServiceConfig>();
             }
@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Objects
             using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
                 if (!Win32.QueryServiceConfig2(this, ServiceInfoLevel.Description, data, retLen, out retLen))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 return data.ReadStruct<ServiceDescription>().Description;
             }
@@ -140,7 +140,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.QueryServiceStatusEx(this, 0, ref status, Marshal.SizeOf(status), out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return status;
         }
@@ -151,7 +151,7 @@ namespace ProcessHacker.Native.Objects
         public void Start()
         {
             if (!Win32.StartService(this.Handle, 0, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
     }
 

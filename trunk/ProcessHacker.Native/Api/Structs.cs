@@ -815,6 +815,19 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct SystemExtendedThreadInformation
+    {
+        public SystemThreadInformation ThreadInfo;
+        public int StackBase; // 16
+        public int StackLimit;
+        public int Win32StartAddress;
+        public int TebAddress; // Vista+
+        public int Unused1;
+        public int Unused2;
+        public int Unused3;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct SystemLoadAndCallImage
     {
         public UnicodeString ModuleName;
@@ -1237,7 +1250,7 @@ namespace ProcessHacker.Native.Api
         public int NumberOfThreads;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        public long[] Reserved1;
+        public long[] Spare;
 
         public long CreateTime; // 8
         public long UserTime;
@@ -1248,7 +1261,7 @@ namespace ProcessHacker.Native.Api
         public int InheritedFromProcessId;
         public int HandleCount;
         public int SessionId;
-        public int ProcessObject;
+        public int PageDirectoryBase;
         public VmCountersEx VirtualMemoryCounters;
         public IoCounters IoCounters;
     }
@@ -1262,6 +1275,14 @@ namespace ProcessHacker.Native.Api
         public long DpcTime;
         public long InterruptTime;
         public int InterruptCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemSessionProcessInformation
+    {
+        public int SessionId;
+        public int BufferLength;
+        public IntPtr Buffer;
     }
 
     [StructLayout(LayoutKind.Sequential)]

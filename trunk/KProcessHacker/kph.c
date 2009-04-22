@@ -62,7 +62,6 @@ NTSTATUS KphNtInit()
         __PsTerminateProcess = KvScanProc(&PsTerminateProcessScan);
         dprintf("PsTerminateProcess: 0x%08x\n", __PsTerminateProcess);
     }
-    
     if (PspTerminateThreadByPointerScan.Initialized)
     {
         __PspTerminateThreadByPointer = KvScanProc(&PspTerminateThreadByPointerScan);

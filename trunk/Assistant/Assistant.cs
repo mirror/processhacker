@@ -39,15 +39,15 @@ namespace Assistant
             using (var sd = new LocalMemoryAlloc(Win32.SecurityDescriptorMinLength))
             {
                 if (!Win32.InitializeSecurityDescriptor(sd, Win32.SecurityDescriptorRevision))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 if (!Win32.SetSecurityDescriptorDacl(sd, true, 0, false))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 SiRequested si = SiRequested.DaclSecurityInformation;
 
                 if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 

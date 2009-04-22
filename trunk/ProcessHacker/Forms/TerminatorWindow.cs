@@ -126,7 +126,7 @@ namespace ProcessHacker
             {
                 // don't use KPH
                 if (!Win32.TerminateProcess(phandle, 0))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
         }
 
@@ -138,7 +138,7 @@ namespace ProcessHacker
 
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
                 if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
         }
 
         private void TJ1()

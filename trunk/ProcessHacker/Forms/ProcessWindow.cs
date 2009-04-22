@@ -453,7 +453,7 @@ namespace ProcessHacker
             }
 
             this.UpdateProtected();
-            this.UpdateDEPStatus();
+            this.UpdateDepStatus();
         }
 
         private void InitializeSubControls()
@@ -635,7 +635,7 @@ namespace ProcessHacker
             }
         }
 
-        public void UpdateDEPStatus()
+        public void UpdateDepStatus()
         {
             labelDEP.Enabled = true;
             textDEP.Enabled = true;
@@ -881,7 +881,7 @@ namespace ProcessHacker
             w.TopMost = this.TopMost;
             w.ShowDialog();
 
-            this.UpdateDEPStatus();
+            this.UpdateDepStatus();
         }
 
         private void buttonEditProtected_Click(object sender, EventArgs e)

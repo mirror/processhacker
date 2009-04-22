@@ -69,7 +69,7 @@ namespace ProcessHacker.Native.Objects
             else
             {
                 if (!Win32.OpenProcessToken(handle, access, out h))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
             }
 
             this.Handle = h;
@@ -85,7 +85,7 @@ namespace ProcessHacker.Native.Objects
             int h;
 
             if (!Win32.OpenThreadToken(handle, access, false, out h))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             this.Handle = h;
         }
@@ -102,7 +102,7 @@ namespace ProcessHacker.Native.Objects
             int token;
 
             if (!Win32.DuplicateTokenEx(this, access, 0, impersonationLevel, type, out token))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return new TokenHandle(token, true);
         }
@@ -118,7 +118,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevationType,
                 out value, 4, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return (TokenElevationType)value;
         }
@@ -138,7 +138,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data,
                 data.Size, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
         }
@@ -173,7 +173,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenOwner, data,
                     data.Size, out retLen))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 return new WindowsSid(data.ReadInt32(0));
             }
@@ -193,7 +193,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrimaryGroup, data,
                     data.Size, out retLen))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 return new WindowsSid(data.ReadInt32(0));
             }
@@ -213,7 +213,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data.Memory,
                     data.Size, out retLen))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 uint number = data.ReadUInt32(0);
                 TokenPrivileges privileges = new TokenPrivileges();
@@ -244,7 +244,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenRestrictedSids, data,
                 data.Size, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
         }
@@ -260,7 +260,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSessionId,
                 out sessionId, 4, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return sessionId;
         }
@@ -276,7 +276,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSource,
                 ref source, Marshal.SizeOf(source), out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return source;
         }
@@ -295,7 +295,7 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!Win32.GetTokenInformation(this.Handle, TokenInformationClass.TokenUser, data,
                     data.Size, out retLen))
-                    Win32.ThrowLastWin32Error();
+                    Win32.ThrowLastError();
 
                 TokenUser user = data.ReadStruct<TokenUser>();
 
@@ -314,7 +314,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevation,
                 out value, 4, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return value != 0;
         }
@@ -330,7 +330,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationAllowed,
                 out value, 4, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return value != 0;
         }
@@ -346,7 +346,7 @@ namespace ProcessHacker.Native.Objects
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled,
                 out value, 4, out retLen))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return value != 0;
         }
@@ -371,7 +371,7 @@ namespace ProcessHacker.Native.Objects
             Win32.AdjustTokenPrivileges(this, 0, ref tkp, 0, 0, 0);
 
             if (Marshal.GetLastWin32Error() != 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace ProcessHacker.Native.Objects
             int value = enabled ? 1 : 0;
 
             if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
     }
 }

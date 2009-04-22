@@ -67,6 +67,24 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Error Handling
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlNtStatusToDosError(int Status);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern int FormatMessage(
+            int Flags,
+            int Source,
+            int MessageId,
+            int LanguageId,
+            StringBuilder Buffer,
+            int Size,
+            IntPtr Arguments
+            );
+
+        #endregion
+
         #region Files
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -217,17 +235,6 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
-        
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern int FormatMessage(
-            int Flags, 
-            int Source, 
-            int MessageId,
-            int LanguageId, 
-            StringBuilder Buffer,
-            int Size, 
-            IntPtr Arguments
-            );
 
         [DllImport("kernel32.dll")]
         public static extern int GetTickCount();
@@ -312,19 +319,23 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            ref PooledUsageAndLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+            out PooledUsageAndLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            ref QuotaLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+            out QuotaLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            ref UnicodeString ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+            out UnicodeString ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            ref ProcessBasicInformation ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+            out ProcessBasicInformation ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
+            out MemExecuteOptions ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtDuplicateObject(int SourceProcessHandle, int SourceHandle,

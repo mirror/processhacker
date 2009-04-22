@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Objects
             this.Handle = Win32.OpenSCManager(0, 0, desiredAccess);
 
             if (this.Handle == 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         public ServiceHandle CreateService(string name, string displayName,
@@ -64,7 +64,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
                 type, startType, errorControl, binaryPath, group, 0, 0, accountName, password)) == 0)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return new ServiceHandle(service, true);
         }

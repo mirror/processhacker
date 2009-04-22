@@ -195,7 +195,7 @@ namespace ProcessHacker.Native.Objects
             HandleFlags flags;
 
             if (!Win32.GetHandleInformation(this, out flags))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return flags;
         }
@@ -206,18 +206,19 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A string.</returns>
         public string GetHandleName()
         {
+            int status;
             int retLength;
 
-            Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
+            status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
                   IntPtr.Zero, 0, out retLength);
 
             if (retLength > 0)
             {
                 using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                 {
-                    if (Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
-                        oniMem.Memory, oniMem.Size, out retLength) != 0)
-                        Win32.ThrowLastWin32Error();
+                    if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
+                        oniMem.Memory, oniMem.Size, out retLength)) < 0)
+                        Win32.ThrowLastError(status);
 
                     ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
 
@@ -226,7 +227,7 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError(status);
             }
 
             return null;
@@ -240,7 +241,7 @@ namespace ProcessHacker.Native.Objects
         public void SetHandleInformation(HandleFlags mask, HandleFlags flags)
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         /// <summary>

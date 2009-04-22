@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Objects
             this.Handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, 0);
 
             if (this.Handle == -1)
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
         }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
@@ -67,7 +67,7 @@ namespace ProcessHacker.Native.Objects
             int outLen = outArr != null ? outBuffer.Length : 0;
 
             if (!Win32.DeviceIoControl(this, (int)controlCode, inArr, inLen, outArr, outLen, out returnBytes, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return returnBytes;
         }
@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Objects
                 outBuffer = dummy;
 
             if (!Win32.DeviceIoControl(this, (int)controlCode, inBuffer, inLen, outBuffer, outLen, out returnBytes, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return returnBytes;
         }
@@ -114,7 +114,7 @@ namespace ProcessHacker.Native.Objects
             int bytesRead;
 
             if (!Win32.ReadFile(this, buffer, buffer.Length, out bytesRead, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return bytesRead;
         }
@@ -143,7 +143,7 @@ namespace ProcessHacker.Native.Objects
             int bytesWritten;
 
             if (!Win32.WriteFile(this, buffer, buffer.Length, out bytesWritten, 0))
-                Win32.ThrowLastWin32Error();
+                Win32.ThrowLastError();
 
             return bytesWritten;
         }
