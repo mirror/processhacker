@@ -33,8 +33,8 @@ namespace ProcessHacker.Components
 {
     public partial class MemoryList : UserControl
     {
+        private List<MemoryItem> _memoryItems = new List<MemoryItem>();
         private MemoryProvider _provider;
-        private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -45,7 +45,6 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            _highlightingContext = new HighlightingContext(listMemory);
             listMemory.KeyDown += new KeyEventHandler(MemoryList_KeyDown);
             listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
             listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
@@ -54,13 +53,15 @@ namespace ProcessHacker.Components
             listMemory.ContextMenu = menuMemory;
             GenericViewMenu.AddMenuItems(copyMemoryMenuItem.MenuItems, listMemory, null);
 
-            listMemory.ListViewItemSorter = new SortedListComparer(listMemory)
+            listMemory.ListViewItemSorter = new SortedListViewComparer(listMemory)
                 {
                     SortColumn = 1,
-                    SortOrder = SortOrder.Ascending
+                    SortOrder = SortOrder.Ascending,
+                    VirtualMode = true,
+                    RetrieveVirtualItem = this.listMemory_RetrieveVirtualItem
                 };
 
-            (listMemory.ListViewItemSorter as SortedListComparer).CustomSorters.Add(2,
+            (listMemory.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2,
                 (x, y) =>
                 {
                     MemoryItem ix = (MemoryItem)x.Tag;
@@ -68,6 +69,7 @@ namespace ProcessHacker.Components
 
                     return ix.Size.CompareTo(iy.Size);
                 });
+            listMemory.ColumnClick += (sender, e) => this.Sort();
         }
 
         private void listMemory_MouseUp(object sender, MouseEventArgs e)
@@ -90,7 +92,7 @@ namespace ProcessHacker.Components
 
         #region Properties
 
-        public bool Highlight { get; set; }
+        public bool AutomaticSort { get; set; }
 
         public new bool DoubleBuffered
         {
@@ -141,7 +143,6 @@ namespace ProcessHacker.Components
                     _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                 }
 
                 _provider = value;
@@ -151,18 +152,17 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    foreach (MemoryItem item in _provider.Dictionary.Values)
-                    {
-                        provider_DictionaryAdded(item);
-                    }
-
                     _provider.UseInvoke = true;
                     _provider.Invoke = new MemoryProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.PID;
+
+                    foreach (MemoryItem item in _provider.Dictionary.Values)
+                    {
+                        provider_DictionaryAdded(item);
+                    }
                 }
             }
         }
@@ -252,16 +252,43 @@ namespace ProcessHacker.Components
                 return "Private";
             else
                 return "Unknown";
-        }       
+        }
 
-        private void provider_Updated()
+        public void Sort()
         {
-            _highlightingContext.Tick();
+            _memoryItems.Sort((m1, m2) =>
+                (listMemory.ListViewItemSorter as SortedListViewComparer).Compare(
+                this.MakeListViewItem(m1),
+                this.MakeListViewItem(m2)
+                ));
+            listMemory.Invalidate();
         }
 
         private void provider_DictionaryAdded(MemoryItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
+            _memoryItems.Add(item);
+
+            if (this.AutomaticSort)
+                this.Sort();
+
+            listMemory.VirtualListSize = _memoryItems.Count;
+        }
+
+        private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
+        {
+            _memoryItems[_memoryItems.IndexOf(oldItem)] = newItem;
+            this.Sort();
+        }
+
+        private void provider_DictionaryRemoved(MemoryItem item)
+        {
+            _memoryItems.Remove(item);
+            listMemory.VirtualListSize = _provider.Dictionary.Count;
+        }
+
+        public ListViewItem MakeListViewItem(MemoryItem item)
+        {
+            ListViewItem litem = new ListViewItem();
 
             litem.Name = item.Address.ToString();
 
@@ -289,49 +316,12 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, GetProtectStr(item.Protection)));
             litem.Tag = item;
 
-            listMemory.Items.Add(litem);
+            return litem;
         }
 
-        private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
+        public void listMemory_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            lock (_listLock)
-            {
-                ListViewItem litem = listMemory.Items[newItem.Address.ToString()];
-
-                if (newItem.State == MemoryState.Free) 
-                {
-                    litem.Text = "Free";
-                }
-                else if (newItem.Type == MemoryType.Image)
-                {
-                    if (newItem.ModuleName != null)
-                        litem.Text = newItem.ModuleName;
-                    else
-                        litem.Text = "Image";
-
-                    litem.Text += " (" + GetStateStr(newItem.State) + ")";
-                }
-                else
-                {
-                    litem.Text = GetTypeStr(newItem.Type);
-                    litem.Text += " (" + GetStateStr(newItem.State) + ")";
-                }
-
-                litem.SubItems[1].Text = "0x" + newItem.Address.ToString("x8");
-                litem.SubItems[2].Text = Misc.GetNiceSizeName(newItem.Size);
-                litem.SubItems[3].Text = GetProtectStr(newItem.Protection);
-                litem.Tag = newItem;
-
-                listMemory.Sort();
-            }
-        }
-
-        private void provider_DictionaryRemoved(MemoryItem item)
-        {
-            lock (_listLock)
-            {
-                listMemory.Items[item.Address.ToString()].Remove();
-            }
+            e.Item = this.MakeListViewItem(this.GetMemoryItem(e.ItemIndex));
         }
 
         public void SaveSettings()
@@ -344,13 +334,18 @@ namespace ProcessHacker.Components
             readWriteMemoryMemoryMenuItem_Click(sender, e);
         }
 
+        private MemoryItem GetMemoryItem(int index)
+        {
+            return _memoryItems[index];
+        }
+
         private void menuMemory_Popup(object sender, EventArgs e)
         {
-            if (listMemory.SelectedItems.Count == 1)
+            if (listMemory.SelectedIndices.Count == 1)
             {
                 menuMemory.EnableAll();
 
-                MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+                MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
 
                 if (item.State != MemoryState.Commit ||
                     item.Type != MemoryType.Private)
@@ -365,12 +360,12 @@ namespace ProcessHacker.Components
 
                 readWriteAddressMemoryMenuItem.Enabled = true;
 
-                if (listMemory.SelectedItems.Count > 1)
+                if (listMemory.SelectedIndices.Count > 1)
                 {
                     copyMemoryMenuItem.Enabled = true;
                 }
 
-                if (listMemory.Items.Count > 0)
+                if (listMemory.VirtualListSize > 0)
                 {
                     selectAllMemoryMenuItem.Enabled = true;
                 }
@@ -383,7 +378,7 @@ namespace ProcessHacker.Components
 
         private void changeMemoryProtectionMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+            MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
             VirtualProtectWindow w = new VirtualProtectWindow(_pid, item.Address, item.Size);
 
             w.ShowDialog();
@@ -391,7 +386,7 @@ namespace ProcessHacker.Components
 
         private void readWriteMemoryMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+            MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
 
             MemoryEditor.ReadWriteMemory(_pid, item.Address, item.Size, false);
         }
@@ -427,10 +422,7 @@ namespace ProcessHacker.Components
                 foreach (MemoryItem item in _provider.Dictionary.Values)
                     items.Add(item);
 
-                items.Sort(new Comparison<MemoryItem>(delegate(MemoryItem i1, MemoryItem i2)
-                    {
-                        return i1.Address.CompareTo(i2.Address);
-                    }));
+                items.Sort((i1, i2) => i1.Address.CompareTo(i2.Address));
 
                 int i = 0;
 
@@ -465,7 +457,7 @@ namespace ProcessHacker.Components
 
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listMemory.Items);
+            Misc.SelectAll(listMemory);
         }
 
         private void freeMenuItem_Click(object sender, EventArgs e)
@@ -479,7 +471,7 @@ namespace ProcessHacker.Components
                     using (var phandle =
                         new ProcessHandle(_pid, ProcessAccess.VmOperation))
                     {
-                        MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+                        MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
 
                         phandle.FreeMemory(item.Address, item.Size, false);
                     }
@@ -502,7 +494,7 @@ namespace ProcessHacker.Components
                     using (ProcessHandle phandle =
                         new ProcessHandle(_pid, ProcessAccess.VmOperation))
                     {
-                        MemoryItem item = (MemoryItem)listMemory.SelectedItems[0].Tag;
+                        MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
 
                         phandle.FreeMemory(item.Address, item.Size, true);
                     }

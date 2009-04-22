@@ -1513,7 +1513,6 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listMemory.DoubleBuffered = true;
-            this.listMemory.Highlight = false;
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;

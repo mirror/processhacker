@@ -18,7 +18,6 @@
                 components.Dispose();
             }
 
-            _highlightingContext.Dispose();
             this.Provider = null;
 
             base.Dispose(disposing);
@@ -43,11 +42,11 @@
             this.readWriteMemoryMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.readWriteAddressMemoryMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMemoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.freeMenuItem = new System.Windows.Forms.MenuItem();
+            this.decommitMenuItem = new System.Windows.Forms.MenuItem();
             this.menuMemory = new System.Windows.Forms.ContextMenu();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMemoryMenuItem = new System.Windows.Forms.MenuItem();
-            this.freeMenuItem = new System.Windows.Forms.MenuItem();
-            this.decommitMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -69,7 +68,9 @@
             this.listMemory.TabIndex = 3;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
+            this.listMemory.VirtualMode = true;
             this.listMemory.DoubleClick += new System.EventHandler(this.listMemory_DoubleClick);
+            this.listMemory.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listMemory_RetrieveVirtualItem);
             // 
             // columnName
             // 
@@ -121,6 +122,20 @@
             this.copyMemoryMenuItem.Index = 6;
             this.copyMemoryMenuItem.Text = "C&opy";
             // 
+            // freeMenuItem
+            // 
+            this.vistaMenu.SetImage(this.freeMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.freeMenuItem.Index = 2;
+            this.freeMenuItem.Text = "&Free";
+            this.freeMenuItem.Click += new System.EventHandler(this.freeMenuItem_Click);
+            // 
+            // decommitMenuItem
+            // 
+            this.vistaMenu.SetImage(this.decommitMenuItem, global::ProcessHacker.Properties.Resources.delete);
+            this.decommitMenuItem.Index = 3;
+            this.decommitMenuItem.Text = "&Decommit";
+            this.decommitMenuItem.Click += new System.EventHandler(this.decommitMenuItem_Click);
+            // 
             // menuMemory
             // 
             this.menuMemory.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -144,20 +159,6 @@
             this.selectAllMemoryMenuItem.Index = 7;
             this.selectAllMemoryMenuItem.Text = "Select &All";
             this.selectAllMemoryMenuItem.Click += new System.EventHandler(this.selectAllMemoryMenuItem_Click);
-            // 
-            // freeMenuItem
-            // 
-            this.vistaMenu.SetImage(this.freeMenuItem, global::ProcessHacker.Properties.Resources.cross);
-            this.freeMenuItem.Index = 2;
-            this.freeMenuItem.Text = "&Free";
-            this.freeMenuItem.Click += new System.EventHandler(this.freeMenuItem_Click);
-            // 
-            // decommitMenuItem
-            // 
-            this.vistaMenu.SetImage(this.decommitMenuItem, global::ProcessHacker.Properties.Resources.delete);
-            this.decommitMenuItem.Index = 3;
-            this.decommitMenuItem.Text = "&Decommit";
-            this.decommitMenuItem.Click += new System.EventHandler(this.decommitMenuItem_Click);
             // 
             // MemoryList
             // 

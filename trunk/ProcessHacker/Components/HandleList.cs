@@ -46,12 +46,18 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listHandles);
-            listHandles.ListViewItemSorter = new SortedListComparer(listHandles);
             listHandles.KeyDown += new KeyEventHandler(HandleList_KeyDown);
             listHandles.MouseDown += new MouseEventHandler(listHandles_MouseDown);
             listHandles.MouseUp += new MouseEventHandler(listHandles_MouseUp);
             listHandles.DoubleClick += new EventHandler(listHandles_DoubleClick);
             listHandles.SelectedIndexChanged += new System.EventHandler(listHandles_SelectedIndexChanged);
+
+            var comparer = (SortedListViewComparer)
+                (listHandles.ListViewItemSorter = new SortedListViewComparer(listHandles));
+
+            comparer.ColumnSortOrder.Add(0);
+            comparer.ColumnSortOrder.Add(2);
+            comparer.ColumnSortOrder.Add(1);
 
             listHandles.ContextMenu = menuHandle;
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles, null);

@@ -45,6 +45,7 @@ namespace ProcessHacker
         public long ContextSwitchesDelta;
         public ulong Cycles;
         public ulong CyclesDelta;
+        public int PriorityI;
         public string Priority;
         public uint StartAddressI;
         public string StartAddress;
@@ -300,6 +301,7 @@ namespace ProcessHacker
 
                         try
                         {
+                            item.PriorityI = (int)item.ThreadQueryLimitedHandle.GetPriorityLevel();
                             item.Priority = item.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
                         }
                         catch
@@ -402,6 +404,7 @@ namespace ProcessHacker
 
                     try
                     {
+                        newitem.PriorityI = (int)newitem.ThreadQueryLimitedHandle.GetPriorityLevel();
                         newitem.Priority = newitem.ThreadQueryLimitedHandle.GetPriorityLevel().ToString();
                     }
                     catch

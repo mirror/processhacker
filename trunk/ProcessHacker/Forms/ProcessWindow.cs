@@ -498,7 +498,7 @@ namespace ProcessHacker
                 tabControl.TabPages.Remove(tabServices);
             }
 
-            listEnvironment.ListViewItemSorter = new SortedListComparer(listEnvironment);
+            listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
             listEnvironment.SetDoubleBuffered(true);
             listEnvironment.SetTheme("explorer");
             listEnvironment.ContextMenu = listEnvironment.GetCopyMenu();
@@ -526,13 +526,12 @@ namespace ProcessHacker
             _moduleP.RunOnceAsync();
 
             listMemory.BeginUpdate();
-            listMemory.Highlight = false;
             _memoryP = new MemoryProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_memoryP);
             _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
-            listMemory.Provider = _memoryP;
+            //listMemory.Provider = _memoryP;
             //_memoryP.RunOnceAsync();
 
             listHandles.BeginUpdate();
@@ -570,8 +569,9 @@ namespace ProcessHacker
             listMemory.List.KeyDown +=
                 (sender, e) =>
                 {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listMemory.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listMemory.List, -1);
+                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listMemory.List);
+                    if (e.Control && e.KeyCode == Keys.C) 
+                        GenericViewMenu.ListViewCopy(listMemory.List, -1, listMemory.listMemory_RetrieveVirtualItem);
                 };
             listHandles.List.KeyDown +=
                 (sender, e) =>
@@ -1065,9 +1065,11 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
+                    listMemory.Provider = _memoryP;
+                    listMemory.Sort();
+                    listMemory.AutomaticSort = true;
                     listMemory.EndUpdate();
                     listMemory.Refresh();
-                    listMemory.Highlight = true;
                     checkHideFreeRegions.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }));

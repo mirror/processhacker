@@ -51,9 +51,10 @@ namespace ProcessHacker.Components
                 listThreads.Columns[1].Text = "Cycles Delta";
 
             _highlightingContext = new HighlightingContext(listThreads);
-            listThreads.ListViewItemSorter = new SortedListComparer(listThreads);
+            var comparer = (SortedListViewComparer)
+                (listThreads.ListViewItemSorter = new SortedListViewComparer(listThreads));
 
-            (listThreads.ListViewItemSorter as SortedListComparer).CustomSorters.Add(1,
+            comparer.CustomSorters.Add(1,
                 (x, y) =>
                 {
                     if (OSVersion.HasCycleTime)
@@ -65,6 +66,15 @@ namespace ProcessHacker.Components
                         return (x.Tag as ThreadItem).ContextSwitchesDelta.CompareTo((y.Tag as ThreadItem).ContextSwitchesDelta);
                     }
                 });
+            comparer.CustomSorters.Add(3,
+                (x, y) =>
+                    {
+                        return (x.Tag as ThreadItem).PriorityI.CompareTo((y.Tag as ThreadItem).PriorityI);
+                    });
+            comparer.ColumnSortOrder.Add(0);
+            comparer.ColumnSortOrder.Add(2);
+            comparer.ColumnSortOrder.Add(3);
+            comparer.ColumnSortOrder.Add(1);
 
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);

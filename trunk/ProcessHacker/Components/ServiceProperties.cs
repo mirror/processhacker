@@ -47,7 +47,7 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            listServices.ListViewItemSorter = new SortedListComparer(listServices);
+            listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
             listServices.SetTheme("explorer");
             ColumnSettings.LoadSettings(Properties.Settings.Default.ServiceMiniListColumns, listServices);
 

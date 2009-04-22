@@ -37,7 +37,7 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            listProcesses.ListViewItemSorter = new SortedListComparer(listProcesses);
+            listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.SetDoubleBuffered(true);
             listProcesses.SetTheme("explorer");

@@ -44,7 +44,7 @@ namespace ProcessHacker.Components
 
             _highlightingContext = new HighlightingContext(listServices);
             listServices.SetTheme("explorer");
-            listServices.ListViewItemSorter = new SortedListComparer(listServices);
+            listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);

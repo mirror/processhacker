@@ -27,7 +27,7 @@ pre {
 
     <h2>System Requirements</h2>
     <ul>
-      <li>Microsoft Windows XP SP2 or Vista, <strong>32-bit</strong> (Windows XP SP3 and 
+      <li>Microsoft Windows XP SP2, Vista or 7, <strong>32-bit</strong> (Windows XP SP3 and 
       Windows Vista SP1 required for certain features)</li>
       <li>.NET Framework 2.0</li>
     </ul>
@@ -178,6 +178,25 @@ pre {
       <dd>This option controls the distance in pixels between each data point.</dd>
     </dl>
     
+    <h2>Symbols</h2>
+    <dl>
+      <dt>Dbghelp.dll path</dt>
+      <dd>Select the path to the most recent version of dbghelp.dll you have 
+      installed on your computer. If you do not have the latest version, go to 
+      <code>http://www.microsoft.com/whdc/devtools/debugging/default.mspx</code> and 
+      download Debugging Tools for Windows.</dd>
+      
+      <dt>Search path</dt>
+      <dd>Type in a symbol server path. Most users will want to use the following: 
+      <code>SRV*<strong>C:\Users\USERNAME\Symbols</strong>*http://msdl.microsoft.com/download/symbols</code>. 
+      This will have any needed symbols downloaded from Microsoft's symbol server to 
+      the specified directory (in bold).</dd>
+      
+      <dt>Undecorate symbols</dt>
+      <dd>If enabled, C++ symbol names will be undecorated (unmangled). This is most 
+      useful for methods with complex signatures.</dd>
+    </dl>
+    
     <h1 id="numberinput">Number Input</h1>
     <p>Process Hacker supports the input of numbers in various bases (including some non-standard
     extensions). This is allowed in: Get Function Address, Change Memory Protection, the Go To
@@ -240,6 +259,11 @@ pre {
       <dt>Affinity...</dt>
       <dd>Allows you to view and modify the process' CPU affinity (the CPUs on which it is allowed 
       to run).</dd>
+      
+      <dt>Inject DLL...</dt>
+      <dd>Allows you to select a DLL file (or any other PE image) that will be injected into 
+      the selected process. This option is only available for processes running in the same 
+      session as Process Hacker (usually processes in the same user account).</dd>
       
       <dt>Terminator...</dt>
       <dd>A tool which tries to terminate the selected process using many different techniques.</dd>

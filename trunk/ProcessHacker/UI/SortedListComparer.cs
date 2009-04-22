@@ -28,31 +28,96 @@ using System.Drawing;
 
 namespace ProcessHacker.UI
 {
+    public interface ISortedListViewComparer
+    {
+        int Compare(ListViewItem x, ListViewItem y, int column);
+    }
+
     /// <summary>
     /// Provides automatic sorting support for the ListView control.
     /// </summary>
     /// <example>
     /// myListView.ListViewItemSorter = new SortedListComparer(myListView);
     /// </example>
-    public class SortedListComparer : IComparer
+    public class SortedListViewComparer : IComparer
     {
+        private class DefaultComparer : ISortedListViewComparer
+        {
+            private SortedListViewComparer _sortedListComparer;
+
+            public DefaultComparer(SortedListViewComparer sortedListComparer)
+            {
+                _sortedListComparer = sortedListComparer;
+            }
+
+            public int Compare(ListViewItem x, ListViewItem y, int column)
+            {
+                string sx, sy;
+                int ix, iy;
+                IComparable cx, cy;
+
+                sx = x.SubItems[column].Text;
+                sy = y.SubItems[column].Text;
+
+                if (!int.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx,
+                    sx.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0,
+                    null, out ix) ||
+                    !int.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy,
+                    sy.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0,
+                    null, out iy))
+                {
+                    cx = x.SubItems[column].Text;
+                    cy = y.SubItems[column].Text;
+                }
+                else
+                {
+                    cx = ix;
+                    cy = iy;
+                }
+
+                return cx.CompareTo(cy);
+            }
+        }
+
         private ListView _list;
-        private bool _triState;
-        private IComparer _triStateComparer;
+        private bool _virtualMode = false;
+        private RetrieveVirtualItemEventHandler _retrieveVirtualItem;
+        private bool _triState = false;
+        private ISortedListViewComparer _comparer;
+        private ISortedListViewComparer _triStateComparer;
         private int _sortColumn;
         private SortOrder _sortOrder;
-        private Dictionary<int, Comparison<ListViewItem>> _customSorters = new Dictionary<int, Comparison<ListViewItem>>();
+        private Dictionary<int, Comparison<ListViewItem>> _customSorters =
+            new Dictionary<int, Comparison<ListViewItem>>();
+        private List<int> _columnSortOrder = new List<int>();
 
         /// <summary>
         /// Creates a new sorted list manager.
         /// </summary>
         /// <param name="list">The ListView to manage.</param>
-        public SortedListComparer(ListView list)
+        public SortedListViewComparer(ListView list)
         {
             _list = list;
             _list.ColumnClick += new ColumnClickEventHandler(list_ColumnClick);
             _sortColumn = 0;
             _sortOrder = SortOrder.Ascending;
+            _comparer = new DefaultComparer(this);
+        }
+
+        /// <summary>
+        /// Specifies whether the ListView is using VirtualMode. If true,
+        /// the SortedListComparer will not automatically sort the ListView.
+        /// </summary>
+        public bool VirtualMode
+        {
+            get { return _virtualMode; }
+            set { _virtualMode = value; }
+        }
+
+        public RetrieveVirtualItemEventHandler RetrieveVirtualItem
+        {
+            get { return _retrieveVirtualItem; }
+            set { _retrieveVirtualItem = value; }
         }
 
         /// <summary>
@@ -67,12 +132,33 @@ namespace ProcessHacker.UI
         }
 
         /// <summary>
+        /// The comparer to use when sorting. This is optional because a
+        /// default comparer will be provided.
+        /// </summary>
+        public ISortedListViewComparer Comparer
+        {
+            get { return _comparer; }
+            set
+            {
+                if (value == null)
+                    _comparer = new DefaultComparer(this);
+                else
+                    _comparer = value;
+            }
+        }
+
+        /// <summary>
         /// Specifies the sorter used for the None sorting state.
         /// </summary>
-        public IComparer TriStateComparer
+        public ISortedListViewComparer TriStateComparer
         {
             get { return _triStateComparer; }
             set { _triStateComparer = value; }
+        }
+
+        public ListView ListView
+        {
+            get { return _list; }
         }
 
         /// <summary>
@@ -101,6 +187,11 @@ namespace ProcessHacker.UI
             get { return _customSorters; }
         }
 
+        public IList<int> ColumnSortOrder
+        {
+            get { return _columnSortOrder; }
+        }
+
         private void list_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             if (e.Column == _sortColumn)
@@ -125,7 +216,22 @@ namespace ProcessHacker.UI
                 _sortOrder = SortOrder.Ascending;
             }
 
-            _list.Sort();
+            if (!_virtualMode)
+                _list.Sort();
+        }
+
+        private ListViewItem GetItem(int index)
+        {
+            if (_virtualMode)
+            {
+                var args = new RetrieveVirtualItemEventArgs(index);
+                _retrieveVirtualItem(this, args);
+                return args.Item;
+            }
+            else
+            {
+                return _list.Items[index];
+            }
         }
 
         private int ModifySort(int result, SortOrder order)
@@ -138,6 +244,54 @@ namespace ProcessHacker.UI
                 return 0;
         }
 
+        private int Compare(ListViewItem x, ListViewItem y, int column)
+        {
+            int result = 0;
+
+            if (_triState && _sortOrder == SortOrder.None)
+                result = _triStateComparer.Compare(x, y, column);
+
+            if (result != 0)
+                return result;
+
+            if (_customSorters.ContainsKey(column))
+                result = ModifySort(_customSorters[column](x, y), _sortOrder);
+
+            if (result != 0)
+                return result;
+
+            return ModifySort(_comparer.Compare(x, y, column), _sortOrder);  
+        }
+
+        public int Compare(ListViewItem x, ListViewItem y)
+        {
+            int result = this.Compare(x, y, _sortColumn);
+
+            if (result != 0)
+                return result;
+
+            foreach (int column in _columnSortOrder)
+            {
+                if (column == _sortColumn)
+                    continue;
+
+                result = this.Compare(x, y, column);
+
+                if (result != 0)
+                    return result;
+            }
+
+            return 0;
+        }
+
+        public int Compare(int x, int y)
+        {
+            return this.Compare(
+                this.GetItem(x),
+                this.GetItem(y)
+                );
+        }
+
         /// <summary>
         /// Compares two ListView objects.
         /// </summary>
@@ -146,39 +300,7 @@ namespace ProcessHacker.UI
         /// <returns>A comparison result.</returns>
         public int Compare(object x, object y)
         {
-            if (_triState && _sortOrder == SortOrder.None)
-                return _triStateComparer.Compare(x, y);
-
-            ListViewItem lx = x as ListViewItem;
-            ListViewItem ly = y as ListViewItem;
-
-            if (_customSorters.ContainsKey(_sortColumn))
-                return ModifySort(_customSorters[_sortColumn](lx, ly), _sortOrder);
-
-            string sx, sy;
-            int ix, iy;
-            IComparable cx, cy;
-
-            sx = lx.SubItems[_sortColumn].Text;
-            sy = ly.SubItems[_sortColumn].Text;
-
-            if (!int.TryParse(sx.StartsWith("0x") ? sx.Substring(2) : sx, 
-                sx.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0, 
-                null, out ix) ||
-                !int.TryParse(sy.StartsWith("0x") ? sy.Substring(2) : sy, 
-                sy.StartsWith("0x") ? System.Globalization.NumberStyles.AllowHexSpecifier : 0, 
-                null, out iy))
-            {
-                cx = lx.SubItems[_sortColumn].Text;
-                cy = ly.SubItems[_sortColumn].Text;
-            }
-            else
-            {
-                cx = ix;
-                cy = iy;
-            }
-
-            return ModifySort(cx.CompareTo(cy), _sortOrder);
+            return this.Compare(x as ListViewItem, y as ListViewItem);
         }
     }
 }

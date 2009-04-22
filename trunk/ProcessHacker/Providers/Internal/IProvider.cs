@@ -12,5 +12,9 @@ namespace ProcessHacker
         bool UseInvoke { get; set; }
         void RunOnce();
         void RunOnceAsync();
+        void InterlockedExecute(Delegate action, params object[] args);
+        void InterlockedExecute(Delegate action, int timeout, params object[] args);
+        void Wait();
+        void Wait(int timeout);
     }
 }

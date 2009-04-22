@@ -113,7 +113,7 @@ namespace ProcessHacker
 
         private Thread _thread;
         private List<Thread> _asyncThreads = new List<Thread>();
-        private Dictionary<TKey, TValue> _dictionary;
+        private IDictionary<TKey, TValue> _dictionary;
 
         private object _disposeLock = new object();
         private object _busyLock = new object();
@@ -129,7 +129,7 @@ namespace ProcessHacker
         /// Creates a new instance of the Provider class.
         /// </summary>
         public Provider()
-            : this(null)
+            : this(new Dictionary<TKey, TValue>())
         { }
 
         /// <summary>
@@ -137,8 +137,19 @@ namespace ProcessHacker
         /// custom equality comparer.
         /// </summary>
         public Provider(IEqualityComparer<TKey> comparer)
+            : this(new Dictionary<TKey, TValue>(comparer))
+        { }
+
+        /// <summary>
+        /// Creates a new instance of the Provider class, specifying a
+        /// custom <seealso cref="System.Collections.Generic.IDictionary&lt;TKey, TValue&gt;"/> instance.
+        /// </summary>
+        public Provider(IDictionary<TKey, TValue> dictionary)
         {
-            _dictionary = new Dictionary<TKey, TValue>(comparer);
+            if (dictionary == null)
+                throw new ArgumentNullException("dictionary");
+
+            _dictionary = dictionary;
         }
 
         ~Provider()
@@ -266,7 +277,7 @@ namespace ProcessHacker
         /// <summary>
         /// Gets the dictionary.
         /// </summary>
-        public Dictionary<TKey, TValue> Dictionary
+        public IDictionary<TKey, TValue> Dictionary
         {
             get { return _dictionary; }
             protected set { _dictionary = value; }
@@ -354,6 +365,42 @@ namespace ProcessHacker
                 _asyncThreads.Add(t);
 
             t.Start();
+        }
+
+        /// <summary>
+        /// Executes code as soon as no updater is running.
+        /// </summary>
+        public void InterlockedExecute(Delegate action, params object[] args)
+        {
+            this.InterlockedExecute(action, -1, args);
+        }
+
+        /// <summary>
+        /// Executes code as soon as no updater is running.
+        /// </summary>
+        public void InterlockedExecute(Delegate action, int timeout, params object[] args)
+        {
+            lock (_busyLock)
+                action.DynamicInvoke(args);
+        }
+
+        /// <summary>
+        /// Waits for the current update process to finish. If an update process is not currently 
+        /// running, this function returns immediately.
+        /// </summary>
+        public void Wait()
+        {
+            this.Wait(-1);
+        }
+
+        /// <summary>
+        /// Waits for the current update process to finish. If an update process is not currently 
+        /// running, this function returns immediately. You may specify a timeout for the wait.
+        /// </summary>
+        /// <param name="timeout">The time in milliseconds to wait for the update process to finish.</param>
+        public void Wait(int timeout)
+        {
+            Monitor.Wait(_busyLock, timeout);
         }
 
         private void CallEvent(Delegate e, TValue item, bool useInvoke)

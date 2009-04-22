@@ -44,7 +44,7 @@ namespace ProcessHacker.Components
 
             _highlightingContext = new HighlightingContext(listNetwork);
             listNetwork.SetTheme("explorer");
-            listNetwork.ListViewItemSorter = new SortedListComparer(listNetwork);
+            listNetwork.ListViewItemSorter = new SortedListViewComparer(listNetwork);
             listNetwork.KeyDown += new KeyEventHandler(NetworkList_KeyDown);
             listNetwork.MouseDown += new MouseEventHandler(listNetwork_MouseDown);
             listNetwork.MouseUp += new MouseEventHandler(listNetwork_MouseUp);

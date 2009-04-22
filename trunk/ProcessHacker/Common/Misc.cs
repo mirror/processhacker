@@ -722,6 +722,13 @@ namespace ProcessHacker
                 item.Selected = true;
         }
 
+        public static void SelectAll(ListView items)
+        {
+            for (int i = 0; i < items.VirtualListSize; i++)
+                if (!items.SelectedIndices.Contains(i))
+                    items.SelectedIndices.Add(i);
+        }
+
         /// <summary>
         /// Selects all of the specified nodes.
         /// </summary>

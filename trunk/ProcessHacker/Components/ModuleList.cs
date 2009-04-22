@@ -173,15 +173,19 @@ namespace ProcessHacker.Components
                         }
 
                         _mainModule = _mainModule.ToLower();
-                        listModules.ListViewItemSorter = new SortedListComparer(listModules)
+                        SortedListViewComparer comparer = (SortedListViewComparer)
+                            (listModules.ListViewItemSorter = new SortedListViewComparer(listModules)
                             {
                                 TriState = true,
                                 TriStateComparer = new ModuleListComparer(_mainModule),
                                 SortColumn = 0,
                                 SortOrder = SortOrder.None
-                            };
+                            });
 
-                        (listModules.ListViewItemSorter as SortedListComparer).CustomSorters.Add(2,
+                        comparer.ColumnSortOrder.Add(1);
+                        comparer.ColumnSortOrder.Add(2);
+
+                        (listModules.ListViewItemSorter as SortedListViewComparer).CustomSorters.Add(2,
                             (x, y) =>
                             {
                                 ModuleItem ix = (ModuleItem)x.Tag;
@@ -435,7 +439,7 @@ namespace ProcessHacker.Components
         }
     }
 
-    public class ModuleListComparer : System.Collections.IComparer
+    public class ModuleListComparer : ISortedListViewComparer
     {
         private string _mainModule;
 
@@ -444,19 +448,17 @@ namespace ProcessHacker.Components
             _mainModule = mainModule.ToLower();
         }
 
-        public int Compare(object x, object y)
+        public int Compare(ListViewItem x, ListViewItem y, int column)
         {
-            ListViewItem lx = x as ListViewItem;
-            ListViewItem ly = y as ListViewItem;
-            ModuleItem mx = (ModuleItem)lx.Tag;
-            ModuleItem my = (ModuleItem)ly.Tag;
+            ModuleItem mx = (ModuleItem)x.Tag;
+            ModuleItem my = (ModuleItem)y.Tag;
 
             if (mx.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 return -1;
             if (my.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 return 1;
 
-            return mx.Name.CompareTo(my.Name);
+            return 0;
         }
     }
 }

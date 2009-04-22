@@ -45,7 +45,7 @@ namespace ProcessHacker.Components
                     GetAttributeString(groups.Groups.Groups[i].Attributes)));
             }
 
-            listGroups.ListViewItemSorter = new SortedListComparer(listGroups);
+            listGroups.ListViewItemSorter = new SortedListViewComparer(listGroups);
             listGroups.SetDoubleBuffered(true);
             listGroups.ContextMenu = listGroups.GetCopyMenu();
             ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);

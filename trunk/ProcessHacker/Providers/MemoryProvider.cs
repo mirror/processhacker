@@ -79,7 +79,7 @@ namespace ProcessHacker
             { }
 
             var memoryInfo = new Dictionary<int, MemoryBasicInformation>();
-            Dictionary<int, MemoryItem> newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
+            var newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
 
             _processHandle.EnumMemory((info) =>
                 {
@@ -108,7 +108,7 @@ namespace ProcessHacker
             {
                 var info = memoryInfo[address];
 
-                if (!Dictionary.ContainsKey(address))
+                if (!this.Dictionary.ContainsKey(address))
                 {
                     MemoryItem item = new MemoryItem();
 
@@ -135,7 +135,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    MemoryItem item = Dictionary[address];
+                    MemoryItem item = this.Dictionary[address];
 
                     if (
                         info.RegionSize != item.Size ||
@@ -157,7 +157,7 @@ namespace ProcessHacker
                 }
             }
 
-            Dictionary = newdictionary;
+            this.Dictionary = newdictionary;
         }
 
         public bool IgnoreFreeRegions { get; set; }
