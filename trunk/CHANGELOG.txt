@@ -23,6 +23,7 @@ Process Hacker
    * Better "could not initialize configuration" message for Windows Vista
    * New Terminator method: assigns a job object to the process and terminates it
    * Process Properties menu item in the handle filter window
+   * Can now close multiple handles at once from the handle filter window
  * FIXED:
    * Service properties Key handle leak
    * Handle deletion detection

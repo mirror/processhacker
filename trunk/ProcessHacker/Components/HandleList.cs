@@ -35,6 +35,7 @@ namespace ProcessHacker.Components
 {
     public partial class HandleList : UserControl
     {
+        private object _listLock = new object();
         private HandleProvider _provider;
         private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
@@ -225,11 +226,14 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(HandleItem item)
         {
-            int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
-            bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
-            int selectedCount = listHandles.SelectedItems.Count;
+            lock (_listLock)
+            {
+                int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
+                bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
+                int selectedCount = listHandles.SelectedItems.Count;
 
-            listHandles.Items[item.Handle.Handle.ToString()].Remove();
+                listHandles.Items[item.Handle.Handle.ToString()].Remove();
+            }
         }
 
         private int _pid;
@@ -396,26 +400,30 @@ namespace ProcessHacker.Components
 
         private void closeHandleMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in listHandles.SelectedItems)
+            lock (_listLock)
             {
-                try
+                foreach (ListViewItem item in listHandles.SelectedItems)
                 {
-                    int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
-
-                    using (ProcessHandle process =
-                           new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
+                    try
                     {
-                        Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0,
-                            0x1 // DUPLICATE_CLOSE_SOURCE
-                            );
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Could not close handle:\n\n" + ex.Message,
-                         "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
 
-                    return;
+                        using (ProcessHandle process =
+                               new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
+                        {
+                            Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                                0x1 // DUPLICATE_CLOSE_SOURCE
+                                );
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var result = MessageBox.Show("Could not close handle:\n\n" + ex.Message,
+                             "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+
+                        if (result == DialogResult.Cancel)
+                            return;
+                    }
                 }
             }
         }

@@ -89,7 +89,6 @@ namespace ProcessHacker
             else
             {
                 menuHandle.EnableAll();
-                closeMenuItem.Enabled = false;
                 processPropertiesMenuItem.Enabled = false;
                 propertiesMenuItem.Enabled = false;
             }
@@ -97,24 +96,32 @@ namespace ProcessHacker
 
         private void closeMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            List<ListViewItem> remove = new List<ListViewItem>();
+            foreach (int index in listHandles.SelectedIndices)
             {
-                int handle = (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text);
-
-                using (ProcessHandle process =
-                       new ProcessHandle((int)listHandles.SelectedItems[0].Tag, ProcessAccess.DupHandle))
+                try
                 {
-                    Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0, 0x1);
-                    listHandles.SelectedItems[0].Remove();
+                    int handle = (int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text);
+
+                    using (ProcessHandle process =
+                           new ProcessHandle((int)listHandles.Items[index].Tag, ProcessAccess.DupHandle))
+                    {
+                        Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0, 0x1);
+                        remove.Add(listHandles.Items[index]);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var result = MessageBox.Show("Could not close handle:\n\n" + ex.Message,
+                         "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+
+                    if (result == DialogResult.Cancel)
+                        return;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not close handle:\n\n" + ex.Message,
-                     "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                return;
-            }
+            foreach (ListViewItem item in remove)
+                item.Remove();
         }
 
         private void buttonFind_Click(object sender, EventArgs e)
