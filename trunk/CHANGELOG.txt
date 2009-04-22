@@ -10,6 +10,7 @@ Process Hacker
    * Improved handle viewing (KProcessHacker) - more object types are visible
    * Better start addresses
    * Job termination
+   * Lists now have column sorting priority
    * Memory list is much faster
    * Stack viewing uses KProcessHacker on Windows Vista
    * Elevation button in Options now spawns a child options window instead of 
