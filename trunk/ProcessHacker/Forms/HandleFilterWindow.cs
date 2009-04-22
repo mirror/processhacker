@@ -112,7 +112,8 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    var result = MessageBox.Show("Could not close handle:\n\n" + ex.Message,
+                    var result = MessageBox.Show(
+                        "Could not close handle \"" + listHandles.Items[index].SubItems[2].Text + "\":\n\n" + ex.Message,
                          "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
 
                     if (result == DialogResult.Cancel)
