@@ -77,7 +77,7 @@ namespace ProcessHacker
         /// </summary>
         protected event ProviderUpdateOnce ProviderUpdate;
 
-        protected event System.Windows.Forms.MethodInvoker Killed;
+        public event Action<IProvider> Disposed;
 
         public event ProviderUpdateOnce BeforeUpdate;
 
@@ -177,8 +177,8 @@ namespace ProcessHacker
                         _thread = null;
                     }
 
-                    if (this.Killed != null)
-                        this.Killed();
+                    if (this.Disposed != null)
+                        this.Disposed(this);
 
                     if (disposing)
                     {

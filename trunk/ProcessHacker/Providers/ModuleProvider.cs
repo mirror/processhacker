@@ -73,7 +73,7 @@ namespace ProcessHacker
             }
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
-            this.Killed += () => { if (_processHandle != null) _processHandle.Dispose(); };
+            this.Disposed += (provider) => { if (_processHandle != null) _processHandle.Dispose(); };
         }
 
         private void UpdateOnce()

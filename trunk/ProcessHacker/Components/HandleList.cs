@@ -29,6 +29,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using System.Drawing;
 
 namespace ProcessHacker.Components
 {
@@ -209,6 +210,15 @@ namespace ProcessHacker.Components
             litem.Text = item.ObjectInfo.TypeName;
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
+
+            if (Properties.Settings.Default.UseColorProtectedHandles && 
+                (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
+                )
+                litem.NormalColor = Properties.Settings.Default.ColorProtectedHandles;
+            if (Properties.Settings.Default.UseColorInheritHandles && 
+                (item.Handle.Flags & HandleFlags.Inherit) != 0
+                )
+                litem.NormalColor = Properties.Settings.Default.ColorInheritHandles;
 
             listHandles.Items.Add(litem);
         }

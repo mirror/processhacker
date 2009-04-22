@@ -1296,5 +1296,53 @@ namespace ProcessHacker.Properties {
                 this["DbgHelpWarningShown"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Gray")]
+        public global::System.Drawing.Color ColorProtectedHandles {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorProtectedHandles"]));
+            }
+            set {
+                this["ColorProtectedHandles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorProtectedHandles {
+            get {
+                return ((bool)(this["UseColorProtectedHandles"]));
+            }
+            set {
+                this["UseColorProtectedHandles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("128, 255, 255")]
+        public global::System.Drawing.Color ColorInheritHandles {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorInheritHandles"]));
+            }
+            set {
+                this["ColorInheritHandles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorInheritHandles {
+            get {
+                return ((bool)(this["UseColorInheritHandles"]));
+            }
+            set {
+                this["UseColorInheritHandles"] = value;
+            }
+        }
     }
 }

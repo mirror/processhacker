@@ -6,6 +6,7 @@ namespace ProcessHacker
 {
     public interface IProvider
     {
+        event Action<IProvider> Disposed;
         bool Busy { get; }
         bool CreateThread { get; set; }
         bool Enabled { get; set; }

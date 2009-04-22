@@ -142,6 +142,10 @@ namespace ProcessHacker
                 "Threads that are suspended from execution.");
             AddToList("ColorGuiThreads", "GUI Threads",
                 "Threads that have made at least one GUI-related system call.");
+            AddToList("ColorProtectedHandles", "Protected Handles",
+                "Handles that are protected from being closed.");
+            AddToList("ColorInheritHandles", "Inherit Handles",
+                "Handles that are to be inherited by any child processes.");
         }
 
         private void listHighlightingColors_DoubleClick(object sender, EventArgs e)

@@ -531,7 +531,7 @@ namespace ProcessHacker
             _memoryP.IgnoreFreeRegions = true;
             _memoryP.Interval = Properties.Settings.Default.RefreshInterval;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
-            //listMemory.Provider = _memoryP;
+            listMemory.Provider = _memoryP;
             //_memoryP.RunOnceAsync();
 
             listHandles.BeginUpdate();
@@ -974,8 +974,11 @@ namespace ProcessHacker
         {
             checkHideFreeRegions.Enabled = false;
             this.Cursor = Cursors.WaitCursor;
-            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;  
+            listMemory.AutomaticSort = false;
+            listMemory.BeginUpdate();
+            _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
+            _memoryP.RunOnceAsync();
         }
 
         private void checkHideHandlesNoName_CheckedChanged(object sender, EventArgs e)
@@ -990,7 +993,7 @@ namespace ProcessHacker
                 _handleP = new HandleProvider(_pid);
                 _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
                 _handleP.Interval = Properties.Settings.Default.RefreshInterval;
-                _handleP.Updated += new Provider<short, HandleItem>.ProviderUpdateOnce(_handleP_Updated);
+                _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);
                 _handleP.RunOnceAsync();
                 listHandles.Provider = _handleP;
                 _handleP.Enabled = true;
@@ -1065,7 +1068,6 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    listMemory.Provider = _memoryP;
                     listMemory.Sort();
                     listMemory.AutomaticSort = true;
                     listMemory.EndUpdate();

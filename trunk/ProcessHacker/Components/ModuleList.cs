@@ -182,6 +182,7 @@ namespace ProcessHacker.Components
                                 SortOrder = SortOrder.None
                             });
 
+                        comparer.ColumnSortOrder.Add(0);
                         comparer.ColumnSortOrder.Add(1);
                         comparer.ColumnSortOrder.Add(2);
 

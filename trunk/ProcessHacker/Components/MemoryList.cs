@@ -33,7 +33,7 @@ namespace ProcessHacker.Components
 {
     public partial class MemoryList : UserControl
     {
-        private List<MemoryItem> _memoryItems = new List<MemoryItem>();
+        private List<MemoryItem> _memoryItems;
         private MemoryProvider _provider;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -143,6 +143,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _memoryItems = null;
                 }
 
                 _provider = value;
@@ -158,6 +159,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _pid = _provider.PID;
+                    _memoryItems = new List<MemoryItem>();
 
                     foreach (MemoryItem item in _provider.Dictionary.Values)
                     {

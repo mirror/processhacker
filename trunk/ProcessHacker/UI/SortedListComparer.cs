@@ -241,7 +241,7 @@ namespace ProcessHacker.UI
             else if (order == SortOrder.Descending)
                 return -result;
             else
-                return 0;
+                return result;
         }
 
         private int Compare(ListViewItem x, ListViewItem y, int column)
@@ -282,14 +282,6 @@ namespace ProcessHacker.UI
             }
 
             return 0;
-        }
-
-        public int Compare(int x, int y)
-        {
-            return this.Compare(
-                this.GetItem(x),
-                this.GetItem(y)
-                );
         }
 
         /// <summary>

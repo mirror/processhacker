@@ -81,7 +81,7 @@ namespace ProcessHacker
                 Program.ProcessesWithThreads.Add(_pid, null);
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
-            this.Killed += new MethodInvoker(ThreadProvider_Killed);
+            this.Disposed += ThreadProvider_Disposed;
 
             try
             {
@@ -155,7 +155,7 @@ namespace ProcessHacker
             { }
         }
 
-        private void ThreadProvider_Killed()
+        private void ThreadProvider_Disposed(IProvider provider)
         {
             if (_symbols != null)
                 _symbols.Dispose();

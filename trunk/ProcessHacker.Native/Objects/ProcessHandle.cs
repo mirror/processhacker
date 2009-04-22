@@ -49,6 +49,13 @@ namespace ProcessHacker.Native.Objects
         public delegate bool EnumMemoryDelegate(MemoryBasicInformation info);
 
         /// <summary>
+        /// The callback for enumerating process modules.
+        /// </summary>
+        /// <param name="module">The module information.</param>
+        /// <returns>Return true to continue enumerating; return false to stop.</returns>
+        public delegate bool EnumModulesDelegate(ProcessModule module);
+
+        /// <summary>
         /// Creates a process handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
@@ -200,6 +207,112 @@ namespace ProcessHacker.Native.Objects
                     break;
 
                 address += mbi.RegionSize;
+            }
+        }
+
+        /// <summary>
+        /// Enumerates the modules loaded by the process.
+        /// </summary>
+        /// <param name="enumModulesCallback">The callback for the enumeration.</param>
+        public void EnumModules(EnumModulesDelegate enumModulesCallback)
+        {
+            this.EnumModulesNative(enumModulesCallback);
+        }
+
+        private void EnumModulesApi(EnumModulesDelegate enumModulesCallback)
+        {
+            IntPtr[] moduleHandles;
+            int requiredSize;
+
+            Win32.EnumProcessModules(this, null, 0, out requiredSize);
+            moduleHandles = new IntPtr[requiredSize / 4];
+
+            if (!Win32.EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
+                Win32.ThrowLastError();
+
+            for (int i = 0; i < moduleHandles.Length; i++)
+            {
+                ModuleInfo moduleInfo = new ModuleInfo();
+                StringBuilder baseName = new StringBuilder(0x400);
+                StringBuilder fileName = new StringBuilder(0x400);
+
+                if (!Win32.GetModuleInformation(this, moduleHandles[i], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
+                    Win32.ThrowLastError();
+                if (Win32.GetModuleBaseName(this, moduleHandles[i], baseName, baseName.Capacity * 2) == 0)
+                    Win32.ThrowLastError();
+                if (Win32.GetModuleFileNameEx(this, moduleHandles[i], fileName, fileName.Capacity * 2) == 0)
+                    Win32.ThrowLastError();
+
+                if (!enumModulesCallback(new ProcessModule(
+                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
+                    baseName.ToString(), FileUtils.FixPath(fileName.ToString())
+                    )))
+                    break;
+            }
+        }
+
+        private unsafe void EnumModulesNative(EnumModulesDelegate enumModulesCallback)
+        {
+            byte* buffer = stackalloc byte[4];
+
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, buffer, 4);
+
+            int loaderData = *(int*)buffer;
+
+            PebLdrData* data = stackalloc PebLdrData[1];
+            this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
+
+            if (data->Initialized == 0)
+                throw new Exception("Loader data is not initialized.");
+
+            IntPtr currentLink = data->InLoadOrderModuleList.Flink;
+            IntPtr startLink = currentLink;
+            LdrModule* currentModule = stackalloc LdrModule[1];
+            int i = 0;
+
+            while (currentLink != IntPtr.Zero)
+            {
+                // Stop when we have reached the beginning of the linked list
+                if (i > 0 && currentLink == startLink)
+                    break;
+                // Safety guard
+                if (i > 0x800)
+                    break;
+
+                this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LdrModule)));
+
+                if (currentModule->BaseAddress != 0)
+                {
+                    string baseDllName = null;
+                    string fullDllName = null;
+
+                    try
+                    {
+                        baseDllName = Utils.ReadUnicodeString(this, currentModule->BaseDllName).TrimEnd('\0');
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        fullDllName =
+                            FileUtils.FixPath(Utils.ReadUnicodeString(this, currentModule->FullDllName).TrimEnd('\0'));
+                    }
+                    catch
+                    { }
+
+                    if (!enumModulesCallback(new ProcessModule(
+                        new IntPtr(currentModule->BaseAddress),
+                        currentModule->SizeOfImage,
+                        new IntPtr(currentModule->EntryPoint),
+                        baseDllName,
+                        fullDllName
+                        )))
+                        break;
+                }
+
+                currentLink = currentModule->InLoadOrderModuleList.Flink;
+                i++;
             }
         }
 
@@ -434,62 +547,15 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A ProcessModule.</returns>
         public ProcessModule GetMainModule()
         {
-            return this.GetMainModuleNative();
-        }
+            ProcessModule mainModule = null;
 
-        private ProcessModule GetMainModuleApi()
-        {
-            IntPtr[] moduleHandles;
-            int requiredSize;
+            this.EnumModules((module) =>
+                {
+                    mainModule = module;
+                    return false;
+                });
 
-            Win32.EnumProcessModules(this, null, 0, out requiredSize);
-            moduleHandles = new IntPtr[requiredSize / 4];
-
-            if (!Win32.EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
-                Win32.ThrowLastError();
-
-            ModuleInfo moduleInfo = new ModuleInfo();
-            StringBuilder baseName = new StringBuilder(0x400);
-            StringBuilder fileName = new StringBuilder(0x400);
-
-            if (!Win32.GetModuleInformation(this, moduleHandles[0], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
-                Win32.ThrowLastError();
-            if (Win32.GetModuleBaseName(this, moduleHandles[0], baseName, baseName.Capacity * 2) == 0)
-                Win32.ThrowLastError();
-            if (Win32.GetModuleFileNameEx(this, moduleHandles[0], fileName, fileName.Capacity * 2) == 0)
-                Win32.ThrowLastError();
-
-            return new ProcessModule(
-                moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
-                baseName.ToString(), FileUtils.FixPath(fileName.ToString())
-                );
-        }
-
-        private unsafe ProcessModule GetMainModuleNative()
-        {
-            byte* buffer = stackalloc byte[4];
-
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, buffer, 4);
-
-            int loaderData = *(int*)buffer;
-
-            PebLdrData* data = stackalloc PebLdrData[1];
-            this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
-
-            if (data->Initialized == 0)
-                throw new Exception("Loader data is not initialized.");
-
-            LdrModule* mainModule = stackalloc LdrModule[1];
-
-            this.ReadMemory(data->InLoadOrderModuleList.Flink, mainModule, Marshal.SizeOf(typeof(LdrModule)));
-
-            return new ProcessModule(
-                new IntPtr(mainModule->BaseAddress),
-                mainModule->SizeOfImage,
-                new IntPtr(mainModule->EntryPoint),
-                Utils.ReadUnicodeString(this, mainModule->BaseDllName).TrimEnd('\0'),
-                FileUtils.FixPath(Utils.ReadUnicodeString(this, mainModule->FullDllName).TrimEnd('\0'))
-                );
+            return mainModule;
         }
 
         public string GetMappedFileName(int address)
@@ -519,89 +585,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An array of ProcessModule objects.</returns>
         public ProcessModule[] GetModules()
         {
-            return this.GetModulesNative();
-        }
-
-        private ProcessModule[] GetModulesApi()
-        {
-            IntPtr[] moduleHandles;
-            int requiredSize;
-
-            Win32.EnumProcessModules(this, null, 0, out requiredSize);
-            moduleHandles = new IntPtr[requiredSize / 4];
-
-            if (!Win32.EnumProcessModules(this, moduleHandles, requiredSize, out requiredSize))
-                Win32.ThrowLastError();
-
-            ProcessModule[] moduleList = new ProcessModule[moduleHandles.Length];
-
-            for (int i = 0; i < moduleHandles.Length; i++)
-            {
-                ModuleInfo moduleInfo = new ModuleInfo();
-                StringBuilder baseName = new StringBuilder(0x400);
-                StringBuilder fileName = new StringBuilder(0x400);
-
-                if (!Win32.GetModuleInformation(this, moduleHandles[i], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
-                    Win32.ThrowLastError();
-                if (Win32.GetModuleBaseName(this, moduleHandles[i], baseName, baseName.Capacity * 2) == 0)
-                    Win32.ThrowLastError();
-                if (Win32.GetModuleFileNameEx(this, moduleHandles[i], fileName, fileName.Capacity * 2) == 0)
-                    Win32.ThrowLastError();
-
-                moduleList[i] = new ProcessModule(
-                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
-                    baseName.ToString(), FileUtils.FixPath(fileName.ToString())
-                    );
-            }
-
-            return moduleList;
-        }
-
-        private unsafe ProcessModule[] GetModulesNative()
-        {
-            byte* buffer = stackalloc byte[4];
-
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, buffer, 4);
-
-            int loaderData = *(int*)buffer;
-
-            PebLdrData* data = stackalloc PebLdrData[1];
-            this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
-
-            if (data->Initialized == 0)
-                throw new Exception("Loader data is not initialized.");
-
             List<ProcessModule> modules = new List<ProcessModule>();
-            IntPtr currentLink = data->InLoadOrderModuleList.Flink;
-            IntPtr startLink = currentLink;
-            LdrModule* currentModule = stackalloc LdrModule[1];
-            int i = 0;
 
-            while (currentLink != IntPtr.Zero)
+            this.EnumModules((module) =>
             {
-                // Stop when we have reached the beginning of the linked list
-                if (modules.Count > 0 && currentLink == startLink)
-                    break;
-                // Safety guard
-                if (i > 0x800)
-                    break;
-
-                this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LdrModule)));
-
-                if (currentModule->BaseAddress != 0)
-                {
-                    modules.Add(new ProcessModule(
-                        new IntPtr(currentModule->BaseAddress),
-                        currentModule->SizeOfImage,
-                        new IntPtr(currentModule->EntryPoint),
-                        Utils.ReadUnicodeString(this, currentModule->BaseDllName).TrimEnd('\0'),
-                        FileUtils.FixPath(Utils.ReadUnicodeString(this, currentModule->FullDllName).TrimEnd('\0'))
-                        ));
-                }
-
-                currentLink = currentModule->InLoadOrderModuleList.Flink;
-                i++;
-            }
+                modules.Add(module);
+                return true;
+            });
 
             return modules.ToArray();
         }
