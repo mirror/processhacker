@@ -28,7 +28,7 @@ _CryptCATCatalogInfoFromContext CryptCATCatalogInfoFromContext;
 _CryptCATAdminReleaseCatalogContext CryptCATAdminReleaseCatalogContext;
 _CryptCATAdminReleaseContext CryptCATAdminReleaseContext;
 
-VOID PhvInit()
+NTSTATUS PhvInit()
 {
     LoadLibrary(L"wintrust.dll");
 
@@ -44,6 +44,8 @@ VOID PhvInit()
         PhGetProcAddress(L"wintrust.dll", "CryptCATAdminReleaseCatalogContext");
     CryptCATAdminReleaseContext =
         PhGetProcAddress(L"wintrust.dll", "CryptCATAdminReleaseContext");
+
+    return STATUS_SUCCESS;
 }
 
 VERIFY_RESULT PhvStatusToVerifyResult(LONG Status)

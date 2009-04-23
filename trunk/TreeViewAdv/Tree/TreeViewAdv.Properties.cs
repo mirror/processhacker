@@ -315,7 +315,9 @@ namespace Aga.Controls.Tree
 		}
 
         // Font proprety for Tahoma as default font
-        private static Font _font = new Font("Tahoma", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)), false);
+        // wj32: Apparently some people don't have Tahoma...
+        //private static Font _font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)), false);
+        private static Font _font = System.Windows.Forms.Control.DefaultFont;
         [Category("Appearance")]
         public override Font Font
         {

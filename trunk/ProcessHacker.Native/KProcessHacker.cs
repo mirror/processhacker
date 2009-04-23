@@ -129,8 +129,12 @@ namespace ProcessHacker.Native
             catch
             { }
 
-            _fileHandle = new FileHandle("\\\\.\\" + deviceName, 
-                FileAccess.GenericRead | FileAccess.GenericWrite);
+            _fileHandle = new FileHandle(
+                "\\\\.\\" + deviceName, 
+                FileAccess.GenericRead | FileAccess.GenericWrite,
+                FileShareMode.Read | FileShareMode.Write,
+                FileCreationDisposition.OpenAlways
+                );
 
             try
             {

@@ -62,7 +62,11 @@ BOOL WINAPI DllMain(
     switch (fdwReason)
     {
     case DLL_PROCESS_ATTACH:
-        PhvInit();
+        if (!NT_SUCCESS(PhvInit()))
+            return FALSE;
+        if (!NT_SUCCESS(KphInit()))
+            return FALSE;
+
         break;
     default:
         break;

@@ -88,6 +88,7 @@ namespace ProcessHacker
         public static Dictionary<int, object> ProcessesWithThreads = new Dictionary<int, object>();
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
+        public static bool NoKph = false;
         public static bool StartHidden = false;
         public static bool StartVisible = false;
         public static string SelectTab = "Processes";
@@ -117,6 +118,7 @@ namespace ProcessHacker
                     "Usage: processhacker [-m]\n" +
                     "\t-m\tStarts Process Hacker hidden.\n" +
                     "\t-v\tStarts Process Hacker visible.\n" +
+                    "\t-nokph\tDisables KProcessHacker. Use this if you are encountering BSODs.\n" + 
                     "\t-a\tAggressive mode.\n" + 
                     "\t-o\tShows Options.\n" +
                     "\t-t n\tShows the specified tab. 0 is Processes, and 1 is Services.",
@@ -127,6 +129,8 @@ namespace ProcessHacker
             // In case the settings file is corrupt PH won't crash here - it will be dealt with later.
             try
             {
+                if (pArgs.ContainsKey("-nokph"))
+                    NoKph = true;
                 if (Properties.Settings.Default.AllowOnlyOneInstance && 
                     !(pArgs.ContainsKey("-e") || pArgs.ContainsKey("-o") ||
                     pArgs.ContainsKey("-pw") || pArgs.ContainsKey("-pt"))
@@ -212,7 +216,7 @@ namespace ProcessHacker
 
             try
             {
-                if (Properties.Settings.Default.EnableKPH)
+                if (Properties.Settings.Default.EnableKPH && !NoKph)
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch

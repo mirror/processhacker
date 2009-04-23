@@ -52,11 +52,12 @@ NTSTATUS KphNtInit()
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
     
     /* Initialize function pointers */
-    if (ExpGetProcessInformationScan.Initialized)
+    /* ExpGetProcessInformation scanning is causing problems for some people... */
+    /* if (ExpGetProcessInformationScan.Initialized)
     {
         ExpGetProcessInformation = KvScanProc(&ExpGetProcessInformationScan);
         dprintf("ExpGetProcessInformation: 0x%08x\n", ExpGetProcessInformation);
-    }
+    } */
     if (PsTerminateProcessScan.Initialized)
     {
         __PsTerminateProcess = KvScanProc(&PsTerminateProcessScan);

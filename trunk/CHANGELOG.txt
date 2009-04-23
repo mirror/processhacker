@@ -1,7 +1,11 @@
 Process Hacker
 
 1.3.7.1
+ * NEW:
+   * "-nokph" command line switch to disable KProcessHacker
  * FIXED:
+   * #2779558 - "TreeViewAdv font cannot be initialized"
+   * KProcessHacker BSOD on some Vista systems
    * Minor issue where new handle providers in the process window would 
      not be added to the shared thread provider
 
