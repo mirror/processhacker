@@ -52,7 +52,26 @@ namespace ProcessHacker.UI.Actions
                 }
             }
 
-            if (promptOnlyIfDangerous && !dangerous)
+            bool critical = false;
+
+            foreach (int pid in pids)
+            {
+                try
+                {
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
+                    {
+                        if (phandle.IsCritical())
+                        {
+                            critical = true;
+                            break;
+                        }
+                    }
+                }
+                catch
+                { }
+            }
+
+            if (promptOnlyIfDangerous && !dangerous && !critical)
                 return true;
 
             DialogResult result = DialogResult.No;
@@ -65,7 +84,14 @@ namespace ProcessHacker.UI.Actions
                 td.MainInstruction = "Do you want to " + action + " " + name + "?";
                 td.Content = content;
 
-                if (dangerous)
+                if (critical)
+                {
+                    td.MainIcon = TaskDialogIcon.Warning;
+                    td.Content = "You are about to " + action + " one or more CRITICAL processes. " +
+                        "Windows is designed to break (crash) when one of these processes is terminated. " +
+                        "Are you sure you want to continue?";
+                }
+                else if (dangerous)
                 {
                     td.MainIcon = TaskDialogIcon.Warning;
                     td.Content = "You are about to " + action + " one or more system processes. " +
@@ -79,7 +105,24 @@ namespace ProcessHacker.UI.Actions
 
                     for (int i = 0; i < pids.Length; i++)
                     {
-                        td.ExpandedInformation += names[i] + " (PID " + pids[i].ToString() + ")\r\n";
+                        bool dangerousPid, criticalPid;
+
+                        dangerousPid = Misc.IsDangerousPid(pids[i]);
+
+                        try
+                        {
+                            using (var phandle = new ProcessHandle(pids[i], ProcessAccess.QueryInformation))
+                                criticalPid = phandle.IsCritical();
+                        }
+                        catch
+                        {
+                            criticalPid = false;
+                        }
+
+                        td.ExpandedInformation += names[i] + " (PID " + pids[i].ToString() + ")" + 
+                            (dangerousPid ? " (system process) " : "") +
+                            (criticalPid ? " (CRITICAL) " : "") +
+                            "\r\n";
                     }
 
                     td.ExpandedInformation = td.ExpandedInformation.Trim();

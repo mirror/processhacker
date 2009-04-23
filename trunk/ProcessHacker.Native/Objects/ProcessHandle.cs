@@ -734,6 +734,24 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets whether the system will crash upon the process being terminated.
+        /// </summary>
+        /// <returns>A boolean.</returns>
+        public bool IsCritical()
+        {
+            int status;
+            int breakOnTermination;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationProcess(
+                this, ProcessInformationClass.ProcessBreakOnTermination,
+                out breakOnTermination, 4, out retLength)) < 0)
+                Win32.ThrowLastError(status);
+
+            return breakOnTermination != 0;
+        }
+
+        /// <summary>
         /// Determines whether the process is running in a job.
         /// </summary>
         /// <returns>A boolean.</returns>

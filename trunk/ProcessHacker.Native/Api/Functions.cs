@@ -319,6 +319,10 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
+            out int ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
             out PooledUsageAndLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
