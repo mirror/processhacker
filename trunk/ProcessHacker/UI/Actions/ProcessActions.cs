@@ -139,7 +139,15 @@ namespace ProcessHacker.UI.Actions
             }
             else
             {
-                if (dangerous)
+                if (critical)
+                {
+                    result = MessageBox.Show("You are about to " + action + " one or more CRITICAL processes. " +
+                        "Windows is designed to break (crash) when one of these processes is terminated. " +
+                        "Are you sure you want to " + action + " " + name + "?",
+                        "Process Hacker", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+                }
+                else if (dangerous)
                 {
                     result = MessageBox.Show("You are about to " + action + " one or more system processes. " + 
                         "Are you sure you want to " + action + " " + name + "?",
