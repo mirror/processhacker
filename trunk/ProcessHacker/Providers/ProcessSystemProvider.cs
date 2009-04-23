@@ -78,7 +78,6 @@ namespace ProcessHacker
 
         public ProcessHandle ProcessQueryHandle;
 
-        public bool FullUpdate;
         public DeltaManager<ProcessStats, long> DeltaManager;
         public HistoryManager<ProcessStats, float> FloatHistoryManager;
         public HistoryManager<ProcessStats, long> LongHistoryManager;
@@ -798,6 +797,7 @@ namespace ProcessHacker
                 else
                 {
                     ProcessItem item = this.Dictionary[pid];
+                    bool fullUpdate = false;
 
                     item.DeltaManager.Update(ProcessStats.CpuKernel, processInfo.KernelTime);
                     item.DeltaManager.Update(ProcessStats.CpuUser, processInfo.UserTime);
@@ -820,8 +820,6 @@ namespace ProcessHacker
                     item.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize);
 
                     item.Process = processInfo;
-                    item.FullUpdate = false;
-                    item.JustProcessed = false;
 
                     if (Program.ProcessesWithThreads.ContainsKey(pid))
                         item.Threads = procs[pid].Threads;
@@ -861,8 +859,13 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.IsBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
-                            item.FullUpdate = true;
+                            bool isBeingDebugged = item.ProcessQueryHandle.IsBeingDebugged();
+
+                            if (isBeingDebugged != item.IsBeingDebugged)
+                            {
+                                item.IsBeingDebugged = isBeingDebugged;
+                                fullUpdate = true;
+                            }
                         }
                         catch
                         { }
@@ -878,8 +881,15 @@ namespace ProcessHacker
                         }
                     }
 
-                    if (item.FullUpdate)
+                    if (item.JustProcessed)
+                        fullUpdate = true;
+
+                    if (fullUpdate)
+                    {
                         this.CallDictionaryModified(null, item);
+                    }
+
+                    item.JustProcessed = false;
                 }
             }
 

@@ -314,16 +314,11 @@ namespace ProcessHacker
             {
                 lock (_listLock)
                 {
-                    //_treeModel.Modify(oldItem, newItem);
+                    TreeNodeAdv node = this.FindTreeNode(newItem.Pid);
 
-                    if (newItem.FullUpdate)
+                    if (node != null)
                     {
-                        TreeNodeAdv node = this.FindTreeNode(newItem.Pid);
-
-                        if (node != null)
-                        {
-                            node.BackColor = GetProcessColor(newItem);
-                        }
+                        node.BackColor = GetProcessColor(newItem);
                     }
                 }
             }));
