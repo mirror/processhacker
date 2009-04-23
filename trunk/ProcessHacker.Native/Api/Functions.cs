@@ -466,7 +466,7 @@ namespace ProcessHacker.Native.Api
             out uint SystemAffinityMask);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool CheckRemoteDebuggerPresent(int ProcessHandle, out bool DebuggerPresent);
+        public static extern bool CheckRemoteDebuggerPresent(int ProcessHandle, out int DebuggerPresent);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetProcessId(int ProcessHandle);

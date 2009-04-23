@@ -725,12 +725,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean value.</returns>
         public bool IsBeingDebugged()
         {
-            bool debugged;
+            int debugged;
 
             if (!Win32.CheckRemoteDebuggerPresent(this, out debugged))
                 Win32.ThrowLastError();
 
-            return debugged;
+            return debugged != 0;
         }
 
         /// <summary>
@@ -936,7 +936,7 @@ namespace ProcessHacker.Native.Objects
                 int status;
 
                 if ((status = Win32.NtSuspendProcess(this)) < 0)
-                    Win32.ThrowLastError();
+                    Win32.ThrowLastError(status);
             }
         }
 
