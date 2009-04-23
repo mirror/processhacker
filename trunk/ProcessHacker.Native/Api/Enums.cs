@@ -143,8 +143,8 @@ namespace ProcessHacker.Native.Api
     [Flags]
     public enum HandleFlags : byte
     {
-        Inherit = 0x1,
-        ProtectFromClose = 0x2
+        ProtectFromClose = 0x1,
+        Inherit = 0x2
     }
 
     [Flags]
