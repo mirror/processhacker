@@ -987,10 +987,12 @@ namespace ProcessHacker
             {
                 checkHideHandlesNoName.Enabled = false;
                 this.Cursor = Cursors.WaitCursor;
+                Program.SecondarySharedThreadProvider.Remove(_handleP);
                 _handleP.Dispose();
                 listHandles.BeginUpdate();
                 listHandles.Highlight = false;
                 _handleP = new HandleProvider(_pid);
+                Program.SecondarySharedThreadProvider.Add(_handleP);
                 _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
                 _handleP.Interval = Properties.Settings.Default.RefreshInterval;
                 _handleP.Updated += new HandleProvider.ProviderUpdateOnce(_handleP_Updated);

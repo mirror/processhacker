@@ -34,6 +34,13 @@ namespace ProcessHacker
             InitializeComponent();
 
             textException.Text = ex.ToString();
+
+            try
+            {
+                textException.Text += "\r\n\r\nDIAGNOSTIC INFORMATION\r\n" + Program.GetDiagnosticInformation();
+            }
+            catch
+            { }
         }
 
         private void TryStart(string command)

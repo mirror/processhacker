@@ -32,6 +32,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using System.Text;
 
 namespace ProcessHacker
 {
@@ -48,7 +49,6 @@ namespace ProcessHacker
         public static ProcessAccess MinProcessGetHandleInformationRights = ProcessAccess.DupHandle;
         public static ThreadAccess MinThreadQueryRights = ThreadAccess.QueryInformation;
 
-        public static int CurrentProcess;
         public static int CurrentSessionId;
         public static string CurrentUsername;
 
@@ -240,8 +240,6 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
-
-            CurrentProcess = Win32.GetCurrentProcess();
 
             try
             {
@@ -485,7 +483,7 @@ namespace ProcessHacker
 
         public static void StartProcessHackerAdmin(string args, MethodInvoker successAction, IntPtr hWnd)
         {
-            StartProgramAdmin(ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName,
+            StartProgramAdmin(ProcessHandle.GetCurrent().GetMainModule().FileName,
                 args, successAction, ShowWindowType.Show, hWnd);
         }
 
@@ -499,7 +497,7 @@ namespace ProcessHacker
             var info = new ShellExecuteInfo();
 
             info.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(info);
-            info.lpFile = ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+            info.lpFile = ProcessHandle.GetCurrent().GetMainModule().FileName;
             info.nShow = ShowWindowType.Show;
             info.fMask = 0x40; // SEE_MASK_NOCLOSEPROCESS
             info.lpVerb = "runas";
@@ -626,6 +624,67 @@ namespace ProcessHacker
                 ThreadPool.SetMaxThreads(0, 0);
                 ThreadPool.SetMaxThreads(workerThreads, completionPortThreads);
             }
+        }
+
+        public static string GetDiagnosticInformation()
+        {
+            StringBuilder info = new StringBuilder();
+
+            info.AppendLine("Process Hacker " + Application.ProductVersion);
+            info.AppendLine("CLR Version: " + Environment.Version.ToString());
+            info.AppendLine("OS Version: " + Environment.OSVersion.VersionString);
+            info.AppendLine("Elevation: " + ElevationType.ToString());
+
+            if (KProcessHacker.Instance == null)
+                info.AppendLine("KProcessHacker: not running");
+            else
+                info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
+
+            info.AppendLine();
+            info.AppendLine("PRIMARY SHARED THREAD PROVIDER");
+            info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
+
+            if (SharedThreadProvider != null)
+            {
+                foreach (var provider in SharedThreadProvider.Providers)
+                    info.AppendLine(provider.GetType().FullName +
+                        " (Enabled: " + provider.Enabled +
+                        ", Busy: " + provider.Busy.ToString() +
+                        ", CreateThread: " + provider.CreateThread.ToString() +
+                        ")");
+            }
+            else
+            {
+                info.AppendLine("(null)");
+            }
+
+            info.AppendLine();
+            info.AppendLine("SECONDARY SHARED THREAD PROVIDER");
+
+            if (SecondarySharedThreadProvider != null)
+            {
+                info.AppendLine("Count: " + SecondarySharedThreadProvider.Count.ToString());
+
+                foreach (var provider in SecondarySharedThreadProvider.Providers)
+                    info.AppendLine(provider.GetType().FullName +
+                        " (Enabled: " + provider.Enabled +
+                        ", Busy: " + provider.Busy.ToString() +
+                        ", CreateThread: " + provider.CreateThread.ToString() +
+                        ")");
+            }
+            else
+            {
+                info.AppendLine("(null)");
+            }
+
+            info.AppendLine();
+            info.AppendLine("WINDOWS");
+            info.AppendLine("MemoryEditors: " + MemoryEditors.Count.ToString() + ", " + MemoryEditorsThreads.Count.ToString());
+            info.AppendLine("PEWindows: " + PEWindows.Count.ToString() + ", " + PEThreads.Count.ToString());
+            info.AppendLine("PWindows: " + PWindows.Count.ToString() + ", " + PThreads.Count.ToString());
+            info.AppendLine("ResultsWindows: " + ResultsWindows.Count.ToString() + ", " + ResultsThreads.Count.ToString());
+
+            return info.ToString();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

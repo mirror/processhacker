@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading;
 
@@ -69,6 +70,11 @@ namespace ProcessHacker
         public int Count
         {
             get { return _providers.Count; }
+        }
+
+        public ReadOnlyCollection<IProvider> Providers
+        {
+            get { return new ReadOnlyCollection<IProvider>(_providers); }
         }
 
         public int Interval

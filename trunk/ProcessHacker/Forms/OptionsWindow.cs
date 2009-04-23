@@ -275,7 +275,7 @@ namespace ProcessHacker
                     ))
                 {
                     if ((_oldTaskMgrDebugger = (string)key.GetValue("Debugger", "")).ToLower().Trim('"') ==
-                        ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName.ToLower())
+                        ProcessHandle.GetCurrent().GetMainModule().FileName.ToLower())
                     {
                         checkReplaceTaskManager.Checked = true;
                     }
@@ -354,7 +354,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    string fileName = ProcessHandle.FromHandle(Program.CurrentProcess).GetMainModule().FileName;
+                    string fileName = ProcessHandle.GetCurrent().GetMainModule().FileName;
 
                     using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
                         "Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe",

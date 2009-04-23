@@ -119,7 +119,7 @@ namespace ProcessHacker.Symbols
 
             try
             {
-                var modules = ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+                var modules = ProcessHandle.GetCurrent().GetModules();
 
                 foreach (var module in modules)
                 {

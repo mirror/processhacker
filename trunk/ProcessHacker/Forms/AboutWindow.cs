@@ -24,6 +24,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
@@ -115,6 +116,13 @@ namespace ProcessHacker
             {
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void buttonDiagnostics_Click(object sender, EventArgs e)
+        {
+            InformationBox box = new InformationBox(Program.GetDiagnosticInformation());
+
+            box.ShowDialog();
         }
     }
 }

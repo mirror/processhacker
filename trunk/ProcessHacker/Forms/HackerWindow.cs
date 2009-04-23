@@ -1895,7 +1895,7 @@ namespace ProcessHacker
 
             try
             {
-                var modules = ProcessHandle.FromHandle(Program.CurrentProcess).GetModules();
+                var modules = ProcessHandle.GetCurrent().GetModules();
 
                 foreach (var module in modules)
                 {
@@ -2427,8 +2427,7 @@ namespace ProcessHacker
             try
             {
                 this.Text +=
-                    " [" + ProcessHandle.FromHandle(Program.CurrentProcess).
-                    GetToken(TokenAccess.Query).GetUser().GetName(true) +
+                    " [" + ProcessHandle.GetCurrent().GetToken(TokenAccess.Query).GetUser().GetName(true) +
                     (KProcessHacker.Instance != null ? "+" : "") + "]";
             }
             catch

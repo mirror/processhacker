@@ -40,9 +40,9 @@
             this.labelIntro.AutoSize = true;
             this.labelIntro.Location = new System.Drawing.Point(12, 9);
             this.labelIntro.Name = "labelIntro";
-            this.labelIntro.Size = new System.Drawing.Size(277, 13);
+            this.labelIntro.Size = new System.Drawing.Size(315, 13);
             this.labelIntro.TabIndex = 0;
-            this.labelIntro.Text = "An unhandled exception has occured in Process Hacker:";
+            this.labelIntro.Text = "An unhandled exception has occured in Process Hacker. Details:";
             // 
             // labelLink
             // 

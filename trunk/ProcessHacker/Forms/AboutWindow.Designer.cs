@@ -43,6 +43,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.linkTaskDialog = new System.Windows.Forms.LinkLabel();
             this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
@@ -52,7 +53,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
-            this.label9 = new System.Windows.Forms.Label();
+            this.buttonDiagnostics = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -61,7 +62,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(333, 250);
+            this.buttonClose.Location = new System.Drawing.Point(333, 251);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 0;
@@ -143,7 +144,7 @@
             // 
             this.linkSourceforge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkSourceforge.AutoSize = true;
-            this.linkSourceforge.Location = new System.Drawing.Point(12, 255);
+            this.linkSourceforge.Location = new System.Drawing.Point(12, 256);
             this.linkSourceforge.Name = "linkSourceforge";
             this.linkSourceforge.Size = new System.Drawing.Size(229, 13);
             this.linkSourceforge.TabIndex = 9;
@@ -155,7 +156,7 @@
             // 
             this.linkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkEmail.AutoSize = true;
-            this.linkEmail.Location = new System.Drawing.Point(12, 237);
+            this.linkEmail.Location = new System.Drawing.Point(12, 238);
             this.linkEmail.Name = "linkEmail";
             this.linkEmail.Size = new System.Drawing.Size(145, 13);
             this.linkEmail.TabIndex = 10;
@@ -212,7 +213,7 @@
             this.flowCredits.Location = new System.Drawing.Point(177, 70);
             this.flowCredits.Name = "flowCredits";
             this.flowCredits.Padding = new System.Windows.Forms.Padding(3);
-            this.flowCredits.Size = new System.Drawing.Size(231, 146);
+            this.flowCredits.Size = new System.Drawing.Size(231, 147);
             this.flowCredits.TabIndex = 14;
             this.flowCredits.WrapContents = false;
             // 
@@ -242,6 +243,15 @@
             this.label1.Size = new System.Drawing.Size(188, 13);
             this.label1.TabIndex = 13;
             this.label1.Text = "XhmikosR - Installer Developer, Tester";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 42);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(127, 13);
+            this.label9.TabIndex = 22;
+            this.label9.Text = "Mikalai Chaly - Developer";
             // 
             // label7
             // 
@@ -323,7 +333,7 @@
             // 
             this.buttonChangelog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonChangelog.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonChangelog.Location = new System.Drawing.Point(252, 250);
+            this.buttonChangelog.Location = new System.Drawing.Point(238, 223);
             this.buttonChangelog.Name = "buttonChangelog";
             this.buttonChangelog.Size = new System.Drawing.Size(75, 23);
             this.buttonChangelog.TabIndex = 15;
@@ -331,20 +341,24 @@
             this.buttonChangelog.UseVisualStyleBackColor = true;
             this.buttonChangelog.Click += new System.EventHandler(this.buttonChangelog_Click);
             // 
-            // label9
+            // buttonDiagnostics
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 42);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(127, 13);
-            this.label9.TabIndex = 22;
-            this.label9.Text = "Mikalai Chaly - Developer";
+            this.buttonDiagnostics.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonDiagnostics.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDiagnostics.Location = new System.Drawing.Point(319, 223);
+            this.buttonDiagnostics.Name = "buttonDiagnostics";
+            this.buttonDiagnostics.Size = new System.Drawing.Size(89, 23);
+            this.buttonDiagnostics.TabIndex = 16;
+            this.buttonDiagnostics.Text = "Diagnostics...";
+            this.buttonDiagnostics.UseVisualStyleBackColor = true;
+            this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
             // 
             // AboutWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(420, 285);
+            this.ClientSize = new System.Drawing.Size(420, 286);
+            this.Controls.Add(this.buttonDiagnostics);
             this.Controls.Add(this.buttonChangelog);
             this.Controls.Add(this.flowCredits);
             this.Controls.Add(this.linkEmail);
@@ -399,6 +413,7 @@
         private System.Windows.Forms.Button buttonChangelog;
         private System.Windows.Forms.LinkLabel linkTaskDialog;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button buttonDiagnostics;
 
     }
 }
