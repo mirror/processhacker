@@ -2221,6 +2221,8 @@ namespace ProcessHacker
 
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;
+
+            apiLoggerMenuItem.Visible = false;
         }
 
         private void LoadUac()

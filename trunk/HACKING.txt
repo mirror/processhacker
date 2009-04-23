@@ -56,9 +56,3 @@ NOTES
    classes make common manipulation tasks much easier. They also use KProcessHacker 
    automatically, if available.
  * Similarly, do not use OpenService - use ServiceHandle instead.
-
-TODO
- * Add memory probing to KProcessHacker and migrate to direct I/O instead of 
-   buffered I/O
- * Make ComboBoxPickerWindow more flexible and get rid of EditDEPWindow.
- * Get dbghelp working so we can use Microsoft's own symbols.
