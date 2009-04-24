@@ -774,6 +774,7 @@
             this.listServices.Size = new System.Drawing.Size(784, 344);
             this.listServices.TabIndex = 0;
             this.listServices.DoubleClick += new System.EventHandler(this.listServices_DoubleClick);
+            this.listServices.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listServices_KeyDown);
             // 
             // tabNetwork
             // 

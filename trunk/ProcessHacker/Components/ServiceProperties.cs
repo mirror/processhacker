@@ -102,6 +102,11 @@ namespace ProcessHacker.Components
             set { buttonApply.Text = value; }
         }
 
+        public Button ApplyButton
+        {
+            get { return buttonApply; }
+        }
+
         public void SaveSettings()
         {
             Properties.Settings.Default.ServiceMiniListColumns = ColumnSettings.SaveSettings(listServices);

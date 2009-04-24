@@ -153,6 +153,18 @@ namespace ProcessHacker
             propertiesServiceMenuItem_Click(null, null);
         }
 
+        private void listServices_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteServiceMenuItem_Click(null, null);
+            }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                propertiesServiceMenuItem_Click(null, null);
+            }
+        }
+
         #endregion
 
         #region Main Menu
@@ -1570,11 +1582,17 @@ namespace ProcessHacker
 
         private void deleteServiceMenuItem_Click(object sender, EventArgs e)
         {
+            if (listServices.SelectedItems.Count != 1)
+                return;
+
             ServiceActions.Delete(this, listServices.SelectedItems[0].Name, true);
         }
 
         private void propertiesServiceMenuItem_Click(object sender, EventArgs e)
         {
+            if (listServices.SelectedItems.Count == 0)
+                return;
+
             List<string> selected = new List<string>();
             ServiceWindow sw;
 

@@ -29,8 +29,7 @@ using System.ComponentModel;
 namespace ProcessHacker.FormHelper
 {
     /// <summary>
-    /// Exception thrown when an
-    /// operation is already in progress.
+    /// Exception thrown when an operation is already in progress.
     /// </summary>
     public class AlreadyRunningException : System.ApplicationException
     {
@@ -40,6 +39,7 @@ namespace ProcessHacker.FormHelper
 
     public abstract class AsyncOperation
     {
+        private Thread _asyncThread;
         private object _asyncLock = new object();
 
         public AsyncOperation(ISynchronizeInvoke target)
@@ -47,7 +47,7 @@ namespace ProcessHacker.FormHelper
             isiTarget = target;
             isRunning = false;
         }
-       
+
         public void Start()
         {
             lock (_asyncLock)
@@ -59,8 +59,9 @@ namespace ProcessHacker.FormHelper
                 isRunning = true;
             }
 
-            new MethodInvoker(InternalStart).BeginInvoke(null, null);
-        }        
+            _asyncThread = new Thread(InternalStart);
+            _asyncThread.Start();
+        }
 
         public void Cancel()
         {
@@ -111,7 +112,8 @@ namespace ProcessHacker.FormHelper
                     return completeFlag || cancelAcknowledgedFlag || failedFlag;
                 }
             }
-        }        
+        }
+
         public event EventHandler Completed;              
         public event EventHandler Cancelled;       
         public event System.Threading.ThreadExceptionEventHandler Failed;   
@@ -135,7 +137,7 @@ namespace ProcessHacker.FormHelper
                 lock (_asyncLock) { return cancelledFlag; }
             }
         }
-                        
+
         private bool completeFlag;
         protected bool HasCompleted
         {
@@ -144,8 +146,7 @@ namespace ProcessHacker.FormHelper
                 lock (_asyncLock) { return completeFlag; }
             }
         }
-        
-      
+
         protected void AcknowledgeCancel()
         {
             lock (_asyncLock)
@@ -158,11 +159,11 @@ namespace ProcessHacker.FormHelper
         }
 
         private bool cancelAcknowledgedFlag;
-        // if the operation fails with an exception,set to true
+        // if the operation fails with an exception, set to true
         private bool failedFlag;
-        // if the operation is running,set to true
+        // if the operation is running, set to true
         private bool isRunning;
-                
+
         private void InternalStart()
         {            
             cancelledFlag = false;

@@ -180,6 +180,18 @@ namespace ProcessHacker.Components
         {
             if (this.KeyDown != null)
                 this.KeyDown(sender, e);
+
+            if (!e.Handled)
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    inspectThreadMenuItem_Click(null, null);
+                }
+                else if (e.KeyCode == Keys.Delete)
+                {
+                    terminateThreadMenuItem_Click(null, null);
+                }
+            }
         }
 
         #region Properties
@@ -496,6 +508,9 @@ namespace ProcessHacker.Components
 
         private void inspectThreadMenuItem_Click(object sender, EventArgs e)
         {
+            if (listThreads.SelectedItems.Count != 1)
+                return;
+
             if (_pid == 4)
             {
                 MessageBox.Show(
@@ -508,7 +523,7 @@ namespace ProcessHacker.Components
             if (_pid == Win32.GetCurrentProcessId())
             {
                 if (MessageBox.Show(
-                    "Inspecting Process Hacker's threads will lead to instability. Are you sure you want to continue?",
+                    "Inspecting Process Hacker's threads may lead to instability. Are you sure you want to continue?",
                     "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
                     == DialogResult.No)
                     return;
@@ -517,7 +532,7 @@ namespace ProcessHacker.Components
             if (Misc.IsDangerousPid(_pid))
             {
                 if (MessageBox.Show(
-                  "Inspecting a system process' threads will lead to instability. Are you sure you want to continue?",
+                  "Inspecting a system process' threads may lead to instability. Are you sure you want to continue?",
                   "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
                   == DialogResult.No)
                     return;
@@ -538,16 +553,13 @@ namespace ProcessHacker.Components
         }
 
         private void terminateThreadMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
-            {
-                DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
-                    " sure you want to terminate the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+        {              
+            if (listThreads.SelectedItems.Count == 0)
+                return;
 
-                if (result == DialogResult.No)
-                    return;
-            }
+            if (MessageBox.Show("Are you sure you want to terminate the selected thread(s)?",
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                return;
 
             if (Program.ElevationType == TokenElevationType.Limited && 
                 KProcessHacker.Instance == null)

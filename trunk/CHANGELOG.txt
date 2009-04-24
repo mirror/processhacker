@@ -1,11 +1,14 @@
 Process Hacker
 
 1.3.7.2
- * NEW:
+ * NEW/IMPROVED:
    * #2780260 - "add <Enter> key to open Proc Properties"
+   * #2780277 - "add <ENTER> to shortcut list for default action"
+   * Thread termination now prompts
  * FIXED:
    * Unhandled exception when process properties is closed within 100ms of 
      being opened
+   * Handle filter took a while to start up
 
 1.3.7.1
  * NEW:

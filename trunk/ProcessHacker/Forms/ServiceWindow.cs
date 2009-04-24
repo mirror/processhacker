@@ -43,6 +43,7 @@ namespace ProcessHacker
             _serviceProps.NeedsClose += new EventHandler(_serviceProps_NeedsClose);
             this.Controls.Add(_serviceProps);
             this.Text = _serviceProps.Text;
+            this.AcceptButton = _serviceProps.ApplyButton;
 
             if (services.Length == 1)
                 _serviceProps.ApplyButtonText = "&OK";

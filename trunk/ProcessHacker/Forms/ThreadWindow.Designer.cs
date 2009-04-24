@@ -142,6 +142,7 @@
             // 
             // buttonToken
             // 
+            this.buttonToken.Enabled = false;
             this.buttonToken.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonToken.Location = new System.Drawing.Point(12, 12);
             this.buttonToken.Name = "buttonToken";

@@ -79,14 +79,16 @@ namespace ProcessHacker
                         using (TokenHandle token = thandle.GetToken(TokenAccess.Query))
                         {
                             labelThreadUser.Text = "Username: " + token.GetUser().GetName(true);
+                            buttonToken.Enabled = true;
                         }
                     }
                     catch (Exception ex)
                     {
+                        buttonToken.Enabled = false;
+
                         if (ex.Message.StartsWith("An attempt was made"))
                         {
                             labelThreadUser.Text = "Username: (Not Impersonating)"; 
-                            buttonToken.Enabled = false;
                         }
                         else
                         {
@@ -95,8 +97,11 @@ namespace ProcessHacker
                     }
                 }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                labelThreadUser.Text = "Username: (" + ex.Message + ")";
+                buttonToken.Enabled = false;
+            }
 
             try
             {
