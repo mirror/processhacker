@@ -1,5 +1,12 @@
 Process Hacker
 
+1.3.7.2
+ * NEW:
+   * #2780260 - "add <Enter> key to open Proc Properties"
+ * FIXED:
+   * Unhandled exception when process properties is closed within 100ms of 
+     being opened
+
 1.3.7.1
  * NEW:
    * "-nokph" command line switch to disable KProcessHacker

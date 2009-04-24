@@ -208,6 +208,11 @@ namespace ProcessHacker
                 new System.Threading.TimerCallback(o =>
                 {
                     t.Dispose();
+
+                    // Check if window was closed before this began executing, bail out if true.
+                    if (!this.IsHandleCreated)
+                        return;
+
                     this.BeginInvoke(new MethodInvoker(this.LoadStage2));
                 }),
                 null, 100, System.Threading.Timeout.Infinite);

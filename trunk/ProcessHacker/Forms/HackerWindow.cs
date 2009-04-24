@@ -143,28 +143,6 @@ namespace ProcessHacker
 
         #region Lists
 
-        private void listProcesses_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyData == Keys.Delete)
-            {
-                terminateMenuItem_Click(null, null);
-            }
-        }
-
-        private void listProcesses_SelectionChanged(object sender, EventArgs e)
-        {
-            processSelectedItems = treeProcesses.SelectedNodes.Count;
-
-            if (processSelectedItems == 1)
-            {
-                processSelectedPID = treeProcesses.SelectedNodes[0].PID;
-            }
-            else
-            {
-                processSelectedPID = -1;
-            }
-        }
-
         private void listNetwork_DoubleClick(object sender, EventArgs e)
         {
             goToProcessNetworkMenuItem_Click(sender, e);
@@ -943,7 +921,7 @@ namespace ProcessHacker
             }
         }
 
-        private void inspectProcessMenuItem_Click(object sender, EventArgs e)
+        private void propertiesProcessMenuItem_Click(object sender, EventArgs e)
         {
             // user hasn't got any processes selected
             if (processSelectedPID == -1)
@@ -1692,9 +1670,35 @@ namespace ProcessHacker
 
         #region Trees
 
+        private void treeProcesses_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Delete)
+            {
+                terminateMenuItem_Click(null, null);
+            }
+            else if (e.KeyData == Keys.Enter)
+            {
+                propertiesProcessMenuItem_Click(null, null);
+            }
+        }
+
         private void treeProcesses_NodeMouseDoubleClick(object sender, TreeNodeAdvMouseEventArgs e)
         {
-            inspectProcessMenuItem_Click(null, null);
+            propertiesProcessMenuItem_Click(null, null);
+        }
+
+        private void treeProcesses_SelectionChanged(object sender, EventArgs e)
+        {
+            processSelectedItems = treeProcesses.SelectedNodes.Count;
+
+            if (processSelectedItems == 1)
+            {
+                processSelectedPID = treeProcesses.SelectedNodes[0].PID;
+            }
+            else
+            {
+                processSelectedPID = -1;
+            }
         }
 
         #endregion

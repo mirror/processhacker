@@ -343,7 +343,7 @@
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
             this.propertiesProcessMenuItem.Index = 13;
             this.propertiesProcessMenuItem.Text = "&Properties...";
-            this.propertiesProcessMenuItem.Click += new System.EventHandler(this.inspectProcessMenuItem_Click);
+            this.propertiesProcessMenuItem.Click += new System.EventHandler(this.propertiesProcessMenuItem_Click);
             // 
             // menuItem7
             // 
@@ -749,9 +749,9 @@
             this.treeProcesses.Provider = null;
             this.treeProcesses.Size = new System.Drawing.Size(784, 344);
             this.treeProcesses.TabIndex = 4;
-            this.treeProcesses.SelectionChanged += new System.EventHandler(this.listProcesses_SelectionChanged);
+            this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
-            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listProcesses_KeyDown);
+            this.treeProcesses.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeProcesses_KeyDown);
             // 
             // tabServices
             // 
