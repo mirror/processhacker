@@ -14,7 +14,7 @@ FOR %%a IN (
 
 :: Clear older files present in "Release" folder
 DEL/f/a "ProcessHacker.exe.config" "processhacker-*-setup.exe"^
- "ProcessHacker_in.exe" "processhacker-bin.zip" >NUL 2>&1
+ "ProcessHacker_in.exe" "Assistant_in.exe" "processhacker-bin.zip" >NUL 2>&1
 
 :: Check if ILMerge is present in the default installation location or in PATH
 SET ILMergePath="%PROGRAMFILES%\Microsoft\ILMerge\ILMerge.exe"
@@ -27,18 +27,15 @@ REN "ProcessHacker.exe" "ProcessHacker_in.exe"^
  && REN "Assistant.exe" "Assistant_in.exe"
 ECHO.
 
-:: Merge "ProcessHacker.Native.dll" with "Assistant.exe"
+:: Merge "ProcessHacker.Native.dll" with "Assistant.exe" (just for the installer + zip)
 %ILMergePath% /t:winexe /out:"Assistant.exe" "Assistant_in.exe"^
  "ProcessHacker.Native.dll"^
  && ECHO:ProcessHacker.Native.dll merged successfully with Assistant.exe!
 
-:: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
+:: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge (just for the installer + zip)
 %ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe"^
  "ProcessHacker.Native.dll" "Aga.Controls.dll"^
  && ECHO:Aga.Controls.dll merged successfully with ProcessHacker.exe!
-
-DEL/f/a "ProcessHacker_in.exe" "Assistant_in.exe" "Aga.Controls.dll"^
- "ProcessHacker.Native.dll" >NUL 2>&1
 
 :: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
@@ -54,13 +51,26 @@ IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
 	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
 
 :CLEANUP
-:: Clean up the .pdb files in "Release" folder
-DEL /f/a/q *.pdb >NUL 2>&1
+:: Move the pdb files somewhere else for now (just for the zip creation)
+MKDIR pdb
+MOVE *.pdb pdb\
 
 :: ZIP the binaries
 IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip^
  "processhacker-bin.zip" "*" -x!*setup.exe -mx=9 >NUL&&(
 	ECHO:ZIP created successfully!))
+
+:: Move the pdb files back
+MOVE pdb\*.pdb .\
+RMDIR pdb
+
+:: Delete the merged files
+DEL "ProcessHacker.exe"
+DEL "Assistant.exe"
+
+:: Rename the _in.exe files back
+REN "ProcessHacker_in.exe" "ProcessHacker.exe"
+REN "Assistant_in.exe" "Assistant.exe"
 
 :END
 GOTO :EOF

@@ -132,6 +132,7 @@ namespace ProcessHacker.UI
                     newColumns[i] = new TreeColumn(s[0], Int32.Parse(s[1]));
                     newColumns[i].SortOrder = (SortOrder)Enum.Parse(typeof(SortOrder), s[2]);
                     newColumns[i].IsVisible = bool.Parse(s[3]);
+                    newColumns[i].MinColumnWidth = 3;
                     newColumnsD.Add(s[0], newColumns[i]);
                 }
 
