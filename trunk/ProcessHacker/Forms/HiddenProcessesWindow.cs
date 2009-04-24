@@ -41,6 +41,8 @@ namespace ProcessHacker
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
             listProcesses.SetDoubleBuffered(true);
             listProcesses.SetTheme("explorer");
+
+            labelCount.Text = "";
         }
 
         private void HiddenProcessesWindow_Load(object sender, EventArgs e)
@@ -61,6 +63,9 @@ namespace ProcessHacker
             listProcesses.Items.Clear();
 
             var processes = Windows.GetProcesses();
+            int totalCount = 0;
+            int hiddenCount = 0;
+            int terminatedCount = 0;
 
             for (int pid = 8; pid <= 8096; pid += 4)
             {
@@ -78,6 +83,9 @@ namespace ProcessHacker
                         pid.ToString()
                     }));
 
+                    // Check if the process has terminated. This is possible because 
+                    // a process can be terminated while its object is still being 
+                    // referenced.
                     ulong[] times = new ulong[4];
 
                     Win32.GetProcessTimes(phandle, out times[0], out times[1], out times[2], out times[3]);
@@ -86,13 +94,17 @@ namespace ProcessHacker
                     {
                         item.BackColor = Color.DarkGray;
                         item.ForeColor = Color.White;
+                        terminatedCount++;
                     }
                     else
                     {
+                        totalCount++;
+
                         if (!processes.ContainsKey(pid))
                         {
                             item.BackColor = Color.Red;
                             item.ForeColor = Color.White;
+                            hiddenCount++;
                         }
                     }
 
@@ -111,8 +123,17 @@ namespace ProcessHacker
 
                     item.BackColor = Color.Red;
                     item.ForeColor = Color.White;
+                    totalCount++;
                 }
             }
+
+            labelCount.Text = totalCount.ToString() + " running processes (excl. kernel and idle), " +
+                hiddenCount.ToString() + " hidden, " + terminatedCount.ToString() + " terminated.";
+
+            if (hiddenCount > 0)
+                labelCount.ForeColor = Color.Red;
+            else
+                labelCount.ForeColor = SystemColors.WindowText;
 
             listProcesses.EndUpdate();
             this.Cursor = Cursors.Default;

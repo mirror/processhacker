@@ -38,6 +38,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.buttonTerminate = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
+            this.labelCount = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listProcesses
@@ -50,10 +51,10 @@
             this.columnPID});
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
-            this.listProcesses.Location = new System.Drawing.Point(12, 55);
+            this.listProcesses.Location = new System.Drawing.Point(12, 70);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(487, 284);
+            this.listProcesses.Size = new System.Drawing.Size(487, 269);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
@@ -141,11 +142,23 @@
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
+            // labelCount
+            // 
+            this.labelCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelCount.Location = new System.Drawing.Point(12, 52);
+            this.labelCount.Name = "labelCount";
+            this.labelCount.Size = new System.Drawing.Size(487, 15);
+            this.labelCount.TabIndex = 6;
+            this.labelCount.Text = "Count";
+            this.labelCount.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // HiddenProcessesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(511, 393);
+            this.Controls.Add(this.labelCount);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonTerminate);
             this.Controls.Add(this.label2);
@@ -175,5 +188,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonTerminate;
         private System.Windows.Forms.Button buttonSave;
+        private System.Windows.Forms.Label labelCount;
     }
 }
