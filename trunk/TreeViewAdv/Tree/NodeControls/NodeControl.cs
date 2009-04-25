@@ -82,8 +82,19 @@ namespace Aga.Controls.Tree.NodeControls
 
 		internal virtual void AssignParent(TreeViewAdv parent)
 		{
+            if (_parent != null)
+                _parent.ColumnWidthChanged -= parent_ColumnWidthChanged;
+
 			_parent = parent;
+
+            if (_parent != null)
+                _parent.ColumnWidthChanged += parent_ColumnWidthChanged;
 		}
+
+        private void parent_ColumnWidthChanged(object sender, TreeColumnEventArgs e)
+        {
+            _cachedSizeValid = false;
+        }
 
 		protected virtual Rectangle GetBounds(TreeNodeAdv node, DrawContext context)
 		{
@@ -116,15 +127,28 @@ namespace Aga.Controls.Tree.NodeControls
 			return Convert.ToBoolean(args.Value);
 		}
 
+        // wj32: getting sizes takes a lot of CPU time, so let's cache it.
+        private bool _cachedSizeValid = false;
+        private Size _cachedSize = Size.Empty;
+
 		internal Size GetActualSize(TreeNodeAdv node, DrawContext context)
 		{
-			if (IsVisible(node))
-			{
-				Size s = MeasureSize(node, context);
-				return new Size(s.Width + LeftMargin, s.Height);
-			}
-			else
-				return Size.Empty;
+            // wj32: IsVisible takes longer than just returning the size...
+            //if (IsVisible(node))
+            //{
+                if (!_cachedSizeValid)
+                {
+                    Size s = MeasureSize(node, context);
+                    _cachedSize = new Size(s.Width + LeftMargin, s.Height);
+                    _cachedSizeValid = true;
+                }
+
+                return _cachedSize;
+            //}
+            //else
+            //{
+            //    return Size.Empty;
+            //}
 		}
 
 		public abstract Size MeasureSize(TreeNodeAdv node, DrawContext context);

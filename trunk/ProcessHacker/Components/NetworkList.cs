@@ -32,6 +32,7 @@ namespace ProcessHacker.Components
     {
         private NetworkProvider _provider;
         private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -197,6 +198,12 @@ namespace ProcessHacker.Components
         private void provider_Updated()
         {
             _highlightingContext.Tick();
+
+            if (_needsSort)
+            {
+                listNetwork.Sort();
+                _needsSort = false;
+            }
         }  
 
         private void provider_DictionaryAdded(NetworkConnection item)
@@ -274,7 +281,7 @@ namespace ProcessHacker.Components
                 }
 
                 litem.SubItems[4].Text = newItem.State != 0 ? newItem.State.ToString() : "";
-                listNetwork.Sort();
+                _needsSort = true;
             }
         }
 

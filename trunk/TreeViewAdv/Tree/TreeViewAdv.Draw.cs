@@ -186,9 +186,29 @@ namespace Aga.Controls.Tree
 			}
 		}
 
+        private Dictionary<TreeNodeAdv, IList<NodeControlInfo>> _cachedNodeControls = 
+            new Dictionary<TreeNodeAdv, IList<NodeControlInfo>>();
+
 		public void DrawNode(TreeNodeAdv node, DrawContext context)
 		{
-			foreach (NodeControlInfo item in GetNodeControls(node))
+            IEnumerable<NodeControlInfo> nodeControls = null;
+
+            lock (_cachedNodeControls)
+            {
+                if (!_cachedNodeControls.ContainsKey(node))
+                {
+                    List<NodeControlInfo> ncList = new List<NodeControlInfo>();
+
+                    foreach (var item in this.GetNodeControls(node))
+                        ncList.Add(item);
+
+                    _cachedNodeControls.Add(node, ncList);
+                }
+
+                nodeControls = _cachedNodeControls[node];
+            }
+
+            foreach (NodeControlInfo item in nodeControls)
 			{
 				if (item.Bounds.X + item.Bounds.Width >= OffsetX && 
                     item.Bounds.X - OffsetX < this.Bounds.Width)// skip invisible nodes (fixed by wj32)
@@ -200,6 +220,12 @@ namespace Aga.Controls.Tree
 				}
 			}
 		}
+
+        public void InvalidateNodeControlCache()
+        {
+            lock (_cachedNodeControls)
+                _cachedNodeControls.Clear();
+        }
 
 		private void DrawScrollBarsBox(Graphics gr)
 		{

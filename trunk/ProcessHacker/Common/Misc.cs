@@ -90,6 +90,8 @@ namespace ProcessHacker
 
         #endregion
 
+        public static int UnitSpecifier = 4;
+
         public static T[] Concat<T>(params T[][] ap)
         {
             int tl = 0;
@@ -443,7 +445,7 @@ namespace ProcessHacker
             int i = 0;
             decimal s = (decimal)size;
 
-            while (s > 1024 && i < SizeUnitNames.Length && i < Properties.Settings.Default.UnitSpecifier)
+            while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
             {
                 s /= 1024;
                 i++;

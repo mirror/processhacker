@@ -36,6 +36,7 @@ namespace ProcessHacker.Components
     {
         private ThreadProvider _provider;
         private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -308,6 +309,12 @@ namespace ProcessHacker.Components
         private void provider_Updated()
         {
             _highlightingContext.Tick();
+
+            if (_needsSort)
+            {
+                listThreads.Sort();
+                _needsSort = false;
+            }
         }   
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
@@ -365,7 +372,7 @@ namespace ProcessHacker.Components
                 litem.Tag = newItem;
 
                 (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
-                listThreads.Sort();
+                _needsSort = true;
             }
         }
 

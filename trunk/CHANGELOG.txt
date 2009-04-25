@@ -7,6 +7,7 @@ Process Hacker
    * Thread termination now prompts
    * Integrity, I/O priority and page priority columns
    * Improved the perceived responsiveness of several GUI components
+   * Performance improvements in the tree view and other lists
  * FIXED:
    * Unhandled exception when process properties is closed within 100ms of 
      being opened

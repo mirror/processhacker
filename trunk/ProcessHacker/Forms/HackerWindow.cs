@@ -1893,6 +1893,8 @@ namespace ProcessHacker
             else
                 this.WindowState = FormWindowState.Normal;
 
+            Misc.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
+
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
             toolbarMenuItem.Checked = toolStrip.Visible = Properties.Settings.Default.ToolbarVisible;
 
@@ -2079,6 +2081,7 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
+            this.Visible = false;
             notifyIcon.Visible = false;
 
             SaveSettings();

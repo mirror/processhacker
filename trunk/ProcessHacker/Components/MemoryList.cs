@@ -35,6 +35,7 @@ namespace ProcessHacker.Components
     {
         private List<MemoryItem> _memoryItems;
         private MemoryProvider _provider;
+        private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -143,6 +144,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryAdded -= new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified -= new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved -= new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated -= new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                     _memoryItems = null;
                 }
 
@@ -158,6 +160,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                    _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
                     _pid = _provider.PID;
                     _memoryItems = new List<MemoryItem>();
 
@@ -266,6 +269,15 @@ namespace ProcessHacker.Components
             listMemory.Invalidate();
         }
 
+        private void provider_Updated()
+        {
+            if (_needsSort)
+            {
+                this.Sort();
+                _needsSort = false;
+            }
+        }
+
         private void provider_DictionaryAdded(MemoryItem item)
         {
             _memoryItems.Add(item);
@@ -279,7 +291,7 @@ namespace ProcessHacker.Components
         private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
         {
             _memoryItems[_memoryItems.IndexOf(oldItem)] = newItem;
-            this.Sort();
+            _needsSort = true;
         }
 
         private void provider_DictionaryRemoved(MemoryItem item)

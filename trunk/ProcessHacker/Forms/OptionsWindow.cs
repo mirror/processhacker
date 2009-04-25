@@ -400,6 +400,7 @@ namespace ProcessHacker
         private void ApplySettings()
         {
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
+            Misc.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
 
             foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());

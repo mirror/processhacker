@@ -271,8 +271,8 @@ namespace Aga.Controls.Tree
 			point.Y += (rect.Y - ColumnHeaderHeight);
 			point.X += OffsetX;
 			foreach (NodeControlInfo info in GetNodeControls(node))
-				if (info.Bounds.Contains(point))
-					return info;
+                if (info.Bounds.Contains(point))
+                    return info;
 
 			if (FullRowSelect)
 				return new NodeControlInfo(null, Rectangle.Empty, node);
@@ -685,6 +685,8 @@ namespace Aga.Controls.Tree
 				node.Nodes.Clear();
 			if (!LoadOnDemand || node.IsExpandedOnce)
 				ReadChilds(node);
+
+            this.InvalidateNodeControlCache();
 		}
 
 		private struct ExpandArgs

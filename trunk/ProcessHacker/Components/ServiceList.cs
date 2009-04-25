@@ -32,6 +32,7 @@ namespace ProcessHacker.Components
     {
         private ServiceProvider _provider;
         private HighlightingContext _highlightingContext;
+        private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -186,6 +187,12 @@ namespace ProcessHacker.Components
         private void provider_Updated()
         {
             _highlightingContext.Tick();
+
+            if (_needsSort)
+            {
+                listServices.Sort();
+                _needsSort = false;
+            }
         }  
 
         private void provider_DictionaryAdded(ServiceItem item)
@@ -236,8 +243,7 @@ namespace ProcessHacker.Components
                 litem.SubItems[4].Text = newItem.Config.StartType.ToString();
                 litem.SubItems[5].Text = newItem.Status.ServiceStatusProcess.ProcessID == 0 ? "" :
                     newItem.Status.ServiceStatusProcess.ProcessID.ToString();
-
-                listServices.Sort();
+                _needsSort = true;
             }
         }
 

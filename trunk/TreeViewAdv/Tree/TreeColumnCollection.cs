@@ -77,12 +77,14 @@ namespace Aga.Controls.Tree
 						col.SortOrder = SortOrder.None;
 				}
 			}
-			_treeView.UpdateHeaders();
+            _treeView.UpdateHeaders();
+            _treeView.InvalidateNodeControlCache();
 		}
 
 		void WidthChanged(object sender, EventArgs e)
 		{
 			_treeView.ChangeColumnWidth(sender as TreeColumn);
+            _treeView.InvalidateNodeControlCache();
 		}
 
 		void IsVisibleChanged(object sender, EventArgs e)

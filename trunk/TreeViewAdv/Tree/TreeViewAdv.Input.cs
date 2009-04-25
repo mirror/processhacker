@@ -163,7 +163,8 @@ namespace Aga.Controls.Tree
 			if (!args.Handled)
 				Input.MouseDown(args);
 
-			base.OnMouseDown(e);
+            base.OnMouseDown(e);
+            this.InvalidateNodeControlCache();
             this.Invalidate();
 		}
 
