@@ -5,7 +5,7 @@
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
-#define installer_build_number "30"
+#define installer_build_number "31"
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -97,8 +97,8 @@ Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: 
 Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
 Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
-Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: KPHServiceCheck; Flags: unchecked dontinheritcheck
-Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: NOT KPHServiceCheck; Flags: unchecked dontinheritcheck
+Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck(); Flags: unchecked dontinheritcheck
+Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck(); Flags: unchecked dontinheritcheck
 
 [INI]
 Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= app_updates_url}
@@ -151,10 +151,10 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
 
 [Run]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser
+Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; Check: ngenExistsCheck(); StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser skipifdoesntexist
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 
@@ -165,8 +165,8 @@ Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellex
 Type: files; Name: {app}\Homepage.url
 
 [UninstallRun]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
 
 [Code]
 // Create a mutex for the installer
@@ -240,6 +240,22 @@ begin
 		if dvalue = 2 then
 		Result := False;
 	end;
+end;
+
+// Check if ngen.exe exists
+function ngenExistsCheck(): Boolean;
+begin
+	Result := False;
+	if FileExists(ExpandConstant('{win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe')) then
+	Result := True;
+end;
+
+// Check if sc.exe exists
+function scExeExistsCheck(): Boolean;
+begin
+	Result := False;
+	if FileExists(ExpandConstant('{sys}\sc.exe')) then
+	Result := True;
 end;
 
 Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
