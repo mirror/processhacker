@@ -1915,7 +1915,8 @@ namespace ProcessHacker
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
-            Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath);
+            if (Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath) == 0)
+                Win32.LoadLibrary("dbghelp.dll");
 
             try
             {
@@ -1978,13 +1979,15 @@ namespace ProcessHacker
             Properties.Settings.Default.StartedServices = startedSMenuItem.Checked;
             Properties.Settings.Default.StoppedServices = stoppedSMenuItem.Checked;
             Properties.Settings.Default.DeletedServices = DSMenuItem.Checked;
-            
+
             try
             {
                 Properties.Settings.Default.Save();
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         public void SelectAll(TreeViewAdv tree)
@@ -2081,10 +2084,9 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
-            this.Visible = false;
             notifyIcon.Visible = false;
-
             SaveSettings();
+            this.Visible = false;
 
             if (KProcessHacker.Instance != null)
                 KProcessHacker.Instance.Close();

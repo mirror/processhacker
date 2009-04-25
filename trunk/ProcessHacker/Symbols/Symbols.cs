@@ -158,8 +158,11 @@ namespace ProcessHacker.Symbols
                                                 System.Diagnostics.Process.Start(
                                                     "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
                                             }
-                                            catch
-                                            { }
+                                            catch (Exception ex)
+                                            {
+                                                MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
+                                                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            }
 
                                             return true;
                                         }
@@ -188,8 +191,10 @@ namespace ProcessHacker.Symbols
                     }
                 }
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         public void LoadModule(string fileName, long baseAddress)

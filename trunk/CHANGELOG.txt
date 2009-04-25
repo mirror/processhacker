@@ -13,6 +13,8 @@ Process Hacker
      being opened
    * Handle filter took a while to start up
    * Forgot to add sorting for Private WS, Shared WS and Shareable WS
+   * dbghelp warnings were not being shown the first time process 
+     properties opened
 
 1.3.7.1
  * NEW:

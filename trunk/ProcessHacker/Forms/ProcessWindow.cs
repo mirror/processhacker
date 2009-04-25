@@ -151,6 +151,8 @@ namespace ProcessHacker
 
             // update the Window menu
             Program.UpdateWindow(this);
+
+            SymbolProvider.ShowWarning(this, false);
         }
 
         private void ProcessWindow_Paint(object sender, PaintEventArgs e)
@@ -229,8 +231,6 @@ namespace ProcessHacker
                     this.BeginInvoke(new MethodInvoker(this.LoadStage2));
                 }),
                 null, 25, System.Threading.Timeout.Infinite);
-
-            SymbolProvider.ShowWarning(this, false);
         }
 
         private void LoadStage2()
