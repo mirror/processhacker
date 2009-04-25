@@ -35,6 +35,7 @@ namespace ProcessHacker
 {
     public partial class OptionsWindow : Form
     {
+        private bool _isFirstPaint = true;
         private string _oldDbghelp;
         private string _oldTaskMgrDebugger;
         private Font _font;
@@ -49,29 +50,6 @@ namespace ProcessHacker
             InitializeComponent();
 
             _dontApply = dontApply;
-            this.InitializeHighlightingColors();
-            this.LoadSettings();
-
-            foreach (TabPage tab in tabControl.TabPages)
-            {
-                foreach (Control c in tab.Controls)
-                {
-                    if (c is CheckBox || c is ListView)
-                        c.Click += (sender, e) => this.EnableApplyButton();
-                    else if (c is TextBox)
-                        (c as TextBox).TextChanged += (sender, e) => this.EnableApplyButton();
-                    else if (c is ComboBox)
-                        (c as ComboBox).SelectedIndexChanged += (sender, e) => this.EnableApplyButton();
-                    else if (c is NumericUpDown)
-                        (c as NumericUpDown).ValueChanged += (sender, e) => this.EnableApplyButton();
-                    else if (c is ColorModifier)
-                        (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
-                    else if (c is Button || c is Label)
-                        ; // Nothing
-                    else
-                        c.Click += (sender, e) => this.EnableApplyButton();
-                }
-            }
         }
 
         public TabPage SelectedTab
@@ -94,6 +72,43 @@ namespace ProcessHacker
             else
             {
                 buttonChangeReplaceTaskManager.Visible = false;
+            }
+        }
+
+        private void OptionsWindow_Paint(object sender, PaintEventArgs e)
+        {
+            if (_isFirstPaint)
+            {
+                this.LoadStage1();
+            }
+
+            _isFirstPaint = false;
+        }
+
+        private void LoadStage1()
+        {
+            this.InitializeHighlightingColors();
+            this.LoadSettings();
+
+            foreach (TabPage tab in tabControl.TabPages)
+            {
+                foreach (Control c in tab.Controls)
+                {
+                    if (c is CheckBox || c is ListView)
+                        c.Click += (sender, e) => this.EnableApplyButton();
+                    else if (c is TextBox)
+                        (c as TextBox).TextChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is ComboBox)
+                        (c as ComboBox).SelectedIndexChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is NumericUpDown)
+                        (c as NumericUpDown).ValueChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is ColorModifier)
+                        (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
+                    else if (c is Button || c is Label)
+                        ; // Nothing
+                    else
+                        c.Click += (sender, e) => this.EnableApplyButton();
+                }
             }
         }
 

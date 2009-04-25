@@ -364,6 +364,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the process' cookie (a random value).
+        /// </summary>
+        public int GetCookie()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessCookie);
+        }
+
+        /// <summary>
         /// Gets the number of processor cycles consumed by the process' threads.
         /// </summary>
         public ulong GetCycleTime()
@@ -516,6 +524,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the number of handles opened by the process.
+        /// </summary>
+        public int GetHandleCount()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessHandleCount);
+        }
+
+        /// <summary>
         /// Gets the file name of the process' image. This requires the
         /// PROCESS_QUERY_LIMITED_INFORMATION permission.
         /// </summary>
@@ -529,6 +545,28 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return FileUtils.FixPath(sb.ToString(0, len));
+        }
+
+        private int GetInformationInt32(ProcessInformationClass infoClass)
+        {
+            int status;
+            int value;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationProcess(
+                this, infoClass, out value, 4, out retLength)) < 0)
+                Win32.ThrowLastError(status);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Gets the process' I/O priority, ranging from 0-7.
+        /// </summary>
+        /// <returns></returns>
+        public int GetIoPriority()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessIoPriority);
         }
 
         /// <summary>
@@ -622,6 +660,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the process' page priority, ranging from 0-7.
+        /// </summary>
+        public int GetPagePriority()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessPagePriority);
+        }
+
+        /// <summary>
         /// Gets the process' parent's process ID. This requires 
         /// the PROCESS_QUERY_LIMITED_INFORMATION permission.
         /// </summary>
@@ -693,6 +739,22 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the process' unique identifier.
+        /// </summary>
+        public int GetProcessId()
+        {
+            return this.GetBasicInformation().UniqueProcessId;
+        }
+
+        /// <summary>
+        /// Gets the process' session ID.
+        /// </summary>
+        public int GetSessionId()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation);
+        }
+
+        /// <summary>
         /// Forces the process to load the specified library.
         /// </summary>
         /// <param name="path">The path to the library.</param>
@@ -722,7 +784,6 @@ namespace ProcessHacker.Native.Objects
         /// Gets whether the process is currently being debugged. This requires 
         /// the PROCESS_QUERY_INFORMATION permission.
         /// </summary>
-        /// <returns>A boolean value.</returns>
         public bool IsBeingDebugged()
         {
             int debugged;
@@ -734,21 +795,19 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets whether the process is being debugged.
+        /// </summary>
+        public bool IsBeingDebuggedNative()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessDebugFlags) != 0;
+        }
+
+        /// <summary>
         /// Gets whether the system will crash upon the process being terminated.
         /// </summary>
-        /// <returns>A boolean.</returns>
         public bool IsCritical()
         {
-            int status;
-            int breakOnTermination;
-            int retLength;
-
-            if ((status = Win32.NtQueryInformationProcess(
-                this, ProcessInformationClass.ProcessBreakOnTermination,
-                out breakOnTermination, 4, out retLength)) < 0)
-                Win32.ThrowLastError(status);
-
-            return breakOnTermination != 0;
+            return this.GetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination) != 0;
         }
 
         /// <summary>
@@ -760,12 +819,28 @@ namespace ProcessHacker.Native.Objects
         /// the name of the job though.</remarks>
         public bool IsInJob()
         {
-            bool result;
+            int result;
 
             if (!Win32.IsProcessInJob(this, 0, out result))
                 Win32.ThrowLastError();
 
-            return result;
+            return result != 0;
+        }
+
+        /// <summary>
+        /// Gets whether the process is a NTVDM process.
+        /// </summary>
+        public bool IsNtVdmProcess()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessWx86Information) != 0;
+        }
+
+        /// <summary>
+        /// Gets whether the process has priority boost enabled.
+        /// </summary>
+        public bool IsPriorityBoostEnabled()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessPriorityBoost) == 0;
         }
 
         /// <summary>

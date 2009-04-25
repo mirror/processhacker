@@ -311,6 +311,14 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            int[] ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
             out uint ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -456,7 +464,7 @@ namespace ProcessHacker.Native.Api
             StringBuilder ExeName, ref int Size);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool IsProcessInJob(int ProcessHandle, int JobHandle, out bool Result);
+        public static extern bool IsProcessInJob(int ProcessHandle, int JobHandle, out int Result);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);

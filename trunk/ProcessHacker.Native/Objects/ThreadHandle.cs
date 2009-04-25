@@ -165,6 +165,66 @@ namespace ProcessHacker.Native.Objects
             return exitCode;
         }
 
+        private int GetInformationInt32(ThreadInformationClass infoClass)
+        {
+            int status;
+            int value;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationThread(
+                this, infoClass, out value, 4, out retLength)) < 0)
+                Win32.ThrowLastError(status);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Gets the thread's I/O priority.
+        /// </summary>
+        public int GetIoPriority()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadIoPriority);
+        }
+
+        /// <summary>
+        /// Gets the last system call the thread made.
+        /// </summary>
+        /// <returns>A system call number.</returns>
+        public int GetLastSystemCall()
+        {
+            int firstArgument;
+
+            return this.GetLastSystemCall(out firstArgument);
+        }
+
+        /// <summary>
+        /// Gets the last system call the thread made.
+        /// </summary>
+        /// <param name="firstArgument">The first argument to the last system call.</param>
+        /// <returns>A system call number.</returns>
+        public int GetLastSystemCall(out int firstArgument)
+        {
+            int status;
+            int[] data = new int[8];
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationThread(
+                this, ThreadInformationClass.ThreadLastSystemCall, data, 8, out retLength)) < 0)
+                Win32.ThrowLastError(status);
+
+            firstArgument = data[0];
+
+            return data[1];
+        }
+
+        /// <summary>
+        /// Gets the thread's page priority.
+        /// </summary>
+        public int GetPagePriority()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadPagePriority);
+        }
+
         /// <summary>
         /// Gets the thread's priority level.
         /// </summary>
@@ -177,6 +237,54 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return (ThreadPriorityLevel)priority;
+        }
+
+        /// <summary>
+        /// Gets the thread's Win32 start address.
+        /// </summary>
+        public uint GetWin32StartAddress()
+        {
+            return (uint)this.GetInformationInt32(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
+        }
+
+        /// <summary>
+        /// Gets whether the system will break (crash) upon the thread terminating.
+        /// </summary>
+        public bool IsCritical()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadBreakOnTermination) != 0;
+        }
+
+        /// <summary>
+        /// Gets whether any I/O request packets (IRPs) are still pending for the thread.
+        /// </summary>
+        public bool IsIoPending()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadIsIoPending) != 0;
+        }
+
+        /// <summary>
+        /// Gets whether the thread is the last in its process.
+        /// </summary>
+        public bool IsLastThread()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadAmILastThread) != 0;
+        }
+
+        /// <summary>
+        /// Gets whether priority boost is enabled for the thread.
+        /// </summary>
+        public bool IsPriorityBoostEnabled()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadPriorityBoost) == 0;
+        }
+
+        /// <summary>
+        /// Gets whether the thread has terminated.
+        /// </summary>
+        public bool IsTerminated()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadIsTerminated) != 0;
         }
 
         /// <summary>

@@ -55,6 +55,8 @@ namespace ProcessHacker
         public string Name;
         public string Username;
         public string JobName;
+        public string Integrity;
+        public int IntegrityLevel;
         public SystemProcessInformation Process;
         public Dictionary<int, SystemThreadInformation> Threads;
 
@@ -194,7 +196,7 @@ namespace ProcessHacker
             {
                 int retLen;
 
-                Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorTimes,
+                Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorPerformanceInformation,
                     data, data.Size, out retLen);
 
                 var newSums = new SystemProcessorPerformanceInformation();
@@ -628,6 +630,37 @@ namespace ProcessHacker
                                         catch { }
                                         try { item.IsElevated = thandle.IsElevated(); }
                                         catch { }
+
+                                        try
+                                        {
+                                            var groups = thandle.GetGroups();
+
+                                            for (int i = 0; i < groups.Groups.GroupCount; i++)
+                                            {
+                                                if ((groups.Groups.Groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
+                                                {
+                                                    item.Integrity = Windows.GetAccountName(
+                                                        groups.Groups.Groups[i].SID, false).Replace(" Mandatory Level", "");
+
+                                                    if (item.Integrity == "Untrusted")
+                                                        item.IntegrityLevel = 0;
+                                                    else if (item.Integrity == "Low")
+                                                        item.IntegrityLevel = 1;
+                                                    else if (item.Integrity == "Medium")
+                                                        item.IntegrityLevel = 2;
+                                                    else if (item.Integrity == "High")
+                                                        item.IntegrityLevel = 3;
+                                                    else if (item.Integrity == "System")
+                                                        item.IntegrityLevel = 4;
+                                                    else if (item.Integrity == "Installer")
+                                                        item.IntegrityLevel = 5;
+                                                }
+                                            }
+
+                                            groups.Data.Dispose();
+                                        }
+                                        catch
+                                        { }
                                     }
                                 }
                                 catch

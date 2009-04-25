@@ -84,7 +84,7 @@ namespace ProcessHacker
 
         private void ResultsWindow_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindows();
+            Program.UpdateWindow(this);
 
             listResults.ContextMenu = listResults.GetCopyMenu(listResults_RetrieveVirtualItem);
 

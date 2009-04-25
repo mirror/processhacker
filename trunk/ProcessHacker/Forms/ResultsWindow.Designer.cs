@@ -27,7 +27,6 @@ namespace ProcessHacker
 
             Program.ResultsWindows.Remove(Id);
             Program.ResultsIds.Push(_id);
-            Program.UpdateWindows();
 
             Program.CollectGarbage();
 

@@ -75,6 +75,8 @@ namespace ProcessHacker.Components
             comparer.ColumnSortOrder.Add(2);
             comparer.ColumnSortOrder.Add(3);
             comparer.ColumnSortOrder.Add(1);
+            comparer.SortColumn = 1;
+            comparer.SortOrder = SortOrder.Descending;
 
             listThreads.KeyDown += new KeyEventHandler(ThreadList_KeyDown);
             listThreads.MouseDown += new MouseEventHandler(listThreads_MouseDown);

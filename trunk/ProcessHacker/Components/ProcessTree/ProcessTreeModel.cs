@@ -225,6 +225,12 @@ namespace ProcessHacker
                         else if (sortC == "peak working set")
                             return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
                                 n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
+                        else if (sortC == "private ws")
+                            return ModifySort(n1.PrivateWorkingSetNumber.CompareTo(n2.PrivateWorkingSetNumber), sortO);
+                        else if (sortC == "shared ws")
+                            return ModifySort(n1.SharedWorkingSetNumber.CompareTo(n2.SharedWorkingSetNumber), sortO);
+                        else if (sortC == "shareable ws")
+                            return ModifySort(n1.ShareableWorkingSetNumber.CompareTo(n2.ShareableWorkingSetNumber), sortO);
                         else if (sortC == "virtual size")
                             return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
                                 n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
@@ -273,6 +279,12 @@ namespace ProcessHacker
                             return ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
                         else if (sortC == "i/o w")
                             return ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
+                        else if (sortC == "integrity")
+                            return ModifySort(n1.IntegrityLevel.CompareTo(n2.IntegrityLevel), sortO);
+                        else if (sortC == "i/o priority")
+                            return ModifySort(n1.IoPriority.CompareTo(n2.IoPriority), sortO);
+                        else if (sortC == "page priority")
+                            return ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
                         else
                             return 0;
                     }));

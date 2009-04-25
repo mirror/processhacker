@@ -65,7 +65,7 @@ namespace ProcessHacker
         {
             this.Size = Properties.Settings.Default.PEWindowSize;
 
-            Program.UpdateWindows();
+            Program.UpdateWindow(this);
         }
 
         private void PEWindow_FormClosing(object sender, FormClosingEventArgs e)

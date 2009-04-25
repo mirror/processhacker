@@ -19,7 +19,6 @@
             }
 
             Program.PEWindows.Remove(Id);
-            Program.UpdateWindows();
 
             base.Dispose(disposing);
         }

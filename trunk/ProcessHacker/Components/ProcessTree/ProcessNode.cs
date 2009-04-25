@@ -535,6 +535,46 @@ namespace ProcessHacker
             }
         }
 
+        public string Integrity
+        {
+            get { return _pitem.Integrity; }
+        }
+
+        public int IntegrityLevel
+        {
+            get { return _pitem.IntegrityLevel; }
+        }
+
+        public int IoPriority
+        {
+            get
+            {
+                try
+                {
+                    return _pitem.ProcessQueryHandle.GetIoPriority();
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int PagePriority
+        {
+            get
+            {
+                try
+                {
+                    return _pitem.ProcessQueryHandle.GetPagePriority();
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
         public Bitmap Icon
         {
             get { return _icon; }

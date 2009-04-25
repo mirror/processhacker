@@ -385,35 +385,6 @@ namespace ProcessHacker.Native
                 }
             }
         }
-
-        /// <summary>
-        /// Loads an image into kernel-mode using NtSetSystemInformation 
-        /// with SystemLoadAndCallImage.
-        /// </summary>
-        /// <param name="fileName">The path to the driver.</param>
-        public static void LoadKernelImage(string fileName)
-        {
-            FileInfo info = new FileInfo(fileName);
-            string ntFileName = "\\??\\" + info.FullName;
-
-            SystemLoadAndCallImage laci = new SystemLoadAndCallImage();
-
-            using (MemoryAlloc stringData = new MemoryAlloc(ntFileName.Length * 2 + 2))
-            {
-                laci.ModuleName = new UnicodeString();
-
-                stringData.WriteUnicodeString(0, ntFileName);
-                laci.ModuleName.Buffer = stringData;
-                laci.ModuleName.Length = (ushort)(ntFileName.Length * 2);
-                laci.ModuleName.MaximumLength = laci.ModuleName.Length;
-
-                int ret;
-
-                if ((ret = Win32.NtSetSystemInformation(SystemInformationClass.SystemLoadAndCallImage,
-                    ref laci, Marshal.SizeOf(laci))) < 0)
-                    throw new Exception("Failed to load the kernel image - error " + ret.ToString());
-            }
-        }
     }
 
     public class KernelModule

@@ -103,7 +103,7 @@ namespace ProcessHacker
 
         private void MemoryEditor_Load(object sender, EventArgs e)
         {
-            Program.UpdateWindows();
+            Program.UpdateWindow(this);
 
             this.Size = Properties.Settings.Default.MemoryWindowSize;
         }

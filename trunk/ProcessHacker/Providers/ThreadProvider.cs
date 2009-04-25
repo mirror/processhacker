@@ -346,11 +346,7 @@ namespace ProcessHacker
                             using (ThreadHandle thandle =
                                 new ThreadHandle(tid, ThreadAccess.QueryInformation))
                             {
-                                int retLen;
-
-                                Win32.NtQueryInformationThread(thandle,
-                                    ThreadInformationClass.ThreadQuerySetWin32StartAddress,
-                                    out item.StartAddressI, 4, out retLen);
+                                item.StartAddressI = thandle.GetWin32StartAddress();
                             }
                         }
                         catch
@@ -370,7 +366,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            if (_moduleLoadCompletedEvent.WaitOne(500, false))
+                            if (_moduleLoadCompletedEvent.WaitOne(0, false))
                             {
                                 item.StartAddress = this.GetThreadBasicStartAddress(item.StartAddressI);
                                 item.StartAddressLevel = SymbolResolveLevel.Module;

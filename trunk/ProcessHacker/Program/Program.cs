@@ -258,12 +258,9 @@ namespace ProcessHacker
             if (ProcessCommandLine(pArgs))
                 return;
 
-#if DEBUG
-#else
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-#endif
 
             ProcessProvider = new ProcessSystemProvider();
             ServiceProvider = new ServiceProvider();
@@ -1070,36 +1067,6 @@ namespace ProcessHacker
             }
         }
 
-        public static void UpdateWindows()
-        {
-            Dictionary<string, Form> TextToForm = new Dictionary<string, Form>();
-            List<string> Texts = new List<string>();
-            List<object> dics = new List<object>();
-            List<Form> forms = new List<Form>();
-
-            dics.Add(Program.MemoryEditors);
-            dics.Add(Program.ResultsWindows);
-            dics.Add(Program.PEWindows);
-            dics.Add(Program.PWindows);
-
-            foreach (object dic in dics)
-            {
-                object valueCollection = dic.GetType().GetProperty("Values").GetValue(dic, null);
-                object enumerator = valueCollection.GetType().GetMethod("GetEnumerator").Invoke(valueCollection, null);
-
-                while ((bool)enumerator.GetType().GetMethod("MoveNext").Invoke(enumerator, null))
-                {
-                    forms.Add((Form)enumerator.GetType().GetProperty("Current").GetValue(enumerator, null));
-                }
-            }
-
-            if (Program.HackerWindow != null)
-                forms.Add(Program.HackerWindow);
-
-            foreach (Form f in forms)
-                UpdateWindow(f);
-        }
-
         private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
         {
             Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;
@@ -1109,7 +1076,7 @@ namespace ProcessHacker
 
             f.Invoke(new MethodInvoker(delegate { f.TopMost = !f.TopMost; }));
 
-            Program.UpdateWindows();
+            Program.UpdateWindow(f);
         }
 
         private static void windowCloseItemClicked(object sender, EventArgs e)

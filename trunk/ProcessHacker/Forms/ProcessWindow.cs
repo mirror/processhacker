@@ -38,6 +38,7 @@ namespace ProcessHacker
 {
     public partial class ProcessWindow : Form
     {
+        private bool _isFirstPaint = true;
         private ProcessItem _processItem;
         private int _pid;
         private Process _process;
@@ -149,24 +150,36 @@ namespace ProcessHacker
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
 
             // update the Window menu
-            Program.UpdateWindows();
+            Program.UpdateWindow(this);
+        }
+
+        private void ProcessWindow_Paint(object sender, PaintEventArgs e)
+        {
+            if (_isFirstPaint)
+            {
+                this.LoadStage1();
+            }
+
+            _isFirstPaint = false;
+        }
+
+        private void LoadStage1()
+        {
             this.ApplyFont(Properties.Settings.Default.Font);
 
             this.ClearStatistics();
 
+            // May fail if the process is hidden
             try
             {
-                // May fail if the process is hidden
-                try
-                {
-                    _process = Process.GetProcessById(_pid);
-                }
-                catch
-                { }
-
-                this.UpdateProcessProperties();
+                _process = Process.GetProcessById(_pid);
             }
             catch
+            { }
+
+            this.UpdateProcessProperties();
+            
+            if (_pid < 0)
             {
                 // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
                 buttonEditDEP.Enabled = false;
@@ -198,7 +211,7 @@ namespace ProcessHacker
                 textFileDescription.Text = "System Idle Process";
 
             // add our handler to the process provider
-            Program.ProcessProvider.Updated += 
+            Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
             // HACK: Delay loading
@@ -215,7 +228,7 @@ namespace ProcessHacker
 
                     this.BeginInvoke(new MethodInvoker(this.LoadStage2));
                 }),
-                null, 100, System.Threading.Timeout.Infinite);
+                null, 25, System.Threading.Timeout.Infinite);
 
             SymbolProvider.ShowWarning(this, false);
         }
@@ -223,7 +236,7 @@ namespace ProcessHacker
         private void LoadStage2()
         {
             this.SuspendLayout();
-                
+
             this.InitializeSubControls();
 
             try
@@ -367,19 +380,22 @@ namespace ProcessHacker
                 textFileCompany.Text = "";
             }
 
-            try
+            if (_pid > 0)
             {
-                var processes = Windows.GetProcesses(null);
-
-                if (!processes.ContainsKey(_pid))
+                try
                 {
-                    textFileDescription.Text = "(HIDDEN PROCESS) " + textFileDescription.Text;
-                    textFileDescription.ForeColor = Color.Red;
-                    textFileCompany.ForeColor = Color.Red;
+                    var processes = Windows.GetProcesses(null);
+
+                    if (!processes.ContainsKey(_pid))
+                    {
+                        textFileDescription.Text = "(HIDDEN PROCESS) " + textFileDescription.Text;
+                        textFileDescription.ForeColor = Color.Red;
+                        textFileCompany.ForeColor = Color.Red;
+                    }
                 }
+                catch
+                { }
             }
-            catch
-            { }
 
             if (_processItem.CmdLine != null)
                 textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");

@@ -31,6 +31,7 @@ namespace ProcessHacker
 {
     public partial class SysInfoWindow : Form
     {
+        private bool _isFirstPaint = true;
         private Components.Plotter[] _cpuPlotters;
         private uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
         private uint _pages = (uint)Program.ProcessProvider.System.NumberOfPhysicalPages;
@@ -42,14 +43,27 @@ namespace ProcessHacker
 
             this.Location = Properties.Settings.Default.SysInfoWindowLocation;
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
+        }
 
+        private void SysInfoWindow_Paint(object sender, PaintEventArgs e)
+        {
+            if (_isFirstPaint)
+            {
+                this.LoadStage1();
+            }
+
+            _isFirstPaint = false;
+        }
+
+        private void LoadStage1()
+        {
             plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
             plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
-            plotterCPU.GetToolTip = i => 
-                Program.ProcessProvider.MostCpuHistory[i] + "\n" + 
-                ((plotterCPU.Data1[i] + plotterCPU.Data2[i]) * 100).ToString("N2") + 
-                "% (K " + (plotterCPU.Data1[i] * 100).ToString("N2") + 
-                "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)" + "\n" + 
+            plotterCPU.GetToolTip = i =>
+                Program.ProcessProvider.MostCpuHistory[i] + "\n" +
+                ((plotterCPU.Data1[i] + plotterCPU.Data2[i]) * 100).ToString("N2") +
+                "% (K " + (plotterCPU.Data1[i] * 100).ToString("N2") +
+                "%, U " + (plotterCPU.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
             plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
