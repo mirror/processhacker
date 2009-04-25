@@ -58,8 +58,9 @@ namespace ProcessHacker
 
             Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
 
-            this.Location = Properties.Settings.Default.LogWindowLocation;
             this.Size = Properties.Settings.Default.LogWindowSize;
+            this.Location = Misc.FitRectangle(new Rectangle(
+                Properties.Settings.Default.LogWindowLocation, this.Size), this).Location;
         }
 
         private void HackerWindow_LogUpdated(KeyValuePair<DateTime, string>? value)

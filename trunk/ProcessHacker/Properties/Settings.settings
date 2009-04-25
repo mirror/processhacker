@@ -332,5 +332,8 @@
     <Setting Name="UseColorInheritHandles" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ProcessWindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">200, 200</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

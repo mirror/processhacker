@@ -41,8 +41,9 @@ namespace ProcessHacker
         {
             InitializeComponent();
 
-            this.Location = Properties.Settings.Default.SysInfoWindowLocation;
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
+            this.Location = Misc.FitRectangle(new Rectangle(
+                Properties.Settings.Default.SysInfoWindowLocation, this.Size), this).Location;
         }
 
         private void SysInfoWindow_Paint(object sender, PaintEventArgs e)

@@ -1344,5 +1344,17 @@ namespace ProcessHacker.Properties {
                 this["UseColorInheritHandles"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200, 200")]
+        public global::System.Drawing.Point ProcessWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["ProcessWindowLocation"]));
+            }
+            set {
+                this["ProcessWindowLocation"] = value;
+            }
+        }
     }
 }

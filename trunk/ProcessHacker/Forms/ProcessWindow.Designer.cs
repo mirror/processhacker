@@ -1651,6 +1651,7 @@
             this.Menu = this.mainMenu;
             this.MinimumSize = new System.Drawing.Size(454, 433);
             this.Name = "ProcessWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Process";
             this.Load += new System.EventHandler(this.ProcessWindow_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ProcessWindow_Paint);

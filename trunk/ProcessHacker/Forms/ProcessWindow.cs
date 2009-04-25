@@ -82,26 +82,6 @@ namespace ProcessHacker
                 this.Icon = Program.HackerWindow.Icon;
 
             Program.PWindows.Add(_pid, this);
-
-            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
-            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
-            plotterCPUUsage.GetToolTip = i =>
-                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
-                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
-                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
-            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
-            plotterMemory.GetToolTip = i =>
-                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
-            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
-            plotterIO.GetToolTip = i =>
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
         }
 
         public MenuItem WindowMenuItem
@@ -149,6 +129,19 @@ namespace ProcessHacker
             if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
 
+            // load location, cascade if possible
+            Rectangle bounds = Screen.GetWorkingArea(this);
+            Point location = Properties.Settings.Default.ProcessWindowLocation;
+
+            if (Program.PWindows.Count > 1)
+            {
+                location.X += 20;
+                location.Y += 20;
+            }
+
+            Properties.Settings.Default.ProcessWindowLocation = this.Location = 
+                Misc.FitRectangle(new Rectangle(location, this.Size), this).Location;
+
             // update the Window menu
             Program.UpdateWindow(this);
 
@@ -167,6 +160,26 @@ namespace ProcessHacker
 
         private void LoadStage1()
         {
+            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
+            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
+            plotterCPUUsage.GetToolTip = i =>
+                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
+                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
+            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
+            plotterMemory.GetToolTip = i =>
+                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
+            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
+            plotterIO.GetToolTip = i =>
+                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+
             this.ApplyFont(Properties.Settings.Default.Font);
 
             this.ClearStatistics();
@@ -216,7 +229,7 @@ namespace ProcessHacker
             Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
-            // HACK: Delay loading
+            // Delay loading
             System.Threading.Timer t = null;
 
             t = new System.Threading.Timer(
@@ -258,6 +271,19 @@ namespace ProcessHacker
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.ProcessWindowSize = this.Size;
+
+                Point p = Properties.Settings.Default.ProcessWindowLocation;
+
+                if (
+                    (this.Location.X < p.X && this.Location.Y < p.Y && 
+                    Program.PWindows.Count > 1) || 
+                    Program.PWindows.Count <= 1)
+                    Properties.Settings.Default.ProcessWindowLocation = this.Location;
+            }
+
             this.Visible = false;
 
             if (_pid >= 0)
@@ -299,9 +325,6 @@ namespace ProcessHacker
             Properties.Settings.Default.EnvironmentListViewColumns = ColumnSettings.SaveSettings(listEnvironment);
             Properties.Settings.Default.ProcessWindowSelectedTab = tabControl.SelectedTab.Name;
             Properties.Settings.Default.SearchType = buttonSearch.Text;
-
-            if (this.WindowState == FormWindowState.Normal)
-                Properties.Settings.Default.ProcessWindowSize = this.Size;
         }
 
         private void ProcessWindow_SizeChanged(object sender, EventArgs e)

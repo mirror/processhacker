@@ -608,6 +608,12 @@ namespace ProcessHacker
 
         private void showHideMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.WindowState == FormWindowState.Normal && this.Visible)
+            {
+                Properties.Settings.Default.WindowLocation = this.Location;
+                Properties.Settings.Default.WindowSize = this.Size;
+            }
+
             this.Visible = !this.Visible;
 
             if (this.WindowState == FormWindowState.Minimized)
@@ -1884,9 +1890,10 @@ namespace ProcessHacker
 
         private void LoadSettings()
         {
-            this.TopMost = Properties.Settings.Default.AlwaysOnTop;                
-            this.Location = Properties.Settings.Default.WindowLocation;
+            this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             this.Size = Properties.Settings.Default.WindowSize;
+            this.Location = Misc.FitRectangle(new Rectangle(
+                Properties.Settings.Default.WindowLocation, this.Size), this).Location;
 
             if (Properties.Settings.Default.WindowState != FormWindowState.Minimized)
                 this.WindowState = Properties.Settings.Default.WindowState;
@@ -2053,6 +2060,12 @@ namespace ProcessHacker
                         {
                             try
                             {
+                                if (this.WindowState == FormWindowState.Normal && this.Visible)
+                                {
+                                    Properties.Settings.Default.WindowLocation = this.Location;
+                                    Properties.Settings.Default.WindowSize = this.Size;
+                                }
+
                                 if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
                                 {
                                     this.Visible = false;

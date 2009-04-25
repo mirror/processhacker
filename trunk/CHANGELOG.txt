@@ -8,6 +8,9 @@ Process Hacker
    * Integrity, I/O priority and page priority columns
    * Improved the perceived responsiveness of several GUI components
    * Performance improvements in the tree view and other lists
+   * Windows are protected from being offscreen when they load
+   * Process property window locations are now saved
+   * The main window dimensions are saved when exiting minimized
  * FIXED:
    * Unhandled exception when process properties is closed within 100ms of 
      being opened

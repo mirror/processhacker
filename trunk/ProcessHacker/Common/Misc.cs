@@ -256,6 +256,11 @@ namespace ProcessHacker
             return str;
         }
 
+        public static Rectangle FitRectangle(Rectangle rect, Control c)
+        {
+            return FitRectangle(rect, Screen.GetWorkingArea(c));
+        }
+
         public static Rectangle FitRectangle(Rectangle rect, Rectangle bounds)
         {
             if (rect.X < bounds.Left)
