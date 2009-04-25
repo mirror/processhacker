@@ -558,7 +558,8 @@ namespace ProcessHacker.Components
                 return;
 
             if (MessageBox.Show("Are you sure you want to terminate the selected thread(s)?",
-                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
+                MessageBoxDefaultButton.Button2) == DialogResult.No)
                 return;
 
             if (Program.ElevationType == TokenElevationType.Limited && 

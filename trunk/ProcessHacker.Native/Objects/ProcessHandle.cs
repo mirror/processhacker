@@ -626,7 +626,7 @@ namespace ProcessHacker.Native.Objects
         /// the PROCESS_QUERY_LIMITED_INFORMATION permission.
         /// </summary>
         /// <returns>The process ID.</returns>
-        public int GetParentPID()
+        public int GetParentPid()
         {
             return this.GetBasicInformation().InheritedFromUniqueProcessId;
         }

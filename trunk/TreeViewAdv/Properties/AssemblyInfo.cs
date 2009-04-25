@@ -12,4 +12,5 @@ using System.Security.Permissions;
 [assembly: AssemblyCopyright("Copyright © Andrey Gliznetsov 2006 - 2007, modified by wj32")]
 [assembly: AssemblyDescription("http://sourceforge.net/projects/treeviewadv/")]
 
-[assembly: AssemblyVersion("1.6.1.0")]
+// 1.6.1.0
+[assembly: AssemblyVersion("1.3.7.2")]
