@@ -83,13 +83,13 @@ namespace Aga.Controls.Tree
 
 		void WidthChanged(object sender, EventArgs e)
 		{
-			_treeView.ChangeColumnWidth(sender as TreeColumn);
             _treeView.InvalidateNodeControlCache();
+			_treeView.ChangeColumnWidth(sender as TreeColumn);
 		}
 
 		void IsVisibleChanged(object sender, EventArgs e)
 		{
-			_treeView.FullUpdate();
+            _treeView.FullUpdate();
 		}
 
 		void HeaderChanged(object sender, EventArgs e)

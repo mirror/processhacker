@@ -71,7 +71,7 @@ namespace Aga.Controls.Tree
 		[Category("Behavior")]
 		public event EventHandler<TreeColumnEventArgs> ColumnWidthChanged;
 		internal void OnColumnWidthChanged(TreeColumn column)
-		{
+        {
 			if (ColumnWidthChanged != null)
 				ColumnWidthChanged(this, new TreeColumnEventArgs(column));
 		}
@@ -80,6 +80,8 @@ namespace Aga.Controls.Tree
 		public event EventHandler<TreeColumnEventArgs> ColumnReordered;
 		internal void OnColumnReordered(TreeColumn column)
 		{
+            this.InvalidateNodeControlCache();
+
 			if (ColumnReordered != null)
 				ColumnReordered(this, new TreeColumnEventArgs(column));
 		}
@@ -117,7 +119,9 @@ namespace Aga.Controls.Tree
 		[Category("Behavior")]
 		public event EventHandler<TreeViewAdvEventArgs> Collapsed;
 		private void OnCollapsed(TreeNodeAdv node)
-		{
+        {
+            this.InvalidateNodeControlCache();
+
 			if (Collapsed != null)
 				Collapsed(this, new TreeViewAdvEventArgs(node));
 		}
@@ -133,7 +137,9 @@ namespace Aga.Controls.Tree
 		[Category("Behavior")]
 		public event EventHandler<TreeViewAdvEventArgs> Expanded;
 		private void OnExpanded(TreeNodeAdv node)
-		{
+        {
+            this.InvalidateNodeControlCache();
+
 			if (Expanded != null)
 				Expanded(this, new TreeViewAdvEventArgs(node));
 		}

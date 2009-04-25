@@ -2357,6 +2357,7 @@ namespace ProcessHacker
 
                                 copyProcessMenuItem.MenuItems.DisposeAndClear();
                                 GenericViewMenu.AddMenuItems(copyProcessMenuItem.MenuItems, treeProcesses.Tree);
+                                treeProcesses.Tree.InvalidateNodeControlCache();
                                 treeProcesses.Tree.Invalidate();
                             }));
 
