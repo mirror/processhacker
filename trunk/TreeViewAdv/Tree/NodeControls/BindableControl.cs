@@ -151,49 +151,30 @@ namespace Aga.Controls.Tree.NodeControls
 			return GetMemberAdapter(node).MemberType;
 		}
 
-        private Dictionary<TreeNodeAdv, MemberAdapter> _memberAdapterCache = 
-            new Dictionary<TreeNodeAdv,MemberAdapter>();
-
 		private MemberAdapter GetMemberAdapter(TreeNodeAdv node)
 		{
             MemberAdapter adapter = MemberAdapter.Empty;
 
-            lock (_memberAdapterCache)
+            if (node.Tag != null && !string.IsNullOrEmpty(DataPropertyName))
             {
-                if (_memberAdapterCache.ContainsKey(node))
+                Type type = node.Tag.GetType();
+                PropertyInfo pi = type.GetProperty(DataPropertyName);
+
+                if (pi != null)
                 {
-                    adapter = _memberAdapterCache[node];
+                    return new MemberAdapter(node.Tag, pi);
                 }
                 else
                 {
-                    if (node.Tag != null && !string.IsNullOrEmpty(DataPropertyName))
-                    {
-                        Type type = node.Tag.GetType();
-                        PropertyInfo pi = type.GetProperty(DataPropertyName);
-
-                        if (pi != null)
-                        {
-                            _memberAdapterCache.Add(node, adapter = new MemberAdapter(node.Tag, pi));
-                        }
-                        else
-                        {
-                            FieldInfo fi = type.GetField(DataPropertyName,
-                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                            if (fi != null)
-                                _memberAdapterCache.Add(node, adapter = new MemberAdapter(node.Tag, fi));
-                        }
-                    }
+                    FieldInfo fi = type.GetField(DataPropertyName,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (fi != null)
+                        return new MemberAdapter(node.Tag, fi);
                 }
-
-                return adapter;
             }
-		}
 
-        public void InvalidateMemberAdapterCache()
-        {
-            lock (_memberAdapterCache)
-                _memberAdapterCache.Clear();
-        }
+            return adapter;
+		}
 
 		public override string ToString()
 		{
