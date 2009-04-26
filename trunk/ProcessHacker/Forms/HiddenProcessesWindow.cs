@@ -67,7 +67,7 @@ namespace ProcessHacker
             int hiddenCount = 0;
             int terminatedCount = 0;
 
-            for (int pid = 8; pid <= 8096; pid += 4)
+            for (int pid = 8; pid <= 65536; pid += 4)
             {
                 try
                 {
