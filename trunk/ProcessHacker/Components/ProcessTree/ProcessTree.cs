@@ -321,6 +321,8 @@ namespace ProcessHacker
                     {
                         node.BackColor = GetProcessColor(newItem);
                     }
+
+                    _treeModel.Nodes[newItem.Pid].ProcessItem = newItem;
                 }
             }));
         }

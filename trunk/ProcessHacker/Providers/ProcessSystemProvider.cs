@@ -30,6 +30,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using System.Threading;
 
 namespace ProcessHacker
 {
@@ -94,7 +95,12 @@ namespace ProcessHacker
     {
         public class FileProcessResult
         {
-            public int PID;
+            public int Stage;
+            public int Pid;
+            public string FileName;
+            public Icon Icon;
+            public FileVersionInfo VersionInfo;
+            public string CmdLine;
             public bool IsDotNet;
             public bool IsPacked;
             public VerifyResult VerifyResult;
@@ -111,7 +117,7 @@ namespace ProcessHacker
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
 
-        private delegate void ProcessFileDelegate(int pid, string fileName, bool useCache);
+        private delegate FileProcessResult ProcessFileDelegate(int pid, string fileName, bool useCache);
 
         public ProcessSystemProvider()
             : base()
@@ -235,12 +241,101 @@ namespace ProcessHacker
             this.Performance = performance;
         }
 
-        private void ProcessFile(int pid, string fileName, bool forced)
+        private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced)
+        {
+            return ProcessFileStage1(pid, fileName, forced, true);
+        }
+
+        private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
             FileProcessResult fpResult = new FileProcessResult();
 
-            fpResult.PID = pid;
+            fpResult.Pid = pid;
+            fpResult.Stage = 1;
+
+            if (fileName == null)
+                fileName = this.GetFileName(pid);
+
+            fpResult.FileName = fileName;
+
+            if (fileName != null)
+            {
+                try
+                {
+                    fpResult.Icon = FileUtils.GetFileIcon(fileName);
+                }
+                catch
+                { }
+
+                try
+                {
+                    fpResult.VersionInfo = FileVersionInfo.GetVersionInfo(fileName);
+                }
+                catch
+                { }
+            }
+
+            try
+            {
+                using (var phandle = new ProcessHandle(pid,
+                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                    fpResult.CmdLine = phandle.GetCommandLine();
+            }
+            catch
+            { }
+
+            if (pid > 4)
+            {
+                try
+                {
+                    var corpubPublishClass = new Debugger.Interop.CorPub.CorpubPublishClass();
+                    Debugger.Interop.CorPub.ICorPublishProcess process = null;
+
+                    try
+                    {
+                        int managed = 0;
+
+                        corpubPublishClass.GetProcess((uint)pid, out process);
+                        process.IsManaged(out managed);
+
+                        if (managed > 0)
+                        {
+                            fpResult.IsDotNet = true;
+                        }
+                    }
+                    finally
+                    {
+                        if (process != null)
+                        {
+                            Marshal.ReleaseComObject(process);
+                        }
+                    }
+                }
+                catch
+                { }
+            }
+
+            if (addToQueue)
+            {
+                lock (_fpResults)
+                    _fpResults.Enqueue(fpResult);
+            }
+
+            (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, fileName, forced, r => { }, null);
+
+            return fpResult;
+        }
+
+        private FileProcessResult ProcessFileStage2(int pid, string fileName, bool forced)
+        {
+            FileProcessResult fpResult = new FileProcessResult();
+
+            fpResult.Pid = pid;
+            fpResult.Stage = 2;
             fpResult.IsPacked = false;
+
+            if (fileName == null)
+                return null;
 
             // find out if it's packed
             // an image is packed if:
@@ -302,29 +397,26 @@ namespace ProcessHacker
                     {
                         string uniName = (new System.IO.FileInfo(fileName)).FullName.ToLower();
 
-                        lock (_fileResults)
+                        // No lock needed; verify results are never removed, only added.
+                        if (!forced && _fileResults.ContainsKey(uniName))
                         {
-                            if (!forced && _fileResults.ContainsKey(uniName))
+                            fpResult.VerifyResult = _fileResults[uniName];
+                        }
+                        else
+                        {
+                            try
                             {
-                                fpResult.VerifyResult = _fileResults[uniName];
+                                fpResult.VerifyResult = Cryptography.VerifyFile(fileName);
                             }
-                            else
+                            catch
                             {
-                                try
-                                {
-                                    fpResult.VerifyResult = Cryptography.VerifyFile(fileName);
-                                    //fpResult.VerifyResult = NProcessHacker.PhvVerifyFile(fileName);
-                                }
-                                catch
-                                {
-                                    fpResult.VerifyResult = VerifyResult.NoSignature;
-                                }
+                                fpResult.VerifyResult = VerifyResult.NoSignature;
+                            }
 
-                                if (!_fileResults.ContainsKey(uniName))
-                                    _fileResults.Add(uniName, fpResult.VerifyResult);
-                                else
-                                    _fileResults[uniName] = fpResult.VerifyResult;
-                            }
+                            if (!_fileResults.ContainsKey(uniName))
+                                _fileResults.Add(uniName, fpResult.VerifyResult);
+                            else
+                                _fileResults[uniName] = fpResult.VerifyResult;
                         }
                     }
                 }
@@ -332,48 +424,97 @@ namespace ProcessHacker
             catch
             { }
 
-            if (pid > 4)
+            lock (_fpResults)
+                _fpResults.Enqueue(fpResult);
+
+            return fpResult;
+        }
+
+        private string GetFileName(int pid)
+        {
+            string fileName = null;
+
+            if (pid != 4)
             {
                 try
                 {
-                    var corpubPublishClass = new Debugger.Interop.CorPub.CorpubPublishClass();
-                    Debugger.Interop.CorPub.ICorPublishProcess process = null;
-
-                    try
+                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
                     {
-                        int managed = 0;
-
-                        corpubPublishClass.GetProcess((uint)pid, out process);
-                        process.IsManaged(out managed);
-
-                        if (managed > 0)
+                        // first try to get the native file name, to prevent PEB
+                        // file name spoofing.
+                        try
                         {
-                            fpResult.IsPacked = false;
-                            fpResult.IsDotNet = true;
+                            fileName = FileUtils.DeviceFileNameToDos(phandle.GetNativeImageFileName());
                         }
-                    }
-                    finally
-                    {
-                        if (process != null)
+                        catch
+                        { }
+
+                        // if we couldn't get it or we couldn't resolve the \Device prefix,
+                        // we'll just use the normal method (which only works on Vista).
+                        if ((fileName == null || fileName.StartsWith("\\Device\\")) &&
+                            OSVersion.HasWin32ImageFileName)
                         {
-                            Marshal.ReleaseComObject(process);
+                            try
+                            {
+                                fileName = phandle.GetImageFileName();
+                            }
+                            catch
+                            { }
                         }
                     }
                 }
                 catch
                 { }
+
+                // If all else failed, we get the main module file name.
+                if (fileName == null || fileName.StartsWith("\\Device\\"))
+                {
+                    try
+                    {
+                        using (var phandle =
+                            new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                            fileName = phandle.GetMainModule().FileName;
+                    }
+                    catch
+                    { }
+                }
+            }
+            else
+            {
+                try
+                {
+                    fileName = Misc.GetKernelFileName();
+                }
+                catch
+                { }
             }
 
-            lock (_fpResults)
-                _fpResults.Enqueue(fpResult);
-
-            Program.CollectGarbage();
+            return fileName;
         }
 
         public void QueueFileProcessing(int pid)
         {
-            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, this.Dictionary[pid].FileName, true,
-                                r => { }, null);
+            (new ProcessFileDelegate(this.ProcessFileStage1)).BeginInvoke(
+                pid, this.Dictionary[pid].FileName, true, r => { }, null);
+        }
+
+        private void FillFpResult(ProcessItem item, FileProcessResult result)
+        {
+            if (result.Stage == 1)
+            {
+                item.FileName = result.FileName;
+                item.Icon = result.Icon;
+                item.VersionInfo = result.VersionInfo;
+                item.CmdLine = result.CmdLine;
+                item.IsDotNet = result.IsDotNet;
+            }
+            else if (result.Stage == 2)
+            {
+                item.IsPacked = result.IsDotNet ? false : result.IsPacked;
+                item.VerifyResult = result.VerifyResult;
+                item.ImportFunctions = result.ImportFunctions;
+                item.ImportModules = result.ImportModules;
+            }
         }
 
         private void UpdateOnce()
@@ -400,7 +541,10 @@ namespace ProcessHacker
             long otherTime = _longDeltas[SystemStats.CpuOther];
 
             if (sysKernelTime + sysUserTime + otherTime == 0)
+            {
+                Logging.Log(Logging.Importance.Warning, "Total systimes are 0, returning!");
                 return;
+            }
 
             _longDeltas.Update(SystemStats.IoRead, this.Performance.IoReadTransferCount);
             _longDeltas.Update(SystemStats.IoWrite, this.Performance.IoWriteTransferCount);
@@ -512,15 +656,11 @@ namespace ProcessHacker
                     // Dictionary may contain items newdictionary doesn't contain, 
                     // because we just removed terminated processes. However, 
                     // the look-for-modified-processes section relies on Dictionary!
-                    if (Dictionary.ContainsKey(result.PID))
+                    if (Dictionary.ContainsKey(result.Pid))
                     {
-                        ProcessItem item = this.Dictionary[result.PID];
+                        ProcessItem item = this.Dictionary[result.Pid];
 
-                        item.IsDotNet = result.IsDotNet;
-                        item.IsPacked = result.IsPacked;
-                        item.VerifyResult = result.VerifyResult;
-                        item.ImportFunctions = result.ImportFunctions;
-                        item.ImportModules = result.ImportModules;
+                        this.FillFpResult(item, result);
                         item.JustProcessed = true;
                     }
                 }
@@ -533,15 +673,11 @@ namespace ProcessHacker
 
                 if (!Dictionary.ContainsKey(pid))
                 {
-                    Process p = null;
                     ProcessItem item = new ProcessItem();
                     ProcessHandle queryLimitedHandle = null;
 
                     if (pid >= 0)
                     {
-                        try { p = Process.GetProcessById(pid); }
-                        catch { }
-
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
                         catch { }
                     }
@@ -576,7 +712,9 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.Name = p.MainModule.ModuleName;
+                            using (var phandle = 
+                                new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                                item.Name = phandle.GetMainModule().BaseName;
                         }
                         catch
                         {
@@ -701,63 +839,6 @@ namespace ProcessHacker
                         { }
                     }
 
-                    if (pid > 0)
-                    {
-                        if (pid != 4)
-                        {
-                            if (queryLimitedHandle != null)
-                            {
-                                // first try to get the native file name, to prevent PEB
-                                // file name spoofing.
-                                try
-                                {
-                                    item.FileName =
-                                        FileUtils.DeviceFileNameToDos(queryLimitedHandle.GetNativeImageFileName());
-                                }
-                                catch
-                                { }
-
-                                // if we couldn't get it or we couldn't resolve the \Device prefix,
-                                // we'll just use the normal method (which only works on Vista).
-                                if ((item.FileName == null || item.FileName.StartsWith("\\Device\\")) && 
-                                    OSVersion.HasWin32ImageFileName)
-                                {
-                                    try
-                                    {
-                                        item.FileName = queryLimitedHandle.GetImageFileName();
-                                    }
-                                    catch
-                                    { }
-                                }
-                            }
-
-                            // if all else failed, we go for the .NET method.
-                            if (item.FileName == null || item.FileName.StartsWith("\\Device\\"))
-                            {
-                                try
-                                {
-                                    item.FileName = Misc.GetRealPath(p.MainModule.FileName);
-                                }
-                                catch
-                                { }
-                            }
-                        }
-                        else
-                        {
-                            item.FileName = Misc.GetKernelFileName();
-                        }
-
-                        if (item.FileName != null)
-                        {
-                            try
-                            {
-                                item.Icon = (Icon)FileUtils.GetFileIcon(item.FileName);
-                            }
-                            catch
-                            { }
-                        }
-                    }
-
                     if (pid == 0)
                     {
                         item.Name = "System Idle Process";
@@ -772,19 +853,16 @@ namespace ProcessHacker
                         item.ParentPid = 0;
                         item.HasParent = true;
                     }
-                    else
+
+                    // If this is not the first run, we process the file immediately.
+                    if (this.RunCount > 0)
                     {
-                        try
-                        {
-                            item.VersionInfo = FileVersionInfo.GetVersionInfo(item.FileName);
-                        }
-                        catch
-                        { }
+                        this.FillFpResult(item, this.ProcessFileStage1(pid, null, false, false));
                     }
 
                     if (pid > 0)
                     {
-                        (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName, false,
+                        (new ProcessFileDelegate(this.ProcessFileStage1)).BeginInvoke(pid, item.FileName, false,
                             r => { }, null);
                     }
 
@@ -811,15 +889,6 @@ namespace ProcessHacker
                         catch
                         { }
                     }
-
-                    try
-                    {
-                        using (var phandle = new ProcessHandle(pid,
-                            Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                            item.CmdLine = phandle.GetCommandLine();
-                    }
-                    catch
-                    { }
 
                     if (queryLimitedHandle != null)
                         queryLimitedHandle.Dispose();
@@ -909,7 +978,7 @@ namespace ProcessHacker
                     {
                         if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
-                            (new ProcessFileDelegate(this.ProcessFile)).BeginInvoke(pid, item.FileName, true,
+                            (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, item.FileName, true,
                                 r => { }, null);
                             item.ProcessingAttempts++;
                         }

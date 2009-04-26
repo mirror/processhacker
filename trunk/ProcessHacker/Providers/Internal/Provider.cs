@@ -117,6 +117,7 @@ namespace ProcessHacker
 
         private object _disposeLock = new object();
         private object _busyLock = new object();
+        private bool _disposing = false;
         private bool _disposed = false;
         private bool _busy = false;
         private bool _createThread = true;
@@ -163,6 +164,8 @@ namespace ProcessHacker
 
             try
             {
+                _disposing = true;
+
                 if (disposing)
                 {
                     Monitor.Enter(_disposeLock);
@@ -314,57 +317,55 @@ namespace ProcessHacker
         /// </summary>
         public void RunOnce()
         {
-            // Bail out if we are disposing
-            if (!Monitor.TryEnter(_disposeLock))
+            lock (_busyLock)
             {
-                Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
-                return;
-            }
-
-            try
-            {
-                lock (_busyLock)
+                // Bail out if we are disposing
+                if (_disposing)
                 {
-                    _busy = true;
+                    Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
+                    return;
+                }
 
-                    if (ProviderUpdate != null)
+                _busy = true;
+
+                if (ProviderUpdate != null)
+                {
+                    try
+                    {
+                        if (BeforeUpdate != null)
+                            BeforeUpdate();
+                    }
+                    catch
+                    { }
+
+                    try
+                    {
+                        ProviderUpdate();
+                        _runCount++;
+                    }
+                    catch (Exception ex)
                     {
                         try
                         {
-                            if (BeforeUpdate != null)
-                                BeforeUpdate();
-                        }
-                        catch
-                        { }
-
-                        try
-                        {
-                            ProviderUpdate();
-                            _runCount++;
-                        }
-                        catch (Exception ex)
-                        {
                             if (Error != null)
                                 Error(ex);
-
-                            Logging.Log(ex);
-                        }
-
-                        try
-                        {
-                            if (Updated != null)
-                                Updated();
                         }
                         catch
                         { }
+
+                        Logging.Log(ex);
                     }
 
-                    _busy = false;
+                    try
+                    {
+                        if (Updated != null)
+                            Updated();
+                    }
+                    catch
+                    { }
                 }
-            }
-            finally
-            {
-                Monitor.Exit(_disposeLock);
+
+                _busy = false;
             }
         }
 

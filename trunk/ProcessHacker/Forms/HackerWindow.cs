@@ -1242,6 +1242,7 @@ namespace ProcessHacker
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
             Misc.SelectAll(treeProcesses.Tree.AllNodes);
+            treeProcesses.Tree.Invalidate();
         } 
 
         #endregion
@@ -1259,12 +1260,20 @@ namespace ProcessHacker
             try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
             catch { }
 
-            Program.CollectGarbage();
+            //Program.CollectGarbage();
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(delegate
+                this.BeginInvoke(new MethodInvoker(delegate
                 {
                     treeProcesses.Tree.EndUpdate();
+                    treeProcesses.Tree.EndCompleteUpdate();
+                    treeProcesses.Tree.Invalidate();
+
+                    // Catch any early file processing results
+                    // NOTE: Do *not* put this statement outside this 
+                    // delegate, as that would cause a deadlock.
+                    processP.RunOnceAsync();
+
                     this.Cursor = Cursors.Default;
                     this.UpdateCommon();
                 }));
@@ -1350,7 +1359,7 @@ namespace ProcessHacker
             serviceP.Updated -= new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
 
             if (processP.RunCount >= 1)
-                this.Invoke(new MethodInvoker(UpdateCommon));
+                this.BeginInvoke(new MethodInvoker(UpdateCommon));
         }
 
         public void serviceP_DictionaryAdded(ServiceItem item)
@@ -2367,6 +2376,7 @@ namespace ProcessHacker
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
             treeProcesses.Tree.BeginUpdate();
+            treeProcesses.Tree.BeginCompleteUpdate();
             this.Cursor = Cursors.WaitCursor;
             processP.RunOnceAsync();
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
@@ -2431,7 +2441,12 @@ namespace ProcessHacker
             treeProcesses.Tree.KeyDown +=
                 (sender, e) =>
                 {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(treeProcesses.TreeNodes);
+                    if (e.Control && e.KeyCode == Keys.A)
+                    {
+                        Misc.SelectAll(treeProcesses.TreeNodes);
+                        treeProcesses.Tree.Invalidate();
+                    }
+
                     if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
                 };
             listServices.List.KeyDown +=

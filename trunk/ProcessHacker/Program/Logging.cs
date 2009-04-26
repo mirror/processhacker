@@ -30,32 +30,38 @@ namespace ProcessHacker
 {
     public static class Logging
     {
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        private static extern void OutputDebugString(string OutputString);
-
         public enum Importance : int
         {
             Information = 0,
             Warning,
             Error,
             Critical
-        }
+        }   
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern void OutputDebugString(string OutputString);
+
+        private static object _logLock = new object();
 
         [Conditional("DEBUG")]
         public static void Log(Importance importance, string message)
         {
-            string debugMessage = 
-                DateTime.Now.ToString("hh:mm:ss:fff:") + 
-                " ProcessHacker: (" + importance.ToString() + ") " + message + "\n" + Environment.StackTrace;
-
-            OutputDebugString(debugMessage);
-
-            try
+            lock (_logLock)
             {
-                Program.HackerWindow.QueueMessage(debugMessage);
+                string debugMessage =
+                    DateTime.Now.ToString("hh:mm:ss:fff:") +
+                    " ProcessHacker (T" + System.Threading.Thread.CurrentThread.ManagedThreadId +
+                    "): (" + importance.ToString() + ") " + message + "\n" + Environment.StackTrace;
+
+                OutputDebugString(debugMessage);
+
+                try
+                {
+                    Program.HackerWindow.QueueMessage(debugMessage);
+                }
+                catch
+                { }
             }
-            catch
-            { }
         }
 
         [Conditional("DEBUG")]

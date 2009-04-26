@@ -270,6 +270,7 @@ namespace ProcessHacker
                 ProcessProvider.Dictionary[pid].Name :
                 null;
 
+            Win32.FileIconInit(true);
             new HackerWindow();
             Application.Run();
         }

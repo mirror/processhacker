@@ -35,6 +35,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
+    [System.Security.SuppressUnmanagedCodeSecurity]
     public partial class Win32
     {
         #region Cryptography
@@ -772,6 +773,9 @@ namespace ProcessHacker.Native.Api
                                     ref ShFileInfo psfi,
                                     uint cbSizeFileInfo,
                                     uint uFlags);
+
+        [DllImport("shell32.dll", EntryPoint = "#660")]
+        public static extern bool FileIconInit(bool RestoreCache);
 
         #endregion
 
