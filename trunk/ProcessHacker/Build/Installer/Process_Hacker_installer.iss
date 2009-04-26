@@ -4,10 +4,9 @@
 ;*Inno Setup QuickStart Pack
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
-#define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_number "31"
+#define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
-#define app_publisher "wj32"
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
 #define app_contact "http://processhacker.sourceforge.net/"
@@ -20,15 +19,15 @@ AppCopyright=Copyright © 2008-2009, Process Hacker Team. Licensed under the GNU 
 AppContact={#= app_contact}
 AppName=Process Hacker
 AppVerName=Process Hacker {#= app_version}
-AppPublisher={#= app_publisher}
+AppPublisher=wj32
 AppPublisherURL={#= app_publisher_url}
 AppSupportURL={#= app_support_url}
 AppUpdatesURL={#= app_updates_url}
 UninstallDisplayName=Process Hacker {#= app_version}
 DefaultDirName={pf}\Process Hacker
 DefaultGroupName=Process Hacker
-VersionInfoCompany={#= app_publisher}
-VersionInfoCopyright={#= app_publisher}
+VersionInfoCompany=wj32
+VersionInfoCopyright=wj32
 VersionInfoDescription=Process Hacker {#= app_version} Setup
 VersionInfoTextVersion={#= app_version}
 VersionInfoVersion={#= app_version}
@@ -68,7 +67,7 @@ Name: en; MessagesFile: compiler:Default.isl
 Name: gr; MessagesFile: Languages\Greek.isl
 
 [Messages]
-BeveledLabel=Process Hacker v{#= app_version} by {#= app_publisher}                                                    Setup v{#= app_version}.{#= installer_build_number} built on {#= installer_build_date}
+BeveledLabel=Process Hacker v{#= app_version} by wj32                                                    Setup v{#= app_version}.{#= installer_build_number} built on {#= installer_build_date}
 
 ; Include the installer's custom messages
 #include "Custom_Messages.iss"
@@ -91,12 +90,16 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Name: desktopicon\user; Description: {cm:tsk_currentuser}; GroupDescription: {cm:AdditionalIcons}; Flags: exclusive
 Name: desktopicon\common; Description: {cm:tsk_allusers}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked exclusive
 Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
+
 Name: startuptask; Description: {cm:tsk_startupdescr}; GroupDescription: {cm:tsk_startup}; Check: StartupRegCheck(); Flags: unchecked checkablealone
 Name: startuptask\minimized; Description: {cm:tsk_startupdescrmin}; GroupDescription: {cm:tsk_startup}; Check: StartupRegCheck(); Flags: unchecked
 Name: removestartuptask; Description: {cm:tsk_removestartup}; GroupDescription: {cm:tsk_startup}; Check: NOT StartupRegCheck(); Flags: unchecked
+
 Name: resetsettings; Description: {cm:tsk_resetsettings}; GroupDescription: {cm:tsk_other}; Check: SettingsExistCheck(); Flags: unchecked checkablealone
+
 Name: setdefaulttaskmgr; Description: {cm:tsk_setdefaulttaskmgr}; GroupDescription: {cm:tsk_other}; Check: PHDefaultCheck(); Flags: unchecked dontinheritcheck
 Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {cm:tsk_other}; Check: NOT PHDefaultCheck(); Flags: unchecked dontinheritcheck
+
 Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck(); Flags: unchecked dontinheritcheck
 Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck(); Flags: unchecked dontinheritcheck
 
@@ -109,6 +112,7 @@ Name: {group}\{cm:sm_help}\{cm:sm_changelog}; Filename: {app}\CHANGELOG.txt; Com
 Name: {group}\{cm:sm_help}\{cm:sm_helpfile}; Filename: {app}\Help.htm; Comment: {cm:sm_helpfile}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:ProgramOnTheWeb,Process Hacker}; Filename: {#= app_updates_url}; Comment: {cm:ProgramOnTheWeb,Process Hacker}
 Name: {group}\{cm:UninstallProgram,Process Hacker}; Filename: {uninstallexe}; IconFilename: {app}\uninstall.ico; Comment: {cm:UninstallProgram,Process Hacker}; WorkingDir: {app}
+
 Name: {commondesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\common; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\user; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
@@ -172,6 +176,7 @@ Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHacker
 // Create a mutex for the installer
 const installer_mutex_name = 'process_hacker_setup_mutex';
 
+
 // Function to check if app is already installed
 function IsInstalled( AppID: String ): Boolean;
 var
@@ -184,6 +189,7 @@ begin
   Result := sPrevPath<>'';
 end;
 
+
 // If this is an update then we use the same directories again
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
@@ -193,6 +199,7 @@ begin
 	end;
 end;
 
+
 // Check if Process Hacker is configured to run on startup in order to control startup choice within the installer
 function StartupRegCheck(): Boolean;
 begin
@@ -201,6 +208,7 @@ begin
 	Result := False;
 end;
 
+
 // Check if Process Hacker's settings exist
 function SettingsExistCheck(): Boolean;
 begin
@@ -208,6 +216,7 @@ begin
 	if DirExists(ExpandConstant('{localappdata}\wj32\')) then
 	Result := True;
 end;
+
 
 // Check if Process Hacker is set as the default Task Manager for Windows
 function PHDefaultCheck(): Boolean;
@@ -222,6 +231,7 @@ begin
 	end;
 end;
 
+
 // Check if KProcessHacker is started
 function KProcessHackerStateCheck(): Boolean;
 begin
@@ -229,6 +239,7 @@ begin
 	if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
 	Result := True;
 end;
+
 
 // Check if KProcessHacker is installed as a service
 function KPHServiceCheck(): Boolean;
@@ -242,6 +253,7 @@ begin
 	end;
 end;
 
+
 // Check if sc.exe exists
 function scExeExistsCheck(): Boolean;
 begin
@@ -249,6 +261,7 @@ begin
 	if FileExists(ExpandConstant('{sys}\sc.exe')) then
 	Result := True;
 end;
+
 
 Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
@@ -271,6 +284,7 @@ begin
 		end;
 	end;
 end;
+
 
 function InitializeSetup(): Boolean;
 
@@ -309,6 +323,7 @@ begin
 		end;
 	end;
 end;
+
 
 function InitializeUninstall(): Boolean;
 begin
