@@ -811,6 +811,36 @@ namespace ProcessHacker
             }
         }
 
+        private void terminateProcessTreeMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treeProcesses.SelectedNodes.Count == 0)
+                return;
+
+            int[] pids = new int[treeProcesses.SelectedNodes.Count];
+            string[] names = new string[pids.Length];
+
+            for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
+            {
+                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                names[i] = treeProcesses.SelectedNodes[i].Name;
+            }
+
+            if (ProcessActions.TerminateTree(this, pids, names, true))
+            {
+                try
+                {
+                    TreeNodeAdv[] nodes = new TreeNodeAdv[treeProcesses.SelectedTreeNodes.Count];
+
+                    treeProcesses.SelectedTreeNodes.CopyTo(nodes, 0);
+
+                    foreach (TreeNodeAdv node in nodes)
+                        node.IsSelected = false;
+                }
+                catch
+                { }
+            }
+        }
+
         private void suspendMenuItem_Click(object sender, EventArgs e)
         {
             if (treeProcesses.SelectedNodes.Count == 0)
@@ -1183,6 +1213,9 @@ namespace ProcessHacker
 
         private void searchProcessMenuItem_Click(object sender, EventArgs e)
         {
+            if (treeProcesses.SelectedNodes.Count != 1)
+                return;
+
             try
             {
                 Process.Start(Properties.Settings.Default.SearchEngine.Replace("%s",
@@ -1703,6 +1736,10 @@ namespace ProcessHacker
             else if (e.KeyData == Keys.Enter)
             {
                 propertiesProcessMenuItem_Click(null, null);
+            }
+            else if (e.KeyData == (Keys.Control | Keys.M))
+            {
+                searchProcessMenuItem_Click(null, null);
             }
         }
 

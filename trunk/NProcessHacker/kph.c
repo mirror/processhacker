@@ -166,3 +166,29 @@ NTSTATUS KphWrite(
 
     return status;
 }
+
+NTSTATUS KphOpenProcess(
+    HANDLE KphHandle,
+    PHANDLE ProcessHandle,
+    ULONG ProcessId,
+    ACCESS_MASK DesiredAccess
+    )
+{
+    struct
+    {
+        ULONG ProcessId;
+        ACCESS_MASK DesiredAccess;
+    } args;
+
+    args.ProcessId = ProcessId;
+    args.DesiredAccess = DesiredAccess;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_OPENPROCESS,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL);
+}

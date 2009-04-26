@@ -31,6 +31,7 @@
 #pragma alloc_text(PAGE, KphDispatchDeviceControl)
 #pragma alloc_text(PAGE, KphDispatchRead)
 #pragma alloc_text(PAGE, KphUnsupported)
+#pragma pack(1)
 
 VOID DriverUnload(PDRIVER_OBJECT DriverObject)
 {
@@ -205,10 +206,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphWriteVirtualMemory";
     else if (ControlCode == KPH_SETPROCESSTOKEN)
         return "Set Process Token";
-    else if (ControlCode == KPH_GETTHREADWIN32STARTADDRESS)
+    else if (ControlCode == KPH_GETTHREADSTARTADDRESS)
         return "Get Thread Win32 Start Address";
-    else if (ControlCode == KPH_GETOBJECTNAME)
-        return "Get Object Name";
     else if (ControlCode == KPH_GETHANDLEOBJECTNAME)
         return "Get Handle Object Name";
     else if (ControlCode == KPH_OPENPROCESSJOB)
@@ -241,7 +240,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
-    PCHAR dataBuffer;
+    PVOID dataBuffer;
     int controlCode;
     unsigned int inLength, outLength;
     int retLength = 0;
@@ -257,7 +256,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         goto IoControlEnd;
     }
     
-    dataBuffer = (PCHAR)Irp->AssociatedIrp.SystemBuffer;
+    dataBuffer = Irp->AssociatedIrp.SystemBuffer;
     
     if (dataBuffer == NULL)
     {
@@ -275,19 +274,20 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     {
         case KPH_READ:
         {
-            PVOID address;
+            struct
+            {
+                PVOID Address;
+            } *args = dataBuffer;
             
-            if (inLength < 4)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            address = *(PVOID *)dataBuffer;
-            
             __try
             {
-                RtlCopyMemory(dataBuffer, address, outLength);
+                RtlCopyMemory(dataBuffer, args->Address, outLength);
                 retLength = outLength;
             }
             __except (EXCEPTION_EXECUTE_HANDLER)
@@ -300,19 +300,21 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_WRITE:
         {
-            PVOID address;
+            struct
+            {
+                PVOID Address;
+                CHAR Data[1];
+            } *args = dataBuffer;
             
-            if (inLength < 4)
+            if (inLength < sizeof(PVOID))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            address = *(PVOID *)dataBuffer;
-            
             /* any interrupts happening while we're writing is... bad. */
             __asm cli;
-            RtlCopyMemory(address, dataBuffer + 4, inLength - 4);
+            RtlCopyMemory(args->Address, args->Data, inLength - sizeof(PVOID));
             __asm sti;
             
             retLength = inLength;
@@ -321,28 +323,26 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_GETFILEOBJECTNAME:
         {
-            HANDLE inHandle;
-            PVOID inObject;
-            HANDLE inProcessId;
+            struct
+            {
+                HANDLE Handle;
+                HANDLE ProcessId;
+            } *args = dataBuffer;
             KPH_ATTACH_STATE attachState;
             PVOID object;
             
-            if (inLength < 0xc)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            inHandle = *(HANDLE *)dataBuffer;
-            inObject = *(PVOID *)(dataBuffer + 4);
-            inProcessId = *(HANDLE *)(dataBuffer + 8);
-            
-            status = KphAttachProcessId(inProcessId, &attachState);
+            status = KphAttachProcessId(args->ProcessId, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = ObReferenceObjectByHandle(inHandle, 0, 
+            status = ObReferenceObjectByHandle(args->Handle, 0, 
                 *IoFileObjectType, KernelMode, &object, 0);
             KphDetachProcess(&attachState);
             
@@ -355,25 +355,8 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 if (((PFILE_OBJECT)object)->Busy || ((PFILE_OBJECT)object)->Waiters)
                 {
+                    status = GetObjectName((PFILE_OBJECT)object, dataBuffer, outLength, &retLength);
                     ObDereferenceObject(object);
-                    
-                    /* We will dereference inObject later. */
-                    if (!inObject)
-                    {
-                        status = STATUS_ACCESS_VIOLATION;
-                        goto IoControlEnd;
-                    }
-                    
-                    /* Reference the object to make sure it isn't freed while we're using it */
-                    status = ObReferenceObjectByPointer(inObject, 0, *IoFileObjectType, KernelMode);
-                    
-                    if (!NT_SUCCESS(status))
-                        goto IoControlEnd;
-                    
-                    status = GetObjectName(
-                        (PFILE_OBJECT)inObject, dataBuffer, outLength, &retLength);
-                    
-                    ObDereferenceObject(inObject);
                     
                     if (NT_SUCCESS(status))
                         dprintf("Resolved object name (indirect): %ws\n", 
@@ -399,24 +382,29 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_OPENPROCESS:
         {
-            HANDLE processId;
-            int desiredAccess;
+            struct
+            {
+                HANDLE ProcessId;
+                ACCESS_MASK DesiredAccess;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ProcessHandle;
+            } *ret = dataBuffer;
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processId = *(HANDLE *)dataBuffer;
-            desiredAccess = *(int *)(dataBuffer + 4);
             clientId.UniqueThread = 0;
-            clientId.UniqueProcess = processId;
+            clientId.UniqueProcess = args->ProcessId;
             status = KphOpenProcess(
-                (PHANDLE)dataBuffer,
-                desiredAccess,
+                &ret->ProcessHandle,
+                args->DesiredAccess,
                 &objectAttributes,
                 &clientId,
                 UserMode
@@ -425,30 +413,35 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_OPENTHREAD:
         {
-            HANDLE threadId;
-            int desiredAccess;
+            struct
+            {
+                HANDLE ThreadId;
+                ACCESS_MASK DesiredAccess;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ThreadHandle;
+            } *ret = dataBuffer;
             OBJECT_ATTRIBUTES objectAttributes = { 0 };
             CLIENT_ID clientId;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadId = *(HANDLE *)dataBuffer;
-            desiredAccess = *(int *)(dataBuffer + 4);
-            clientId.UniqueThread = threadId;
+            clientId.UniqueThread = args->ThreadId;
             clientId.UniqueProcess = 0;
             status = KphOpenThread(
-                (PHANDLE)dataBuffer,
-                desiredAccess,
+                &ret->ThreadHandle,
+                args->DesiredAccess,
                 &objectAttributes,
                 &clientId,
                 UserMode
@@ -457,88 +450,97 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_OPENPROCESSTOKEN:
         {
-            HANDLE processHandle;
-            int desiredAccess;
+            struct
+            {
+                HANDLE ProcessHandle;
+                ACCESS_MASK DesiredAccess;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE TokenHandle;
+            } *ret = dataBuffer;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            desiredAccess = *(int *)(dataBuffer + 4);
-            
             status = KphOpenProcessTokenEx(
-                processHandle,
-                desiredAccess,
+                args->ProcessHandle,
+                args->DesiredAccess,
                 0,
-                (PHANDLE)dataBuffer,
+                &ret->TokenHandle,
                 UserMode
                 );
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_GETPROCESSPROTECTED:
         {
-            HANDLE processId;
+            struct
+            {
+                HANDLE ProcessId;
+            } *args = dataBuffer;
+            struct
+            {
+                BOOLEAN IsProtected;
+            } *ret = dataBuffer;
             PEPROCESS processObject;
             
-            if (inLength < 4 || outLength < 1)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processId = *(HANDLE *)dataBuffer;
-            
-            status = PsLookupProcessByProcessId(processId, &processObject);
+            status = PsLookupProcessByProcessId(args->ProcessId, &processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PCHAR)dataBuffer = 
+            ret->IsProtected = 
                 (CHAR)GET_BIT(
                     *(PULONG)KVOFF(processObject, OffEpProtectedProcessOff),
                     OffEpProtectedProcessBit
                     );
             ObDereferenceObject(processObject);
-            retLength = 1;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_SETPROCESSPROTECTED:
         {
-            HANDLE processId;
-            CHAR protected;
+            struct
+            {
+                HANDLE ProcessId;
+                BOOLEAN IsProtected;
+            } *args = dataBuffer;
             PEPROCESS processObject;
             
-            if (inLength < 5)
-            {
+            if (inLength < sizeof(*args))
+            {dprintf("%d\n", sizeof(*args));
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processId = *(HANDLE *)dataBuffer;
-            protected = *(CHAR *)(dataBuffer + 4);
-            
-            status = PsLookupProcessByProcessId(processId, &(PEPROCESS)processObject);
+            status = PsLookupProcessByProcessId(args->ProcessId, &processObject);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            if (protected)
+            if (args->IsProtected)
             {
                 SET_BIT(
                     *(PULONG)KVOFF(processObject, OffEpProtectedProcessOff),
@@ -559,189 +561,187 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_TERMINATEPROCESS:
         {
-            HANDLE processHandle;
-            NTSTATUS exitStatus;
+            struct
+            {
+                HANDLE ProcessHandle;
+                NTSTATUS ExitStatus;
+            } *args = dataBuffer;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
-            
-            status = KphTerminateProcess(processHandle, exitStatus);
+            status = KphTerminateProcess(args->ProcessHandle, args->ExitStatus);
         }
         break;
         
         case KPH_SUSPENDPROCESS:
         {
-            HANDLE processHandle;
+            struct
+            {
+                HANDLE ProcessHandle;
+            } *args = dataBuffer;
             
-            if (inLength < 4)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            
-            status = KphSuspendProcess(processHandle);
+            status = KphSuspendProcess(args->ProcessHandle);
         }
         break;
         
         case KPH_RESUMEPROCESS:
         {
-            HANDLE processHandle;
+            struct
+            {
+                HANDLE ProcessHandle;
+            } *args = dataBuffer;
             
-            if (inLength < 4)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            
-            status = KphResumeProcess(processHandle);
+            status = KphResumeProcess(args->ProcessHandle);
         }
         break;
         
         case KPH_READVIRTUALMEMORY:
         {
-            HANDLE processHandle;
-            PVOID baseAddress;
-            PVOID buffer;
-            ULONG bufferLength;
-            PULONG returnLength;
+            struct
+            {
+                HANDLE ProcessHandle;
+                PVOID BaseAddress;
+                PVOID Buffer;
+                ULONG BufferLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
             
-            if (inLength < 0x14)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            baseAddress = *(PVOID *)(dataBuffer + 0x4);
-            buffer = *(PVOID *)(dataBuffer + 0x8);
-            bufferLength = *(PULONG)(dataBuffer + 0xc);
-            returnLength = *(PULONG *)(dataBuffer + 0x10);
-            
-            status = KphReadVirtualMemory(processHandle, baseAddress, buffer, bufferLength, returnLength, UserMode);
+            status = KphReadVirtualMemory(
+                args->ProcessHandle,
+                args->BaseAddress,
+                args->Buffer,
+                args->BufferLength,
+                args->ReturnLength,
+                UserMode
+                );
         }
         break;
         
         case KPH_WRITEVIRTUALMEMORY:
         {
-            HANDLE processHandle;
-            PVOID baseAddress;
-            PVOID buffer;
-            ULONG bufferLength;
-            PULONG returnLength;
+            struct
+            {
+                HANDLE ProcessHandle;
+                PVOID BaseAddress;
+                PVOID Buffer;
+                ULONG BufferLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
             
-            if (inLength < 0x14)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            baseAddress = *(PVOID *)(dataBuffer + 0x4);
-            buffer = *(PVOID *)(dataBuffer + 0x8);
-            bufferLength = *(PULONG)(dataBuffer + 0xc);
-            returnLength = *(PULONG *)(dataBuffer + 0x10);
-            
-            status = KphWriteVirtualMemory(processHandle, baseAddress, buffer, bufferLength, returnLength, UserMode);
+            status = KphWriteVirtualMemory(
+                args->ProcessHandle,
+                args->BaseAddress,
+                args->Buffer,
+                args->BufferLength,
+                args->ReturnLength,
+                UserMode
+                );
         }
         break;
         
         case KPH_SETPROCESSTOKEN:
         {
-            HANDLE sourcePid;
-            HANDLE targetPid;
+            struct
+            {
+                HANDLE SourceProcessId;
+                HANDLE TargetProcessId;
+            } *args = dataBuffer;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            sourcePid = *(HANDLE *)dataBuffer;
-            targetPid = *(HANDLE *)(dataBuffer + 4);
-            
-            status = SetProcessToken(sourcePid, targetPid);
+            status = SetProcessToken(args->SourceProcessId, args->TargetProcessId);
         }
         break;
         
-        case KPH_GETTHREADWIN32STARTADDRESS:
+        case KPH_GETTHREADSTARTADDRESS:
         {
-            HANDLE threadHandle;
+            struct
+            {
+                HANDLE ThreadHandle;
+            } *args = dataBuffer;
+            struct
+            {
+                PVOID StartAddress;
+            } *ret = dataBuffer;
             PETHREAD2 threadObject;
-            PVOID startAddress;
             
-            if (inLength < 4 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadHandle = *(HANDLE *)dataBuffer;
-            status = ObReferenceObjectByHandle(threadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+            status = ObReferenceObjectByHandle(args->ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             /* Get the Win32StartAddress */
-            startAddress = *(PVOID *)KVOFF(threadObject, OffEtWin32StartAddress);
-            /* If that failed, get the StartAddress */
-            if (!startAddress)
-                startAddress = *(PVOID *)KVOFF(threadObject, OffEtStartAddress);
-            
-            *(PVOID *)dataBuffer = startAddress;
-            ObDereferenceObject(threadObject);
-            retLength = 4;
-        }
-        break;
-        
-        case KPH_GETOBJECTNAME:
-        {
-            PVOID object;
-            
-            if (inLength < 4)
+            if (!(ret->StartAddress = *(PVOID *)KVOFF(threadObject, OffEtWin32StartAddress)))
             {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
+                /* If that failed, get the StartAddress */
+                ret->StartAddress = *(PVOID *)KVOFF(threadObject, OffEtStartAddress);
             }
             
-            object = *(PVOID *)dataBuffer;
-            ObReferenceObject(object);
-            status = ObQueryNameString(object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
-            ObDereferenceObject(object);
+            ObDereferenceObject(threadObject);
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_GETHANDLEOBJECTNAME:
         {
-            HANDLE processHandle;
-            HANDLE handle;
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE Handle;
+            } *args = dataBuffer;
             KPH_ATTACH_STATE attachState;
             PVOID object;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            handle = *(HANDLE *)(dataBuffer + 4);
-            
-            status = KphAttachProcessHandle(processHandle, &attachState);
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            status = ObReferenceObjectByHandle(handle, 0, NULL, KernelMode, &object, NULL);
+            status = ObReferenceObjectByHandle(args->Handle, 0, NULL, KernelMode, &object, NULL);
             KphDetachProcess(&attachState);
             
             if (!NT_SUCCESS(status))
@@ -754,112 +754,120 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_OPENPROCESSJOB:
         {
-            HANDLE processHandle;
-            int desiredAccess;
+            struct
+            {
+                HANDLE ProcessHandle;
+                ACCESS_MASK DesiredAccess;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE JobHandle;
+            } *ret = dataBuffer;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            desiredAccess = *(int *)(dataBuffer + 4);
-            status = KphOpenProcessJob(processHandle, desiredAccess, (PHANDLE)dataBuffer, UserMode);
+            status = KphOpenProcessJob(args->ProcessHandle, args->DesiredAccess, &ret->JobHandle, UserMode);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_GETCONTEXTTHREAD:
         {
-            HANDLE threadHandle;
-            PCONTEXT threadContext;
+            struct
+            {
+                HANDLE ThreadHandle;
+                PCONTEXT ThreadContext;
+            } *args = dataBuffer;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadHandle = *(HANDLE *)dataBuffer;
-            threadContext = *(PCONTEXT *)(dataBuffer + 4);
-            status = KphGetContextThread(threadHandle, threadContext, UserMode);
+            status = KphGetContextThread(args->ThreadHandle, args->ThreadContext, UserMode);
         }
         break;
         
         case KPH_SETCONTEXTTHREAD:
         {
-            HANDLE threadHandle;
-            PCONTEXT threadContext;
+            struct
+            {
+                HANDLE ThreadHandle;
+                PCONTEXT ThreadContext;
+            } *args = dataBuffer;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadHandle = *(HANDLE *)dataBuffer;
-            threadContext = *(PCONTEXT *)(dataBuffer + 4);
-            status = KphSetContextThread(threadHandle, threadContext, UserMode);
+            status = KphSetContextThread(args->ThreadHandle, args->ThreadContext, UserMode);
         }
         break;
         
         case KPH_GETTHREADWIN32THREAD:
         {
-            HANDLE threadHandle;
+            struct
+            {
+                HANDLE ThreadHandle;
+            } *args = dataBuffer;
+            struct
+            {
+                PVOID Win32Thread;
+            } *ret = dataBuffer;
             
-            if (inLength < 4 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadHandle = *(HANDLE *)dataBuffer;
-            status = KphGetThreadWin32Thread(threadHandle, (PVOID *)dataBuffer, KernelMode);
+            status = KphGetThreadWin32Thread(args->ThreadHandle, &ret->Win32Thread, KernelMode);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_DUPLICATEOBJECT:
         {
-            HANDLE sourceProcessHandle;
-            HANDLE sourceHandle;
-            HANDLE targetProcessHandle;
-            PHANDLE targetHandle;
-            ACCESS_MASK desiredAccess;
-            ULONG handleAttributes;
-            ULONG options;
+            struct
+            {
+                HANDLE SourceProcessHandle;
+                HANDLE SourceHandle;
+                HANDLE TargetProcessHandle;
+                PHANDLE TargetHandle;
+                ACCESS_MASK DesiredAccess;
+                ULONG HandleAttributes;
+                ULONG Options;
+            } *args = dataBuffer;
             
-            if (inLength < 7 * 4)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            sourceProcessHandle = *(HANDLE *)dataBuffer;
-            sourceHandle = *(HANDLE *)(dataBuffer + 0x4);
-            targetProcessHandle = *(HANDLE *)(dataBuffer + 0x8);
-            targetHandle = *(PHANDLE *)(dataBuffer + 0xc);
-            desiredAccess = *(ACCESS_MASK *)(dataBuffer + 0x10);
-            handleAttributes = *(ULONG *)(dataBuffer + 0x14);
-            options = *(ULONG *)(dataBuffer + 0x18);
-            
             status = KphDuplicateObject(
-                sourceProcessHandle,
-                sourceHandle,
-                targetProcessHandle,
-                targetHandle,
-                desiredAccess,
-                handleAttributes,
-                options,
+                args->SourceProcessHandle,
+                args->SourceHandle,
+                args->TargetProcessHandle,
+                args->TargetHandle,
+                args->DesiredAccess,
+                args->HandleAttributes,
+                args->Options,
                 UserMode
                 );
         }
@@ -867,123 +875,142 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         case KPH_ZWQUERYOBJECT:
         {
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE Handle;
+                ULONG ObjectInformationClass;
+            } *args = dataBuffer;
+            struct
+            {
+                NTSTATUS Status;
+                ULONG ReturnLength;
+                PVOID BufferBase;
+                CHAR Buffer[1];
+            } *ret = dataBuffer;
             NTSTATUS status2 = STATUS_SUCCESS;
-            HANDLE processHandle;
-            HANDLE handle;
-            ULONG objectInformationClass;
             KPH_ATTACH_STATE attachState;
             
-            if (inLength < 0xc || outLength < 12)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret) - sizeof(CHAR))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            handle = *(HANDLE *)(dataBuffer + 4);
-            objectInformationClass = *(ULONG *)(dataBuffer + 8);
-            
-            status = KphAttachProcessHandle(processHandle, &attachState);
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
             status2 = ZwQueryObject(
-                handle,
-                objectInformationClass,
-                (PCHAR)dataBuffer + 12,
-                outLength - 12,
+                args->Handle,
+                args->ObjectInformationClass,
+                ret->Buffer,
+                outLength - (sizeof(*ret) - sizeof(CHAR)),
                 &retLength
                 );
             KphDetachProcess(&attachState);
             
-            *(PULONG)(dataBuffer + 4) = retLength;
-            *(PCHAR *)(dataBuffer + 8) = (PCHAR)dataBuffer + 12;
+            ret->ReturnLength = retLength;
+            ret->BufferBase = ret->Buffer;
             
             if (NT_SUCCESS(status2))
-                retLength += 12;
+                retLength += sizeof(*ret) - sizeof(CHAR);
             else
-                retLength = 12;
+                retLength = sizeof(*ret) - sizeof(CHAR);
             
-            *(PNTSTATUS)dataBuffer = status2;
+            ret->Status = status2;
         }
         break;
         
         case KPH_GETPROCESSID:
         {
-            HANDLE processHandle;
-            HANDLE handle;
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE Handle;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ProcessId;
+            } *ret = dataBuffer;
             KPH_ATTACH_STATE attachState;
             
-            if (inLength < 8 || outLength < 4)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            handle = *(HANDLE *)(dataBuffer + 4);
-            
-            status = KphAttachProcessHandle(processHandle, &attachState);
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PHANDLE)dataBuffer = KphGetProcessId(handle);
+            ret->ProcessId = KphGetProcessId(args->Handle);
             KphDetachProcess(&attachState);
-            retLength = 4;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_GETTHREADID:
         {
-            HANDLE processHandle;
-            HANDLE handle;
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE Handle;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ThreadId;
+                HANDLE ProcessId;
+            } *ret = dataBuffer;
             KPH_ATTACH_STATE attachState;
             
-            if (inLength < 8 || outLength < 8)
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            processHandle = *(HANDLE *)dataBuffer;
-            handle = *(HANDLE *)(dataBuffer + 4);
-            
-            status = KphAttachProcessHandle(processHandle, &attachState);
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
             
-            *(PHANDLE)dataBuffer = KphGetThreadId(handle, (PHANDLE)((PCHAR)dataBuffer + 4));
+            ret->ThreadId = KphGetThreadId(args->Handle, &ret->ProcessId);
             KphDetachProcess(&attachState);
-            retLength = 8;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_TERMINATETHREAD:
         {
-            HANDLE threadHandle;
-            NTSTATUS exitStatus;
+            struct
+            {
+                HANDLE ThreadHandle;
+                NTSTATUS ExitStatus;
+            } *args = dataBuffer;
             
-            if (inLength < 8)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            threadHandle = *(HANDLE *)dataBuffer;
-            exitStatus = *(NTSTATUS *)(dataBuffer + 4);
-            
-            status = KphTerminateThread(threadHandle, exitStatus);
+            status = KphTerminateThread(args->ThreadHandle, args->ExitStatus);
         }
         break;
         
         case KPH_GETFEATURES:
         {
+            struct
+            {
+                ULONG Features;
+            } *ret = dataBuffer;
             ULONG features = 0;
             
-            if (outLength < 4)
+            if (outLength < sizeof(*ret))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
@@ -998,18 +1025,21 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (__PspTerminateThreadByPointer)
                 features |= KPHF_PSPTERMINATETHREADBPYPOINTER;
             
-            *(PULONG)dataBuffer = features;
-            retLength = 4;
+            ret->Features = features;
+            retLength = sizeof(*ret);
         }
         break;
         
         case KPH_EXPGETPROCESSINFORMATION:
         {
-            PVOID buffer;
-            ULONG bufferLength;
-            PULONG returnLength;
-            ULONG sessionId;
-            ULONG extendedInformation;
+            struct
+            {
+                PVOID Buffer;
+                ULONG BufferLength;
+                PULONG ReturnLength;
+                ULONG SessionId;
+                BOOL ExtendedInformation;
+            } *args = dataBuffer;
             
             if (!ExpGetProcessInformation)
             {
@@ -1017,24 +1047,18 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            if (inLength < 5 * 4)
+            if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
             
-            buffer = *(PVOID *)dataBuffer;
-            bufferLength = *(ULONG *)(dataBuffer + 0x4);
-            returnLength = *(PULONG *)(dataBuffer + 0x8);
-            sessionId = *(ULONG *)(dataBuffer + 0xc);
-            extendedInformation = *(ULONG *)(dataBuffer + 0x10);
-            
             status = ExpGetProcessInformation(
-                buffer,
-                bufferLength,
-                returnLength,
-                sessionId,
-                !!extendedInformation
+                args->Buffer,
+                args->BufferLength,
+                args->ReturnLength,
+                args->SessionId,
+                !!args->ExtendedInformation
                 );
         }
         break;

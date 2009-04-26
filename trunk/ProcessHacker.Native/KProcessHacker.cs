@@ -62,8 +62,8 @@ namespace ProcessHacker.Native
             KphReadVirtualMemory,
             KphWriteVirtualMemory,
             SetProcessToken,
-            GetThreadWin32StartAddress,
-            GetObjectName,
+            GetThreadStartAddress,
+            Reserved1,
             GetHandleObjectName,
             KphOpenProcessJob,
             KphGetContextThread,
@@ -223,16 +223,15 @@ namespace ProcessHacker.Native
 
         public string GetFileObjectName(SystemHandleInformation handle)
         {
-            byte* inData = stackalloc byte[12];
+            byte* inData = stackalloc byte[8];
             byte[] outData = new byte[2048];
 
             *(int*)inData = handle.Handle;
-            *(int*)(inData + 4) = handle.Object;
-            *(int*)(inData + 8) = handle.ProcessId;
+            *(int*)(inData + 4) = handle.ProcessId;
 
             try
             {
-                int len = _fileHandle.IoControl(CtlCode(Control.GetFileObjectName), inData, 12, outData);
+                int len = _fileHandle.IoControl(CtlCode(Control.GetFileObjectName), inData, 8, outData);
 
                 return UnicodeEncoding.Unicode.GetString(outData, 8, len - 8).TrimEnd('\0');
             }
@@ -263,23 +262,6 @@ namespace ProcessHacker.Native
             return null;
         }
 
-        public string GetObjectName(int obj)
-        {
-            byte[] outData = new byte[2048];
-
-            try
-        {
-                int len = _fileHandle.IoControl(CtlCode(Control.GetObjectName),
-                    (byte*)&obj, 4, outData);
-
-                return UnicodeEncoding.Unicode.GetString(outData, 8, len - 8).TrimEnd('\0');
-            }
-            catch
-            { }
-
-            return null;
-        }
-
         public bool GetProcessProtected(int pid)
         {
             byte[] result = new byte[1];
@@ -290,12 +272,12 @@ namespace ProcessHacker.Native
             return result[0] != 0;
         }
 
-        public uint GetThreadWin32StartAddress(ThreadHandle threadHandle)
+        public uint GetThreadStartAddress(ThreadHandle threadHandle)
         {
             byte* outData = stackalloc byte[4];
             int threadHandleInt = threadHandle;
 
-            _fileHandle.IoControl(CtlCode(Control.GetThreadWin32StartAddress),
+            _fileHandle.IoControl(CtlCode(Control.GetThreadStartAddress),
                 (byte*)&threadHandleInt, 4, outData, 4);
 
             return *(uint*)outData;

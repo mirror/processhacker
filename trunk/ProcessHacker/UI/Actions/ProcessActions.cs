@@ -26,6 +26,7 @@ using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using System.Collections.Generic;
 
 namespace ProcessHacker.UI.Actions
 {
@@ -273,6 +274,63 @@ namespace ProcessHacker.UI.Actions
             }
 
             return allGood;
+        }
+
+        public static bool TerminateTree(IWin32Window window, int[] pids, string[] names, bool prompt)
+        {
+            bool allGood = true;
+
+            // HACK
+            if (prompt && !Prompt(
+                window,
+                new int[] { pids[0] },
+                new string[] { names[0] + " and its descendants" }, "terminate",
+                "Terminating a process tree will cause the process and its descendants to be terminated. " +
+                "Are you sure you want to continue?", false
+                ))
+                return false;
+
+            var processes = Windows.GetProcesses();
+
+            for (int i = 0; i < pids.Length; i++)
+            {
+                if (!TerminateTree(window, processes, pids[i]))
+                    allGood = false;
+            }
+
+            return allGood;
+        }
+
+        private static bool TerminateTree(IWin32Window window, Dictionary<int, SystemProcess> processes, int pid)
+        {
+            bool good = true;
+
+            foreach (var process in processes)
+            {
+                if (process.Value.Process.ProcessId < 4)
+                    continue;
+
+                if (process.Value.Process.InheritedFromProcessId == pid)
+                    if (!TerminateTree(window, processes, process.Value.Process.ProcessId))
+                        good = false;
+            }
+
+            try
+            {
+                using (ProcessHandle phandle =
+                    new ProcessHandle(pid, ProcessAccess.Terminate))
+                    phandle.Terminate();
+            }
+            catch (Exception ex)
+            {
+                good = false;
+
+                DialogResult r = MessageBox.Show(window, "Could not terminate process \"" + processes[pid].Name +
+                    "\" with PID " + pid.ToString() + ":\n\n" +
+                    ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return good;
         }
 
         public static void Suspend(IWin32Window window, int[] pids, string[] names, bool prompt)

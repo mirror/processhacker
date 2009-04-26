@@ -334,7 +334,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.StartAddressI = KProcessHacker.Instance.GetThreadWin32StartAddress(item.ThreadQueryLimitedHandle);
+                            item.StartAddressI = KProcessHacker.Instance.GetThreadStartAddress(item.ThreadQueryLimitedHandle);
                         }
                         catch
                         { }
