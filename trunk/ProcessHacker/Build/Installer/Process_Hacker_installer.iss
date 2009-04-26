@@ -303,7 +303,6 @@ begin
 	else begin
 		CreateMutex(installer_mutex_name);
 
-
 	NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
 		if NetFrameWorkInstalled then begin
 			Result := True;
@@ -321,6 +320,7 @@ begin
 		end;
 	end;
 end;
+
 
 function InitializeUninstall(): Boolean;
 begin
