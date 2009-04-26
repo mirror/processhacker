@@ -302,25 +302,25 @@ begin
 	end
 	else begin
 		CreateMutex(installer_mutex_name);
-	end;
 
-NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
-	if NetFrameWorkInstalled then begin
-		Result := True;
-		end
-		else begin
-			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
-			if Result1 =False then begin
-			Result:=False;
-		end
-		else begin
-			Result:=False;
-		ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
-		'','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+
+	NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
+		if NetFrameWorkInstalled then begin
+			Result := True;
+			end
+			else begin
+				Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
+				if Result1 =False then begin
+				Result:=False;
+			end
+			else begin
+				Result:=False;
+			ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
+			'','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+			end;
 		end;
 	end;
 end;
-
 
 function InitializeUninstall(): Boolean;
 begin
