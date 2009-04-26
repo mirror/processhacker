@@ -154,7 +154,7 @@ Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Exec
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: "create KProcessHacker binPath= ""{app}\kprocesshacker.sys"" type= kernel start= auto"; Tasks: createKPHservice; StatusMsg: {cm:msg_createkprocesshacker}; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: start KProcessHacker; Tasks: createKPHservice; StatusMsg: {cm:msg_startkprocesshacker}; Flags: runhidden runascurrentuser
-Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; Check: ngenExistsCheck(); StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser skipifdoesntexist
+Filename: {win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe; Parameters: "install ""{app}\ProcessHacker.exe"""; StatusMsg: {cm:msg_optimizingperformance}; Flags: runhidden runascurrentuser skipifdoesntexist
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 
@@ -165,8 +165,8 @@ Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellex
 Type: files; Name: {app}\Homepage.url
 
 [UninstallRun]
-Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
-Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
 
 [Code]
 // Create a mutex for the installer
@@ -242,14 +242,6 @@ begin
 	end;
 end;
 
-// Check if ngen.exe exists
-function ngenExistsCheck(): Boolean;
-begin
-	Result := False;
-	if FileExists(ExpandConstant('{win}\Microsoft.NET\Framework\v2.0.50727\ngen.exe')) then
-	Result := True;
-end;
-
 // Check if sc.exe exists
 function scExeExistsCheck(): Boolean;
 begin
@@ -293,7 +285,7 @@ begin
 		Result := True;
 		end
 		else begin
-			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = IDYES;
+			Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
 			if Result1 =False then begin
 			Result:=False;
 		end
