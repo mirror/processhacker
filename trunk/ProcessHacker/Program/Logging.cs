@@ -44,7 +44,9 @@ namespace ProcessHacker
         [Conditional("DEBUG")]
         public static void Log(Importance importance, string message)
         {
-            string debugMessage = "ProcessHacker: (" + importance.ToString() + ") " + message;
+            string debugMessage = 
+                DateTime.Now.ToString("hh:mm:ss:fff:") + 
+                " ProcessHacker: (" + importance.ToString() + ") " + message + "\n" + Environment.StackTrace;
 
             OutputDebugString(debugMessage);
 
@@ -59,7 +61,7 @@ namespace ProcessHacker
         [Conditional("DEBUG")]
         public static void Log(Exception ex)
         {
-            Log(Importance.Error, ex.ToString());
+            Log(Importance.Error, ex.Message);
         }
     }
 }

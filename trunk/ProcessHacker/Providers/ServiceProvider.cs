@@ -43,7 +43,8 @@ namespace ProcessHacker
     {
         public ServiceProvider()
             : base(StringComparer.InvariantCultureIgnoreCase) // Windows is case-insensitive with services
-        {      
+        {
+            this.Name = this.GetType().Name;
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
         }
 

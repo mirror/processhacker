@@ -51,10 +51,11 @@ namespace ProcessHacker
         private ProcessHandle _processHandle;
         private int _pid;
 
-        public ModuleProvider(int PID)
+        public ModuleProvider(int pid)
             : base()
         {
-            _pid = PID;
+            this.Name = this.GetType().Name;
+            _pid = pid;
 
             try
             {
@@ -235,7 +236,7 @@ namespace ProcessHacker
             this.Dictionary = newdictionary;
         }
 
-        public int PID
+        public int Pid
         {
             get { return _pid; }
         }

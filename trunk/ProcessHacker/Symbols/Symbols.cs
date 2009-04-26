@@ -414,6 +414,8 @@ namespace ProcessHacker.Symbols
         {
             try
             {
+                Logging.Log(Logging.Importance.Information, "SymbolProvider: disposing (" + disposing.ToString() + ")");
+
                 if (disposing)
                 {
                     Monitor.Enter(_disposeLock);
@@ -425,7 +427,9 @@ namespace ProcessHacker.Symbols
                     if (!Win32.SymCleanup(_handle))
                         Win32.ThrowLastError();
 
-                    _idGen.Push(_handle);
+                    // If we didn't use a process handle, we got it from the ID generator
+                    if (_processHandle == null)
+                        _idGen.Push(_handle);
  
                     _disposed = true;
                 }
@@ -438,6 +442,8 @@ namespace ProcessHacker.Symbols
                     Monitor.Exit(_disposeLock);
                 }
             }
+
+            Logging.Log(Logging.Importance.Information, "SymbolProvider: finished disposing (" + disposing.ToString() + ")");
         }
 
         public void Dispose()

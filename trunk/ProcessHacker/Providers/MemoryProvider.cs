@@ -49,10 +49,11 @@ namespace ProcessHacker
         private ProcessHandle _processHandle;
         private int _pid;
 
-        public MemoryProvider(int PID)
+        public MemoryProvider(int pid)
             : base()
         {
-            _pid = PID;
+            this.Name = this.GetType().Name;
+            _pid = pid;
 
             try
             {
@@ -162,7 +163,7 @@ namespace ProcessHacker
 
         public bool IgnoreFreeRegions { get; set; }
 
-        public int PID
+        public int Pid
         {
             get { return _pid; }
         }

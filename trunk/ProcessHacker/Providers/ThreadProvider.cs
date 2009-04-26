@@ -39,7 +39,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
-        public int TID;
+        public int Tid;
 
         public long ContextSwitches;
         public long ContextSwitchesDelta;
@@ -72,10 +72,11 @@ namespace ProcessHacker
         private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private bool _waitedForLoad = false;
 
-        public ThreadProvider(int PID)
+        public ThreadProvider(int pid)
             : base()
         {
-            _pid = PID;
+            this.Name = this.GetType().Name;
+            _pid = pid;
 
             if (!Program.ProcessesWithThreads.ContainsKey(_pid))
                 Program.ProcessesWithThreads.Add(_pid, null);
@@ -291,7 +292,7 @@ namespace ProcessHacker
                 {
                     ThreadItem item = new ThreadItem();
 
-                    item.TID = tid;
+                    item.Tid = tid;
                     item.ContextSwitches = t.ContextSwitchCount;
                     item.WaitReason = t.WaitReason;
 
@@ -464,7 +465,7 @@ namespace ProcessHacker
             get { return _symbols; }
         }
 
-        public int PID
+        public int Pid
         {
             get { return _pid; }
         }

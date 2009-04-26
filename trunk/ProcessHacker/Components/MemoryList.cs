@@ -161,7 +161,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new MemoryProvider.ProviderUpdateOnce(provider_Updated);
-                    _pid = _provider.PID;
+                    _pid = _provider.Pid;
                     _memoryItems = new List<MemoryItem>();
 
                     foreach (MemoryItem item in _provider.Dictionary.Values)

@@ -43,10 +43,11 @@ namespace ProcessHacker
         private ProcessHandle _processHandle;
         private int _pid;
 
-        public HandleProvider(int PID)
+        public HandleProvider(int pid)
             : base()
         {
-            _pid = PID;
+            this.Name = this.GetType().Name;
+            _pid = pid;
 
             try
             {
@@ -125,7 +126,7 @@ namespace ProcessHacker
 
         public bool HideHandlesWithNoName { get; set; }
 
-        public int PID
+        public int Pid
         {
             get { return _pid; }
         }

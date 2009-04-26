@@ -275,7 +275,7 @@ namespace ProcessHacker.Components
                     _provider.Updated += new ThreadProvider.ProviderUpdateOnce(provider_Updated);
                     _provider.LoadingStateChanged += new ThreadProvider.LoadingStateChangedDelegate(provider_LoadingStateChanged);
 
-                    _pid = _provider.PID;
+                    _pid = _provider.Pid;
                 }
             }
         }
@@ -331,8 +331,8 @@ namespace ProcessHacker.Components
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
 
-            litem.Name = item.TID.ToString();
-            litem.Text = item.TID.ToString();
+            litem.Name = item.Tid.ToString();
+            litem.Text = item.Tid.ToString();
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
@@ -347,7 +347,7 @@ namespace ProcessHacker.Components
         {
             lock (listThreads)
             {
-                ListViewItem litem = listThreads.Items[newItem.TID.ToString()];
+                ListViewItem litem = listThreads.Items[newItem.Tid.ToString()];
 
                 if (litem == null)
                     return;
@@ -378,11 +378,11 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(ThreadItem item)
         {
-            int index = listThreads.Items[item.TID.ToString()].Index;
-            bool selected = listThreads.Items[item.TID.ToString()].Selected;
+            int index = listThreads.Items[item.Tid.ToString()].Index;
+            bool selected = listThreads.Items[item.Tid.ToString()].Selected;
             int selectedCount = listThreads.SelectedItems.Count;
 
-            listThreads.Items[item.TID.ToString()].Remove();
+            listThreads.Items[item.Tid.ToString()].Remove();
         }
 
         private void provider_LoadingStateChanged(bool loading)

@@ -115,7 +115,8 @@ namespace ProcessHacker
 
         public ProcessSystemProvider()
             : base()
-        {      
+        {
+            this.Name = this.GetType().Name;
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
             var basic = new SystemBasicInformation();

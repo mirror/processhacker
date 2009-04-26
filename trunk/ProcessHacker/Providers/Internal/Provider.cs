@@ -111,8 +111,8 @@ namespace ProcessHacker
         /// </summary>
         public event ProviderError Error;
 
+        private string _name = string.Empty;
         private Thread _thread;
-        private List<Thread> _asyncThreads = new List<Thread>();
         private IDictionary<TKey, TValue> _dictionary;
 
         private object _disposeLock = new object();
@@ -159,6 +159,8 @@ namespace ProcessHacker
 
         private void Dispose(bool disposing)
         {
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
+
             try
             {
                 if (disposing)
@@ -178,19 +180,14 @@ namespace ProcessHacker
                     }
 
                     if (this.Disposed != null)
-                        this.Disposed(this);
-
-                    if (disposing)
                     {
-                        lock (_asyncThreads)
+                        try
                         {
-                            foreach (Thread t in _asyncThreads)
-                            {
-                                t.Abort();
-                            }
-
-                            _asyncThreads.Clear();
-                            _asyncThreads = null;
+                            this.Disposed(this);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logging.Log(ex);
                         }
                     }
                 }
@@ -203,12 +200,25 @@ namespace ProcessHacker
                     Monitor.Exit(_disposeLock);
                 }
             }
+
+            Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
         }
 
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public string Name
+        {
+            get { return _name; }
+            protected set
+            {
+                _name = value;
+                if (_name == null)
+                    _name = string.Empty;
+            }
         }
 
         /// <summary>
@@ -304,43 +314,57 @@ namespace ProcessHacker
         /// </summary>
         public void RunOnce()
         {
-            lock (_busyLock)
+            // Bail out if we are disposing
+            if (!Monitor.TryEnter(_disposeLock))
             {
-                _busy = true;
+                Logging.Log(Logging.Importance.Warning, "Provider (" + _name + "): RunOnce: currently disposing");
+                return;
+            }
 
-                if (ProviderUpdate != null)
+            try
+            {
+                lock (_busyLock)
                 {
-                    try
-                    {
-                        if (BeforeUpdate != null)
-                            BeforeUpdate();
-                    }
-                    catch
-                    { }
-                    
-                    try
-                    {
-                        ProviderUpdate();
-                        _runCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (Error != null)
-                            Error(ex);
+                    _busy = true;
 
-                        Logging.Log(ex);
+                    if (ProviderUpdate != null)
+                    {
+                        try
+                        {
+                            if (BeforeUpdate != null)
+                                BeforeUpdate();
+                        }
+                        catch
+                        { }
+
+                        try
+                        {
+                            ProviderUpdate();
+                            _runCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            if (Error != null)
+                                Error(ex);
+
+                            Logging.Log(ex);
+                        }
+
+                        try
+                        {
+                            if (Updated != null)
+                                Updated();
+                        }
+                        catch
+                        { }
                     }
 
-                    try
-                    {
-                        if (Updated != null)
-                            Updated();
-                    }
-                    catch
-                    { }
+                    _busy = false;
                 }
-
-                _busy = false;
+            }
+            finally
+            {
+                Monitor.Exit(_disposeLock);
             }
         }
 
@@ -349,22 +373,7 @@ namespace ProcessHacker
         /// </summary>
         public void RunOnceAsync()
         {
-            Thread t = null;
-
-            t = new Thread(new ThreadStart(delegate
-                {
-                    this.RunOnce();
-
-                    lock (_asyncThreads)
-                        _asyncThreads.Remove(t);
-                }));
-
-            t.SetApartmentState(ApartmentState.STA);
-
-            lock (_asyncThreads)
-                _asyncThreads.Add(t);
-
-            t.Start();
+            ThreadPool.QueueUserWorkItem((o) => this.RunOnce());
         }
 
         /// <summary>

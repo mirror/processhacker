@@ -30,7 +30,8 @@ namespace ProcessHacker
     {
         public NetworkProvider()
             : base()
-        {      
+        {
+            this.Name = this.GetType().Name;
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
         }
 

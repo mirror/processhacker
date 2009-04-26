@@ -156,7 +156,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new ModuleProvider.ProviderUpdateOnce(provider_Updated);
-                    _pid = _provider.PID;
+                    _pid = _provider.Pid;
 
                     try
                     {
