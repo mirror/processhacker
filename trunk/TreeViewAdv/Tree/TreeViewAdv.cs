@@ -494,9 +494,43 @@ namespace Aga.Controls.Tree
 			base.OnFontChanged(e);
 			_measureContext.Font = Font;
 			FullUpdate();
-		}
+        }
 
-		internal IEnumerable<NodeControlInfo> GetNodeControls(TreeNodeAdv node)
+        private Dictionary<TreeNodeAdv, IList<NodeControlInfo>> _cachedNodeControls =
+            new Dictionary<TreeNodeAdv, IList<NodeControlInfo>>();
+
+        internal IEnumerable<NodeControlInfo> GetNodeControls(TreeNodeAdv node)
+        {
+            IEnumerable<NodeControlInfo> nodeControls = null;
+
+            if (node == null)
+                return new List<NodeControlInfo>();
+
+            lock (_cachedNodeControls)
+            {
+                if (!_cachedNodeControls.ContainsKey(node))
+                {
+                    List<NodeControlInfo> ncList = new List<NodeControlInfo>();
+
+                    foreach (var item in this.GetNodeControlsInternal(node))
+                        ncList.Add(item);
+
+                    _cachedNodeControls.Add(node, ncList);
+                }
+
+                nodeControls = _cachedNodeControls[node];
+            }
+
+            return nodeControls;
+        }
+
+        public void InvalidateNodeControlCache()
+        {
+            lock (_cachedNodeControls)
+                _cachedNodeControls.Clear();
+        }
+
+		private IEnumerable<NodeControlInfo> GetNodeControlsInternal(TreeNodeAdv node)
 		{
 			if (node == null)
 				yield break;

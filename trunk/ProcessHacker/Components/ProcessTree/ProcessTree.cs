@@ -219,7 +219,7 @@ namespace ProcessHacker
                         _treeModel.CallStructureChanged(new TreePathEventArgs(new TreePath()));
                     }
 
-                    treeProcesses.InvalidateNodeControlCache();
+                    //treeProcesses.InvalidateNodeControlCache();
                     treeProcesses.Invalidate();
                 }));
             }
