@@ -163,7 +163,7 @@ Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice
 Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
-Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait unchecked runascurrentuser
+Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
