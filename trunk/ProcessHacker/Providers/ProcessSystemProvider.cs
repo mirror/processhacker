@@ -1032,8 +1032,10 @@ namespace ProcessHacker
                     {
                         if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
-                            (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, item.FileName, true,
-                                r => { }, null);
+                            WorkQueue.GlobalQueueWorkItem(
+                                new ProcessFileDelegate(this.ProcessFileStage2),
+                                pid, item.FileName, true
+                                );
                             item.ProcessingAttempts++;
                         }
                     }

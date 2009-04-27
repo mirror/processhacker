@@ -27,7 +27,9 @@
             {
                 Program.SecondarySharedThreadProvider.Remove(_threadP);
                 // May take a very, very long time
-                (new System.Windows.Forms.MethodInvoker(_threadP.Dispose)).BeginInvoke(r => { }, null);
+                WorkQueue.GlobalQueueWorkItem(
+                    new System.Windows.Forms.MethodInvoker(_threadP.Dispose)
+                    );
                 _threadP = null;
             }
 
