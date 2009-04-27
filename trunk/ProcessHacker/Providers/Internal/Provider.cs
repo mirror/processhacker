@@ -375,7 +375,7 @@ namespace ProcessHacker
         /// </summary>
         public void RunOnceAsync()
         {
-            ThreadPool.QueueUserWorkItem((o) => this.RunOnce());
+            WorkQueue.GlobalQueueWorkItem(new Action(this.RunOnce));
         }
 
         /// <summary>

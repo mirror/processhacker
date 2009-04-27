@@ -67,7 +67,12 @@ namespace ProcessHacker
         [Conditional("DEBUG")]
         public static void Log(Exception ex)
         {
-            Log(Importance.Error, ex.Message);
+            string message = ex.Message;
+
+            if (ex.InnerException != null)
+                message += "\nInner exception:\n" + ex.InnerException.ToString();
+
+            Log(Importance.Error, message);
         }
     }
 }

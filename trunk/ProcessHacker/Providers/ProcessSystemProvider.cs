@@ -298,8 +298,14 @@ namespace ProcessHacker
                     _fpResults.Enqueue(fpResult);
             }
 
-            (new ProcessFileDelegate(this.ProcessFileStage1a)).BeginInvoke(pid, fileName, forced, r => { }, null);
-            (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, fileName, forced, r => { }, null);
+            WorkQueue.GlobalQueueWorkItem(
+                new ProcessFileDelegate(this.ProcessFileStage1a),
+                pid, fileName, forced
+                );
+            WorkQueue.GlobalQueueWorkItem(
+                new ProcessFileDelegate(this.ProcessFileStage2),
+                pid, fileName, forced
+                );
 
             if (this.FileProcessingComplete != null)
                 this.FileProcessingComplete(fpResult.Stage, pid);
@@ -533,8 +539,10 @@ namespace ProcessHacker
 
         public void QueueFileProcessing(int pid)
         {
-            (new ProcessFileDelegate(this.ProcessFileStage1)).BeginInvoke(
-                pid, this.Dictionary[pid].FileName, true, r => { }, null);
+            WorkQueue.GlobalQueueWorkItem(
+                new ProcessFileDelegate(this.ProcessFileStage1),
+                pid, this.Dictionary[pid].FileName, true
+                );
         }
 
         private void FillFpResult(ProcessItem item, FileProcessResult result)
@@ -907,8 +915,9 @@ namespace ProcessHacker
 
                     if (pid > 0)
                     {
-                        (new ProcessFileDelegate(this.ProcessFileStage1)).BeginInvoke(pid, item.FileName, false,
-                            r => { }, null);
+                        WorkQueue.GlobalQueueWorkItem(
+                            new ProcessFileDelegate(this.ProcessFileStage1),
+                            pid, item.FileName, false);
                     }
 
                     if (pid == 0 || pid == 4)

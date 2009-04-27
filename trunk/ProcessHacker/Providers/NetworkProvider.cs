@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
 using ProcessHacker.Native;
 
 namespace ProcessHacker
@@ -71,8 +72,11 @@ namespace ProcessHacker
             {
                 if (!keyDict.ContainsKey(connection.ID))
                 {
-                    CallDictionaryRemoved(connection);   
-                    newDict.Remove(connection.ID);
+                    lock (Dictionary)
+                    {
+                        CallDictionaryRemoved(connection);   
+                        newDict.Remove(connection.ID);
+                    }
                 }
             }
 
@@ -84,56 +88,29 @@ namespace ProcessHacker
                     CallDictionaryAdded(connection);
 
                     // resolve the IP addresses
-
-                    if (connection.Local.Address.ToString() != "0.0.0.0")
+                    if (connection.Local != null)
                     {
-                        Dns.BeginGetHostEntry(connection.Local.Address, result =>
-                            {
-                                string id = (string)result.AsyncState;
-
-                                if (Dictionary.ContainsKey(id))
-                                {
-                                    lock (Dictionary)
-                                    {
-                                        try
-                                        {
-                                            var dnsResult = Dns.EndGetHostEntry(result);
-                                            var modConnection = Dictionary[id];
-
-                                            modConnection.LocalString = dnsResult.HostName;
-                                            CallDictionaryModified(Dictionary[id], modConnection);
-                                            Dictionary[id] = modConnection;
-                                        }
-                                        catch { }
-                                    }
-                                }
-                            }, connection.ID);
-                    }
-
-                    if (connection.Remote != null && connection.Remote.Address.ToString() != "0.0.0.0")
-                    {
-                        Dns.BeginGetHostEntry(connection.Remote.Address, result =>
+                        if (connection.Local.Address.ToString() != "0.0.0.0")
                         {
-                            string id = (string)result.AsyncState;
-
-                            if (Dictionary.ContainsKey(id))
-                            {
-                                lock (Dictionary)
-                                {
-                                    try
-                                    {
-                                        var dnsResult = Dns.EndGetHostEntry(result);
-                                        var modConnection = Dictionary[id];
-
-                                        modConnection.RemoteString = dnsResult.HostName;
-                                        CallDictionaryModified(Dictionary[id], modConnection);
-                                        Dictionary[id] = modConnection;
-                                    }
-                                    catch
-                                    { }
-                                }
-                            }
-                        }, connection.ID);
+                            WorkQueue.GlobalQueueWorkItem(
+                                new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                connection.ID,
+                                false,
+                                connection.Local.Address
+                                );
+                        }
+                    }
+                    if (connection.Remote != null)
+                    {
+                        if (connection.Remote.Address.ToString() != "0.0.0.0")
+                        {
+                            WorkQueue.GlobalQueueWorkItem(
+                                new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                connection.ID,
+                                true,
+                                connection.Remote.Address
+                                );
+                        }
                     }
                 }
                 else
@@ -154,6 +131,44 @@ namespace ProcessHacker
             }
 
             Dictionary = newDict;
+        }
+
+        private void ResolveAddresses(string id, bool remote, IPAddress address)
+        {
+            IPHostEntry entry = null;
+
+            try
+            {
+                entry = Dns.GetHostEntry(address);
+            }
+            catch (SocketException)
+            {
+                // Host was not found.
+                return;
+            }
+
+            if (Dictionary.ContainsKey(id))
+            {
+                lock (Dictionary)
+                {
+                    if (Dictionary.ContainsKey(id))
+                    {
+                        try
+                        {
+                            var modConnection = Dictionary[id];
+
+                            if (remote)
+                                modConnection.RemoteString = entry.HostName;
+                            else
+                                modConnection.LocalString = entry.HostName;
+
+                            CallDictionaryModified(Dictionary[id], modConnection);
+                            Dictionary[id] = modConnection;
+                        }
+                        catch { }
+                    }
+                }
+            }
         }
     }
 }

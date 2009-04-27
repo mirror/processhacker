@@ -194,8 +194,8 @@ namespace ProcessHacker
                 if (_provider != null)
                 {
                     // Do an interlocked execute so that we don't get corrupted state.
-                    _provider.InterlockedExecute(new MethodInvoker(() =>
-                        {
+                    //_provider.InterlockedExecute(new MethodInvoker(() =>
+                    //    {
                             _provider.DictionaryAdded += provider_DictionaryAdded;
                             _provider.DictionaryModified += provider_DictionaryModified;
                             _provider.DictionaryRemoved += provider_DictionaryRemoved;
@@ -211,9 +211,15 @@ namespace ProcessHacker
 
                             treeProcesses.EndCompleteUpdate();
                             treeProcesses.EndUpdate();
-                        }));
+                        //}));
                 }
             }
+        }
+
+        public bool StateHighlighting
+        {
+            get;
+            set;
         }
 
         #endregion
@@ -301,7 +307,7 @@ namespace ProcessHacker
 
                     if (node != null)
                     {
-                        if (_provider.RunCount > 1)
+                        if (this.StateHighlighting)
                         {
                             node.State = TreeNodeAdv.NodeState.New;
                             this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
@@ -347,20 +353,27 @@ namespace ProcessHacker
 
                     if (node != null)
                     {
-                        node.State = TreeNodeAdv.NodeState.Removed;
-                        this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
-                            new MethodInvoker(delegate
+                        if (this.StateHighlighting)
                         {
-                            try
+                            node.State = TreeNodeAdv.NodeState.Removed;
+                            this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
+                                new MethodInvoker(delegate
                             {
-                                _treeModel.Remove(item);
-                                this.RefreshItems();
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
-                        }));
+                                try
+                                {
+                                    _treeModel.Remove(item);
+                                    this.RefreshItems();
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logging.Log(ex);
+                                }
+                            }));
+                        }
+                        else
+                        {
+                            _treeModel.Remove(item);
+                        }
 
                         treeProcesses.Invalidate();
                     }

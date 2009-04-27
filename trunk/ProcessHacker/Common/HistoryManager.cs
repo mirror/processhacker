@@ -67,8 +67,11 @@ namespace ProcessHacker
 
         public ReadOnlyCollection<TValue> GetHistory(TKey key)
         {
-            if (!_readOnlyCollections.ContainsKey(key))
-                _readOnlyCollections.Add(key, new ReadOnlyCollection<TValue>(_history[key]));
+            lock (_readOnlyCollections)
+            {
+                if (!_readOnlyCollections.ContainsKey(key))
+                    _readOnlyCollections.Add(key, new ReadOnlyCollection<TValue>(_history[key]));
+            }
 
             return _readOnlyCollections[key];
         }
@@ -77,10 +80,13 @@ namespace ProcessHacker
         {
             int maxCount = this.EffectiveMaxCount;
 
-            if (_history[key].Size != maxCount)
-                _history[key].Resize(maxCount);
+            lock (_history[key])
+            {
+                if (_history[key].Size != maxCount)
+                    _history[key].Resize(maxCount);
 
-            _history[key].Add(value);
+                _history[key].Add(value);
+            }
         }
     }
 }

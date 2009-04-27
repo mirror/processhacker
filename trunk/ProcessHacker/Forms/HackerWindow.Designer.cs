@@ -90,6 +90,8 @@
             this.cpuHistoryMenuItem = new System.Windows.Forms.MenuItem();
             this.cpuUsageMenuItem = new System.Windows.Forms.MenuItem();
             this.ioHistoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.commitHistoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.physMemHistoryMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.updateNowMenuItem = new System.Windows.Forms.MenuItem();
             this.updateProcessesMenuItem = new System.Windows.Forms.MenuItem();
@@ -159,8 +161,6 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.commitHistoryMenuItem = new System.Windows.Forms.MenuItem();
-            this.physMemHistoryMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -614,6 +614,18 @@
             this.ioHistoryMenuItem.Text = "I/O History";
             this.ioHistoryMenuItem.Click += new System.EventHandler(this.ioHistoryMenuItem_Click);
             // 
+            // commitHistoryMenuItem
+            // 
+            this.commitHistoryMenuItem.Index = 3;
+            this.commitHistoryMenuItem.Text = "Commit History";
+            this.commitHistoryMenuItem.Click += new System.EventHandler(this.commitHistoryMenuItem_Click);
+            // 
+            // physMemHistoryMenuItem
+            // 
+            this.physMemHistoryMenuItem.Index = 4;
+            this.physMemHistoryMenuItem.Text = "Physical Memory History";
+            this.physMemHistoryMenuItem.Click += new System.EventHandler(this.physMemHistoryMenuItem_Click);
+            // 
             // menuItem3
             // 
             this.menuItem3.Index = 3;
@@ -793,6 +805,7 @@
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
             this.treeProcesses.Size = new System.Drawing.Size(784, 344);
+            this.treeProcesses.StateHighlighting = false;
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
@@ -1151,18 +1164,6 @@
             this.selectAllNetworkMenuItem.Index = 3;
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
-            // 
-            // commitHistoryMenuItem
-            // 
-            this.commitHistoryMenuItem.Index = 3;
-            this.commitHistoryMenuItem.Text = "Commit History";
-            this.commitHistoryMenuItem.Click += new System.EventHandler(this.commitHistoryMenuItem_Click);
-            // 
-            // physMemHistoryMenuItem
-            // 
-            this.physMemHistoryMenuItem.Index = 4;
-            this.physMemHistoryMenuItem.Text = "Physical Memory History";
-            this.physMemHistoryMenuItem.Click += new System.EventHandler(this.physMemHistoryMenuItem_Click);
             // 
             // HackerWindow
             // 

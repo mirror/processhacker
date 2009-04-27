@@ -1317,6 +1317,7 @@ namespace ProcessHacker
             if (processP.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
+                    treeProcesses.StateHighlighting = true;
                     processP.RunOnceAsync();
                     this.Cursor = Cursors.Default;
                     this.UpdateCommon();
@@ -2167,6 +2168,10 @@ namespace ProcessHacker
                     }
                     break;
 
+                case (int)WindowMessage.Paint:
+                    this.Painting();
+                    break;
+
                 case (int)WindowMessage.Activate:
                 case (int)WindowMessage.KillFocus:
                     {
@@ -2341,6 +2346,7 @@ namespace ProcessHacker
 
             HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightingContext.StateHighlighting = false;
+
             listServices.List.BeginUpdate();
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             listServices.Provider = serviceP;
@@ -2420,33 +2426,8 @@ namespace ProcessHacker
             tabControl.SelectedTab = tabControl.TabPages["tab" + Program.SelectTab];
         }
 
-        public HackerWindow()
+        private void LoadStructs()
         {
-            Program.HackerWindow = this;
-            processP = Program.ProcessProvider;
-            serviceP = Program.ServiceProvider;
-            networkP = Program.NetworkProvider;
-
-            InitializeComponent();
-
-            // Force the handle to be created
-            { var handle = this.Handle; }
-
-            this.LoadWindowSettings();
-            this.LoadControls();
-            this.LoadNotificationIcons();
-
-            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
-                Program.StartVisible)
-            {
-                this.Visible = true;
-            }
-
-            if (tabControl.SelectedTab == tabProcesses)
-                treeProcesses.Tree.Select();
-
-            statusText.Text = "Waiting...";
-
             try
             {
                 if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
@@ -2460,6 +2441,11 @@ namespace ProcessHacker
             {
                 QueueMessage("Error loading structure definitions: " + ex.Message);
             }
+        }
+
+        private void LoadOther()
+        {
+            statusText.Text = "Waiting...";
 
             try
             {
@@ -2477,6 +2463,35 @@ namespace ProcessHacker
             {
                 Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             }
+        }
+
+        public HackerWindow()
+        {
+            Program.HackerWindow = this;
+            processP = Program.ProcessProvider;
+            serviceP = Program.ServiceProvider;
+            networkP = Program.NetworkProvider;
+
+            InitializeComponent();
+
+            // Force the handle to be created
+            { var handle = this.Handle; }
+
+            this.LoadWindowSettings();
+            this.LoadOtherSettings();
+            this.LoadControls();
+            this.LoadNotificationIcons();
+
+            if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
+                Program.StartVisible)
+            {
+                this.Visible = true;
+            }
+
+            if (tabControl.SelectedTab == tabProcesses)
+                treeProcesses.Tree.Select();
+
+            this.LoadOther();
 
             dontCalculate = false;
         }
@@ -2519,21 +2534,18 @@ namespace ProcessHacker
 
         private bool isFirstPaint = true;
 
-        protected override void OnPaint(PaintEventArgs e)
+        private void Painting()
         {
             if (isFirstPaint)
             {
                 isFirstPaint = false;
                 vistaMenu.DelaySetImageCalls = false;
                 vistaMenu.PerformPendingSetImageCalls();
-                this.LoadOtherSettings();
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
             }
-
-            base.OnPaint(e);
         }
     }
 }

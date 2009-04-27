@@ -143,8 +143,8 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    _provider.InterlockedExecute(new MethodInvoker(() =>
-                    {
+                    //_provider.InterlockedExecute(new MethodInvoker(() =>
+                    //{
                         _provider.UseInvoke = true;
                         _provider.Invoke = new ServiceProvider.ProviderInvokeMethod(this.BeginInvoke);
                         _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
@@ -156,7 +156,7 @@ namespace ProcessHacker.Components
                         {
                             provider_DictionaryAdded(item);
                         }
-                    }));
+                    //}));
                 }
             }
         }

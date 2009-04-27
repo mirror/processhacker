@@ -97,7 +97,7 @@ namespace ProcessHacker
                 { }
 
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
-                ThreadPool.QueueUserWorkItem(new WaitCallback(o =>
+                WorkQueue.GlobalQueueWorkItem(new Action(() =>
                 {
                     _symbols = new SymbolProvider(_processHandle);
 
@@ -229,8 +229,10 @@ namespace ProcessHacker
 
         public void QueueThreadResolveStartAddress(int tid, long startAddress)
         {
-            (new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress)).BeginInvoke(
-                        tid, startAddress, r => { }, null);
+            WorkQueue.GlobalQueueWorkItem(
+                new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress),
+                tid, startAddress
+                );
         }
 
         private string GetThreadBasicStartAddress(long startAddress)

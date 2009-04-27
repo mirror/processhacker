@@ -27,19 +27,29 @@ using System.Threading;
 
 namespace ProcessHacker
 {
+    public delegate void Action();
+    public delegate void Action<T>(T a1);
+    public delegate void Action<T, U>(T a1, U a2);
+    public delegate void Action<T, U, V>(T a1, U a2, V a3);
+    public delegate void Action<T, U, V, W>(T a1, U a2, V a3, W a4);
+    public delegate void Action<T, U, V, W, X>(T a1, U a2, V a3, W a4, X a5);
+    public delegate void Action<T, U, V, W, X, Y>(T a1, U a2, V a3, W a4, X a5, Y a6);
+    public delegate void Action<T, U, V, W, X, Y, Z>(T a1, U a2, V a3, W a4, X a5, Y a6, Z a7);
+
+    /// <summary>
+    /// Manages a work queue which is executed by worker threads.
+    /// </summary>
     public class WorkQueue
     {
-        public delegate void WorkItemDelegate(object parameter);
-
         private class WorkItem
         {              
             public Delegate _work;
-            public object _parameter;
+            public object[] _args;
 
-            public WorkItem(Delegate work, object parameter)
+            public WorkItem(Delegate work, object[] args)
             {
                 _work = work;
-                _parameter = parameter;
+                _args = args;
             }
 
             public Delegate Work
@@ -47,32 +57,47 @@ namespace ProcessHacker
                 get { return _work; }
             }
 
-            public object Parameter
+            public object[] Parameter
             {
-                get { return _parameter; }
+                get { return _args; }
             }
 
             public void PerformWork()
             {
-                _work.DynamicInvoke(_parameter);
+                if (_args == null)
+                    _work.Method.Invoke(_work.Target, null);
+                else
+                    _work.Method.Invoke(_work.Target, _args.Length != 0 ? _args : null);
             }
         }
 
         private static WorkQueue _globalWorkQueue = new WorkQueue();
 
+        /// <summary>
+        /// Gets the global work queue instance.
+        /// </summary>
         public static WorkQueue GlobalWorkQueue
         {
             get { return _globalWorkQueue; }
         }
 
+        /// <summary>
+        /// Queues work for the global work queue.
+        /// </summary>
+        /// <param name="work">The work to be executed.</param>
         public static void GlobalQueueWorkItem(Delegate work)
         {
             _globalWorkQueue.QueueWorkItem(work);
         }
 
-        public static void GlobalQueueWorkItem(Delegate work, object parameter)
+        /// <summary>
+        /// Queues work for the global work queue.
+        /// </summary>
+        /// <param name="work">The work to be executed.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        public static void GlobalQueueWorkItem(Delegate work, params object[] args)
         {
-            _globalWorkQueue.QueueWorkItem(work, parameter);
+            _globalWorkQueue.QueueWorkItem(work, true, args);
         }
 
         private Queue<WorkItem> _workQueue = new Queue<WorkItem>();
@@ -96,12 +121,20 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Gets the worker thread limit.
+        /// Gets or sets the worker thread limit.
         /// </summary>
         public int MaxWorkerThreads
         {
             get { return _maxWorkerThreads; }
             set { _maxWorkerThreads = value; }
+        }
+
+        /// <summary>
+        /// Gets the number of queued work items.
+        /// </summary>
+        public int QueuedCount
+        {
+            get { return _workQueue.Count; }
         }
 
         /// <summary>
@@ -139,18 +172,29 @@ namespace ProcessHacker
         /// <param name="work">The work to be performed.</param>
         public void QueueWorkItem(Delegate work)
         {
-            this.QueueWorkItem(work, null);
+            this.QueueWorkItem(work, true, null);
         }
 
         /// <summary>
         /// Queues work for the worker thread(s).
         /// </summary>
         /// <param name="work">The work to be performed.</param>
-        /// <param name="parameter">A parameter to pass to the delegate.</param>
-        public void QueueWorkItem(Delegate work, object parameter)
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        public void QueueWorkItem(Delegate work, params object[] args)
+        {
+            this.QueueWorkItem(work, true, args);
+        }
+
+        /// <summary>
+        /// Queues work for the worker thread(s).
+        /// </summary>
+        /// <param name="work">The work to be performed.</param>
+        /// <param name="isArray">Ignored.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        public void QueueWorkItem(Delegate work, bool isArray, object[] args)
         {
             lock (_workQueue)
-                _workQueue.Enqueue(new WorkItem(work, parameter));
+                _workQueue.Enqueue(new WorkItem(work, args));
 
             _workArrivedEvent.Set();
 
@@ -209,7 +253,16 @@ namespace ProcessHacker
                     }
 
                     Interlocked.Increment(ref _busyCount);
-                    item.PerformWork();
+
+                    try
+                    {
+                        item.PerformWork();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
+
                     Interlocked.Decrement(ref _busyCount);
                 }
                 else
