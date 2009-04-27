@@ -2337,11 +2337,11 @@ namespace ProcessHacker
 
             processP.Interval = Properties.Settings.Default.RefreshInterval;
             treeProcesses.Provider = processP;
-            processP.RunOnceAsync();
-            processP.Enabled = true;
             this.Cursor = Cursors.WaitCursor;
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_InfoUpdater);
+            processP.RunOnceAsync();
+            processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;
 
             HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
@@ -2350,17 +2350,16 @@ namespace ProcessHacker
             listServices.List.BeginUpdate();
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             listServices.Provider = serviceP;
-            serviceP.RunOnceAsync();
             serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
             serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
             serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
             serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
+            serviceP.RunOnceAsync();
             serviceP.Enabled = true;
             updateServicesMenuItem.Checked = true;
 
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
             listNetwork.Provider = networkP;
-            networkP.Enabled = true;
 
             treeProcesses.Tree.MouseDown += (sender, e) =>
                 {
