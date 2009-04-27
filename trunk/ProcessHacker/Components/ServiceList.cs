@@ -143,17 +143,20 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    foreach (ServiceItem item in _provider.Dictionary.Values)
+                    _provider.InterlockedExecute(new MethodInvoker(() =>
                     {
-                        provider_DictionaryAdded(item);
-                    }
+                        _provider.UseInvoke = true;
+                        _provider.Invoke = new ServiceProvider.ProviderInvokeMethod(this.BeginInvoke);
+                        _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
+                        _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
+                        _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
+                        _provider.Updated += new ServiceProvider.ProviderUpdateOnce(provider_Updated);
 
-                    _provider.UseInvoke = true;
-                    _provider.Invoke = new ServiceProvider.ProviderInvokeMethod(this.BeginInvoke);
-                    _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new ServiceProvider.ProviderUpdateOnce(provider_Updated);
+                        foreach (ServiceItem item in _provider.Dictionary.Values)
+                        {
+                            provider_DictionaryAdded(item);
+                        }
+                    }));
                 }
             }
         }

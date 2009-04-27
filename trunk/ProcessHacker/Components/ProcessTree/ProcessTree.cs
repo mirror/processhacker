@@ -181,10 +181,10 @@ namespace ProcessHacker
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= provider_DictionaryAdded;
+                    _provider.DictionaryModified -= provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= provider_DictionaryRemoved;
+                    _provider.Updated -= provider_Updated;
                 }
 
                 _provider = value;
@@ -193,15 +193,25 @@ namespace ProcessHacker
 
                 if (_provider != null)
                 {
-                    foreach (ProcessItem item in _provider.Dictionary.Values)
-                    {
-                        provider_DictionaryAdded(item);
-                    }
+                    // Do an interlocked execute so that we don't get corrupted state.
+                    _provider.InterlockedExecute(new MethodInvoker(() =>
+                        {
+                            _provider.DictionaryAdded += provider_DictionaryAdded;
+                            _provider.DictionaryModified += provider_DictionaryModified;
+                            _provider.DictionaryRemoved += provider_DictionaryRemoved;
+                            _provider.Updated += provider_Updated;
 
-                    _provider.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified += new ProcessSystemProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(provider_Updated);
+                            treeProcesses.BeginUpdate();
+                            treeProcesses.BeginCompleteUpdate();
+
+                            foreach (ProcessItem item in _provider.Dictionary.Values)
+                            {
+                                provider_DictionaryAdded(item);
+                            }
+
+                            treeProcesses.EndCompleteUpdate();
+                            treeProcesses.EndUpdate();
+                        }));
                 }
             }
         }

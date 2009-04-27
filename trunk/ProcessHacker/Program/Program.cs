@@ -162,6 +162,8 @@ namespace ProcessHacker
             catch
             { }
 
+            VerifySettings();
+
             if (Environment.Version.Major < 2)
             {
                 MessageBox.Show("You must have .NET Framework 2.0 or higher to use Process Hacker.", "Process Hacker",
@@ -262,17 +264,145 @@ namespace ProcessHacker
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            ProcessProvider = new ProcessSystemProvider();
-            ServiceProvider = new ServiceProvider();
-            NetworkProvider = new NetworkProvider();
+            Win32.FileIconInit(true);
+            LoadProviders();
             Windows.GetProcessName = (pid) => 
                 ProcessProvider.Dictionary.ContainsKey(pid) ? 
                 ProcessProvider.Dictionary[pid].Name :
                 null;
 
-            Win32.FileIconInit(true);
             new HackerWindow();
             Application.Run();
+        }
+
+        private static void LoadProviders()
+        {
+            ProcessProvider = new ProcessSystemProvider();
+            ServiceProvider = new ServiceProvider();
+            NetworkProvider = new NetworkProvider();
+            Program.SharedThreadProvider = 
+                new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+            Program.SharedThreadProvider.Add(ProcessProvider);
+            Program.SharedThreadProvider.Add(ServiceProvider);
+            Program.SharedThreadProvider.Add(NetworkProvider);
+            Program.SecondarySharedThreadProvider = 
+                new SharedThreadProvider(Properties.Settings.Default.RefreshInterval);
+        }
+
+        private static void DeleteSettings()
+        {
+            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                + "\\wj32"))
+                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                    + "\\wj32", true);
+            if (System.IO.Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                + "\\wj32"))
+                System.IO.Directory.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                    + "\\wj32", true);
+        }
+
+        private static void VerifySettings()
+        {
+            // Try to get a setting. If the file is corrupt, we can reset the settings.
+            try
+            {
+                var a = Properties.Settings.Default.AlwaysOnTop;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+
+                try { ThemingScope.Activate(); }
+                catch { }
+
+                if (OSVersion.HasTaskDialogs)
+                {
+                    TaskDialog td = new TaskDialog();
+
+                    td.WindowTitle = "Process Hacker";
+                    td.MainInstruction = "Process Hacker could not initialize the configuration manager";
+                    td.Content = "The Process Hacker configuration file is corrupt or the configuration manager " +
+                        "could not be initialized. Do you want Process Hacker to reset your settings?";
+                    td.MainIcon = TaskDialogIcon.Warning;
+                    td.CommonButtons = TaskDialogCommonButtons.Cancel;
+                    td.Buttons = new TaskDialogButton[]
+                    {
+                        new TaskDialogButton((int)DialogResult.Yes, "Yes, reset the settings and restart Process Hacker"),
+                        new TaskDialogButton((int)DialogResult.No, "No, attempt to start Process Hacker anyway"),
+                        new TaskDialogButton((int)DialogResult.Retry, "Show me the error message")
+                    };
+                    td.UseCommandLinks = true;
+                    td.Callback = (taskDialog, args, userData) =>
+                    {
+                        if (args.Notification == TaskDialogNotification.ButtonClicked)
+                        {
+                            if (args.ButtonId == (int)DialogResult.Yes)
+                            {
+                                taskDialog.SetMarqueeProgressBar(true);
+                                taskDialog.SetProgressBarMarquee(true, 1000);
+
+                                try
+                                {
+                                    DeleteSettings();
+                                    System.Diagnostics.Process.Start(Application.ExecutablePath);
+                                }
+                                catch (Exception ex2)
+                                {
+                                    taskDialog.SetProgressBarMarquee(false, 1000);
+                                    MessageBox.Show("The settings could not be reset:\r\n\r\n" + ex2.ToString(),
+                                        "Process Hacker",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return true;
+                                }
+
+                                return false;
+                            }
+                            else if (args.ButtonId == (int)DialogResult.Retry)
+                            {
+                                InformationBox box = new InformationBox(ex.ToString());
+
+                                box.ShowDialog();
+
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    };
+
+                    int result = td.Show();
+
+                    if (result == (int)DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (MessageBox.Show("Process Hacker cannot start because your configuration file is corrupt. " +
+                        "Do you want Process Hacker to reset your settings?", "Process Hacker", MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            DeleteSettings();
+                            MessageBox.Show("Process Hacker has reset your settings and will now restart.", "Process Hacker",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            System.Diagnostics.Process.Start(Application.ExecutablePath);
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logging.Log(ex2);
+
+                            MessageBox.Show("Process Hacker could not reset your settings. Please delete the folder " +
+                                "'wj32' in your Application Data/Local Application Data directories.",
+                                "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                    }
+                }
+
+                Win32.ExitProcess(0);
+            }
         }
 
         private static bool ProcessCommandLine(Dictionary<string, string> pArgs)
