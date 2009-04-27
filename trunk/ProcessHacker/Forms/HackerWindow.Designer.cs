@@ -1078,6 +1078,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // goToProcessNetworkMenuItem
             // 

@@ -1942,7 +1942,7 @@ namespace ProcessHacker
             return shieldImage;
         }
 
-        private void LoadSettings()
+        private void LoadWindowSettings()
         {
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             this.Size = Properties.Settings.Default.WindowSize;
@@ -1953,7 +1953,10 @@ namespace ProcessHacker
                 this.WindowState = Properties.Settings.Default.WindowState;
             else
                 this.WindowState = FormWindowState.Normal;
+        }
 
+        private void LoadOtherSettings()
+        {
             Misc.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
 
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
@@ -2490,15 +2493,7 @@ namespace ProcessHacker
             // Force the handle to be created
             { var handle = this.Handle; }
 
-            this.SuspendLayout();
-            this.CreateShutdownMenuItems();
-            this.LoadFixMenuItems();
-            this.LoadNotificationIcon();
-            this.LoadUac();
-            this.LoadSettings();
-            this.LoadControls();
-            this.LoadAddShortcuts();
-            this.ResumeLayout();
+            this.LoadWindowSettings();
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible)
@@ -2541,6 +2536,8 @@ namespace ProcessHacker
             {
                 Win32.ChangeWindowMessageFilter((WindowMessage)0x9991, UipiFilterFlag.Add);
             }
+
+            dontCalculate = false;
         }
 
         private void HackerWindow_Load(object sender, EventArgs e)
@@ -2560,8 +2557,13 @@ namespace ProcessHacker
             treeProcesses.Draw = this.Visible;
         }
 
+        private bool dontCalculate = true;
+
         protected override void OnResize(EventArgs e)
         {
+            if (dontCalculate)
+                return;
+
             //
             // Size grip bug fix as per
             // http://jelle.druyts.net/2003/10/20/StatusBarResizeBug.aspx
@@ -2570,7 +2572,29 @@ namespace ProcessHacker
             {
                 statusBar.SizingGrip = (WindowState == FormWindowState.Normal);
             }
+
             base.OnResize(e);
+        }
+
+        private bool isFirstPaint = true;
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (isFirstPaint)
+            {
+                isFirstPaint = false;
+                vistaMenu.DelaySetImageCalls = false;
+                vistaMenu.PerformPendingSetImageCalls();
+                this.LoadOtherSettings();
+                this.LoadNotificationIcon();
+                this.LoadControls();
+                this.CreateShutdownMenuItems();
+                this.LoadFixMenuItems();
+                this.LoadUac();
+                this.LoadAddShortcuts();
+            }
+
+            base.OnPaint(e);
         }
     }
 }

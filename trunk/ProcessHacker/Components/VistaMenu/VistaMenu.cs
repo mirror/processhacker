@@ -33,6 +33,19 @@ namespace wyDay.Controls
         private bool formHasBeenIntialized;
         private bool isVistaOrLater;
 
+        // performance hacks
+        private Queue<KeyValuePair<MenuItem, Image>> _pendingSetImageCalls =
+            new Queue<KeyValuePair<MenuItem, Image>>();
+
+        private static bool _firstVistaMenu = true;
+        private bool _delaySetImageCalls = false;
+
+        public bool DelaySetImageCalls
+        {
+            get { return _delaySetImageCalls; }
+            set { _delaySetImageCalls = value; }
+        }
+
         #region Imports
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -58,6 +71,12 @@ namespace wyDay.Controls
             : this()
         {
             container.Add(this);
+
+            if (_firstVistaMenu)
+            {
+                _delaySetImageCalls = true;
+                _firstVistaMenu = false;
+            }
         }
 
         /// <summary>
@@ -140,6 +159,17 @@ namespace wyDay.Controls
         [DefaultValue(null)]
         public void SetImage(MenuItem mnuItem, Image value)
         {
+            this.SetImage(mnuItem, value, false);
+        }
+
+        public void SetImage(MenuItem mnuItem, Image value, bool ignorePending)
+        {
+            if (_delaySetImageCalls && !ignorePending)
+            {
+                _pendingSetImageCalls.Enqueue(new KeyValuePair<MenuItem, Image>(mnuItem, value));
+                return;
+            }
+
             Properties prop = EnsurePropertiesExists(mnuItem);
 
             if (DesignMode)
@@ -204,6 +234,16 @@ namespace wyDay.Controls
                 {
                     AddPreVistaMenuItem(mnuItem);
                 }
+            }
+        }
+
+        public void PerformPendingSetImageCalls()
+        {
+            while (_pendingSetImageCalls.Count > 0)
+            {
+                var call = _pendingSetImageCalls.Dequeue();
+
+                this.SetImage(call.Key, call.Value, true);
             }
         }
 
