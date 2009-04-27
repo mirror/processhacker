@@ -90,6 +90,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the thread's base priority.
+        /// </summary>
+        public int GetBasePriority()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadBasePriority);
+        }
+
+        /// <summary>
         /// Gets the thread's basic information.
         /// </summary>
         /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
@@ -223,6 +231,14 @@ namespace ProcessHacker.Native.Objects
         public int GetPagePriority()
         {
             return this.GetInformationInt32(ThreadInformationClass.ThreadPagePriority);
+        }
+
+        /// <summary>
+        /// Gets the thread's priority.
+        /// </summary>
+        public int GetPriority()
+        {
+            return this.GetInformationInt32(ThreadInformationClass.ThreadPriority);
         }
 
         /// <summary>

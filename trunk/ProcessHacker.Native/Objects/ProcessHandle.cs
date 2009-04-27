@@ -335,6 +335,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the base priority of the process.
+        /// </summary>
+        public int GetBasePriority()
+        {
+            return this.GetInformationInt32(ProcessInformationClass.ProcessBasePriority);
+        }
+
+        /// <summary>
         /// Gets the process' basic information through the undocumented Native API function 
         /// NtQueryInformationProcess. This function requires the PROCESS_QUERY_LIMITED_INFORMATION 
         /// permission.

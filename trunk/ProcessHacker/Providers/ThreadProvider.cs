@@ -78,8 +78,11 @@ namespace ProcessHacker
             this.Name = this.GetType().Name;
             _pid = pid;
 
-            if (!Program.ProcessesWithThreads.ContainsKey(_pid))
-                Program.ProcessesWithThreads.Add(_pid, null);
+            lock (Program.ProcessesWithThreads)
+            {
+                if (!Program.ProcessesWithThreads.ContainsKey(_pid))
+                    Program.ProcessesWithThreads.Add(_pid, null);
+            }
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
@@ -93,8 +96,10 @@ namespace ProcessHacker
                     // Needed (maybe) to display the EULA
                     Win32.SymbolServerSetOptions(SymbolServerOption.Unattended, 0);
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
 
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
                 WorkQueue.GlobalQueueWorkItem(new Action(() =>
@@ -120,8 +125,10 @@ namespace ProcessHacker
                                     {
                                         _symbols.LoadModule(module.FileName, module.BaseAddress.ToInt32(), module.Size);
                                     }
-                                    catch
-                                    { }
+                                    catch (Exception ex)
+                                    {
+                                        Logging.Log(ex);
+                                    }
                                 }
                             }
                         }
@@ -137,13 +144,17 @@ namespace ProcessHacker
                                 {
                                     _symbols.LoadModule(module.FileName, module.BaseAddress);
                                 }
-                                catch
-                                { }
+                                catch (Exception ex)
+                                {
+                                    Logging.Log(ex);
+                                }
                             }
                         }
                     }
-                    catch
-                    { }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
 
                     lock (_moduleLoadCompletedEvent)
                     {
@@ -152,8 +163,10 @@ namespace ProcessHacker
                     }
                 }));
             }
-            catch
-            { }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void ThreadProvider_Disposed(IProvider provider)
@@ -167,8 +180,11 @@ namespace ProcessHacker
             lock (_moduleLoadCompletedEvent)
                 _moduleLoadCompletedEvent.Close();
 
-            if (Program.ProcessesWithThreads.ContainsKey(_pid))
-                Program.ProcessesWithThreads.Remove(_pid);
+            lock (Program.ProcessesWithThreads)
+            {
+                if (Program.ProcessesWithThreads.ContainsKey(_pid))
+                    Program.ProcessesWithThreads.Remove(_pid);
+            }
 
             foreach (int tid in this.Dictionary.Keys)
             {

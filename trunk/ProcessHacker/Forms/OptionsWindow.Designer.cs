@@ -949,7 +949,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
             this.Load += new System.EventHandler(this.OptionsWindow_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.OptionsWindow_Paint);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).EndInit();
             this.tabControl.ResumeLayout(false);

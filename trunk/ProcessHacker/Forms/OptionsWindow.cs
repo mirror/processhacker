@@ -75,14 +75,23 @@ namespace ProcessHacker
             }
         }
 
-        private void OptionsWindow_Paint(object sender, PaintEventArgs e)
+        protected override void WndProc(ref Message m)
         {
-            if (_isFirstPaint)
+            switch (m.Msg)
             {
-                this.LoadStage1();
+                case (int)WindowMessage.Paint:
+                    {
+                        if (_isFirstPaint)
+                        {
+                            this.LoadStage1();
+                        }
+
+                        _isFirstPaint = false;
+                    }
+                    break;
             }
 
-            _isFirstPaint = false;
+            base.WndProc(ref m);
         }
 
         private void LoadStage1()

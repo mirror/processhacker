@@ -1656,7 +1656,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Process";
             this.Load += new System.EventHandler(this.ProcessWindow_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.ProcessWindow_Paint);
             this.SizeChanged += new System.EventHandler(this.ProcessWindow_SizeChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProcessWindow_FormClosing);
             this.tabControl.ResumeLayout(false);

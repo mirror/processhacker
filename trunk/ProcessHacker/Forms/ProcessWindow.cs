@@ -151,13 +151,22 @@ namespace ProcessHacker
             SymbolProvider.ShowWarning(this, false);
         }
 
-        private void ProcessWindow_Paint(object sender, PaintEventArgs e)
+        protected override void WndProc(ref Message m)
         {
-            if (_isFirstPaint)
+            switch (m.Msg)
             {
-                _isFirstPaint = false;
-                this.LoadStage1();
+                case (int)WindowMessage.Paint:
+                    {
+                        if (_isFirstPaint)
+                        {
+                            _isFirstPaint = false;
+                            this.LoadStage1();
+                        }
+                    }
+                    break;
             }
+
+            base.WndProc(ref m);
         }
 
         private void FixTabs()

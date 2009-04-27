@@ -83,7 +83,7 @@ namespace ProcessHacker
             using (Bitmap bm = new Bitmap(_width, _height))
             {
                 _plotter.Draw();
-                _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), bm.Size));
+                _plotter.DrawToBitmap(bm, new Rectangle(new Point(0, 0), _plotter.Size));
 
                 newIcon = Icon.FromHandle(bm.GetHicon());
             }

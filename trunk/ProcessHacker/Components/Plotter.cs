@@ -265,10 +265,10 @@ namespace ProcessHacker.Components
             // restrict scaling to the currently visible data points
             int maxIndex = this.Width / this.EffectiveMoveStep;
 
-            for (int i = 0; i < _longData1.Count && i < maxIndex; i++)
+            for (int i = 0; i < _longData1.Count && i <= maxIndex; i++)
                 if (_longData1[i] > max)
                     max = _longData1[i];
-            for (int i = 0; i < _longData2.Count && i < maxIndex; i++)
+            for (int i = 0; i < _longData2.Count && i <= maxIndex; i++)
                 if (_longData2[i] > max)
                     max = _longData2[i];
 
@@ -279,7 +279,7 @@ namespace ProcessHacker.Components
             _data1 = new List<float>();
             _data2 = new List<float>();
 
-            for (int i = 0; i < _longData1.Count && i < maxIndex; i++)
+            for (int i = 0; i < _longData1.Count && i <= maxIndex; i++)
             {
                 if (max != 0)
                     _data1.Add((float)_longData1[i] / max);
@@ -287,7 +287,7 @@ namespace ProcessHacker.Components
                     _data1.Add(0);
             }
 
-            for (int i = 0; i < _longData2.Count && i < maxIndex; i++)
+            for (int i = 0; i < _longData2.Count && i <= maxIndex; i++)
             {
                 if (max != 0)
                     _data2.Add((float)_longData2[i] / max);
