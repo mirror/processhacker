@@ -1440,13 +1440,13 @@ namespace ProcessHacker.Native.Api
         public int PolicyCallbackData;
         public int SIPClientData;
         public int UIChoice;
-        public int RevocationChecks;
+        public WtRevocationChecks RevocationChecks;
         public int UnionChoice;
         public IntPtr UnionData;
-        public int StateAction;
+        public WtStateAction StateAction;
         public int StateData;
         public int URLReference;
-        public int ProvFlags;
+        public WtProvFlags ProvFlags;
         public int UIContext;
     }
 

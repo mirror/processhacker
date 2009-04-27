@@ -180,7 +180,7 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
-            ThreadPool.SetMaxThreads(10, 20);
+            ThreadPool.SetMaxThreads(10, 10);
 
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
 

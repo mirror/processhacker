@@ -2433,6 +2433,8 @@ namespace ProcessHacker
             { var handle = this.Handle; }
 
             this.LoadWindowSettings();
+            this.LoadControls();
+            this.LoadNotificationIcons();
 
             if ((!Properties.Settings.Default.StartHidden && !Program.StartHidden) ||
                 Program.StartVisible)
@@ -2525,8 +2527,6 @@ namespace ProcessHacker
                 vistaMenu.DelaySetImageCalls = false;
                 vistaMenu.PerformPendingSetImageCalls();
                 this.LoadOtherSettings();
-                this.LoadControls();
-                this.LoadNotificationIcons();
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();
                 this.LoadUac();

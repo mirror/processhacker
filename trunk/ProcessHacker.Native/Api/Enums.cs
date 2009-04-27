@@ -1067,6 +1067,34 @@ namespace ProcessHacker.Native.Api
         MaximizeBox = 0x00010000
     }
 
+    [Flags]
+    public enum WtProvFlags : int
+    {
+        RevocationCheckNone = 0x10,
+        RevocationCheckEndCert = 0x20,
+        RevocationCheckChain = 0x40,
+        RevocationCheckChainExcludeRoot = 0x80,
+        Safer = 0x100,
+        HashOnly = 0x200,
+        UseDefaultOsVerCheck = 0x800,
+        CacheOnlyUrlRetrieval = 0x1000
+    }
+
+    public enum WtRevocationChecks : int
+    {
+        None = 0,
+        WholeChain = 1
+    }
+
+    public enum WtStateAction
+    {
+        Ignore = 0,
+        Verify = 1,
+        Close = 2,
+        AutoCache = 3,
+        AutoCacheFlush = 4
+    }
+
     public enum WtsConnectStateClass : int
     {
         Active,

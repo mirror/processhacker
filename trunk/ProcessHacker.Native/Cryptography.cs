@@ -94,7 +94,11 @@ namespace ProcessHacker.Native
                 trustData.Size = 12 * 4;
                 trustData.UIChoice = 2; // WTD_UI_NONE
                 trustData.UnionChoice = 1; // WTD_CHOICE_FILE
-                trustData.ProvFlags = 0x100; // WTD_SAFER_FLAG
+                trustData.RevocationChecks = WtRevocationChecks.None;
+                trustData.ProvFlags = WtProvFlags.Safer;
+
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    trustData.ProvFlags |= WtProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
                 {
@@ -163,6 +167,10 @@ namespace ProcessHacker.Native
                 trustData.Size = 12 * 4;
                 trustData.UIChoice = 1;
                 trustData.UnionChoice = 2;
+                trustData.RevocationChecks = WtRevocationChecks.None;
+
+                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                    trustData.ProvFlags = WtProvFlags.CacheOnlyUrlRetrieval;
 
                 using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
                 {
