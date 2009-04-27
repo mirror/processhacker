@@ -5,9 +5,9 @@ Process Hacker
    * #2780260 - "add <Enter> key to open Proc Properties"
    * #2780277 - "add <ENTER> to shortcut list for default action"
    * "Terminate Process Tree"
+   * Process tree loads instantly
    * Improved the perceived responsiveness of Process Hacker in 
      various places
-   * Process tree loads instantly
    * Actual performance improvements in the tree view and other lists
    * Thread termination now prompts
    * Integrity, I/O priority and page priority columns

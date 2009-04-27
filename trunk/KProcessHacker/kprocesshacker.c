@@ -207,7 +207,7 @@ PCHAR GetIoControlName(ULONG ControlCode)
     else if (ControlCode == KPH_SETPROCESSTOKEN)
         return "Set Process Token";
     else if (ControlCode == KPH_GETTHREADSTARTADDRESS)
-        return "Get Thread Win32 Start Address";
+        return "Get Thread Start Address";
     else if (ControlCode == KPH_GETHANDLEOBJECTNAME)
         return "Get Handle Object Name";
     else if (ControlCode == KPH_OPENPROCESSJOB)
@@ -272,6 +272,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     
     switch (controlCode)
     {
+        /* Read
+         * 
+         * Reads a number of bytes from the specified address. This call should 
+         * never be used because it will cause a bugcheck upon reading invalid 
+         * kernel memory.
+         */
         case KPH_READ:
         {
             struct
@@ -298,6 +304,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Write
+         * 
+         * Writes a number of bytes to the specified address. This call should 
+         * never be used because it will cause a bugcheck upon writing to invalid 
+         * kernel memory.
+         */
         case KPH_WRITE:
         {
             struct
@@ -321,6 +333,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Get File Object Name
+         * 
+         * Gets the file name of the specified handle. The handle can be remote; 
+         * in that case the process ID must be specified. Otherwise, specify the 
+         * current process ID.
+         */
         case KPH_GETFILEOBJECTNAME:
         {
             struct
@@ -380,6 +398,13 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphOpenProcess
+         * 
+         * Opens the specified process. This call will never fail unless:
+         * 1. PsLookupProcessByProcessId, ObOpenObjectByPointer or some lower-level 
+         *    function is hooked, or 
+         * 2. The process is protected.
+         */
         case KPH_OPENPROCESS:
         {
             struct
@@ -417,6 +442,13 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphOpenThread
+         * 
+         * Opens the specified thread. This call will never fail unless:
+         * 1. PsLookupProcessThreadByCid, ObOpenObjectByPointer or some lower-level 
+         *    function is hooked, or 
+         * 2. The thread's process is protected.
+         */
         case KPH_OPENTHREAD:
         {
             struct
@@ -454,6 +486,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphOpenProcessToken
+         * 
+         * Opens the specified process' token. This call will never fail unless 
+         * a low-level function is hooked.
+         */
         case KPH_OPENPROCESSTOKEN:
         {
             struct
@@ -487,6 +524,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Get Process Protected
+         * 
+         * Gets whether the process is protected.
+         */
         case KPH_GETPROCESSPROTECTED:
         {
             struct
@@ -520,6 +561,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Set Process Protected
+         * 
+         * Sets whether the process is protected.
+         */
         case KPH_SETPROCESSPROTECTED:
         {
             struct
@@ -559,6 +604,13 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphTerminateProcess
+         * 
+         * Terminates the specified process. This call will never fail unless
+         * PsTerminateProcess could not be located and Zw/NtTerminateProcess 
+         * is hooked, or an attempt was made to terminate the current process. 
+         * In that case, the call will fail with STATUS_DISK_FULL.
+         */
         case KPH_TERMINATEPROCESS:
         {
             struct
@@ -577,6 +629,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphSuspendProcess
+         * 
+         * Suspends the specified process. This call will never fail unless 
+         * PsSuspendProcess could not be located and Zw/NtSuspendProcess 
+         * is hooked.
+         */
         case KPH_SUSPENDPROCESS:
         {
             struct
@@ -594,6 +652,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphResumeProcess
+         * 
+         * Resumes the specified process. This call will never fail unless 
+         * PsResumeProcess could not be located and Zw/NtResumeProcess 
+         * is hooked.
+         */
         case KPH_RESUMEPROCESS:
         {
             struct
@@ -611,6 +675,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphReadVirtualMemory
+         * 
+         * Reads process memory. This call will fail if MmCopyVirtualMemory 
+         * could not be located.
+         */
         case KPH_READVIRTUALMEMORY:
         {
             struct
@@ -639,6 +708,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphWriteVirtualMemory
+         * 
+         * Writes process memory. This call will fail if MmCopyVirtualMemory 
+         * could not be located.
+         */
         case KPH_WRITEVIRTUALMEMORY:
         {
             struct
@@ -667,6 +741,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Set Process Token
+         * 
+         * Assigns the primary token of a source process to a target process.
+         */
         case KPH_SETPROCESSTOKEN:
         {
             struct
@@ -685,6 +763,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Get Thread Start Address
+         * 
+         * Gets the specified thread's start address.
+         */
         case KPH_GETTHREADSTARTADDRESS:
         {
             struct
@@ -720,6 +802,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Get Handle Object Name
+         * 
+         * Gets the name of the specified handle. The handle can be remote; in 
+         * that case a valid process handle must be passed. Otherwise, set the 
+         * process handle to -1.
+         */
         case KPH_GETHANDLEOBJECTNAME:
         {
             struct
@@ -752,6 +840,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphOpenProcessJob
+         * 
+         * Opens the job object that the process is assigned to. If the process is 
+         * not assigned to any job object, the call will fail with STATUS_DISK_FULL.
+         */
         case KPH_OPENPROCESSJOB:
         {
             struct
@@ -779,6 +872,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphGetContextThread
+         * 
+         * Gets the context of the specified thread.
+         */
         case KPH_GETCONTEXTTHREAD:
         {
             struct
@@ -797,6 +894,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphSetContextThread
+         * 
+         * Sets the context of the specified thread.
+         */
         case KPH_SETCONTEXTTHREAD:
         {
             struct
@@ -815,6 +916,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphGetThreadWin32Thread
+         * 
+         * Gets a pointer to the specified thread's Win32Thread structure.
+         */
         case KPH_GETTHREADWIN32THREAD:
         {
             struct
@@ -841,6 +946,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphDuplicateObject
+         * 
+         * Duplicates the specified handle from the source process to the target process. 
+         * Do not use this call to duplicate file handles; it may freeze indefinitely if 
+         * the file is a named pipe.
+         */
         case KPH_DUPLICATEOBJECT:
         {
             struct
@@ -873,6 +984,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* ZwQueryObject
+         * 
+         * Performs ZwQueryObject in the context of another process.
+         */
         case KPH_ZWQUERYOBJECT:
         {
             struct
@@ -923,6 +1038,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphGetProcessId
+         * 
+         * Gets the process ID of a process handle in the context of another process.
+         */
         case KPH_GETPROCESSID:
         {
             struct
@@ -953,6 +1072,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphGetThreadId
+         * 
+         * Gets the thread ID of a thread handle in the context of another process.
+         */
         case KPH_GETTHREADID:
         {
             struct
@@ -984,6 +1107,13 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphTerminateThread
+         * 
+         * Terminates the specified thread. This call will fail if 
+         * PspTerminateThreadByPointer could not be located or if an attempt 
+         * was made to terminate the current thread. In that case, the call 
+         * will return STATUS_DISK_FULL.
+         */
         case KPH_TERMINATETHREAD:
         {
             struct
@@ -1002,6 +1132,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Get Features
+         * 
+         * Gets the features supported by the driver.
+         */
         case KPH_GETFEATURES:
         {
             struct
@@ -1030,6 +1164,11 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* ExpGetProcessInformation
+         * 
+         * Calls ExpGetProcessInformation. This call will fail if 
+         * ExpGetProcessInformation could not be located.
+         */
         case KPH_EXPGETPROCESSINFORMATION:
         {
             struct
