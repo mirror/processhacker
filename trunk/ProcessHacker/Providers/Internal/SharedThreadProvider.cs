@@ -18,6 +18,7 @@ namespace ProcessHacker
         {
             _interval = interval;
             _thread = new Thread(new ThreadStart(this.Update));
+            _thread.IsBackground = true;
             _thread.SetApartmentState(ApartmentState.STA);
             _thread.Start();
             _thread.Priority = ThreadPriority.Lowest;

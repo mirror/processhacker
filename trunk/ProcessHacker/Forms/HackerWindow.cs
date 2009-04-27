@@ -1260,7 +1260,7 @@ namespace ProcessHacker
             try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
             catch { }
 
-            //Program.CollectGarbage();
+            Program.CollectGarbage();
 
             if (processP.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(delegate
@@ -1269,9 +1269,6 @@ namespace ProcessHacker
                     treeProcesses.Tree.EndCompleteUpdate();
                     treeProcesses.Tree.Invalidate();
 
-                    // Catch any early file processing results
-                    // NOTE: Do *not* put this statement outside this 
-                    // delegate, as that would cause a deadlock.
                     processP.RunOnceAsync();
 
                     this.Cursor = Cursors.Default;

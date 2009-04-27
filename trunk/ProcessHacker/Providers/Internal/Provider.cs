@@ -254,6 +254,7 @@ namespace ProcessHacker
                 if (_enabled && _createThread && _thread == null)
                 {
                     _thread = new Thread(new ThreadStart(Update));
+                    _thread.IsBackground = true;
                     _thread.SetApartmentState(ApartmentState.STA);
                     _thread.Start();
                     _thread.Priority = ThreadPriority.Lowest;

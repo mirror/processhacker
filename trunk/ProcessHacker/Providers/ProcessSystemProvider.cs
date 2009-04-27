@@ -246,12 +246,15 @@ namespace ProcessHacker
             return ProcessFileStage1(pid, fileName, forced, true);
         }
 
+        /// <summary>
+        /// Stage 1 File Processing - gets the process file name, icon and command line.
+        /// </summary>
         private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
             FileProcessResult fpResult = new FileProcessResult();
 
             fpResult.Pid = pid;
-            fpResult.Stage = 1;
+            fpResult.Stage = 0x1;
 
             if (fileName == null)
                 fileName = this.GetFileName(pid);
@@ -284,54 +287,76 @@ namespace ProcessHacker
             catch
             { }
 
-            if (pid > 4)
-            {
-                try
-                {
-                    var corpubPublishClass = new Debugger.Interop.CorPub.CorpubPublishClass();
-                    Debugger.Interop.CorPub.ICorPublishProcess process = null;
-
-                    try
-                    {
-                        int managed = 0;
-
-                        corpubPublishClass.GetProcess((uint)pid, out process);
-                        process.IsManaged(out managed);
-
-                        if (managed > 0)
-                        {
-                            fpResult.IsDotNet = true;
-                        }
-                    }
-                    finally
-                    {
-                        if (process != null)
-                        {
-                            Marshal.ReleaseComObject(process);
-                        }
-                    }
-                }
-                catch
-                { }
-            }
-
             if (addToQueue)
             {
                 lock (_fpResults)
                     _fpResults.Enqueue(fpResult);
             }
 
+            (new ProcessFileDelegate(this.ProcessFileStage1a)).BeginInvoke(pid, fileName, forced, r => { }, null);
             (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, fileName, forced, r => { }, null);
 
             return fpResult;
         }
 
+        /// <summary>
+        /// Stage 1A File Processing - gets whether the process is managed.
+        /// </summary>
+        /// <remarks>
+        /// This is present in a separate stage because it blocks on the GUI thread. It invokes 
+        /// the action on the GUI thread because COM interop requires that these calls are made 
+        /// on an STA thread. ThreadPool worker threads are all MTA.
+        /// </remarks>
+        private FileProcessResult ProcessFileStage1a(int pid, string fileName, bool forced)
+        {
+            FileProcessResult fpResult = new FileProcessResult();
+
+            fpResult.Pid = pid;
+            fpResult.Stage = 0x1a;
+
+            // HACK
+            Program.HackerWindow.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+            {
+                if (pid > 4)
+                {
+                    try
+                    {
+                        var publish = new Debugger.Core.Wrappers.CorPub.ICorPublish();
+                        Debugger.Core.Wrappers.CorPub.ICorPublishProcess process = null;
+
+                        try
+                        {
+                            process = publish.GetProcess(pid);
+                            fpResult.IsDotNet = process.IsManaged;
+                        }
+                        finally
+                        {
+                            if (process != null)
+                            {
+                                Debugger.Wrappers.ResourceManager.ReleaseCOMObject(process, process.GetType());
+                            }
+                        }
+                    }
+                    catch
+                    { }
+                }
+            }));
+
+            lock (_fpResults)
+                _fpResults.Enqueue(fpResult);
+
+            return fpResult;
+        }
+
+        /// <summary>
+        /// Stage 2 File Processing - gets whether the process file is packed or signed.
+        /// </summary>
         private FileProcessResult ProcessFileStage2(int pid, string fileName, bool forced)
         {
             FileProcessResult fpResult = new FileProcessResult();
 
             fpResult.Pid = pid;
-            fpResult.Stage = 2;
+            fpResult.Stage = 0x2;
             fpResult.IsPacked = false;
 
             if (fileName == null)
@@ -500,15 +525,18 @@ namespace ProcessHacker
 
         private void FillFpResult(ProcessItem item, FileProcessResult result)
         {
-            if (result.Stage == 1)
+            if (result.Stage == 0x1)
             {
                 item.FileName = result.FileName;
                 item.Icon = result.Icon;
                 item.VersionInfo = result.VersionInfo;
                 item.CmdLine = result.CmdLine;
+            }
+            else if (result.Stage == 0x1a)
+            {
                 item.IsDotNet = result.IsDotNet;
             }
-            else if (result.Stage == 2)
+            else if (result.Stage == 0x2)
             {
                 item.IsPacked = result.IsDotNet ? false : result.IsPacked;
                 item.VerifyResult = result.VerifyResult;

@@ -22,6 +22,7 @@ Process Hacker
    * dbghelp warnings were not being shown the first time process 
      properties opened
    * Random file-object-related BSODs
+   * Increased PID limit in Hidden Processes to 65536
 
 1.3.7.1
  * NEW:
