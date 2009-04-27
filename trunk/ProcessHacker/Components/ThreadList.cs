@@ -122,13 +122,20 @@ namespace ProcessHacker.Components
                     catch
                     { }
 
-                    try
+                    if (!_provider.Symbols.Busy)
                     {
-                        _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI, out fileName);
-                        fileModule.Text = fileName;
-                        fileModule.Enabled = true;
+                        try
+                        {
+                            _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI, out fileName);
+                            fileModule.Text = fileName;
+                            fileModule.Enabled = true;
+                        }
+                        catch
+                        {
+                            fileModule.Enabled = false;
+                        }
                     }
-                    catch
+                    else
                     {
                         fileModule.Enabled = false;
                     }

@@ -82,6 +82,9 @@ namespace ProcessHacker
                 this.Icon = Program.HackerWindow.Icon;
 
             Program.PWindows.Add(_pid, this);
+
+            this.InitializeSubControls();
+            this.FixTabs();
         }
 
         public MenuItem WindowMenuItem
@@ -152,10 +155,41 @@ namespace ProcessHacker
         {
             if (_isFirstPaint)
             {
+                _isFirstPaint = false;
                 this.LoadStage1();
             }
+        }
 
-            _isFirstPaint = false;
+        private void FixTabs()
+        {
+            if (_pid < 0)
+            {
+                // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
+                buttonEditDEP.Enabled = false;
+                buttonEditProtected.Enabled = false;
+                buttonInspectParent.Enabled = false;
+                buttonInspectPEB.Enabled = false;
+
+                if (fileCurrentDirectory.Text != "")
+                    fileCurrentDirectory.Enabled = false;
+
+                if (_pid != 4)
+                    fileImage.Enabled = false;
+
+                buttonSearch.Enabled = false;
+                buttonTerminate.Enabled = false;
+
+                // remove tab controls not relevant to DPCs/Interrupts
+                tabControl.TabPages.Remove(tabHandles);
+                tabControl.TabPages.Remove(tabMemory);
+                tabControl.TabPages.Remove(tabModules);
+                tabControl.TabPages.Remove(tabServices);
+                tabControl.TabPages.Remove(tabThreads);
+                tabControl.TabPages.Remove(tabToken);
+                if (tabControl.TabPages.Contains(tabJob))
+                    tabControl.TabPages.Remove(tabJob);
+                tabControl.TabPages.Remove(tabEnvironment);
+            }
         }
 
         private void LoadStage1()
@@ -193,34 +227,6 @@ namespace ProcessHacker
             { }
 
             this.UpdateProcessProperties();
-            
-            if (_pid < 0)
-            {
-                // this "process" is probably DPCs or Interrupts, so we won't try to load any more information
-                buttonEditDEP.Enabled = false;
-                buttonEditProtected.Enabled = false;
-                buttonInspectParent.Enabled = false;
-                buttonInspectPEB.Enabled = false;
-
-                if (fileCurrentDirectory.Text != "")
-                    fileCurrentDirectory.Enabled = false;
-
-                if (_pid != 4)
-                    fileImage.Enabled = false;
-
-                buttonSearch.Enabled = false;
-                buttonTerminate.Enabled = false;
-
-                // remove tab controls not relevant to DPCs/Interrupts
-                tabControl.TabPages.Remove(tabHandles);
-                tabControl.TabPages.Remove(tabMemory);
-                tabControl.TabPages.Remove(tabModules);
-                tabControl.TabPages.Remove(tabServices);
-                tabControl.TabPages.Remove(tabThreads);
-                tabControl.TabPages.Remove(tabToken);
-                tabControl.TabPages.Remove(tabJob);
-                tabControl.TabPages.Remove(tabEnvironment);
-            }
 
             if (_pid == 0)
                 textFileDescription.Text = "System Idle Process";
@@ -249,8 +255,6 @@ namespace ProcessHacker
         private void LoadStage2()
         {
             this.SuspendLayout();
-
-            this.InitializeSubControls();
 
             try
             {

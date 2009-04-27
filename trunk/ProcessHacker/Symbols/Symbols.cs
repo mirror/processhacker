@@ -112,6 +112,22 @@ namespace ProcessHacker.Symbols
 
         public bool PreloadModules { get; set; }
 
+        public bool Busy
+        {
+            get
+            {
+                if (!Monitor.TryEnter(_callLock))
+                {
+                    return true;
+                }
+                else
+                {
+                    Monitor.Exit(_callLock);
+                    return false;
+                }
+            }
+        }
+
         public static void ShowWarning(IWin32Window window, bool force)
         {
             if (Properties.Settings.Default.DbgHelpWarningShown && !force)

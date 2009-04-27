@@ -71,7 +71,7 @@ namespace ProcessHacker
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
-        public const bool PWindowsThreaded = true;
+        public const bool PWindowsThreaded = false;
         public static Dictionary<int, ProcessWindow> PWindows = new Dictionary<int, ProcessWindow>();
         public static Dictionary<int, Thread> PThreads = new Dictionary<int, Thread>();
 
