@@ -372,7 +372,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                lock (_imageListLock)
+                lock (listNetwork)
                 {
                     foreach (ListViewItem lvItem in listNetwork.Items)
                     {

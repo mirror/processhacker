@@ -46,7 +46,7 @@ namespace ProcessHacker.Components
         {
             InitializeComponent();
 
-            listMemory.KeyDown += new KeyEventHandler(MemoryList_KeyDown);
+            listMemory.KeyDown += new KeyEventHandler(listMemory_KeyDown);
             listMemory.MouseDown += new MouseEventHandler(listMemory_MouseDown);
             listMemory.MouseUp += new MouseEventHandler(listMemory_MouseUp);
 
@@ -85,10 +85,13 @@ namespace ProcessHacker.Components
                 this.MouseDown(sender, e);
         }
 
-        private void MemoryList_KeyDown(object sender, KeyEventArgs e)
+        private void listMemory_KeyDown(object sender, KeyEventArgs e)
         {
             if (this.KeyDown != null)
                 this.KeyDown(sender, e);
+
+            if (!e.Handled)
+                readWriteMemoryMemoryMenuItem_Click(null, null);
         }
 
         #region Properties
@@ -400,6 +403,9 @@ namespace ProcessHacker.Components
 
         private void readWriteMemoryMemoryMenuItem_Click(object sender, EventArgs e)
         {
+            if (listMemory.SelectedIndices.Count != 1)
+                return;
+
             MemoryItem item = this.GetMemoryItem(listMemory.SelectedIndices[0]);
 
             MemoryEditor.ReadWriteMemory(_pid, item.Address, item.Size, false);

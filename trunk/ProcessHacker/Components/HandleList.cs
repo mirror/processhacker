@@ -48,7 +48,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _highlightingContext = new HighlightingContext(listHandles);
-            listHandles.KeyDown += new KeyEventHandler(HandleList_KeyDown);
+            listHandles.KeyDown += new KeyEventHandler(listHandles_KeyDown);
             listHandles.MouseDown += new MouseEventHandler(listHandles_MouseDown);
             listHandles.MouseUp += new MouseEventHandler(listHandles_MouseUp);
             listHandles.DoubleClick += new EventHandler(listHandles_DoubleClick);
@@ -89,10 +89,13 @@ namespace ProcessHacker.Components
                 this.SelectedIndexChanged(sender, e);
         }
 
-        private void HandleList_KeyDown(object sender, KeyEventArgs e)
+        private void listHandles_KeyDown(object sender, KeyEventArgs e)
         {
             if (this.KeyDown != null)
                 this.KeyDown(sender, e);
+
+            if (!e.Handled)
+                propertiesHandleMenuItem_Click(null, null);
         }
 
         #region Properties
@@ -431,6 +434,9 @@ namespace ProcessHacker.Components
 
         private void propertiesHandleMenuItem_Click(object sender, EventArgs e)
         {
+            if (listHandles.SelectedItems.Count != 1)
+                return;
+
             string type = listHandles.SelectedItems[0].Text;
 
             try
