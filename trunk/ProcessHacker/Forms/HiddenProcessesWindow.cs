@@ -36,6 +36,7 @@ namespace ProcessHacker
         public HiddenProcessesWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();

@@ -53,6 +53,7 @@ namespace ProcessHacker
         public ThreadWindow(int PID, int TID, SymbolProvider symbols)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listViewCallStack_SelectedIndexChanged(null, null);
 

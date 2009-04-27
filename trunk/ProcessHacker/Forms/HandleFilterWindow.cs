@@ -40,6 +40,7 @@ namespace ProcessHacker
         public HandleFilterWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listHandles.SetDoubleBuffered(true);
             listHandles.SetTheme("explorer");

@@ -30,6 +30,7 @@ namespace ProcessHacker
         public ListPickerWindow(string[] items)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listItems.Items.AddRange(items);
 

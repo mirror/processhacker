@@ -59,6 +59,7 @@ namespace ProcessHacker
         public ProcessWindow(ProcessItem process)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _processItem = process;
             _pid = process.Pid;
@@ -371,12 +372,6 @@ namespace ProcessHacker
         private void ProcessWindow_SizeChanged(object sender, EventArgs e)
         {
             this.Invalidate(true);
-        }
-
-        private void ProcessWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-                this.Close();
         }
 
         public void ApplyFont(Font f)

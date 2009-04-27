@@ -48,6 +48,7 @@ namespace ProcessHacker
         public OptionsWindow(bool dontApply)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _dontApply = dontApply;
         }

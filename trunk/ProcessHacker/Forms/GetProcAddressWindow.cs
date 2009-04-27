@@ -33,6 +33,7 @@ namespace ProcessHacker
         public GetProcAddressWindow(string fileName)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _fileName = fileName;
 

@@ -35,6 +35,7 @@ namespace ProcessHacker
         public ComboBoxPickerWindow(string[] items)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             comboBox.Items.AddRange(items);
 

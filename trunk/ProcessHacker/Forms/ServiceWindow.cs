@@ -37,6 +37,7 @@ namespace ProcessHacker
         public ServiceWindow(string[] services)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _serviceProps = new ServiceProperties(services);
             _serviceProps.Dock = DockStyle.Fill;

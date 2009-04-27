@@ -1017,7 +1017,6 @@
             this.Load += new System.EventHandler(this.ProcessWindow_Load);
             this.SizeChanged += new System.EventHandler(this.ProcessWindow_SizeChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProcessWindow_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ProcessWindow_KeyDown);
             this.tabControl.ResumeLayout(false);
             this.tabGeneral.ResumeLayout(false);
             this.groupProcess.ResumeLayout(false);

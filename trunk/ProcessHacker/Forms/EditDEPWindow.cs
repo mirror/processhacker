@@ -35,6 +35,7 @@ namespace ProcessHacker
         public EditDEPWindow(int PID)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = PID;
 

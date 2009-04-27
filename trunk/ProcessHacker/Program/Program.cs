@@ -1205,6 +1205,18 @@ namespace ProcessHacker
             }
         }
 
+        public static void AddEscapeToClose(this Form f)
+        {
+            f.KeyPreview = true;
+            f.KeyDown += (sender, e) =>
+            {
+                if (e.KeyCode == Keys.Escape)
+                {
+                    e.Handled = true;
+                }
+            };
+        }
+
         private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)
         {
             Form f = ((WeakReference<Form>)((MenuItem)sender).Tag).Target;

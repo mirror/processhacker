@@ -41,6 +41,7 @@ namespace ProcessHacker
         public PEWindow(string path)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _path = path;
             this.Text = "PE File - " + path;

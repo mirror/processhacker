@@ -40,6 +40,7 @@ namespace ProcessHacker
         public SysInfoWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
             this.Location = Misc.FitRectangle(new Rectangle(

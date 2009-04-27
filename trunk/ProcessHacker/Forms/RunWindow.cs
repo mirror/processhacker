@@ -38,6 +38,7 @@ namespace ProcessHacker
         public RunWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
             
             textSessionID.Text = Program.CurrentSessionId.ToString();
             comboType.SelectedItem = "Interactive";

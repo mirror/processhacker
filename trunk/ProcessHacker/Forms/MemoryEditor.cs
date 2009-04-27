@@ -74,6 +74,7 @@ namespace ProcessHacker
         public MemoryEditor(int PID, int Address, int Length)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = PID;
             _address = Address;

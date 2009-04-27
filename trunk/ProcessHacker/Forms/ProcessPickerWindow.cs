@@ -36,6 +36,7 @@ namespace ProcessHacker
         public ProcessPickerWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
         }
 
         public int SelectedPid { get; private set; }

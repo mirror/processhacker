@@ -34,6 +34,7 @@ namespace ProcessHacker
         public TokenWindow(IWithToken obj)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _tokenProps = new TokenProperties(obj);
             _tokenProps.Dock = DockStyle.Fill;

@@ -33,6 +33,7 @@ namespace ProcessHacker
         public AboutWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             labelVersion.Text = Application.ProductVersion;
 

@@ -39,6 +39,7 @@ namespace ProcessHacker
         public TerminatorWindow(int PID)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = PID;
 

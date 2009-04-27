@@ -46,8 +46,9 @@ namespace ProcessHacker
         public PromptBox(bool multiline) : this("", multiline) { }
 
         public PromptBox(string value, bool multiline)
-        {                          
+        {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             if (value == "")
             {

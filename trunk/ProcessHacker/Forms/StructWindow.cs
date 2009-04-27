@@ -36,6 +36,7 @@ namespace ProcessHacker
         public StructWindow(int pid, int address, StructDef struc)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = pid;
             _address = address;

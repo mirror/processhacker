@@ -43,6 +43,7 @@ namespace ProcessHacker
         public HelpWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             Assembly assembly = Assembly.GetExecutingAssembly();
             Stream resource = assembly.GetManifestResourceStream(assembly.GetName().Name + ".Help.htm");

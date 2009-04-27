@@ -35,6 +35,7 @@ namespace ProcessHacker
         public ProcessAffinity(int PID)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = PID;
 

@@ -2472,6 +2472,7 @@ namespace ProcessHacker
             networkP = Program.NetworkProvider;
 
             InitializeComponent();
+            this.AddEscapeToClose();
 
             // Force the handle to be created
             { var handle = this.Handle; }

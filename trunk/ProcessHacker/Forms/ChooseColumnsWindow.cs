@@ -40,6 +40,7 @@ namespace ProcessHacker
         {
             _list = list;
 
+
             foreach (ColumnHeader column in list.Columns)
             {
                 listColumns.Items.Add(new ListViewItem()
@@ -65,10 +66,11 @@ namespace ProcessHacker
                 });
             }
         }
-         
+
         private ChooseColumnsWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listColumns.SetDoubleBuffered(true);
             listColumns.SetTheme("explorer");

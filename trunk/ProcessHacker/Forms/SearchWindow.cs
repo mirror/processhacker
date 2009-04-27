@@ -38,6 +38,7 @@ namespace ProcessHacker
         public SearchWindow(int PID, SearchOptions so)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             foreach (string s in Program.Structs.Keys)
                 listStructName.Items.Add(s);

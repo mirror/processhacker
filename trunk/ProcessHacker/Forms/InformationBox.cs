@@ -34,6 +34,7 @@ namespace ProcessHacker
         public InformationBox(string values)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             textValues.Text = values;
             textValues.Select(0, 0);

@@ -50,6 +50,7 @@ namespace ProcessHacker
         public ResultsWindow(int PID)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listResults.SetDoubleBuffered(true);
             listResults.SetTheme("explorer");

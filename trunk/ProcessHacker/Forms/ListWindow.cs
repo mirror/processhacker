@@ -36,6 +36,7 @@ namespace ProcessHacker
         public ListWindow(List<KeyValuePair<string, string>> list)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             foreach (KeyValuePair<string, string> kvp in list)
             {

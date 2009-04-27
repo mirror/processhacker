@@ -36,6 +36,7 @@ namespace ProcessHacker
         public LogWindow()
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");

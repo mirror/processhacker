@@ -35,6 +35,7 @@ namespace ProcessHacker
         public VirtualProtectWindow(int pid, int address, int size)
         {
             InitializeComponent();
+            this.AddEscapeToClose();
 
             _pid = pid;
             _address = address;
