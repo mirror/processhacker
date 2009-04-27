@@ -9,9 +9,9 @@ Process Hacker
    * "Terminate Process Tree"
    * Process tree loads instantly
    * Process properties (appears to) loads faster
-   * Improved the perceived responsiveness of Process Hacker
    * Decreased CPU usage
-   * Slightly less memory usage
+   * Significantly less memory usage, especially when opening 
+     process properties
    * Thread termination now prompts
    * Implemented Esc to close windows
    * Cycles, Page Priority and I/O Priority in process statistics
