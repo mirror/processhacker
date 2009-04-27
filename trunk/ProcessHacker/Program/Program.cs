@@ -773,6 +773,12 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
+            info.AppendLine("GLOBAL THREAD POOL");
+            info.AppendLine("Worker thread limit: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
+            info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount.ToString());
+            info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
+
+            info.AppendLine();
             info.AppendLine("PRIMARY SHARED THREAD PROVIDER");
             info.AppendLine("Count: " + SharedThreadProvider.Count.ToString());
 

@@ -78,7 +78,7 @@
             // columnRemote
             // 
             this.columnRemote.Text = "Remote";
-            this.columnRemote.Width = 280;
+            this.columnRemote.Width = 250;
             // 
             // columnProtocol
             // 

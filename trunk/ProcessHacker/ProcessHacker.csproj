@@ -319,6 +319,7 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
+    <Compile Include="Common\WorkQueue.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuUsageIcon.cs" />

@@ -186,7 +186,7 @@
             this.columnName.Sortable = true;
             this.columnName.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnName.TooltipText = null;
-            this.columnName.Width = 270;
+            this.columnName.Width = 245;
             // 
             // columnPID
             // 
@@ -356,7 +356,7 @@
             this.columnDescription.Sortable = true;
             this.columnDescription.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnDescription.TooltipText = null;
-            this.columnDescription.Width = 180;
+            this.columnDescription.Width = 170;
             // 
             // columnCompany
             // 
