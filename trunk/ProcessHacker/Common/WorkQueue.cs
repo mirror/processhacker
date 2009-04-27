@@ -100,11 +100,34 @@ namespace ProcessHacker
             _globalWorkQueue.QueueWorkItem(work, true, args);
         }
 
+        /// <summary>
+        /// The work queue.
+        /// </summary>
         private Queue<WorkItem> _workQueue = new Queue<WorkItem>();
+        /// <summary>
+        /// The maximum number of worker threads. If there are less worker threads 
+        /// than this limit, they will be created as necessary. If there are more 
+        /// worker threads than this limit, they will terminate once they have 
+        /// finished processing their current work items.
+        /// </summary>
         private int _maxWorkerThreads = 1;
+        /// <summary>
+        /// The pool of worker threads.
+        /// </summary>
         private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
+        /// <summary>
+        /// The number of worker threads which are currently running work.
+        /// </summary>
         private int _busyCount = 0;
+        /// <summary>
+        /// A worker will block on the work-arrived event for this amount of time 
+        /// before terminating.
+        /// </summary>
         private int _noWorkTimeout = 1000;
+        /// <summary>
+        /// Signalled whenever work arrives. If worker threads have no immediate work, 
+        /// they will block on this event.
+        /// </summary>
         private AutoResetEvent _workArrivedEvent = new AutoResetEvent(false);
 
         /// <summary>
@@ -210,7 +233,7 @@ namespace ProcessHacker
             _workArrivedEvent.Set();
 
             // Check if all worker threads are currently busy.
-            if (_busyCount == _workerThreads.Count)
+            if (Thread.VolatileRead(ref _busyCount) == _workerThreads.Count)
             {
                 // Check if we still have available worker threads
                 if (_workerThreads.Count < _maxWorkerThreads)
