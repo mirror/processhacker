@@ -84,6 +84,9 @@ namespace ProcessHacker
                     Program.ProcessesWithThreads.Add(_pid, null);
             }
 
+            // Force a refresh so we don't have to wait for it
+            Program.ProcessProvider.RunOnce();
+
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
 

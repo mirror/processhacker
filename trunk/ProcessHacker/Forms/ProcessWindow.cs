@@ -246,20 +246,20 @@ namespace ProcessHacker
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
             // Delay loading
-            System.Threading.Timer t = null;
+            //System.Threading.Timer t = null;
 
-            t = new System.Threading.Timer(
-                new System.Threading.TimerCallback(o =>
-                {
-                    t.Dispose();
+            //t = new System.Threading.Timer(
+            //    new System.Threading.TimerCallback(o =>
+            //    {
+            //        t.Dispose();
 
-                    // Check if window was closed before this began executing, bail out if true.
-                    if (!this.IsHandleCreated)
-                        return;
+            //        // Check if window was closed before this began executing, bail out if true.
+            //        if (!this.IsHandleCreated)
+            //            return;
 
                     this.BeginInvoke(new MethodInvoker(this.LoadStage2));
-                }),
-                null, 25, System.Threading.Timeout.Infinite);
+                //}),
+                //null, 0, System.Threading.Timeout.Infinite);
         }
 
         private void LoadStage2()
