@@ -104,6 +104,7 @@ namespace ProcessHacker
         private int _maxWorkerThreads = 1;
         private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
         private int _busyCount = 0;
+        private int _noWorkTimeout = 1000;
         private AutoResetEvent _workArrivedEvent = new AutoResetEvent(false);
 
         /// <summary>
@@ -127,6 +128,16 @@ namespace ProcessHacker
         {
             get { return _maxWorkerThreads; }
             set { _maxWorkerThreads = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the time, in milliseconds, after which a 
+        /// worker thread with no work will terminate.
+        /// </summary>
+        public int NoWorkTimeout
+        {
+            get { return _noWorkTimeout; }
+            set { _noWorkTimeout = value; }
         }
 
         /// <summary>
@@ -268,7 +279,7 @@ namespace ProcessHacker
                 else
                 {
                     // No work available. Wait for work.
-                    if (_workArrivedEvent.WaitOne(1000))
+                    if (_workArrivedEvent.WaitOne(_noWorkTimeout))
                     {
                         // Work arrived. Go back so we can perform it.
                         continue;
