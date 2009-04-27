@@ -150,6 +150,9 @@
     <EmbeddedResource Include="Components\Plotter.resx">
       <DependentUpon>Plotter.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\ProcessStatistics.resx">
+      <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ServiceList.resx">
       <DependentUpon>ServiceList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -320,6 +323,12 @@
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Common\WorkQueue.cs" />
+    <Compile Include="Components\ProcessStatistics.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ProcessStatistics.Designer.cs">
+      <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuUsageIcon.cs" />

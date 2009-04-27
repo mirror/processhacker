@@ -49,6 +49,7 @@ namespace ProcessHacker
         private MemoryProvider _memoryP;
         private HandleProvider _handleP;
 
+        private ProcessStatistics _processStats;
         private TokenProperties _tokenProps;
         private JobProperties _jobProps;
         private ServiceProperties _serviceProps;
@@ -62,28 +63,17 @@ namespace ProcessHacker
             _processItem = process;
             _pid = process.Pid;
 
-            this.Text = process.Name + " (PID " + _pid.ToString() + ")";
-
-            // DPCs or Interrupts
-            if (_pid < 0)
-            {
-                this.Text = process.Name;
-                textFileDescription.Text = process.Name;
-                textFileCompany.Text = "";
-            }
-            else
-            {
-                timerUpdate.Enabled = true;
-            }
-
             if (process.Icon != null)
                 this.Icon = process.Icon;
             else
                 this.Icon = Program.HackerWindow.Icon;
 
+            textFileDescription.Text = "";
+            textFileCompany.Text = "";
+            textFileVersion.Text = "";
+
             Program.PWindows.Add(_pid, this);
 
-            this.InitializeSubControls();
             this.FixTabs();
         }
 
@@ -199,34 +189,35 @@ namespace ProcessHacker
                     tabControl.TabPages.Remove(tabJob);
                 tabControl.TabPages.Remove(tabEnvironment);
             }
+            else
+            {
+                try
+                {
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                        phandle.GetJob(JobObjectAccess.Query);
+                }
+                catch
+                {
+                    tabControl.TabPages.Remove(tabJob);
+                }
+
+                if (Program.HackerWindow != null)
+                {
+                    if (Program.HackerWindow.ProcessServices.ContainsKey(_pid))
+                    {
+                        if (Program.HackerWindow.ProcessServices[_pid].Count == 0)
+                            tabControl.TabPages.Remove(tabServices);
+                    }
+                    else
+                    {
+                        tabControl.TabPages.Remove(tabServices);
+                    }
+                }
+            }
         }
 
         private void LoadStage1()
         {
-            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
-            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
-            plotterCPUUsage.GetToolTip = i =>
-                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
-                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
-                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
-            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
-            plotterMemory.GetToolTip = i =>
-                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
-            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
-            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
-            plotterIO.GetToolTip = i =>
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
-                Program.ProcessProvider.TimeHistory[i].ToString();
-
-            this.ApplyFont(Properties.Settings.Default.Font);
-
-            this.ClearStatistics();
-
             // May fail if the process is hidden
             try
             {
@@ -237,8 +228,18 @@ namespace ProcessHacker
 
             this.UpdateProcessProperties();
 
-            if (_pid == 0)
-                textFileDescription.Text = "System Idle Process";
+            // System Idle Process, DPCs, or Interrupts
+            if (_pid <= 0)
+            {
+                this.Text = _processItem.Name;
+                textFileDescription.Text = _processItem.Name;
+                textFileCompany.Text = "";
+            }
+            else
+            {
+                this.Text = _processItem.Name + " (PID " + _pid.ToString() + ")";
+                timerUpdate.Enabled = true;
+            }
 
             // add our handler to the process provider
             Program.ProcessProvider.Updated +=
@@ -264,6 +265,30 @@ namespace ProcessHacker
         private void LoadStage2()
         {
             this.SuspendLayout();
+
+            plotterCPUUsage.Data1 = _processItem.FloatHistoryManager[ProcessStats.CpuKernel];
+            plotterCPUUsage.Data2 = _processItem.FloatHistoryManager[ProcessStats.CpuUser];
+            plotterCPUUsage.GetToolTip = i =>
+                ((plotterCPUUsage.Data1[i] + plotterCPUUsage.Data2[i]) * 100).ToString("N2") +
+                "% (K: " + (plotterCPUUsage.Data1[i] * 100).ToString("N2") +
+                "%, U: " + (plotterCPUUsage.Data2[i] * 100).ToString("N2") + "%)" + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
+            plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
+            plotterMemory.GetToolTip = i =>
+                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+            plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
+            plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
+            plotterIO.GetToolTip = i =>
+                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                Program.ProcessProvider.TimeHistory[i].ToString();
+
+            this.ApplyFont(Properties.Settings.Default.Font);
+
+            this.InitializeSubControls();
 
             try
             {
@@ -324,6 +349,9 @@ namespace ProcessHacker
                 _serviceProps.SaveSettings();
             }
 
+            if (_processStats != null)
+                _processStats.Dispose();
+
             timerUpdate.Enabled = false;
 
             if (_processImage != null)
@@ -345,6 +373,12 @@ namespace ProcessHacker
             this.Invalidate(true);
         }
 
+        private void ProcessWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+                this.Close();
+        }
+
         public void ApplyFont(Font f)
         {
             listThreads.List.Font = f;
@@ -359,6 +393,9 @@ namespace ProcessHacker
 
         private void UpdateProcessProperties()
         {
+            // HACK: Evil but necessary to reduce user complaints
+            Application.DoEvents();
+
             try
             {
                 string fileName;
@@ -367,6 +404,12 @@ namespace ProcessHacker
                     fileName = Misc.GetKernelFileName();
                 else
                     fileName = _processItem.FileName;
+
+                if (fileName == null)
+                {
+                    pictureIcon.Image = ProcessHacker.Properties.Resources.Process.ToBitmap();
+                    return;
+                }
 
                 FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
 
@@ -432,6 +475,12 @@ namespace ProcessHacker
                 catch
                 { }
             }
+
+            // HACK: Evil but necessary to reduce user complaints (2)
+            Application.DoEvents();
+
+            if (_pid <= 0)
+                return;
 
             if (_processItem.CmdLine != null)
                 textCmdLine.Text = _processItem.CmdLine.Replace("\0", "");
@@ -515,6 +564,12 @@ namespace ProcessHacker
 
         private void InitializeSubControls()
         {
+            var processStats = new ProcessStatistics(_pid);
+            processStats.Dock = DockStyle.Fill;
+            processStats.ClearStatistics();
+            tabStatistics.Controls.Add(processStats);
+            _processStats = processStats;
+
             try
             {
                 _tokenProps = new TokenProperties(new ProcessHandle(_pid, Program.MinProcessQueryRights));
@@ -536,23 +591,23 @@ namespace ProcessHacker
                 }
             }
             catch
-            {
-                tabControl.TabPages.Remove(tabJob);
-            }
+            { }
 
             if (Program.HackerWindow != null)
             {
-                _serviceProps = new ServiceProperties(
-                    Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
-                    Program.HackerWindow.ProcessServices[_pid].ToArray() :
-                    new string[0]);
-                _serviceProps.Dock = DockStyle.Fill;
-                _serviceProps.PID = _pid;
-                tabServices.Controls.Add(_serviceProps);
-            }
-            else
-            {
-                tabControl.TabPages.Remove(tabServices);
+                if (Program.HackerWindow.ProcessServices.ContainsKey(_pid))
+                {
+                    if (Program.HackerWindow.ProcessServices[_pid].Count > 0)
+                    {
+                        _serviceProps = new ServiceProperties(
+                           Program.HackerWindow.ProcessServices.ContainsKey(_pid) ?
+                           Program.HackerWindow.ProcessServices[_pid].ToArray() :
+                           new string[0]);
+                        _serviceProps.Dock = DockStyle.Fill;
+                        _serviceProps.PID = _pid;
+                        tabServices.Controls.Add(_serviceProps);
+                    }
+                }
             }
 
             listEnvironment.ListViewItemSorter = new SortedListViewComparer(listEnvironment);
@@ -807,34 +862,6 @@ namespace ProcessHacker
             buttonSearch.Text = text;
         }
 
-        private void ClearStatistics()
-        {
-            labelCPUPriority.Text = "";
-            labelCPUKernelTime.Text = "";
-            labelCPUUserTime.Text = "";
-            labelCPUTotalTime.Text = "";
-
-            labelMemoryPB.Text = "";
-            labelMemoryWS.Text = "";
-            labelMemoryPWS.Text = "";
-            labelMemoryVS.Text = "";
-            labelMemoryPVS.Text = "";
-            labelMemoryPU.Text = "";
-            labelMemoryPPU.Text = "";
-            labelMemoryPF.Text = "";
-
-            labelIOReads.Text = "";
-            labelIOReadBytes.Text = "";
-            labelIOWrites.Text = "";
-            labelIOWriteBytes.Text = "";
-            labelIOOther.Text = "";
-            labelIOOtherBytes.Text = "";
-
-            labelOtherHandles.Text = "";
-            labelOtherGDIHandles.Text = "";
-            labelOtherUSERHandles.Text = "";
-        }
-
         private void UpdatePerformance()
         {
             ProcessSystemProvider sysProvider = Program.ProcessProvider;
@@ -874,48 +901,6 @@ namespace ProcessHacker
             plotterMemory.Draw();
             plotterIO.MoveGrid();
             plotterIO.Draw();
-        }
-
-        private void UpdateStatistics()
-        {
-            if (!Program.ProcessProvider.Dictionary.ContainsKey(_pid))
-                return;
-
-            ProcessItem item = Program.ProcessProvider.Dictionary[_pid];
-
-            labelCPUPriority.Text = item.Process.BasePriority.ToString();
-            labelCPUKernelTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime));
-            labelCPUUserTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.UserTime));
-            labelCPUTotalTime.Text = Misc.GetNiceTimeSpan(new TimeSpan(item.Process.KernelTime + item.Process.UserTime));
-
-            labelMemoryPB.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
-            labelMemoryWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
-            labelMemoryPWS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakWorkingSetSize);
-            labelMemoryVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.VirtualSize);
-            labelMemoryPVS.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakVirtualSize);
-            labelMemoryPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PagefileUsage);
-            labelMemoryPPU.Text = Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PeakPagefileUsage);
-            labelMemoryPF.Text = ((ulong)item.Process.VirtualMemoryCounters.PageFaultCount).ToString("N0");
-
-            labelIOReads.Text = ((ulong)item.Process.IoCounters.ReadOperationCount).ToString("N0");
-            labelIOReadBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.ReadTransferCount);
-            labelIOWrites.Text = ((ulong)item.Process.IoCounters.WriteOperationCount).ToString("N0");
-            labelIOWriteBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.WriteTransferCount);
-            labelIOOther.Text = ((ulong)item.Process.IoCounters.OtherOperationCount).ToString("N0");
-            labelIOOtherBytes.Text = Misc.GetNiceSizeName(item.Process.IoCounters.OtherTransferCount);
-
-            labelOtherHandles.Text = ((ulong)item.Process.HandleCount).ToString("N0");
-
-            try
-            {
-                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                {
-                    labelOtherGDIHandles.Text = phandle.GetGuiResources(false).ToString("N0");
-                    labelOtherUSERHandles.Text = phandle.GetGuiResources(true).ToString("N0");
-                }
-            }
-            catch
-            { }
         }
 
         private void fileCurrentDirectory_TextBoxLeave(object sender, EventArgs e)
@@ -1109,7 +1094,8 @@ namespace ProcessHacker
                 {
                     if (tabControl.SelectedTab == tabStatistics)
                     {
-                        this.UpdateStatistics();
+                        if (_processStats != null)
+                            _processStats.UpdateStatistics();
                     }
                     else if (tabControl.SelectedTab == tabPerformance)
                     {
@@ -1237,7 +1223,8 @@ namespace ProcessHacker
 
             if (tabControl.SelectedTab == tabStatistics)
             {
-                this.UpdateStatistics();
+                if (_processStats != null)
+                    _processStats.UpdateStatistics();
             }
 
             if (tabControl.SelectedTab == tabPerformance)
