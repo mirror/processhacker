@@ -1,14 +1,17 @@
 Process Hacker
 
-1.3.7.2
+1.3.7.3
  * NEW/IMPROVED:
    * #2780260 - "add <Enter> key to open Proc Properties"
    * #2780277 - "add <ENTER> to shortcut list for default action"
+   * Customizable tray icons - CPU History, CPU Usage, I/O History, 
+     Commit History and Physical Memory History
    * "Terminate Process Tree"
    * Process tree loads instantly
    * Improved the perceived responsiveness of Process Hacker in 
      various places
-   * Actual performance improvements in the tree view and other lists
+   * Actual performance improvements in the tree view and other lists - 
+     decreased CPU usage
    * Thread termination now prompts
    * Integrity, I/O priority and page priority columns
    * Windows are protected from being offscreen when they load

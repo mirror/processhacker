@@ -47,7 +47,6 @@
             this.checkStartHidden = new System.Windows.Forms.CheckBox();
             this.checkHideWhenClosed = new System.Windows.Forms.CheckBox();
             this.checkHideWhenMinimized = new System.Windows.Forms.CheckBox();
-            this.checkShowTrayIcon = new System.Windows.Forms.CheckBox();
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
@@ -152,7 +151,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(200, 385);
+            this.buttonOK.Location = new System.Drawing.Point(200, 363);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
@@ -164,7 +163,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 309);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 285);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -177,7 +176,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 285);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 261);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -219,7 +218,7 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 367);
+            this.tabControl.Size = new System.Drawing.Size(425, 345);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
@@ -233,7 +232,6 @@
             this.tabGeneral.Controls.Add(this.checkStartHidden);
             this.tabGeneral.Controls.Add(this.checkHideWhenClosed);
             this.tabGeneral.Controls.Add(this.checkHideWhenMinimized);
-            this.tabGeneral.Controls.Add(this.checkShowTrayIcon);
             this.tabGeneral.Controls.Add(this.label23);
             this.tabGeneral.Controls.Add(this.label1);
             this.tabGeneral.Controls.Add(this.textSearchEngine);
@@ -245,7 +243,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 341);
+            this.tabGeneral.Size = new System.Drawing.Size(417, 319);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -254,7 +252,7 @@
             // 
             this.checkAllowOnlyOneInstance.AutoSize = true;
             this.checkAllowOnlyOneInstance.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 261);
+            this.checkAllowOnlyOneInstance.Location = new System.Drawing.Point(6, 237);
             this.checkAllowOnlyOneInstance.Name = "checkAllowOnlyOneInstance";
             this.checkAllowOnlyOneInstance.Size = new System.Drawing.Size(143, 18);
             this.checkAllowOnlyOneInstance.TabIndex = 16;
@@ -322,7 +320,7 @@
             // 
             this.checkStartHidden.AutoSize = true;
             this.checkStartHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkStartHidden.Location = new System.Drawing.Point(21, 237);
+            this.checkStartHidden.Location = new System.Drawing.Point(6, 213);
             this.checkStartHidden.Name = "checkStartHidden";
             this.checkStartHidden.Size = new System.Drawing.Size(89, 18);
             this.checkStartHidden.TabIndex = 9;
@@ -335,7 +333,7 @@
             // 
             this.checkHideWhenClosed.AutoSize = true;
             this.checkHideWhenClosed.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenClosed.Location = new System.Drawing.Point(21, 213);
+            this.checkHideWhenClosed.Location = new System.Drawing.Point(6, 189);
             this.checkHideWhenClosed.Name = "checkHideWhenClosed";
             this.checkHideWhenClosed.Size = new System.Drawing.Size(117, 18);
             this.checkHideWhenClosed.TabIndex = 9;
@@ -347,26 +345,13 @@
             // 
             this.checkHideWhenMinimized.AutoSize = true;
             this.checkHideWhenMinimized.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideWhenMinimized.Location = new System.Drawing.Point(21, 189);
+            this.checkHideWhenMinimized.Location = new System.Drawing.Point(6, 165);
             this.checkHideWhenMinimized.Name = "checkHideWhenMinimized";
             this.checkHideWhenMinimized.Size = new System.Drawing.Size(131, 18);
             this.checkHideWhenMinimized.TabIndex = 9;
             this.checkHideWhenMinimized.Text = "Hide when minimized";
             this.toolTipProvider.SetToolTip(this.checkHideWhenMinimized, "Hides Process Hacker when it is minimized.");
             this.checkHideWhenMinimized.UseVisualStyleBackColor = true;
-            // 
-            // checkShowTrayIcon
-            // 
-            this.checkShowTrayIcon.AutoSize = true;
-            this.checkShowTrayIcon.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowTrayIcon.Location = new System.Drawing.Point(6, 165);
-            this.checkShowTrayIcon.Name = "checkShowTrayIcon";
-            this.checkShowTrayIcon.Size = new System.Drawing.Size(136, 18);
-            this.checkShowTrayIcon.TabIndex = 7;
-            this.checkShowTrayIcon.Text = "Show notification icon";
-            this.toolTipProvider.SetToolTip(this.checkShowTrayIcon, "A notification icon which can be configured to alert you of events.");
-            this.checkShowTrayIcon.UseVisualStyleBackColor = true;
-            this.checkShowTrayIcon.CheckedChanged += new System.EventHandler(this.checkShowTrayIcon_CheckedChanged);
             // 
             // label23
             // 
@@ -526,7 +511,7 @@
             this.tabHighlighting.Location = new System.Drawing.Point(4, 22);
             this.tabHighlighting.Name = "tabHighlighting";
             this.tabHighlighting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHighlighting.Size = new System.Drawing.Size(417, 341);
+            this.tabHighlighting.Size = new System.Drawing.Size(417, 319);
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
@@ -535,7 +520,7 @@
             // 
             this.buttonDisableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonDisableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableAll.Location = new System.Drawing.Point(336, 312);
+            this.buttonDisableAll.Location = new System.Drawing.Point(336, 290);
             this.buttonDisableAll.Name = "buttonDisableAll";
             this.buttonDisableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonDisableAll.TabIndex = 12;
@@ -547,7 +532,7 @@
             // 
             this.buttonEnableAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEnableAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableAll.Location = new System.Drawing.Point(255, 312);
+            this.buttonEnableAll.Location = new System.Drawing.Point(255, 290);
             this.buttonEnableAll.Name = "buttonEnableAll";
             this.buttonEnableAll.Size = new System.Drawing.Size(75, 23);
             this.buttonEnableAll.TabIndex = 12;
@@ -579,7 +564,7 @@
             this.listHighlightingColors.MultiSelect = false;
             this.listHighlightingColors.Name = "listHighlightingColors";
             this.listHighlightingColors.ShowItemToolTips = true;
-            this.listHighlightingColors.Size = new System.Drawing.Size(405, 246);
+            this.listHighlightingColors.Size = new System.Drawing.Size(405, 224);
             this.listHighlightingColors.TabIndex = 10;
             this.listHighlightingColors.UseCompatibleStateImageBehavior = false;
             this.listHighlightingColors.View = System.Windows.Forms.View.Details;
@@ -922,9 +907,9 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(281, 385);
+            this.buttonCancel.Location = new System.Drawing.Point(281, 363);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 11;
@@ -937,7 +922,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Enabled = false;
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(362, 385);
+            this.buttonApply.Location = new System.Drawing.Point(362, 363);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 11;
@@ -950,7 +935,7 @@
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 420);
+            this.ClientSize = new System.Drawing.Size(449, 398);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.tabControl);
@@ -1004,7 +989,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown textHighlightingDuration;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.CheckBox checkShowTrayIcon;
         private System.Windows.Forms.CheckBox checkHideWhenMinimized;
         private System.Windows.Forms.TabPage tabPlotting;
         private System.Windows.Forms.Label label12;

@@ -86,6 +86,10 @@
             this.viewMenuItem = new System.Windows.Forms.MenuItem();
             this.toolbarMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInfoMenuItem = new System.Windows.Forms.MenuItem();
+            this.trayIconsMenuItem = new System.Windows.Forms.MenuItem();
+            this.cpuHistoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.cpuUsageMenuItem = new System.Windows.Forms.MenuItem();
+            this.ioHistoryMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem3 = new System.Windows.Forms.MenuItem();
             this.updateNowMenuItem = new System.Windows.Forms.MenuItem();
             this.updateProcessesMenuItem = new System.Windows.Forms.MenuItem();
@@ -132,7 +136,6 @@
             this.menuItem8 = new System.Windows.Forms.MenuItem();
             this.copyServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.selectAllServiceMenuItem = new System.Windows.Forms.MenuItem();
-            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.menuIcon = new System.Windows.Forms.ContextMenu();
             this.showHideMenuItem = new System.Windows.Forms.MenuItem();
             this.sysInformationIconMenuItem = new System.Windows.Forms.MenuItem();
@@ -156,6 +159,8 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.commitHistoryMenuItem = new System.Windows.Forms.MenuItem();
+            this.physMemHistoryMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -560,6 +565,7 @@
             this.viewMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.toolbarMenuItem,
             this.sysInfoMenuItem,
+            this.trayIconsMenuItem,
             this.menuItem3,
             this.updateNowMenuItem,
             this.updateProcessesMenuItem,
@@ -579,28 +585,57 @@
             this.sysInfoMenuItem.Text = "System &Information...";
             this.sysInfoMenuItem.Click += new System.EventHandler(this.sysInfoMenuItem_Click);
             // 
+            // trayIconsMenuItem
+            // 
+            this.trayIconsMenuItem.Index = 2;
+            this.trayIconsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.cpuHistoryMenuItem,
+            this.cpuUsageMenuItem,
+            this.ioHistoryMenuItem,
+            this.commitHistoryMenuItem,
+            this.physMemHistoryMenuItem});
+            this.trayIconsMenuItem.Text = "Tray Icons";
+            // 
+            // cpuHistoryMenuItem
+            // 
+            this.cpuHistoryMenuItem.Index = 0;
+            this.cpuHistoryMenuItem.Text = "CPU History";
+            this.cpuHistoryMenuItem.Click += new System.EventHandler(this.cpuHistoryMenuItem_Click);
+            // 
+            // cpuUsageMenuItem
+            // 
+            this.cpuUsageMenuItem.Index = 1;
+            this.cpuUsageMenuItem.Text = "CPU Usage";
+            this.cpuUsageMenuItem.Click += new System.EventHandler(this.cpuUsageMenuItem_Click);
+            // 
+            // ioHistoryMenuItem
+            // 
+            this.ioHistoryMenuItem.Index = 2;
+            this.ioHistoryMenuItem.Text = "I/O History";
+            this.ioHistoryMenuItem.Click += new System.EventHandler(this.ioHistoryMenuItem_Click);
+            // 
             // menuItem3
             // 
-            this.menuItem3.Index = 2;
+            this.menuItem3.Index = 3;
             this.menuItem3.Text = "-";
             // 
             // updateNowMenuItem
             // 
             this.vistaMenu.SetImage(this.updateNowMenuItem, global::ProcessHacker.Properties.Resources.arrow_refresh);
-            this.updateNowMenuItem.Index = 3;
+            this.updateNowMenuItem.Index = 4;
             this.updateNowMenuItem.Shortcut = System.Windows.Forms.Shortcut.F5;
             this.updateNowMenuItem.Text = "&Refresh";
             this.updateNowMenuItem.Click += new System.EventHandler(this.updateNowMenuItem_Click);
             // 
             // updateProcessesMenuItem
             // 
-            this.updateProcessesMenuItem.Index = 4;
+            this.updateProcessesMenuItem.Index = 5;
             this.updateProcessesMenuItem.Text = "Update &Processes";
             this.updateProcessesMenuItem.Click += new System.EventHandler(this.updateProcessesMenuItem_Click);
             // 
             // updateServicesMenuItem
             // 
-            this.updateServicesMenuItem.Index = 5;
+            this.updateServicesMenuItem.Index = 6;
             this.updateServicesMenuItem.Text = "Update &Services";
             this.updateServicesMenuItem.Click += new System.EventHandler(this.updateServicesMenuItem_Click);
             // 
@@ -966,13 +1001,6 @@
             this.selectAllServiceMenuItem.Text = "Select &All";
             this.selectAllServiceMenuItem.Click += new System.EventHandler(this.selectAllServiceMenuItem_Click);
             // 
-            // notifyIcon
-            // 
-            this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-            this.notifyIcon.Text = "Process Hacker";
-            this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-            // 
             // menuIcon
             // 
             this.menuIcon.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
@@ -1124,6 +1152,18 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
+            // commitHistoryMenuItem
+            // 
+            this.commitHistoryMenuItem.Index = 3;
+            this.commitHistoryMenuItem.Text = "Commit History";
+            this.commitHistoryMenuItem.Click += new System.EventHandler(this.commitHistoryMenuItem_Click);
+            // 
+            // physMemHistoryMenuItem
+            // 
+            this.physMemHistoryMenuItem.Index = 4;
+            this.physMemHistoryMenuItem.Text = "Physical Memory History";
+            this.physMemHistoryMenuItem.Click += new System.EventHandler(this.physMemHistoryMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1216,7 +1256,6 @@
         private System.Windows.Forms.MenuItem copyServiceMenuItem;
         private System.Windows.Forms.MenuItem selectAllServiceMenuItem;
         private System.Windows.Forms.MenuItem toolsMenuItem;
-        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenu menuIcon;
         private System.Windows.Forms.MenuItem showHideMenuItem;
         private System.Windows.Forms.MenuItem exitTrayMenuItem;
@@ -1288,6 +1327,12 @@
         private System.Windows.Forms.MenuItem injectDllProcessMenuItem;
         private System.Windows.Forms.MenuItem apiLoggerMenuItem;
         private System.Windows.Forms.MenuItem terminateProcessTreeMenuItem;
+        private System.Windows.Forms.MenuItem trayIconsMenuItem;
+        private System.Windows.Forms.MenuItem cpuHistoryMenuItem;
+        private System.Windows.Forms.MenuItem cpuUsageMenuItem;
+        private System.Windows.Forms.MenuItem ioHistoryMenuItem;
+        private System.Windows.Forms.MenuItem commitHistoryMenuItem;
+        private System.Windows.Forms.MenuItem physMemHistoryMenuItem;
     }
 }
 

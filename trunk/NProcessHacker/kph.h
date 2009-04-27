@@ -100,7 +100,45 @@ typedef NTSTATUS (NTAPI *_NtDeviceIoControlFile)(
     );
 
 NTSTATUS KphInit();
-NTSTATUS KphConnect(PHANDLE KphHandle);
-NTSTATUS KphDisconnect(HANDLE KphHandle);
+
+NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle);
+
+NPHAPI NTSTATUS KphDisconnect(HANDLE KphHandle);
+
+NTSTATUS KphpDeviceIoControl(
+    HANDLE KphHandle,
+    ULONG KphControlCode,
+    PVOID InBuffer,
+    ULONG InBufferLength,
+    PVOID OutBuffer,
+    ULONG OutBufferLength,
+    PULONG ReturnLength
+    );
+
+NPHAPI NTSTATUS KphGetFeatures(
+    HANDLE KphHandle,
+    PULONG Features
+    );
+
+NPHAPI NTSTATUS KphRead(
+    HANDLE KphHandle,
+    PVOID Address,
+    PVOID Buffer,
+    ULONG BufferLength
+    );
+
+NPHAPI NTSTATUS KphWrite(
+    HANDLE KphHandle,
+    PVOID Address,
+    PVOID Buffer,
+    ULONG Length
+    );
+
+NPHAPI NTSTATUS KphOpenProcess(
+    HANDLE KphHandle,
+    PHANDLE ProcessHandle,
+    ULONG ProcessId,
+    ACCESS_MASK DesiredAccess
+    );
 
 #endif

@@ -60,7 +60,14 @@ namespace ProcessHacker
         NetworkProvider networkP;
 
         Bitmap uacShieldIcon;
-        UsageIcon cpuUsageIcon;
+        Icon blackIcon;
+        UsageIcon dummyIcon;
+        List<UsageIcon> notifyIcons = new List<UsageIcon>();
+        CpuHistoryIcon cpuHistoryIcon;
+        CpuUsageIcon cpuUsageIcon;
+        IoHistoryIcon ioHistoryIcon;
+        CommitHistoryIcon commitHistoryIcon;
+        PhysMemHistoryIcon physMemHistoryIcon;
 
         Dictionary<int, List<string>> processServices = new Dictionary<int, List<string>>();
 
@@ -79,11 +86,6 @@ namespace ProcessHacker
         public MenuItem WindowMenuItem
         {
             get { return windowMenuItem; }
-        }
-
-        public NotifyIcon NotifyIcon
-        {
-            get { return notifyIcon; }
         }
 
         public wyDay.Controls.VistaMenu VistaMenu
@@ -214,7 +216,7 @@ namespace ProcessHacker
             Program.StartProcessHackerAdmin("-v", () =>
                 {
                     this.SaveSettings();
-                    notifyIcon.Visible = false;
+                    this.ExecuteOnIcons((icon) => icon.Visible = false);
                     Win32.ExitProcess(0);
                 }, this.Handle);
         }
@@ -438,6 +440,45 @@ namespace ProcessHacker
         {
             Save.SaveToFile();
         }
+
+        #region View
+
+        private void cpuHistoryMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.CpuHistoryIconVisible = 
+                cpuHistoryMenuItem.Checked = !cpuHistoryMenuItem.Checked;
+            this.ApplyIconVisibilities();
+        }
+
+        private void cpuUsageMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.CpuUsageIconVisible =
+                cpuUsageMenuItem.Checked = !cpuUsageMenuItem.Checked;
+            this.ApplyIconVisibilities();
+        }
+
+        private void ioHistoryMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.IoHistoryIconVisible =
+                ioHistoryMenuItem.Checked = !ioHistoryMenuItem.Checked;
+            this.ApplyIconVisibilities();
+        }
+
+        private void commitHistoryMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.CommitHistoryIconVisible =
+             commitHistoryMenuItem.Checked = !commitHistoryMenuItem.Checked;
+            this.ApplyIconVisibilities();
+        }
+
+        private void physMemHistoryMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.PhysMemHistoryIconVisible =
+               physMemHistoryMenuItem.Checked = !physMemHistoryMenuItem.Checked;
+            this.ApplyIconVisibilities();
+        }
+
+        #endregion
 
         #endregion
 
@@ -1286,24 +1327,7 @@ namespace ProcessHacker
         {
             this.BeginInvoke(new MethodInvoker(delegate
             {
-                cpuUsageIcon.Update(processP.CurrentCpuKernelUsage, processP.CurrentCpuUserUsage);
-
-                if (NotifyIcon.Icon != null)
-                    Win32.DestroyIcon(notifyIcon.Icon.Handle);
-
-                notifyIcon.Icon = cpuUsageIcon.GetIcon();
-                
                 UpdateStatusInfo();
-
-                notifyIcon.Text = "Process Hacker\n" +
-                    "CPU Usage: " + (processP.CurrentCpuUsage * 100).ToString("F2") + "%";
-
-                if (processP.Dictionary.ContainsKey(processP.PIDWithMostCpuUsage))
-                    if (processP.Dictionary[processP.PIDWithMostCpuUsage].Name != null)
-                        if (notifyIcon.Text.Length +
-                            processP.Dictionary[processP.PIDWithMostCpuUsage].Name.Length + 7 < 62)
-                            notifyIcon.Text += "\n" + processP.Dictionary[processP.PIDWithMostCpuUsage].Name +
-                                ": " + processP.Dictionary[processP.PIDWithMostCpuUsage].CpuUsage.ToString("F2") + "%";
             }));
         }
 
@@ -1329,7 +1353,7 @@ namespace ProcessHacker
             this.QueueMessage("New Process: " + item.Name + " (PID " + item.Pid.ToString() + ")" + parentText, item.Icon);
 
             if (NPMenuItem.Checked)
-                notifyIcon.ShowBalloonTip(2000, "New Process",
+                this.GetFirstIcon().ShowBalloonTip(2000, "New Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() + 
                     ") was started" + ((parentText != "") ? " by " + 
                     parent.Name + " (PID " + parent.Pid.ToString() + ")" : "") + ".", ToolTipIcon.Info);
@@ -1343,7 +1367,7 @@ namespace ProcessHacker
                 processServices.Remove(item.Pid);
 
             if (TPMenuItem.Checked)
-                notifyIcon.ShowBalloonTip(2000, "Terminated Process",
+                this.GetFirstIcon().ShowBalloonTip(2000, "Terminated Process",
                     "The process " + item.Name + " (" + item.Pid.ToString() + ") was terminated.", ToolTipIcon.Info);
         }
 
@@ -1374,7 +1398,7 @@ namespace ProcessHacker
                 ""), null);
 
             if (NSMenuItem.Checked)
-                notifyIcon.ShowBalloonTip(2000, "New Service",
+                this.GetFirstIcon().ShowBalloonTip(2000, "New Service",
                     "The service " + item.Status.ServiceName + " (" + item.Status.DisplayName + ") has been created.",
                     ToolTipIcon.Info);
         }
@@ -1406,7 +1430,7 @@ namespace ProcessHacker
                     ""), null);
 
                 if (startedSMenuItem.Checked)
-                    notifyIcon.ShowBalloonTip(2000, "Service Started",
+                    this.GetFirstIcon().ShowBalloonTip(2000, "Service Started",
                         "The service " + newItem.Status.ServiceName + " (" + newItem.Status.DisplayName + ") has been started.",
                         ToolTipIcon.Info);
             }
@@ -1429,7 +1453,7 @@ namespace ProcessHacker
                     ""), null);
 
                 if (stoppedSMenuItem.Checked)
-                    notifyIcon.ShowBalloonTip(2000, "Service Stopped",
+                    this.GetFirstIcon().ShowBalloonTip(2000, "Service Stopped",
                         "The service " + newItem.Status.ServiceName + " (" + newItem.Status.DisplayName + ") has been stopped.",
                         ToolTipIcon.Info);
             }
@@ -1472,7 +1496,7 @@ namespace ProcessHacker
                 ""), null);
 
             if (DSMenuItem.Checked)
-                notifyIcon.ShowBalloonTip(2000, "Service Deleted",
+                this.GetFirstIcon().ShowBalloonTip(2000, "Service Deleted",
                     "The service " + item.Status.ServiceName + " (" + item.Status.DisplayName + ") has been deleted.",
                     ToolTipIcon.Info);
         }
@@ -2061,6 +2085,45 @@ namespace ProcessHacker
 
         #endregion
 
+        #region Notification Icons
+
+        public void ExecuteOnIcons(Action<UsageIcon> action)
+        {
+            foreach (var icon in notifyIcons)
+                action(icon);
+        }
+
+        public UsageIcon GetFirstIcon()
+        {
+            foreach (var icon in notifyIcons)
+                if (icon.Visible)
+                    return icon;
+
+            return dummyIcon;
+        }
+
+        public int GetIconsVisibleCount()
+        {
+            int count = 0;
+
+            foreach (var icon in notifyIcons)
+                if (icon.Visible)
+                    count++;
+
+            return count;
+        }
+
+        public void ApplyIconVisibilities()
+        {
+            cpuHistoryIcon.Visible = cpuHistoryIcon.Enabled = Properties.Settings.Default.CpuHistoryIconVisible;
+            cpuUsageIcon.Visible = cpuUsageIcon.Enabled = Properties.Settings.Default.CpuUsageIconVisible;
+            ioHistoryIcon.Visible = ioHistoryIcon.Enabled = Properties.Settings.Default.IoHistoryIconVisible;
+            commitHistoryIcon.Visible = commitHistoryIcon.Enabled = Properties.Settings.Default.CommitHistoryIconVisible;
+            physMemHistoryIcon.Visible = physMemHistoryIcon.Enabled = Properties.Settings.Default.PhysMemHistoryIconVisible;
+        }
+
+        #endregion
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -2091,7 +2154,7 @@ namespace ProcessHacker
                                     Properties.Settings.Default.WindowSize = this.Size;
                                 }
 
-                                if (this.NotifyIcon.Visible && Properties.Settings.Default.HideWhenMinimized)
+                                if (this.GetIconsVisibleCount() > 0 && Properties.Settings.Default.HideWhenMinimized)
                                 {
                                     this.Visible = false;
 
@@ -2122,7 +2185,7 @@ namespace ProcessHacker
             //serviceP.Dispose();
             //networkP.Dispose();
 
-            notifyIcon.Visible = false;
+            this.ExecuteOnIcons((icon) => icon.Visible = false);
             SaveSettings();
             this.Visible = false;
 
@@ -2145,7 +2208,8 @@ namespace ProcessHacker
                 return;
             }
 
-            if (Properties.Settings.Default.HideWhenClosed)
+            if (this.GetIconsVisibleCount() > 0 &&
+                Properties.Settings.Default.HideWhenClosed)
             {
                 e.Cancel = true;
                 showHideMenuItem_Click(sender, null);
@@ -2208,10 +2272,36 @@ namespace ProcessHacker
             }
         }
 
-        private void LoadNotificationIcon()
+        private void LoadNotificationIcons()
         {
-            notifyIcon.ContextMenu = menuIcon;
-            notifyIcon.Visible = Properties.Settings.Default.ShowIcon;
+            using (Bitmap b = new Bitmap(16, 16))
+            {
+                using (Graphics g = Graphics.FromImage(b))
+                {
+                    g.FillRectangle(new SolidBrush(Color.Black), 0, 0, b.Width, b.Height);
+                    blackIcon = Icon.FromHandle(b.GetHicon());
+                }
+            }
+
+            dummyIcon = new UsageIcon();
+            notifyIcons.Add(cpuHistoryIcon = new CpuHistoryIcon() { Parent = this });
+            notifyIcons.Add(cpuUsageIcon = new CpuUsageIcon() { Parent = this });
+            notifyIcons.Add(ioHistoryIcon = new IoHistoryIcon() { Parent = this });
+            notifyIcons.Add(commitHistoryIcon = new CommitHistoryIcon() { Parent = this });
+            notifyIcons.Add(physMemHistoryIcon = new PhysMemHistoryIcon() { Parent = this });
+
+            foreach (var icon in notifyIcons)
+                icon.Icon = (Icon)blackIcon.Clone();
+
+            this.ExecuteOnIcons((icon) => icon.ContextMenu = menuIcon);
+            this.ExecuteOnIcons((icon) => icon.MouseDoubleClick += notifyIcon_MouseDoubleClick);
+            cpuHistoryMenuItem.Checked = Properties.Settings.Default.CpuHistoryIconVisible;
+            cpuUsageMenuItem.Checked = Properties.Settings.Default.CpuUsageIconVisible;
+            ioHistoryMenuItem.Checked = Properties.Settings.Default.IoHistoryIconVisible;
+            commitHistoryMenuItem.Checked = Properties.Settings.Default.CommitHistoryIconVisible;
+            physMemHistoryMenuItem.Checked = Properties.Settings.Default.PhysMemHistoryIconVisible;
+            this.ApplyIconVisibilities();
+
             NPMenuItem.Checked = Properties.Settings.Default.NewProcesses;
             TPMenuItem.Checked = Properties.Settings.Default.TerminatedProcesses;
             NSMenuItem.Checked = Properties.Settings.Default.NewServices;
@@ -2229,8 +2319,6 @@ namespace ProcessHacker
 
         private void LoadControls()
         {
-            cpuUsageIcon = new UsageIcon(16, 16);
-
             listControls.Add(treeProcesses.Tree);
             listControls.Add(listServices);
 
@@ -2250,9 +2338,6 @@ namespace ProcessHacker
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
             processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_InfoUpdater);
             updateProcessesMenuItem.Checked = true;
-
-            cpuUsageIcon.BackColor = Color.Black;
-            cpuUsageIcon.Color = Color.FromArgb(0, 255, 0);
 
             HighlightingContext.HighlightingDuration = Properties.Settings.Default.HighlightingDuration;
             HighlightingContext.StateHighlighting = false;
@@ -2440,8 +2525,8 @@ namespace ProcessHacker
                 vistaMenu.DelaySetImageCalls = false;
                 vistaMenu.PerformPendingSetImageCalls();
                 this.LoadOtherSettings();
-                this.LoadNotificationIcon();
                 this.LoadControls();
+                this.LoadNotificationIcons();
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();
                 this.LoadUac();

@@ -272,6 +272,9 @@ namespace ProcessHacker.Components
                 if (_longData2[i] > max)
                     max = _longData2[i];
 
+            if (max < _minMaxValue)
+                max = _minMaxValue;
+
             // redo the float list
             _data1 = new List<float>();
             _data2 = new List<float>();
@@ -483,6 +486,16 @@ namespace ProcessHacker.Components
         {
             get { return _longData2; }
             set { _longData2 = value; }
+        }
+
+        private long _minMaxValue = 0;
+        /// <summary>
+        /// The minimum scaling value to be used for long data.
+        /// </summary>
+        public long MinMaxValue
+        {
+            get { return _minMaxValue; }
+            set { _minMaxValue = value; }
         }
 
         private void Plotter_Resize(object sender, EventArgs e)

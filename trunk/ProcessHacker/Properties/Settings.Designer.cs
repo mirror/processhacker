@@ -553,18 +553,6 @@ namespace ProcessHacker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowIcon {
-            get {
-                return ((bool)(this["ShowIcon"]));
-            }
-            set {
-                this["ShowIcon"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ServiceListViewColumns {
             get {
@@ -1354,6 +1342,66 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["ProcessWindowLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CpuHistoryIconVisible {
+            get {
+                return ((bool)(this["CpuHistoryIconVisible"]));
+            }
+            set {
+                this["CpuHistoryIconVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IoHistoryIconVisible {
+            get {
+                return ((bool)(this["IoHistoryIconVisible"]));
+            }
+            set {
+                this["IoHistoryIconVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CpuUsageIconVisible {
+            get {
+                return ((bool)(this["CpuUsageIconVisible"]));
+            }
+            set {
+                this["CpuUsageIconVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CommitHistoryIconVisible {
+            get {
+                return ((bool)(this["CommitHistoryIconVisible"]));
+            }
+            set {
+                this["CommitHistoryIconVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PhysMemHistoryIconVisible {
+            get {
+                return ((bool)(this["PhysMemHistoryIconVisible"]));
+            }
+            set {
+                this["PhysMemHistoryIconVisible"] = value;
             }
         }
     }

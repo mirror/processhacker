@@ -34,7 +34,7 @@ NTSTATUS KphInit()
     return STATUS_SUCCESS;
 }
 
-NTSTATUS KphConnect(PHANDLE KphHandle)
+NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle)
 {
     HANDLE deviceHandle;
 
@@ -59,7 +59,7 @@ NTSTATUS KphConnect(PHANDLE KphHandle)
     return STATUS_SUCCESS;
 }
 
-NTSTATUS KphDisconnect(HANDLE KphHandle)
+NPHAPI NTSTATUS KphDisconnect(HANDLE KphHandle)
 {
     if (CloseHandle(KphHandle))
         return STATUS_SUCCESS;
@@ -99,7 +99,7 @@ NTSTATUS KphpDeviceIoControl(
     return status;
 }
 
-NTSTATUS KphGetFeatures(
+NPHAPI NTSTATUS KphGetFeatures(
     HANDLE KphHandle,
     PULONG Features
     )
@@ -122,7 +122,7 @@ NTSTATUS KphGetFeatures(
     return status;
 }
 
-NTSTATUS KphRead(
+NPHAPI NTSTATUS KphRead(
     HANDLE KphHandle,
     PVOID Address,
     PVOID Buffer,
@@ -140,7 +140,7 @@ NTSTATUS KphRead(
         );
 }
 
-NTSTATUS KphWrite(
+NPHAPI NTSTATUS KphWrite(
     HANDLE KphHandle,
     PVOID Address,
     PVOID Buffer,
@@ -167,7 +167,7 @@ NTSTATUS KphWrite(
     return status;
 }
 
-NTSTATUS KphOpenProcess(
+NPHAPI NTSTATUS KphOpenProcess(
     HANDLE KphHandle,
     PHANDLE ProcessHandle,
     ULONG ProcessId,

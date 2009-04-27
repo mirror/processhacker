@@ -219,7 +219,6 @@ namespace ProcessHacker
                 Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
-            checkShowTrayIcon.Checked = Properties.Settings.Default.ShowIcon;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
             checkHideWhenClosed.Checked = Properties.Settings.Default.HideWhenClosed;
             checkAllowOnlyOneInstance.Checked = Properties.Settings.Default.AllowOnlyOneInstance;
@@ -314,8 +313,6 @@ namespace ProcessHacker
             }
             catch
             { }
-
-            checkShowTrayIcon_CheckedChanged(null, null);
         }
 
         private void SaveSettings()
@@ -324,7 +321,6 @@ namespace ProcessHacker
             Properties.Settings.Default.SearchEngine = textSearchEngine.Text;
             Properties.Settings.Default.WarnDangerous = checkWarnDangerous.Checked;
             Properties.Settings.Default.ShowAccountDomains = checkShowProcessDomains.Checked;
-            Properties.Settings.Default.ShowIcon = checkShowTrayIcon.Checked;
             Properties.Settings.Default.HideWhenMinimized = checkHideWhenMinimized.Checked;
             Properties.Settings.Default.HideWhenClosed = checkHideWhenClosed.Checked;
             Properties.Settings.Default.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
@@ -405,7 +401,7 @@ namespace ProcessHacker
             foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());
 
-            Program.HackerWindow.NotifyIcon.Visible = Properties.Settings.Default.ShowIcon;
+            Program.HackerWindow.ApplyIconVisibilities();
             Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;
@@ -444,25 +440,6 @@ namespace ProcessHacker
         private void buttonCancel_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void checkShowTrayIcon_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkShowTrayIcon.Checked)
-            {
-                checkHideWhenMinimized.Enabled = true;
-                checkHideWhenClosed.Enabled = true;
-                checkStartHidden.Enabled = true;
-            }
-            else
-            {
-                checkHideWhenMinimized.Enabled = false;
-                checkHideWhenMinimized.Checked = false;
-                checkHideWhenClosed.Enabled = false;
-                checkHideWhenClosed.Checked = false;
-                checkStartHidden.Enabled = false;
-                checkStartHidden.Checked = false;
-            }
         }
 
         private void buttonFont_Click(object sender, EventArgs e)
