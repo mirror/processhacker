@@ -148,6 +148,14 @@ namespace ProcessHacker
             goToProcessNetworkMenuItem_Click(sender, e);
         }
 
+        private void listNetwork_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                goToProcessNetworkMenuItem_Click(null, null);
+            }
+        }
+
         private void listServices_DoubleClick(object sender, EventArgs e)
         {
             propertiesServiceMenuItem_Click(null, null);
@@ -459,6 +467,9 @@ namespace ProcessHacker
 
         private void goToProcessNetworkMenuItem_Click(object sender, EventArgs e)
         {
+            if (listNetwork.SelectedItems.Count != 1)
+                return;
+
             DeselectAll(treeProcesses.Tree);
 
             try

@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HackerWindow));
             this.menuProcess = new System.Windows.Forms.ContextMenu();
             this.terminateMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminateProcessTreeMenuItem = new System.Windows.Forms.MenuItem();
             this.suspendMenuItem = new System.Windows.Forms.MenuItem();
             this.resumeMenuItem = new System.Windows.Forms.MenuItem();
             this.restartProcessMenuItem = new System.Windows.Forms.MenuItem();
@@ -155,7 +156,6 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.terminateProcessTreeMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -202,6 +202,12 @@
             this.terminateMenuItem.Shortcut = System.Windows.Forms.Shortcut.Del;
             this.terminateMenuItem.Text = "&Terminate";
             this.terminateMenuItem.Click += new System.EventHandler(this.terminateMenuItem_Click);
+            // 
+            // terminateProcessTreeMenuItem
+            // 
+            this.terminateProcessTreeMenuItem.Index = 1;
+            this.terminateProcessTreeMenuItem.Text = "Terminate Process Tree";
+            this.terminateProcessTreeMenuItem.Click += new System.EventHandler(this.terminateProcessTreeMenuItem_Click);
             // 
             // suspendMenuItem
             // 
@@ -801,6 +807,7 @@
             this.listNetwork.Size = new System.Drawing.Size(784, 344);
             this.listNetwork.TabIndex = 0;
             this.listNetwork.DoubleClick += new System.EventHandler(this.listNetwork_DoubleClick);
+            this.listNetwork.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listNetwork_KeyDown);
             // 
             // toolStrip
             // 
@@ -1115,12 +1122,6 @@
             this.selectAllNetworkMenuItem.Index = 3;
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
-            // 
-            // terminateProcessTreeMenuItem
-            // 
-            this.terminateProcessTreeMenuItem.Index = 1;
-            this.terminateProcessTreeMenuItem.Text = "Terminate Process Tree";
-            this.terminateProcessTreeMenuItem.Click += new System.EventHandler(this.terminateProcessTreeMenuItem_Click);
             // 
             // HackerWindow
             // 

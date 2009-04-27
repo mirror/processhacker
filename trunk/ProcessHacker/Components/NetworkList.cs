@@ -30,9 +30,11 @@ namespace ProcessHacker.Components
 {
     public partial class NetworkList : UserControl
     {
+        private object _imageListLock = new object();
         private NetworkProvider _provider;
         private HighlightingContext _highlightingContext;
         private bool _needsSort = false;
+        private bool _needsImageKeyReset = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -131,10 +133,11 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new NetworkProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryModified -= new NetworkProvider.ProviderDictionaryModified(provider_DictionaryModified);
-                    _provider.DictionaryRemoved -= new NetworkProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new NetworkProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= provider_DictionaryAdded;
+                    _provider.DictionaryModified -= provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= provider_DictionaryRemoved;
+                    _provider.Updated -= provider_Updated;
+                    Program.ProcessProvider.FileProcessingReceived += ProcessProvider_FileProcessingReceived;
                 }
 
                 _provider = value;
@@ -154,6 +157,7 @@ namespace ProcessHacker.Components
                     _provider.DictionaryModified += new NetworkProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new NetworkProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new NetworkProvider.ProviderUpdateOnce(provider_Updated);
+                    Program.ProcessProvider.FileProcessingReceived -= ProcessProvider_FileProcessingReceived;
                 }
             }
         }
@@ -184,14 +188,36 @@ namespace ProcessHacker.Components
 
         #endregion
 
+        private void ProcessProvider_FileProcessingReceived(int stage, int pid)
+        {
+            if (stage == 0x1)
+            {
+                // We just got the icon for the process.
+                this.BeginInvoke(new Action<int>(this.RefreshIcons), pid);
+                _needsImageKeyReset = true;
+            }
+        }
+
+        /// <summary>
+        /// Invalidates the cached icon indicies used in the list view.
+        /// </summary>
+        /// <remarks>
+        /// When the image key of a ListViewItem is set, it looks up 
+        /// the index corresponding to the image key and uses that 
+        /// instead of the image key. When an image is removed from 
+        /// the image list, the indicies will be wrong.
+        /// </remarks>
         private void ResetImageKeys()
         {
-            foreach (ListViewItem lvItem in listNetwork.Items)
+            lock (_imageListLock)
             {
-                string t = lvItem.ImageKey;
+                foreach (ListViewItem lvItem in listNetwork.Items)
+                {
+                    string t = lvItem.ImageKey;
 
-                lvItem.ImageKey = "";
-                lvItem.ImageKey = t;
+                    lvItem.ImageKey = "";
+                    lvItem.ImageKey = t;
+                }
             }
         }
 
@@ -204,7 +230,51 @@ namespace ProcessHacker.Components
                 listNetwork.Sort();
                 _needsSort = false;
             }
-        }  
+
+            if (_needsImageKeyReset)
+            {
+                this.ResetImageKeys();
+                _needsImageKeyReset = false;
+            }
+        }
+
+        public void RefreshIcons()
+        {
+            this.RefreshIcons(0);
+        }
+
+        public void RefreshIcons(int searchPid)
+        {
+            lock (_imageListLock)
+            {
+                lock (listNetwork)
+                {
+                    foreach (ListViewItem item in listNetwork.Items)
+                    {
+                        int pid = (int)item.Tag;
+
+                        if (searchPid != 0)
+                            if (pid != searchPid)
+                                continue;
+                        // If the item already has an icon, continue searching.
+                        if (item.ImageKey != "generic_process")
+                            continue;
+                        // If the PID is System Idle Process, continue searching.
+                        if (pid < 4)
+                            continue;
+
+                        if (Program.ProcessProvider.Dictionary.ContainsKey(pid) && 
+                            Program.ProcessProvider.Dictionary[pid].Icon != null && 
+                            !imageList.Images.ContainsKey(pid.ToString()))
+                        {
+                            imageList.Images.Add(pid.ToString(),
+                                Program.ProcessProvider.Dictionary[pid].Icon);
+                            item.ImageKey = pid.ToString();
+                        }
+                    }
+                }
+            }
+        }
 
         private void provider_DictionaryAdded(NetworkConnection item)
         {
@@ -215,19 +285,22 @@ namespace ProcessHacker.Components
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
             {
-                if (imageList.Images.ContainsKey(item.PID.ToString()))
-                    imageList.Images.RemoveByKey(item.PID.ToString());
-
-                var icon = Program.ProcessProvider.Dictionary[item.PID].Icon;
-
-                if (icon != null)
+                lock (_imageListLock)
                 {
-                    imageList.Images.Add(item.PID.ToString(), icon);
-                    litem.ImageKey = item.PID.ToString();
-                }
-                else
-                {
-                    litem.ImageKey = "generic_process";
+                    if (imageList.Images.ContainsKey(item.PID.ToString()))
+                        imageList.Images.RemoveByKey(item.PID.ToString());
+
+                    var icon = Program.ProcessProvider.Dictionary[item.PID].Icon;
+
+                    if (icon != null)
+                    {
+                        imageList.Images.Add(item.PID.ToString(), icon);
+                        litem.ImageKey = item.PID.ToString();
+                    }
+                    else
+                    {
+                        litem.ImageKey = "generic_process";
+                    }
                 }
             }
 
@@ -299,25 +372,39 @@ namespace ProcessHacker.Components
             }
             else
             {
-                foreach (ListViewItem lvItem in listNetwork.Items)
+                lock (_imageListLock)
                 {
-                    if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                    foreach (ListViewItem lvItem in listNetwork.Items)
                     {
-                        imageStillUsed = true;
-                        break;
+                        if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                        {
+                            imageStillUsed = true;
+                            break;
+                        }
                     }
                 }
             }
 
+            lock (_imageListLock)
+            {
+                if (!imageStillUsed)
+                {
+                    imageList.Images.RemoveByKey(item.PID.ToString());
+                }
+            }
+
+            // Do this outside of the lock; ResetImageKeys locks anyway
             if (!imageStillUsed)
             {
-                imageList.Images.RemoveByKey(item.PID.ToString());
-
+                // Set the item's icon to generic_process, otherwise we are going to 
+                // get a blank space for the icon.
+                litem.ImageKey = "generic_process";
                 // Reset all the image keys (by now most items' icons have screwed up).
                 this.ResetImageKeys();
             }
 
-            litem.Remove();
+            lock (listNetwork)
+                litem.Remove();
         }
     }
 }

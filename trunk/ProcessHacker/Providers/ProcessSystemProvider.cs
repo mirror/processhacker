@@ -108,6 +108,30 @@ namespace ProcessHacker
             public int ImportModules;
         }
 
+        public delegate void FileProcessingDelegate(int stage, int pid);
+
+        public event FileProcessingDelegate FileProcessingComplete;
+        public event FileProcessingDelegate FileProcessingReceived;
+
+        public SystemBasicInformation System { get; private set; }
+        public SystemPerformanceInformation Performance { get; private set; }
+        public SystemProcessorPerformanceInformation ProcessorPerf { get; private set; }
+        public SystemProcessorPerformanceInformation[] ProcessorPerfArray { get; private set; }
+        public float CurrentCpuKernelUsage { get; private set; }
+        public float CurrentCpuUserUsage { get; private set; }
+        public float CurrentCpuUsage { get { return this.CurrentCpuKernelUsage + this.CurrentCpuUserUsage; } }
+        public int PIDWithMostIoActivity { get; private set; }
+        public int PIDWithMostCpuUsage { get; private set; }
+        public DeltaManager<string, long> CpuDeltas { get { return _cpuDeltas; } }
+        public DeltaManager<SystemStats, long> LongDeltas { get { return _longDeltas; } }
+        public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
+        public HistoryManager<SystemStats, long> LongHistory { get { return _longHistory; } }
+        public ReadOnlyCollection<DateTime> TimeHistory { get { return _timeHistory[false]; } }
+        public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
+        public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
+
+        private delegate FileProcessResult ProcessFileDelegate(int pid, string fileName, bool useCache);
+
         private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor);
@@ -116,8 +140,6 @@ namespace ProcessHacker
         private HistoryManager<SystemStats, long> _longHistory = new HistoryManager<SystemStats, long>();
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
-
-        private delegate FileProcessResult ProcessFileDelegate(int pid, string fileName, bool useCache);
 
         public ProcessSystemProvider()
             : base()
@@ -154,15 +176,15 @@ namespace ProcessHacker
             _floatHistory.Add("Other");
 
             for (int i = 0; i < this.System.NumberOfProcessors; i++)
-            {                                
+            {
                 _cpuDeltas.Add(i.ToString() + " Kernel", this.ProcessorPerfArray[i].KernelTime);
                 _cpuDeltas.Add(i.ToString() + " User", this.ProcessorPerfArray[i].UserTime);
-                _cpuDeltas.Add(i.ToString() + " Other", 
-                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime + 
+                _cpuDeltas.Add(i.ToString() + " Other",
+                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
                     this.ProcessorPerfArray[i].InterruptTime);
                 _floatHistory.Add(i.ToString() + " Kernel");
                 _floatHistory.Add(i.ToString() + " User");
-                _floatHistory.Add(i.ToString() + " Other");   
+                _floatHistory.Add(i.ToString() + " Other");
             }
 
             _longHistory.Add(SystemStats.IoRead);
@@ -172,23 +194,6 @@ namespace ProcessHacker
             _longHistory.Add(SystemStats.Commit);
             _longHistory.Add(SystemStats.PhysicalMemory);
         }
-
-        public SystemBasicInformation System { get; private set; }
-        public SystemPerformanceInformation Performance { get; private set; }
-        public SystemProcessorPerformanceInformation ProcessorPerf { get; private set; }
-        public SystemProcessorPerformanceInformation[] ProcessorPerfArray { get; private set; }
-        public float CurrentCpuKernelUsage { get; private set; }
-        public float CurrentCpuUserUsage { get; private set; }
-        public float CurrentCpuUsage { get { return this.CurrentCpuKernelUsage + this.CurrentCpuUserUsage; } }
-        public int PIDWithMostIoActivity { get; private set; }
-        public int PIDWithMostCpuUsage { get; private set; }
-        public DeltaManager<string, long> CpuDeltas { get { return _cpuDeltas; } }
-        public DeltaManager<SystemStats, long> LongDeltas { get { return _longDeltas; } }
-        public HistoryManager<string, float> FloatHistory { get { return _floatHistory; } }
-        public HistoryManager<SystemStats, long> LongHistory { get { return _longHistory; } }
-        public ReadOnlyCollection<DateTime> TimeHistory { get { return _timeHistory[false]; } }
-        public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
-        public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
 
         public Queue<FileProcessResult> FileProcessingQueue
         {
@@ -296,6 +301,9 @@ namespace ProcessHacker
             (new ProcessFileDelegate(this.ProcessFileStage1a)).BeginInvoke(pid, fileName, forced, r => { }, null);
             (new ProcessFileDelegate(this.ProcessFileStage2)).BeginInvoke(pid, fileName, forced, r => { }, null);
 
+            if (this.FileProcessingComplete != null)
+                this.FileProcessingComplete(fpResult.Stage, pid);
+
             return fpResult;
         }
 
@@ -344,6 +352,9 @@ namespace ProcessHacker
 
             lock (_fpResults)
                 _fpResults.Enqueue(fpResult);
+
+            if (this.FileProcessingComplete != null)
+                this.FileProcessingComplete(fpResult.Stage, pid);
 
             return fpResult;
         }
@@ -452,6 +463,9 @@ namespace ProcessHacker
             lock (_fpResults)
                 _fpResults.Enqueue(fpResult);
 
+            if (this.FileProcessingComplete != null)
+                this.FileProcessingComplete(fpResult.Stage, pid);
+
             return fpResult;
         }
 
@@ -543,6 +557,9 @@ namespace ProcessHacker
                 item.ImportFunctions = result.ImportFunctions;
                 item.ImportModules = result.ImportModules;
             }
+
+            if (this.FileProcessingReceived != null)
+                this.FileProcessingReceived(result.Stage, result.Pid);
         }
 
         private void UpdateOnce()
