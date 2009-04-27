@@ -617,7 +617,6 @@
     <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
     <Compile Include="UI\Actions\ProcessActions.cs" />
-    <Compile Include="Common\Singleton.cs" />
     <Compile Include="Symbols\Symbols.cs" />
     <Compile Include="UI\Icons\PlotterIcon.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
