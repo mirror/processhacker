@@ -52,8 +52,7 @@ namespace ProcessHacker
 
             this.Redraw();
 
-            this.Text = "Process Hacker\n" +
-                "R: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) + 
+            this.Text = "R: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) + 
                 "\nO: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoOther]) + 
                 "\nW: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoWrite]);
 

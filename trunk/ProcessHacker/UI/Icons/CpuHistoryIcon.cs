@@ -40,8 +40,7 @@ namespace ProcessHacker
             this.Update(this.Provider.CurrentCpuKernelUsage, this.Provider.CurrentCpuUserUsage);
             this.Redraw();
 
-            this.Text = "Process Hacker\n" +
-                "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
+            this.Text = "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
             string mostCpuText = this.Provider.MostCpuHistory[0];
 
