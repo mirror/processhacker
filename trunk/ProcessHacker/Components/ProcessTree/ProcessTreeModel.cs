@@ -212,81 +212,97 @@ namespace ProcessHacker
 
                 nodes.Sort(new Comparison<ProcessNode>(delegate(ProcessNode n1, ProcessNode n2)
                     {
-                        if (sortC == "name")
-                            return ModifySort(n1.Name.CompareTo(n2.Name), sortO);
-                        else if (sortC == "pid")
-                            return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
-                        else if (sortC == "pvt. memory")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes), sortO);
-                        else if (sortC == "working set")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
-                        else if (sortC == "peak working set")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
-                        else if (sortC == "private ws")
-                            return ModifySort(n1.PrivateWorkingSetNumber.CompareTo(n2.PrivateWorkingSetNumber), sortO);
-                        else if (sortC == "shared ws")
-                            return ModifySort(n1.SharedWorkingSetNumber.CompareTo(n2.SharedWorkingSetNumber), sortO);
-                        else if (sortC == "shareable ws")
-                            return ModifySort(n1.ShareableWorkingSetNumber.CompareTo(n2.ShareableWorkingSetNumber), sortO);
-                        else if (sortC == "virtual size")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
-                        else if (sortC == "peak virtual size")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize), sortO);
-                        else if (sortC == "pagefile usage")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage), sortO);
-                        else if (sortC == "peak pagefile usage")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage), sortO);
-                        else if (sortC == "page faults")
-                            return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
-                                n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
-                        else if (sortC == "cpu")
-                            return ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
-                        else if (sortC == "username")
-                            return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
-                        else if (sortC == "session id")
-                            return ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
-                        else if (sortC == "base priority")
-                            return ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
-                                n2.ProcessItem.Process.BasePriority), sortO);
-                        else if (sortC == "description")
-                            return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
-                        else if (sortC == "company")
-                            return ModifySort(n1.Company.CompareTo(n2.Company), sortO);
-                        else if (sortC == "file name")
-                            return ModifySort(n1.FileName.CompareTo(n2.FileName), sortO);
-                        else if (sortC == "command line")
-                            return ModifySort(n1.CommandLine.CompareTo(n2.CommandLine), sortO);
-                        else if (sortC == "threads")
-                            return ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
-                                n2.ProcessItem.Process.NumberOfThreads), sortO);
-                        else if (sortC == "handles")
-                            return ModifySort(n1.ProcessItem.Process.HandleCount.CompareTo(
-                                n2.ProcessItem.Process.HandleCount), sortO);
-                        else if (sortC == "gdi handles")
-                            return ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
-                        else if (sortC == "user handles")
-                            return ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
-                        else if (sortC == "i/o total")
-                            return ModifySort(n1.IoTotalNumber.CompareTo(n2.IoTotalNumber), sortO);
-                        else if (sortC == "i/o ro")
-                            return ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
-                        else if (sortC == "i/o w")
-                            return ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
-                        else if (sortC == "integrity")
-                            return ModifySort(n1.IntegrityLevel.CompareTo(n2.IntegrityLevel), sortO);
-                        else if (sortC == "i/o priority")
-                            return ModifySort(n1.IoPriority.CompareTo(n2.IoPriority), sortO);
-                        else if (sortC == "page priority")
-                            return ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
-                        else
-                            return 0;
+                        switch (sortC)
+                        {
+                            case "name":
+                                return ModifySort(n1.Name.CompareTo(n2.Name), sortO);
+                            case "pid":
+                                return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
+                            case "pvt. memory":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes), sortO);
+                            case "working set":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.WorkingSetSize), sortO);
+                            case "peak working set":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakWorkingSetSize), sortO);
+                            case "private ws":
+                                return ModifySort(n1.PrivateWorkingSetNumber.CompareTo(n2.PrivateWorkingSetNumber), sortO);
+                            case "shared ws":
+                                return ModifySort(n1.SharedWorkingSetNumber.CompareTo(n2.SharedWorkingSetNumber), sortO);
+                            case "shareable ws":
+                                return ModifySort(n1.ShareableWorkingSetNumber.CompareTo(n2.ShareableWorkingSetNumber), sortO);
+                            case "virtual size":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.VirtualSize.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.VirtualSize), sortO);
+                            case "peak virtual size":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakVirtualSize), sortO);
+                            case "pagefile usage":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PagefileUsage), sortO);
+                            case "peak pagefile usage":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PeakPagefileUsage), sortO);
+                            case "page faults":
+                                return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount.CompareTo(
+                                    n2.ProcessItem.Process.VirtualMemoryCounters.PageFaultCount), sortO);
+                            case "cpu":
+                                return ModifySort(n1.ProcessItem.CpuUsage.CompareTo(n2.ProcessItem.CpuUsage), sortO);
+                            case "username":
+                                return ModifySort(n1.Username.CompareTo(n2.Username), sortO);
+                            case "session id":
+                                return ModifySort(n1.ProcessItem.SessionId.CompareTo(n2.ProcessItem.SessionId), sortO);
+                            case "priority class":
+                            case "base priority":
+                                return ModifySort(n1.ProcessItem.Process.BasePriority.CompareTo(
+                                    n2.ProcessItem.Process.BasePriority), sortO);
+                            case "description":
+                                return ModifySort(n1.Description.CompareTo(n2.Description), sortO);
+                            case "company":
+                                return ModifySort(n1.Company.CompareTo(n2.Company), sortO);
+                            case "file name":
+                                return ModifySort(n1.FileName.CompareTo(n2.FileName), sortO);
+                            case "command line":
+                                return ModifySort(n1.CommandLine.CompareTo(n2.CommandLine), sortO);
+                            case "threads":
+                                return ModifySort(n1.ProcessItem.Process.NumberOfThreads.CompareTo(
+                                    n2.ProcessItem.Process.NumberOfThreads), sortO);
+                            case "handles":
+                                return ModifySort(n1.ProcessItem.Process.HandleCount.CompareTo(
+                                    n2.ProcessItem.Process.HandleCount), sortO);
+                            case "gdi handles":
+                                return ModifySort(n1.GdiHandlesNumber.CompareTo(n2.GdiHandlesNumber), sortO);
+                            case "user handles":
+                                return ModifySort(n1.UserHandlesNumber.CompareTo(n2.UserHandlesNumber), sortO);
+                            case "i/o total":
+                                return ModifySort(n1.IoTotalNumber.CompareTo(n2.IoTotalNumber), sortO);
+                            case "i/o ro":
+                                return ModifySort(n1.IoReadOtherNumber.CompareTo(n2.IoReadOtherNumber), sortO);
+                            case "i/o w":
+                                return ModifySort(n1.IoWriteNumber.CompareTo(n2.IoWriteNumber), sortO);
+                            case "integrity":
+                                return ModifySort(n1.IntegrityLevel.CompareTo(n2.IntegrityLevel), sortO);
+                            case "i/o priority":
+                                return ModifySort(n1.IoPriority.CompareTo(n2.IoPriority), sortO);
+                            case "page priority":
+                                return ModifySort(n1.PagePriority.CompareTo(n2.PagePriority), sortO);
+                            case "start time":
+                            case "start time (relative)":
+                                return ModifySort(n1.ProcessItem.CreateTime.CompareTo(n2.ProcessItem.CreateTime), sortO);
+                            case "total cpu time":
+                                return ModifySort((n1.ProcessItem.Process.KernelTime + n1.ProcessItem.Process.UserTime).
+                                    CompareTo(n2.ProcessItem.Process.KernelTime + n2.ProcessItem.Process.UserTime), sortO);
+                            case "kernel cpu time":
+                                return ModifySort(n1.ProcessItem.Process.KernelTime.CompareTo(
+                                    n2.ProcessItem.Process.KernelTime), sortO);
+                            case "user cpu time":
+                                return ModifySort(n1.ProcessItem.Process.UserTime.CompareTo(
+                                    n2.ProcessItem.Process.UserTime), sortO);
+                            default:
+                                return 0;
+                        }
                     }));
 
                 return nodes;

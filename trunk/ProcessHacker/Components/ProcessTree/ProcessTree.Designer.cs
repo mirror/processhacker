@@ -62,6 +62,7 @@
             this.columnIoPriority = new Aga.Controls.Tree.TreeColumn();
             this.columnPagePriority = new Aga.Controls.Tree.TreeColumn();
             this.columnStartTime = new Aga.Controls.Tree.TreeColumn();
+            this.columnRelativeStartTime = new Aga.Controls.Tree.TreeColumn();
             this.columnTotalCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.columnUserCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.columnKernelCpuTime = new Aga.Controls.Tree.TreeColumn();
@@ -99,11 +100,10 @@
             this.nodeIoPriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePagePriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeStartTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeRelativeStartTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeTotalCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeKernelCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUserCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.columnRelativeStartTime = new Aga.Controls.Tree.TreeColumn();
-            this.nodeRelativeStartTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -509,9 +509,17 @@
             this.columnStartTime.IsVisible = false;
             this.columnStartTime.Sortable = true;
             this.columnStartTime.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnStartTime.TooltipText = null;
             this.columnStartTime.Width = 100;
+            // 
+            // columnRelativeStartTime
+            // 
+            this.columnRelativeStartTime.Header = "Start Time (Relative)";
+            this.columnRelativeStartTime.IsVisible = false;
+            this.columnRelativeStartTime.Sortable = true;
+            this.columnRelativeStartTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnRelativeStartTime.TooltipText = null;
+            this.columnRelativeStartTime.Width = 100;
             // 
             // columnTotalCpuTime
             // 
@@ -868,8 +876,16 @@
             this.nodeStartTime.IncrementalSearchEnabled = true;
             this.nodeStartTime.LeftMargin = 3;
             this.nodeStartTime.ParentColumn = this.columnStartTime;
-            this.nodeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeStartTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeRelativeStartTime
+            // 
+            this.nodeRelativeStartTime.DataPropertyName = "RelativeStartTime";
+            this.nodeRelativeStartTime.EditEnabled = false;
+            this.nodeRelativeStartTime.IncrementalSearchEnabled = true;
+            this.nodeRelativeStartTime.LeftMargin = 3;
+            this.nodeRelativeStartTime.ParentColumn = this.columnRelativeStartTime;
+            this.nodeRelativeStartTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeTotalCpuTime
             // 
@@ -900,26 +916,6 @@
             this.nodeUserCpuTime.ParentColumn = this.columnUserCpuTime;
             this.nodeUserCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeUserCpuTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
-            // 
-            // columnRelativeStartTime
-            // 
-            this.columnRelativeStartTime.Header = "Start Time (Relative)";
-            this.columnRelativeStartTime.IsVisible = false;
-            this.columnRelativeStartTime.Sortable = true;
-            this.columnRelativeStartTime.SortOrder = System.Windows.Forms.SortOrder.None;
-            this.columnRelativeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.columnRelativeStartTime.TooltipText = null;
-            this.columnRelativeStartTime.Width = 100;
-            // 
-            // nodeRelativeStartTime
-            // 
-            this.nodeRelativeStartTime.DataPropertyName = "RelativeStartTime";
-            this.nodeRelativeStartTime.EditEnabled = false;
-            this.nodeRelativeStartTime.IncrementalSearchEnabled = true;
-            this.nodeRelativeStartTime.LeftMargin = 3;
-            this.nodeRelativeStartTime.ParentColumn = this.columnRelativeStartTime;
-            this.nodeRelativeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodeRelativeStartTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // ProcessTree
             // 
