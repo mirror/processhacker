@@ -20,6 +20,7 @@ Process Hacker
    * Windows are protected from being offscreen when they load
    * Process property window locations are now saved
    * The main window dimensions are saved when exiting minimized
+   * Enabled Reduce Working Set for multiple processes at a time
  * FIXED:
    * Unhandled exception when process properties is closed within 100ms of 
      being opened

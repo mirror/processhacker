@@ -812,6 +812,7 @@ namespace ProcessHacker
                 terminateMenuItem.Enabled = true;
                 suspendMenuItem.Enabled = true;
                 resumeMenuItem.Enabled = true;
+                reduceWorkingSetProcessMenuItem.Enabled = true;
                 copyProcessMenuItem.Enabled = true;
             }
 
