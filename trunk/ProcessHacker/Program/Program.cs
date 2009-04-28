@@ -179,7 +179,9 @@ namespace ProcessHacker
 
                 Application.Exit();
             }
-
+                                     
+            ThreadPool.SetMinThreads(0, 0);
+            ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
 
             Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
@@ -773,11 +775,22 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
-            info.AppendLine("GLOBAL THREAD POOL");
+            info.AppendLine("PROCESS HACKER THREAD POOL");
             info.AppendLine("Worker thread limit: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
             info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount.ToString());
             info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
             info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount.ToString());
+
+            info.AppendLine();
+            info.AppendLine("CLR THREAD POOL");
+            int maxWt, maxIoc, minWt, minIoc, wt, ioc;
+            ThreadPool.GetAvailableThreads(out wt, out ioc);
+            ThreadPool.GetMinThreads(out minWt, out minIoc);
+            ThreadPool.GetMaxThreads(out maxWt, out maxIoc);
+            info.AppendLine("Worker threads: " + (maxWt - wt).ToString() + " current, " +
+                maxWt.ToString() + " max, " + minWt.ToString() + " min");
+            info.AppendLine("I/O completion threads: " + (maxIoc - ioc).ToString() + " current, " +
+                maxIoc.ToString() + " max, " + minIoc.ToString() + " min");
 
             info.AppendLine();
             info.AppendLine("PRIMARY SHARED THREAD PROVIDER");

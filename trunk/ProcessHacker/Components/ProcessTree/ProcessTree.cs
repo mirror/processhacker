@@ -249,6 +249,7 @@ namespace ProcessHacker
             {
                 t.Enabled = false;
                 action();
+                t.Dispose();
             });
 
             t.Interval = delay;
