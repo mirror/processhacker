@@ -483,8 +483,8 @@ namespace ProcessHacker
                 if (_pitem.LongHistoryManager[ProcessStats.IoReadOther].Count == 0)
                     return 0;
                 else
-                    return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
-                        _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
+                    return (_pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
+                        _pitem.LongHistoryManager[ProcessStats.IoWrite][0]) * 1000 /
                         Properties.Settings.Default.RefreshInterval;
             }
         }
