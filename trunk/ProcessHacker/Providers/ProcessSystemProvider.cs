@@ -135,10 +135,12 @@ namespace ProcessHacker
 
         private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
         private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
-        private DeltaManager<SystemStats, long> _longDeltas = new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor);
+        private DeltaManager<SystemStats, long> _longDeltas = 
+            new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor, EnumComparer<SystemStats>.Instance);
         private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(Subtractor.Int64Subtractor);
         private HistoryManager<bool, DateTime> _timeHistory = new HistoryManager<bool, DateTime>();
-        private HistoryManager<SystemStats, long> _longHistory = new HistoryManager<SystemStats, long>();
+        private HistoryManager<SystemStats, long> _longHistory = 
+            new HistoryManager<SystemStats, long>(EnumComparer<SystemStats>.Instance);
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
 
@@ -744,14 +746,17 @@ namespace ProcessHacker
 
                     item.Name = procs[pid].Name;
 
-                    item.DeltaManager = new DeltaManager<ProcessStats, long>(Subtractor.Int64Subtractor);
+                    item.DeltaManager = new DeltaManager<ProcessStats, long>(
+                        Subtractor.Int64Subtractor, EnumComparer<ProcessStats>.Instance);
                     item.DeltaManager.Add(ProcessStats.CpuKernel, processInfo.KernelTime);
                     item.DeltaManager.Add(ProcessStats.CpuUser, processInfo.UserTime);
                     item.DeltaManager.Add(ProcessStats.IoRead, (long)processInfo.IoCounters.ReadTransferCount);
                     item.DeltaManager.Add(ProcessStats.IoWrite, (long)processInfo.IoCounters.WriteTransferCount);
                     item.DeltaManager.Add(ProcessStats.IoOther, (long)processInfo.IoCounters.OtherTransferCount);
-                    item.FloatHistoryManager = new HistoryManager<ProcessStats, float>();
-                    item.LongHistoryManager = new HistoryManager<ProcessStats, long>();
+                    item.FloatHistoryManager = 
+                        new HistoryManager<ProcessStats, float>(EnumComparer<ProcessStats>.Instance);
+                    item.LongHistoryManager =
+                        new HistoryManager<ProcessStats, long>(EnumComparer<ProcessStats>.Instance);
                     item.FloatHistoryManager.Add(ProcessStats.CpuKernel);
                     item.FloatHistoryManager.Add(ProcessStats.CpuUser);
                     item.LongHistoryManager.Add(ProcessStats.IoReadOther);

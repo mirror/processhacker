@@ -40,9 +40,21 @@ namespace ProcessHacker
 
     public class HistoryManager<TKey, TValue>
     {
-        private Dictionary<TKey, CircularBuffer<TValue>> _history = new Dictionary<TKey, CircularBuffer<TValue>>();
-        private Dictionary<TKey, ReadOnlyCollection<TValue>> _readOnlyCollections = new Dictionary<TKey, ReadOnlyCollection<TValue>>();
+        private Dictionary<TKey, CircularBuffer<TValue>> _history;
+        private Dictionary<TKey, ReadOnlyCollection<TValue>> _readOnlyCollections;
         private int _maxCount = -1;
+
+        public HistoryManager()
+        {
+            _history = new Dictionary<TKey, CircularBuffer<TValue>>();
+            _readOnlyCollections = new Dictionary<TKey, ReadOnlyCollection<TValue>>();
+        }
+
+        public HistoryManager(IEqualityComparer<TKey> comparer)
+        {
+            _history = new Dictionary<TKey, CircularBuffer<TValue>>(comparer);
+            _readOnlyCollections = new Dictionary<TKey, ReadOnlyCollection<TValue>>(comparer);
+        }
 
         public int MaxCount
         {

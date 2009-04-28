@@ -122,8 +122,8 @@ namespace ProcessHacker
     /// </summary>
     public class DeltaManager<TKey, TValue>
     {
-        private Dictionary<TKey, TValue> _values = new Dictionary<TKey, TValue>();
-        private Dictionary<TKey, TValue> _deltas = new Dictionary<TKey, TValue>();
+        private Dictionary<TKey, TValue> _values;
+        private Dictionary<TKey, TValue> _deltas;
         private ISubtractor<TValue> _subtractor;
 
         /// <summary>
@@ -133,6 +133,15 @@ namespace ProcessHacker
         public DeltaManager(ISubtractor<TValue> subtractor)
         {
             _subtractor = subtractor;
+            _values = new Dictionary<TKey, TValue>();
+            _deltas = new Dictionary<TKey, TValue>();
+        }
+
+        public DeltaManager(ISubtractor<TValue> subtractor, IEqualityComparer<TKey> comparer)
+        {
+            _subtractor = subtractor;
+            _values = new Dictionary<TKey, TValue>(comparer);
+            _deltas = new Dictionary<TKey, TValue>(comparer);
         }
 
         public TValue this[TKey key]

@@ -726,8 +726,6 @@ namespace ProcessHacker
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
 
             /* Compact the native heaps */
             int[] heaps = new int[128];
