@@ -33,6 +33,7 @@ Process Hacker
    * Increased PID limit in Hidden Processes to 65536
    * Inaccurate I/O Total rates when using a refresh interval other than 
      1000ms
+   * Incorrect thread start addresses
 
 1.3.7.1
  * NEW:

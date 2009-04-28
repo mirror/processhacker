@@ -59,6 +59,13 @@ namespace ProcessHacker
 
     public class ThreadProvider : Provider<int, ThreadItem>
     {
+        private class ResolveResult
+        {
+            public int Tid;
+            public string Symbol;
+            public SymbolResolveLevel ResolveLevel;
+        }
+
         public delegate void LoadingStateChangedDelegate(bool loading);
         private delegate void ResolveThreadStartAddressDelegate(int tid, long startAddress);
 
@@ -68,7 +75,7 @@ namespace ProcessHacker
         private SymbolProvider _symbols;
         private int _pid;
         private int _loading = 0;
-        private Queue<KeyValuePair<int, string>> _resolveResults = new Queue<KeyValuePair<int,string>>();
+        private Queue<ResolveResult> _resolveResults = new Queue<ResolveResult>();
         private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private bool _waitedForLoad = false;
 
@@ -200,7 +207,9 @@ namespace ProcessHacker
 
         private void ResolveThreadStartAddress(int tid, long startAddress)
         {
-            string name = null;
+            ResolveResult result = new ResolveResult();
+
+            result.Tid = tid;
 
             if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
             {
@@ -217,27 +226,27 @@ namespace ProcessHacker
 
             try
             {
-                _loading++;
+                Interlocked.Increment(ref _loading);
 
                 if (this.LoadingStateChanged != null)
-                    this.LoadingStateChanged(_loading > 0);
+                    this.LoadingStateChanged(Thread.VolatileRead(ref _loading) > 0);
 
                 try
                 {
-                    name = _symbols.GetSymbolFromAddress(startAddress);
+                    result.Symbol = _symbols.GetSymbolFromAddress(startAddress, out result.ResolveLevel);
 
                     lock (_resolveResults)
-                        _resolveResults.Enqueue(new KeyValuePair<int, string>(tid, name));
+                        _resolveResults.Enqueue(result);
                 }
                 catch
                 { }
             }
             finally
             {
-                _loading--;
+                Interlocked.Decrement(ref _loading);
 
                 if (this.LoadingStateChanged != null)
-                    this.LoadingStateChanged(_loading > 0);
+                    this.LoadingStateChanged(Thread.VolatileRead(ref _loading) > 0);
             }
         }
 
@@ -254,16 +263,22 @@ namespace ProcessHacker
                 );
         }
 
-        private string GetThreadBasicStartAddress(long startAddress)
+        private string GetThreadBasicStartAddress(long startAddress, out SymbolResolveLevel level)
         {
             long modBase;
             string fileName = _symbols.GetModuleFromAddress(startAddress, out modBase);
 
             if (fileName == null)
+            {
+                level = SymbolResolveLevel.Address;
                 return "0x" + startAddress.ToString("x");
+            }
             else
+            {
+                level = SymbolResolveLevel.Module;
                 return (new System.IO.FileInfo(fileName)).Name + "+0x" +
                     (startAddress - modBase).ToString("x");
+            }
         }
 
         private void UpdateOnce()
@@ -295,11 +310,11 @@ namespace ProcessHacker
                 {
                     var result = _resolveResults.Dequeue();
 
-                    if (result.Value != null)
+                    if (result.Symbol != null)
                     {
-                        this.Dictionary[result.Key].StartAddress = result.Value;
-                        this.Dictionary[result.Key].StartAddressLevel = SymbolResolveLevel.Function; // Assume we found a good symbol
-                        this.Dictionary[result.Key].JustResolved = true;
+                        this.Dictionary[result.Tid].StartAddress = result.Symbol;
+                        this.Dictionary[result.Tid].StartAddressLevel = result.ResolveLevel;
+                        this.Dictionary[result.Tid].JustResolved = true;
                     }
                 }
             }
@@ -375,13 +390,6 @@ namespace ProcessHacker
                         { }
                     }
 
-                    // if the start address is less than 0x40000, it's wrong.
-                    if (item.StartAddressI < 0x40000)
-                    {
-                        // if that failed, use the start address supplied by NtQuerySystemInformation
-                        item.StartAddressI = (uint)t.StartAddress;
-                    }
-
                     if (!_waitedForLoad)
                     {
                         _waitedForLoad = true;
@@ -390,8 +398,8 @@ namespace ProcessHacker
                         {
                             if (_moduleLoadCompletedEvent.WaitOne(0, false))
                             {
-                                item.StartAddress = this.GetThreadBasicStartAddress(item.StartAddressI);
-                                item.StartAddressLevel = SymbolResolveLevel.Module;
+                                item.StartAddress = this.GetThreadBasicStartAddress(
+                                    item.StartAddressI, out item.StartAddressLevel);
                             }
                         }
                         catch
@@ -455,8 +463,22 @@ namespace ProcessHacker
                     {
                         if (_moduleLoadCompletedEvent.WaitOne(0, false))
                         {
-                            newitem.StartAddress = this.GetThreadBasicStartAddress(newitem.StartAddressI);
-                            newitem.StartAddressLevel = SymbolResolveLevel.Module;
+                            newitem.StartAddress = this.GetThreadBasicStartAddress(
+                                newitem.StartAddressI, out newitem.StartAddressLevel);
+                        }
+
+                        // If we couldn't resolve it to a module+offset, 
+                        // use the StartAddress (instead of the Win32StartAddress)
+                        // and queue the resolve again.
+                        if (
+                            item.StartAddressLevel == SymbolResolveLevel.Address &&
+                            item.JustResolved)
+                        {
+                            if (item.StartAddressI != (uint)t.StartAddress)
+                            {
+                                item.StartAddressI = (uint)t.StartAddress;
+                                this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
+                            }
                         }
                     }
 
