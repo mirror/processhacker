@@ -80,7 +80,7 @@
             // columnType
             // 
             this.columnType.Text = "Type";
-            this.columnType.Width = 110;
+            this.columnType.Width = 120;
             // 
             // columnStatus
             // 

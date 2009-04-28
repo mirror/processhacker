@@ -210,7 +210,7 @@
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(462, 429);
+            this.tabControl.Size = new System.Drawing.Size(489, 455);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -223,7 +223,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 42);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(454, 383);
+            this.tabGeneral.Size = new System.Drawing.Size(481, 409);
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -254,7 +254,7 @@
             this.groupProcess.Controls.Add(this.textCmdLine);
             this.groupProcess.Location = new System.Drawing.Point(8, 126);
             this.groupProcess.Name = "groupProcess";
-            this.groupProcess.Size = new System.Drawing.Size(440, 251);
+            this.groupProcess.Size = new System.Drawing.Size(467, 277);
             this.groupProcess.TabIndex = 5;
             this.groupProcess.TabStop = false;
             this.groupProcess.Text = "Process";
@@ -266,7 +266,7 @@
             this.fileCurrentDirectory.Location = new System.Drawing.Point(101, 73);
             this.fileCurrentDirectory.Name = "fileCurrentDirectory";
             this.fileCurrentDirectory.ReadOnly = true;
-            this.fileCurrentDirectory.Size = new System.Drawing.Size(333, 24);
+            this.fileCurrentDirectory.Size = new System.Drawing.Size(360, 24);
             this.fileCurrentDirectory.TabIndex = 10;
             this.fileCurrentDirectory.Leave += new System.EventHandler(this.fileCurrentDirectory_TextBoxLeave);
             // 
@@ -298,7 +298,7 @@
             this.textProtected.Location = new System.Drawing.Point(101, 181);
             this.textProtected.Name = "textProtected";
             this.textProtected.ReadOnly = true;
-            this.textProtected.Size = new System.Drawing.Size(303, 20);
+            this.textProtected.Size = new System.Drawing.Size(330, 20);
             this.textProtected.TabIndex = 7;
             // 
             // labelProtected
@@ -319,7 +319,7 @@
             this.textDEP.Location = new System.Drawing.Point(101, 155);
             this.textDEP.Name = "textDEP";
             this.textDEP.ReadOnly = true;
-            this.textDEP.Size = new System.Drawing.Size(303, 20);
+            this.textDEP.Size = new System.Drawing.Size(330, 20);
             this.textDEP.TabIndex = 7;
             // 
             // labelDEP
@@ -336,7 +336,7 @@
             // 
             this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonTerminate.Location = new System.Drawing.Point(359, 19);
+            this.buttonTerminate.Location = new System.Drawing.Point(386, 19);
             this.buttonTerminate.Name = "buttonTerminate";
             this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
             this.buttonTerminate.TabIndex = 5;
@@ -348,7 +348,7 @@
             // 
             this.buttonInspectPEB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonInspectPEB.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonInspectPEB.Location = new System.Drawing.Point(410, 100);
+            this.buttonInspectPEB.Location = new System.Drawing.Point(437, 100);
             this.buttonInspectPEB.Name = "buttonInspectPEB";
             this.buttonInspectPEB.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectPEB.TabIndex = 4;
@@ -360,7 +360,7 @@
             // 
             this.buttonEditProtected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEditProtected.Image = global::ProcessHacker.Properties.Resources.cog_edit;
-            this.buttonEditProtected.Location = new System.Drawing.Point(410, 178);
+            this.buttonEditProtected.Location = new System.Drawing.Point(437, 178);
             this.buttonEditProtected.Name = "buttonEditProtected";
             this.buttonEditProtected.Size = new System.Drawing.Size(24, 24);
             this.buttonEditProtected.TabIndex = 4;
@@ -372,7 +372,7 @@
             // 
             this.buttonInspectParent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonInspectParent.Image = global::ProcessHacker.Properties.Resources.application_form_magnify;
-            this.buttonInspectParent.Location = new System.Drawing.Point(410, 126);
+            this.buttonInspectParent.Location = new System.Drawing.Point(437, 126);
             this.buttonInspectParent.Name = "buttonInspectParent";
             this.buttonInspectParent.Size = new System.Drawing.Size(24, 24);
             this.buttonInspectParent.TabIndex = 4;
@@ -384,7 +384,7 @@
             // 
             this.buttonEditDEP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonEditDEP.Image = global::ProcessHacker.Properties.Resources.cog_edit;
-            this.buttonEditDEP.Location = new System.Drawing.Point(410, 152);
+            this.buttonEditDEP.Location = new System.Drawing.Point(437, 152);
             this.buttonEditDEP.Name = "buttonEditDEP";
             this.buttonEditDEP.Size = new System.Drawing.Size(24, 24);
             this.buttonEditDEP.TabIndex = 4;
@@ -410,7 +410,7 @@
             this.textParent.Location = new System.Drawing.Point(101, 129);
             this.textParent.Name = "textParent";
             this.textParent.ReadOnly = true;
-            this.textParent.Size = new System.Drawing.Size(303, 20);
+            this.textParent.Size = new System.Drawing.Size(330, 20);
             this.textParent.TabIndex = 3;
             // 
             // label4
@@ -430,7 +430,7 @@
             this.textPEBAddress.Location = new System.Drawing.Point(101, 103);
             this.textPEBAddress.Name = "textPEBAddress";
             this.textPEBAddress.ReadOnly = true;
-            this.textPEBAddress.Size = new System.Drawing.Size(303, 20);
+            this.textPEBAddress.Size = new System.Drawing.Size(330, 20);
             this.textPEBAddress.TabIndex = 3;
             // 
             // label2
@@ -450,7 +450,7 @@
             this.textStartTime.Location = new System.Drawing.Point(101, 21);
             this.textStartTime.Name = "textStartTime";
             this.textStartTime.ReadOnly = true;
-            this.textStartTime.Size = new System.Drawing.Size(252, 20);
+            this.textStartTime.Size = new System.Drawing.Size(279, 20);
             this.textStartTime.TabIndex = 3;
             // 
             // textCmdLine
@@ -460,7 +460,7 @@
             this.textCmdLine.Location = new System.Drawing.Point(101, 47);
             this.textCmdLine.Name = "textCmdLine";
             this.textCmdLine.ReadOnly = true;
-            this.textCmdLine.Size = new System.Drawing.Size(333, 20);
+            this.textCmdLine.Size = new System.Drawing.Size(360, 20);
             this.textCmdLine.TabIndex = 3;
             // 
             // groupFile
@@ -476,7 +476,7 @@
             this.groupFile.Controls.Add(this.textFileVersion);
             this.groupFile.Location = new System.Drawing.Point(6, 6);
             this.groupFile.Name = "groupFile";
-            this.groupFile.Size = new System.Drawing.Size(442, 114);
+            this.groupFile.Size = new System.Drawing.Size(469, 114);
             this.groupFile.TabIndex = 4;
             this.groupFile.TabStop = false;
             this.groupFile.Text = "File";
@@ -488,7 +488,7 @@
             this.fileImage.Location = new System.Drawing.Point(103, 83);
             this.fileImage.Name = "fileImage";
             this.fileImage.ReadOnly = true;
-            this.fileImage.Size = new System.Drawing.Size(333, 24);
+            this.fileImage.Size = new System.Drawing.Size(360, 24);
             this.fileImage.TabIndex = 10;
             // 
             // pictureIcon
@@ -509,7 +509,7 @@
             this.textFileDescription.Location = new System.Drawing.Point(44, 19);
             this.textFileDescription.Name = "textFileDescription";
             this.textFileDescription.ReadOnly = true;
-            this.textFileDescription.Size = new System.Drawing.Size(392, 13);
+            this.textFileDescription.Size = new System.Drawing.Size(419, 13);
             this.textFileDescription.TabIndex = 2;
             this.textFileDescription.Text = "File Description";
             // 
@@ -522,7 +522,7 @@
             this.textFileCompany.Location = new System.Drawing.Point(44, 38);
             this.textFileCompany.Name = "textFileCompany";
             this.textFileCompany.ReadOnly = true;
-            this.textFileCompany.Size = new System.Drawing.Size(392, 13);
+            this.textFileCompany.Size = new System.Drawing.Size(419, 13);
             this.textFileCompany.TabIndex = 2;
             this.textFileCompany.Text = "File Company";
             // 
@@ -553,7 +553,7 @@
             this.textFileVersion.Location = new System.Drawing.Point(101, 57);
             this.textFileVersion.Name = "textFileVersion";
             this.textFileVersion.ReadOnly = true;
-            this.textFileVersion.Size = new System.Drawing.Size(335, 20);
+            this.textFileVersion.Size = new System.Drawing.Size(362, 20);
             this.textFileVersion.TabIndex = 2;
             // 
             // tabStatistics
@@ -1006,7 +1006,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 429);
+            this.ClientSize = new System.Drawing.Size(489, 455);
             this.Controls.Add(this.tabControl);
             this.KeyPreview = true;
             this.Menu = this.mainMenu;

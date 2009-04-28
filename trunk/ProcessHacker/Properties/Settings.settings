@@ -168,7 +168,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ProcessWindowSize" Type="System.Drawing.Size" Scope="User">
-      <Value Profile="(Default)">493, 465</Value>
+      <Value Profile="(Default)">505, 512</Value>
     </Setting>
     <Setting Name="PlotterAntialias" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
