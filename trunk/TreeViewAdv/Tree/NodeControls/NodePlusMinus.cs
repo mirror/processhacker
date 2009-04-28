@@ -18,10 +18,30 @@ namespace Aga.Controls.Tree.NodeControls
 
 		public NodePlusMinus(TreeViewAdv tree)
 		{
-			_plus = Resources.plus;
-			_minus = Resources.minus;
             _tree = tree;
 		}
+
+        private Bitmap Plus
+        {
+            get
+            {
+                if (_plus == null)
+                    _plus = Resources.plus;
+
+                return _plus;
+            }
+        }
+
+        private Bitmap Minus
+        {
+            get
+            {
+                if (_minus == null)
+                    _minus = Resources.minus;
+
+                return _minus;
+            }
+        }
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
 		{
@@ -47,9 +67,9 @@ namespace Aga.Controls.Tree.NodeControls
 				{
 					Image img;
 					if (node.IsExpanded)
-						img = _minus;
+						img = this.Minus;
 					else
-						img = _plus;
+						img = this.Plus;
 					context.Graphics.DrawImageUnscaled(img, new Point(r.X, r.Y + dy));
 				}
 			}

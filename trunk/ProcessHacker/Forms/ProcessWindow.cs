@@ -379,9 +379,6 @@ namespace ProcessHacker
 
         private void UpdateProcessProperties()
         {
-            // HACK: Evil but necessary to reduce user complaints
-            Application.DoEvents();
-
             try
             {
                 string fileName;
@@ -462,7 +459,7 @@ namespace ProcessHacker
                 { }
             }
 
-            // HACK: Evil but necessary to reduce user complaints (2)
+            // HACK: Evil but necessary to reduce user complaints
             Application.DoEvents();
 
             if (_pid <= 0)

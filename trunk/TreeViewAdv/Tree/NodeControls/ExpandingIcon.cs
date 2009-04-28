@@ -13,9 +13,20 @@ namespace Aga.Controls.Tree.NodeControls
 	/// </summary>
 	public class ExpandingIcon: NodeControl
 	{
-		private static GifDecoder _gif = ResourceHelper.LoadingIcon;
+		private static GifDecoder _gif;
 		private static int _index = 0;
 		private static Thread _animatingThread;
+
+        private static GifDecoder Gif
+        {
+            get
+            {
+                if (_gif == null)
+                    _gif = ResourceHelper.LoadingIcon;
+
+                return _gif;
+            }
+        }
 
 		public override Size MeasureSize(TreeNodeAdv node, DrawContext context)
 		{
@@ -31,7 +42,7 @@ namespace Aga.Controls.Tree.NodeControls
 		public override void Draw(TreeNodeAdv node, DrawContext context)
 		{
 			Rectangle rect = GetBounds(node, context);
-			Image img = _gif.GetFrame(_index).Image;
+			Image img = Gif.GetFrame(_index).Image;
 			context.Graphics.DrawImage(img, rect.Location);
 		}
 
@@ -51,7 +62,7 @@ namespace Aga.Controls.Tree.NodeControls
 		{
 			while (true)
 			{
-				if (_index < _gif.FrameCount - 1)
+                if (_index < Gif.FrameCount - 1)
 					_index++;
 				else
 					_index = 0;
@@ -59,7 +70,7 @@ namespace Aga.Controls.Tree.NodeControls
 				if (IconChanged != null)
 					IconChanged(null, EventArgs.Empty);
 
-				int delay = _gif.GetFrame(_index).Delay;
+                int delay = Gif.GetFrame(_index).Delay;
 				Thread.Sleep(delay);
 			}
 		}
