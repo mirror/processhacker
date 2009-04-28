@@ -27,6 +27,9 @@ using System.Windows.Forms;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// The process tree model. None of the methods are thread-safe.
+    /// </summary>
     public class ProcessTreeModel : ITreeModel
     {
         private ProcessTree _tree;
@@ -42,18 +45,22 @@ namespace ProcessHacker
         {
             ProcessNode itemNode = new ProcessNode(item);
 
-            // find this process' parent
+            // Find the process' parent and add the process to it if we found it.
             if (item.HasParent && _processes.ContainsKey(item.ParentPid))
+            {
                 _processes[item.ParentPid].Children.Add(itemNode);
+            }
             else
+            {
+                // The process doesn't have a parent, so add it to the root nodes.
                 _roots.Add(itemNode);
+            }
 
+            // Add the process to the list of all processes.
             _processes.Add(item.Pid, itemNode);
 
-            ProcessNode[] rootNodes = _roots.ToArray();
-
-            // find this process' children
-            foreach (ProcessNode node in rootNodes)
+            // Find this process' children and add them.
+            foreach (ProcessNode node in _roots)
             {
                 if (node.ProcessItem.HasParent && node.PPID == item.Pid)
                 {
@@ -80,45 +87,54 @@ namespace ProcessHacker
         public void Remove(ProcessItem item)
         {
             ProcessNode targetNode = _processes[item.Pid];
-            ProcessNode[] nodes = _roots.ToArray();
             ProcessNode[] targetChildren = null;
 
+            // Dispose of the process node we're removing.
             targetNode.Dispose();
 
-            foreach (ProcessNode node in nodes)
-            {
-                if (node.PID == item.Pid)
-                {
-                    _roots.Remove(node);
-                    this.MoveChildrenToRoot(node);
-                    break;
-                }
-                else if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPID))
-                {
-                    ProcessNode foundNode = _processes[targetNode.PPID];
+            // Check if the process is a root.
+            ProcessNode rootNode = _roots.Find(node => node.PID == item.Pid);
 
-                    if (foundNode != null)
+            if (rootNode != null)
+            {
+                // Remove the process from the roots and make its children root nodes.
+                _roots.Remove(rootNode);
+                this.MoveChildrenToRoot(rootNode);
+            }
+            else
+            {
+                // The process isn't a root, so we have to search for the process' parent.
+                if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPID))
+                {
+                    ProcessNode parentNode = _processes[targetNode.PPID];
+
+                    if (parentNode != null)
                     {
-                        foundNode.Children.Remove(targetNode);
+                        // Remove the node from its parent and make its children root nodes.
+                        parentNode.Children.Remove(targetNode);
                         targetChildren = targetNode.Children.ToArray();
                         this.MoveChildrenToRoot(targetNode);
-                        break;
                     }
                 }
             }
 
+            // Remove the process from the process dictionary.
             _processes.Remove(item.Pid);
             this.StructureChanged(this, new TreePathEventArgs(new TreePath()));
 
-            foreach (ProcessNode n in targetChildren)
+            // Expand the children because TreeViewAdv collapses them by default.
+            if (targetChildren != null)
             {
-                try
+                foreach (ProcessNode n in targetChildren)
                 {
-                    _tree.FindTreeNode(n).ExpandAll();
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
+                    try
+                    {
+                        _tree.FindTreeNode(n).ExpandAll();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
                 }
             }
 
@@ -316,6 +332,7 @@ namespace ProcessHacker
 
         public bool IsLeaf(TreePath treePath)
         {
+            // When we're sorting the whole tree is a flat list, so there are no children.
             if (this.GetSortColumn() != "")
                 return true;
 

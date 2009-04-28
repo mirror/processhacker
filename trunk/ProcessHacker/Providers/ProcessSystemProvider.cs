@@ -267,6 +267,9 @@ namespace ProcessHacker
             if (fileName == null)
                 fileName = this.GetFileName(pid);
 
+            if (fileName == null)
+                Logging.Log(Logging.Importance.Warning, "Could not get file name for PID " + pid.ToString());
+
             fpResult.FileName = fileName;
 
             if (fileName != null)
@@ -486,9 +489,9 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(pid, ProcessAccess.QueryLimitedInformation))
+                    using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
                     {
-                        // first try to get the native file name, to prevent PEB
+                        // First try to get the native file name, to prevent PEB
                         // file name spoofing.
                         try
                         {
@@ -497,7 +500,7 @@ namespace ProcessHacker
                         catch
                         { }
 
-                        // if we couldn't get it or we couldn't resolve the \Device prefix,
+                        // If we couldn't get it or we couldn't resolve the \Device prefix,
                         // we'll just use the normal method (which only works on Vista).
                         if ((fileName == null || fileName.StartsWith("\\Device\\")) &&
                             OSVersion.HasWin32ImageFileName)
@@ -514,14 +517,30 @@ namespace ProcessHacker
                 catch
                 { }
 
-                // If all else failed, we get the main module file name.
                 if (fileName == null || fileName.StartsWith("\\Device\\"))
                 {
                     try
                     {
                         using (var phandle =
                             new ProcessHandle(pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead))
-                            fileName = phandle.GetMainModule().FileName;
+                        {
+                            // We can try to use the PEB.
+                            try
+                            {
+                                fileName = FileUtils.DeviceFileNameToDos(
+                                    FileUtils.FixPath(phandle.GetPebString(PebOffset.ImagePathName)));
+                            }
+                            catch
+                            { }
+
+                            // If all else failed, we get the main module file name.
+                            try
+                            {
+                                fileName = phandle.GetMainModule().FileName;
+                            }
+                            catch
+                            { }
+                        }
                     }
                     catch
                     { }
@@ -567,6 +586,10 @@ namespace ProcessHacker
                 item.VerifyResult = result.VerifyResult;
                 item.ImportFunctions = result.ImportFunctions;
                 item.ImportModules = result.ImportModules;
+            }
+            else
+            {
+                Logging.Log(Logging.Importance.Warning, "Unknown stage " + result.Stage.ToString("x"));
             }
 
             if (this.FileProcessingReceived != null)
@@ -928,12 +951,14 @@ namespace ProcessHacker
                     {
                         this.FillFpResult(item, this.ProcessFileStage1(pid, null, false, false));
                     }
-
-                    if (pid > 0)
+                    else
                     {
-                        WorkQueue.GlobalQueueWorkItem(
-                            new ProcessFileDelegate(this.ProcessFileStage1),
-                            pid, item.FileName, false);
+                        if (pid > 0)
+                        {
+                            WorkQueue.GlobalQueueWorkItem(
+                                new ProcessFileDelegate(this.ProcessFileStage1),
+                                pid, item.FileName, false);
+                        }
                     }
 
                     if (pid == 0 || pid == 4)

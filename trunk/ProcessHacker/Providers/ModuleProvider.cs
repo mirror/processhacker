@@ -154,6 +154,12 @@ namespace ProcessHacker
 
         private void UpdateModules()
         {
+            if (_processHandle == null)
+            {
+                Logging.Log(Logging.Importance.Warning, "ModuleProvider: Process Handle is null, exiting...");
+                return;
+            }
+
             var processModules = _processHandle.GetModules();
             var modules = new Dictionary<int, ProcessModule>();
             var newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);

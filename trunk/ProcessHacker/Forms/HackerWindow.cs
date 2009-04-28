@@ -1341,7 +1341,7 @@ namespace ProcessHacker
             ProcessItem parent = null;
             string parentText = "";
 
-            if (item.HasParent)
+            if (item.HasParent && processP.Dictionary.ContainsKey(item.ParentPid))
             {
                 try
                 {

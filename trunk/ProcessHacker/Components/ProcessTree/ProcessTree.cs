@@ -391,9 +391,15 @@ namespace ProcessHacker
                     try
                     {
                         ProcessNode pNode = this.FindNode(node);
-                        ProcessItem item = _provider.Dictionary[pNode.PID];
 
-                        node.BackColor = this.GetProcessColor(item);
+                        // May not be in the dictionary if the process has terminated but 
+                        // the node is still being highlighted.
+                        if (_provider.Dictionary.ContainsKey(pNode.PID))
+                        {
+                            ProcessItem item = _provider.Dictionary[pNode.PID];
+
+                            node.BackColor = this.GetProcessColor(item);
+                        }
                     }
                     catch (Exception ex)
                     {

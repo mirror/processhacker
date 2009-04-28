@@ -51,7 +51,7 @@ namespace ProcessHacker
                 string debugMessage =
                     DateTime.Now.ToString("hh:mm:ss:fff:") +
                     " ProcessHacker (T" + System.Threading.Thread.CurrentThread.ManagedThreadId +
-                    "): (" + importance.ToString() + ") " + message + "\n" + Environment.StackTrace;
+                    "): (" + importance.ToString() + ") " + message + "\r\n\r\n" + Environment.StackTrace;
 
                 OutputDebugString(debugMessage);
 
@@ -70,7 +70,9 @@ namespace ProcessHacker
             string message = ex.Message;
 
             if (ex.InnerException != null)
-                message += "\nInner exception:\n" + ex.InnerException.ToString();
+                message += "\r\nInner exception:\r\n" + ex.InnerException.ToString();
+            if (ex.StackTrace != null)
+                message += "\r\n" + ex.StackTrace;
 
             Log(Importance.Error, message);
         }
