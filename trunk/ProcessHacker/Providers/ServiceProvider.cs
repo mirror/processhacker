@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -99,6 +100,8 @@ namespace ProcessHacker
                 }
             }
 
+            var toModify = new Dictionary<string, ServiceItem>();
+
             // check for modified services
             foreach (ServiceItem service in Dictionary.Values)
             {
@@ -133,9 +136,12 @@ namespace ProcessHacker
                 if (modified)
                 {
                     this.CallDictionaryModified(service, newServiceItem);
-                    Dictionary[service.Status.ServiceName] = newServiceItem;
+                    toModify.Add(service.Status.ServiceName, newServiceItem);
                 }         
             }
+
+            foreach (string serviceName in toModify.Keys)
+                Dictionary[serviceName] = toModify[serviceName];
         }
     }
 }
