@@ -157,7 +157,8 @@ namespace ProcessHacker
                     break;
             }
 
-            base.WndProc(ref m);
+            if (!this.IsDisposed)
+                base.WndProc(ref m);
         }
 
         private void FixTabs()
@@ -246,21 +247,11 @@ namespace ProcessHacker
             Program.ProcessProvider.Updated +=
                 new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
 
-            // Delay loading
-            //System.Threading.Timer t = null;
+            // Check if window was closed before this began executing, bail out if true.
+            if (!this.IsHandleCreated)
+                return;
 
-            //t = new System.Threading.Timer(
-            //    new System.Threading.TimerCallback(o =>
-            //    {
-            //        t.Dispose();
-
-            //        // Check if window was closed before this began executing, bail out if true.
-            //        if (!this.IsHandleCreated)
-            //            return;
-
-                    this.BeginInvoke(new MethodInvoker(this.LoadStage2));
-                //}),
-                //null, 0, System.Threading.Timeout.Infinite);
+            this.BeginInvoke(new MethodInvoker(this.LoadStage2));
         }
 
         private void LoadStage2()

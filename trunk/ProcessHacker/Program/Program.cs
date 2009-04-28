@@ -1212,6 +1212,7 @@ namespace ProcessHacker
             {
                 if (e.KeyCode == Keys.Escape)
                 {
+                    f.Close();
                     e.Handled = true;
                 }
             };
