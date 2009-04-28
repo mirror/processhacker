@@ -302,7 +302,7 @@ namespace ProcessHacker
                 else
                 {
                     // No work available. Wait for work.
-                    if (_workArrivedEvent.WaitOne(_noWorkTimeout))
+                    if (_workArrivedEvent.WaitOne(_noWorkTimeout, false))
                     {
                         // Work arrived. Go back so we can perform it.
                         continue;
