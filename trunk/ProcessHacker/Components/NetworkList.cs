@@ -305,7 +305,7 @@ namespace ProcessHacker.Components
             }
 
             if (item.PID == 0)
-                litem.Text = "Unknown Process";
+                litem.Text = "Waiting Connections";
             else if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
                 litem.Text = Program.ProcessProvider.Dictionary[item.PID].Name;
             else
