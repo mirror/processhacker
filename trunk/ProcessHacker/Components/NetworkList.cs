@@ -304,7 +304,9 @@ namespace ProcessHacker.Components
                 }
             }
 
-            if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
+            if (item.PID == 0)
+                litem.Text = "Unknown Process";
+            else if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
                 litem.Text = Program.ProcessProvider.Dictionary[item.PID].Name;
             else
                 litem.Text = "(" + item.PID.ToString() + ")";
