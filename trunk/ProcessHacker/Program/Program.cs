@@ -179,8 +179,8 @@ namespace ProcessHacker
 
                 Application.Exit();
             }
-                                     
-            ThreadPool.SetMinThreads(0, 0);
+
+            ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
 
