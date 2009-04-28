@@ -207,6 +207,11 @@ namespace ProcessHacker
             return new DateTime(1970, 1, 1, 0, 0, 0).Add(new TimeSpan(0, 0, 0, (int)time));
         }
 
+        public static DateTime DateTimeFromFileTime(long time)
+        {
+            return new DateTime(1601, 1, 1).AddTicks(time).ToLocalTime();
+        }
+
         /// <summary>
         /// Disables the menu items contained in the specified menu. 
         /// </summary>

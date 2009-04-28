@@ -46,6 +46,7 @@
             this.columnIoTotal = new Aga.Controls.Tree.TreeColumn();
             this.columnUsername = new Aga.Controls.Tree.TreeColumn();
             this.columnSessionId = new Aga.Controls.Tree.TreeColumn();
+            this.columnPriorityClass = new Aga.Controls.Tree.TreeColumn();
             this.columnBasePriority = new Aga.Controls.Tree.TreeColumn();
             this.columnDescription = new Aga.Controls.Tree.TreeColumn();
             this.columnCompany = new Aga.Controls.Tree.TreeColumn();
@@ -60,6 +61,10 @@
             this.columnIntegrity = new Aga.Controls.Tree.TreeColumn();
             this.columnIoPriority = new Aga.Controls.Tree.TreeColumn();
             this.columnPagePriority = new Aga.Controls.Tree.TreeColumn();
+            this.columnStartTime = new Aga.Controls.Tree.TreeColumn();
+            this.columnTotalCpuTime = new Aga.Controls.Tree.TreeColumn();
+            this.columnUserCpuTime = new Aga.Controls.Tree.TreeColumn();
+            this.columnKernelCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
@@ -77,6 +82,7 @@
             this.nodeCPU = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeSessionId = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodePriorityClass = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeBasePriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeDescription = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeCompany = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -92,6 +98,12 @@
             this.nodeIntegrity = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeIoPriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePagePriority = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeStartTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeTotalCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeKernelCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeUserCpuTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.columnRelativeStartTime = new Aga.Controls.Tree.TreeColumn();
+            this.nodeRelativeStartTime = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.SuspendLayout();
             // 
             // treeProcesses
@@ -115,6 +127,7 @@
             this.treeProcesses.Columns.Add(this.columnIoTotal);
             this.treeProcesses.Columns.Add(this.columnUsername);
             this.treeProcesses.Columns.Add(this.columnSessionId);
+            this.treeProcesses.Columns.Add(this.columnPriorityClass);
             this.treeProcesses.Columns.Add(this.columnBasePriority);
             this.treeProcesses.Columns.Add(this.columnDescription);
             this.treeProcesses.Columns.Add(this.columnCompany);
@@ -129,6 +142,11 @@
             this.treeProcesses.Columns.Add(this.columnIntegrity);
             this.treeProcesses.Columns.Add(this.columnIoPriority);
             this.treeProcesses.Columns.Add(this.columnPagePriority);
+            this.treeProcesses.Columns.Add(this.columnStartTime);
+            this.treeProcesses.Columns.Add(this.columnRelativeStartTime);
+            this.treeProcesses.Columns.Add(this.columnTotalCpuTime);
+            this.treeProcesses.Columns.Add(this.columnUserCpuTime);
+            this.treeProcesses.Columns.Add(this.columnKernelCpuTime);
             this.treeProcesses.DefaultToolTipProvider = null;
             this.treeProcesses.DisplayDraggingNodes = true;
             this.treeProcesses.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -155,6 +173,7 @@
             this.treeProcesses.NodeControls.Add(this.nodeCPU);
             this.treeProcesses.NodeControls.Add(this.nodeUsername);
             this.treeProcesses.NodeControls.Add(this.nodeSessionId);
+            this.treeProcesses.NodeControls.Add(this.nodePriorityClass);
             this.treeProcesses.NodeControls.Add(this.nodeBasePriority);
             this.treeProcesses.NodeControls.Add(this.nodeDescription);
             this.treeProcesses.NodeControls.Add(this.nodeCompany);
@@ -170,6 +189,11 @@
             this.treeProcesses.NodeControls.Add(this.nodeIntegrity);
             this.treeProcesses.NodeControls.Add(this.nodeIoPriority);
             this.treeProcesses.NodeControls.Add(this.nodePagePriority);
+            this.treeProcesses.NodeControls.Add(this.nodeStartTime);
+            this.treeProcesses.NodeControls.Add(this.nodeRelativeStartTime);
+            this.treeProcesses.NodeControls.Add(this.nodeTotalCpuTime);
+            this.treeProcesses.NodeControls.Add(this.nodeKernelCpuTime);
+            this.treeProcesses.NodeControls.Add(this.nodeUserCpuTime);
             this.treeProcesses.SelectedNode = null;
             this.treeProcesses.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
             this.treeProcesses.ShowNodeToolTips = true;
@@ -341,14 +365,23 @@
             this.columnSessionId.TooltipText = null;
             this.columnSessionId.Width = 20;
             // 
+            // columnPriorityClass
+            // 
+            this.columnPriorityClass.Header = "Priority Class";
+            this.columnPriorityClass.IsVisible = false;
+            this.columnPriorityClass.Sortable = true;
+            this.columnPriorityClass.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnPriorityClass.TooltipText = null;
+            this.columnPriorityClass.Width = 70;
+            // 
             // columnBasePriority
             // 
             this.columnBasePriority.Header = "Base Priority";
             this.columnBasePriority.IsVisible = false;
             this.columnBasePriority.Sortable = true;
             this.columnBasePriority.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnBasePriority.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnBasePriority.TooltipText = null;
-            this.columnBasePriority.Width = 70;
             // 
             // columnDescription
             // 
@@ -469,6 +502,46 @@
             this.columnPagePriority.SortOrder = System.Windows.Forms.SortOrder.None;
             this.columnPagePriority.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnPagePriority.TooltipText = null;
+            // 
+            // columnStartTime
+            // 
+            this.columnStartTime.Header = "Start Time";
+            this.columnStartTime.IsVisible = false;
+            this.columnStartTime.Sortable = true;
+            this.columnStartTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnStartTime.TooltipText = null;
+            this.columnStartTime.Width = 100;
+            // 
+            // columnTotalCpuTime
+            // 
+            this.columnTotalCpuTime.Header = "Total CPU Time";
+            this.columnTotalCpuTime.IsVisible = false;
+            this.columnTotalCpuTime.Sortable = true;
+            this.columnTotalCpuTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnTotalCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnTotalCpuTime.TooltipText = null;
+            this.columnTotalCpuTime.Width = 100;
+            // 
+            // columnUserCpuTime
+            // 
+            this.columnUserCpuTime.Header = "User CPU Time";
+            this.columnUserCpuTime.IsVisible = false;
+            this.columnUserCpuTime.Sortable = true;
+            this.columnUserCpuTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnUserCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnUserCpuTime.TooltipText = null;
+            this.columnUserCpuTime.Width = 100;
+            // 
+            // columnKernelCpuTime
+            // 
+            this.columnKernelCpuTime.Header = "Kernel CPU Time";
+            this.columnKernelCpuTime.IsVisible = false;
+            this.columnKernelCpuTime.Sortable = true;
+            this.columnKernelCpuTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnKernelCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnKernelCpuTime.TooltipText = null;
+            this.columnKernelCpuTime.Width = 100;
             // 
             // nodeIcon
             // 
@@ -634,6 +707,15 @@
             this.nodeSessionId.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeSessionId.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodePriorityClass
+            // 
+            this.nodePriorityClass.DataPropertyName = "PriorityClass";
+            this.nodePriorityClass.EditEnabled = false;
+            this.nodePriorityClass.IncrementalSearchEnabled = true;
+            this.nodePriorityClass.LeftMargin = 3;
+            this.nodePriorityClass.ParentColumn = this.columnPriorityClass;
+            this.nodePriorityClass.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // nodeBasePriority
             // 
             this.nodeBasePriority.DataPropertyName = "BasePriority";
@@ -641,6 +723,7 @@
             this.nodeBasePriority.IncrementalSearchEnabled = true;
             this.nodeBasePriority.LeftMargin = 3;
             this.nodeBasePriority.ParentColumn = this.columnBasePriority;
+            this.nodeBasePriority.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodeBasePriority.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeDescription
@@ -778,6 +861,66 @@
             this.nodePagePriority.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodePagePriority.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
+            // nodeStartTime
+            // 
+            this.nodeStartTime.DataPropertyName = "StartTime";
+            this.nodeStartTime.EditEnabled = false;
+            this.nodeStartTime.IncrementalSearchEnabled = true;
+            this.nodeStartTime.LeftMargin = 3;
+            this.nodeStartTime.ParentColumn = this.columnStartTime;
+            this.nodeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeStartTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeTotalCpuTime
+            // 
+            this.nodeTotalCpuTime.DataPropertyName = "TotalCpuTime";
+            this.nodeTotalCpuTime.EditEnabled = false;
+            this.nodeTotalCpuTime.IncrementalSearchEnabled = true;
+            this.nodeTotalCpuTime.LeftMargin = 3;
+            this.nodeTotalCpuTime.ParentColumn = this.columnTotalCpuTime;
+            this.nodeTotalCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeTotalCpuTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeKernelCpuTime
+            // 
+            this.nodeKernelCpuTime.DataPropertyName = "KernelCpuTime";
+            this.nodeKernelCpuTime.EditEnabled = false;
+            this.nodeKernelCpuTime.IncrementalSearchEnabled = true;
+            this.nodeKernelCpuTime.LeftMargin = 3;
+            this.nodeKernelCpuTime.ParentColumn = this.columnKernelCpuTime;
+            this.nodeKernelCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeKernelCpuTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // nodeUserCpuTime
+            // 
+            this.nodeUserCpuTime.DataPropertyName = "UserCpuTime";
+            this.nodeUserCpuTime.EditEnabled = false;
+            this.nodeUserCpuTime.IncrementalSearchEnabled = true;
+            this.nodeUserCpuTime.LeftMargin = 3;
+            this.nodeUserCpuTime.ParentColumn = this.columnUserCpuTime;
+            this.nodeUserCpuTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeUserCpuTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
+            // columnRelativeStartTime
+            // 
+            this.columnRelativeStartTime.Header = "Start Time (Relative)";
+            this.columnRelativeStartTime.IsVisible = false;
+            this.columnRelativeStartTime.Sortable = true;
+            this.columnRelativeStartTime.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnRelativeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnRelativeStartTime.TooltipText = null;
+            this.columnRelativeStartTime.Width = 100;
+            // 
+            // nodeRelativeStartTime
+            // 
+            this.nodeRelativeStartTime.DataPropertyName = "RelativeStartTime";
+            this.nodeRelativeStartTime.EditEnabled = false;
+            this.nodeRelativeStartTime.IncrementalSearchEnabled = true;
+            this.nodeRelativeStartTime.LeftMargin = 3;
+            this.nodeRelativeStartTime.ParentColumn = this.columnRelativeStartTime;
+            this.nodeRelativeStartTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeRelativeStartTime.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            // 
             // ProcessTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -824,7 +967,7 @@
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeHandles;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeGdiHandles;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeUserHandles;
-        private Aga.Controls.Tree.TreeColumn columnBasePriority;
+        private Aga.Controls.Tree.TreeColumn columnPriorityClass;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeBasePriority;
         private Aga.Controls.Tree.TreeColumn columnVirtualSize;
         private Aga.Controls.Tree.TreeColumn columnPeakVirtualSize;
@@ -856,5 +999,17 @@
         private Aga.Controls.Tree.TreeColumn columnPagePriority;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeIoPriority;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodePagePriority;
+        private Aga.Controls.Tree.TreeColumn columnBasePriority;
+        private Aga.Controls.Tree.TreeColumn columnStartTime;
+        private Aga.Controls.Tree.TreeColumn columnTotalCpuTime;
+        private Aga.Controls.Tree.TreeColumn columnUserCpuTime;
+        private Aga.Controls.Tree.TreeColumn columnKernelCpuTime;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodePriorityClass;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeStartTime;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeTotalCpuTime;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeKernelCpuTime;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeUserCpuTime;
+        private Aga.Controls.Tree.TreeColumn columnRelativeStartTime;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeRelativeStartTime;
     }
 }

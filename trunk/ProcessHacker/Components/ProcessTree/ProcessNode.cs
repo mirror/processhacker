@@ -314,7 +314,7 @@ namespace ProcessHacker
             }
         }
 
-        public string BasePriority
+        public string PriorityClass
         {
             get
             {
@@ -322,6 +322,17 @@ namespace ProcessHacker
                     return "";
                 else
                     return Misc.GetStringPriority(_pitem.Process.BasePriority);
+            }
+        }
+
+        public string BasePriority
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return _pitem.Process.BasePriority.ToString();
             }
         }
 
@@ -578,6 +589,43 @@ namespace ProcessHacker
         public Bitmap Icon
         {
             get { return _icon; }
+        }
+
+        public string StartTime
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return _pitem.CreateTime.ToString();
+            }
+        }
+
+        public string RelativeStartTime
+        {
+            get
+            {
+                if (PID < 4)
+                    return "";
+                else
+                    return Misc.GetNiceRelativeDateTime(_pitem.CreateTime);
+            }
+        }
+
+        public string TotalCpuTime
+        {
+            get { return Misc.GetNiceTimeSpan(new TimeSpan(_pitem.Process.KernelTime + _pitem.Process.UserTime)); }
+        }
+
+        public string KernelCpuTime
+        {
+            get { return Misc.GetNiceTimeSpan(new TimeSpan(_pitem.Process.KernelTime)); }
+        }
+
+        public string UserCpuTime
+        {
+            get { return Misc.GetNiceTimeSpan(new TimeSpan(_pitem.Process.UserTime)); }
         }
     }
 }

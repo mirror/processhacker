@@ -60,6 +60,7 @@ namespace ProcessHacker
         public int IntegrityLevel;
         public SystemProcessInformation Process;
         public Dictionary<int, SystemThreadInformation> Threads;
+        public DateTime CreateTime;
 
         public TokenElevationType ElevationType;
         public bool IsBeingDebugged;
@@ -773,6 +774,16 @@ namespace ProcessHacker
                         {
                             item.Name = "";
                         }
+                    }
+
+                    if (queryLimitedHandle != null)
+                    {
+                        try
+                        {
+                            item.CreateTime = Misc.DateTimeFromFileTime(queryLimitedHandle.GetCreateTime());
+                        }
+                        catch
+                        { }
                     }
 
                     if (pid > 0)

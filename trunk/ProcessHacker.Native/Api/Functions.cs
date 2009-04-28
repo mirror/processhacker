@@ -786,8 +786,8 @@ namespace ProcessHacker.Native.Api
             int Size);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetProcessTimes(int ProcessHandle, out ulong CreationTime, out ulong ExitTime,
-            out ulong KernelTime, out ulong UserTime);
+        public static extern bool GetProcessTimes(int ProcessHandle, out long CreationTime, out long ExitTime,
+            out long KernelTime, out long UserTime);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetProcessIoCounters(int ProcessHandle, out IoCounters IoCounters);

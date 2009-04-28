@@ -380,6 +380,14 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the creation time of the process.
+        /// </summary>
+        public long GetCreateTime()
+        {
+            return this.GetTimes()[0];
+        }
+
+        /// <summary>
         /// Gets the number of processor cycles consumed by the process' threads.
         /// </summary>
         public ulong GetCycleTime()
@@ -518,6 +526,15 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return exitCode;
+        }
+
+        /// <summary>
+        /// Gets the exit time of the process.
+        /// </summary>
+        /// <returns></returns>
+        public long GetExitTime()
+        {
+            return this.GetTimes()[1];
         }
 
         /// <summary>
@@ -760,6 +777,16 @@ namespace ProcessHacker.Native.Objects
         public int GetSessionId()
         {
             return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation);
+        }
+
+        public long[] GetTimes()
+        {
+            long[] times = new long[4];
+
+            if (!Win32.GetProcessTimes(this, out times[0], out times[1], out times[2], out times[3]))
+                Win32.ThrowLastError();
+
+            return times;
         }
 
         /// <summary>

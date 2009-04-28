@@ -87,11 +87,12 @@ namespace ProcessHacker
                     // Check if the process has terminated. This is possible because 
                     // a process can be terminated while its object is still being 
                     // referenced.
-                    ulong[] times = new ulong[4];
+                    long exitTime = -1;
 
-                    Win32.GetProcessTimes(phandle, out times[0], out times[1], out times[2], out times[3]);
+                    try { exitTime = phandle.GetExitTime(); }
+                    catch { }
 
-                    if (times[1] != 0)
+                    if (exitTime != 0)
                     {
                         item.BackColor = Color.DarkGray;
                         item.ForeColor = Color.White;
