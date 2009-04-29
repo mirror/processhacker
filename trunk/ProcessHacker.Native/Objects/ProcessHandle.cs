@@ -411,51 +411,34 @@ namespace ProcessHacker.Native.Objects
         /// but it doesn't seem to work.</remarks>
         public DepStatus GetDepStatus()
         {
-            //if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-            //{
-                int status;
-                MemExecuteOptions options;
-                int retLength;
+            int status;
+            MemExecuteOptions options;
+            int retLength;
 
-                if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessExecuteFlags,
-                    out options, 4, out retLength)) < 0)
-                    Win32.ThrowLastError(status);
+            if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessExecuteFlags,
+                out options, 4, out retLength)) < 0)
+                Win32.ThrowLastError(status);
 
-                DepStatus depStatus = 0;
+            DepStatus depStatus = 0;
 
-                // Check if execution of data pages is enabled.
-                if ((options & MemExecuteOptions.ExecuteEnable) != 0)
-                    return 0;
+            // Check if execution of data pages is enabled.
+            if ((options & MemExecuteOptions.ExecuteEnable) != 0)
+                return 0;
 
-                // Check if execution of data pages is disabled.
-                if ((options & MemExecuteOptions.ExecuteDisable) != 0)
-                    depStatus = DepStatus.Enabled;
-                // ExecuteDisable and ExecuteEnable are both disabled in OptOut mode.
-                else if ((options & MemExecuteOptions.ExecuteDisable) == 0 &&
-                    (options & MemExecuteOptions.ExecuteEnable) == 0)
-                    depStatus = DepStatus.Enabled;
+            // Check if execution of data pages is disabled.
+            if ((options & MemExecuteOptions.ExecuteDisable) != 0)
+                depStatus = DepStatus.Enabled;
+            // ExecuteDisable and ExecuteEnable are both disabled in OptOut mode.
+            else if ((options & MemExecuteOptions.ExecuteDisable) == 0 &&
+                (options & MemExecuteOptions.ExecuteEnable) == 0)
+                depStatus = DepStatus.Enabled;
 
-                if ((options & MemExecuteOptions.DisableThunkEmulation) != 0)
-                    depStatus |= DepStatus.AtlThunkEmulationDisabled;
-                if ((options & MemExecuteOptions.Permanent) != 0)
-                    depStatus |= DepStatus.Permanent;
+            if ((options & MemExecuteOptions.DisableThunkEmulation) != 0)
+                depStatus |= DepStatus.AtlThunkEmulationDisabled;
+            if ((options & MemExecuteOptions.Permanent) != 0)
+                depStatus |= DepStatus.Permanent;
 
-                return depStatus;
-            //}
-            //else
-            //{
-            //    DepFlags flags;
-            //    int perm;
-
-            //    if (!Win32.GetProcessDEPPolicy(this, out flags, out perm))
-            //        Win32.ThrowLastError();
-
-            //    return
-            //        ((flags & DepFlags.Enable) != 0 ? DepStatus.Enabled : 0) |
-            //        ((flags & DepFlags.DisableAtlThunkEmulation) != 0 ?
-            //        (DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled) : 0) |
-            //        ((perm != 0) ? DepStatus.Permanent : 0);
-            //}
+            return depStatus;
         }
 
         /// <summary>

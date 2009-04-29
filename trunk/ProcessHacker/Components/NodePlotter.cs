@@ -81,7 +81,11 @@ namespace ProcessHacker.Components
             _plotter.LineColor1 = info.LineColor1;
             _plotter.LineColor2 = info.LineColor2;
 
-            _plotter.Size = new Size(context.Bounds.Width - 1, context.Bounds.Height - 1);
+            if ((_plotter.Width != context.Bounds.Width - 1 || 
+                _plotter.Height != context.Bounds.Height - 1) &&
+                context.Bounds.Width > 1 && context.Bounds.Height > 1)
+                _plotter.Size = new Size(context.Bounds.Width - 1, context.Bounds.Height - 1);
+
             _plotter.Draw();
 
             using (Bitmap b = new Bitmap(_plotter.Width, _plotter.Height))

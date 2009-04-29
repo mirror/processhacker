@@ -23,6 +23,7 @@ Process Hacker
    * The main window dimensions are saved when exiting minimized
    * Enabled Reduce Working Set for multiple processes at a time
  * FIXED:
+   * #2782808 - "Exception generated when CPU History is set to first column."
    * Unhandled exception when process properties is closed within 100ms of 
      being opened
    * Handle filter took a while to start up
