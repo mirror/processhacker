@@ -232,8 +232,8 @@ namespace ProcessHacker.Native.Api
     [Flags]
     public enum MemExecuteOptions : int
     {
-        Enable = 0x1,
-        Disable = 0x2,
+        ExecuteDisable = 0x1,
+        ExecuteEnable = 0x2,
         DisableThunkEmulation = 0x4,
         Permanent = 0x8
     }
