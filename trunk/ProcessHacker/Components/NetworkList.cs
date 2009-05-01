@@ -280,22 +280,22 @@ namespace ProcessHacker.Components
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
 
-            litem.Name = item.ID;
-            litem.Tag = item.PID;
+            litem.Name = item.Id;
+            litem.Tag = item.Pid;
 
-            if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
+            if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
             {
                 lock (_imageListLock)
                 {
-                    if (imageList.Images.ContainsKey(item.PID.ToString()))
-                        imageList.Images.RemoveByKey(item.PID.ToString());
+                    if (imageList.Images.ContainsKey(item.Pid.ToString()))
+                        imageList.Images.RemoveByKey(item.Pid.ToString());
 
-                    var icon = Program.ProcessProvider.Dictionary[item.PID].Icon;
+                    var icon = Program.ProcessProvider.Dictionary[item.Pid].Icon;
 
                     if (icon != null)
                     {
-                        imageList.Images.Add(item.PID.ToString(), icon);
-                        litem.ImageKey = item.PID.ToString();
+                        imageList.Images.Add(item.Pid.ToString(), icon);
+                        litem.ImageKey = item.Pid.ToString();
                     }
                     else
                     {
@@ -304,12 +304,12 @@ namespace ProcessHacker.Components
                 }
             }
 
-            if (item.PID == 0)
+            if (item.Pid == 0)
                 litem.Text = "Waiting Connections";
-            else if (Program.ProcessProvider.Dictionary.ContainsKey(item.PID))
-                litem.Text = Program.ProcessProvider.Dictionary[item.PID].Name;
+            else if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+                litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name;
             else
-                litem.Text = "(" + item.PID.ToString() + ")";
+                litem.Text = "(" + item.Pid.ToString() + ")";
 
             if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Local.ToString()));
@@ -332,7 +332,7 @@ namespace ProcessHacker.Components
         {
             lock (listNetwork)
             {
-                ListViewItem litem = listNetwork.Items[newItem.ID];
+                ListViewItem litem = listNetwork.Items[newItem.Id];
 
                 if (litem == null)
                     return;
@@ -362,10 +362,10 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(NetworkConnection item)
         {
-            int index = listNetwork.Items[item.ID].Index;
-            bool selected = listNetwork.Items[item.ID].Selected;
+            int index = listNetwork.Items[item.Id].Index;
+            bool selected = listNetwork.Items[item.Id].Selected;
             int selectedCount = listNetwork.SelectedItems.Count;
-            ListViewItem litem = listNetwork.Items[item.ID];
+            ListViewItem litem = listNetwork.Items[item.Id];
             bool imageStillUsed = false;
 
             if (litem.ImageKey == "generic_process")
@@ -378,7 +378,7 @@ namespace ProcessHacker.Components
                 {
                     foreach (ListViewItem lvItem in listNetwork.Items)
                     {
-                        if (lvItem != litem && lvItem.ImageKey == item.PID.ToString())
+                        if (lvItem != litem && lvItem.ImageKey == item.Pid.ToString())
                         {
                             imageStillUsed = true;
                             break;
@@ -391,7 +391,7 @@ namespace ProcessHacker.Components
             {
                 if (!imageStillUsed)
                 {
-                    imageList.Images.RemoveByKey(item.PID.ToString());
+                    imageList.Images.RemoveByKey(item.Pid.ToString());
                 }
             }
 

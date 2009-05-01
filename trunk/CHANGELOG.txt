@@ -9,6 +9,7 @@ Process Hacker
      Commit History and Physical Memory History
    * Base Priority, Start Time, and CPU Time columns
    * "Terminate Process Tree"
+   * Can close TCP connections
    * Process tree loads instantly
    * Process properties (appears to) loads faster
    * Decreased CPU usage

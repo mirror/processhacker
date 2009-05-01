@@ -157,6 +157,7 @@
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.goToProcessNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.copyNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.closeNetworkMenuItem = new System.Windows.Forms.MenuItem();
             this.panelHack = new System.Windows.Forms.Panel();
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
@@ -1132,8 +1133,16 @@
             // copyNetworkMenuItem
             // 
             this.vistaMenu.SetImage(this.copyNetworkMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyNetworkMenuItem.Index = 2;
+            this.copyNetworkMenuItem.Index = 3;
             this.copyNetworkMenuItem.Text = "&Copy";
+            // 
+            // closeNetworkMenuItem
+            // 
+            this.vistaMenu.SetImage(this.closeNetworkMenuItem, global::ProcessHacker.Properties.Resources.cross);
+            this.closeNetworkMenuItem.Index = 1;
+            this.closeNetworkMenuItem.Shortcut = System.Windows.Forms.Shortcut.Del;
+            this.closeNetworkMenuItem.Text = "Close";
+            this.closeNetworkMenuItem.Click += new System.EventHandler(this.closeNetworkMenuItem_Click);
             // 
             // panelHack
             // 
@@ -1149,6 +1158,7 @@
             // 
             this.menuNetwork.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.goToProcessNetworkMenuItem,
+            this.closeNetworkMenuItem,
             this.menuItem6,
             this.copyNetworkMenuItem,
             this.selectAllNetworkMenuItem});
@@ -1156,12 +1166,12 @@
             // 
             // menuItem6
             // 
-            this.menuItem6.Index = 1;
+            this.menuItem6.Index = 2;
             this.menuItem6.Text = "-";
             // 
             // selectAllNetworkMenuItem
             // 
-            this.selectAllNetworkMenuItem.Index = 3;
+            this.selectAllNetworkMenuItem.Index = 4;
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
@@ -1334,6 +1344,7 @@
         private System.Windows.Forms.MenuItem ioHistoryMenuItem;
         private System.Windows.Forms.MenuItem commitHistoryMenuItem;
         private System.Windows.Forms.MenuItem physMemHistoryMenuItem;
+        private System.Windows.Forms.MenuItem closeNetworkMenuItem;
     }
 }
 

@@ -48,7 +48,7 @@ namespace ProcessHacker
             {
                 foreach (var connection in list)
                 {
-                    string id = connection.PID.ToString() + "-" + connection.Local.ToString() + "-" +
+                    string id = connection.Pid.ToString() + "-" + connection.Local.ToString() + "-" +
                         (connection.Remote != null ? connection.Remote.ToString() : "") + "-" + connection.Protocol.ToString();
 
                     if (preKeyDict.ContainsKey(id))
@@ -64,27 +64,27 @@ namespace ProcessHacker
             {
                 var connection = preKeyDict[s].Value;
 
-                connection.ID = s + "-" + preKeyDict[s].Key.ToString();
+                connection.Id = s + "-" + preKeyDict[s].Key.ToString();
                 keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), connection);
             }
 
             foreach (var connection in Dictionary.Values)
             {
-                if (!keyDict.ContainsKey(connection.ID))
+                if (!keyDict.ContainsKey(connection.Id))
                 {
                     lock (Dictionary)
                     {
                         CallDictionaryRemoved(connection);   
-                        newDict.Remove(connection.ID);
+                        newDict.Remove(connection.Id);
                     }
                 }
             }
 
             foreach (var connection in keyDict.Values)
             {
-                if (!Dictionary.ContainsKey(connection.ID))
+                if (!Dictionary.ContainsKey(connection.Id))
                 {
-                    newDict.Add(connection.ID, connection);
+                    newDict.Add(connection.Id, connection);
                     CallDictionaryAdded(connection);
 
                     // resolve the IP addresses
@@ -94,7 +94,7 @@ namespace ProcessHacker
                         {
                             WorkQueue.GlobalQueueWorkItem(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                connection.ID,
+                                connection.Id,
                                 false,
                                 connection.Local.Address
                                 );
@@ -106,7 +106,7 @@ namespace ProcessHacker
                         {
                             WorkQueue.GlobalQueueWorkItem(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                connection.ID,
+                                connection.Id,
                                 true,
                                 connection.Remote.Address
                                 );
@@ -115,16 +115,16 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    if (connection.State != Dictionary[connection.ID].State)
+                    if (connection.State != Dictionary[connection.Id].State)
                     {
                         lock (Dictionary)
                         {
-                            var newConnection = Dictionary[connection.ID];
+                            var newConnection = Dictionary[connection.Id];
 
                             newConnection.State = connection.State;
 
-                            CallDictionaryModified(Dictionary[connection.ID], newConnection);
-                            Dictionary[connection.ID] = connection;
+                            CallDictionaryModified(Dictionary[connection.Id], newConnection);
+                            Dictionary[connection.Id] = connection;
                         }
                     }
                 }

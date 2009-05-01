@@ -35,7 +35,6 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    [System.Security.SuppressUnmanagedCodeSecurity]
     public partial class Win32
     {
         #region Cryptography
@@ -884,6 +883,9 @@ namespace ProcessHacker.Native.Api
         #endregion
 
         #region TCP
+
+        [DllImport("iphlpapi.dll", SetLastError = true)]
+        public extern static int SetTcpEntry(ref MibTcpRow TcpRow);
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public extern static int GetExtendedTcpTable(IntPtr Table, ref int Size,

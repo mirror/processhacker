@@ -156,6 +156,13 @@ namespace ProcessHacker
             {
                 goToProcessNetworkMenuItem_Click(null, null);
             }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                if (MessageBox.Show("Are you sure you want to close the selected network connection(s)?",
+                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                    closeNetworkMenuItem_Click(null, null);
+            }
         }
 
         private void listServices_DoubleClick(object sender, EventArgs e)
@@ -504,6 +511,27 @@ namespace ProcessHacker
                 selectAllNetworkMenuItem.Enabled = true;
             else
                 selectAllNetworkMenuItem.Enabled = false;
+
+            try
+            {
+                bool hasTcp = false;
+
+                foreach (ListViewItem item in listNetwork.SelectedItems)
+                {
+                    if (item.SubItems[3].Text == "TCP")
+                    {
+                        hasTcp = true;
+                        break;
+                    }
+                }
+
+                if (!hasTcp)
+                    closeNetworkMenuItem.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void goToProcessNetworkMenuItem_Click(object sender, EventArgs e)
@@ -522,6 +550,34 @@ namespace ProcessHacker
                 treeProcesses.Tree.FullUpdate();
 
                 tabControl.SelectedTab = tabProcesses;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+        }
+
+        private void closeNetworkMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listNetwork.SelectedItems.Count == 0)
+                return;
+
+            try
+            {
+                foreach (ListViewItem item in listNetwork.SelectedItems)
+                {
+                    try
+                    {
+                        networkP.Dictionary[item.Name].CloseTcpConnection();
+                    }
+                    catch (Exception ex)
+                    {
+                        if (MessageBox.Show("Could not close the TCP connection. " + 
+                            "Make sure Process Hacker is running with administrative privileges.", "Process Hacker",
+                            MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
+                            return;
+                    }
+                }
             }
             catch (Exception ex)
             {

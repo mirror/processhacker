@@ -215,7 +215,7 @@ namespace ProcessHacker.Native
                         Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).SwapBytes()),
                         Remote = new IPEndPoint(struc.RemoteAddress, ((ushort)struc.RemotePort).SwapBytes()),
                         State = struc.State,
-                        PID = struc.OwningProcessId
+                        Pid = struc.OwningProcessId
                     });
                 }
             }
@@ -241,7 +241,7 @@ namespace ProcessHacker.Native
                         {
                             Protocol = NetworkProtocol.Udp,
                             Local = new IPEndPoint(struc.LocalAddress, ((ushort)struc.LocalPort).SwapBytes()),
-                            PID = struc.OwningProcessId
+                            Pid = struc.OwningProcessId
                         });
                 }
             }
@@ -707,14 +707,30 @@ namespace ProcessHacker.Native
 
     public struct NetworkConnection
     {
-        public string ID;
-        public int PID;
+        public string Id;
+        public int Pid;
         public NetworkProtocol Protocol;
         public string LocalString;
         public IPEndPoint Local;
         public string RemoteString;
         public IPEndPoint Remote;
         public MibTcpState State;
+
+        public void CloseTcpConnection()
+        {
+            MibTcpRow row = new MibTcpRow()
+            {
+                State = MibTcpState.DeleteTcb,
+                LocalAddress = (uint)this.Local.Address.Address,
+                LocalPort = ((ushort)this.Local.Port).SwapBytes(),
+                RemoteAddress = this.Remote != null ? (uint)this.Remote.Address.Address : 0,
+                RemotePort = this.Remote != null ? ((ushort)this.Remote.Port).SwapBytes() : 0
+            };
+            int result = Win32.SetTcpEntry(ref row);
+
+            if (result != 0)
+                Win32.ThrowLastError(result, false);
+        }
     }
 
     public struct SystemProcess
