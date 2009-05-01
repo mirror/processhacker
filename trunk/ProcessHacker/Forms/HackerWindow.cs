@@ -859,6 +859,18 @@ namespace ProcessHacker
                 {
                     Logging.Log(ex);
                 }
+
+                try
+                {
+                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf)
+                        terminateProcessTreeMenuItem.Visible = false;
+                    else
+                        terminateProcessTreeMenuItem.Visible = true;
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
             else
             {
