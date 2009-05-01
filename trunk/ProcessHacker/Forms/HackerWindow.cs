@@ -156,13 +156,6 @@ namespace ProcessHacker
             {
                 goToProcessNetworkMenuItem_Click(null, null);
             }
-            else if (e.KeyCode == Keys.Delete)
-            {
-                if (MessageBox.Show("Are you sure you want to close the selected network connection(s)?",
-                    "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
-                    MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                    closeNetworkMenuItem_Click(null, null);
-            }
         }
 
         private void listServices_DoubleClick(object sender, EventArgs e)
@@ -562,6 +555,8 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count == 0)
                 return;
 
+            bool allGood = true;
+
             try
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
@@ -570,8 +565,10 @@ namespace ProcessHacker
                     {
                         networkP.Dictionary[item.Name].CloseTcpConnection();
                     }
-                    catch (Exception ex)
+                    catch
                     {
+                        allGood = false;
+
                         if (MessageBox.Show("Could not close the TCP connection. " + 
                             "Make sure Process Hacker is running with administrative privileges.", "Process Hacker",
                             MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.Cancel)
@@ -582,6 +579,12 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 Logging.Log(ex);
+            }
+
+            if (allGood)
+            {
+                foreach (ListViewItem item in listNetwork.SelectedItems)
+                    item.Selected = false;
             }
         }
 

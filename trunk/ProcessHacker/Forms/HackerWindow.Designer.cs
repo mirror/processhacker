@@ -1140,7 +1140,6 @@
             // 
             this.vistaMenu.SetImage(this.closeNetworkMenuItem, global::ProcessHacker.Properties.Resources.cross);
             this.closeNetworkMenuItem.Index = 1;
-            this.closeNetworkMenuItem.Shortcut = System.Windows.Forms.Shortcut.Del;
             this.closeNetworkMenuItem.Text = "Close";
             this.closeNetworkMenuItem.Click += new System.EventHandler(this.closeNetworkMenuItem_Click);
             // 
