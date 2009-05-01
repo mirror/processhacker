@@ -376,7 +376,7 @@ namespace ProcessHacker.Native
             int threadHandleInt = threadHandle;
             byte* outData = stackalloc byte[4];
 
-            _fileHandle.IoControl(CtlCode(Control.KphGetThreadWin32Thread), (byte*)threadHandleInt, 4, outData, 4);
+            _fileHandle.IoControl(CtlCode(Control.KphGetThreadWin32Thread), (byte*)&threadHandleInt, 4, outData, 4);
 
             return *(int*)outData;
         }
