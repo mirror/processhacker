@@ -264,11 +264,12 @@ namespace ProcessHacker.Components
                             continue;
 
                         if (Program.ProcessProvider.Dictionary.ContainsKey(pid) && 
-                            Program.ProcessProvider.Dictionary[pid].Icon != null && 
-                            !imageList.Images.ContainsKey(pid.ToString()))
+                            Program.ProcessProvider.Dictionary[pid].Icon != null)
                         {
-                            imageList.Images.Add(pid.ToString(),
-                                Program.ProcessProvider.Dictionary[pid].Icon);
+                            if (!imageList.Images.ContainsKey(pid.ToString()))
+                                imageList.Images.Add(pid.ToString(),
+                                    Program.ProcessProvider.Dictionary[pid].Icon);
+
                             item.ImageKey = pid.ToString();
                         }
                     }
@@ -282,9 +283,6 @@ namespace ProcessHacker.Components
 
             litem.Name = item.Id;
             litem.Tag = item.Pid;
-
-            if (!Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
-                Program.ProcessProvider.RunOnce();
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
             {
