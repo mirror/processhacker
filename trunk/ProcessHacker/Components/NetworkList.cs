@@ -283,6 +283,9 @@ namespace ProcessHacker.Components
             litem.Name = item.Id;
             litem.Tag = item.Pid;
 
+            if (!Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+                Program.ProcessProvider.RunOnce();
+
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
             {
                 lock (_imageListLock)
@@ -305,11 +308,17 @@ namespace ProcessHacker.Components
             }
 
             if (item.Pid == 0)
+            {
                 litem.Text = "Waiting Connections";
+            }
             else if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+            {
                 litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name;
+            }
             else
+            {
                 litem.Text = "(" + item.Pid.ToString() + ")";
+            }
 
             if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
                 litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Local.ToString()));
