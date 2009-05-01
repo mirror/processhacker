@@ -86,6 +86,9 @@ namespace ProcessHacker
 
                 if (HandleList.HasHandleProperties(type))
                     propertiesMenuItem.Enabled = true;
+
+                if (type == "DLL" || type == "Mapped File")
+                    closeMenuItem.Enabled = false;
             }
             else
             {
@@ -98,8 +101,13 @@ namespace ProcessHacker
         private void closeMenuItem_Click(object sender, EventArgs e)
         {
             List<ListViewItem> remove = new List<ListViewItem>();
+
             foreach (int index in listHandles.SelectedIndices)
             {
+                if (listHandles.Items[index].SubItems[1].Text == "DLL" ||
+                    listHandles.Items[index].SubItems[1].Text == "Mapped File")
+                    continue;
+
                 try
                 {
                     int handle = (int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text);

@@ -27,6 +27,8 @@ using System.Windows.Forms;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using System;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.FormHelper
 {
@@ -65,6 +67,7 @@ namespace ProcessHacker.FormHelper
                 var handles = Windows.GetHandles();
                 Dictionary<int, ProcessHandle> processHandles = new Dictionary<int, ProcessHandle>();
 
+                // Find handles
                 for (int i = 0; i < handles.Length; i++)
                 {
                     // Check for cancellation here too,
@@ -80,9 +83,52 @@ namespace ProcessHacker.FormHelper
                     // test Exception 
                     //if (i > 2000) throw new Exception("test");
                 }
-                OnMatchListView(null);
+
                 foreach (ProcessHandle phandle in processHandles.Values)
                     phandle.Dispose();
+
+                // Find DLLs and mapped files
+                var processes = Windows.GetProcesses();
+
+                foreach (var process in processes)
+                {
+                    try
+                    {
+                        using (var phandle = new ProcessHandle(process.Key,
+                            Program.MinProcessReadMemoryRights))
+                        {
+                            phandle.EnumModules((module) =>
+                                {
+                                    if (module.FileName.ToLower().Contains(strFilter.ToLower()))
+                                        this.CallDllMatchListView(process.Key, module);
+                                    return true;
+                                });
+                        }
+
+                        using (var phandle = new ProcessHandle(process.Key,
+                            ProcessAccess.QueryInformation | Program.MinProcessReadMemoryRights))
+                        {
+                            phandle.EnumMemory((region) =>
+                                {
+                                    if (region.Type != MemoryType.Mapped)
+                                        return true;
+
+                                    string name = phandle.GetMappedFileName(region.BaseAddress);
+
+                                    if (name != null && name.ToLower().Contains(strFilter.ToLower()))
+                                        this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
+
+                                    return true;
+                                });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.Log(ex);
+                    }
+                }
+
+                OnMatchListView(null);
             }
         }
 
@@ -126,7 +172,7 @@ namespace ProcessHacker.FormHelper
                 if (!info.BestName.ToLower().Contains(strFilter.ToLower()))
                     return;
 
-                CallMatchListView(currhandle, info);
+                CallHandleMatchListView(currhandle, info);
             }
             catch
             {
@@ -134,7 +180,7 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CallMatchListView(SystemHandleInformation handle, ObjectInformation info)
+        private void CallHandleMatchListView(SystemHandleInformation handle, ObjectInformation info)
         {
             ListViewItem item = new ListViewItem();
             item.Name = handle.ProcessId.ToString() + " " + handle.Handle.ToString();
@@ -144,6 +190,32 @@ namespace ProcessHacker.FormHelper
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.TypeName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, info.BestName));
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + handle.Handle.ToString("x")));
+            OnMatchListView(item);
+        }
+
+        private void CallDllMatchListView(int pid, ProcessModule module)
+        {
+            ListViewItem item = new ListViewItem();
+            item.Name = pid.ToString() + " " + module.BaseAddress.ToString();
+            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
+                " (" + pid.ToString() + ")";
+            item.Tag = pid;
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "DLL"));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, module.FileName));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + module.BaseAddress.ToString("x8")));
+            OnMatchListView(item);
+        }
+
+        private void CallMappedFileMatchListView(int pid, int address, string fileName)
+        {
+            ListViewItem item = new ListViewItem();
+            item.Name = pid.ToString() + " " + address.ToString();
+            item.Text = Program.ProcessProvider.Dictionary[pid].Name +
+                " (" + pid.ToString() + ")";
+            item.Tag = pid;
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "Mapped File"));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, fileName));
+            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + address.ToString("x8")));
             OnMatchListView(item);
         }
 

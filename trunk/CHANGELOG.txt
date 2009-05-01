@@ -5,6 +5,7 @@ Process Hacker
    * #2780260 - "add <Enter> key to open Proc Properties"
    * #2780277 - "add <ENTER> to shortcut list for default action"
    * #2781625 - "System Idle Process should not have network connections"
+   * #2784954 - "Ctrl+F find DLLs and not just Handles"
    * Customizable tray icons - CPU History, CPU Usage, I/O History, 
      Commit History and Physical Memory History
    * Base Priority, Start Time, and CPU Time columns

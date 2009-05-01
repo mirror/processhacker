@@ -273,7 +273,8 @@ namespace ProcessHacker.Components
         public static bool HasHandleProperties(string type)
         {
             if (type == "Token" || type == "Process" || type == "File" || 
-                type == "Event" || type == "Mutant" || type == "Section")
+                type == "Event" || type == "Mutant" || type == "Section" || 
+                type == "DLL" || type == "Mapped File")
                 return true;
             else
                 return false;
@@ -335,7 +336,7 @@ namespace ProcessHacker.Components
                             Program.FocusWindow(f);
                         }));
                 }
-                else if (type == "File")
+                else if (type == "File" || type == "DLL" || type == "Mapped File")
                 {
                     FileUtils.ShowProperties(name);
                 }
