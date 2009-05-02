@@ -44,9 +44,15 @@ namespace ProcessHacker
 
             listHandles.SetDoubleBuffered(true);
             listHandles.SetTheme("explorer");
-            listHandles.ListViewItemSorter = new SortedListViewComparer(listHandles);
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHandles, null);
             listHandles.ContextMenu = menuHandle;
+
+            var comparer = (SortedListViewComparer)(listHandles.ListViewItemSorter = new SortedListViewComparer(listHandles));
+
+            comparer.ColumnSortOrder.Add(0);
+            comparer.ColumnSortOrder.Add(1);
+            comparer.ColumnSortOrder.Add(2);
+            comparer.ColumnSortOrder.Add(3);
         }
 
         private void HandleFilterWindow_Load(object sender, EventArgs e)

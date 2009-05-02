@@ -514,6 +514,7 @@ namespace ProcessHacker
                     if (item.SubItems[3].Text == "TCP")
                     {
                         if (item.SubItems[4].Text != "Listening" &&
+                            item.SubItems[4].Text != "CloseWait" &&
                             item.SubItems[4].Text != "TimeWait")
                         {
                             hasValid = true;
@@ -567,6 +568,7 @@ namespace ProcessHacker
                 {
                     if (item.SubItems[3].Text != "TCP" ||
                         item.SubItems[4].Text == "Listening" ||
+                        item.SubItems[4].Text == "CloseWait" ||
                         item.SubItems[4].Text == "TimeWait")
                         continue;
 
