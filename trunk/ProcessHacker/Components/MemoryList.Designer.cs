@@ -71,7 +71,6 @@
             this.listMemory.VirtualMode = true;
             this.listMemory.DoubleClick += new System.EventHandler(this.listMemory_DoubleClick);
             this.listMemory.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listMemory_RetrieveVirtualItem);
-            this.listMemory.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listMemory_KeyDown);
             // 
             // columnName
             // 

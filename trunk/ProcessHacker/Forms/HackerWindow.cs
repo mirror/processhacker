@@ -1398,7 +1398,6 @@ namespace ProcessHacker
             if (processP.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    treeProcesses.StateHighlighting = true;
                     treeProcesses.Tree.EndCompleteUpdate();
                     treeProcesses.Tree.EndUpdate();
                     treeProcesses.Invalidate();

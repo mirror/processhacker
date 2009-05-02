@@ -32,8 +32,9 @@ namespace ProcessHacker
 {
     public partial class ProcessTree : UserControl
     {
-        ProcessSystemProvider _provider;
-        ProcessTreeModel _treeModel;
+        private ProcessSystemProvider _provider;
+        private ProcessTreeModel _treeModel;
+        private int _runCount = 0;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
         public new event MouseEventHandler MouseUp;
@@ -216,12 +217,6 @@ namespace ProcessHacker
             }
         }
 
-        public bool StateHighlighting
-        {
-            get;
-            set;
-        }
-
         #endregion
 
         private void provider_Updated()
@@ -239,6 +234,8 @@ namespace ProcessHacker
                     treeProcesses.Invalidate();
                 }));
             }
+
+            _runCount++;
         }
 
         private void PerformDelayed(int delay, MethodInvoker action)
@@ -308,7 +305,7 @@ namespace ProcessHacker
 
                     if (node != null)
                     {
-                        if (this.StateHighlighting)
+                        if (item.RunId > 0 && _runCount > 0)
                         {
                             node.State = TreeNodeAdv.NodeState.New;
                             this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
@@ -354,8 +351,8 @@ namespace ProcessHacker
 
                     if (node != null)
                     {
-                        if (this.StateHighlighting)
-                        {
+                        //if (this.StateHighlighting)
+                        //{
                             node.State = TreeNodeAdv.NodeState.Removed;
                             this.PerformDelayed(Properties.Settings.Default.HighlightingDuration,
                                 new MethodInvoker(delegate
@@ -370,11 +367,11 @@ namespace ProcessHacker
                                     Logging.Log(ex);
                                 }
                             }));
-                        }
-                        else
-                        {
-                            _treeModel.Remove(item);
-                        }
+                        //}
+                        //else
+                        //{
+                        //    _treeModel.Remove(item);
+                        //}
 
                         treeProcesses.Invalidate();
                     }

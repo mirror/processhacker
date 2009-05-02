@@ -46,6 +46,7 @@ namespace ProcessHacker
             return base.MemberwiseClone();
         }
 
+        public int RunId;
         public int Pid;
 
         public Icon Icon;
@@ -754,6 +755,7 @@ namespace ProcessHacker
                         catch { }
                     }
 
+                    item.RunId = this.RunCount;
                     item.Pid = pid;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;

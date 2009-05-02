@@ -806,7 +806,6 @@
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.Provider = null;
             this.treeProcesses.Size = new System.Drawing.Size(784, 344);
-            this.treeProcesses.StateHighlighting = false;
             this.treeProcesses.TabIndex = 4;
             this.treeProcesses.SelectionChanged += new System.EventHandler(this.treeProcesses_SelectionChanged);
             this.treeProcesses.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeProcesses_NodeMouseDoubleClick);
