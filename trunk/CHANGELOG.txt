@@ -26,6 +26,7 @@ Process Hacker
    * Enabled Reduce Working Set for multiple processes at a time
  * FIXED:
    * #2782808 - "Exception generated when CPU History is set to first column."
+   * #2784922 - "Hidden processes window: window location not remembered"
    * #2784924 - "Network connections: process's icon not shown"
    * Unhandled exception when process properties is closed within 100ms of 
      being opened

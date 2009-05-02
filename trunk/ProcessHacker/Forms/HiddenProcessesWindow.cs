@@ -50,11 +50,21 @@ namespace ProcessHacker
         {
             buttonScan.Select();
             ColumnSettings.LoadSettings(Properties.Settings.Default.HiddenProcessesColumns, listProcesses);
+
+            this.Size = Properties.Settings.Default.HiddenProcessesWindowSize;
+            this.Location = Misc.FitRectangle(new Rectangle(
+                Properties.Settings.Default.HiddenProcessesWindowLocation, this.Size), this).Location;
         }
 
         private void HiddenProcessesWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             Properties.Settings.Default.HiddenProcessesColumns = ColumnSettings.SaveSettings(listProcesses);
+
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.HiddenProcessesWindowSize = this.Size;
+                Properties.Settings.Default.HiddenProcessesWindowLocation = this.Location;
+            }
         }
 
         private void Scan()

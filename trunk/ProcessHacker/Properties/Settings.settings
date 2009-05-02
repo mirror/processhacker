@@ -140,10 +140,10 @@
     <Setting Name="HandleListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FilterHandleListViewColumns" Type="System.String" Scope="User">
+    <Setting Name="HandleFilterWindowListViewColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FilterHandleWindowSize" Type="System.Drawing.Size" Scope="User">
+    <Setting Name="HandleFilterWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">554, 463</Value>
     </Setting>
     <Setting Name="ColorDebuggedProcesses" Type="System.Drawing.Color" Scope="User">
@@ -346,6 +346,15 @@
     </Setting>
     <Setting Name="PhysMemHistoryIconVisible" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HandleFilterWindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">200, 200</Value>
+    </Setting>
+    <Setting Name="HiddenProcessesWindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">200, 200</Value>
+    </Setting>
+    <Setting Name="HiddenProcessesWindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">527, 429</Value>
     </Setting>
   </Settings>
 </SettingsFile>

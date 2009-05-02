@@ -578,24 +578,24 @@ namespace ProcessHacker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FilterHandleListViewColumns {
+        public string HandleFilterWindowListViewColumns {
             get {
-                return ((string)(this["FilterHandleListViewColumns"]));
+                return ((string)(this["HandleFilterWindowListViewColumns"]));
             }
             set {
-                this["FilterHandleListViewColumns"] = value;
+                this["HandleFilterWindowListViewColumns"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("554, 463")]
-        public global::System.Drawing.Size FilterHandleWindowSize {
+        public global::System.Drawing.Size HandleFilterWindowSize {
             get {
-                return ((global::System.Drawing.Size)(this["FilterHandleWindowSize"]));
+                return ((global::System.Drawing.Size)(this["HandleFilterWindowSize"]));
             }
             set {
-                this["FilterHandleWindowSize"] = value;
+                this["HandleFilterWindowSize"] = value;
             }
         }
         
@@ -1402,6 +1402,42 @@ namespace ProcessHacker.Properties {
             }
             set {
                 this["PhysMemHistoryIconVisible"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200, 200")]
+        public global::System.Drawing.Point HandleFilterWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["HandleFilterWindowLocation"]));
+            }
+            set {
+                this["HandleFilterWindowLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("200, 200")]
+        public global::System.Drawing.Point HiddenProcessesWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["HiddenProcessesWindowLocation"]));
+            }
+            set {
+                this["HiddenProcessesWindowLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("527, 429")]
+        public global::System.Drawing.Size HiddenProcessesWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["HiddenProcessesWindowSize"]));
+            }
+            set {
+                this["HiddenProcessesWindowSize"] = value;
             }
         }
     }

@@ -57,8 +57,10 @@ namespace ProcessHacker
 
         private void HandleFilterWindow_Load(object sender, EventArgs e)
         {
-            ColumnSettings.LoadSettings(Properties.Settings.Default.FilterHandleListViewColumns, listHandles);
-            this.Size = Properties.Settings.Default.FilterHandleWindowSize;
+            ColumnSettings.LoadSettings(Properties.Settings.Default.HandleFilterWindowListViewColumns, listHandles);
+            this.Size = Properties.Settings.Default.HandleFilterWindowSize;
+            this.Location = Misc.FitRectangle(new System.Drawing.Rectangle(
+                Properties.Settings.Default.HandleFilterWindowLocation, this.Size), this).Location;
             listHandles.KeyDown +=
                 (sender_, e_) =>
                 {
@@ -69,8 +71,13 @@ namespace ProcessHacker
 
         private void HandleFilterWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.FilterHandleListViewColumns = ColumnSettings.SaveSettings(listHandles);
-            Properties.Settings.Default.FilterHandleWindowSize = this.Size;
+            Properties.Settings.Default.HandleFilterWindowListViewColumns = ColumnSettings.SaveSettings(listHandles);
+
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Properties.Settings.Default.HandleFilterWindowSize = this.Size;
+                Properties.Settings.Default.HandleFilterWindowLocation = this.Location;
+            }
 
             e.Cancel = true;
             this.Visible = false;
