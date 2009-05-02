@@ -36,12 +36,20 @@ namespace ProcessHacker.PE
         private Dictionary<ImageDataType, ImageData> _imageData = new Dictionary<ImageDataType,ImageData>();
         private List<SectionHeader> _sections = new List<SectionHeader>();
 
-        public ExportData ExportData;
-        public ImportData ImportData;
-        public RelocData RelocData;
+        public ExportData ExportData { get; private set; }
+        public ImportData ImportData { get; private set; }
+        public RelocData RelocData { get; private set; }
+
+        internal bool GetNames { get; private set; }
 
         public PEFile(string path)
+            : this(path, true)
+        { }
+
+        public PEFile(string path, bool getNames)
         {
+            this.GetNames = getNames;
+
             using (FileStream s = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 this.Read(s);
@@ -152,7 +160,7 @@ namespace ProcessHacker.PE
             }
 
             if (section == null)
-                throw new PEException("Relative virtual address has no matching section.");
+                throw new PEException("RVA could not be matched to a virtual address.");
 
             return section.PointerToRawData + rva - section.VirtualAddress;
         }

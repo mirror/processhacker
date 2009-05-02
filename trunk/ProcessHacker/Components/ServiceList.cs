@@ -193,7 +193,7 @@ namespace ProcessHacker.Components
         {
             _highlightingContext.Tick();
 
-            if (_provider.RunCount > 1 && listServices.ListViewItemSorter != _lvComparer)
+            if (_provider.RunCount > 0 && listServices.ListViewItemSorter != _lvComparer)
                 listServices.ListViewItemSorter = _lvComparer;
 
             if (_needsSort)

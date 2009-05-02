@@ -116,31 +116,34 @@ namespace ProcessHacker.PE
                 }
 
                 dllNumber++;
-            } 
-
-            foreach (ImportDirectoryEntry entry in this.ImportDirectoryTable)
-            {
-                br.BaseStream.Seek(peFile.RvaToVa(entry.NameRVA), SeekOrigin.Begin);
-
-                entry.Name = Misc.ReadString(br.BaseStream);
             }
 
-            for (int i = 0; i < this.ImportLookupTable.Count; i++)
+            if (peFile.GetNames)
             {
-                for (int j = 0; j < this.ImportLookupTable[i].Count; j++)
+                foreach (ImportDirectoryEntry entry in this.ImportDirectoryTable)
                 {
-                    ImportLookupEntry entry = this.ImportLookupTable[i][j];
+                    br.BaseStream.Seek(peFile.RvaToVa(entry.NameRVA), SeekOrigin.Begin);
 
-                    if (!entry.UseOrdinal)
+                    entry.Name = Misc.ReadString(br.BaseStream);
+                }
+
+                for (int i = 0; i < this.ImportLookupTable.Count; i++)
+                {
+                    for (int j = 0; j < this.ImportLookupTable[i].Count; j++)
                     {
-                        br.BaseStream.Seek(peFile.RvaToVa(entry.NameTableRVA), SeekOrigin.Begin);
+                        ImportLookupEntry entry = this.ImportLookupTable[i][j];
 
-                        entry.NameEntry = new ImportNameEntry();
-                        entry.NameEntry.Hint = br.ReadUInt16();
-                        entry.NameEntry.Name = Misc.ReadString(br.BaseStream);
+                        if (!entry.UseOrdinal)
+                        {
+                            br.BaseStream.Seek(peFile.RvaToVa(entry.NameTableRVA), SeekOrigin.Begin);
+
+                            entry.NameEntry = new ImportNameEntry();
+                            entry.NameEntry.Hint = br.ReadUInt16();
+                            entry.NameEntry.Name = Misc.ReadString(br.BaseStream);
+                        }
                     }
                 }
-            }  
+            }
         }
 
         public List<ImportDirectoryEntry> ImportDirectoryTable = new List<ImportDirectoryEntry>();

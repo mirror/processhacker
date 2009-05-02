@@ -396,7 +396,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    var peFile = new PE.PEFile(fileName);
+                    var peFile = new PE.PEFile(fileName, false);
 
                     if (peFile.ImportData != null)
                     {

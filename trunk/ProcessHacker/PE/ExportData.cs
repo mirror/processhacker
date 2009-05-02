@@ -80,14 +80,17 @@ namespace ProcessHacker.PE
                 this.ExportAddressTable.Add(entry);
             }
 
-            for (int i = 0; i < this.ExportAddressTable.Count; i++)
+            if (peFile.GetNames)
             {
-                ExportEntry entry = this.ExportAddressTable[i];
-
-                if (entry.Type == ExportEntry.ExportType.Forwarder)
+                for (int i = 0; i < this.ExportAddressTable.Count; i++)
                 {
-                    br.BaseStream.Seek(peFile.RvaToVa(entry.ExportRVA), SeekOrigin.Begin);
-                    entry.ForwardedString = Misc.ReadString(br.BaseStream);
+                    ExportEntry entry = this.ExportAddressTable[i];
+
+                    if (entry.Type == ExportEntry.ExportType.Forwarder)
+                    {
+                        br.BaseStream.Seek(peFile.RvaToVa(entry.ExportRVA), SeekOrigin.Begin);
+                        entry.ForwardedString = Misc.ReadString(br.BaseStream);
+                    }
                 }
             }
 
@@ -107,11 +110,14 @@ namespace ProcessHacker.PE
                 this.ExportNamePointerTable.Add(br.ReadUInt32());
             }
 
-            // read names
-            for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
+            if (peFile.GetNames)
             {
-                br.BaseStream.Seek(peFile.RvaToVa(this.ExportNamePointerTable[i]), SeekOrigin.Begin);
-                this.ExportNameTable.Add(Misc.ReadString(br.BaseStream));
+                // read names
+                for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
+                {
+                    br.BaseStream.Seek(peFile.RvaToVa(this.ExportNamePointerTable[i]), SeekOrigin.Begin);
+                    this.ExportNameTable.Add(Misc.ReadString(br.BaseStream));
+                }
             }
         }
 

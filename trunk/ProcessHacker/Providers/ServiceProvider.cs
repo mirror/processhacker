@@ -105,36 +105,36 @@ namespace ProcessHacker
             // check for modified services
             foreach (ServiceItem service in Dictionary.Values)
             {
-                ServiceItem newServiceItem = service.Clone() as ServiceItem;
-
-                newServiceItem.Status = newdictionary[service.Status.ServiceName];
-                newServiceItem.Config = service.Config;
+                var newStatus = newdictionary[service.Status.ServiceName];
 
                 bool modified = false;
 
-                if (service.Status.DisplayName != newServiceItem.Status.DisplayName)
+                if (service.Status.DisplayName != newStatus.DisplayName)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ControlsAccepted !=
-                    newServiceItem.Status.ServiceStatusProcess.ControlsAccepted)
+                    newStatus.ServiceStatusProcess.ControlsAccepted)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.CurrentState !=
-                    newServiceItem.Status.ServiceStatusProcess.CurrentState)
+                    newStatus.ServiceStatusProcess.CurrentState)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ProcessID !=
-                    newServiceItem.Status.ServiceStatusProcess.ProcessID)
+                    newStatus.ServiceStatusProcess.ProcessID)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ServiceFlags !=
-                    newServiceItem.Status.ServiceStatusProcess.ServiceFlags)
+                    newStatus.ServiceStatusProcess.ServiceFlags)
                     modified = true;
                 else if (service.Status.ServiceStatusProcess.ServiceType !=
-                    newServiceItem.Status.ServiceStatusProcess.ServiceType)
-                    modified = true;
-                else if (service.Config.StartType !=
-                    newServiceItem.Config.StartType)
+                    newStatus.ServiceStatusProcess.ServiceType)
                     modified = true;
 
                 if (modified)
                 {
+                    var newServiceItem = new ServiceItem()
+                    {
+                        Status = newStatus,
+                        Config = service.Config
+                    };
+
                     this.CallDictionaryModified(service, newServiceItem);
                     toModify.Add(service.Status.ServiceName, newServiceItem);
                 }         
