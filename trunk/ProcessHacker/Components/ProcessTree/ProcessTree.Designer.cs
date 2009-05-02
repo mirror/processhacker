@@ -68,7 +68,7 @@
             this.columnKernelCpuTime = new Aga.Controls.Tree.TreeColumn();
             this.nodeIcon = new Aga.Controls.Tree.NodeControls.NodeIcon();
             this.nodeName = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodePID = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
+            this.nodePid = new Aga.Controls.Tree.NodeControls.NodeIntegerTextBox();
             this.nodePvtMemory = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePeakWorkingSet = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -80,7 +80,7 @@
             this.nodePagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePeakPagefileUsage = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePageFaults = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-            this.nodeCPU = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.nodeCpu = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeUsername = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodeSessionId = new Aga.Controls.Tree.NodeControls.NodeTextBox();
             this.nodePriorityClass = new Aga.Controls.Tree.NodeControls.NodeTextBox();
@@ -158,7 +158,7 @@
             this.treeProcesses.Name = "treeProcesses";
             this.treeProcesses.NodeControls.Add(this.nodeIcon);
             this.treeProcesses.NodeControls.Add(this.nodeName);
-            this.treeProcesses.NodeControls.Add(this.nodePID);
+            this.treeProcesses.NodeControls.Add(this.nodePid);
             this.treeProcesses.NodeControls.Add(this.nodePvtMemory);
             this.treeProcesses.NodeControls.Add(this.nodeWorkingSet);
             this.treeProcesses.NodeControls.Add(this.nodePeakWorkingSet);
@@ -170,7 +170,7 @@
             this.treeProcesses.NodeControls.Add(this.nodePagefileUsage);
             this.treeProcesses.NodeControls.Add(this.nodePeakPagefileUsage);
             this.treeProcesses.NodeControls.Add(this.nodePageFaults);
-            this.treeProcesses.NodeControls.Add(this.nodeCPU);
+            this.treeProcesses.NodeControls.Add(this.nodeCpu);
             this.treeProcesses.NodeControls.Add(this.nodeUsername);
             this.treeProcesses.NodeControls.Add(this.nodeSessionId);
             this.treeProcesses.NodeControls.Add(this.nodePriorityClass);
@@ -566,15 +566,15 @@
             this.nodeName.ParentColumn = this.columnName;
             this.nodeName.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
-            // nodePID
+            // nodePid
             // 
-            this.nodePID.DataPropertyName = "DisplayPID";
-            this.nodePID.EditEnabled = false;
-            this.nodePID.IncrementalSearchEnabled = true;
-            this.nodePID.LeftMargin = 3;
-            this.nodePID.ParentColumn = this.columnPID;
-            this.nodePID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodePID.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.nodePid.DataPropertyName = "DisplayPid";
+            this.nodePid.EditEnabled = false;
+            this.nodePid.IncrementalSearchEnabled = true;
+            this.nodePid.LeftMargin = 3;
+            this.nodePid.ParentColumn = this.columnPID;
+            this.nodePid.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodePid.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodePvtMemory
             // 
@@ -686,15 +686,15 @@
             this.nodePageFaults.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.nodePageFaults.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
-            // nodeCPU
+            // nodeCpu
             // 
-            this.nodeCPU.DataPropertyName = "CPU";
-            this.nodeCPU.EditEnabled = false;
-            this.nodeCPU.IncrementalSearchEnabled = true;
-            this.nodeCPU.LeftMargin = 3;
-            this.nodeCPU.ParentColumn = this.columnCPU;
-            this.nodeCPU.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.nodeCPU.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
+            this.nodeCpu.DataPropertyName = "Cpu";
+            this.nodeCpu.EditEnabled = false;
+            this.nodeCpu.IncrementalSearchEnabled = true;
+            this.nodeCpu.LeftMargin = 3;
+            this.nodeCpu.ParentColumn = this.columnCPU;
+            this.nodeCpu.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.nodeCpu.Trimming = System.Drawing.StringTrimming.EllipsisCharacter;
             // 
             // nodeUsername
             // 
@@ -937,9 +937,9 @@
         private Aga.Controls.Tree.TreeColumn columnPvtMemory;
         private Aga.Controls.Tree.TreeColumn columnUsername;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeName;
-        private Aga.Controls.Tree.NodeControls.NodeIntegerTextBox nodePID;
+        private Aga.Controls.Tree.NodeControls.NodeIntegerTextBox nodePid;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodePvtMemory;
-        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeCPU;
+        private Aga.Controls.Tree.NodeControls.NodeTextBox nodeCpu;
         private Aga.Controls.Tree.NodeControls.NodeTextBox nodeUsername;
         private Aga.Controls.Tree.NodeControls.NodeIcon nodeIcon;
         private Aga.Controls.Tree.TreeColumn columnCPU;

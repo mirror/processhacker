@@ -394,9 +394,9 @@ namespace ProcessHacker
 
                         // May not be in the dictionary if the process has terminated but 
                         // the node is still being highlighted.
-                        if (_provider.Dictionary.ContainsKey(pNode.PID))
+                        if (_provider.Dictionary.ContainsKey(pNode.Pid))
                         {
-                            ProcessItem item = _provider.Dictionary[pNode.PID];
+                            ProcessItem item = _provider.Dictionary[pNode.Pid];
 
                             node.BackColor = this.GetProcessColor(item);
                         }
@@ -424,7 +424,7 @@ namespace ProcessHacker
 
         public TreeNodeAdv FindTreeNode(ProcessNode node)
         {
-            return this.FindTreeNode(node.PID);
+            return this.FindTreeNode(node.Pid);
         }
 
         public ProcessNode FindNode(TreeNodeAdv node)

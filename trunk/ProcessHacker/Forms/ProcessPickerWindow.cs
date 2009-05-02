@@ -60,7 +60,7 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            this.SelectedPid = treeProcesses.SelectedNodes[0].PID;
+            this.SelectedPid = treeProcesses.SelectedNodes[0].Pid;
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

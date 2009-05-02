@@ -149,7 +149,7 @@ namespace ProcessHacker
             get { return _pitem.Name != null ? _pitem.Name : ""; }
         }
 
-        public string DisplayPID
+        public string DisplayPid
         {
             get
             {
@@ -160,12 +160,12 @@ namespace ProcessHacker
             }
         }
 
-        public int PID
+        public int Pid
         {
             get { return _pitem.Pid; }
         }
 
-        public int PPID
+        public int PPid
         {
             get { if (_pitem.Pid == _pitem.ParentPid) return -1; else return _pitem.ParentPid; }
         }
@@ -269,7 +269,7 @@ namespace ProcessHacker
             get { return _pitem.Process.VirtualMemoryCounters.PageFaultCount.ToString("N0"); }
         }
 
-        public string CPU
+        public string Cpu
         {
             get
             {
@@ -307,7 +307,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return _pitem.SessionId.ToString();
@@ -318,7 +318,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return Misc.GetStringPriority(_pitem.Process.BasePriority);
@@ -329,7 +329,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return _pitem.Process.BasePriority.ToString();
@@ -340,11 +340,11 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID == 0)
+                if (Pid == 0)
                     return "System Idle Process";
-                else if (PID == -2)
+                else if (Pid == -2)
                     return "Deferred Procedure Calls";
-                else if (PID == -3)
+                else if (Pid == -3)
                     return "Interrupts";
                 else if (_pitem.VersionInfo != null && _pitem.VersionInfo.FileDescription != null)
                     return _pitem.VersionInfo.FileDescription;
@@ -390,7 +390,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return _pitem.Process.NumberOfThreads.ToString();
@@ -401,7 +401,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return _pitem.Process.HandleCount.ToString();
@@ -414,7 +414,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
+                    using (var phandle = new ProcessHandle(Pid, ProcessAccess.QueryInformation))
                         return phandle.GetGuiResources(false);
                 }
                 catch
@@ -428,7 +428,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                 {
@@ -448,7 +448,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    using (var phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
+                    using (var phandle = new ProcessHandle(Pid, ProcessAccess.QueryInformation))
                         return phandle.GetGuiResources(true);
                 }
                 catch
@@ -462,7 +462,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                 {
@@ -595,7 +595,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return _pitem.CreateTime.ToString();
@@ -606,7 +606,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (PID < 4)
+                if (Pid < 4)
                     return "";
                 else
                     return Misc.GetNiceRelativeDateTime(_pitem.CreateTime);

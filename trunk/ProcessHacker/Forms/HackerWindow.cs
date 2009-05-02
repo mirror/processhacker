@@ -926,7 +926,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                pids[i] = treeProcesses.SelectedNodes[i].Pid;
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
@@ -956,7 +956,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                pids[i] = treeProcesses.SelectedNodes[i].Pid;
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
@@ -986,7 +986,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                pids[i] = treeProcesses.SelectedNodes[i].Pid;
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
@@ -1003,7 +1003,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                pids[i] = treeProcesses.SelectedNodes[i].Pid;
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
@@ -1074,7 +1074,7 @@ namespace ProcessHacker
 
             for (int i = 0; i < treeProcesses.SelectedNodes.Count; i++)
             {
-                pids[i] = treeProcesses.SelectedNodes[i].PID;
+                pids[i] = treeProcesses.SelectedNodes[i].Pid;
                 names[i] = treeProcesses.SelectedNodes[i].Name;
             }
 
@@ -1875,7 +1875,7 @@ namespace ProcessHacker
 
             if (processSelectedItems == 1)
             {
-                processSelectedPID = treeProcesses.SelectedNodes[0].PID;
+                processSelectedPID = treeProcesses.SelectedNodes[0].Pid;
             }
             else
             {

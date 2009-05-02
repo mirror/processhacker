@@ -52,7 +52,7 @@ namespace ProcessHacker
                 {
                     string filename = "";
 
-                    if (pNode.PID == 4)
+                    if (pNode.Pid == 4)
                     {
                         filename = Misc.GetRealPath(Misc.GetKernelFileName());
                     }
@@ -133,9 +133,9 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (Program.HackerWindow.ProcessServices.ContainsKey(pNode.PID))
+                    if (Program.HackerWindow.ProcessServices.ContainsKey(pNode.Pid))
                     {
-                        foreach (string service in Program.HackerWindow.ProcessServices[pNode.PID])
+                        foreach (string service in Program.HackerWindow.ProcessServices[pNode.Pid])
                         {
                             if (Program.HackerWindow.ServiceProvider.Dictionary.ContainsKey(service))
                             {

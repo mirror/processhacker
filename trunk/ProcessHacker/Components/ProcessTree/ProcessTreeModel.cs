@@ -62,7 +62,7 @@ namespace ProcessHacker
             // Find this process' children and add them.
             foreach (ProcessNode node in _roots)
             {
-                if (node.ProcessItem.HasParent && node.PPID == item.Pid)
+                if (node.ProcessItem.HasParent && node.PPid == item.Pid)
                 {
                     _roots.Remove(node);
                     itemNode.Children.Add(node);
@@ -93,7 +93,7 @@ namespace ProcessHacker
             targetNode.Dispose();
 
             // Check if the process is a root.
-            ProcessNode rootNode = _roots.Find(node => node.PID == item.Pid);
+            ProcessNode rootNode = _roots.Find(node => node.Pid == item.Pid);
 
             if (rootNode != null)
             {
@@ -104,9 +104,9 @@ namespace ProcessHacker
             else
             {
                 // The process isn't a root, so we have to search for the process' parent.
-                if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPID))
+                if (targetNode.ProcessItem.HasParent && _processes.ContainsKey(targetNode.PPid))
                 {
-                    ProcessNode parentNode = _processes[targetNode.PPID];
+                    ProcessNode parentNode = _processes[targetNode.PPid];
 
                     if (parentNode != null)
                     {
@@ -157,9 +157,9 @@ namespace ProcessHacker
                 {
                     stack.Push(currentNode);
 
-                    if (currentNode.ProcessItem.HasParent && _processes.ContainsKey(currentNode.PPID))
+                    if (currentNode.ProcessItem.HasParent && _processes.ContainsKey(currentNode.PPid))
                     {
-                        ProcessNode newNode = _processes[currentNode.PPID];
+                        ProcessNode newNode = _processes[currentNode.PPid];
 
                         if (newNode == currentNode)
                             break;
@@ -233,7 +233,7 @@ namespace ProcessHacker
                             case "name":
                                 return ModifySort(n1.Name.CompareTo(n2.Name), sortO);
                             case "pid":
-                                return ModifySort(n1.PID.CompareTo(n2.PID), sortO);
+                                return ModifySort(n1.Pid.CompareTo(n2.Pid), sortO);
                             case "pvt. memory":
                                 return ModifySort(n1.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes.CompareTo(
                                     n2.ProcessItem.Process.VirtualMemoryCounters.PrivateBytes), sortO);
