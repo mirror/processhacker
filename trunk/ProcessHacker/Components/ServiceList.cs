@@ -53,6 +53,8 @@ namespace ProcessHacker.Components
             listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
 
             _lvComparer = new SortedListViewComparer(listServices);
+            listServices.Sorting = SortOrder.None;
+            listServices.ListViewItemSorter = null;
         }
 
         private void listServices_DoubleClick(object sender, EventArgs e)

@@ -411,15 +411,9 @@ namespace ProcessHacker
 
                         if (
                             libraryTotal < 3 && funcTotal < 5 ||
-                            ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3 && libraryTotal < 14
+                            ((float)funcTotal / libraryTotal < 4) && libraryTotal > 3 && libraryTotal < 30
                             )
                             fpResult.IsPacked = true;
-
-                        // Only one import from mscoree.dll means that it's a .NET program.
-                        if (libraryTotal == 1 && 
-                            peFile.ImportData.ImportDirectoryTable[0].Name.Equals("mscoree.dll", 
-                            StringComparison.InvariantCultureIgnoreCase))
-                            fpResult.IsPacked = false;
                     }
                 }
                 catch (System.IO.EndOfStreamException)
