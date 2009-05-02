@@ -236,6 +236,7 @@ namespace ProcessHacker
             checkHideHandlesWithNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
             checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
+            checkHidePhConnections.Checked = Properties.Settings.Default.HideProcessHackerNetworkConnections;
 
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
 
@@ -341,6 +342,7 @@ namespace ProcessHacker
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
             Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
             Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
+            Properties.Settings.Default.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
 
             Properties.Settings.Default.MaxSamples = (int)textMaxSamples.Value;
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;

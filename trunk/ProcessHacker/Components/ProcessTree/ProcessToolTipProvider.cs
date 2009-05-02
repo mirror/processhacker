@@ -194,9 +194,10 @@ namespace ProcessHacker
 
                     if (pNode.ProcessItem.IsInJob)
                         otherNotes += "\n    Process is in a job.";
-
                     if (pNode.ProcessItem.ElevationType == TokenElevationType.Full)
                         otherNotes += "\n    Process is elevated.";
+                    if (pNode.ProcessItem.IsDotNet)
+                        otherNotes += "\n    Process is managed (.NET).";
 
                     if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;

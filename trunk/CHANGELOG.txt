@@ -24,6 +24,7 @@ Process Hacker
    * Process property window locations are now saved
    * The main window dimensions are saved when exiting minimized
    * Enabled Reduce Working Set for multiple processes at a time
+   * Hides Process Hacker network connections by default
  * FIXED:
    * #2782808 - "Exception generated when CPU History is set to first column."
    * #2784922 - "Hidden processes window: window location not remembered"

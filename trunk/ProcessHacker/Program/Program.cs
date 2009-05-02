@@ -49,6 +49,7 @@ namespace ProcessHacker
         public static ProcessAccess MinProcessGetHandleInformationRights = ProcessAccess.DupHandle;
         public static ThreadAccess MinThreadQueryRights = ThreadAccess.QueryInformation;
 
+        public static int CurrentProcessId;
         public static int CurrentSessionId;
         public static string CurrentUsername;
 
@@ -250,6 +251,7 @@ namespace ProcessHacker
 
             try
             {
+                CurrentProcessId = Win32.GetCurrentProcessId();
                 CurrentSessionId = Win32.GetProcessSessionId(Win32.GetCurrentProcessId());
                 System.Threading.Thread.CurrentThread.Priority = ThreadPriority.Highest;
             }

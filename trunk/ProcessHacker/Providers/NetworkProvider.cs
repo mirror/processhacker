@@ -48,6 +48,10 @@ namespace ProcessHacker
             {
                 foreach (var connection in list)
                 {
+                    if (connection.Pid == Program.CurrentProcessId &&
+                        Properties.Settings.Default.HideProcessHackerNetworkConnections)
+                        continue;
+
                     string id = connection.Pid.ToString() + "-" + connection.Local.ToString() + "-" +
                         (connection.Remote != null ? connection.Remote.ToString() : "") + "-" + connection.Protocol.ToString();
 

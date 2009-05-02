@@ -1440,5 +1440,17 @@ namespace ProcessHacker.Properties {
                 this["HiddenProcessesWindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HideProcessHackerNetworkConnections {
+            get {
+                return ((bool)(this["HideProcessHackerNetworkConnections"]));
+            }
+            set {
+                this["HideProcessHackerNetworkConnections"] = value;
+            }
+        }
     }
 }

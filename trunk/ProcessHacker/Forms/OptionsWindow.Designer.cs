@@ -95,6 +95,7 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.checkHidePhConnections = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -163,7 +164,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 285);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 261);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -176,7 +177,7 @@
             // 
             this.checkWarnDangerous.AutoSize = true;
             this.checkWarnDangerous.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 261);
+            this.checkWarnDangerous.Location = new System.Drawing.Point(6, 78);
             this.checkWarnDangerous.Name = "checkWarnDangerous";
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
@@ -239,7 +240,6 @@
             this.tabGeneral.Controls.Add(this.textUpdateInterval);
             this.tabGeneral.Controls.Add(this.label2);
             this.tabGeneral.Controls.Add(this.checkShowProcessDomains);
-            this.tabGeneral.Controls.Add(this.checkWarnDangerous);
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
@@ -383,17 +383,19 @@
             // 
             // tabAdvanced
             // 
+            this.tabAdvanced.Controls.Add(this.checkHidePhConnections);
             this.tabAdvanced.Controls.Add(this.textMaxSamples);
             this.tabAdvanced.Controls.Add(this.label6);
             this.tabAdvanced.Controls.Add(this.buttonChangeReplaceTaskManager);
             this.tabAdvanced.Controls.Add(this.checkReplaceTaskManager);
+            this.tabAdvanced.Controls.Add(this.checkWarnDangerous);
             this.tabAdvanced.Controls.Add(this.checkEnableKPH);
             this.tabAdvanced.Controls.Add(this.checkHideHandlesWithNoName);
             this.tabAdvanced.Controls.Add(this.checkVerifySignatures);
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(417, 341);
+            this.tabAdvanced.Size = new System.Drawing.Size(417, 319);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -405,7 +407,7 @@
             0,
             0,
             0});
-            this.textMaxSamples.Location = new System.Drawing.Point(118, 102);
+            this.textMaxSamples.Location = new System.Drawing.Point(118, 154);
             this.textMaxSamples.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -428,7 +430,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 104);
+            this.label6.Location = new System.Drawing.Point(6, 156);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(106, 13);
             this.label6.TabIndex = 19;
@@ -475,7 +477,7 @@
             // 
             this.checkHideHandlesWithNoName.AutoSize = true;
             this.checkHideHandlesWithNoName.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 78);
+            this.checkHideHandlesWithNoName.Location = new System.Drawing.Point(6, 102);
             this.checkHideHandlesWithNoName.Name = "checkHideHandlesWithNoName";
             this.checkHideHandlesWithNoName.Size = new System.Drawing.Size(160, 18);
             this.checkHideHandlesWithNoName.TabIndex = 13;
@@ -667,7 +669,7 @@
             this.tabPlotting.Location = new System.Drawing.Point(4, 22);
             this.tabPlotting.Name = "tabPlotting";
             this.tabPlotting.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPlotting.Size = new System.Drawing.Size(417, 341);
+            this.tabPlotting.Size = new System.Drawing.Size(417, 319);
             this.tabPlotting.TabIndex = 2;
             this.tabPlotting.Text = "Plotting";
             this.tabPlotting.UseVisualStyleBackColor = true;
@@ -830,7 +832,7 @@
             this.tabSymbols.Location = new System.Drawing.Point(4, 22);
             this.tabSymbols.Name = "tabSymbols";
             this.tabSymbols.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSymbols.Size = new System.Drawing.Size(417, 341);
+            this.tabSymbols.Size = new System.Drawing.Size(417, 319);
             this.tabSymbols.TabIndex = 4;
             this.tabSymbols.Text = "Symbols";
             this.tabSymbols.UseVisualStyleBackColor = true;
@@ -929,6 +931,19 @@
             this.buttonApply.Text = "&Apply";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            // 
+            // checkHidePhConnections
+            // 
+            this.checkHidePhConnections.AutoSize = true;
+            this.checkHidePhConnections.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkHidePhConnections.Location = new System.Drawing.Point(6, 126);
+            this.checkHidePhConnections.Name = "checkHidePhConnections";
+            this.checkHidePhConnections.Size = new System.Drawing.Size(235, 18);
+            this.checkHidePhConnections.TabIndex = 21;
+            this.checkHidePhConnections.Text = "Hide Process Hacker network connections";
+            this.toolTipProvider.SetToolTip(this.checkHidePhConnections, "Hides network connections made by Process Hacker. This may be useful when Process" +
+                    " Hacker is resolving addresses.");
+            this.checkHidePhConnections.UseVisualStyleBackColor = true;
             // 
             // OptionsWindow
             // 
@@ -1038,5 +1053,6 @@
         private System.Windows.Forms.TextBox textDbghelpPath;
         private System.Windows.Forms.CheckBox checkUndecorate;
         private System.Windows.Forms.Button buttonApply;
+        private System.Windows.Forms.CheckBox checkHidePhConnections;
     }
 }

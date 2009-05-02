@@ -356,5 +356,8 @@
     <Setting Name="HiddenProcessesWindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">527, 429</Value>
     </Setting>
+    <Setting Name="HideProcessHackerNetworkConnections" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
