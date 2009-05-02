@@ -1386,8 +1386,6 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            serviceP.RunOnceAsync();
-
             processP.DictionaryAdded += processP_DictionaryAdded;
             processP.DictionaryRemoved += processP_DictionaryRemoved;
             processP.Updated -= processP_Updated;
@@ -2442,6 +2440,7 @@ namespace ProcessHacker
             serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
             serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
             serviceP.Updated += serviceP_Updated;
+            serviceP.RunOnceAsync();
             serviceP.Enabled = true;
             updateServicesMenuItem.Checked = true;
 
@@ -2632,6 +2631,7 @@ namespace ProcessHacker
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
+                this.LoadStructs();
             }
         }
     }
