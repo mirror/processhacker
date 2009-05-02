@@ -32,6 +32,7 @@ namespace ProcessHacker.Components
     {
         private ServiceProvider _provider;
         private HighlightingContext _highlightingContext;
+        private SortedListViewComparer _lvComparer;
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -45,12 +46,13 @@ namespace ProcessHacker.Components
 
             _highlightingContext = new HighlightingContext(listServices);
             listServices.SetTheme("explorer");
-            listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
             listServices.KeyDown += new KeyEventHandler(ServiceList_KeyDown);
             listServices.MouseDown += new MouseEventHandler(listServices_MouseDown);
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
             listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
             listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
+
+            _lvComparer = new SortedListViewComparer(listServices);
         }
 
         private void listServices_DoubleClick(object sender, EventArgs e)
@@ -191,12 +193,15 @@ namespace ProcessHacker.Components
         {
             _highlightingContext.Tick();
 
+            if (_provider.RunCount > 1 && listServices.ListViewItemSorter != _lvComparer)
+                listServices.ListViewItemSorter = _lvComparer;
+
             if (_needsSort)
             {
                 listServices.Sort();
                 _needsSort = false;
             }
-        }  
+        }
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
