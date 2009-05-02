@@ -40,11 +40,11 @@
             this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
             this.closeMenuItem = new System.Windows.Forms.MenuItem();
+            this.processPropertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.propertiesMenuItem = new System.Windows.Forms.MenuItem();
             this.copyMenuItem = new System.Windows.Forms.MenuItem();
             this.progress = new System.Windows.Forms.ProgressBar();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.processPropertiesMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
@@ -138,6 +138,12 @@
             this.closeMenuItem.Text = "Close";
             this.closeMenuItem.Click += new System.EventHandler(this.closeMenuItem_Click);
             // 
+            // processPropertiesMenuItem
+            // 
+            this.processPropertiesMenuItem.Index = 1;
+            this.processPropertiesMenuItem.Text = "Process Properties...";
+            this.processPropertiesMenuItem.Click += new System.EventHandler(this.processPropertiesMenuItem_Click);
+            // 
             // propertiesMenuItem
             // 
             this.propertiesMenuItem.Index = 2;
@@ -163,12 +169,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
-            // 
-            // processPropertiesMenuItem
-            // 
-            this.processPropertiesMenuItem.Index = 1;
-            this.processPropertiesMenuItem.Text = "Process Properties...";
-            this.processPropertiesMenuItem.Click += new System.EventHandler(this.processPropertiesMenuItem_Click);
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // HandleFilterWindow
             // 
@@ -184,7 +185,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HandleFilterWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Filter Handles";
+            this.Text = "Find Handles or DLLs";
             this.Load += new System.EventHandler(this.HandleFilterWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();

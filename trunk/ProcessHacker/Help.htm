@@ -65,12 +65,6 @@ pre {
       smaller unit will be displayed in that smaller unit, while sizes requiring a larger unit will 
       use units up to the maximum unit specified here.</dd>
       
-      <dt>Show notification icon</dt>
-      <dd>If enabled, Process Hacker will display an icon in the system notification area. 
-      That icon will show the CPU usage history and any enabled notifications such as new/terminated 
-      processes and new/started/stopped/deleted services. You can configure notifications by 
-      right-clicking on the icon.</dd>
-      
       <dt>Hide when minimized</dt>
       <dd>If enabled, Process Hacker will automatically hide itself when it is minimized. You 
       can double-click on the notification icon to show Process Hacker.</dd>
@@ -86,9 +80,6 @@ pre {
       <dt>Allow only one instance</dt>
       <dd>If enabled, Process Hacker will allow only one instance of itself. Any attempts to start 
       a new instance will show the existing instance.</dd>
-      
-      <dt>Warn about potentially dangerous actions</dt>
-      <dd>If enabled, Process Hacker will warn about certain actions to system processes.</dd>
       
       <dt>Show user/group domains</dt>
       <dd>If enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
@@ -115,10 +106,17 @@ pre {
       
       <dt>Replace Task Manager with Process Hacker</dt>
       <dd>If enabled, any attempt to start Task Manager will start Process Hacker instead.</dd>
+
+      <dt>Warn about potentially dangerous actions</dt>
+      <dd>If enabled, Process Hacker will warn about certain actions to system processes.</dd>
       
       <dt>Hide handles with no name</dt>
       <dd>If enabled, unnamed handles will be hidden by default. This can be changed in each 
       process properties window.</dd>
+      
+      <dt>Hide Process Hacker network connections</dt>
+      <dd>If enabled, network connections made by Process Hacker will be hidden in the network 
+      connections list.</dd>
       
       <dt>Max. Sample History</dt>
       <dd>Specifies the maximum number of performance-related samples to be retained. This includes 
@@ -166,6 +164,18 @@ pre {
       <dd>Highlighting for packed images and images with invalid signatures. These processes 
       are often, but not always malicious - normal executables are often packed to reduce their 
       size.</dd>
+      
+      <dt>Suspended Threads</dt>
+      <dd>Threads which have been suspended.</dd>
+      
+      <dt>GUI Threads</dt>
+      <dd>Threads which have made at least one GUI-related system call.</dd>
+      
+      <dt>Protected Handles</dt>
+      <dd>Handles which are protected from being closed.</dd>
+      
+      <dt>Inherit Handles</dt>
+      <dd>Handles which will be inherited by child processes.</dd>
     </dl>
     
     <h2>Plotting</h2>
@@ -234,23 +244,29 @@ pre {
     
     <dl>
       <dt>Terminate Process(es)</dt>
-      <dd>Uses the <code>TerminateProcess</code> API function to terminate the selected 
-      process(es).</dd>
+      <dd>Terminates the selected process(es). If KProcessHacker is enabled, Process Hacker 
+      will, except under extraordinary circumstances, be able to terminate any process, 
+      including ones protected by rootkits or security software.</dd>
+
+      <dt>Terminate Process Tree</dt>
+      <dd>Terminates the selected process and its descendants.</dd>
 
       <dt>Suspend Process(es)</dt>
-      <dd>Uses the <code>NtSuspendProcess</code> API function to suspend the selected
-      process(es).</dd>
+      <dd>Suspends the selected process(es). If KProcessHacker is enabled and running on 
+      Windows Vista, Process Hacker will be able to suspend any process, including ones 
+      protected by rootkits or security software.</dd>
 
       <dt>Resume Process(es)</dt>
-      <dd>Uses the <code>NtResumeProcess</code> API function to resume the selected 
-      process(es).</dd>
+      <dd>Resumes the selected process(es). If KProcessHacker is enabled and running on 
+      Windows Vista, Process Hacker will be able to resume any process, including ones 
+      protected by rootkits or security software.</dd>
       
       <dt>Restart</dt>
       <dd>Restarts the selected process with the same command line arguments and working 
       directory.</dd>
       
       <dt>Reduce Working Set</dt>
-      <dd>Uses the <code>EmptyWorkingSet</code> API function to reduce the process' working set. 
+      <dd>Empties the selected process(es)' working set(s). 
       This is a safe function; the process will eventually reclaim most of its working set.</dd>
       
       <dt>Virtualization</dt>

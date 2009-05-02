@@ -95,7 +95,7 @@ namespace ProcessHacker.FormHelper
                     try
                     {
                         using (var phandle = new ProcessHandle(process.Key,
-                            Program.MinProcessReadMemoryRights))
+                            Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                         {
                             phandle.EnumModules((module) =>
                                 {

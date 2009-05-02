@@ -518,7 +518,7 @@
             this.vistaMenu.SetImage(this.findHandlesMenuItem, global::ProcessHacker.Properties.Resources.find);
             this.findHandlesMenuItem.Index = 8;
             this.findHandlesMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlF;
-            this.findHandlesMenuItem.Text = "&Find Handles...";
+            this.findHandlesMenuItem.Text = "&Find Handles or DLLs...";
             this.findHandlesMenuItem.Click += new System.EventHandler(this.findHandlesMenuItem_Click);
             // 
             // inspectPEFileMenuItem
@@ -917,8 +917,8 @@
             this.findHandlesToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.findHandlesToolStripButton.Name = "findHandlesToolStripButton";
             this.findHandlesToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.findHandlesToolStripButton.Text = "Find Handles...";
-            this.findHandlesToolStripButton.ToolTipText = "Find Handles... (Ctrl+F)";
+            this.findHandlesToolStripButton.Text = "Find Handles or DLLs...";
+            this.findHandlesToolStripButton.ToolTipText = "Find Handles or DLLs... (Ctrl+F)";
             this.findHandlesToolStripButton.Click += new System.EventHandler(this.findHandlesToolStripButton_Click);
             // 
             // sysInfoToolStripButton
