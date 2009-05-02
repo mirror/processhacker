@@ -1,5 +1,11 @@
 Process Hacker
 
+1.3.7.6
+ * FIXED:
+   * #2785648 - "cursor down crashes PH"
+   * Unexpected actions being performed when a key was pressed in 
+     the memory and handle lists
+
 1.3.7.5
  * NEW/IMPROVED:
    * #2780260 - "add <Enter> key to open Proc Properties"

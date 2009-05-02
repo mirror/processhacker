@@ -95,7 +95,12 @@ namespace ProcessHacker.Components
                 this.KeyDown(sender, e);
 
             if (!e.Handled)
-                propertiesHandleMenuItem_Click(null, null);
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    propertiesHandleMenuItem_Click(null, null);
+                }
+            }
         }
 
         #region Properties
