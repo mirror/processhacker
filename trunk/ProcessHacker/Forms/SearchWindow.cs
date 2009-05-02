@@ -117,7 +117,7 @@ namespace ProcessHacker
             {
                 _so = new SearchOptions(_pid, SearchType.Struct);
             }
-                             
+
             _so.Searcher.Params["text"] = text;
             _so.Searcher.Params["regex"] = textRegex.Text;
             _so.Searcher.Params["s_ms"] = textStringMS.Text;
@@ -128,7 +128,8 @@ namespace ProcessHacker
             _so.Searcher.Params["private"] = checkPrivate.Checked;
             _so.Searcher.Params["image"] = checkImage.Checked;
             _so.Searcher.Params["mapped"] = checkMapped.Checked;
-            _so.Searcher.Params["struct"] = listStructName.SelectedItem.ToString();
+            if (listStructName.SelectedItem != null)
+                _so.Searcher.Params["struct"] = listStructName.SelectedItem.ToString();
             _so.Searcher.Params["struct_align"] = textStructAlign.Text;
 
             _so.Searcher.Results = _oldresults;

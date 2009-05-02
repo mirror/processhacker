@@ -276,14 +276,14 @@ namespace ProcessHacker.Native
 
         public static Dictionary<int, SystemProcess> GetProcesses()
         {
-            return GetProcesses(null);
+            return GetProcesses(false);
         }
 
         /// <summary>
         /// Gets a dictionary containing the currently running processes.
         /// </summary>
         /// <returns>A dictionary, indexed by process ID.</returns>
-        public static Dictionary<int, SystemProcess> GetProcesses(Dictionary<int, object> processesWithThreads)
+        public static Dictionary<int, SystemProcess> GetProcesses(bool getThreads)
         {
             int retLength;
             Dictionary<int, SystemProcess> returnProcesses;
@@ -321,20 +321,17 @@ namespace ProcessHacker.Native
                     currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
                     currentProcess.Name = Utils.ReadUnicodeString(currentProcess.Process.ImageName);
 
-                    if (processesWithThreads != null)
+                    if (getThreads &&
+                        currentProcess.Process.ProcessId != 0)
                     {
-                        if (processesWithThreads.ContainsKey(currentProcess.Process.ProcessId) &&
-                            currentProcess.Process.ProcessId != 0)
+                        currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
+
+                        for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
                         {
-                            currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
+                            var thread = data.ReadStruct<SystemThreadInformation>(i +
+                                Marshal.SizeOf(typeof(SystemProcessInformation)), j);
 
-                            for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
-                            {
-                                var thread = data.ReadStruct<SystemThreadInformation>(i +
-                                    Marshal.SizeOf(typeof(SystemProcessInformation)), j);
-
-                                currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
-                            }
+                            currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
                         }
                     }
 
@@ -348,6 +345,65 @@ namespace ProcessHacker.Native
 
                 return returnProcesses;
             }
+        }
+
+        public static Dictionary<int, SystemThreadInformation> GetProcessThreads(int pid)
+        {
+            int retLength;
+
+            using (MemoryAlloc data = new MemoryAlloc(0x4000))
+            {
+                int status;
+                int attempts = 0;
+
+                while (true)
+                {
+                    attempts++;
+
+                    if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
+                        data.Size, out retLength)) < 0)
+                    {
+                        if (attempts > 3)
+                            Win32.ThrowLastError(status);
+
+                        data.Resize(retLength);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                int i = 0;
+                SystemProcessInformation process;
+
+                while (true)
+                {
+                    process = data.ReadStruct<SystemProcessInformation>(i, 0);
+
+                    if (process.ProcessId == pid)
+                    {
+                        var threads = new Dictionary<int, SystemThreadInformation>();
+
+                        for (int j = 0; j < process.NumberOfThreads; j++)
+                        {
+                            var thread = data.ReadStruct<SystemThreadInformation>(i +
+                                Marshal.SizeOf(typeof(SystemProcessInformation)), j);
+
+                            threads.Add(thread.ClientId.UniqueThread, thread);
+                        }
+
+                        return threads;
+                    }
+
+                    if (process.NextEntryOffset == 0)
+                        break;
+
+                    i += process.NextEntryOffset;
+                }
+            }
+
+            return null;
         }
 
         public static Dictionary<string, EnumServiceStatusProcess> GetServices()

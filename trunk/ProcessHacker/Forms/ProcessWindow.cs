@@ -446,7 +446,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    var processes = Windows.GetProcesses(null);
+                    var processes = Windows.GetProcesses();
 
                     if (!processes.ContainsKey(_pid))
                     {

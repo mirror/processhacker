@@ -59,7 +59,6 @@ namespace ProcessHacker
         public string Integrity;
         public int IntegrityLevel;
         public SystemProcessInformation Process;
-        public Dictionary<int, SystemThreadInformation> Threads;
         public DateTime CreateTime;
 
         public TokenElevationType ElevationType;
@@ -605,7 +604,7 @@ namespace ProcessHacker
                 FileUtils.RefreshDriveDevicePrefixes();
 
             var tsProcesses = new Dictionary<int, int>();
-            var procs = Windows.GetProcesses(Program.ProcessesWithThreads);
+            var procs = Windows.GetProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
 
@@ -764,7 +763,6 @@ namespace ProcessHacker
                     item.Pid = pid;
                     item.Process = processInfo;
                     item.SessionId = processInfo.SessionId;
-                    item.Threads = procs[pid].Threads;
                     item.ProcessingAttempts = 1;
 
                     item.Name = procs[pid].Name;
@@ -1018,9 +1016,6 @@ namespace ProcessHacker
                     item.LongHistoryManager.Update(ProcessStats.WorkingSet, processInfo.VirtualMemoryCounters.WorkingSetSize);
 
                     item.Process = processInfo;
-
-                    if (Program.ProcessesWithThreads.ContainsKey(pid))
-                        item.Threads = procs[pid].Threads;
 
                     try
                     {

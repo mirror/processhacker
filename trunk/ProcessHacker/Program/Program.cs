@@ -85,7 +85,6 @@ namespace ProcessHacker
         public static ProcessSystemProvider ProcessProvider;
         public static ServiceProvider ServiceProvider;
         public static NetworkProvider NetworkProvider;
-        public static Dictionary<int, object> ProcessesWithThreads = new Dictionary<int, object>();
         public static System.Collections.Specialized.StringCollection ImposterNames = 
             new System.Collections.Specialized.StringCollection();
         public static bool NoKph = false;

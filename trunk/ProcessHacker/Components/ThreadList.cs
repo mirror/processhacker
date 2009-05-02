@@ -111,13 +111,13 @@ namespace ProcessHacker.Components
                 try
                 {
                     int tid = int.Parse(listThreads.SelectedItems[0].Name);
-                    ProcessItem process = Program.ProcessProvider.Dictionary[_pid];
-                    ProcessThread thread = null;
+                    var thread = Windows.GetProcessThreads(_pid)[tid];
+                    ProcessThread processThread = null;
                     string fileName;
 
                     try
                     {
-                        thread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
+                        processThread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
                     }
                     catch
                     { }
@@ -140,25 +140,25 @@ namespace ProcessHacker.Components
                         fileModule.Enabled = false;
                     }
 
-                    if (thread != null)
+                    if (processThread != null)
                     {
-                        if (thread.ThreadState == ThreadState.Wait)
+                        if (processThread.ThreadState == ThreadState.Wait)
                         {
-                            labelState.Text = "Wait: " + process.Threads[tid].WaitReason.ToString();
+                            labelState.Text = "Wait: " + thread.WaitReason.ToString();
                         }
                         else
                         {
-                            labelState.Text = thread.ThreadState.ToString();
+                            labelState.Text = processThread.ThreadState.ToString();
                         }
 
-                        labelKernelTime.Text = Misc.GetNiceTimeSpan(thread.PrivilegedProcessorTime);
-                        labelUserTime.Text = Misc.GetNiceTimeSpan(thread.UserProcessorTime);
-                        labelTotalTime.Text = Misc.GetNiceTimeSpan(thread.TotalProcessorTime);
+                        labelKernelTime.Text = Misc.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
+                        labelUserTime.Text = Misc.GetNiceTimeSpan(processThread.UserProcessorTime);
+                        labelTotalTime.Text = Misc.GetNiceTimeSpan(processThread.TotalProcessorTime);
                     }
 
-                    labelPriority.Text = process.Threads[tid].Priority.ToString();
-                    labelBasePriority.Text = process.Threads[tid].BasePriority.ToString();
-                    labelContextSwitches.Text = process.Threads[tid].ContextSwitchCount.ToString("N0");
+                    labelPriority.Text = thread.Priority.ToString();
+                    labelBasePriority.Text = thread.BasePriority.ToString();
+                    labelContextSwitches.Text = thread.ContextSwitchCount.ToString("N0");
 
                     using (ThreadHandle thandle = new ThreadHandle(tid))
                         labelTEBAddress.Text = "0x" + thandle.GetBasicInformation().TebBaseAddress.ToString("x8");

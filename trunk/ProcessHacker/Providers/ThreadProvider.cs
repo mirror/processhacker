@@ -85,15 +85,6 @@ namespace ProcessHacker
             this.Name = this.GetType().Name;
             _pid = pid;
 
-            lock (Program.ProcessesWithThreads)
-            {
-                if (!Program.ProcessesWithThreads.ContainsKey(_pid))
-                    Program.ProcessesWithThreads.Add(_pid, null);
-            }
-
-            // Force a refresh so we don't have to wait for it
-            Program.ProcessProvider.RunOnce();
-
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
 
@@ -190,12 +181,6 @@ namespace ProcessHacker
             lock (_moduleLoadCompletedEvent)
                 _moduleLoadCompletedEvent.Close();
 
-            lock (Program.ProcessesWithThreads)
-            {
-                if (Program.ProcessesWithThreads.ContainsKey(_pid))
-                    Program.ProcessesWithThreads.Remove(_pid);
-            }
-
             foreach (int tid in this.Dictionary.Keys)
             {
                 ThreadItem item = this.Dictionary[tid];
@@ -283,7 +268,7 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            var threads = Program.ProcessProvider.Dictionary[_pid].Threads;
+            var threads = Windows.GetProcessThreads(_pid);
             Dictionary<int, ThreadItem> newdictionary = new Dictionary<int, ThreadItem>(this.Dictionary);
 
             if (threads == null)
