@@ -507,18 +507,22 @@ namespace ProcessHacker
 
             try
             {
-                bool hasTcp = false;
+                bool hasValid = false;
 
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
                     if (item.SubItems[3].Text == "TCP")
                     {
-                        hasTcp = true;
-                        break;
+                        if (item.SubItems[4].Text != "Listening" &&
+                            item.SubItems[4].Text != "TimeWait")
+                        {
+                            hasValid = true;
+                            break;
+                        }
                     }
                 }
 
-                if (!hasTcp)
+                if (!hasValid)
                     closeNetworkMenuItem.Enabled = false;
             }
             catch (Exception ex)
@@ -561,6 +565,11 @@ namespace ProcessHacker
             {
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
+                    if (item.SubItems[3].Text != "TCP" ||
+                        item.SubItems[4].Text == "Listening" ||
+                        item.SubItems[4].Text == "TimeWait")
+                        continue;
+
                     try
                     {
                         networkP.Dictionary[item.Name].CloseTcpConnection();
