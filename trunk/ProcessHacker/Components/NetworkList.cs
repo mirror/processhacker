@@ -280,7 +280,8 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(NetworkConnection item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
+                _provider.RunCount > 1);
 
             litem.Name = item.Id;
             litem.Tag = item.Pid;

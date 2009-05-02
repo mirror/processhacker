@@ -1386,11 +1386,11 @@ namespace ProcessHacker
 
         private void processP_Updated()
         {
-            networkP.RunOnceAsync();
+            serviceP.RunOnceAsync();
 
-            processP.DictionaryAdded += new ProcessSystemProvider.ProviderDictionaryAdded(processP_DictionaryAdded);
-            processP.DictionaryRemoved += new ProcessSystemProvider.ProviderDictionaryRemoved(processP_DictionaryRemoved);
-            processP.Updated -= new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
+            processP.DictionaryAdded += processP_DictionaryAdded;
+            processP.DictionaryRemoved += processP_DictionaryRemoved;
+            processP.Updated -= processP_Updated;
 
             try { Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High; }
             catch { }
@@ -1467,10 +1467,10 @@ namespace ProcessHacker
 
             HighlightingContext.StateHighlighting = true;
 
-            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded);
-            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified);
-            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved);
-            serviceP.Updated -= new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
+            serviceP.DictionaryAdded += serviceP_DictionaryAdded;
+            serviceP.DictionaryModified += serviceP_DictionaryModified;
+            serviceP.DictionaryRemoved += serviceP_DictionaryRemoved;
+            serviceP.Updated -= serviceP_Updated;
 
             if (processP.RunCount >= 1)
                 this.BeginInvoke(new MethodInvoker(UpdateCommon));
@@ -2426,8 +2426,8 @@ namespace ProcessHacker
             treeProcesses.Tree.BeginUpdate();
             treeProcesses.Tree.BeginCompleteUpdate();
             this.Cursor = Cursors.WaitCursor;
-            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_Updated);
-            processP.Updated += new ProcessSystemProvider.ProviderUpdateOnce(processP_InfoUpdater);
+            processP.Updated += processP_Updated;
+            processP.Updated += processP_InfoUpdater;
             processP.RunOnceAsync();
             processP.Enabled = true;
             updateProcessesMenuItem.Checked = true;
@@ -2438,11 +2438,10 @@ namespace ProcessHacker
             listServices.List.BeginUpdate();
             serviceP.Interval = Properties.Settings.Default.RefreshInterval;
             listServices.Provider = serviceP;
-            serviceP.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(serviceP_DictionaryAdded_Process);
-            serviceP.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(serviceP_DictionaryModified_Process);
-            serviceP.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(serviceP_DictionaryRemoved_Process);
-            serviceP.Updated += new ServiceProvider.ProviderUpdateOnce(serviceP_Updated);
-            serviceP.RunOnceAsync();
+            serviceP.DictionaryAdded += serviceP_DictionaryAdded_Process;
+            serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
+            serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
+            serviceP.Updated += serviceP_Updated;
             serviceP.Enabled = true;
             updateServicesMenuItem.Checked = true;
 
