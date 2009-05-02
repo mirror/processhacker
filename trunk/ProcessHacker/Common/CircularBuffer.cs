@@ -26,6 +26,11 @@ using System.Text;
 
 namespace ProcessHacker
 {
+    /// <summary>
+    /// Provides methods for manipulating a circular buffer. A circular buffer 
+    /// is a fixed-size array where old elements will be automatically deleted 
+    /// as new elements are added.
+    /// </summary>
     public class CircularBuffer<T> : IList<T>
     {
         private int _size;
@@ -45,21 +50,13 @@ namespace ProcessHacker
         {
             get
             {
-                int i = (_index + index) % _size;
-
-                if (i < 0)
-                    i = _size + i;
-
-                return _data[i];
+                // See the comment in Add for more details.
+                return _data[(((_index + index) % _size) + _size) % _size];
             }
             set
             {
-                int i = (_index + index) % _size;
-
-                if (i < 0)
-                    i = _size + i;
-
-                _data[i] = value;
+                // See the comment in Add for more details.
+                _data[(((_index + index) % _size) + _size) % _size] = value;
             }
         }
 
@@ -75,12 +72,14 @@ namespace ProcessHacker
 
         public void Add(T value)
         {
-            _index = --_index % _size;
-
-            if (_index < 0)
-                _index = _size + _index;
-
-            _data[_index] = value;
+            /* The C# modulus operator produces a result which has the 
+             * same sign as the dividend. For circular array access,
+             * we want the result to have the same sign as the divisor.
+             * We do this by using r = ((i % t) + t) % t where i is 
+             * the index (possibly negative) and t is the size of the 
+             * array.
+             */
+            _data[_index = ((--_index % _size) + _size) % _size] = value;
 
             if (_count < _size)
                 _count++;

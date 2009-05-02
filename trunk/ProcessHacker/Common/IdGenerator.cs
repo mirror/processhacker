@@ -27,7 +27,7 @@ using System.Text;
 namespace ProcessHacker
 {
     /// <summary>
-    /// Provides a facility for generating unique Ids.
+    /// Provides a facility for generating unique IDs.
     /// </summary>
     public class IdGenerator
     {

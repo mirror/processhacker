@@ -309,7 +309,7 @@ namespace ProcessHacker
                     }
                     else
                     {
-                        // No work arrived in 1 second. Delete the thread.
+                        // No work arrived during the timeout period. Delete the thread.
                         lock (_workerThreads)
                             this.DestroyWorkerThread();
 
