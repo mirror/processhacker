@@ -265,6 +265,9 @@ namespace ProcessHacker.Native.Api
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtAlertThread(int ThreadHandle);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtCreateProcess(
             out int ProcessHandle,
             ProcessAccess DesiredAccess,
@@ -288,61 +291,52 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtAlertThread(int ThreadHandle);
+        public static extern int NtDuplicateObject(
+            int SourceProcessHandle,
+            int SourceHandle,
+            int TargetProcessHandle,
+            int TargetHandle,
+            int DesiredAccess,
+            int Attributes, 
+            int Options
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtDuplicateObject(
+            int SourceProcessHandle,
+            int SourceHandle,
+            int TargetProcessHandle,
+            out int TargetHandle,
+            int DesiredAccess,
+            int Attributes,
+            int Options
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtGetNextProcess(
+            int ProcessHandle,
+            ProcessAccess DesiredAccess,
+            int HandleAttributes,
+            int Flags,
+            out int NewProcessHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtGetNextThread(
+            int ProcessHandle,
+            ProcessAccess DesiredAccess,
+            int HandleAttributes,
+            int Flags,
+            out int NewProcessHandle
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtOpenSymbolicLinkObject(out int LinkHandle, int DesiredAccess,
             ref ObjectAttributes ObjectAttributes);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySymbolicLinkObject(int LinkHandle, ref UnicodeString LinkName,
-            out int DataWritten);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtResumeProcess(int ProcessHandle);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSuspendProcess(int ProcessHandle);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
-            ref SectionBasicInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
-            ref SectionImageInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryMutant(int MutantHandle, MutantInformationClass MutantInformationClass,
-            ref MutantBasicInformation MutantInformation, int MutantInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryEvent(int EventHandle, EventInformationClass EventInformationClass,
             ref EventBasicInformation EventInformation, int EventInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSetInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            ref int ThreadInformation, int ThreadInformationLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            ref ThreadBasicInformation ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out long ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            int[] ThreadInformation, int ThreadInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out uint ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
@@ -373,12 +367,44 @@ namespace ProcessHacker.Native.Api
             out MemExecuteOptions ProcessInformation, int ProcessInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, int TargetHandle, int DesiredAccess, int Attributes, int Options);
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            ref ThreadBasicInformation ThreadInformation, int ThreadInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtDuplicateObject(int SourceProcessHandle, int SourceHandle,
-            int TargetProcessHandle, out int TargetHandle, int DesiredAccess, int Attributes, int Options);
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            out long ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            int[] ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            out uint ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryMutant(int MutantHandle, MutantInformationClass MutantInformationClass,
+            ref MutantBasicInformation MutantInformation, int MutantInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryObject(int Handle, ObjectInformationClass ObjectInformationClass,
+            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
+            ref SectionBasicInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
+            ref SectionImageInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQuerySymbolicLinkObject(int LinkHandle, ref UnicodeString LinkName,
+            out int DataWritten);
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
@@ -402,12 +428,18 @@ namespace ProcessHacker.Native.Api
             IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtResumeProcess(int ProcessHandle);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtSetInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
+            ref int ThreadInformation, int ThreadInformationLength);
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtSetSystemInformation(SystemInformationClass SystemInformationClass,
             ref SystemLoadAndCallImage SystemInformation, int SystemInformationLength);
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryObject(int Handle, ObjectInformationClass ObjectInformationClass,
-            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
+        public static extern int NtSuspendProcess(int ProcessHandle);
 
         #endregion
 
