@@ -49,6 +49,7 @@
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
+    <Compile Include="Objects\SectionHandle.cs" />
     <Compile Include="Objects\WindowStationHandle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Api\Enums.cs" />

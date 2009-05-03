@@ -265,6 +265,29 @@ namespace ProcessHacker.Native.Api
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtCreateProcess(
+            out int ProcessHandle,
+            ProcessAccess DesiredAccess,
+            int ObjectAttributes,
+            int ParentProcess,
+            bool InheritHandleTable,
+            int SectionHandle,
+            int DebugPort,
+            int ExceptionPort
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtCreateSection(
+            out int SectionHandle,
+            SectionAccess DesiredAccess,
+            int ObjectAttributes,
+            int MaximumSize,
+            int PageAttributes,
+            int SectionAttributes,
+            int FileHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtAlertThread(int ThreadHandle);
 
         [DllImport("ntdll.dll", SetLastError = true)]

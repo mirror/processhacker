@@ -55,6 +55,41 @@ namespace ProcessHacker.Native.Objects
         /// <returns>Return true to continue enumerating; return false to stop.</returns>
         public delegate bool EnumModulesDelegate(ProcessModule module);
 
+        public static ProcessHandle Create(SectionHandle sectionHandle, ProcessAccess access, ProcessHandle parent, bool inheritHandles)
+        {
+            int status;
+            int process;
+
+            if ((status = Win32.NtCreateProcess(
+                out process,
+                access,
+                0,
+                parent,
+                inheritHandles,
+                sectionHandle,
+                0,
+                0)) < 0)
+                Win32.ThrowLastError(status);
+
+            return new ProcessHandle(process, true);
+        }
+
+        public static ProcessHandle Create(string fileName, ProcessAccess access, bool inheritHandles)
+        {
+            using (var fhandle = new FileHandle(
+                fileName,
+                (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData,
+                FileShareMode.Delete | FileShareMode.Read, FileCreationDisposition.OpenAlways))
+            {
+                using (var shandle = new SectionHandle(
+                    SectionAccess.All, fhandle,
+                    SectionAttributes.Image, MemoryProtection.Execute))
+                {
+                    return Create(shandle, access, ProcessHandle.GetCurrent(), inheritHandles);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates a process handle using an existing handle. 
         /// The handle will not be closed automatically.
