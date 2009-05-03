@@ -557,6 +557,12 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool ImpersonateLoggedOnUser(int TokenHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool RevertToSelf();
+
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool LogonUser(
             string Username,

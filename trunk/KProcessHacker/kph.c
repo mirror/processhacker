@@ -23,6 +23,10 @@
 #define _KPH_PRIVATE
 #include "include/kph.h"
 
+/* GetSystemRoutineAddress
+ * 
+ * Gets the address of a function exported by ntoskrnl or hal.
+ */
 PVOID GetSystemRoutineAddress(WCHAR *Name)
 {
     UNICODE_STRING routineName;
@@ -42,11 +46,14 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
     return routineAddress;
 }
 
+/* KphNtInit
+ * 
+ * Initializes the KProcessHacker NT component.
+ */
 NTSTATUS KphNtInit()
 {
     NTSTATUS status = STATUS_SUCCESS;
     
-    MmCopyVirtualMemory = GetSystemRoutineAddress(L"MmCopyVirtualMemory");
     PsGetProcessJob = GetSystemRoutineAddress(L"PsGetProcessJob");
     PsResumeProcess = GetSystemRoutineAddress(L"PsResumeProcess");
     PsSuspendProcess = GetSystemRoutineAddress(L"PsSuspendProcess");
@@ -72,6 +79,10 @@ NTSTATUS KphNtInit()
     return status;
 }
 
+/* KphAttachProcess
+ * 
+ * Attaches to a process represented by the specified EPROCESS.
+ */
 VOID KphAttachProcess(
     PEPROCESS Process,
     PKPH_ATTACH_STATE AttachState
@@ -86,6 +97,10 @@ VOID KphAttachProcess(
     }
 }
 
+/* KphAttachProcessHandle
+ * 
+ * Attaches to a process represented by the specified handle.
+ */
 NTSTATUS KphAttachProcessHandle(
     HANDLE ProcessHandle,
     PKPH_ATTACH_STATE AttachState
@@ -114,6 +129,10 @@ NTSTATUS KphAttachProcessHandle(
     return status;
 }
 
+/* KphAttachProcessId
+ * 
+ * Attaches to a process represented by the specified process ID.
+ */
 NTSTATUS KphAttachProcessId(
     HANDLE ProcessId,
     PKPH_ATTACH_STATE AttachState
@@ -135,6 +154,10 @@ NTSTATUS KphAttachProcessId(
     return status;
 }
 
+/* KphDetachProcess
+ * 
+ * Detaches from the currently attached process.
+ */
 VOID KphDetachProcess(
     PKPH_ATTACH_STATE AttachState
     )
@@ -143,10 +166,15 @@ VOID KphDetachProcess(
         KeUnstackDetachProcess(&AttachState->ApcState);
 }
 
+/* OpenProcess
+ * 
+ * Opens the process with the specified PID.
+ */
 NTSTATUS OpenProcess(
     PHANDLE ProcessHandle,
     ULONG DesiredAccess,
-    HANDLE ProcessId)
+    HANDLE ProcessId
+    )
 {
     OBJECT_ATTRIBUTES objAttr = { 0 };
     CLIENT_ID clientId;
@@ -158,8 +186,10 @@ NTSTATUS OpenProcess(
     return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
 }
 
-/* If you've seen Hacker Defender's source code,
- * this may look familiar...
+/* SetProcessToken
+ * 
+ * Assigns the primary token of the target process from the 
+ * primary token of source process.
  */
 NTSTATUS SetProcessToken(
     HANDLE sourcePid,

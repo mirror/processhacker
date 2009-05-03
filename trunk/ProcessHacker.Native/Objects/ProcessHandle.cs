@@ -958,7 +958,7 @@ namespace ProcessHacker.Native.Objects
         {
             int readLen;
 
-            if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
+            if (KProcessHacker.Instance != null)
             {
                 KProcessHacker.Instance.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
             }
@@ -1113,7 +1113,7 @@ namespace ProcessHacker.Native.Objects
         {
             int writtenLen;
 
-            if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
+            if (KProcessHacker.Instance != null)
             {
                 KProcessHacker.Instance.KphWriteVirtualMemory(this, offset, data, length, out writtenLen);
             }

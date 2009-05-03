@@ -30,6 +30,7 @@ extern POBJECT_TYPE *SeTokenObjectType;
 typedef PVOID PAUX_ACCESS_DATA;
 
 /* FUNCTION DEFS */
+
 NTKERNELAPI NTSTATUS NTAPI SeCreateAccessState(
     PACCESS_STATE AccessState,
     PAUX_ACCESS_DATA AuxData,

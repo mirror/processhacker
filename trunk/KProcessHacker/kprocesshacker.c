@@ -232,6 +232,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "Get Features";
     else if (ControlCode == KPH_EXPGETPROCESSINFORMATION)
         return "ExpGetProcessInformation";
+    else if (ControlCode == KPH_ASSIGNIMPERSONATIONTOKEN)
+        return "KphAssignImpersonationToken";
     else
         return "Unknown";
 }
@@ -843,7 +845,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         /* KphOpenProcessJob
          * 
          * Opens the job object that the process is assigned to. If the process is 
-         * not assigned to any job object, the call will fail with STATUS_DISK_FULL.
+         * not assigned to any job object, the call will fail with STATUS_NO_SUCH_FILE.
          */
         case KPH_OPENPROCESSJOB:
         {
@@ -1150,8 +1152,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            if (MmCopyVirtualMemory)
-                features |= KPHF_MMCOPYVIRTUALMEMORY;
             if (ExpGetProcessInformation)
                 features |= KPHF_EXPGETPROCESSINFORMATION;
             if (__PsTerminateProcess)
@@ -1199,6 +1199,28 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->SessionId,
                 !!args->ExtendedInformation
                 );
+        }
+        break;
+        
+        /* KphAssignImpersonationToken
+         * 
+         * Assigns an impersonation token to a thread.
+         */
+        case KPH_ASSIGNIMPERSONATIONTOKEN:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                HANDLE TokenHandle;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphAssignImpersonationToken(args->ThreadHandle, args->TokenHandle);
         }
         break;
         

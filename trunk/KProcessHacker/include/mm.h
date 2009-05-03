@@ -23,17 +23,11 @@
 #ifndef _MM_H
 #define _MM_H
 
-/* FUNCTION TYPEDEFS */
-
-typedef NTSTATUS (NTAPI *_MmCopyVirtualMemory)(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
-    );
+#define MI_MAX_TRANSFER_SIZE (0x10000)
+#define MI_COPY_STACK_SIZE (0x200)
+#define MI_MAPPED_COPY_PAGES (14)
+#define MM_POOL_COPY_THRESHOLD (0x1ff)
+#define TAG_MM ('PhMm')
 
 /* STRUCTS */
 typedef struct _MMADDRESS_NODE

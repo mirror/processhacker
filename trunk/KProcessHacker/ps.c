@@ -23,6 +23,47 @@
 #include "include/kph.h"
 #include "include/ps.h"
 
+BOOLEAN KphAcquireProcessRundownProtection(
+    PEPROCESS Process
+    )
+{
+    return ExAcquireRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
+}
+
+/* KphAssignImpersonationToken
+ * 
+ * Assigns an impersonation token to the specified thread.
+ */
+NTSTATUS KphAssignImpersonationToken(
+    HANDLE ThreadHandle,
+    HANDLE TokenHandle
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        0,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    status = PsAssignImpersonationToken(threadObject, TokenHandle);
+    ObDereferenceObject(threadObject);
+    
+    return status;
+}
+
+/* KphGetContextThread
+ * 
+ * Gets the context of the specified thread.
+ */
 NTSTATUS KphGetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext,
@@ -38,7 +79,8 @@ NTSTATUS KphGetContextThread(
         *PsThreadType,
         KernelMode,
         &threadObject,
-        NULL);
+        NULL
+        );
     
     if (!NT_SUCCESS(status))
         return status;
@@ -49,6 +91,10 @@ NTSTATUS KphGetContextThread(
     return status;
 }
 
+/* KphGetProcessId
+ * 
+ * Gets the ID of the process referenced by the specified handle.
+ */
 HANDLE KphGetProcessId(
     HANDLE ProcessHandle
     )
@@ -66,6 +112,11 @@ HANDLE KphGetProcessId(
     return processId;
 }
 
+/* KphGetThreadId
+ * 
+ * Gets the ID of the thread referenced by the specified handle, 
+ * and optionally the ID of the thread's process.
+ */
 HANDLE KphGetThreadId(
     HANDLE ThreadHandle,
     PHANDLE ProcessId
@@ -90,6 +141,10 @@ HANDLE KphGetThreadId(
     return clientId.UniqueThread;
 }
 
+/* KphGetThreadWin32Thread
+ * 
+ * Gets a pointer to the WIN32THREAD structure of the specified thread.
+ */
 NTSTATUS KphGetThreadWin32Thread(
     HANDLE ThreadHandle,
     PVOID *Win32Thread,
@@ -132,6 +187,10 @@ NTSTATUS KphGetThreadWin32Thread(
     return status;
 }
 
+/* KphOpenProcess
+ * 
+ * Opens a process.
+ */
 NTSTATUS KphOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
@@ -240,6 +299,12 @@ NTSTATUS KphOpenProcess(
     return status;
 }
 
+/* KphOpenProcess
+ * 
+ * Opens the specified process' job object. If the process has 
+ * not been assigned to a job object, the function returns 
+ * STATUS_NO_SUCH_FILE.
+ */
 NTSTATUS KphOpenProcessJob(
     HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
@@ -317,6 +382,10 @@ NTSTATUS KphOpenProcessJob(
     return status;
 }
 
+/* KphOpenThread
+ * 
+ * Opens a thread.
+ */
 NTSTATUS KphOpenThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
@@ -412,6 +481,17 @@ NTSTATUS KphOpenThread(
     return status;
 }
 
+VOID KphReleaseProcessRundownProtection(
+    PEPROCESS Process
+    )
+{
+    ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
+}
+
+/* KphResumeProcess
+ * 
+ * Resumes the specified process.
+ */
 NTSTATUS KphResumeProcess(
     HANDLE ProcessHandle
     )
@@ -439,6 +519,10 @@ NTSTATUS KphResumeProcess(
     return status;
 }
 
+/* KphSetContextThread
+ * 
+ * Sets the context of the specified thread.
+ */
 NTSTATUS KphSetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext,
@@ -465,6 +549,10 @@ NTSTATUS KphSetContextThread(
     return status;
 }
 
+/* KphSuspendProcess
+ * 
+ * Suspends the specified process.
+ */
 NTSTATUS KphSuspendProcess(
     HANDLE ProcessHandle
     )
@@ -492,6 +580,10 @@ NTSTATUS KphSuspendProcess(
     return status;
 }
 
+/* KphTerminateProcess
+ * 
+ * Terminates the specified process.
+ */
 NTSTATUS KphTerminateProcess(
     HANDLE ProcessHandle,
     NTSTATUS ExitStatus
@@ -545,6 +637,10 @@ NTSTATUS KphTerminateProcess(
     return status;
 }
 
+/* KphTerminateThread
+ * 
+ * Terminates the specified thread.
+ */
 NTSTATUS KphTerminateThread(
     HANDLE ThreadHandle,
     NTSTATUS ExitStatus
@@ -581,6 +677,12 @@ NTSTATUS KphTerminateThread(
     return status;
 }
 
+/* PsTerminateProcess
+ * 
+ * Terminates the specified process. If PsTerminateProcess or 
+ * PspTerminateProcess could not be located, the call will fail 
+ * with STATUS_NOT_SUPPORTED.
+ */
 NTSTATUS PsTerminateProcess(
     PEPROCESS Process,
     NTSTATUS ExitStatus
@@ -625,6 +727,11 @@ NTSTATUS PsTerminateProcess(
     return status;
 }
 
+/* PspTerminateThreadByPointer
+ * 
+ * Terminates the specified thread. If PspTerminateThreadByPointer 
+ * could not be located, the call will fail with STATUS_NOT_SUPPORTED.
+ */
 NTSTATUS PspTerminateThreadByPointer(
     PETHREAD Thread,
     NTSTATUS ExitStatus

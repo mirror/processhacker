@@ -23,6 +23,10 @@
 #include "include/kph.h"
 #include "include/se.h"
 
+/* KphOpenProcessTokenEx
+ * 
+ * Opens the primary token of the specified process.
+ */
 NTSTATUS KphOpenProcessTokenEx(
     HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,

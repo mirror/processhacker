@@ -75,16 +75,16 @@ namespace ProcessHacker.Native
             KphGetThreadId,
             KphTerminateThread,
             GetFeatures,
-            ExpGetProcessInformation
+            ExpGetProcessInformation,
+            KphAssignImpersonationToken
         }
 
         [Flags]
         public enum KphFeatures : int
         {
-            MmCopyVirtualMemory = 0x1,
-            ExpGetProcessInformation = 0x2,
-            PsTerminateProcess = 0x4,
-            PspTerminateThreadByPointer = 0x8
+            ExpGetProcessInformation = 0x1,
+            PsTerminateProcess = 0x2,
+            PspTerminateThreadByPointer = 0x4
         }
 
         private string _deviceName;
@@ -281,6 +281,16 @@ namespace ProcessHacker.Native
                 (byte*)&threadHandleInt, 4, outData, 4);
 
             return *(uint*)outData;
+        }
+
+        public void KphAssignImpersonationToken(ThreadHandle threadHandle, TokenHandle tokenHandle)
+        {
+            byte* inData = stackalloc byte[8];
+
+            *(int*)inData = threadHandle;
+            *(int*)(inData + 4) = tokenHandle;
+
+            _fileHandle.IoControl(CtlCode(Control.KphAssignImpersonationToken), inData, 8, null, 0);
         }
 
         public void KphDuplicateObject(

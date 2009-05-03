@@ -49,6 +49,50 @@ namespace ProcessHacker.Native.Objects
             return new TokenHandle(handle, false);
         }
 
+        public static TokenHandle Logon(string username, string domain, string password, LogonType logonType, LogonProvider logonProvider)
+        {
+            int token;
+
+            if (!Win32.LogonUser(username, domain, password, logonType, logonProvider, out token))
+                Win32.ThrowLastError();
+
+            return new TokenHandle(token, true);
+        }
+
+        public static TokenHandle OpenCurrent(TokenAccess access)
+        {
+            return new TokenHandle(ThreadHandle.GetCurrent(), access, false);
+        }
+
+        public static TokenHandle OpenCurrentPrimary(TokenAccess access)
+        {
+            return new TokenHandle(ProcessHandle.GetCurrent(), access);
+        }
+
+        public static TokenHandle OpenSelf(TokenAccess access)
+        {
+            return new TokenHandle(ThreadHandle.GetCurrent(), access, true);
+        }
+
+        public static TokenHandle OpenSystemToken(TokenAccess access)
+        {
+            using (var phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
+            {
+                return phandle.GetToken(access);
+            }
+        }
+
+        public static TokenHandle OpenSystemToken(TokenAccess access, SecurityImpersonationLevel impersonationLevel, TokenType type)
+        {
+            using (var phandle = new ProcessHandle(4, OSVersion.MinProcessQueryInfoAccess))
+            {
+                using (var thandle = phandle.GetToken(TokenAccess.Duplicate | access))
+                {
+                    return thandle.Duplicate(access, impersonationLevel, type);
+                }
+            }
+        }
+
         public TokenHandle(int handle, bool owned)
             : base(handle, owned)
         { }
@@ -81,10 +125,20 @@ namespace ProcessHacker.Native.Objects
         /// <param name="handle">The thread handle.</param>
         /// <param name="access">The desired access to the token.</param>
         public TokenHandle(ThreadHandle handle, TokenAccess access)
+            : this(handle, access, false)
+        { }
+
+        /// <summary>
+        /// Creates a new token handle from a thread.
+        /// </summary>
+        /// <param name="handle">The thread handle.</param>
+        /// <param name="access">The desired access to the token.</param>
+        /// <param name="openAsSelf">If the thread is currently impersonating, opens the original token.</param>
+        public TokenHandle(ThreadHandle handle, TokenAccess access, bool openAsSelf)
         {
             int h;
 
-            if (!Win32.OpenThreadToken(handle, access, false, out h))
+            if (!Win32.OpenThreadToken(handle, access, openAsSelf, out h))
                 Win32.ThrowLastError();
 
             this.Handle = h;

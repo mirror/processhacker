@@ -232,10 +232,6 @@ namespace ProcessHacker
             if (KProcessHacker.Instance != null)
             {
                 MinProcessGetHandleInformationRights = MinProcessQueryRights;
-            }
-
-            if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
-            {
                 MinProcessReadMemoryRights = MinProcessQueryRights;
                 MinProcessWriteMemoryRights = MinProcessQueryRights;
             }

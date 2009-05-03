@@ -23,6 +23,10 @@
 #include "include/kph.h"
 #include "include/ob.h"
 
+/* KphDuplicateObject
+ * 
+ * Duplicates a handle from the source process to the target process.
+ */
 NTSTATUS KphDuplicateObject(
     HANDLE SourceProcessHandle,
     HANDLE SourceHandle,
@@ -111,6 +115,10 @@ NTSTATUS KphDuplicateObject(
     return status;
 }
 
+/* KphEnumProcessHandleTable
+ * 
+ * Enumerates the handles in the specified process' handle table.
+ */
 BOOLEAN KphEnumProcessHandleTable(
     PEPROCESS Process,
     PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
@@ -135,13 +143,21 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
+/* ObDereferenceProcessHandleTable
+ * 
+ * Allows the process to terminate.
+ */
 VOID ObDereferenceProcessHandleTable(
     PEPROCESS Process
     )
 {
-    ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
+    KphReleaseProcessRundownProtection(Process);
 }
 
+/* ObDuplicateObject
+ * 
+ * Duplicates a handle from the source process to the target process.
+ */
 NTSTATUS ObDuplicateObject(
     PEPROCESS SourceProcess,
     PEPROCESS TargetProcess,
@@ -257,18 +273,23 @@ OpenObjectEnd:
     return status;
 }
 
+/* ObReferenceProcessHandleTable
+ * 
+ * Prevents the process from terminating and returns a pointer 
+ * to its handle table.
+ */
 PHANDLE_TABLE ObReferenceProcessHandleTable(
     PEPROCESS Process
     )
 {
     PHANDLE_TABLE handleTable = NULL;
     
-    if (ExAcquireRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect)))
+    if (KphAcquireProcessRundownProtection(Process))
     {
         handleTable = *(PHANDLE_TABLE *)KVOFF(Process, OffEpObjectTable);
         
         if (!handleTable)
-            ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
+            KphReleaseProcessRundownProtection(Process);
     }
     
     return handleTable;

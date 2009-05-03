@@ -106,7 +106,7 @@ namespace ProcessHacker
 
             try
             {
-                if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
+                if (KProcessHacker.Instance != null)
                 {
                     _phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
                 }
@@ -258,7 +258,7 @@ namespace ProcessHacker
                 {
                     Win32.ReadProcessMemoryProc64 readMemoryProc = null;
 
-                    if (KProcessHacker.Instance != null && OSVersion.HasMmCopyVirtualMemory)
+                    if (KProcessHacker.Instance != null)
                     {
                         readMemoryProc = new Win32.ReadProcessMemoryProc64(
                             delegate(int processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)

@@ -44,7 +44,6 @@
 #endif
 
 EXT _ExpGetProcessInformation ExpGetProcessInformation EQNULL;
-EXT _MmCopyVirtualMemory MmCopyVirtualMemory EQNULL;
 EXT _NtClose __NtClose EQNULL;
 EXT _PsGetProcessJob PsGetProcessJob EQNULL;
 EXT _PsResumeProcess PsResumeProcess EQNULL;
@@ -97,6 +96,15 @@ NTSTATUS SetProcessToken(
     );
 
 /* KProcessHacker */
+
+BOOLEAN KphAcquireProcessRundownProtection(
+    PEPROCESS Process
+    );
+
+NTSTATUS KphAssignImpersonationToken(
+    HANDLE ThreadHandle,
+    HANDLE TokenHandle
+    );
 
 NTSTATUS KphDuplicateObject(
     HANDLE SourceProcessHandle,
@@ -177,6 +185,10 @@ NTSTATUS KphReadVirtualMemory(
     KPROCESSOR_MODE AccessMode
     );
 
+VOID KphReleaseProcessRundownProtection(
+    PEPROCESS Process
+    );
+
 NTSTATUS KphResumeProcess(
     HANDLE ProcessHandle
     );
@@ -210,6 +222,44 @@ NTSTATUS KphWriteVirtualMemory(
     KPROCESSOR_MODE AccessMode
     );
 
+/* MM */
+
+NTSTATUS MiDoMappedCopy(
+    PEPROCESS FromProcess,
+    PVOID FromAddress,
+    PEPROCESS ToProcess,
+    PVOID ToAddress,
+    ULONG BufferLength,
+    KPROCESSOR_MODE AccessMode,
+    PULONG ReturnLength
+    );
+
+NTSTATUS MiDoPoolCopy(
+    PEPROCESS FromProcess,
+    PVOID FromAddress,
+    PEPROCESS ToProcess,
+    PVOID ToAddress,
+    ULONG BufferLength,
+    KPROCESSOR_MODE AccessMode,
+    PULONG ReturnLength
+    );
+
+ULONG MiGetExceptionInfo(
+    PEXCEPTION_POINTERS ExceptionPointers,
+    PBOOLEAN IsBadAddress,
+    PULONG_PTR BadAddress
+    );
+
+NTSTATUS MmCopyVirtualMemory(
+    PEPROCESS FromProcess,
+    PVOID FromAddress,
+    PEPROCESS ToProcess,
+    PVOID ToAddress,
+    ULONG BufferLength,
+    KPROCESSOR_MODE AccessMode,
+    PULONG ReturnLength
+    );
+
 /* OB */
 
 NTSTATUS ObDuplicateObject(
@@ -232,6 +282,7 @@ VOID ObDereferenceProcessHandleTable(
     );
 
 /* PS */
+
 NTSTATUS PsTerminateProcess(
     PEPROCESS Process,
     NTSTATUS ExitStatus

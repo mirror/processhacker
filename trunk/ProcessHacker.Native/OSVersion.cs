@@ -37,7 +37,6 @@ namespace ProcessHacker.Native
         private static ThreadAccess _minThreadSetInfoAccess = ThreadAccess.SetInformation;
 
         private static bool _hasCycleTime = false;
-        private static bool _hasMmCopyVirtualMemory = false;
         private static bool _hasProtectedProcesses = false;
         private static bool _hasPsSuspendResumeProcess = false;
         private static bool _hasQueryLimitedInformation = false;
@@ -71,7 +70,6 @@ namespace ProcessHacker.Native
                 _minThreadSetInfoAccess = ThreadAccess.SetLimitedInformation;
 
                 _hasCycleTime = true;
-                _hasMmCopyVirtualMemory = true;
                 _hasProtectedProcesses = true;
                 _hasPsSuspendResumeProcess = true;
                 _hasQueryLimitedInformation = true;
@@ -104,11 +102,6 @@ namespace ProcessHacker.Native
         public static bool HasCycleTime
         {
             get { return _hasCycleTime; }
-        }
-
-        public static bool HasMmCopyVirtualMemory
-        {
-            get { return _hasMmCopyVirtualMemory; }
         }
 
         public static bool HasProtectedProcesses
