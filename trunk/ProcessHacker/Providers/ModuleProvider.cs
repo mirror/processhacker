@@ -38,6 +38,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
+        public int RunId;
         public int BaseAddress;
         public int Size;
         public string Name;
@@ -127,6 +128,7 @@ namespace ProcessHacker
                     Win32.GetDeviceDriverBaseName(b, name, name.Capacity * 2);
                     Win32.GetDeviceDriverFileName(b, filename, filename.Capacity * 2);
 
+                    item.RunId = this.RunCount;
                     item.BaseAddress = b;
                     item.Name = name.ToString();
                     item.FileName = Misc.GetRealPath(filename.ToString());
@@ -212,6 +214,7 @@ namespace ProcessHacker
                     var m = modules[b];
                     ModuleItem item = new ModuleItem();
 
+                    item.RunId = this.RunCount;
                     item.Name = m.BaseName;
 
                     try

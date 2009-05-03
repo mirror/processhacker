@@ -36,6 +36,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
+        public int RunId;
         public int Address;
         public string ModuleName;
         public int Size;
@@ -113,6 +114,7 @@ namespace ProcessHacker
                 {
                     MemoryItem item = new MemoryItem();
 
+                    item.RunId = this.RunCount;
                     item.Address = address;
                     item.Size = info.RegionSize;
                     item.Type = info.Type;

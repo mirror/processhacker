@@ -88,31 +88,34 @@ namespace ProcessHacker
             {
                 if (!Dictionary.ContainsKey(connection.Id))
                 {
-                    newDict.Add(connection.Id, connection);
-                    CallDictionaryAdded(connection);
+                    NetworkConnection newConnection = connection;
+
+                    newConnection.Tag = this.RunCount;
+                    newDict.Add(newConnection.Id, newConnection);
+                    CallDictionaryAdded(newConnection);
 
                     // resolve the IP addresses
-                    if (connection.Local != null)
+                    if (newConnection.Local != null)
                     {
-                        if (connection.Local.Address.ToString() != "0.0.0.0")
+                        if (newConnection.Local.Address.ToString() != "0.0.0.0")
                         {
                             WorkQueue.GlobalQueueWorkItem(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                connection.Id,
+                                newConnection.Id,
                                 false,
-                                connection.Local.Address
+                                newConnection.Local.Address
                                 );
                         }
                     }
-                    if (connection.Remote != null)
+                    if (newConnection.Remote != null)
                     {
-                        if (connection.Remote.Address.ToString() != "0.0.0.0")
+                        if (newConnection.Remote.Address.ToString() != "0.0.0.0")
                         {
                             WorkQueue.GlobalQueueWorkItem(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                connection.Id,
+                                newConnection.Id,
                                 true,
-                                connection.Remote.Address
+                                newConnection.Remote.Address
                                 );
                         }
                     }

@@ -36,6 +36,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
+        public int RunId;
         public EnumServiceStatusProcess Status;
         public QueryServiceConfig Config;
     }
@@ -85,6 +86,7 @@ namespace ProcessHacker
                 {
                     ServiceItem item = new ServiceItem();
 
+                    item.RunId = this.RunCount;
                     item.Status = newdictionary[s];
 
                     try
@@ -131,6 +133,7 @@ namespace ProcessHacker
                 {
                     var newServiceItem = new ServiceItem()
                     {
+                        RunId = service.RunId,
                         Status = newStatus,
                         Config = service.Config
                     };

@@ -35,6 +35,7 @@ namespace ProcessHacker.Components
     public partial class ThreadList : UserControl
     {
         private ThreadProvider _provider;
+        private int _runCount = 0;
         private HighlightingContext _highlightingContext;
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
@@ -206,8 +207,6 @@ namespace ProcessHacker.Components
 
         #region Properties
 
-        public bool Highlight { get; set; }
-
         public new bool DoubleBuffered
         {
             get
@@ -322,6 +321,8 @@ namespace ProcessHacker.Components
                 listThreads.Sort();
                 _needsSort = false;
             }
+
+            _runCount++;
         }   
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
@@ -336,7 +337,8 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
+                item.RunId > 0 && _runCount > 0);
 
             litem.Name = item.Tid.ToString();
             litem.Text = item.Tid.ToString();
@@ -344,7 +346,6 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
             litem.Tag = item;
-
             litem.NormalColor = GetThreadColor(item);
 
             listThreads.Items.Add(litem);

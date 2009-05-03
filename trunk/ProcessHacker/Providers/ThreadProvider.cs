@@ -39,6 +39,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
+        public int RunId;
         public int Tid;
 
         public long ContextSwitches;
@@ -313,6 +314,7 @@ namespace ProcessHacker
                 {
                     ThreadItem item = new ThreadItem();
 
+                    item.RunId = this.RunCount;
                     item.Tid = tid;
                     item.ContextSwitches = t.ContextSwitchCount;
                     item.WaitReason = t.WaitReason;

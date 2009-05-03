@@ -31,6 +31,7 @@ namespace ProcessHacker.Components
     public partial class ServiceList : UserControl
     {
         private ServiceProvider _provider;
+        private int _runCount = 0;
         private HighlightingContext _highlightingContext;
         private SortedListViewComparer _lvComparer;
         private bool _needsSort = false;
@@ -195,7 +196,7 @@ namespace ProcessHacker.Components
         {
             _highlightingContext.Tick();
 
-            if (_provider.RunCount > 0 && listServices.ListViewItemSorter != _lvComparer)
+            if (_runCount > 0 && listServices.ListViewItemSorter != _lvComparer)
                 listServices.ListViewItemSorter = _lvComparer;
 
             if (_needsSort)
@@ -203,11 +204,14 @@ namespace ProcessHacker.Components
                 listServices.Sort();
                 _needsSort = false;
             }
+
+            _runCount++;
         }
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                item.RunId > 0 && _runCount > 0);
 
             litem.Name = item.Status.ServiceName;
             litem.Text = item.Status.ServiceName;

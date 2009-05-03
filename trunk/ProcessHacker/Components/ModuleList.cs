@@ -35,6 +35,7 @@ namespace ProcessHacker.Components
     public partial class ModuleList : UserControl
     {
         private ModuleProvider _provider;
+        private int _runCount = 0;
         private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -83,8 +84,6 @@ namespace ProcessHacker.Components
         }
 
         #region Properties
-
-        public bool Highlight { get; set; }
 
         public new bool DoubleBuffered
         {
@@ -230,11 +229,13 @@ namespace ProcessHacker.Components
         private void provider_Updated()
         {
             _highlightingContext.Tick();
+            _runCount++;
         }
 
         private void provider_DictionaryAdded(ModuleItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, this.Highlight);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
+                item.RunId > 0 && _runCount > 0);
 
             litem.Name = item.BaseAddress.ToString();
             litem.Text = item.Name;

@@ -729,7 +729,6 @@
             this.listThreads.Cursor = System.Windows.Forms.Cursors.Default;
             this.listThreads.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listThreads.DoubleBuffered = true;
-            this.listThreads.Highlight = false;
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
@@ -762,7 +761,6 @@
             // 
             this.listModules.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listModules.DoubleBuffered = true;
-            this.listModules.Highlight = false;
             this.listModules.Location = new System.Drawing.Point(0, 0);
             this.listModules.Name = "listModules";
             this.listModules.Provider = null;
@@ -948,7 +946,6 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listHandles.DoubleBuffered = true;
-            this.listHandles.Highlight = false;
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;

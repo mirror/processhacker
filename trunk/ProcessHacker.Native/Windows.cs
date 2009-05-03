@@ -771,6 +771,7 @@ namespace ProcessHacker.Native
         public string RemoteString;
         public IPEndPoint Remote;
         public MibTcpState State;
+        public object Tag;
 
         public void CloseTcpConnection()
         {

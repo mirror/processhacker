@@ -32,6 +32,7 @@ namespace ProcessHacker.Components
     {
         private object _imageListLock = new object();
         private NetworkProvider _provider;
+        private int _runCount = 0;
         private HighlightingContext _highlightingContext;
         private bool _needsSort = false;
         private bool _needsImageKeyReset = false;
@@ -237,6 +238,8 @@ namespace ProcessHacker.Components
                 this.ResetImageKeys();
                 _needsImageKeyReset = false;
             }
+
+            _runCount++;
         }
 
         public void RefreshIcons()
@@ -281,7 +284,7 @@ namespace ProcessHacker.Components
         private void provider_DictionaryAdded(NetworkConnection item)
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
-                _provider.RunCount > 1);
+                (int)item.Tag > 0 && _runCount > 0);
 
             litem.Name = item.Id;
             litem.Tag = item.Pid;

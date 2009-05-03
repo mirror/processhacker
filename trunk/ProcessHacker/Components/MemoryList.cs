@@ -34,6 +34,7 @@ namespace ProcessHacker.Components
     public partial class MemoryList : UserControl
     {
         private List<MemoryItem> _memoryItems;
+        private int _runCount = 0;
         private MemoryProvider _provider;
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
@@ -284,6 +285,8 @@ namespace ProcessHacker.Components
                 this.Sort();
                 _needsSort = false;
             }
+
+            _runCount++;
         }
 
         private void provider_DictionaryAdded(MemoryItem item)

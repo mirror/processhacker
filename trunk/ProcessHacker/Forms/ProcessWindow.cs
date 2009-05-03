@@ -603,7 +603,6 @@ namespace ProcessHacker
         private void InitializeProviders()
         {
             listThreads.BeginUpdate();
-            listThreads.Highlight = false;
             _threadP = new ThreadProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_threadP);
             _threadP.Interval = Properties.Settings.Default.RefreshInterval;
@@ -612,7 +611,6 @@ namespace ProcessHacker
             //_threadP.RunOnceAsync();
 
             listModules.BeginUpdate();
-            listModules.Highlight = false;
             _moduleP = new ModuleProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_moduleP);
             _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
@@ -630,7 +628,6 @@ namespace ProcessHacker
             //_memoryP.RunOnceAsync();
 
             listHandles.BeginUpdate();
-            listHandles.Highlight = false;
             _handleP = new HandleProvider(_pid);
             Program.SecondarySharedThreadProvider.Add(_handleP);
             _handleP.HideHandlesWithNoName = Properties.Settings.Default.HideHandlesWithNoName;
@@ -1015,7 +1012,6 @@ namespace ProcessHacker
                 Program.SecondarySharedThreadProvider.Remove(_handleP);
                 _handleP.Dispose();
                 listHandles.BeginUpdate();
-                listHandles.Highlight = false;
                 _handleP = new HandleProvider(_pid);
                 Program.SecondarySharedThreadProvider.Add(_handleP);
                 _handleP.HideHandlesWithNoName = checkHideHandlesNoName.Checked;
@@ -1115,7 +1111,6 @@ namespace ProcessHacker
                 {
                     listHandles.EndUpdate();
                     listHandles.Refresh();
-                    listHandles.Highlight = true;
                     checkHideHandlesNoName.Enabled = true;
                     this.Cursor = Cursors.Default;
                 }));
@@ -1131,7 +1126,6 @@ namespace ProcessHacker
                 {
                     listModules.EndUpdate();
                     listModules.Refresh();
-                    listModules.Highlight = true;
                 }));
                 _moduleP.Updated -= new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             }
@@ -1145,7 +1139,6 @@ namespace ProcessHacker
                 {
                     listThreads.EndUpdate();
                     listThreads.Refresh();
-                    listThreads.Highlight = true;
                 }));
                 _threadP.Updated -= new ThreadProvider.ProviderUpdateOnce(_threadP_Updated);
             }

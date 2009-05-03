@@ -34,6 +34,7 @@ namespace ProcessHacker
             return this.MemberwiseClone();
         }
 
+        public int RunId;
         public SystemHandleInformation Handle;
         public ObjectInformation ObjectInfo;
     }
@@ -113,6 +114,7 @@ namespace ProcessHacker
                         continue;
                     }
 
+                    item.RunId = this.RunCount;
                     item.Handle = processHandles[h];
                     item.ObjectInfo = info;
 
