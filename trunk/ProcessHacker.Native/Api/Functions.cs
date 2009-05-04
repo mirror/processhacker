@@ -324,10 +324,11 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtGetNextThread(
             int ProcessHandle,
-            ProcessAccess DesiredAccess,
+            int ThreadHandle,
+            ThreadAccess DesiredAccess,
             int HandleAttributes,
             int Flags,
-            out int NewProcessHandle
+            out int NewThreadHandle
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]

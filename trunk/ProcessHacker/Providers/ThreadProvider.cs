@@ -73,6 +73,7 @@ namespace ProcessHacker
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
         private ProcessHandle _processHandle;
+        private ProcessAccess _processAccess;
         private SymbolProvider _symbols;
         private int _pid;
         private int _loading = 0;
@@ -91,7 +92,25 @@ namespace ProcessHacker
 
             try
             {
-                _processHandle = new ProcessHandle(_pid, Program.MinProcessQueryRights);
+                // Try to get a good process handle we can use the same handle for stack walking.
+                try
+                {
+                    _processAccess = ProcessAccess.QueryInformation | ProcessAccess.VmRead;
+                    _processHandle = new ProcessHandle(_pid, _processAccess);
+                }
+                catch
+                {
+                    if (KProcessHacker.Instance != null)
+                    {
+                        _processAccess = Program.MinProcessReadMemoryRights;
+                        _processHandle = new ProcessHandle(_pid, _processAccess);
+                    }
+                    else
+                    {
+                        _processAccess = Program.MinProcessQueryRights;
+                        _processHandle = new ProcessHandle(_pid, _processAccess);
+                    }
+                }
 
                 try
                 {
@@ -169,6 +188,16 @@ namespace ProcessHacker
             {
                 Logging.Log(ex);
             }
+        }
+
+        public ProcessAccess ProcessAccess
+        {
+            get { return _processAccess; }
+        }
+
+        public ProcessHandle ProcessHandle
+        {
+            get { return _processHandle; }
         }
 
         private void ThreadProvider_Disposed(IProvider provider)

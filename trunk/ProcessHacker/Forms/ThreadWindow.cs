@@ -37,6 +37,7 @@ namespace ProcessHacker
         private int _pid;
         private int _tid;
         private ProcessHandle _phandle;
+        private bool _processHandleOwned = true;
         private ThreadHandle _thandle;
         private SymbolProvider _symbols;
 
@@ -50,7 +51,7 @@ namespace ProcessHacker
             get { return _pid + "-" + _tid; }
         }
 
-        public ThreadWindow(int PID, int TID, SymbolProvider symbols)
+        public ThreadWindow(int PID, int TID, SymbolProvider symbols, ProcessHandle processHandle)
         {
             InitializeComponent();
             this.AddEscapeToClose();
@@ -106,15 +107,30 @@ namespace ProcessHacker
 
             try
             {
-                if (KProcessHacker.Instance != null)
+                if (processHandle != null)
                 {
-                    _phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
+                    _phandle = processHandle;
+                    _processHandleOwned = false;
                 }
                 else
                 {
-                    _phandle = new ProcessHandle(_pid,
-                        ProcessAccess.QueryInformation | ProcessAccess.VmRead
-                        );
+                    try
+                    {
+                        _phandle = new ProcessHandle(_pid,
+                            ProcessAccess.QueryInformation | ProcessAccess.VmRead
+                            );
+                    }
+                    catch
+                    {
+                        if (KProcessHacker.Instance != null)
+                        {
+                            _phandle = new ProcessHandle(_pid, Program.MinProcessReadMemoryRights);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -129,15 +145,22 @@ namespace ProcessHacker
 
             try
             {
-                if (KProcessHacker.Instance != null)
-                {
-                    _thandle = new ThreadHandle(_tid,
-                        Program.MinThreadQueryRights | ThreadAccess.SuspendResume
-                        );
-                }
-                else
+                try
                 {
                     _thandle = new ThreadHandle(_tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume);
+                }
+                catch
+                {
+                    if (KProcessHacker.Instance != null)
+                    {
+                        _thandle = new ThreadHandle(_tid,
+                            Program.MinThreadQueryRights | ThreadAccess.SuspendResume
+                            );
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
             catch (Exception ex)
@@ -161,10 +184,10 @@ namespace ProcessHacker
                     if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewCallStack, -1);
                 };
 
-            this.WalkCallStack();
-
             this.Size = Properties.Settings.Default.ThreadWindowSize;
             ColumnSettings.LoadSettings(Properties.Settings.Default.CallStackColumns, listViewCallStack);
+
+            this.WalkCallStack();
         }
 
         private void ThreadWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -236,10 +259,6 @@ namespace ProcessHacker
 
         private unsafe void WalkCallStack(Context context)
         {
-            /*  [ebp+8]... = args   
-             *  [ebp+4] = ret addr  
-             *  [ebp] = old ebp
-             */
             listViewCallStack.BeginUpdate();
             listViewCallStack.Items.Clear();
 
@@ -251,7 +270,7 @@ namespace ProcessHacker
             stackFrame.AddrStack.Offset = context.Esp;
             stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
             stackFrame.AddrFrame.Offset = context.Ebp;
-            
+
             while (true)
             {
                 try
@@ -277,24 +296,46 @@ namespace ProcessHacker
 
                     uint addr = (uint)(stackFrame.AddrPC.Offset & 0xffffffff);
 
-                    ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                        "0x" + addr.ToString("x8"),
-                        _symbols.GetSymbolFromAddress(addr)
-                    }));
+                    try
+                    {
+                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                            "0x" + addr.ToString("x8"),
+                            _symbols.GetSymbolFromAddress(addr)
+                        }));
 
-                    newItem.Tag = addr;
+                        newItem.Tag = addr;
 
-                    if (stackFrame.Params.Length > 0)
-                        newItem.ToolTipText = "Parameters: ";
+                        try
+                        {
+                            if (stackFrame.Params.Length > 0)
+                                newItem.ToolTipText = "Parameters: ";
 
-                    foreach (long arg in stackFrame.Params)
-                        newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
+                            foreach (long arg in stackFrame.Params)
+                                newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
 
-                    if (newItem.ToolTipText.EndsWith(", "))
-                        newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
+                            if (newItem.ToolTipText.EndsWith(", "))
+                                newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
+                        }
+                        catch (Exception ex3)
+                        {
+                            Logging.Log(ex3);
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        Logging.Log(ex2);
+
+                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                            "0x" + addr.ToString("x8"),
+                            "???"
+                        }));
+
+                        newItem.Tag = addr;
+                    }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Logging.Log(ex);
                     break;
                 }
             }

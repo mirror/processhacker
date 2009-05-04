@@ -18,7 +18,7 @@
                 components.Dispose();
             }
 
-            if (_phandle != null)
+            if (_phandle != null && _processHandleOwned)
                 _phandle.Dispose();
             if (_thandle != null)
                 _thandle.Dispose();

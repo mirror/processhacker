@@ -7,6 +7,7 @@ Process Hacker
    * Better highlighting
  * FIXED:
    * #2785648 - "cursor down crashes PH"
+   * Incomplete or inaccurate thread call stacks
    * Unexpected actions being performed when a key was pressed in 
      the memory and handle lists
 

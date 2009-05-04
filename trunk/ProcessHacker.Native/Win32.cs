@@ -59,7 +59,7 @@ namespace ProcessHacker.Native.Api
         public const uint ShgFiIcon = 0x100;
         public const uint ShgFiLargeIcon = 0x0;
         public const uint ShgFiSmallIcon = 0x1;
-        public const int SizeOf80387Registers = 72;
+        public const int SizeOf80387Registers = 80;
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
 
         #endregion    

@@ -557,10 +557,27 @@ namespace ProcessHacker.Components
 
             try
             {
+                ProcessHandle phandle = null;
+
+                // If we have KPH, we don't need much access.
+                if (KProcessHacker.Instance != null)
+                {
+                    if ((_provider.ProcessAccess & ProcessAccess.QueryLimitedInformation) != 0 || 
+                        (_provider.ProcessAccess & ProcessAccess.QueryInformation) != 0)
+                        phandle = _provider.ProcessHandle;
+                }
+                else
+                {
+                    if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
+                        phandle = _provider.ProcessHandle;
+                }
+
                 (new ThreadWindow(
                     _pid,
                     Int32.Parse(listThreads.SelectedItems[0].SubItems[0].Text),
-                    _provider.Symbols)
+                    _provider.Symbols,
+                    phandle
+                    )
                     ).ShowDialog(this);
             }
             catch (Exception ex)

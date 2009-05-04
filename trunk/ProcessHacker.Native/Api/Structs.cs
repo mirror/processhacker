@@ -63,8 +63,6 @@ namespace ProcessHacker.Native.Api
         public int Dr1;
         public int Dr2;
         public int Dr3;
-        public int Dr4;
-        public int Dr5;
         public int Dr6;
         public int Dr7;
 
