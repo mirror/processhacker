@@ -5,6 +5,7 @@ Process Hacker
    * KProcessHacker can now perform process memory reading/writing 
      by itself and does not require MmCopyVirtualMemory
    * Better highlighting
+   * Shows function file and line numbers where available
  * FIXED:
    * #2785648 - "cursor down crashes PH"
    * Incomplete or inaccurate thread call stacks

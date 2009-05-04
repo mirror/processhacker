@@ -63,7 +63,7 @@
             this.listViewCallStack.Location = new System.Drawing.Point(6, 19);
             this.listViewCallStack.Name = "listViewCallStack";
             this.listViewCallStack.ShowItemToolTips = true;
-            this.listViewCallStack.Size = new System.Drawing.Size(363, 353);
+            this.listViewCallStack.Size = new System.Drawing.Size(363, 352);
             this.listViewCallStack.TabIndex = 0;
             this.listViewCallStack.UseCompatibleStateImageBehavior = false;
             this.listViewCallStack.View = System.Windows.Forms.View.Details;
@@ -139,6 +139,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // buttonToken
             // 

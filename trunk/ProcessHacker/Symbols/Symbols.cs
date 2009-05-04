@@ -255,6 +255,42 @@ namespace ProcessHacker.Symbols
                 _modules.RemoveAll(kvp => kvp.Key == baseAddress);
         }
 
+        public string GetLineFromAddress(long address)
+        {
+            string fileName;
+            int lineNumber;
+
+            this.GetLineFromAddress(address, out fileName, out lineNumber);
+
+            if (fileName != null)
+                return fileName + ": " + lineNumber.ToString();
+            else
+                return null;
+        }
+
+        public void GetLineFromAddress(long address, out string fileName, out int lineNumber)
+        {
+            int displacement;
+
+            this.GetLineFromAddress(address, out fileName, out lineNumber, out displacement);
+        }
+
+        public void GetLineFromAddress(long address, out string fileName, out int lineNumber, out int lineDisplacement)
+        {
+            ImagehlpLine64 line;
+            int displacement;
+
+            lock (_callLock)
+            {
+                if (!Win32.SymGetLineFromAddr64(_handle, address, out displacement, out line))
+                    Win32.ThrowLastError();
+
+                fileName = line.FileName;
+                lineNumber = line.LineNumber;
+                lineDisplacement = displacement;
+            }
+        }
+
         public string GetModuleFromAddress(long address, out long baseAddress)
         {
             lock (_modules)

@@ -315,6 +315,16 @@ namespace ProcessHacker
 
                             if (newItem.ToolTipText.EndsWith(", "))
                                 newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
+
+                            try
+                            {
+                                string fileAndLine = _symbols.GetLineFromAddress(addr);
+
+                                if (fileAndLine != null)
+                                    newItem.ToolTipText += "\nFile: " + fileAndLine;
+                            }
+                            catch
+                            { }
                         }
                         catch (Exception ex3)
                         {

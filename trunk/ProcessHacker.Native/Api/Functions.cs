@@ -924,6 +924,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
+        public static extern bool SymGetLineFromAddr64(
+            int ProcessHandle,
+            long Address,
+            out int Displacement,
+            out ImagehlpLine64 Line
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
         public static extern bool StackWalk64(
             MachineType MachineType,
             int ProcessHandle,

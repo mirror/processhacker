@@ -195,6 +195,16 @@ namespace ProcessHacker.Native.Api
         public int dwFlags;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct ImagehlpLine64
+    {
+        public int SizeOfStruct;
+        public int Key;
+        public int LineNumber;
+        public string FileName;
+        public long Address;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct IoCounters
     {
