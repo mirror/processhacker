@@ -40,6 +40,7 @@ NTSTATUS KphReadVirtualMemory(
     PEPROCESS processObject;
     ULONG returnLength = 0;
     
+    /* Probe user input if we're not from kernel-mode. */
     if (AccessMode != KernelMode)
     {
         if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
@@ -61,9 +62,18 @@ NTSTATUS KphReadVirtualMemory(
         }
     }
     
+    /* If we actually have work to do, reference the process object and 
+       call the internal function. */
     if (BufferLength)
     {
-        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+        status = ObReferenceObjectByHandle(
+            ProcessHandle,
+            PROCESS_VM_READ,
+            *PsProcessType,
+            KernelMode,
+            &processObject,
+            NULL
+            );
         
         if (!NT_SUCCESS(status))
             return status;
@@ -112,6 +122,7 @@ NTSTATUS KphWriteVirtualMemory(
     PEPROCESS processObject;
     ULONG returnLength = 0;
     
+    /* Probe user input if we're not from kernel-mode. */
     if (AccessMode != KernelMode)
     {
         if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
@@ -133,9 +144,18 @@ NTSTATUS KphWriteVirtualMemory(
         }
     }
     
+    /* If we actually have work to do, reference the process object and 
+       call the internal function. */
     if (BufferLength)
     {
-        status = ObReferenceObjectByHandle(ProcessHandle, 0, *PsProcessType, KernelMode, &processObject, NULL);
+        status = ObReferenceObjectByHandle(
+            ProcessHandle,
+            PROCESS_VM_WRITE,
+            *PsProcessType,
+            KernelMode,
+            &processObject,
+            NULL
+            );
         
         if (!NT_SUCCESS(status))
             return status;
@@ -182,7 +202,7 @@ NTSTATUS MiDoMappedCopy(
     PULONG ReturnLength
     )
 {
-    PFN_NUMBER mdlBuffer [(sizeof(MDL) / sizeof(PFN_NUMBER)) + MI_MAPPED_COPY_PAGES + 1];
+    PFN_NUMBER mdlBuffer[(sizeof(MDL) / sizeof(PFN_NUMBER)) + MI_MAPPED_COPY_PAGES + 1];
     PMDL mdl = (PMDL)mdlBuffer;
     /* The mapped address. */
     PVOID mappedAddress;
@@ -263,7 +283,7 @@ NTSTATUS MiDoMappedCopy(
             
             if (!mappedAddress)
             {
-                /* Insufficient resources, exit. */
+                /* Insufficient resources; exit. */
                 mapping = TRUE;
                 ExRaiseStatus(STATUS_INSUFFICIENT_RESOURCES);
             }
@@ -542,6 +562,8 @@ NTSTATUS MmCopyVirtualMemory(
     if (!KphAcquireProcessRundownProtection(processToLock))
         return STATUS_PROCESS_IS_TERMINATING;
     
+    /* If the amount we're trying to copy is over the threshold 
+       for MiDoPoolCopy, use MiDoMappedCopy. */
     if (BufferLength > MM_POOL_COPY_THRESHOLD)
     {
         status = MiDoMappedCopy(
@@ -567,6 +589,7 @@ NTSTATUS MmCopyVirtualMemory(
             );
     }
     
+    /* Allow the process to terminate. */
     KphReleaseProcessRundownProtection(processToLock);
     
     return status;

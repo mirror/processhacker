@@ -64,15 +64,18 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     /* Initialize NT KPH */
     status = KphNtInit();
+    
     if (!NT_SUCCESS(status))
         return status;
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     
+    /* Create the KProcessHacker device. */
     status = IoCreateDevice(DriverObject, 0, &deviceName, 
         FILE_DEVICE_UNKNOWN, FILE_DEVICE_SECURE_OPEN, FALSE, &deviceObject);
     
+    /* Set up the major functions. */
     for (i = 0; i < IRP_MJ_MAXIMUM_FUNCTION; i++)
         DriverObject->MajorFunction[i] = NULL;
     
@@ -122,56 +125,56 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 }
 
 /* from YAPM */
-NTSTATUS GetObjectName(PFILE_OBJECT lpObject, PVOID lpBuffer, ULONG nBufferLength, PULONG lpReturnLength)
+NTSTATUS GetObjectName(PFILE_OBJECT FileObject, PVOID Buffer, ULONG BufferLength, PULONG ReturnLength)
 {
-    ULONG nObjectName = 0;
-    PFILE_OBJECT lpRelated;
-    PVOID lpName = lpBuffer;
+    ULONG nameLength = 0;
+    PFILE_OBJECT relatedFile;
+    PVOID name = Buffer;
     
-    if (lpObject->DeviceObject)
+    if (FileObject->DeviceObject)
     {
-        ObQueryNameString((PVOID)lpObject->DeviceObject, lpName, nBufferLength, lpReturnLength);
-        (PCHAR)lpName += *lpReturnLength - 2; /* minus the null terminator */
-        nBufferLength -= *lpReturnLength - 2;
+        ObQueryNameString((PVOID)FileObject->DeviceObject, name, BufferLength, ReturnLength);
+        (PCHAR)name += *ReturnLength - 2; /* minus the null terminator */
+        BufferLength -= *ReturnLength - 2;
     }
     else
     {
         /* it's a UNICODE_STRING. we need to subtract the space 
         Length and MaximumLength take up. */
-        (PCHAR)lpName += 4;
-        nBufferLength -= 4;
+        (PCHAR)name += 4;
+        BufferLength -= 4;
     }
     
-    if (!lpObject->FileName.Buffer)
+    if (!FileObject->FileName.Buffer)
         return STATUS_SUCCESS;
     
-    lpRelated = lpObject;
+    relatedFile = FileObject;
     
     do
     {
-        nObjectName += lpRelated->FileName.Length;
-        lpRelated = lpRelated->RelatedFileObject;
+        nameLength += relatedFile->FileName.Length;
+        relatedFile = relatedFile->RelatedFileObject;
     }
-    while (lpRelated);
+    while (relatedFile);
     
-    *lpReturnLength += nObjectName;
+    *ReturnLength += nameLength;
     
-    if (nObjectName > nBufferLength)
+    if (nameLength > BufferLength)
     {
         return STATUS_BUFFER_TOO_SMALL;
     }
     
-    (PCHAR)lpName += nObjectName;
-    *(unsigned short*)lpName = 0;
+    (PCHAR)name += nameLength;
+    *(PUSHORT)name = 0;
     
-    lpRelated = lpObject;
+    relatedFile = FileObject;
     do
     {
-        (PCHAR)lpName -= lpRelated->FileName.Length;
-        RtlCopyMemory(lpName, lpRelated->FileName.Buffer, lpRelated->FileName.Length);
-        lpRelated = lpRelated->RelatedFileObject;
+        (PCHAR)name -= relatedFile->FileName.Length;
+        memcpy(name, relatedFile->FileName.Buffer, relatedFile->FileName.Length);
+        relatedFile = relatedFile->RelatedFileObject;
     }
-    while (lpRelated);
+    while (relatedFile);
     
     return STATUS_SUCCESS;
 }

@@ -34,11 +34,13 @@ PVOID GetSystemRoutineAddress(WCHAR *Name)
     
     RtlInitUnicodeString(&routineName, Name);
     
-    __try
+    /* Wrap in SEH because MmGetSystemRoutineAddress is known to cause 
+       some BSODs. */
+    try
     {
         routineAddress = MmGetSystemRoutineAddress(&routineName);
     }
-    __except (EXCEPTION_EXECUTE_HANDLER)
+    except (EXCEPTION_EXECUTE_HANDLER)
     {
         routineAddress = NULL;
     }
@@ -90,6 +92,7 @@ VOID KphAttachProcess(
 {
     AttachState->Attached = FALSE;
     
+    /* Don't attach if we are already attached to the target. */
     if (Process != PsGetCurrentProcess())
     {
         KeStackAttachProcess(Process, &AttachState->ApcState);

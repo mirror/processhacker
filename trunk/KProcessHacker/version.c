@@ -107,7 +107,9 @@ NTSTATUS KvInit()
     __NtClose = GetSystemRoutineAddress(L"NtClose");
     
     /* NtClose is used as a reference point for any addresses 
-       dependent on where the kernel is loaded. */
+       dependent on where the kernel is loaded, so if we don't 
+       have it, we can't proceed.
+     */
     if (!__NtClose)
         return STATUS_NOT_SUPPORTED;
     
@@ -132,7 +134,7 @@ NTSTATUS KvInit()
         
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
-           PsTerminateProcess is simply a wrapper.
+           PsTerminateProcess is simply a wrapper on XP.
          */
         INIT_SCAN(
             ExpGetProcessInformationScan,
@@ -233,7 +235,7 @@ NTSTATUS KvInit()
     /* Windows 7 */
     else if (majorVersion == 6 && minorVersion == 1)
     {
-        ULONG searchOffset = (ULONG)__NtClose + 0xfff00000; /* negative */
+        ULONG searchOffset = (ULONG)__NtClose - 0x100000;
         
         WindowsVersion = WINDOWS_7;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;

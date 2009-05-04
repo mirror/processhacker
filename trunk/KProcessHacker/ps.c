@@ -23,6 +23,10 @@
 #include "include/kph.h"
 #include "include/ps.h"
 
+/* KphAcquireProcessRundownProtection
+ * 
+ * Prevents the process from terminating.
+ */
 BOOLEAN KphAcquireProcessRundownProtection(
     PEPROCESS Process
     )
@@ -167,7 +171,14 @@ NTSTATUS KphGetThreadWin32Thread(
         }
     }
     
-    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, NULL);
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        0,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL
+        );
     
     if (!NT_SUCCESS(status))
         return status;
@@ -481,6 +492,10 @@ NTSTATUS KphOpenThread(
     return status;
 }
 
+/* KphReleaseProcessRundownProtection
+ * 
+ * Allows the process to terminate.
+ */
 VOID KphReleaseProcessRundownProtection(
     PEPROCESS Process
     )
@@ -610,6 +625,8 @@ NTSTATUS KphTerminateProcess(
         return STATUS_DISK_FULL;
     }
     
+    /* If we have located PsTerminateProcess/PspTerminateProcess, 
+       call it. */
     if (__PsTerminateProcess)
     {
         status = PsTerminateProcess(processObject, ExitStatus);
@@ -617,6 +634,8 @@ NTSTATUS KphTerminateProcess(
     }
     else
     {
+        /* Otherwise, we'll have to call ZwTerminateProcess - most hooks on this function 
+           allow kernel-mode callers through. */
         OBJECT_ATTRIBUTES objectAttributes = { 0 };
         CLIENT_ID clientId;
         HANDLE newProcessHandle;
@@ -696,7 +715,7 @@ NTSTATUS PsTerminateProcess(
     
     if (WindowsVersion == WINDOWS_XP)
     {
-        /* PspTerminateProcess on XP is stdcall */
+        /* PspTerminateProcess on XP is stdcall. */
         __asm
         {
             push    [ExitStatus]
@@ -710,7 +729,7 @@ NTSTATUS PsTerminateProcess(
         WindowsVersion == WINDOWS_7
         )
     {
-        /* PsTerminateProcess on Vista and above is thiscall */
+        /* PsTerminateProcess on Vista and above is thiscall. */
         __asm
         {
             push    [ExitStatus]

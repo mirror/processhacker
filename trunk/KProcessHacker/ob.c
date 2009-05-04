@@ -68,7 +68,7 @@ NTSTATUS KphDuplicateObject(
     if (!NT_SUCCESS(status))
         return status;
     
-    /* Target handle is optional */
+    /* Target handle is optional. */
     if (TargetProcessHandle)
     {
         status = ObReferenceObjectByHandle(
@@ -84,7 +84,7 @@ NTSTATUS KphDuplicateObject(
             return status;
     }
     
-    /* Call the internal function */
+    /* Call the internal function. */
     status = ObDuplicateObject(
         sourceProcess,
         targetProcess,
