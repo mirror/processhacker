@@ -34,15 +34,15 @@ namespace ProcessHacker.Native.Objects
             int outBufferSize, int inBufferSize, int defaultTimeOut)
         {
             this.Handle = Win32.CreateNamedPipe(name, openMode, pipeMode, maxInstances,
-                outBufferSize, inBufferSize, defaultTimeOut, 0);
+                outBufferSize, inBufferSize, defaultTimeOut, IntPtr.Zero);
 
-            if (this.Handle == 0)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
         public void Connect()
         {
-            if (!Win32.ConnectNamedPipe(this, 0))
+            if (!Win32.ConnectNamedPipe(this, IntPtr.Zero))
                 Win32.ThrowLastError();
         }
 
@@ -68,7 +68,7 @@ namespace ProcessHacker.Native.Objects
     }
 
     [Flags]
-    public enum PipeMode : int
+    public enum PipeMode : uint
     {
         TypeByte = 0x0,
         TypeMessage = 0x4,
@@ -81,7 +81,7 @@ namespace ProcessHacker.Native.Objects
     }
 
     [Flags]
-    public enum PipeState : int
+    public enum PipeState : uint
     {
         NoWait = 0x1,
         ReadModeMessage = 0x2

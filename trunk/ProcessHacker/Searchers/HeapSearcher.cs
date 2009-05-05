@@ -34,7 +34,7 @@ namespace ProcessHacker
         {
             Results.Clear();
 
-            int snapshot;
+            IntPtr snapshot;
             var hlist = new HeapList32();
             var heap = new HeapEntry32();
             int minsize = (int)BaseConverter.ToNumberParse((string)Params["h_ms"]);
@@ -45,7 +45,7 @@ namespace ProcessHacker
             hlist.dwSize = Marshal.SizeOf(hlist);
             heap.dwSize = Marshal.SizeOf(heap);
 
-            if (snapshot != 0 && Marshal.GetLastWin32Error() == 0)
+            if (snapshot != IntPtr.Zero && Marshal.GetLastWin32Error() == 0)
             {
                 Win32.Heap32ListFirst(snapshot, ref hlist);
 
@@ -65,8 +65,8 @@ namespace ProcessHacker
                             "0x00000000", heap.dwBlockSize.ToString(), heap.dwFlags.ToString().Replace("LF32_", "") });
 
                         count++;
-                    } while (Win32.Heap32Next(ref heap) != 0);
-                } while (Win32.Heap32ListNext(snapshot, ref hlist) != 0);
+                    } while (Win32.Heap32Next(out heap) != 0);
+                } while (Win32.Heap32ListNext(snapshot, out hlist));
             }
             else
             {

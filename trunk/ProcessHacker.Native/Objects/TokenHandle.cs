@@ -44,14 +44,14 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="Handle">The handle value.</param>
         /// <returns>The token handle.</returns>
-        public static TokenHandle FromHandle(int handle)
+        public static TokenHandle FromHandle(IntPtr handle)
         {
             return new TokenHandle(handle, false);
         }
 
         public static TokenHandle Logon(string username, string domain, string password, LogonType logonType, LogonProvider logonProvider)
         {
-            int token;
+            IntPtr token;
 
             if (!Win32.LogonUser(username, domain, password, logonType, logonProvider, out token))
                 Win32.ThrowLastError();
@@ -93,7 +93,7 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public TokenHandle(int handle, bool owned)
+        public TokenHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -104,11 +104,11 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the token.</param>
         public TokenHandle(ProcessHandle handle, TokenAccess access)
         {
-            int h;
+            IntPtr h;
 
             if (KProcessHacker.Instance != null)
             {
-                h = KProcessHacker.Instance.KphOpenProcessToken(handle, access);
+                h = new IntPtr(KProcessHacker.Instance.KphOpenProcessToken(handle, access));
             }
             else
             {
@@ -136,7 +136,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="openAsSelf">If the thread is currently impersonating, opens the original token.</param>
         public TokenHandle(ThreadHandle handle, TokenAccess access, bool openAsSelf)
         {
-            int h;
+            IntPtr h;
 
             if (!Win32.OpenThreadToken(handle, access, openAsSelf, out h))
                 Win32.ThrowLastError();
@@ -153,9 +153,9 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A new token.</returns>
         public TokenHandle Duplicate(TokenAccess access, SecurityImpersonationLevel impersonationLevel, TokenType type)
         {
-            int token;
+            IntPtr token;
 
-            if (!Win32.DuplicateTokenEx(this, access, 0, impersonationLevel, type, out token))
+            if (!Win32.DuplicateTokenEx(this, access, IntPtr.Zero, impersonationLevel, type, out token))
                 Win32.ThrowLastError();
 
             return new TokenHandle(token, true);
@@ -167,14 +167,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A TOKEN_ELEVATION_TYPE enum.</returns>
         public TokenElevationType GetElevationType()
         {
-            int value;
+            MemoryAlloc value = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevationType,
-                out value, 4, out retLen))
+                value.Memory, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return (TokenElevationType)value;
+            return (TokenElevationType)value.ReadInt32(0);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace ProcessHacker.Native.Objects
 
             MemoryAlloc data = new MemoryAlloc(retLen);
 
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data,
+            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data.Memory,
                 data.Size, out retLen))
                 Win32.ThrowLastError();
 
@@ -229,7 +229,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(data.ReadInt32(0));
+                return new WindowsSid(Marshal.ReadIntPtr(data.Memory));
             }
         }
 
@@ -249,7 +249,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(data.ReadInt32(0));
+                return new WindowsSid(Marshal.ReadIntPtr(data.Memory));
             }
         }
 
@@ -309,14 +309,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The session ID.</returns>
         public int GetSessionId()
         {
-            int sessionId;
+            MemoryAlloc sessionId = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSessionId,
-                out sessionId, 4, out retLen))
+                sessionId.Memory, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return sessionId;
+            return sessionId.ReadInt32(0);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSource,
-                ref source, Marshal.SizeOf(source), out retLen))
+                 ref source, Marshal.SizeOf(source), out retLen))
                 Win32.ThrowLastError();
 
             return source;
@@ -363,14 +363,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsElevated()
         {
-            int value;
+            MemoryAlloc value = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevation,
-                out value, 4, out retLen))
+                value.Memory, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return value != 0;
+            return value.ReadInt32(0) != 0;
         }
 
         /// <summary>
@@ -379,14 +379,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsVirtualizationAllowed()
         {
-            int value;
+            MemoryAlloc value = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationAllowed,
-                out value, 4, out retLen))
+                value, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return value != 0;
+            return value.ReadInt32(0) != 0;
         }
 
         /// <summary>
@@ -395,14 +395,14 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsVirtualizationEnabled()
         {
-            int value;
+            MemoryAlloc value = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled,
-                out value, 4, out retLen))
+                value, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return value != 0;
+            return value.ReadInt32(0) != 0;
         }
 
         /// <summary>
@@ -416,13 +416,16 @@ namespace ProcessHacker.Native.Objects
 
             tkp.Privileges = new LuidAndAttributes[1];
 
-            if (!Win32.LookupPrivilegeValue(null, privilegeName, ref tkp.Privileges[0].Luid))
+            if (!Win32.LookupPrivilegeValue(null, privilegeName, out tkp.Privileges[0].Luid))
                 throw new Exception("Invalid privilege name '" + privilegeName + "'.");
 
             tkp.PrivilegeCount = 1;
             tkp.Privileges[0].Attributes = attributes;
 
-            Win32.AdjustTokenPrivileges(this, 0, ref tkp, 0, 0, 0);
+            int test = 0;
+            IntPtr a = IntPtr.Zero;
+
+            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, test);
 
             if (Marshal.GetLastWin32Error() != 0)
                 Win32.ThrowLastError();
@@ -434,10 +437,17 @@ namespace ProcessHacker.Native.Objects
         /// <param name="enabled">Whether virtualization is enabled.</param>
         public void SetVirtualizationEnabled(bool enabled)
         {
-            int value = enabled ? 1 : 0;
+            //int value = enabled ? 1 : 0;
+
+            IntPtr value = Marshal.AllocHGlobal(4);
+            Marshal.WriteInt32(value,enabled ? 1 : 0);
 
             if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
+            {
+                Marshal.FreeHGlobal(value);
                 Win32.ThrowLastError();
+            }
+            Marshal.FreeHGlobal(value);
         }
     }
 }

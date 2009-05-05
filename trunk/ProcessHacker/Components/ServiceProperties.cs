@@ -360,9 +360,10 @@ namespace ProcessHacker.Components
                 {
                     using (var shandle = new ServiceHandle(serviceName, ServiceAccess.ChangeConfig))
                     {
+                        int dummy = 0;
                         if (!Win32.ChangeServiceConfig(shandle.Handle,
                             type, startType, errorControl,
-                            binaryPath, loadOrderGroup, 0, 0, userAccount, password, null))
+                            binaryPath, loadOrderGroup, out dummy, null, userAccount, password, null))
                             Win32.ThrowLastError();
                     }
                 }

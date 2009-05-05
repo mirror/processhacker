@@ -29,7 +29,7 @@ namespace ProcessHacker.Forms
 
         private struct HOOK
         {
-            public int Address;
+            public IntPtr Address;
             public char Hooked;
             public unsafe fixed byte ReplacedBytes[16];
             public int ReplacedLength;

@@ -399,7 +399,7 @@ namespace ProcessHacker
                             using (ThreadHandle thandle =
                                 new ThreadHandle(tid, ThreadAccess.QueryInformation))
                             {
-                                item.StartAddressI = thandle.GetWin32StartAddress();
+                                item.StartAddressI = (uint)thandle.GetWin32StartAddress();
                             }
                         }
                         catch

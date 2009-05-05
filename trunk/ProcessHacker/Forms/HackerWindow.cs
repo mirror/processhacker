@@ -181,7 +181,7 @@ namespace ProcessHacker
 
         private void runMenuItem_Click(object sender, EventArgs e)
         {
-            Win32.RunFileDlg(this.Handle, 0, 0, null, null, 0);
+            Win32.RunFileDlg(this.Handle, IntPtr.Zero, null, null, null, 0);
         }
 
         private void runAsMenuItem_Click(object sender, EventArgs e)
@@ -1042,8 +1042,8 @@ namespace ProcessHacker
 
                             startupInfo.Size = Marshal.SizeOf(startupInfo);
 
-                            if (!Win32.CreateProcess(null, cmdLine, 0, 0, false, 0, 0, currentDirectory,
-                                ref startupInfo, ref procInfo))
+                            if (!Win32.CreateProcess(null, cmdLine, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, currentDirectory,
+                                ref startupInfo, out procInfo))
                                 Win32.ThrowLastError();
 
                             Win32.CloseHandle(procInfo.hProcess);
@@ -2055,7 +2055,7 @@ namespace ProcessHacker
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
-            if (Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath) == 0)
+            if (Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath) == IntPtr.Zero)
                 Win32.LoadLibrary("dbghelp.dll");
 
             try

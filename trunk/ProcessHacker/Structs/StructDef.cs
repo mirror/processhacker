@@ -22,6 +22,8 @@
 
 using System.Collections.Generic;
 using System.Text;
+using System;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Structs
 {
@@ -45,7 +47,7 @@ namespace ProcessHacker.Structs
             }
         }
 
-        public int Offset { get; set; }
+        public IntPtr Offset { get; set; }
 
         public Dictionary<string, StructDef> Structs { get; set; }
 
@@ -99,7 +101,7 @@ namespace ProcessHacker.Structs
             return values;
         }
 
-        private int Read(StructField field, int offset, out FieldValue valueOut)
+        private int Read(StructField field, IntPtr offset, out FieldValue valueOut)
         {
             if (!field.IsArray)
                 return this.ReadOnce(field, offset, out valueOut);
@@ -113,7 +115,7 @@ namespace ProcessHacker.Structs
             {
                 FieldValue elementValue;
 
-                readSize += this.ReadOnce(field, offset + readSize, out elementValue);
+                readSize += this.ReadOnce(field, offset.Increment(readSize), out elementValue);
                 elementValue.Name = "[" + i.ToString() + "]";
 
                 valueArray.Add(elementValue);
@@ -126,7 +128,7 @@ namespace ProcessHacker.Structs
             return readSize;
         }
 
-        private unsafe int ReadOnce(StructField field, int offset, out FieldValue valueOut)
+        private unsafe int ReadOnce(StructField field, IntPtr offset, out FieldValue valueOut)
         {
             FieldValue value = new FieldValue() { FieldType = field.Type, Name = field.Name };
             int readSize = 0;
@@ -198,7 +200,7 @@ namespace ProcessHacker.Structs
 
                             for (i = 0; ; i++)
                             {
-                                byte b = IOProvider.ReadBytes(offset + i, 1)[0];
+                                byte b = IOProvider.ReadBytes(offset.Increment(i), 1)[0];
 
                                 if (b == 0)
                                     break;
@@ -229,7 +231,7 @@ namespace ProcessHacker.Structs
 
                             for (i = 0; ; i += 2)
                             {
-                                byte[] b = IOProvider.ReadBytes(offset + i, 2);
+                                byte[] b = IOProvider.ReadBytes(offset.Increment(i), 2);
 
                                 if (Misc.IsEmpty(b))
                                     break;
@@ -305,20 +307,20 @@ namespace ProcessHacker.Structs
                 // resolve pointer
                 if (field.IsPointer)
                 {
-                    int pointingTo = Misc.BytesToInt(IOProvider.ReadBytes(Offset + localOffset, 4), Misc.Endianness.Little);
+                    int pointingTo = Misc.BytesToInt(IOProvider.ReadBytes(Offset.Increment(localOffset), 4), Misc.Endianness.Little);
 
                     localOffset += 4;
 
                     if (pointingTo == 0)
                         value = new FieldValue() { Name = field.Name, FieldType = field.RawType, Value = null };
                     else
-                        Read(field, pointingTo, out value);
+                        Read(field, new IntPtr(pointingTo), out value);
 
                     value.PointerValue = pointingTo;
                 }
                 else
                 {
-                    localOffset += Read(field, Offset + localOffset, out value);
+                    localOffset += Read(field, Offset.Increment(localOffset), out value);
                 }
 
                 if (field.SetsVarOn != null)

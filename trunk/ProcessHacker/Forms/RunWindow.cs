@@ -60,13 +60,13 @@ namespace ProcessHacker
                     IntPtr sids;
                     int length;
 
-                    if (Win32.LsaEnumerateAccountsWithUserRight(policy, 0, out sids, out length) == 0)
+                    if (Win32.LsaEnumerateAccountsWithUserRight(policy, IntPtr.Zero, out sids, out length) == 0)
                     {
                         using (LsaMemoryAlloc memory = LsaMemoryAlloc.FromPointer(sids))
                         {
                             for (int i = 0; i < length; i++)
                             {
-                                int sid = System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4);
+                                IntPtr sid = new IntPtr(System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4));
                                 SidNameUse type = Windows.GetAccountType(sid);
 
                                 if (type == SidNameUse.User)
@@ -267,9 +267,9 @@ namespace ProcessHacker
                 string user = null;
                 string domain = null;
                 int retLen;
-                                                                                                                                   
-                Win32.WTSQuerySessionInformation(0, session.SessionID, WtsInformationClass.UserName, out user, out retLen);
-                Win32.WTSQuerySessionInformation(0, session.SessionID, WtsInformationClass.DomainName, out domain, out retLen);
+
+                Win32.WTSQuerySessionInformation(IntPtr.Zero, session.SessionID, WtsInformationClass.UserName, out user, out retLen);
+                Win32.WTSQuerySessionInformation(IntPtr.Zero, session.SessionID, WtsInformationClass.DomainName, out domain, out retLen);
 
                 string username = domain + "\\" + user;
                 string displayName = "";

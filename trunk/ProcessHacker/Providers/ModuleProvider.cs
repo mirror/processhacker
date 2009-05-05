@@ -39,7 +39,7 @@ namespace ProcessHacker
         }
 
         public int RunId;
-        public int BaseAddress;
+        public IntPtr BaseAddress;
         public int Size;
         public string Name;
         public string FileName;
@@ -47,7 +47,7 @@ namespace ProcessHacker
         public string FileVersion;
     }
 
-    public class ModuleProvider : Provider<int, ModuleItem>
+    public class ModuleProvider : Provider<IntPtr, ModuleItem>
     {
         private ProcessHandle _processHandle;
         private int _pid;
@@ -89,25 +89,25 @@ namespace ProcessHacker
         private void UpdateDrivers()
         {
             int requiredSize = 0;
-            int[] imageBases;
+            IntPtr[] imageBases;
             List<int> done = new List<int>();
-            Dictionary<int, object> bases = new Dictionary<int, object>();
-            Dictionary<int, ModuleItem> newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);
+            Dictionary<IntPtr, object> bases = new Dictionary<IntPtr, object>();
+            Dictionary<IntPtr, ModuleItem> newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
 
             Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new int[requiredSize];
+            imageBases = new IntPtr[requiredSize];
             Win32.EnumDeviceDrivers(imageBases, requiredSize * sizeof(int), out requiredSize);
 
             for (int i = 0; i < requiredSize; i++)
             {
-                if (bases.ContainsKey(imageBases[i]) || imageBases[i] == 0)
+                if (bases.ContainsKey(imageBases[i]) || imageBases[i] == IntPtr.Zero)
                     continue;
 
                 bases.Add(imageBases[i], null);
             }
 
             // look for unloaded drivers
-            foreach (int b in Dictionary.Keys)
+            foreach (IntPtr b in Dictionary.Keys)
             {
                 if (!bases.ContainsKey(b))
                 {
@@ -117,7 +117,7 @@ namespace ProcessHacker
             }
 
             // look for new drivers
-            foreach (int b in bases.Keys)
+            foreach (IntPtr b in bases.Keys)
             {
                 if (!Dictionary.ContainsKey(b))
                 {
@@ -163,11 +163,11 @@ namespace ProcessHacker
             }
 
             var processModules = _processHandle.GetModules();
-            var modules = new Dictionary<int, ProcessModule>();
-            var newdictionary = new Dictionary<int, ModuleItem>(this.Dictionary);
+            var modules = new Dictionary<IntPtr, ProcessModule>();
+            var newdictionary = new Dictionary<IntPtr, ModuleItem>(this.Dictionary);
 
             foreach (var m in processModules)
-                modules.Add(m.BaseAddress.ToInt32(), m);
+                modules.Add(m.BaseAddress, m);
 
             // add mapped files
             _processHandle.EnumMemory((info) =>
@@ -184,7 +184,7 @@ namespace ProcessHacker
 
                                 modules.Add(info.BaseAddress,
                                     new ProcessModule(
-                                        new IntPtr(info.BaseAddress),
+                                        info.BaseAddress,
                                         info.RegionSize, IntPtr.Zero,
                                         fi.Name, fi.FullName));
                             }
@@ -197,7 +197,7 @@ namespace ProcessHacker
                 });
 
             // look for unloaded modules
-            foreach (int b in Dictionary.Keys)
+            foreach (IntPtr b in Dictionary.Keys)
             {
                 if (!modules.ContainsKey(b))
                 {
@@ -207,7 +207,7 @@ namespace ProcessHacker
             }
 
             // look for new modules
-            foreach (int b in modules.Keys)
+            foreach (IntPtr b in modules.Keys)
             {
                 if (!Dictionary.ContainsKey(b))
                 {

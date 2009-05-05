@@ -26,14 +26,14 @@ namespace ProcessHacker.Native
 
         public static Icon GetFileIcon(string fileName, bool large)
         {
-            var shinfo = new ShFileInfo();
+            ShFileInfo shinfo = new ShFileInfo();
 
             if (fileName == null || fileName == "")
                 throw new Exception("File name cannot be empty.");
 
             try
             {
-                if (Win32.SHGetFileInfo(fileName, 0, ref shinfo,
+                if (Win32.SHGetFileInfo(fileName, 0, out shinfo,
                       (uint)Marshal.SizeOf(shinfo),
                        Win32.ShgFiIcon |
                        (large ? Win32.ShgFiLargeIcon : Win32.ShgFiSmallIcon)) == 0)

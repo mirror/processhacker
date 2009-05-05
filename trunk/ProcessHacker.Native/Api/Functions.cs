@@ -2,6 +2,7 @@
  * Process Hacker - 
  *   windows API functions
  *                       
+ * Copyright (C) 2009 Flavio Erlich
  * Copyright (C) 2009 Uday Shanbhag
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
@@ -30,6 +31,7 @@ using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using Security.WinTrust;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -40,47 +42,72 @@ namespace ProcessHacker.Native.Api
         #region Cryptography
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern bool CryptCATCatalogInfoFromContext(int CatInfoHandle,
-            ref CatalogInfo CatInfo, int Flags);
+        public static extern bool CryptCATCatalogInfoFromContext(
+            [In] IntPtr CatInfoHandle,
+            [MarshalAs(UnmanagedType.LPStruct)] ref CatalogInfo CatInfo,
+            [In] int Flags
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern int CryptCATAdminEnumCatalogFromHash(int CatAdminHandle,
-            byte[] Hash, int HashSize, int Flags, int PrevCatInfoHandle);
+        public static extern IntPtr CryptCATAdminEnumCatalogFromHash(
+            [In] IntPtr CatAdminHandle,
+            [In] byte[] Hash,
+            [In] int HashSize,
+            [In] int Flags,
+            [In] IntPtr PrevCatInfoHandle
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern bool CryptCATAdminAcquireContext(out int CatAdminHandle, ref Guid Subsystem,
-            int Flags);
+        public static extern bool CryptCATAdminAcquireContext(
+            [Out] out IntPtr CatAdminHandle,
+            [In] [MarshalAs(UnmanagedType.LPStruct)] System.Guid Subsystem,
+            [In] int Flags
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern bool CryptCATAdminCalcHashFromFileHandle(int FileHandle, ref int HashSize,
-            byte[] Hash, int Flags);
+        public static extern bool CryptCATAdminCalcHashFromFileHandle(
+            [In] int FileHandle,
+            ref int HashSize,
+            [In] byte[] Hash,
+            [In] int Flags
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern bool CryptCATAdminReleaseContext(int CatAdminHandle, int Flags);
+        public static extern bool CryptCATAdminReleaseContext(
+            [In] IntPtr CatAdminHandle,
+            [In] int Flags
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern bool CryptCATAdminReleaseCatalogContext(int CatAdminHandle, 
-            int CatInfoHandle, int Flags);
+        public static extern bool CryptCATAdminReleaseCatalogContext(
+            [In] IntPtr CatAdminHandle, 
+            [In] IntPtr CatInfoHandle,
+            [In] int Flags
+        );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern uint WinVerifyTrust(int WindowHandle, ref Guid Action, ref WintrustData Data);
+        public static extern WinVerifyTrustResult WinVerifyTrust(
+             [In] IntPtr hwnd,
+             [In] [MarshalAs(UnmanagedType.LPStruct)] System.Guid pgActionID,
+             [In] WinTrustData pWVTData
+        );
 
         #endregion
 
         #region Error Handling
 
         [DllImport("ntdll.dll")]
-        public static extern int RtlNtStatusToDosError(int Status);
+        public static extern int RtlNtStatusToDosError([In] int Status);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int FormatMessage(
-            int Flags,
-            int Source,
-            int MessageId,
-            int LanguageId,
-            StringBuilder Buffer,
-            int Size,
-            IntPtr Arguments
+            [In] int Flags,
+            [In] [Optional] IntPtr Source,
+            [In] int MessageId,
+            [In] int LanguageId,
+            [Out] StringBuilder Buffer,
+            [In] int Size,
+            [In] [Optional] IntPtr Arguments
             );
 
         #endregion
@@ -88,153 +115,324 @@ namespace ProcessHacker.Native.Api
         #region Files
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int QueryDosDevice(string DeviceName, StringBuilder TargetPath, int MaxLength);
+        public static extern int QueryDosDevice(
+            [In] [Optional] string DeviceName,
+            [Out] StringBuilder TargetPath,
+            [In] int MaxLength
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CreateFile(string FileName, FileAccess DesiredAccess, FileShareMode ShareMode,
-            int SecurityAttributes, FileCreationDisposition CreationDisposition, int FlagsAndAttributes,
-            int TemplateFile);
+        public static extern IntPtr CreateFile(
+            [In] string FileName, 
+            [In] FileAccess DesiredAccess,
+            [In] FileShareMode ShareMode,
+            [In] [Optional] int SecurityAttributes,
+            [In] FileCreationDisposition CreationDisposition,
+            [In] int FlagsAndAttributes,
+            [In] [Optional] IntPtr TemplateFile
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool ReadFile(int FileHandle, byte[] Buffer, int Bytes, out int ReadBytes, int Overlapped);
+        public static extern bool ReadFile(
+            [In] IntPtr FileHandle,
+            [Out] byte[] Buffer,
+            [In] int Bytes, 
+            [Out] [Optional] out int ReadBytes,
+            [Optional] IntPtr Overlapped
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool WriteFile(int FileHandle, byte[] Buffer, int Bytes, out int WrittenBytes, int Overlapped);
+        public static extern bool WriteFile(
+            [In] IntPtr FileHandle, 
+            [Out] byte[] Buffer,
+            [In] int Bytes, 
+            [Out] [Optional] out int WrittenBytes,
+            [Optional] IntPtr Overlapped
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool DeviceIoControl(int FileHandle, int IoControlCode,
-            byte[] InBuffer, int InBufferLength, byte[] OutBuffer, int OutBufferLength,
-            out int BytesReturned, int Overlapped);
+        public static extern bool DeviceIoControl(
+            [In] IntPtr FileHandle,
+            [In] int IoControlCode,
+            [In] [Optional] byte[] InBuffer,
+            [In] int InBufferLength, 
+            [Out] [Optional] byte[] OutBuffer,
+            [In] int OutBufferLength,
+            [Out] [Optional]out int BytesReturned,
+            [Optional] IntPtr Overlapped
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public unsafe static extern bool DeviceIoControl(int FileHandle, int IoControlCode,
-            byte* InBuffer, int InBufferLength, byte* OutBuffer, int OutBufferLength,
-            out int BytesReturned, int Overlapped);
+        public unsafe static extern bool DeviceIoControl(
+            [In] IntPtr FileHandle,
+            [In] int IoControlCode,
+            [In] [Optional] byte* InBuffer,
+            [In] int InBufferLength, 
+            [Out] [Optional] byte* OutBuffer,
+            [In] int OutBufferLength,
+            [Out] [Optional] out int BytesReturned,
+            [Optional] IntPtr Overlapped
+            );
 
         #endregion
 
         #region Jobs
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool TerminateJobObject(int JobHandle, int ExitCode);
+        public static extern bool TerminateJobObject(
+            [In] IntPtr JobHandle,
+            [In] int ExitCode
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool AssignProcessToJobObject(int JobHandle, int ProcessHandle);
+        public static extern bool AssignProcessToJobObject(
+            [In] IntPtr JobHandle,
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int CreateJobObject(int SecurityAttributes, string Name);
+        public static extern IntPtr CreateJobObject(
+            [In] [Optional] IntPtr SecurityAttributes,
+            [In] [Optional] string Name
+            );
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int OpenJobObject(JobObjectAccess DesiredAccess, bool Inherit, string Name);
+        public static extern IntPtr OpenJobObject(
+            [In] JobObjectAccess DesiredAccess, 
+            [In] bool Inherit, 
+            [In] string Name
+            );
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryInformationJobObject(int JobHandle, JobObjectInformationClass JobInformationClass,
-            IntPtr JobInformation, int JobInformationLength, out int ReturnLength);
+        public static extern bool QueryInformationJobObject(
+            [In] [Optional] IntPtr JobHandle,
+            [In] JobObjectInformationClass JobInformationClass,
+            [Out] IntPtr JobInformation, 
+            [In] int JobInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryInformationJobObject(int JobHandle, JobObjectInformationClass JobInformationClass,
-            out JobObjectBasicUiRestrictions JobInformation, int JobInformationLength, out int ReturnLength);
+        public static extern bool QueryInformationJobObject(
+            [In] [Optional] IntPtr JobHandle, 
+            [In] JobObjectInformationClass JobInformationClass,
+            [Out] out JobObjectBasicUiRestrictions JobInformation,
+            [In] int JobInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         #endregion
 
         #region Kernel
 
         [DllImport("psapi.dll", SetLastError = true)]
-        public static extern bool EnumDeviceDrivers(int[] ImageBases, int Size, out int Needed);
+        public static extern bool EnumDeviceDrivers(
+            [Out] IntPtr[] ImageBases,
+            [In] int Size,
+            [Out] out int Needed
+            );
 
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetDeviceDriverBaseName(int ImageBase, StringBuilder FileName, int Size);
+        public static extern int GetDeviceDriverBaseName(
+            [In] IntPtr ImageBase, 
+            [Out] StringBuilder FileName, 
+            [In] int Size
+            );
 
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int GetDeviceDriverFileName(int ImageBase, StringBuilder FileName, int Size);
+        public static extern int GetDeviceDriverFileName(
+            [In] IntPtr ImageBase, 
+            [Out] StringBuilder FileName, 
+            [In] int Size
+            );
 
         #endregion
 
         #region Libraries
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern int LoadLibrary(string FileName);
+        public static extern IntPtr LoadLibrary(
+            [In] string FileName
+            );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern int LoadLibraryEx(string FileName, int File, int Flags);
+        public static extern IntPtr LoadLibraryEx(
+            [In] string FileName, 
+            IntPtr File,
+            [In] int Flags
+            );
 
         [DllImport("kernel32.dll")]
-        public static extern bool FreeLibrary(int Handle);
+        public static extern bool FreeLibrary(
+            [In] IntPtr Handle
+            );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetModuleHandle(string ModuleName);
+        public static extern IntPtr GetModuleHandle(
+            [In] [Optional] string ModuleName
+            );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
-        public static extern int GetProcAddress(int Module, string ProcName);
+        public static extern IntPtr GetProcAddress(
+            [In] IntPtr Module, 
+            [In] string ProcName
+            );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
-        public static extern int GetProcAddress(int Module, int ProcOrdinal);
+        public static extern IntPtr GetProcAddress(
+            [In] IntPtr Module, 
+            [In] IntPtr ProcOrdinal
+            );
 
         #endregion
 
         #region Memory
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr LocalAlloc(AllocFlags Flags, int Bytes);
+        public static extern IntPtr LocalAlloc(
+            [In] AllocFlags Flags, 
+            [In] int Bytes
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr LocalFree(IntPtr Memory);
+        public static extern IntPtr LocalFree(
+            [In] IntPtr Memory
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessHeaps(int NumberOfHeaps, int[] Heaps);
+        public static extern int GetProcessHeaps(
+            [In] int NumberOfHeaps, 
+            [Out] IntPtr[] Heaps
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int HeapCompact(int Heap, bool NoSerialize);
+        public static extern int HeapCompact(
+            [In] IntPtr Heap, 
+            [In] bool NoSerialize
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int HeapFree(int Heap, int Flags, IntPtr Memory);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool HeapFree(
+            [In] IntPtr Heap, 
+            [In] int Flags, 
+            [In] IntPtr Memory
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern IntPtr HeapAlloc(int Heap, int Flags, int Bytes);
+        public static extern IntPtr HeapAlloc(
+            [In] IntPtr Heap, 
+            [In] int Flags, 
+            [In] int Bytes
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessHeap();
+        public static extern IntPtr GetProcessHeap();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualQueryEx(int Process, int Address,
-            [MarshalAs(UnmanagedType.Struct)] out MemoryBasicInformation Buffer, int Size);
+        public static extern int VirtualQueryEx(
+            [In] IntPtr Process, 
+            [In] [Optional] IntPtr Address,
+            [Out] [MarshalAs(UnmanagedType.Struct)] out MemoryBasicInformation Buffer,
+            [In] int Size
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualProtectEx(int Process, int Address, int Size, MemoryProtection NewProtect, out MemoryProtection OldProtect);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool VirtualProtectEx(
+            [In] IntPtr Process,
+            [In] IntPtr Address,
+            [In] int Size,
+            [In] MemoryProtection NewProtect, 
+            [Out] out MemoryProtection OldProtect
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int VirtualAllocEx(int Process, int Address, int Size, MemoryState Type, MemoryProtection Protect);
+        public static extern IntPtr VirtualAllocEx(
+            [In] IntPtr Process,
+            [In] [Optional] IntPtr Address,
+            [In] int Size,
+            [In] MemoryState Type,
+            [In] MemoryProtection Protect
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool VirtualFreeEx(int Process, int Address, int Size, MemoryState FreeType);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool VirtualFreeEx(
+            [In] IntPtr Process,
+            [In] IntPtr Address,
+            [In] int Size,
+            [In] MemoryState FreeType
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool ReadProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesRead);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ReadProcessMemory(
+            [In] IntPtr Process,
+            [In] IntPtr BaseAddress,
+            [Out] byte[] Buffer,
+            [In] int Size, 
+            [Out] out int BytesRead
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public unsafe static extern bool ReadProcessMemory(int Process, int BaseAddress, void* Buffer, int Size, out int BytesRead);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public unsafe static extern bool ReadProcessMemory(
+            [In] IntPtr Process, 
+            [In] IntPtr BaseAddress,
+            [Out] void* Buffer, 
+            [In] int Size, 
+            [Out] out int BytesRead
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool WriteProcessMemory(int Process, int BaseAddress, byte[] Buffer, int Size, out int BytesWritten);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WriteProcessMemory(
+            [In] IntPtr Process,
+            [In] IntPtr BaseAddress,
+            [In] byte[] Buffer,
+            [In] int Size, 
+            [Out] out int BytesWritten
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public unsafe static extern bool WriteProcessMemory(int Process, int BaseAddress, void* Buffer, int Size, out int BytesWritten);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public unsafe static extern bool WriteProcessMemory(
+            [In] IntPtr Process,
+            [In] IntPtr BaseAddress,
+            [In] void* Buffer,
+            [In] int Size, 
+            [Out] out int BytesWritten
+            );
 
         #endregion
 
         #region Misc.
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool ExitWindowsEx(ExitWindowsFlags flags, int reason);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ExitWindowsEx(
+            [In] ExitWindowsFlags flags,
+            [In] int reason
+            );
 
         [DllImport("powrprof.dll", SetLastError = true)]
-        public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetSuspendState(
+            [In] bool hibernate,
+            [In] bool forceCritical,
+            [In] bool disableWakeEvent
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool LockWorkStation();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool QueryPerformanceFrequency(ref long PerformanceFrequency);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryPerformanceFrequency(
+            [Out] out long PerformanceFrequency
+            );
 
         [DllImport("kernel32.dll")]
         public static extern int GetTickCount();
@@ -244,296 +442,446 @@ namespace ProcessHacker.Native.Api
         #region Named Pipes
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool DisconnectNamedPipe(int NamedPipe);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DisconnectNamedPipe(
+            [In] IntPtr NamedPipe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool ConnectNamedPipe(int NamedPipe, int Overlapped);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ConnectNamedPipe(
+            [In] IntPtr NamedPipe, 
+            [Optional] IntPtr Overlapped
+            );
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int CreateNamedPipe(string Name, PipeAccessMode OpenMode, PipeMode PipeMode,
-            int MaxInstances, int OutBufferSize, int InBufferSize, int DefaultTimeOut, int SecurityAttributes);
+        public static extern IntPtr CreateNamedPipe(
+            [In] string Name,
+            [In] PipeAccessMode OpenMode,
+            [In] PipeMode PipeMode,
+            [In] int MaxInstances,
+            [In] int OutBufferSize,
+            [In] int InBufferSize,
+            [In] int DefaultTimeOut,
+            [In] [Optional] IntPtr SecurityAttributes
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetNamedPipeClientProcessId(int NamedPipeHandle, out int ServerProcessId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetNamedPipeClientProcessId(
+            [In] IntPtr NamedPipeHandle, 
+            [Out] out int ServerProcessId
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetNamedPipeHandleState(int NamedPipeHandle, out PipeState State,
-            int CurInstances, int MaxCollectionCount, int CollectDataTimeout, int UserName, int MaxUserNameSize);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetNamedPipeHandleState(
+            [In] int NamedPipeHandle, 
+            [Out] [Optional] out PipeState State,
+            [Out] [Optional] out int CurInstances,
+            [Out] [Optional] out int MaxCollectionCount,
+            [Out] [Optional] out int CollectDataTimeout,
+            [Out] [Optional] out int UserName,
+            [In] int MaxUserNameSize
+            );
 
         #endregion
 
         #region Native API
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtAlertThread(int ThreadHandle);
+        public static extern int NtAlertThread(
+            [In] IntPtr ThreadHandle
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtCreateProcess(
-            out int ProcessHandle,
-            ProcessAccess DesiredAccess,
-            int ObjectAttributes,
-            int ParentProcess,
-            bool InheritHandleTable,
-            int SectionHandle,
-            int DebugPort,
-            int ExceptionPort
+            [Out] out IntPtr ProcessHandle,
+            [In] ProcessAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] IntPtr ParentProcess,
+            [In] bool InheritHandleTable,
+            [In] [Optional] IntPtr SectionHandle,
+            [In] [Optional] IntPtr DebugPort,
+            [In] [Optional] IntPtr ExceptionPort
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtCreateSection(
-            out int SectionHandle,
-            SectionAccess DesiredAccess,
-            int ObjectAttributes,
-            int MaximumSize,
-            int PageAttributes,
-            int SectionAttributes,
-            int FileHandle
+            [Out] out IntPtr SectionHandle,
+            [In] SectionAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] [Optional] ref LargeInteger MaximumSize,
+            [In] int PageAttributes,
+            [In] int SectionAttributes,
+            [In] [Optional] IntPtr FileHandle
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtDuplicateObject(
-            int SourceProcessHandle,
-            int SourceHandle,
-            int TargetProcessHandle,
-            int TargetHandle,
-            int DesiredAccess,
-            int Attributes, 
-            int Options
-            );
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtDuplicateObject(
-            int SourceProcessHandle,
-            int SourceHandle,
-            int TargetProcessHandle,
-            out int TargetHandle,
-            int DesiredAccess,
-            int Attributes,
-            int Options
+            [In] IntPtr SourceProcessHandle,
+            [In] IntPtr SourceHandle,
+            [In] IntPtr TargetProcessHandle,
+            [Out] out IntPtr TargetHandle,
+            [In] [Optional] int DesiredAccess,
+            [In] bool Attributes,
+            [In] int Options
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtGetNextProcess(
-            int ProcessHandle,
-            ProcessAccess DesiredAccess,
-            int HandleAttributes,
-            int Flags,
-            out int NewProcessHandle
+            [In] IntPtr ProcessHandle,
+            [In] ProcessAccess DesiredAccess,
+            [In] int HandleAttributes,
+            [In] int Flags,
+            [Out] out IntPtr NewProcessHandle
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtGetNextThread(
-            int ProcessHandle,
-            int ThreadHandle,
-            ThreadAccess DesiredAccess,
-            int HandleAttributes,
-            int Flags,
-            out int NewThreadHandle
+            [In] IntPtr ProcessHandle,
+            [In] ProcessAccess DesiredAccess,
+            [In] int HandleAttributes,
+            [In] int Flags,
+            [Out] out int NewProcessHandle
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtOpenSymbolicLinkObject(out int LinkHandle, int DesiredAccess,
-            ref ObjectAttributes ObjectAttributes);
+        public static extern int NtOpenSymbolicLinkObject(
+            [Out] out IntPtr LinkHandle,
+            [In] int DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryEvent(int EventHandle, EventInformationClass EventInformationClass,
-            ref EventBasicInformation EventInformation, int EventInformationLength, out int ReturnLength);
+        public static extern int NtQuerySymbolicLinkObject(
+            [In] IntPtr LinkHandle, 
+            ref UnicodeString LinkName,
+            [Out] [Optional] out int DataWritten
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            IntPtr ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtResumeProcess(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out int ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtSuspendProcess(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out PooledUsageAndLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtQuerySection(
+            [In] IntPtr SectionHandle, 
+            [In] SectionInformationClass SectionInformationClass,
+            ref SectionBasicInformation SectionInformation, 
+            [In] int SectionInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out QuotaLimits ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtQuerySection(
+            [In] IntPtr SectionHandle, 
+            [In] SectionInformationClass SectionInformationClass,
+            ref SectionImageInformation SectionInformation,
+            [In] int SectionInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out UnicodeString ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtQueryMutant(
+            [In] IntPtr MutantHandle,
+            [In] MutantInformationClass MutantInformationClass,
+            ref MutantBasicInformation MutantInformation,
+            [In] int MutantInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out ProcessBasicInformation ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtQueryEvent(
+            [In] IntPtr EventHandle, 
+            [In] EventInformationClass EventInformationClass,
+            ref EventBasicInformation EventInformation,
+            [In] int EventInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationProcess(int ProcessHandle, ProcessInformationClass ProcessInformationClass,
-            out MemExecuteOptions ProcessInformation, int ProcessInformationLength, out int ReturnLength);
+        public static extern int NtSetInformationThread(
+            [In] IntPtr ThreadHandle, 
+            [In] ThreadInformationClass ThreadInformationClass,
+            [In] IntPtr ThreadInformation, 
+            [In] int ThreadInformationLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            ref ThreadBasicInformation ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
+            ref ThreadBasicInformation ThreadInformation,
+            [In] int ThreadInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out long ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
+            IntPtr ThreadInformation,
+            [In] int ThreadInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out int ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] IntPtr ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            int[] ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out PooledUsageAndLimits ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            out uint ThreadInformation, int ThreadInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out QuotaLimits ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryMutant(int MutantHandle, MutantInformationClass MutantInformationClass,
-            ref MutantBasicInformation MutantInformation, int MutantInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out MemExecuteOptions ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQueryObject(int Handle, ObjectInformationClass ObjectInformationClass,
-            IntPtr ObjectInformation, int ObjectInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out ProcessBasicInformation ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
-            ref SectionBasicInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out UnicodeString ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+        
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            ref SystemBasicInformation SystemInformation,
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySection(int SectionHandle, SectionInformationClass SectionInformationClass,
-            ref SectionImageInformation SectionInformation, int SectionInformationLength, out int ReturnLength);
+        public static extern int NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            IntPtr SystemInformation,
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySymbolicLinkObject(int LinkHandle, ref UnicodeString LinkName,
-            out int DataWritten);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
-            ref SystemBasicInformation SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
-            ref SystemCacheInformation SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
-            ref SystemPerformanceInformation SystemInformation, int SystemInformationLength, out int ReturnLength);
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
+        public static extern int NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
             [MarshalAs(UnmanagedType.LPArray)] SystemProcessorPerformanceInformation[] SystemInformation,
-            int SystemInformationLength, out int ReturnLength);
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtQuerySystemInformation(SystemInformationClass SystemInformationClass,
-            IntPtr SystemInformation, int SystemInformationLength, out int ReturnLength);
+        public static extern int NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            ref SystemPerformanceInformation SystemInformation,
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtResumeProcess(int ProcessHandle);
+        public static extern int NtQuerySystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            ref SystemCacheInformation SystemInformation,
+            [In] int SystemInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+        
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtSetSystemInformation(
+            [In] SystemInformationClass SystemInformationClass,
+            [In] ref SystemLoadAndCallImage SystemInformation, 
+            [In] int SystemInformationLength
+            );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSetInformationThread(int ThreadHandle, ThreadInformationClass ThreadInformationClass,
-            ref int ThreadInformation, int ThreadInformationLength);
+        public static extern int NtQueryObject(
+            [In] IntPtr Handle, 
+            [In] ObjectInformationClass ObjectInformationClass,
+            [Out] IntPtr ObjectInformation,
+            [In] int ObjectInformationLength, 
+            [Out] out int ReturnLength
+            );
 
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSetSystemInformation(SystemInformationClass SystemInformationClass,
-            ref SystemLoadAndCallImage SystemInformation, int SystemInformationLength);
 
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSuspendProcess(int ProcessHandle);
 
         #endregion
 
         #region Processes
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern void ExitProcess(int ExitCode);
+        public static extern void ExitProcess(
+            [In] int ExitCode
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool QueryProcessCycleTime(int ProcessHandle, out ulong CycleTime);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryProcessCycleTime(
+            [In] IntPtr ProcessHandle, 
+            [Out] out ulong CycleTime
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetPriorityClass(int ProcessHandle, int Priority);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetPriorityClass(
+            [In] IntPtr ProcessHandle, 
+            [In] int Priority
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetPriorityClass(int ProcessHandle);
+        public static extern int GetPriorityClass(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("psapi.dll", SetLastError = true)]
-        public static extern bool EmptyWorkingSet(int ProcessHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EmptyWorkingSet(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("psapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetMappedFileName(
-            int ProcessHandle,
-            int Address,
-            StringBuilder Buffer,
-            int Size
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr Address,
+            [Out] StringBuilder Buffer,
+            [In] int Size
             );
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CreateProcessWithTokenW(
-            int TokenHandle,
-            LogonFlags Flags,
-            string ApplicationName,
-            string CommandLine,
-            CreationFlags CreationFlags,
-            int Environment,
-            string CurrentDirectory,
-            ref StartupInfo StartupInfo,
-            ref ProcessInformation ProcessInfo
+            [In] IntPtr TokenHandle,
+            [In] LogonFlags Flags,
+            [In] [Optional] string ApplicationName,
+            [Optional] string CommandLine,
+            [In] CreationFlags CreationFlags,
+            [In] [Optional] int Environment,
+            [In] [Optional] string CurrentDirectory,
+            [In] ref StartupInfo StartupInfo,
+            [Out] out ProcessInformation ProcessInfo
             );
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CreateProcessAsUser(
-            int TokenHandle,
-            string ApplicationName,
-            string CommandLine,
-            int ProcessAttributes,
-            int ThreadAttributes,
-            bool InheritHandles,
-            CreationFlags CreationFlags,
-            int Environment,
-            string CurrentDirectory,
-            ref StartupInfo StartupInfo,
-            ref ProcessInformation ProcessInformation
+            [In] [Optional] IntPtr TokenHandle,
+            [In] [Optional] string ApplicationName,
+            [Optional] string CommandLine,
+            [In] [Optional] IntPtr ProcessAttributes,
+            [In] [Optional] IntPtr ThreadAttributes,
+            [In] bool InheritHandles,
+            [In] CreationFlags CreationFlags,
+            [In] [Optional] IntPtr Environment,
+            [In] [Optional] string CurrentDirectory,
+            [In] ref StartupInfo StartupInfo,
+            [Out] out ProcessInformation ProcessInformation
             );
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CreateProcess(
-            string ApplicationName,
-            string CommandLine,
-            int ProcessAttributes,
-            int ThreadAttributes,
-            bool InheritHandles,
-            CreationFlags CreationFlags,
-            int Environment,
-            string CurrentDirectory,
-            ref StartupInfo StartupInfo,
-            ref ProcessInformation ProcessInformation
+            [In] [Optional] string ApplicationName,
+            [Optional] string CommandLine,
+            [In] [Optional] IntPtr ProcessAttributes,
+            [In] [Optional] IntPtr ThreadAttributes,
+            [In] bool InheritHandles,
+            [In] CreationFlags CreationFlags,
+            [In] [Optional] IntPtr Environment,
+            [In] [Optional] string CurrentDirectory,
+            [In] ref StartupInfo StartupInfo,
+            [Out] out ProcessInformation ProcessInformation
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetExitCodeProcess(int ProcessHandle, out int ExitCode);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetExitCodeProcess(
+            [In] IntPtr ProcessHandle, 
+            [Out] out int ExitCode
+            );
 
         // Vista and higher
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryFullProcessImageName(int ProcessHandle, bool UseNativeName,
-            StringBuilder ExeName, ref int Size);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryFullProcessImageName(
+            [In] IntPtr ProcessHandle, 
+            [In] [MarshalAs(UnmanagedType.Bool)] bool UseNativeName,
+            [Out] StringBuilder ExeName, 
+            ref int Size
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool IsProcessInJob(int ProcessHandle, int JobHandle, out int Result);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsProcessInJob(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr JobHandle,
+            [Out] [MarshalAs(UnmanagedType.Bool)] out bool Result
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetProcessAffinityMask(int ProcessHandle, uint ProcessAffinityMask);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetProcessAffinityMask(
+            [In] IntPtr ProcessHandle, 
+            [In] uint ProcessAffinityMask
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetProcessAffinityMask(int ProcessHandle, out uint ProcessAffinityMask,
-            out uint SystemAffinityMask);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetProcessAffinityMask(
+            [In] IntPtr ProcessHandle, 
+            [Out] out uint ProcessAffinityMask,
+            [Out] out uint SystemAffinityMask
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool CheckRemoteDebuggerPresent(int ProcessHandle, out int DebuggerPresent);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CheckRemoteDebuggerPresent(
+            [In] IntPtr ProcessHandle, 
+            [MarshalAs(UnmanagedType.Bool)] ref bool DebuggerPresent
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessId(int ProcessHandle);
+        public static extern int GetProcessId(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetCurrentProcess();
@@ -542,50 +890,110 @@ namespace ProcessHacker.Native.Api
         public static extern int GetCurrentProcessId();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetProcessDEPPolicy(int ProcessHandle, out DepFlags Flags, out int Permanent);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetProcessDEPPolicy(
+            [In] IntPtr ProcessHandle, 
+            [Out] out DepFlags Flags,
+            [Out] [MarshalAs(UnmanagedType.Bool)] out bool Permanent
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool TerminateProcess(int ProcessHandle, int ExitCode);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool TerminateProcess(
+            [In] IntPtr ProcessHandle, 
+            [In] int ExitCode
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int OpenProcess(ProcessAccess DesiredAccess, int InheritHandle, int ProcessId);
+        public static extern IntPtr OpenProcess(
+            [In] ProcessAccess DesiredAccess, 
+            [In] bool InheritHandle, 
+            [In] int ProcessId
+            );
 
         [DllImport("kernel32.dll")]
-        public static extern bool DebugActiveProcess(int PID);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DebugActiveProcess(
+            [In] int PID
+            );
 
         [DllImport("kernel32.dll")]
-        public static extern bool DebugActiveProcessStop(int PID);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DebugActiveProcessStop(
+            [In] int PID
+            );
 
         [DllImport("psapi.dll")]
-        public static extern bool EnumProcessModules(int ProcessHandle, IntPtr[] ModuleHandles, int Size, out int RequiredSize);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumProcessModules(
+            [In] IntPtr ProcessHandle, 
+            [Out] IntPtr[] ModuleHandles, 
+            [In] int Size, 
+            [Out] out int RequiredSize
+            );
 
         [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetModuleBaseName(int ProcessHandle, IntPtr ModuleHandle, StringBuilder BaseName, int Size);
+        public static extern int GetModuleBaseName(
+            [In] IntPtr ProcessHandle, 
+            [In] [Optional] IntPtr ModuleHandle, 
+            [Out] StringBuilder BaseName, 
+            [In] int Size
+            );
 
         [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetModuleFileNameEx(int ProcessHandle, IntPtr ModuleHandle, StringBuilder FileName, int Size);
+        public static extern int GetModuleFileNameEx(
+            [In] IntPtr ProcessHandle, 
+            [In] [Optional] IntPtr ModuleHandle,
+            [Out] StringBuilder FileName, 
+            [In] int Size
+            );
 
         [DllImport("psapi.dll")]
-        public static extern bool GetModuleInformation(int ProcessHandle, IntPtr ModuleHandle, ref ModuleInfo ModInfo, int Size);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetModuleInformation(
+            [In] IntPtr ProcessHandle, 
+            [In] [Optional] IntPtr ModuleHandle,
+            [Out] ModuleInfo ModInfo, 
+            [In] int Size
+            );
 
         #endregion
 
         #region Resources/Handles
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int CreateMutex(int attributes, bool initialOwner, string name);
+        public static extern IntPtr CreateMutex(
+            [In] [Optional] IntPtr attributes,
+            [In] bool initialOwner, 
+            [In] [Optional] string name
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetHandleInformation(int handle, HandleFlags mask, HandleFlags flags);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetHandleInformation(
+            [In] IntPtr handle,
+            [In] HandleFlags mask,
+            [In] HandleFlags flags
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetHandleInformation(int handle, out HandleFlags flags);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetHandleInformation(
+            [In] IntPtr handle, 
+            [Out] out HandleFlags flags
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool CloseHandle(int Handle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseHandle(
+            [In] IntPtr Handle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern WaitResult WaitForSingleObject(int Object, uint Timeout);
+        public static extern WaitResult WaitForSingleObject(
+            [In] IntPtr Object, 
+            [In] uint Timeout
+            );
 
         #endregion
 
@@ -594,115 +1002,196 @@ namespace ProcessHacker.Native.Api
         #region LSA
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaFreeMemory(IntPtr Memory);
+        public static extern int LsaFreeMemory(
+            [In] IntPtr Memory
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int LsaEnumerateAccountsWithUserRight(
-            int PolicyHandle, int UserRights, out IntPtr SIDs, out int CountReturned);
+            [In] IntPtr PolicyHandle, 
+            [In] IntPtr UserRights,
+            [Out] out IntPtr SIDs,
+            [Out] out int CountReturned
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaAddAccountRights(int PolicyHandle, int AccountSid,
-            UnicodeString[] UserRights, uint CountOfRights);
+        public static extern int LsaAddAccountRights(
+            [In] IntPtr PolicyHandle, 
+            [In] IntPtr AccountSid,
+            [In] UnicodeString[] UserRights, 
+            [In] uint CountOfRights
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaOpenPolicy(int SystemName, ref ObjectAttributes ObjectAttributes,
-            PolicyAccess DesiredAccess, out int PolicyHandle);
+        public static extern int LsaOpenPolicy(
+            [In] IntPtr SystemName, 
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] PolicyAccess DesiredAccess,
+            ref IntPtr PolicyHandle
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaClose(int Handle);
+        public static extern int LsaClose(
+            [In] IntPtr Handle
+            );
 
         #endregion
 
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool ImpersonateLoggedOnUser(int TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ImpersonateLoggedOnUser(
+            [In] IntPtr TokenHandle
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool RevertToSelf();
 
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool LogonUser(
-            string Username,
-            string Domain,
-            string Password,
-            LogonType LogonType,
-            LogonProvider LogonProvider,
-            out int TokenHandle
+            [In] string Username,
+            [In] [Optional] string Domain,
+            [In] string Password,
+            [In] LogonType LogonType,
+            [In] LogonProvider LogonProvider,
+            [Out] out IntPtr TokenHandle
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool OpenProcessToken(int ProcessHandle, TokenAccess DesiredAccess,
-            out int TokenHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool OpenProcessToken(
+            [In] IntPtr ProcessHandle, 
+            [In] TokenAccess DesiredAccess,
+            [Out] out IntPtr TokenHandle
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool OpenThreadToken(int ThreadHandle, TokenAccess DesiredAccess,
-            bool OpenAsSelf, out int TokenHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool OpenThreadToken(
+            [In] IntPtr ThreadHandle, 
+            [In] TokenAccess DesiredAccess,
+            [In] bool OpenAsSelf, 
+            [Out] out IntPtr TokenHandle
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool DuplicateTokenEx(int ExistingToken, TokenAccess DesiredAccess,
-            int TokenAttributes, SecurityImpersonationLevel ImpersonationLevel, TokenType TokenType,
-            out int NewToken);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DuplicateTokenEx(
+            [In] IntPtr ExistingToken, 
+            [In] TokenAccess DesiredAccess,
+            [In] [Optional] IntPtr TokenAttributes, 
+            [In] SecurityImpersonationLevel ImpersonationLevel, 
+            [In] TokenType TokenType,
+            [Out] out IntPtr NewToken
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool SetTokenInformation(int TokenHandle,
-            TokenInformationClass TokenInformationClass, ref int TokenInformation,
-            int TokenInformationLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetTokenInformation(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [In] ref IntPtr TokenInformation,
+            [In] int TokenInformationLength
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool GetTokenInformation(int TokenHandle,
-            TokenInformationClass TokenInformationClass, IntPtr TokenInformation,
-            int TokenInformationLength, out int ReturnLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetTokenInformation(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Out] [Optional] IntPtr TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] out int ReturnLength
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool GetTokenInformation(int TokenHandle,
-            TokenInformationClass TokenInformationClass, out int TokenInformation,
-            int TokenInformationLength, out int ReturnLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetTokenInformation(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Optional] ref TokenSource TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] out int ReturnLength
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool GetTokenInformation(int TokenHandle,
-            TokenInformationClass TokenInformationClass, ref TokenSource TokenInformation,
-            int TokenInformationLength, out int ReturnLength);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool LookupAccountName(
-            string SystemName,
-            string AccountName,
-            IntPtr SID,
-            out int SIDSize,
-            int ReferencedDomainName,
-            int ReferencedDomainNameSize,
-            out SidNameUse Use
+            [In] [Optional] string SystemName,
+            [In] string AccountName,
+            [Out] [Optional] IntPtr SID,
+            ref int SIDSize,
+            [Out] StringBuilder ReferencedDomainName,
+            ref int ReferencedDomainNameSize,
+            [Out] out SidNameUse Use
             );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool LookupAccountSid(string SystemName,
-            int SID, StringBuilder Name, out int NameSize,
-            StringBuilder ReferencedDomainName, out int ReferencedDomainNameSize,
-            out SidNameUse Use);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupAccountSid(
+            [In] [Optional] string SystemName,
+            [In] IntPtr SID,
+            [Out] [Optional] StringBuilder Name, 
+            ref int NameSize,
+            [Out] [Optional] StringBuilder ReferencedDomainName, 
+            ref int ReferencedDomainNameSize,
+            [Out] out SidNameUse Use
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool LookupPrivilegeDisplayName(int SystemName, string Name,
-            StringBuilder DisplayName, out int DisplayNameSize, out int LanguageId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupPrivilegeDisplayName(
+            [In] [Optional] string SystemName, 
+            [In] string Name,
+            [Out] [Optional] StringBuilder DisplayName, 
+            ref int DisplayNameSize,
+            [Out] out int LanguageId
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool LookupPrivilegeName(int SystemName, ref Luid Luid,
-            StringBuilder Name, out int RequiredSize);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupPrivilegeName(
+            [In] [Optional] string SystemName, 
+            [In] ref Luid Luid,
+            [Out] [Optional] StringBuilder Name, 
+            ref int RequiredSize
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool LookupPrivilegeValue(string SystemName, string PrivilegeName, ref Luid Luid);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupPrivilegeValue(
+            [In] [Optional] string SystemName, 
+            [In] string PrivilegeName, 
+            [Out] out Luid Luid
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool AdjustTokenPrivileges(int TokenHandle, int DisableAllPrivileges,
-            ref TokenPrivileges NewState, int BufferLength,
-            int PreviousState, int ReturnLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AdjustTokenPrivileges(
+            [In] IntPtr TokenHandle,
+            [In] [MarshalAs(UnmanagedType.Bool)] bool DisableAllPrivileges,
+            [In] [Optional] ref TokenPrivileges NewState,
+            [In] int BufferLength,
+            [Out] [Optional] IntPtr PreviousState, 
+            [Out] [Optional] int ReturnLength
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool InitializeSecurityDescriptor(IntPtr SecurityDescriptor, int Revision);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool InitializeSecurityDescriptor(
+            [Out] out IntPtr SecurityDescriptor, 
+            [In] int Revision
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool SetSecurityDescriptorDacl(IntPtr SecurityDescriptor,
-            [MarshalAs(UnmanagedType.Bool)] bool DaclPresent,
-            int Dacl,
-            [MarshalAs(UnmanagedType.Bool)] bool DaclDefaulted
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetSecurityDescriptorDacl(
+            ref IntPtr SecurityDescriptor,
+            [In] [MarshalAs(UnmanagedType.Bool)] bool DaclPresent,
+            [In] [Optional] IntPtr Dacl,
+            [In] [MarshalAs(UnmanagedType.Bool)] bool DaclDefaulted
             );
 
         #endregion      
@@ -710,74 +1199,108 @@ namespace ProcessHacker.Native.Api
         #region Services
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool CloseServiceHandle(int ServiceHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseServiceHandle(
+            [In] IntPtr ServiceHandle
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool StartService(int Service, int NumServiceArgs, int Args);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool StartService(
+            [In] IntPtr Service, 
+            [In] int NumServiceArgs, 
+            [In] [Optional] string[] Args
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ChangeServiceConfig(
-            int Service,
-            ServiceType ServiceType, 
-            ServiceStartType StartType,
-            ServiceErrorControl ErrorControl, 
-            string BinaryPath, 
-            string LoadOrderGroup,
-            int TagID, 
-            int Dependencies,
-            string StartName,
-            string Password,
-            string DisplayName
+            [In] IntPtr Service,
+            [In] ServiceType ServiceType,
+            [In] ServiceStartType StartType,
+            [In] ServiceErrorControl ErrorControl, 
+            [In] [Optional] string BinaryPath,
+            [In] [Optional] string LoadOrderGroup,
+            [Out] [Optional] out int TagID, 
+            [In] [Optional] string Dependencies,
+            [In] [Optional] string StartName,
+            [In] [Optional] string Password,
+            [In] [Optional] string DisplayName
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ControlService(
-            int Service,
-            ServiceControl Control, 
-            ref ServiceStatus ServiceStatus
+            [In] IntPtr Service,
+            [In] ServiceControl Control, 
+            [Out] out ServiceStatus ServiceStatus
             );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int CreateService(int SCManager,
-            string ServiceName,
-            string DisplayName,
-            ServiceAccess DesiredAccess, 
-            ServiceType ServiceType,
-            ServiceStartType StartType,
-            ServiceErrorControl ErrorControl,
-            string BinaryPathName,
-            string LoadOrderGroup,
-            int TagID, 
-            int Dependencies,
-            string ServiceStartName,
-            string Password
+        public static extern IntPtr CreateService(
+            [In] IntPtr SCManager,
+            [In] string ServiceName,
+            [In] [Optional] string DisplayName,
+            [In] ServiceAccess DesiredAccess,
+            [In] ServiceType ServiceType,
+            [In] ServiceStartType StartType,
+            [In] ServiceErrorControl ErrorControl,
+            [In] [Optional] string BinaryPathName,
+            [In] [Optional] string LoadOrderGroup,
+            [Out] [Optional] out int TagID,
+            [In] [Optional] string Dependencies,
+            [In] [Optional] string ServiceStartName,
+            [In] [Optional] string Password
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool DeleteService(int Service);
-
-        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryServiceStatus(
-            int Service, 
-            ref ServiceStatus ServiceStatus
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteService(
+            [In] IntPtr Service
             );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryServiceStatusEx(int Service, int InfoLevel,
-            ref ServiceStatusProcess ServiceStatus, int BufSize, out int BytesNeeded);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryServiceStatus(
+            [In] IntPtr Service, 
+            [Out] out ServiceStatus ServiceStatus
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryServiceConfig(int Service,
-            IntPtr ServiceConfig,
-            int BufSize, ref int BytesNeeded);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryServiceStatusEx(
+            [In] IntPtr Service, 
+            [In] IntPtr InfoLevel,
+            [Out] [Optional] ServiceStatusProcess ServiceStatus,
+            [In] int BufSize, 
+            [Out] out int BytesNeeded
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool QueryServiceConfig2(int Service,
-            ServiceInfoLevel InfoLevel, IntPtr Buffer, int BufferSize, out int ReturnLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryServiceConfig(
+            [In] IntPtr Service,
+            [Out] [Optional] IntPtr ServiceConfig,
+            [In] int BufSize, 
+            [Out] out int BytesNeeded
+            );
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int OpenService(int SCManager,
-            string ServiceName, ServiceAccess DesiredAccess);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryServiceConfig2(
+            [In] IntPtr Service,
+            [In] ServiceInfoLevel InfoLevel,
+            [Out] [Optional] IntPtr Buffer, 
+            [In] int BufferSize, 
+            [Out] out int ReturnLength
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr OpenService(
+            [In] IntPtr SCManager,
+            [In] string ServiceName, 
+            [In] ServiceAccess DesiredAccess
+            );
 
         /// <summary>
         /// Enumerates services in the specified service control manager database. 
@@ -800,154 +1323,240 @@ namespace ProcessHacker.Native.Api
         /// <param name="GroupName">Must be 0 for this definition.</param>
         /// <returns>A non-zero value for success, zero for failure.</returns>
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool EnumServicesStatusEx(int SCManager, int InfoLevel,
-            ServiceQueryType ServiceType, ServiceQueryState ServiceState,
-            IntPtr Services, int BufSize, out int BytesNeeded, out int ServicesReturned,
-            out int ResumeHandle, int GroupName);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumServicesStatusEx(
+            [In] IntPtr SCManager,
+            [In] IntPtr InfoLevel,
+            [In] ServiceQueryType ServiceType,
+            [In] ServiceQueryState ServiceState,
+            [Out] [Optional] IntPtr Services,
+            [In] int BufSize, 
+            [Out] out int BytesNeeded,
+            [Out] out int ServicesReturned,
+            ref int ResumeHandle,
+            [In] [Optional] string GroupName
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int OpenSCManager(int MachineName, int DatabaseName,
-            ScManagerAccess DesiredAccess);
+        public static extern IntPtr OpenSCManager(
+            [In] [Optional] string MachineName, 
+            [In] [Optional] string DatabaseName,
+            [In] ScManagerAccess DesiredAccess
+            );
 
         #endregion
 
         #region Shell
 
         [DllImport("shell32.dll", EntryPoint = "#61", CharSet = CharSet.Unicode)]
-        public static extern int RunFileDlg(IntPtr hWnd, int unknown, int unknown2,
-            string title, string prompt, int flags);
+        public static extern int RunFileDlg(
+            [In] IntPtr hWnd,
+            [In] IntPtr hIcon,
+            [In] string Path,
+            [In] string title,
+            [In] string prompt,
+            [In] RunFileDialogFlags flags
+            );
 
         [DllImport("shell32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShellExecuteEx(
-            [MarshalAs(UnmanagedType.Struct)] ref ShellExecuteInfo s);
+            [MarshalAs(UnmanagedType.Struct)] ref ShellExecuteInfo s
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern int SetWindowsHookEx(int HookId, int HookFunction, int Module, int ThreadId);
+        public static extern IntPtr SetWindowsHookEx(
+            [In] int HookId, 
+            [In] IntPtr HookFunction,
+            [In] IntPtr Module,
+            [In] int ThreadId
+            );
 
         [DllImport("shell32.dll")]
-        public extern static int ExtractIconEx(string libName, int iconIndex,
-        IntPtr[] largeIcon, IntPtr[] smallIcon, int nIcons);
+        public extern static int ExtractIconEx(
+            [In] string libName,
+            [In] int iconIndex,
+            [Out] IntPtr[] largeIcon,
+            [Out] IntPtr[] smallIcon,
+            [In] int nIcons
+            );
 
         [DllImport("shell32.dll")]
-        public static extern int SHGetFileInfo(string pszPath,
-                                    uint dwFileAttributes,
-                                    ref ShFileInfo psfi,
-                                    uint cbSizeFileInfo,
-                                    uint uFlags);
+        public static extern int SHGetFileInfo(
+            [In] string pszPath,
+            [In] uint dwFileAttributes,
+            [Out] out ShFileInfo psfi,
+            [In] uint cbSizeFileInfo,
+            [In] uint uFlags);
 
         [DllImport("shell32.dll", EntryPoint = "#660")]
-        public static extern bool FileIconInit(bool RestoreCache);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FileIconInit([In] bool RestoreCache);
 
         #endregion
 
         #region Statistics
 
         [DllImport("psapi.dll", SetLastError = true)]
-        public static extern bool GetPerformanceInfo(ref PerformanceInformation PerformanceInformation,
-            int Size);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetPerformanceInfo(
+            [Out] out PerformanceInformation PerformanceInformation,
+            [In] int Size
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetProcessTimes(int ProcessHandle, out long CreationTime, out long ExitTime,
-            out long KernelTime, out long UserTime);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetProcessTimes(
+            [In] IntPtr ProcessHandle,
+            [Out] out FileTime CreationTime,
+            [Out] out FileTime ExitTime,
+            [Out] out FileTime KernelTime,
+            [Out] out FileTime UserTime
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetProcessIoCounters(int ProcessHandle, out IoCounters IoCounters);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetProcessIoCounters(
+            [In] IntPtr ProcessHandle, 
+            [Out] out IoCounters IoCounters
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetSystemTimes(out ulong IdleTime, out ulong KernelTime, out ulong UserTime);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetSystemTimes(
+            [Out] out FileTime IdleTime,
+            [Out] out FileTime KernelTime,
+            [Out] out FileTime UserTime
+            );
 
+        // From MSDN: Do not cast a pointer to a FILETIME structure to either a ULARGE_INTEGER* or __int64* value because it can cause alignment faults on 64-bit Windows.
         [DllImport("kernel32.dll")]
-        public static extern bool GetThreadTimes(int hThread, out long lpCreationTime,
-           out long lpExitTime, out long lpKernelTime, out long lpUserTime);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetThreadTimes(
+            [In] IntPtr hThread,
+            [Out] out FileTime lpCreationTime,
+            [Out] out FileTime lpExitTime,
+            [Out] out FileTime lpKernelTime,
+            [Out] out FileTime lpUserTime
+            );
 
         #endregion
 
         #region Symbols/Stack Walking
 
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        public static extern bool SymInitialize(int ProcessHandle, string UserSearchPath, bool InvadeProcess);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymInitialize(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] string UserSearchPath,
+            [In] bool InvadeProcess
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern bool SymCleanup(int ProcessHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymCleanup(
+            [In] IntPtr ProcessHandle
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
         public static extern SymbolOptions SymGetOptions();
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern SymbolOptions SymSetOptions(SymbolOptions SymOptions);
+        public static extern SymbolOptions SymSetOptions(
+            [In] SymbolOptions SymOptions
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        public static extern bool SymGetSearchPath(int ProcessHandle, IntPtr SearchPath, int SearchPathLength);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymGetSearchPath(
+            [In] IntPtr ProcessHandle,
+            [Out] StringBuilder SearchPath, 
+            [In] int SearchPathLength
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
-        public static extern bool SymSetSearchPath(int ProcessHandle, string SearchPath);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymSetSearchPath(
+            [In] IntPtr ProcessHandle, 
+            [In] [Optional] string SearchPath
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         public static extern long SymLoadModule64(
-            int ProcessHandle,
-            int FileHandle,
-            string ImageName,
-            string ModuleName,
-            long BaseOfDll,
-            int SizeOfDll
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr FileHandle,
+            [In] [Optional] string ImageName,
+            [In] [Optional] string ModuleName,
+            [In] ulong BaseOfDll,
+            [In] int SizeOfDll
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern bool SymUnloadModule64(int ProcessHandle, long BaseOfDll);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymUnloadModule64(
+            [In] IntPtr ProcessHandle,
+            [In] ulong BaseOfDll
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymFunctionTableAccess64(int ProcessHandle, long AddrBase);
+        public static extern IntPtr SymFunctionTableAccess64(
+            [In] IntPtr ProcessHandle,
+            [In] ulong AddrBase
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern long SymGetModuleBase64(int ProcessHandle, long Address);
+        public static extern ulong SymGetModuleBase64(
+            [In] IntPtr ProcessHandle, 
+            [In] ulong Address
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern int SymEnumSymbols(
-            int ProcessHandle,
-            int BaseOfDll,
-            string Mask,
-            SymEnumSymbolsProc EnumSymbolsCallback, int UserContext);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymEnumSymbols(
+            [In] IntPtr ProcessHandle,
+            [In] ulong BaseOfDll,
+            [In] [Optional] string Mask,
+            [In] SymEnumSymbolsProc EnumSymbolsCallback, 
+            [In] [Optional] IntPtr UserContext
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymFromAddr(
-            int ProcessHandle,
-            long Address,
-            out long Displacement,
-            IntPtr Symbol);
+            [In] IntPtr ProcessHandle,
+            [In] ulong Address,
+            [Out] out ulong Displacement,
+            [In] IntPtr Symbol
+            );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymFromIndex(
-            int ProcessHandle,
-            int BaseOfDll,
-            int Index,
+            [In] IntPtr ProcessHandle,
+            [In] ulong BaseOfDll,
+            [In] int Index,
             IntPtr Symbol
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]
-        public static extern bool SymGetLineFromAddr64(
-            int ProcessHandle,
-            long Address,
-            out int Displacement,
-            out ImagehlpLine64 Line
-            );
-
-        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool StackWalk64(
-            MachineType MachineType,
-            int ProcessHandle,
-            int ThreadHandle,
+            [In] MachineType MachineType,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ThreadHandle,
             ref StackFrame64 StackFrame,
             ref Context ContextRecord,
-            ReadProcessMemoryProc64 ReadMemoryRoutine,
-            FunctionTableAccessProc64 FunctionTableAccessRoutine,
-            GetModuleBaseProc64 GetModuleBaseRoutine,
-            int TranslateAddress
+            [In] [Optional] ReadProcessMemoryProc64 ReadMemoryRoutine,
+            [In] [Optional] FunctionTableAccessProc64 FunctionTableAccessRoutine,
+            [In] [Optional] GetModuleBaseProc64 GetModuleBaseRoutine,
+            [In] [Optional] IntPtr TranslateAddress
             );
 
         [DllImport("symsrv.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymbolServerSetOptions(
-            SymbolServerOption Options,
-            long Data
+            [In] SymbolServerOption Options,
+            [In] ulong Data
             );
 
         #endregion
@@ -955,126 +1564,231 @@ namespace ProcessHacker.Native.Api
         #region TCP
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int SetTcpEntry(ref MibTcpRow TcpRow);
+        public extern static int SetTcpEntry(
+            [In] ref MibTcpRow TcpRow
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int GetExtendedTcpTable(IntPtr Table, ref int Size,
-            bool Order, int IpVersion, // 2 for IPv4
-            TcpTableClass TableClass, int Reserved);
+        public extern static int GetExtendedTcpTable(
+            [Out] IntPtr Table,
+            ref int Size,
+            [In] bool Order,
+            [In] int IpVersion, // 2 for IPv4
+            [In] TcpTableClass TableClass,
+            [In] int Reserved
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int GetTcpStatistics(ref MibTcpStats pStats);
+        public extern static int GetTcpStatistics(
+            [Out] out MibTcpStats pStats
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public static extern int GetTcpTable(byte[] tcpTable, out int pdwSize, bool bOrder);
+        public static extern int GetTcpTable(
+            [Out] byte[] tcpTable, 
+            ref int pdwSize, 
+            [In] bool bOrder
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int AllocateAndGetTcpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+        public extern static int AllocateAndGetTcpExTableFromStack(
+            [Out] out IntPtr pTable, 
+            [In] bool bOrder,
+            [In] IntPtr heap,
+            [In] int flags,
+            [In] int family
+            );
 
         #endregion
 
         #region Terminal Server
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool ProcessIdToSessionId(int ProcessId, out int SessionId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ProcessIdToSessionId(
+            [In] int ProcessId,
+            [Out] out int SessionId
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
-            WtsInformationClass InfoClass,
-            out string Buffer,
-            out int BytesReturned);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSQuerySessionInformation(
+            [In] IntPtr ServerHandle,
+            [In] int SessionID,
+            [In] WtsInformationClass InfoClass,
+            [Out] out IntPtr Buffer,
+            [Out] out int BytesReturned
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
-            WtsInformationClass InfoClass,
-            out int Buffer,
-            out int BytesReturned);
-
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
-            WtsInformationClass InfoClass,
-            out ushort Buffer,
-            out int BytesReturned);
-
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSQuerySessionInformation(int ServerHandle, int SessionID,
-            WtsInformationClass InfoClass,
-            out WtsClientDisplay[] Buffer,
-            out int BytesReturned);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSQuerySessionInformation(
+            [In] IntPtr ServerHandle,
+            [In] int SessionID,
+            [In] WtsInformationClass InfoClass,
+            [Out] out string Buffer,
+            [Out] out int BytesReturned
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSLogoffSession(int ServerHandle, int SessionID, int Wait);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSLogoffSession(
+            [In] IntPtr ServerHandle,
+            [In] int SessionID,
+            [In] bool Wait
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSDisconnectSession(int ServerHandle, int SessionID, int Wait);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSDisconnectSession(
+            [In] IntPtr ServerHandle,
+            [In] int SessionID,
+            [In] bool Wait
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSTerminateProcess(int ServerHandle, int ProcessID, int ExitCode);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSTerminateProcess(
+            [In] IntPtr ServerHandle,
+            [In] int ProcessID,
+            [In] int ExitCode
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSEnumerateSessions(int ServerHandle, int Reserved,
-            int Version, out IntPtr SessionInfo, out int Count);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSEnumerateSessions(
+            [In] IntPtr ServerHandle,
+            [In] int Reserved,
+            [In] int Version,
+            [Out] out IntPtr SessionInfo,
+            [Out] out int Count
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool WTSEnumerateProcesses(int ServerHandle, int Reserved,
-            int Version, out IntPtr ProcessInfo, out int Count);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSEnumerateProcesses(
+            [In] IntPtr ServerHandle,
+            [In] int Reserved,
+            [In] int Version, 
+            [Out] out IntPtr ProcessInfo,
+            [Out] out int Count
+            );
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSFreeMemory(IntPtr Memory);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSFreeMemory(
+            [In] IntPtr Memory
+            );
+
         [DllImport("wtsapi32.dll", SetLastError = true)]
-        public static extern bool WTSFreeMemory(string Memory);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSFreeMemory([In] string Memory);
 
         #endregion
 
         #region Threads
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool QueryThreadCycleTime(int ThreadHandle, out ulong CycleTime);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryThreadCycleTime(
+            [In] IntPtr ThreadHandle, 
+            [Out] out ulong CycleTime
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool QueueUserAPC(int APC, int ThreadHandle, int Data);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueueUserAPC(
+            [In] IntPtr APC,
+            [In] IntPtr ThreadHandle,
+            [In] IntPtr Data
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetExitCodeThread(int ThreadHandle, out int ExitCode);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetExitCodeThread(
+            [In] IntPtr ThreadHandle,
+            [Out] out int ExitCode
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetThreadPriority(int ThreadHandle, int Priority);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetThreadPriority(
+            [In] IntPtr ThreadHandle, 
+            [In] int Priority
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetThreadPriority(int ThreadHandle);
+        public static extern int GetThreadPriority([In] IntPtr ThreadHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CreateThread(int ThreadAttributes, int StackSize,
-            [MarshalAs(UnmanagedType.FunctionPtr)] ThreadStart StartAddress,
-            int Parameter, int CreationFlags, out int ThreadId);
+        public static extern int CreateThread(
+            [In] [Optional] IntPtr ThreadAttributes,
+            [In] int StackSize,
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] ThreadStart StartAddress,
+            [In] IntPtr Parameter,
+            [In] int CreationFlags,
+            [Out] out int ThreadId
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetProcessIdOfThread(int ThreadHandle);
+        public static extern int GetProcessIdOfThread(
+            [In] IntPtr ThreadHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int GetThreadId(int ThreadHandle);
+        public static extern int GetThreadId(
+            [In] IntPtr ThreadHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int OpenThread(ThreadAccess DesiredAccess, int InheritHandle, int ThreadId);
+        public static extern IntPtr OpenThread(
+            [In] ThreadAccess DesiredAccess, 
+            [In] bool InheritHandle, 
+            [In] int ThreadId
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool TerminateThread(int ThreadHandle, int ExitCode);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool TerminateThread(
+            IntPtr ThreadHandle,
+            [In] int ExitCode
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int SuspendThread(int ThreadHandle);
+        public static extern int SuspendThread(
+            [In] IntPtr ThreadHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int ResumeThread(int ThreadHandle);
+        public static extern int ResumeThread(
+            [In] IntPtr ThreadHandle
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool SetThreadContext(int ThreadHandle, ref Context Context);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetThreadContext(
+            [In] IntPtr ThreadHandle, 
+            [In] ref Context Context
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool GetThreadContext(int ThreadHandle, ref Context Context);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetThreadContext(
+            [In] IntPtr ThreadHandle, 
+            ref Context Context
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern bool CreateRemoteThread(int ProcessHandle, int ThreadAttributes,
-            int StackSize, int StartAddress, int Parameter, int CreationFlags, out int ThreadId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CreateRemoteThread(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ThreadAttributes,
+            [In] int StackSize,
+            [In] IntPtr StartAddress,
+            [In] IntPtr Parameter,
+            [In] int CreationFlags,
+            [Out] out int ThreadId
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern int GetCurrentThreadId();
@@ -1084,126 +1798,185 @@ namespace ProcessHacker.Native.Api
         #region Toolhelp
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int CreateToolhelp32Snapshot(SnapshotFlags dwFlags, int th32ProcessID);
+        public static extern IntPtr CreateToolhelp32Snapshot(
+            [In] SnapshotFlags dwFlags,
+            [In] int th32ProcessID
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Process32First(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ProcessEntry32 lppe);
+        public static extern bool Process32First(
+            [In] IntPtr hSnapshot,
+            [MarshalAs(UnmanagedType.Struct)] ref ProcessEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Process32Next(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ProcessEntry32 lppe);
+        public static extern bool Process32Next(
+            [In] IntPtr hSnapshot,
+            [Out] [MarshalAs(UnmanagedType.Struct)] out ProcessEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Thread32First(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ThreadEntry32 lppe);
+        public static extern bool Thread32First(
+            [In] IntPtr hSnapshot,
+            [MarshalAs(UnmanagedType.Struct)] ref ThreadEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Thread32Next(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ThreadEntry32 lppe);
+        public static extern bool Thread32Next(
+            [In] IntPtr hSnapshot,
+            [Out] [MarshalAs(UnmanagedType.Struct)] out ThreadEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Module32First(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ModuleEntry32 lppe);
+        public static extern bool Module32First(
+            [In] IntPtr hSnapshot,
+            [MarshalAs(UnmanagedType.Struct)] ref ModuleEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Module32Next(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref ModuleEntry32 lppe);
+        public static extern bool Module32Next(
+            [In] IntPtr hSnapshot,
+            [Out] [MarshalAs(UnmanagedType.Struct)] out ModuleEntry32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Heap32ListFirst(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref HeapList32 lppe);
+        public static extern bool Heap32ListFirst(
+            [In] IntPtr hSnapshot,
+            [MarshalAs(UnmanagedType.Struct)] ref HeapList32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Heap32ListNext(int hSnapshot,
-            [MarshalAs(UnmanagedType.Struct)] ref HeapList32 lppe);
+        public static extern bool Heap32ListNext(
+            [In] IntPtr hSnapshot,
+            [Out] [MarshalAs(UnmanagedType.Struct)] out HeapList32 lppe
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Heap32First([MarshalAs(UnmanagedType.Struct)] ref HeapEntry32 lppe,
-            int ProcessID, int HeapID);
+        public static extern bool Heap32First(
+            [MarshalAs(UnmanagedType.Struct)] ref HeapEntry32 lppe,
+            [In] int ProcessID,
+            [In] IntPtr HeapID
+            );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        public static extern int Heap32Next([MarshalAs(UnmanagedType.Struct)] ref HeapEntry32 lppe);
+        public static extern int Heap32Next(
+            [Out] [MarshalAs(UnmanagedType.Struct)] out HeapEntry32 lppe
+            );
 
         #endregion
 
         #region UDP
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int GetExtendedUdpTable(IntPtr Table, ref int Size,
-            bool Order, int IpVersion, // 2 for IPv4
-            UdpTableClass TableClass, int Reserved);
+        public extern static int GetExtendedUdpTable(
+            [Out] IntPtr Table, 
+            ref int Size,
+            [In] bool Order,
+            [In] int IpVersion, // 2 for IPv4
+            [In] UdpTableClass TableClass,
+            [In] int Reserved
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public static extern int GetUdpStatistics(ref MibUdpStats pStats);
+        public static extern int GetUdpStatistics(
+            [Out] out MibUdpStats pStats
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public static extern int GetUdpTable(byte[] udpTable, out int pdwSize, bool bOrder);
+        public static extern int GetUdpTable(
+            [Out] byte[] udpTable, 
+            ref int pdwSize, 
+            [In] bool bOrder
+            );
 
         [DllImport("iphlpapi.dll", SetLastError = true)]
-        public extern static int AllocateAndGetUdpExTableFromStack(ref IntPtr pTable, bool bOrder, IntPtr heap, int zero, int flags);
+        public extern static int AllocateAndGetUdpExTableFromStack(
+            [Out] out IntPtr pTable, 
+            [In] bool bOrder,
+            [In] IntPtr heap,
+            [In] int flags,
+            [In] int family
+            );
 
         #endregion
 
         #region User
 
         [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetUserObjectSecurity(
-            int Handle,
-            ref SiRequested SiRequested,
-            IntPtr Sid
+            [In] IntPtr Handle,
+            [In] ref SiRequested SiRequested,
+            [In] IntPtr Sid
             );
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern int OpenDesktop(
-            string Desktop,
-            int Flags,
-            bool Inherit,
-            DesktopAccess DesiredAccess
+        public static extern IntPtr OpenDesktop(
+            [In] string Desktop,
+            [In] int Flags,
+            [In] bool Inherit,
+            [In] DesktopAccess DesiredAccess
             );
 
         [DllImport("user32.dll")]
-        public static extern bool CloseDesktop(int Handle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseDesktop(
+            [In] IntPtr Handle
+            );
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        public static extern int OpenWindowStation(
-            string WinSta,
-            bool Inherit,
-            WindowStationAccess DesiredAccess
+        public static extern IntPtr OpenWindowStation(
+            [In] string WinSta,
+            [In] bool Inherit,
+            [In] WindowStationAccess DesiredAccess
             );
 
         [DllImport("user32.dll")]
-        public static extern bool CloseWindowStation(int Handle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseWindowStation(
+            [In] IntPtr Handle
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern int GetThreadDesktop(int ThreadId);
+        public static extern IntPtr GetThreadDesktop(
+            [In] int ThreadId
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool SetThreadDesktop(int DesktopHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetThreadDesktop(
+            [In] IntPtr DesktopHandle
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern int GetProcessWindowStation();
+        public static extern IntPtr GetProcessWindowStation();
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool SetProcessWindowStation(int WindowStationHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetProcessWindowStation(
+            [In] IntPtr WindowStationHandle
+            );
 
         [DllImport("userenv.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CreateEnvironmentBlock(
-            out int Environment,
-            int TokenHandle,
-            bool Inherit
+            [Out] out IntPtr Environment,
+            [In] IntPtr TokenHandle,
+            [In] bool Inherit
             );
 
         [DllImport("userenv.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool LoadUserProfile(
-            int TokenHandle,
+            [In] IntPtr TokenHandle,
             ref ProfileInformation ProfileInfo
             );
 
         [DllImport("userenv.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool UnloadUserProfile(
-            int TokenHandle,
-            int ProfileHandle
+            [In] IntPtr TokenHandle,
+            [In] IntPtr ProfileHandle
             );
 
         #endregion
@@ -1211,157 +1984,320 @@ namespace ProcessHacker.Native.Api
         #region Windows
 
         [DllImport("user32.dll")]
-        public static extern bool GetCursorPos(out Point location);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(
+            [Out]out Point location
+            );
 
         [DllImport("user32.dll")]
-        public static extern bool ChangeWindowMessageFilter(WindowMessage message, UipiFilterFlag flag);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ChangeWindowMessageFilter(
+            [In] WindowMessage message, 
+            [In] UipiFilterFlag flag
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int SendMessage(IntPtr windowHandle, WindowMessage msg, int w, int l);
+        public static extern IntPtr SendMessage(
+            [In] IntPtr windowHandle, 
+            [In] WindowMessage msg,
+            [In] int w,
+            [In] int l
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int SendMessageTimeout(IntPtr windowHandle, WindowMessage msg, int w, int l, 
-            SmtoFlags flags, int timeout, out int result);
+        public static extern IntPtr SendMessageTimeout(
+            [In] IntPtr windowHandle,
+            [In] WindowMessage msg,
+            [In] int w,
+            [In] int l,
+            [In] SmtoFlags flags,
+            [In] int timeout,
+            [Out] out int result
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern int PostMessage(IntPtr windowHandle, WindowMessage msg, int w, int l);
+        public static extern bool PostMessage(
+            [In] IntPtr windowHandle,
+            [In] WindowMessage msg,
+            [In] int w,
+            [In] int l
+            );
 
         [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetForegroundWindow(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll")]
-        public static extern bool AllowSetForegroundWindow(int processId);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AllowSetForegroundWindow(
+            [In] int processId
+            );
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        public static extern int SetWindowTheme(IntPtr hWnd, string appName, string idList);
+        public static extern int SetWindowTheme(
+            [In] IntPtr hWnd,
+            [In] string appName,
+            [In] string idList
+            );
 
         [DllImport("user32.dll")]
-        public static extern int GetGuiResources(int ProcessHandle, bool UserObjects);
+        public static extern int GetGuiResources(
+            [In] IntPtr ProcessHandle,
+            [In] int UserObjects
+            );
 
         [DllImport("user32.dll")]
-        public static extern bool DestroyIcon(IntPtr Handle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DestroyIcon(
+            [In] IntPtr Handle
+            );
 
         [DllImport("user32.dll")]
-        public static extern bool BringWindowToTop(IntPtr hWnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool BringWindowToTop(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll")]
-        public static extern int EnumWindows([MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback, int param);
+        public static extern int EnumWindows(
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] EnumWindowsProc Callback,
+            [In] int param
+            );
 
         [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumThreadWindows(
-            int threadId,
-            [MarshalAs(UnmanagedType.FunctionPtr)] EnumThreadWndProc callback,
-            int param
+            [In] int threadId,
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] EnumThreadWndProc callback,
+            [In] int param
             );
 
         [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumChildWindows(
-            IntPtr hWnd,
-            [MarshalAs(UnmanagedType.FunctionPtr)] EnumChildProc callback,
-            int param
+            [In] IntPtr hWnd,
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] EnumChildProc callback,
+            [In] int param
             );
 
         [DllImport("user32.dll")]
-        public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
+        public static extern int GetWindowThreadProcessId(
+            [In] IntPtr hWnd,
+            [Out] out int processId
+            );
 
         [DllImport("user32.dll")]
-        public static extern int SetActiveWindow(int hWnd);
+        public static extern IntPtr SetActiveWindow(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool PeekMessage(out Message msg, IntPtr hWnd, uint messageFilterMin, uint messageFilterMax, PeekMessageFlags flags);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PeekMessage(
+            [Out] out Message msg, 
+            [In] IntPtr hWnd,
+            [In] uint messageFilterMin,
+            [In] uint messageFilterMax,
+            [In] PeekMessageFlags flags
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool TranslateMessage(ref Message msg);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool TranslateMessage(
+            [In] ref Message msg
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool DispatchMessage(ref Message msg);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr DispatchMessage(
+            [In] ref Message msg
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr DefWindowProc(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr DefWindowProc(
+            [In] IntPtr hWnd, 
+            [In] WindowMessage msg,
+            [In] IntPtr wParam,
+            [In] IntPtr lParam
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern void PostQuitMessage(int exitCode);
+        public static extern void PostQuitMessage(
+            [In] int exitCode
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 #if(_WIN64)
-		private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int index, [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback);
+		private static extern IntPtr SetWindowLongPtr(
+            [In] IntPtr hWnd, 
+            [In] int index, 
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback
+            );
 #else
-        private static extern IntPtr SetWindowLong(IntPtr hWnd, int index, [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback);
+        private static extern IntPtr SetWindowLong(
+            [In] IntPtr hWnd,
+            [In] int index,
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback
+            );
 #endif
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLong", CharSet = CharSet.Auto)]
-        public static extern IntPtr SetWindowLongStyle(IntPtr hWnd, int index, WindowStyles style);
+        public static extern IntPtr SetWindowLongStyle(
+            [In] IntPtr hWnd,
+            [In] int index,
+            [In] WindowStyles style
+            );
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowLong", CharSet = CharSet.Auto)]
-        public static extern WindowStyles GetWindowLongStyle(IntPtr hWnd, int index);
+        public static extern WindowStyles GetWindowLongStyle(
+            [In] IntPtr hWnd,
+            [In] int index
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool GetClientRect(IntPtr hWnd, out Rectangle rect);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetClientRect(
+            [In] IntPtr hWnd, 
+            [Out] out Rectangle rect
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool GetWindowRect(IntPtr hWnd, out Rectangle rect);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(
+            [In] IntPtr hWnd, 
+            [Out] out Rectangle rect
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndAfter, int x, int y, int w, int h, uint flags);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPos(
+            [In] IntPtr hWnd,
+            [In] IntPtr hWndAfter,
+            [In] int x,
+            [In] int y,
+            [In] int w,
+            [In] int h,
+            [In] uint flags
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool ScreenToClient(IntPtr hWnd, ref Point rect);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ScreenToClient(
+            [In] IntPtr hWnd, 
+            ref Point rect
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr SetFocus(IntPtr hWnd);
+        public static extern IntPtr SetFocus(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr GetParent(IntPtr hWnd);
+        public static extern IntPtr GetParent(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool GetMonitorInfo(IntPtr hWnd, ref MonitorInformation info);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetMonitorInfo(
+            [In] IntPtr hWnd, 
+            [Out] out MonitorInformation info
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr MonitorFromWindow(IntPtr hWnd, uint flags);
+        public static extern IntPtr MonitorFromWindow(
+            [In] IntPtr hWnd, 
+            [In] uint flags
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern short GetAsyncKeyState(uint key);
+        public static extern short GetAsyncKeyState([In] uint key);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr SetCapture(IntPtr handle);
+        public static extern IntPtr SetCapture([In] IntPtr handle);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ReleaseCapture();
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool ShowWindow(IntPtr hWnd, ShowWindowType flags);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShowWindow(
+            [In] IntPtr hWnd, 
+            [In] ShowWindowType flags
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool SetMenu(IntPtr hWnd, IntPtr menuHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetMenu(
+            [In] IntPtr hWnd, 
+            [In] IntPtr menuHandle
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool CloseWindow(IntPtr hWnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseWindow(
+            [In] IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool DestroyWindow(IntPtr hWnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DestroyWindow(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool IsIconic(IntPtr hWnd);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsIconic(
+            [In] IntPtr hWnd
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool AdjustWindowRect(ref Rectangle rect, WindowStyles style,
-            [MarshalAs(UnmanagedType.Bool)]bool menu);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AdjustWindowRect(
+            ref Rectangle rect, 
+            [In] WindowStyles style,
+            [In] [MarshalAs(UnmanagedType.Bool)]bool menu
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr RegisterClass(ref WindowClass wndClass);
+        public static extern IntPtr RegisterClass(
+            [In] ref WindowClass wndClass
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern bool UnregisterClass([MarshalAs(UnmanagedType.LPTStr)] string className, IntPtr instanceHandle);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool UnregisterClass(
+            [In] [MarshalAs(UnmanagedType.LPTStr)] string className,
+            [In] IntPtr instanceHandle
+            );
 
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "CreateWindowEx", CharSet = CharSet.Auto)]
-        public static extern IntPtr CreateWindow(int exStyle, [MarshalAs(UnmanagedType.LPTStr)] string className, [MarshalAs(UnmanagedType.LPTStr)] string windowName,
-            WindowStyles style, int x, int y, int width, int height, IntPtr parent, IntPtr menuHandle, IntPtr instanceHandle, IntPtr zero);
+        public static extern IntPtr CreateWindow(
+            [In] int exStyle,
+            [In] [MarshalAs(UnmanagedType.LPTStr)] string className,
+            [In] [MarshalAs(UnmanagedType.LPTStr)] string windowName,
+            [In] WindowStyles style,
+            [In] int x,
+            [In] int y,
+            [In] int width,
+            [In] int height,
+            [In] IntPtr parent,
+            [In] IntPtr menuHandle,
+            [In] IntPtr instanceHandle,
+            [In] IntPtr zero
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern int GetCaretBlinkTime();
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern int InternalGetWindowText(IntPtr hWnd, StringBuilder str, int maxCount);
+        public static extern int InternalGetWindowText(
+            [In] IntPtr hWnd, 
+            [Out] StringBuilder str, 
+            int maxCount
+            );
 
         #endregion
     }

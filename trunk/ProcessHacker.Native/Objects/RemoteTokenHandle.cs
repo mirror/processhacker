@@ -22,6 +22,7 @@
 
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -35,16 +36,16 @@ namespace ProcessHacker.Native.Objects
     /// </remarks>
     public class RemoteTokenHandle : RemoteHandle, IWithToken
     {
-        public RemoteTokenHandle(ProcessHandle phandle, int handle)
+        public RemoteTokenHandle(ProcessHandle phandle, IntPtr handle)
             : base(phandle, handle)
         { }
 
-        public new int GetHandle(int rights)
+        public new IntPtr GetHandle(int rights)
         {
-            int newHandle = 0;
+            IntPtr newHandle = IntPtr.Zero;
 
             // We can use KPH here. RemoteHandle doesn't.
-            Win32.DuplicateObject(this.ProcessHandle, this.Handle, -1, out newHandle, rights, 0, 0);
+            Win32.DuplicateObject(this.ProcessHandle, this.Handle, new IntPtr(-1), out newHandle, rights, false, 0);
 
             return newHandle;
         }

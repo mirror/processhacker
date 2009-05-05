@@ -34,11 +34,12 @@ namespace Assistant
 {
     static class Program
     {
-        static void SetAllAccess(int handle)
+        static void SetAllAccess(IntPtr handle)
         {
+            /*
             using (var sd = new LocalMemoryAlloc(Win32.SecurityDescriptorMinLength))
             {
-                if (!Win32.InitializeSecurityDescriptor(sd, Win32.SecurityDescriptorRevision))
+                if (!Win32.InitializeSecurityDescriptor(out sd.Memory, Win32.SecurityDescriptorRevision))
                     Win32.ThrowLastError();
 
                 if (!Win32.SetSecurityDescriptorDacl(sd, true, 0, false))
@@ -49,6 +50,18 @@ namespace Assistant
                 if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
                     Win32.ThrowLastError();
             }
+             */
+            IntPtr sd;
+            if (!Win32.InitializeSecurityDescriptor(out sd, Win32.SecurityDescriptorRevision))
+                Win32.ThrowLastError();
+
+            if (!Win32.SetSecurityDescriptorDacl(ref sd, true, IntPtr.Zero, false))
+                Win32.ThrowLastError();
+
+            SiRequested si = SiRequested.DaclSecurityInformation;
+
+            if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
+                Win32.ThrowLastError();
         }
 
         static void SetDesktopWinStaAccess()
@@ -210,7 +223,7 @@ namespace Assistant
                 }
             }
 
-            int token = 0;
+            IntPtr token = IntPtr.Zero;
             string domain = null;
             string username = "";
 
@@ -269,11 +282,11 @@ namespace Assistant
                     Console.WriteLine("Error: Invalid PID.");
                 }
 
-                int handle = 0;
+                IntPtr handle = IntPtr.Zero;
 
                 try
                 {
-                    handle = System.Diagnostics.Process.GetProcessById(pid).Handle.ToInt32();
+                    handle = System.Diagnostics.Process.GetProcessById(pid).Handle;
                 }
                 catch
                 {
@@ -289,9 +302,9 @@ namespace Assistant
 
                 if (Environment.OSVersion.Version.Major != 5)
                 {
-                    int dupToken;
+                    IntPtr dupToken;
 
-                    if (!Win32.DuplicateTokenEx(token, TokenAccess.All, 0, SecurityImpersonationLevel.SecurityImpersonation,
+                    if (!Win32.DuplicateTokenEx(token, TokenAccess.All, IntPtr.Zero, SecurityImpersonationLevel.SecurityImpersonation,
                         TokenType.Primary, out dupToken))
                     {
                         Console.WriteLine("Error: Could not duplicate own token: " + Win32.GetLastErrorMessage());
@@ -306,8 +319,10 @@ namespace Assistant
             if (args.ContainsKey("-s"))
             {
                 int sessionId = int.Parse(args["-s"]);
+                IntPtr buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(int)));
+                Marshal.WriteInt32(buffer, sessionId);
 
-                if (!Win32.SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref sessionId, 4))
+                if (!Win32.SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref buffer, 4))
                 {
                     Console.WriteLine("Error: Could not set token session Id: " + Win32.GetLastErrorMessage());
                 }
@@ -319,7 +334,7 @@ namespace Assistant
                 {
                     StartupInfo info = new StartupInfo();
                     ProcessInformation pinfo = new ProcessInformation();
-                    int environment;
+                    IntPtr environment;
 
                     Win32.CreateEnvironmentBlock(out environment, token, false);
 
@@ -329,9 +344,9 @@ namespace Assistant
                     if (!Win32.CreateProcessAsUser(token,
                         args.ContainsKey("-f") ? args["-f"] : null,
                         args.ContainsKey("-c") ? args["-c"] : null,
-                        0, 0, false, CreationFlags.CreateUnicodeEnvironment, environment,
+                        IntPtr.Zero, IntPtr.Zero, false, CreationFlags.CreateUnicodeEnvironment, environment,
                         args.ContainsKey("-d") ? args["-d"] : null,
-                        ref info, ref pinfo))
+                        ref info, out pinfo))
                     {
                         Console.WriteLine("Error: Could not create process: " + Win32.GetLastErrorMessage());
                         Exit(Marshal.GetLastWin32Error());

@@ -936,7 +936,7 @@ namespace ProcessHacker
 
                 using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    int baseAddress = phandle.GetBasicInformation().PebBaseAddress;
+                    IntPtr baseAddress = phandle.GetBasicInformation().PebBaseAddress;
 
                     Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
                     {

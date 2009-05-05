@@ -45,7 +45,7 @@ namespace ProcessHacker.PE
             this.SizeOfCode = br.ReadUInt32();
             this.SizeOfInitializedData = br.ReadUInt32();
             this.SizeOfUninitializedData = br.ReadUInt32();
-            this.AddressOfEntryPoint = br.ReadUInt32();
+            this.AddressOfEntryPoint = new IntPtr(br.ReadUInt32());
             this.BaseOfCode = br.ReadUInt32();
 
             if (this.Magic == COFFOptionalHeader.PE32Magic)
@@ -145,7 +145,7 @@ namespace ProcessHacker.PE
         /// optional for DLLs. When no entry point is present, this field 
         /// must be zero.
         /// </summary>
-        public uint AddressOfEntryPoint;
+        public IntPtr AddressOfEntryPoint;
 
         /// <summary>
         /// The address that is relative to the image base of the 

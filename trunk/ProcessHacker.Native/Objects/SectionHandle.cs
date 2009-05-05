@@ -33,13 +33,13 @@ namespace ProcessHacker.Native.Objects
         public SectionHandle(SectionAccess access, FileHandle fileHandle, SectionAttributes sectionAttributes, MemoryProtection pageAttributes)
         {
             int status;
-            int section;
-
+            IntPtr section;
+            LargeInteger largeInteger = new LargeInteger();
             if ((status = Win32.NtCreateSection(
                 out section,
                 access,
-                0,
-                0,
+                IntPtr.Zero,
+                ref largeInteger,
                 (int)pageAttributes,
                 (int)sectionAttributes,
                 fileHandle)) < 0)
@@ -48,7 +48,7 @@ namespace ProcessHacker.Native.Objects
             this.Handle = section;
         }
 
-        private SectionHandle(int handle, bool owned)
+        private SectionHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
     }

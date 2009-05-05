@@ -89,7 +89,7 @@ namespace ProcessHacker.Native
         /// <param name="size">The amount of memory, in bytes, to allocate.</param>
         public MemoryAlloc(int size)
         {
-            _memory = Marshal.AllocHGlobal(size);
+            _memory = Marshal.AllocHGlobal((int)size);
             _size = size;
 
             if (size > 0)

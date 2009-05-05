@@ -35,7 +35,7 @@ namespace ProcessHacker
             PerformanceInformation info = new PerformanceInformation();
 
             info.Size = Marshal.SizeOf(info);
-            Win32.GetPerformanceInfo(ref info, info.Size);
+            Win32.GetPerformanceInfo(out info, info.Size);
             this.MinMaxValue = info.PhysicalTotal;
         }
 

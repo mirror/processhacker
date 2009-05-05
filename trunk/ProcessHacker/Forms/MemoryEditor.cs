@@ -30,13 +30,13 @@ namespace ProcessHacker
 {
     public partial class MemoryEditor : Form
     {
-        public static MemoryEditor ReadWriteMemory(int pid, int address, int size, bool RO)
+        public static MemoryEditor ReadWriteMemory(int pid, IntPtr address, int size, bool RO)
         {
             return ReadWriteMemory(pid, address, size, RO, 
                 new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { }));
         }
 
-        public static MemoryEditor ReadWriteMemory(int pid, int address, int size, bool RO, 
+        public static MemoryEditor ReadWriteMemory(int pid, IntPtr address, int size, bool RO, 
             Program.MemoryEditorInvokeAction action)
         {
             try
@@ -63,7 +63,8 @@ namespace ProcessHacker
             }
         }
 
-        private int _pid, _address, _length;
+        private int _pid, _length;
+        private IntPtr _address;
         private byte[] _data;
 
         public string Id
@@ -71,7 +72,7 @@ namespace ProcessHacker
             get { return _pid.ToString() + "-" + _address.ToString() + "-" + _length.ToString(); }
         }
 
-        public MemoryEditor(int PID, int Address, int Length)
+        public MemoryEditor(int PID, IntPtr Address, int Length)
         {
             InitializeComponent();
             this.AddEscapeToClose();
@@ -84,7 +85,7 @@ namespace ProcessHacker
 
             this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 "), 0x" + _address.ToString("x8") + "-0x" +
-                (_address + _length).ToString("x8") + " - Memory Editor";
+                (_address.Increment(_length)).ToString("x8") + " - Memory Editor";
 
             try
             {
@@ -414,7 +415,7 @@ namespace ProcessHacker
                     // stupid TreeViewAdv only works on the one thread
                     Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
                         {
-                            StructWindow sw = new StructWindow(_pid, (int)(_address + selectionStart),
+                            StructWindow sw = new StructWindow(_pid, (_address.Increment(selectionStart)),
                                 Program.Structs[lpw.SelectedItem]);
 
                             try

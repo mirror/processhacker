@@ -286,7 +286,7 @@ namespace ProcessHacker.Components
                 return false;
         }
 
-        public static void ShowHandleProperties(int pid, string type, int handle, string name)
+        public static void ShowHandleProperties(int pid, string type, IntPtr handle, string name)
         {
             ProcessHandle phandle;
 
@@ -321,9 +321,9 @@ namespace ProcessHacker.Components
                     }
                     else
                     {
-                        int newHandle = 0;
+                        IntPtr newHandle;
 
-                        Win32.DuplicateObject(phandle, handle, -1, out newHandle, (int)Program.MinProcessQueryRights, 0, 0);
+                        Win32.DuplicateObject(phandle, handle, new IntPtr(-1), out newHandle, (int)Program.MinProcessQueryRights, false, 0);
                         processId = Win32.GetProcessId(newHandle);
                         Win32.CloseHandle(newHandle);
                     }
@@ -416,12 +416,12 @@ namespace ProcessHacker.Components
                 {
                     try
                     {
-                        int handle = (int)BaseConverter.ToNumberParse(item.SubItems[2].Text);
-
+                        IntPtr handle = new IntPtr((int)BaseConverter.ToNumberParse(item.SubItems[2].Text));
+                        IntPtr dummy;
                         using (ProcessHandle process =
                                new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                         {
-                            Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0,
+                            Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, false,
                                 0x1 // DUPLICATE_CLOSE_SOURCE
                                 );
                         }
@@ -451,7 +451,7 @@ namespace ProcessHacker.Components
                 ShowHandleProperties(
                     _pid,
                     listHandles.SelectedItems[0].Text,
-                    int.Parse(listHandles.SelectedItems[0].Name),
+                    new IntPtr(int.Parse(listHandles.SelectedItems[0].Name)),
                     listHandles.SelectedItems[0].SubItems[1].Text
                     );
             }

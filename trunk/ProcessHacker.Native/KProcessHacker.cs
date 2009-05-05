@@ -114,8 +114,9 @@ namespace ProcessHacker.Native
                         shandle.Delete();
                 }
             }
-            catch
-            { }
+            catch (Exception)
+            {
+            }
 
             try
             {
@@ -204,7 +205,7 @@ namespace ProcessHacker.Native
                 inData, 0x14,
                 inData, 0,
                 out ioReturnLength,
-                0
+                IntPtr.Zero
                 );
 
             returnLength = expReturnLength;
@@ -241,13 +242,13 @@ namespace ProcessHacker.Native
             return null;
         }
 
-        public string GetHandleObjectName(ProcessHandle processHandle, int handle)
+        public string GetHandleObjectName(ProcessHandle processHandle, IntPtr handle)
         {
             byte* inData = stackalloc byte[8];
             byte[] outData = new byte[2048];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = handle;
+            *(int*)(inData + 4) = handle.ToInt32();
 
             try
             {
@@ -354,26 +355,26 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.KphGetContextThread), inData, 8, null, 0);
         }
 
-        public int KphGetProcessId(ProcessHandle processHandle, int handle)
+        public int KphGetProcessId(ProcessHandle processHandle, IntPtr handle)
         {
             byte* inData = stackalloc byte[8];
             byte* outData = stackalloc byte[4];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = handle;
+            *(int*)(inData + 4) = handle.ToInt32();
 
             _fileHandle.IoControl(CtlCode(Control.KphGetProcessId), inData, 8, outData, 4);
 
             return *(int*)outData;
         }
 
-        public int KphGetThreadId(ProcessHandle processHandle, int handle, out int processId)
+        public int KphGetThreadId(ProcessHandle processHandle, IntPtr handle, out int processId)
         {
             byte* inData = stackalloc byte[8];
             byte* outData = stackalloc byte[8];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = handle;
+            *(int*)(inData + 4) = handle.ToInt32();
 
             _fileHandle.IoControl(CtlCode(Control.KphGetThreadId), inData, 8, outData, 8);
             processId = *(int*)(outData + 4);
@@ -470,7 +471,7 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0x10) = (int)&br;
 
             bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphReadVirtualMemory), 
-                inData, 0x14, null, 0, out returnLength, 0);
+                inData, 0x14, null, 0, out returnLength, IntPtr.Zero);
 
             bytesRead = br;
 
@@ -519,7 +520,7 @@ namespace ProcessHacker.Native
                 // STATUS_DISK_FULL means we tried to terminate ourself. Kernel-mode can't do it, 
                 // so we do it now.
                 if (ex.ErrorCode == 112)
-                    Win32.TerminateProcess(-1, exitStatus);
+                    Win32.TerminateProcess(new IntPtr(-1), exitStatus);
                 else
                     throw ex;
             }
@@ -539,7 +540,7 @@ namespace ProcessHacker.Native
             catch (WindowsException ex)
             {
                 if (ex.ErrorCode == 112)
-                    Win32.TerminateThread(-2, exitStatus);
+                    Win32.TerminateThread(new IntPtr(-2), exitStatus);
                 else
                     throw ex;
             }
@@ -616,7 +617,7 @@ namespace ProcessHacker.Native
 
         public int ZwQueryObject(
             ProcessHandle processHandle,
-            int handle,
+            IntPtr handle,
             ObjectInformationClass objectInformationClass,
             IntPtr buffer,
             int bufferLength,
@@ -628,7 +629,7 @@ namespace ProcessHacker.Native
             byte[] outData = new byte[bufferLength + 12];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = handle;
+            *(int*)(inData + 4) = handle.ToInt32();
             *(int*)(inData + 8) = (int)objectInformationClass;
 
             _fileHandle.IoControl(CtlCode(Control.ZwQueryObject), inData, 12, outData);

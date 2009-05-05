@@ -123,12 +123,13 @@ namespace ProcessHacker
 
                 try
                 {
-                    int handle = (int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text);
+                    IntPtr handle = new IntPtr((int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text));
 
                     using (ProcessHandle process =
                            new ProcessHandle((int)listHandles.Items[index].Tag, ProcessAccess.DupHandle))
                     {
-                        Win32.DuplicateObject(process.Handle, handle, 0, 0, 0, 0, 0x1);
+                        IntPtr dummy;
+                        Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, false, 0x1);
                         remove.Add(listHandles.Items[index]);
                     }
                 }
@@ -233,7 +234,7 @@ namespace ProcessHacker
                 HandleList.ShowHandleProperties(
                     (int)listHandles.SelectedItems[0].Tag,
                     listHandles.SelectedItems[0].SubItems[1].Text,
-                    (int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text),
+                    new IntPtr((int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text)),
                     listHandles.SelectedItems[0].SubItems[2].Text
                     );
             }

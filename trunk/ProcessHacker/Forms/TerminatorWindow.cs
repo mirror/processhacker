@@ -133,12 +133,12 @@ namespace ProcessHacker
 
         private void TP2()
         {
-            int kernel32 = Win32.LoadLibrary("kernel32.dll");
-            int exitProcess = Win32.GetProcAddress(kernel32, "ExitProcess");
+            IntPtr kernel32 = Win32.LoadLibrary("kernel32.dll");
+            IntPtr exitProcess = Win32.GetProcAddress(kernel32, "ExitProcess");
             int threadId;
 
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
-                if (!Win32.CreateRemoteThread(phandle, 0, 0, exitProcess, 0, 0, out threadId))
+                if (!Win32.CreateRemoteThread(phandle, IntPtr.Zero, 0, exitProcess, IntPtr.Zero, 0, out threadId))
                     Win32.ThrowLastError();
         }
 
@@ -177,7 +177,7 @@ namespace ProcessHacker
         private void TT2()
         {
             Context context;
-            int exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
+            IntPtr exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
 
             System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
 
@@ -189,7 +189,7 @@ namespace ProcessHacker
                     {
                         context = thandle.GetContext(ContextFlags.Control);
                         context.ContextFlags = ContextFlags.Control;
-                        context.Eip = exitProcess;
+                        context.Eip = exitProcess.ToInt32();
                         thandle.SetContext(context);
                     }
                     catch
@@ -209,7 +209,7 @@ namespace ProcessHacker
                     phandle.EnumMemory((info) =>
                         {
                             for (int i = 0; i < info.RegionSize; i += 0x1000)
-                                phandle.WriteMemory(info.BaseAddress + i, alloc, 0x1000);
+                                phandle.WriteMemory(info.BaseAddress.Increment(i), alloc, 0x1000);
 
                             return true;
                         });
@@ -243,7 +243,8 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.DuplicateObject(phandle, i, -1, 0, 0, 0, 0x1);
+                        IntPtr dummy;
+                        Win32.DuplicateObject(phandle, new IntPtr(i), new IntPtr(-1), out dummy, 0, false, 0x1);
                     }
                     catch
                     { }

@@ -21,6 +21,7 @@
  */
 
 
+using System;
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
@@ -29,9 +30,9 @@ namespace ProcessHacker.Native.Objects
     public class RemoteHandle
     {
         private ProcessHandle _phandle;
-        private int _handle;
+        private IntPtr _handle;
 
-        public RemoteHandle(ProcessHandle phandle, int handle)
+        public RemoteHandle(ProcessHandle phandle, IntPtr handle)
         {
             _phandle = phandle;
             _handle = handle;
@@ -42,7 +43,7 @@ namespace ProcessHacker.Native.Objects
             get { return _phandle; }
         }
 
-        public int Handle
+        public IntPtr Handle
         {
             get { return _handle; }
         }

@@ -3,6 +3,8 @@ using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using Security.WinTrust;
+using System;
 
 namespace ProcessHacker.Native
 {
@@ -20,41 +22,15 @@ namespace ProcessHacker.Native
 
     public static class Cryptography
     {
-        public static readonly ProcessHacker.Native.Api.Guid GenericCertVerify =
-            new ProcessHacker.Native.Api.Guid()
-            {
-                Data1 = 0x189a3842,
-                Data2 = 0x3041,
-                Data3 = 0x11d1,
-                Data4 = new byte[] { 0x85, 0xe1, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
-            };
+        // GUID of the action to perform
 
-        public static readonly ProcessHacker.Native.Api.Guid GenericVerifyV2 =
-            new ProcessHacker.Native.Api.Guid()
-            {
-                Data1 = 0xaac56b,
-                Data2 = 0xcd44,
-                Data3 = 0x11d0,
-                Data4 = new byte[] { 0x8c, 0xc2, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
-            };
-
-        public static readonly ProcessHacker.Native.Api.Guid GenericChainVerify = 
-            new ProcessHacker.Native.Api.Guid()
-            {
-                Data1 = 0xfc451c16,
-                Data2 = 0xac75,
-                Data3 = 0x11d1,
-                Data4 = new byte[] { 0xb4, 0xb8, 0x00, 0xc0, 0x4f, 0xb6, 0x6e, 0xa0 }
-            };
-
-        public static readonly ProcessHacker.Native.Api.Guid DriverVerify = 
-            new ProcessHacker.Native.Api.Guid()
-            {
-                Data1 = 0xf750e6c3,
-                Data2 = 0x38ee,
-                Data3 = 0x11d1,
-                Data4 = new byte[] { 0x85, 0xe5, 0x00, 0xc0, 0x4f, 0xc2, 0x95, 0xee }
-            };
+        public static readonly System.Guid DRIVER_ACTION_VERIFY = new System.Guid("{F750E6C3-38EE-11d1-85E5-00C04FC295EE}");
+        public static readonly System.Guid HTTPSPROV_ACTION = new System.Guid("{573E31F8-AABA-11d0-8CCB-00C04FC295EE}");
+        public static readonly System.Guid OFFICESIGN_ACTION_VERIFY = new System.Guid("{5555C2CD-17FB-11d1-85C4-00C04FC295EE}");
+        public static readonly System.Guid WINTRUST_ACTION_GENERIC_CERT_VERIFY = new System.Guid("{189A3842-3041-11d1-85E1-00C04FC295EE}");
+        public static readonly System.Guid WINTRUST_ACTION_GENERIC_CHAIN_VERIFY = new System.Guid("{fc451c16-ac75-11d1-b4b8-00c04fb66ea0}");
+        public static readonly System.Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new System.Guid("{00AAC56B-CD44-11d0-8CC2-00C04FC295EE}");
+        public static readonly System.Guid WINTRUST_ACTION_TRUSTPROVIDER_TEST = new System.Guid("{573E31F8-DDBA-11d0-8CCB-00C04FC295EE}");
 
         public static VerifyResult StatusToVerifyResult(uint status)
         {
@@ -76,49 +52,30 @@ namespace ProcessHacker.Native
 
         public static VerifyResult VerifyFile(string filePath)
         {
-            VerifyResult result = VerifyResult.NoSignature;
+            WinVerifyTrustResult result = WinVerifyTrustResult.ActionUnknown;
 
-            using (MemoryAlloc strMem = new MemoryAlloc(filePath.Length * 2 + 2))
-            {
-                WintrustFileInfo fileInfo = new WintrustFileInfo();
+            WinTrustData trustData = new WinTrustData();
+            WinTrustFileInfo fileInfo = new WinTrustFileInfo(filePath);
+            trustData.StructSize = 12 * 4;
+            trustData.UIChoice = WinTrustDataUIChoice.None;
+            trustData.UnionChoice = WinTrustDataChoice.File;
+            trustData.ProvFlags = WinTrustDataProvFlags.SaferFlag;
+            trustData.RevocationChecks = WinTrustDataRevocationChecks.None;
+            trustData.UnionData = fileInfo;
 
-                strMem.WriteUnicodeString(0, filePath);
-                strMem.WriteByte(filePath.Length * 2, 0);
-                strMem.WriteByte(filePath.Length * 2 + 1, 0);
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                trustData.ProvFlags |= WinTrustDataProvFlags.CacheOnlyUrlRetrieval;
 
-                fileInfo.Size = Marshal.SizeOf(fileInfo);
-                fileInfo.FilePath = strMem;
+            result = Win32.WinVerifyTrust(new IntPtr(-1)
+                                          , WINTRUST_ACTION_GENERIC_VERIFY_V2
+                                          , trustData);
 
-                WintrustData trustData = new WintrustData();
-
-                trustData.Size = 12 * 4;
-                trustData.UIChoice = 2; // WTD_UI_NONE
-                trustData.UnionChoice = 1; // WTD_CHOICE_FILE
-                trustData.RevocationChecks = WtRevocationChecks.None;
-                trustData.ProvFlags = WtProvFlags.Safer;
-
-                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                    trustData.ProvFlags |= WtProvFlags.CacheOnlyUrlRetrieval;
-
-                using (MemoryAlloc mem = new MemoryAlloc(fileInfo.Size))
-                {
-                    Marshal.StructureToPtr(fileInfo, mem, false);
-                    trustData.UnionData = mem;
-
-                    var action = GenericVerifyV2;
-                    uint winTrustResult = Win32.WinVerifyTrust(0, ref action, ref trustData);
-
-                    result = StatusToVerifyResult(winTrustResult);
-                }
-            }
-
-            if (result == VerifyResult.NoSignature)
+            if (StatusToVerifyResult((uint)result) == VerifyResult.NoSignature)
             {
                 FileHandle sourceFile = new FileHandle(filePath, FileAccess.GenericRead, FileShareMode.Read,
                     FileCreationDisposition.OpenExisting);
                 byte[] hash = new byte[256];
                 int hashLength = 256;
-
                 if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
                 {
                     hash = new byte[hashLength];
@@ -132,15 +89,14 @@ namespace ProcessHacker.Native
                 for (int i = 0; i < hashLength; i++)
                     memberTag.Append(hash[i].ToString("X2"));
 
-                int catAdmin;
-                var action = DriverVerify;
+                IntPtr catAdmin;
 
-                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, ref action, 0))
+                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DRIVER_ACTION_VERIFY, 0))
                     return VerifyResult.NoSignature;
 
-                int catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, 0);
+                IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
 
-                if (catInfo == 0)
+                if (catInfo == IntPtr.Zero)
                 {
                     Win32.CryptCATAdminReleaseContext(catAdmin, 0);
                     return VerifyResult.NoSignature;
@@ -155,46 +111,35 @@ namespace ProcessHacker.Native
                     return VerifyResult.NoSignature;
                 }
 
-                WintrustCatalogInfo wci = new WintrustCatalogInfo();
+                WinTrustCatalogInfo wci = new WinTrustCatalogInfo();
 
                 wci.Size = Marshal.SizeOf(wci);
                 wci.CatalogFilePath = ci.CatalogFile;
                 wci.MemberFilePath = filePath;
                 wci.MemberTag = memberTag.ToString();
 
-                WintrustData trustData = new WintrustData();
+                trustData = new WinTrustData();
 
-                trustData.Size = 12 * 4;
-                trustData.UIChoice = 1;
-                trustData.UnionChoice = 2;
-                trustData.RevocationChecks = WtRevocationChecks.None;
+                trustData.StructSize = 12 * 4;
+                trustData.UIChoice = WinTrustDataUIChoice.None;
+                trustData.UnionChoice = WinTrustDataChoice.Catalog;
+                trustData.RevocationChecks = WinTrustDataRevocationChecks.None;
 
                 if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                    trustData.ProvFlags = WtProvFlags.CacheOnlyUrlRetrieval;
+                    trustData.ProvFlags |= WinTrustDataProvFlags.CacheOnlyUrlRetrieval;
 
-                using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
+                trustData.UnionData = wci;
+                try
                 {
-                    Marshal.StructureToPtr(wci, mem, false);
-
-                    try
-                    {
-                        trustData.UnionData = mem;
-
-                        var action2 = DriverVerify;
-                        uint winTrustResult = Win32.WinVerifyTrust(0, ref action2, ref trustData);
-
-                        result = StatusToVerifyResult(winTrustResult);
-                    }
-                    finally
-                    {
-                        Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
-                        Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                        Marshal.DestroyStructure(mem, typeof(WintrustCatalogInfo));
-                    }
+                    result = Win32.WinVerifyTrust(new IntPtr(-1), DRIVER_ACTION_VERIFY, trustData);
+                }
+                finally
+                {
+                    Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                    Win32.CryptCATAdminReleaseContext(catAdmin, 0);
                 }
             }
-
-            return result;
+            return StatusToVerifyResult((uint)result);
         }
     }
 }

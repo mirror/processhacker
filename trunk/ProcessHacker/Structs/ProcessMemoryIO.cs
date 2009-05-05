@@ -21,6 +21,7 @@
  */
 
 using ProcessHacker.Native.Objects;
+using System;
 
 namespace ProcessHacker.Structs
 {
@@ -40,12 +41,12 @@ namespace ProcessHacker.Structs
             catch { }
         }
 
-        public byte[] ReadBytes(int offset, int length)
+        public byte[] ReadBytes(IntPtr offset, int length)
         {
             return _phandleR.ReadMemory(offset, length);
         }
 
-        public void WriteBytes(int offset, byte[] bytes)
+        public void WriteBytes(IntPtr offset, byte[] bytes)
         {
             _phandleW.WriteMemory(offset, bytes);
         }

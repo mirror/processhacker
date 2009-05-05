@@ -22,6 +22,7 @@
 
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -38,9 +39,9 @@ namespace ProcessHacker.Native.Objects
         {
             int status;
             ObjectAttributes attributes = new ObjectAttributes();
-            int handle = 0;
+            IntPtr handle = IntPtr.Zero;
 
-            if ((status = Win32.LsaOpenPolicy(0, ref attributes, access, out handle)) < 0)
+            if ((status = Win32.LsaOpenPolicy(IntPtr.Zero, ref attributes, access, ref handle)) < 0)
                 Win32.ThrowLastError(status);
 
             this.Handle = handle;

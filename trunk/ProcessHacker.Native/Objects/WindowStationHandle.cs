@@ -10,9 +10,9 @@ namespace ProcessHacker.Native.Objects
     {
         public static WindowStationHandle GetCurrent()
         {
-            int handle = Win32.GetProcessWindowStation();
+            IntPtr handle = Win32.GetProcessWindowStation();
 
-            if (handle == 0)
+            if (handle == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return new WindowStationHandle(handle, false);
@@ -22,11 +22,11 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenWindowStation(name, false, access);
 
-            if (this.Handle == 0)
+            if (this.Handle == System.IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
-        private WindowStationHandle(int handle, bool owned)
+        private WindowStationHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 

@@ -425,16 +425,16 @@ namespace ProcessHacker.Components
 
             if (prompt.ShowDialog() == DialogResult.OK)
             {
-                int address = -1;
-                int regionAddress = 0;
+                IntPtr address = new IntPtr(-1);
+                IntPtr regionAddress = IntPtr.Zero;
                 int regionSize = 0;
                 bool found = false;
 
                 try
                 {
-                    address = (int)BaseConverter.ToNumberParse(prompt.Value);
+                    address = new IntPtr((int)BaseConverter.ToNumberParse(prompt.Value));
 
-                    if (address < 0)
+                    if (address.CompareTo(0) < 0)
                         throw new Exception();
                 }
                 catch
@@ -456,7 +456,7 @@ namespace ProcessHacker.Components
 
                 foreach (MemoryItem item in items)
                 {
-                    if (item.Address > address)
+                    if (item.Address.CompareTo ( address) > 0)
                     {
                         MemoryItem regionItem = items[i - 1];
 
@@ -479,7 +479,7 @@ namespace ProcessHacker.Components
                 }
 
                 MemoryEditor m_e = MemoryEditor.ReadWriteMemory(_pid, regionAddress, regionSize, false,
-                   new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { f.Select(address - regionAddress, 1); }));
+                   new Program.MemoryEditorInvokeAction(delegate(MemoryEditor f) { f.Select(address.Decrement(regionAddress).ToInt64(), 1); }));
             }
         }
 

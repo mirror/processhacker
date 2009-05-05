@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -38,7 +39,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="Handle">The handle value.</param>
         /// <returns>The thread handle.</returns>
-        public static ThreadHandle FromHandle(int handle)
+        public static ThreadHandle FromHandle(IntPtr handle)
         {
             return new ThreadHandle(handle, false);
         }
@@ -49,10 +50,10 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A thread handle.</returns>
         public static ThreadHandle GetCurrent()
         {
-            return new ThreadHandle(-2, false);
+            return new ThreadHandle(new IntPtr(-2), false);
         }
 
-        internal ThreadHandle(int handle, bool owned)
+        internal ThreadHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -72,11 +73,11 @@ namespace ProcessHacker.Native.Objects
         public ThreadHandle(int tid, ThreadAccess access)
         {
             if (KProcessHacker.Instance != null)
-                this.Handle = KProcessHacker.Instance.KphOpenThread(tid, access);
+                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread((int)tid, access));
             else
-                this.Handle = Win32.OpenThread(access, 0, tid);
+                this.Handle = Win32.OpenThread(access, false, tid);
 
-            if (this.Handle == 0)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -176,14 +177,15 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
             int status;
-            int value;
+            IntPtr value = Marshal.AllocCoTaskMem(4);
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, infoClass, out value, 4, out retLength)) < 0)
+                this, infoClass, value, 4, out retLength)) < 0)
                 Win32.ThrowLastError(status);
-
-            return value;
+            int ret = Marshal.ReadInt32(value);
+            Marshal.FreeCoTaskMem(value);
+            return ret;
         }
 
         /// <summary>
@@ -213,13 +215,17 @@ namespace ProcessHacker.Native.Objects
         public int GetLastSystemCall(out int firstArgument)
         {
             int status;
-            int[] data = new int[8];
+            int[] data = new int[2];
+            IntPtr value = Marshal.AllocCoTaskMem(8);
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, ThreadInformationClass.ThreadLastSystemCall, data, 8, out retLength)) < 0)
+                this, ThreadInformationClass.ThreadLastSystemCall, value, 8, out retLength)) < 0)
                 Win32.ThrowLastError(status);
 
+            data[0] = Marshal.ReadInt32(value);
+            data[1] = Marshal.ReadInt32(value,4);
+            Marshal.FreeCoTaskMem(value);
             firstArgument = data[0];
 
             return data[1];
@@ -258,9 +264,9 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the thread's Win32 start address.
         /// </summary>
-        public uint GetWin32StartAddress()
+        public int GetWin32StartAddress()
         {
-            return (uint)this.GetInformationInt32(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
+            return this.GetInformationInt32(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
         }
 
         /// <summary>
@@ -309,7 +315,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="address">The address of the APC procedure.</param>
         /// <param name="parameter">The parameter to pass to the procedure.</param>
-        public void QueueApc(int address, int parameter)
+        public void QueueApc(IntPtr address, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(address, this, parameter))
                 Win32.ThrowLastError();

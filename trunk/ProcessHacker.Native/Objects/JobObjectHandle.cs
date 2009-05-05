@@ -39,22 +39,22 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="Handle">The handle value.</param>
         /// <returns>The job handle.</returns>
-        public static JobObjectHandle FromHandle(int handle)
+        public static JobObjectHandle FromHandle(IntPtr handle)
         {
             return new JobObjectHandle(handle, false);
         }
 
         public static JobObjectHandle Create(string name)
         {
-            int jobHandle = Win32.CreateJobObject(0, name);
+            IntPtr jobHandle = Win32.CreateJobObject(IntPtr.Zero, name);
 
-            if (jobHandle == 0)
+            if (jobHandle == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return new JobObjectHandle(jobHandle, true);
         }
 
-        private JobObjectHandle(int handle, bool owned)
+        private JobObjectHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -67,7 +67,7 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenJobObject(access, false, name);
 
-            if (this.Handle == 0)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -78,9 +78,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the job object.</param>
         public JobObjectHandle(ProcessHandle processHandle, JobObjectAccess access)
         {
-            this.Handle = KProcessHacker.Instance.KphOpenProcessJob(processHandle, access);
+            this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, access));
 
-            if (this.Handle == 0)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 

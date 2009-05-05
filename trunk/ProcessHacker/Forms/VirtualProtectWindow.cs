@@ -30,9 +30,10 @@ namespace ProcessHacker
 {
     public partial class VirtualProtectWindow : Form
     {
-        private int _pid, _address, _size;
+        private int _pid, _size;
+        private IntPtr _address;
 
-        public VirtualProtectWindow(int pid, int address, int size)
+        public VirtualProtectWindow(int pid, IntPtr address, int size)
         {
             InitializeComponent();
             this.AddEscapeToClose();

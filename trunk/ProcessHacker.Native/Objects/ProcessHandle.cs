@@ -58,17 +58,17 @@ namespace ProcessHacker.Native.Objects
         public static ProcessHandle Create(SectionHandle sectionHandle, ProcessAccess access, ProcessHandle parent, bool inheritHandles)
         {
             int status;
-            int process;
+            IntPtr process;
 
             if ((status = Win32.NtCreateProcess(
                 out process,
                 access,
-                0,
+                IntPtr.Zero,
                 parent,
                 inheritHandles,
                 sectionHandle,
-                0,
-                0)) < 0)
+                IntPtr.Zero,
+                IntPtr.Zero)) < 0)
                 Win32.ThrowLastError(status);
 
             return new ProcessHandle(process, true);
@@ -96,7 +96,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="Handle">The handle value.</param>
         /// <returns>The process handle.</returns>
-        public static ProcessHandle FromHandle(int handle)
+        public static ProcessHandle FromHandle(IntPtr handle)
         {
             return new ProcessHandle(handle, false);
         }
@@ -107,10 +107,10 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A process handle.</returns>
         public static ProcessHandle GetCurrent()
         {
-            return new ProcessHandle(-1, false);
+            return new ProcessHandle(new IntPtr(-1), false);
         }
 
-        internal ProcessHandle(int handle, bool owned)
+        internal ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -130,11 +130,11 @@ namespace ProcessHacker.Native.Objects
         public ProcessHandle(int pid, ProcessAccess access)
         {
             if (KProcessHacker.Instance != null)
-                this.Handle = KProcessHacker.Instance.KphOpenProcess(pid, access);
+                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, access));
             else
-                this.Handle = Win32.OpenProcess(access, 0, pid);
+                this.Handle = Win32.OpenProcess(access, false, pid);
 
-            if (this.Handle == 0)
+            if (this.Handle == System.IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -145,12 +145,12 @@ namespace ProcessHacker.Native.Objects
         /// <param name="size">The size of the region.</param>
         /// <param name="protection">The protection of the region.</param>
         /// <returns>The base address of the allocated pages.</returns>
-        public int AllocMemory(int address, int size, MemoryProtection protection)
+        public IntPtr AllocMemory(IntPtr address, int size, MemoryProtection protection)
         {
-            int newAddress;
+            IntPtr newAddress;
 
             if ((newAddress = Win32.VirtualAllocEx(this, address, size, MemoryState.Commit, protection))
-                == 0)
+                == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return newAddress;
@@ -163,9 +163,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="size">The size of the region.</param>
         /// <param name="protection">The protection of the region.</param>
         /// <returns>The base address of the allocated pages.</returns>
-        public int AllocMemory(int size, MemoryProtection protection)
+        public IntPtr AllocMemory(int size, MemoryProtection protection)
         {
-            return this.AllocMemory(0, size, protection);
+            return this.AllocMemory(IntPtr.Zero, size, protection);
         }
 
         /// <summary>
@@ -190,11 +190,11 @@ namespace ProcessHacker.Native.Objects
         /// </param>
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <returns>The ID of the new thread.</returns>
-        public int CreateThread(int startAddress, int parameter)
+        public int CreateThread(IntPtr startAddress, IntPtr parameter)
         {
             int threadId;
 
-            if (!Win32.CreateRemoteThread(this, 0, 0, startAddress, parameter, 0, out threadId))
+            if (!Win32.CreateRemoteThread(this, IntPtr.Zero, 0, startAddress, parameter, 0, out threadId))
                 Win32.ThrowLastError();
 
             return threadId;
@@ -211,7 +211,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="parameter">The parameter to pass to the function.</param>
         /// <param name="access">The desired access to the new thread.</param>
         /// <returns>A handle to the new thread.</returns>
-        public ThreadHandle CreateThread(int startAddress, int parameter, ThreadAccess access)
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, ThreadAccess access)
         {
             return new ThreadHandle(this.CreateThread(startAddress, parameter), access);
         }
@@ -232,16 +232,16 @@ namespace ProcessHacker.Native.Objects
         /// <param name="enumMemoryCallback">The callback for the enumeration.</param>
         public void EnumMemory(EnumMemoryDelegate enumMemoryCallback)
         {
-            int address = 0;
+            IntPtr address = IntPtr.Zero;
             MemoryBasicInformation mbi = new MemoryBasicInformation();
             int mbiSize = Marshal.SizeOf(mbi);
 
-            while (Win32.VirtualQueryEx(this, address, out mbi, mbiSize))
+            while (Win32.VirtualQueryEx(this, address, out mbi, mbiSize) != 0)
             {
                 if (!enumMemoryCallback(mbi))
                     break;
-
-                address += mbi.RegionSize;
+                address = address.Increment(mbi.RegionSize);
+                //address += mbi.RegionSize;
             }
         }
 
@@ -271,7 +271,7 @@ namespace ProcessHacker.Native.Objects
                 StringBuilder baseName = new StringBuilder(0x400);
                 StringBuilder fileName = new StringBuilder(0x400);
 
-                if (!Win32.GetModuleInformation(this, moduleHandles[i], ref moduleInfo, Marshal.SizeOf(moduleInfo)))
+                if (!Win32.GetModuleInformation(this, moduleHandles[i], moduleInfo, Marshal.SizeOf(moduleInfo)))
                     Win32.ThrowLastError();
                 if (Win32.GetModuleBaseName(this, moduleHandles[i], baseName, baseName.Capacity * 2) == 0)
                     Win32.ThrowLastError();
@@ -290,9 +290,9 @@ namespace ProcessHacker.Native.Objects
         {
             byte* buffer = stackalloc byte[4];
 
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, buffer, 4);
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, 4);
 
-            int loaderData = *(int*)buffer;
+            IntPtr loaderData = new IntPtr(*(int*)buffer);
 
             PebLdrData* data = stackalloc PebLdrData[1];
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
@@ -316,7 +316,7 @@ namespace ProcessHacker.Native.Objects
 
                 this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LdrModule)));
 
-                if (currentModule->BaseAddress != 0)
+                if (currentModule->BaseAddress != IntPtr.Zero)
                 {
                     string baseDllName = null;
                     string fullDllName = null;
@@ -337,9 +337,9 @@ namespace ProcessHacker.Native.Objects
                     { }
 
                     if (!enumModulesCallback(new ProcessModule(
-                        new IntPtr(currentModule->BaseAddress),
+                        currentModule->BaseAddress,
                         currentModule->SizeOfImage,
-                        new IntPtr(currentModule->EntryPoint),
+                        currentModule->EntryPoint,
                         baseDllName,
                         fullDllName
                         )))
@@ -358,7 +358,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="size">The size to free.</param>
         /// <param name="reserveOnly">Specifies whether or not to only 
         /// reserve the memory instead of freeing it.</param>
-        public void FreeMemory(int address, int size, bool reserveOnly)
+        public void FreeMemory(IntPtr address, int size, bool reserveOnly)
         {
             // size needs to be 0 if we're freeing
             if (!reserveOnly)
@@ -417,7 +417,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the creation time of the process.
         /// </summary>
-        public long GetCreateTime()
+        public FileTime GetCreateTime()
         {
             return this.GetTimes()[0];
         }
@@ -483,10 +483,10 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A dictionary of variables.</returns>
         public unsafe IDictionary<string, string> GetEnvironmentVariables()
         {
-            int pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+            IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
             byte* buffer = stackalloc byte[4];
 
-            this.ReadMemory(pebBaseAddress + 0x10, buffer, 4);
+            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, 4);
             int processParameters = *(int*)buffer;
 
             /*
@@ -508,22 +508,22 @@ namespace ProcessHacker.Native.Objects
              * +40 UNICODE_STRING CommandLine
              * +48 PVOID Environment
              */
-            this.ReadMemory(processParameters + 0x48, buffer, 4);
+            this.ReadMemory(new IntPtr( processParameters + 0x48), buffer, 4);
             int envBase = *(int*)buffer;
             int length = 0;
 
             {
-                MemoryBasicInformation mbi = this.QueryMemory(envBase);
+                MemoryBasicInformation mbi = this.QueryMemory(new IntPtr(envBase));
 
                 if (mbi.Protect == MemoryProtection.NoAccess)
                     throw new WindowsException();
 
-                length = mbi.RegionSize - (envBase - mbi.BaseAddress);
+                length = mbi.RegionSize - (envBase - mbi.BaseAddress.ToInt32());
             }
 
             // Now we read in the entire region of memory
             // And yes, some memory is wasted.
-            byte[] memory = this.ReadMemory(envBase, length);
+            byte[] memory = this.ReadMemory(new IntPtr(envBase), length);
 
             /* The environment variables block is a series of Unicode strings separated by 
              * two null bytes. The entire block is terminated by four null bytes.
@@ -579,7 +579,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the exit time of the process.
         /// </summary>
         /// <returns></returns>
-        public long GetExitTime()
+        public FileTime GetExitTime()
         {
             return this.GetTimes()[1];
         }
@@ -592,7 +592,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle count.</returns>
         public int GetGuiResources(bool userObjects)
         {
-            return Win32.GetGuiResources(this, userObjects);
+            return Win32.GetGuiResources(this, userObjects ? 1 : 0);
         }
 
         /// <summary>
@@ -622,14 +622,14 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(ProcessInformationClass infoClass)
         {
             int status;
-            int value;
+            MemoryAlloc value = new MemoryAlloc(4);
             int retLength;
 
             if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, out value, 4, out retLength)) < 0)
+                this, infoClass, value.Memory, 4, out retLength)) < 0)
                 Win32.ThrowLastError(status);
 
-            return value;
+            return value.ReadInt32(0);
         }
 
         /// <summary>
@@ -668,7 +668,7 @@ namespace ProcessHacker.Native.Objects
             return mainModule;
         }
 
-        public string GetMappedFileName(int address)
+        public string GetMappedFileName(IntPtr address)
         {
             StringBuilder sb = new StringBuilder(0x400);
             int length = Win32.GetMappedFileName(this, address, sb, sb.Capacity);
@@ -757,7 +757,7 @@ namespace ProcessHacker.Native.Objects
         public unsafe string GetPebString(PebOffset offset)
         {
             byte* buffer = stackalloc byte[4];
-            int pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+            IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
             /* read address of parameter information block
              *
@@ -772,7 +772,7 @@ namespace ProcessHacker.Native.Objects
              * +0c PVOID LoaderData;
              * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
              */
-            this.ReadMemory(pebBaseAddress + 0x10, buffer, 4);
+            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, 4);
             int processParameters = *(int*)buffer;
 
             // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
@@ -783,13 +783,13 @@ namespace ProcessHacker.Native.Objects
             // +00 USHORT Length;
             // +02 USHORT MaximumLength;
             // +04 PWSTR Buffer;
-            this.ReadMemory(processParameters + (int)offset, buffer, 2);
+            this.ReadMemory(new IntPtr(processParameters + (int)offset), buffer, 2);
             ushort stringLength = *(ushort*)buffer;
             byte[] stringData = new byte[stringLength];
 
             // read address of string
-            this.ReadMemory(processParameters + (int)offset + 0x4, buffer, 4);
-            int stringAddr = *(int*)buffer;
+            this.ReadMemory(new IntPtr(processParameters + (int)offset + 0x4), buffer, 4);
+            IntPtr stringAddr = new IntPtr(*(int*)buffer);
 
             // read string and decode it
             return UnicodeEncoding.Unicode.GetString(
@@ -826,9 +826,9 @@ namespace ProcessHacker.Native.Objects
             return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation);
         }
 
-        public long[] GetTimes()
+        public FileTime[] GetTimes()
         {
-            long[] times = new long[4];
+            FileTime[] times = new FileTime[4];
 
             if (!Win32.GetProcessTimes(this, out times[0], out times[1], out times[2], out times[3]))
                 Win32.ThrowLastError();
@@ -852,7 +852,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="timeout">The timeout, in seconds, for the process to load the library.</param>
         public void InjectDll(string path, uint timeout)
         {
-            int stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ExecuteReadWrite);
+            IntPtr stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ExecuteReadWrite);
 
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
@@ -868,12 +868,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public bool IsBeingDebugged()
         {
-            int debugged;
+            bool debugged = false;
 
-            if (!Win32.CheckRemoteDebuggerPresent(this, out debugged))
+            if (!Win32.CheckRemoteDebuggerPresent(this, ref debugged))
                 Win32.ThrowLastError();
 
-            return debugged != 0;
+            return debugged;
         }
 
         /// <summary>
@@ -901,14 +901,13 @@ namespace ProcessHacker.Native.Objects
         /// the name of the job though.</remarks>
         public bool IsInJob()
         {
-            int result;
+            bool result;
 
-            if (!Win32.IsProcessInJob(this, 0, out result))
+            if (!Win32.IsProcessInJob(this, IntPtr.Zero, out result))
                 Win32.ThrowLastError();
 
-            return result != 0;
+            return result;
         }
-
         /// <summary>
         /// Gets whether the process is a NTVDM process.
         /// </summary>
@@ -932,7 +931,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="size">The number of bytes to modify.</param>
         /// <param name="protection">The new memory protection.</param>
         /// <returns>The old memory protection.</returns>
-        public MemoryProtection ProtectMemory(int address, int size, MemoryProtection protection)
+        public MemoryProtection ProtectMemory(IntPtr address, int size, MemoryProtection protection)
         {
             MemoryProtection oldProtection;
 
@@ -947,11 +946,11 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="address">The address to query.</param>
         /// <returns>A MEMORY_BASIC_INFORMATION structure.</returns>
-        public MemoryBasicInformation QueryMemory(int address)
+        public MemoryBasicInformation QueryMemory(IntPtr address)
         {
             MemoryBasicInformation mbi = new MemoryBasicInformation();
 
-            if (!Win32.VirtualQueryEx(this, address, out mbi, Marshal.SizeOf(mbi)))
+            if (Win32.VirtualQueryEx(this, address, out mbi, Marshal.SizeOf(mbi)) == 0)
                 Win32.ThrowLastError();
 
             return mbi;
@@ -963,7 +962,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="offset">The offset at which to begin reading.</param>
         /// <param name="length">The length, in bytes, to read.</param>
         /// <returns>An array of bytes</returns>
-        public byte[] ReadMemory(int offset, int length)
+        public byte[] ReadMemory(IntPtr offset, int length)
         {
             byte[] buffer = new byte[length];
 
@@ -971,7 +970,7 @@ namespace ProcessHacker.Native.Objects
 
             return buffer;
         }
-
+        /*
         /// <summary>
         /// Reads data from the process' virtual memory.
         /// </summary>
@@ -982,20 +981,20 @@ namespace ProcessHacker.Native.Objects
         {
             return this.ReadMemory(offset.ToInt32(), length);
         }
-
-        public unsafe int ReadMemory(int offset, byte[] buffer, int length)
+        */
+        public unsafe int ReadMemory(IntPtr offset, byte[] buffer, int length)
         {
             fixed (byte* bufferPtr = buffer)
                 return this.ReadMemory(offset, bufferPtr, length);
         }
 
-        public unsafe int ReadMemory(int offset, void* buffer, int length)
+        public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
         {
             int readLen;
 
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphReadVirtualMemory(this, offset, buffer, length, out readLen);
+                KProcessHacker.Instance.KphReadVirtualMemory(this, offset.ToInt32(), buffer, length, out readLen);
             }
             else
             {
@@ -1005,12 +1004,12 @@ namespace ProcessHacker.Native.Objects
 
             return readLen;
         }
-
+/*
         public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
         {
             return this.ReadMemory(offset.ToInt32(), buffer, length);
         }
-
+        */
         /// <summary>
         /// Resumes the process. This requires the PROCESS_SUSPEND_RESUME permission.
         /// </summary>
@@ -1029,13 +1028,13 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
-        public unsafe void SetModuleReferenceCount(int baseAddress, ushort count)
+        public unsafe void SetModuleReferenceCount(IntPtr baseAddress, ushort count)
         {
             byte* buffer = stackalloc byte[4];
 
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress + 0xc, buffer, 4);
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, 4);
 
-            int loaderData = *(int*)buffer;
+            IntPtr loaderData = new IntPtr(*(int*)buffer);
 
             PebLdrData* data = stackalloc PebLdrData[1];
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
@@ -1060,7 +1059,7 @@ namespace ProcessHacker.Native.Objects
 
                 if (currentModule->BaseAddress == baseAddress)
                 {
-                    this.WriteMemory(currentLink.ToInt32() + 0x38, &count, 2);
+                    this.WriteMemory(currentLink.Increment(0x38), &count, 2);
                     break;
                 }
 
@@ -1129,7 +1128,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="offset">The offset at which to begin writing.</param>
         /// <param name="data">The data to write.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(int offset, byte[] data)
+        public unsafe int WriteMemory(IntPtr offset, byte[] data)
         {
             fixed (byte* dataPtr = data)
             {
@@ -1144,13 +1143,13 @@ namespace ProcessHacker.Native.Objects
         /// <param name="data">The data to write.</param>
         /// <param name="length">The length to be written.</param>
         /// <returns>The length, in bytes, that was written.</returns>
-        public unsafe int WriteMemory(int offset, void* data, int length)
+        public unsafe int WriteMemory(IntPtr offset, void* data, int length)
         {
             int writtenLen;
 
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphWriteVirtualMemory(this, offset, data, length, out writtenLen);
+                KProcessHacker.Instance.KphWriteVirtualMemory(this, offset.ToInt32(), data, length, out writtenLen);
             }
             else
             {

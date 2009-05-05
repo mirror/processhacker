@@ -35,16 +35,16 @@ namespace ProcessHacker.Native.Api
     /// </summary>
     public partial class Win32
     {
-        public delegate bool EnumWindowsProc(IntPtr hWnd, int param);
-        public delegate bool EnumChildProc(IntPtr hWnd, int param);
-        public delegate bool EnumThreadWndProc(IntPtr hWnd, int param);
+        public delegate bool EnumWindowsProc(IntPtr hWnd, uint param);
+        public delegate bool EnumChildProc(IntPtr hWnd, uint param);
+        public delegate bool EnumThreadWndProc(IntPtr hWnd, uint param);
         public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
         public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
-        public unsafe delegate bool ReadProcessMemoryProc64(int ProcessHandle, ulong BaseAddress, byte* Buffer,
+        public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, byte* Buffer,
             int Size, out int BytesRead);
-        public delegate int FunctionTableAccessProc64(int ProcessHandle, long AddrBase);
-        public delegate long GetModuleBaseProc64(int ProcessHandle, long Address);
+        public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
+        public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);
 
         #region Consts
 
@@ -75,7 +75,7 @@ namespace ProcessHacker.Native.Api
         {
             StringBuilder buffer = new StringBuilder(0x100);
 
-            if (FormatMessage(0x3200, 0, ErrorCode, 0, buffer, buffer.Capacity, IntPtr.Zero) == 0)
+            if (FormatMessage(0x3200, IntPtr.Zero, ErrorCode, 0, buffer, buffer.Capacity, IntPtr.Zero) == 0)
                 return "Unknown error (0x" + ErrorCode.ToString("x") + ")";
 
             StringBuilder result = new StringBuilder();
@@ -141,50 +141,27 @@ namespace ProcessHacker.Native.Api
         #region Handles
 
         public unsafe static void DuplicateObject(
-            int sourceProcessHandle,
-            int sourceHandle,
-            int targetProcessHandle,
-            out int targetHandle,
+            IntPtr sourceProcessHandle,
+            IntPtr sourceHandle,
+            IntPtr targetProcessHandle,
+            out IntPtr targetHandle,
             int desiredAccess,
-            int handleAttributes,
-            int options
-            )
-        {
-            int handle;
-
-            DuplicateObject(
-                sourceProcessHandle,
-                sourceHandle,
-                targetProcessHandle,
-                (int)&handle,
-                desiredAccess,
-                handleAttributes,
-                options
-                );
-
-            targetHandle = handle;
-        }
-
-        public unsafe static void DuplicateObject(
-            int sourceProcessHandle,
-            int sourceHandle,
-            int targetProcessHandle,
-            int targetHandle,
-            int desiredAccess,
-            int handleAttributes,
+            bool handleAttributes,
             int options
             )
         {
             if (KProcessHacker.Instance != null)
             {
+                int target = 0;
                 KProcessHacker.Instance.KphDuplicateObject(
-                    sourceProcessHandle,
-                    sourceHandle,
-                    targetProcessHandle,
-                    targetHandle,
+                    sourceProcessHandle.ToInt32(),
+                    sourceHandle.ToInt32(),
+                    targetProcessHandle.ToInt32(),
+                    target,
                     desiredAccess,
-                    handleAttributes,
+                    handleAttributes ? 1 : 0,
                     options);
+                targetHandle = new IntPtr(target);
             }
             else
             {
@@ -194,7 +171,7 @@ namespace ProcessHacker.Native.Api
                     sourceProcessHandle,
                     sourceHandle,
                     targetProcessHandle,
-                    targetHandle,
+                    out targetHandle,
                     desiredAccess,
                     handleAttributes,
                     options)) < 0)
@@ -208,7 +185,7 @@ namespace ProcessHacker.Native.Api
 
         public static int GetProcessSessionId(int ProcessId)
         {
-            int sessionId = -1;
+            int sessionId;
 
             try
             {
@@ -233,7 +210,7 @@ namespace ProcessHacker.Native.Api
         public static MibTcpStats GetTcpStats()
         {
             MibTcpStats tcpStats = new MibTcpStats();
-            GetTcpStatistics(ref tcpStats);
+            GetTcpStatistics(out tcpStats);
             return tcpStats;
         }
 
@@ -270,7 +247,7 @@ namespace ProcessHacker.Native.Api
             int count;
             WtsSessionInfo[] returnSessions;
 
-            WTSEnumerateSessions(0, 0, 1, out sessions, out count);
+            WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count);
             returnSessions = new WtsSessionInfo[count];
 
             WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(sessions);
@@ -308,7 +285,7 @@ namespace ProcessHacker.Native.Api
             int count;
             WtsProcessInfo[] returnProcesses;
 
-            WTSEnumerateProcesses(0, 0, 1, out processes, out count);
+            WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out processes, out count);
             returnProcesses = new WtsProcessInfo[count];
 
             WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
@@ -324,7 +301,7 @@ namespace ProcessHacker.Native.Api
         public struct WtsEnumProcessesFastData
         {
             public int[] PIDs;
-            public int[] SIDs;
+            public IntPtr[] SIDs;
             public WtsMemoryAlloc Memory;
         }
 
@@ -333,12 +310,12 @@ namespace ProcessHacker.Native.Api
             IntPtr processes;
             int count;
             int[] pids;
-            int[] sids;
+            IntPtr[] sids;
 
-            WTSEnumerateProcesses(0, 0, 1, out processes, out count);
+            WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out processes, out count);
 
             pids = new int[count];
-            sids = new int[count];
+            sids = new IntPtr[count];
 
             WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
             int* dataP = (int*)data.Memory.ToPointer();
@@ -346,7 +323,7 @@ namespace ProcessHacker.Native.Api
             for (int i = 0; i < count; i++)
             {
                 pids[i] = dataP[i * 4 + 1];
-                sids[i] = dataP[i * 4 + 3];
+                sids[i] = new IntPtr(dataP[i * 4 + 3]);
             }
 
             return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };
@@ -359,7 +336,7 @@ namespace ProcessHacker.Native.Api
         public static MibUdpStats GetUdpStats()
         {
             MibUdpStats udpStats = new MibUdpStats();
-            GetUdpStatistics(ref udpStats);
+            GetUdpStatistics(out udpStats);
             return udpStats;
         }
 

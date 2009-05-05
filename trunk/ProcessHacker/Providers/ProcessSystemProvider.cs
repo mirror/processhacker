@@ -245,7 +245,7 @@ namespace ProcessHacker
             var performance = new SystemPerformanceInformation();
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                ref performance, Marshal.SizeOf(performance), out retLen);
+                 ref performance, Marshal.SizeOf(performance), out retLen);
             this.Performance = performance;
         }
 
@@ -598,7 +598,7 @@ namespace ProcessHacker
             if (this.RunCount % 3 == 0)
                 FileUtils.RefreshDriveDevicePrefixes();
 
-            var tsProcesses = new Dictionary<int, int>();
+            var tsProcesses = new Dictionary<int, IntPtr>();
             var procs = Windows.GetProcesses();
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
@@ -752,7 +752,9 @@ namespace ProcessHacker
                     if (pid >= 0)
                     {
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
-                        catch { }
+                        catch (Exception e)
+                        {
+                        }
                     }
 
                     item.RunId = this.RunCount;
@@ -908,7 +910,7 @@ namespace ProcessHacker
                                             }
                                         }
                                     }
-                                    catch
+                                    catch(Exception e)
                                     {
                                         item.IsInJob = false;
                                         item.IsInSignificantJob = false;

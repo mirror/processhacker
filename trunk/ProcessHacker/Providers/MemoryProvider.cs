@@ -37,15 +37,16 @@ namespace ProcessHacker
         }
 
         public int RunId;
-        public int Address;
+        public IntPtr Address;
         public string ModuleName;
         public int Size;
         public MemoryType Type;
         public MemoryState State;
         public MemoryProtection Protection;
+
     }
 
-    public class MemoryProvider : Provider<int, MemoryItem>
+    public class MemoryProvider : Provider<IntPtr, MemoryItem>
     {
         private ProcessHandle _processHandle;
         private int _pid;
@@ -70,18 +71,18 @@ namespace ProcessHacker
 
         private void UpdateOnce()
         {
-            var modules = new Dictionary<int, ProcessModule>();
+            var modules = new Dictionary<IntPtr, ProcessModule>();
 
             try
             {
                 foreach (var m in _processHandle.GetModules())
-                    modules.Add(m.BaseAddress.ToInt32(), m);
+                    modules.Add(m.BaseAddress, m);
             }
             catch
             { }
 
-            var memoryInfo = new Dictionary<int, MemoryBasicInformation>();
-            var newdictionary = new Dictionary<int, MemoryItem>(this.Dictionary);
+            var memoryInfo = new Dictionary<IntPtr, MemoryBasicInformation>();
+            var newdictionary = new Dictionary<IntPtr, MemoryItem>(this.Dictionary);
 
             _processHandle.EnumMemory((info) =>
                 {
@@ -93,7 +94,7 @@ namespace ProcessHacker
                 });
 
             // look for freed memory regions
-            foreach (int address in Dictionary.Keys)
+            foreach (IntPtr address in Dictionary.Keys)
             {
                 if (!memoryInfo.ContainsKey(address))
                 {
@@ -103,10 +104,10 @@ namespace ProcessHacker
             }
 
             string lastModuleName = null;
-            int lastModuleAddress = 0;
+            IntPtr lastModuleAddress = IntPtr.Zero;
             int lastModuleSize = 0;
 
-            foreach (int address in memoryInfo.Keys)
+            foreach (IntPtr address in memoryInfo.Keys)
             {
                 var info = memoryInfo[address];
 
@@ -124,11 +125,11 @@ namespace ProcessHacker
                     if (modules.ContainsKey(item.Address))
                     {
                         lastModuleName = modules[item.Address].BaseName; 
-                        lastModuleAddress = modules[item.Address].BaseAddress.ToInt32();
+                        lastModuleAddress = modules[item.Address].BaseAddress;
                         lastModuleSize = modules[item.Address].Size;
                     }
 
-                    if (item.Address >= lastModuleAddress && item.Address < lastModuleAddress + lastModuleSize)
+                    if (item.Address.ToInt32() >= lastModuleAddress.ToInt32() && item.Address.ToInt32() < lastModuleAddress.ToInt32() + lastModuleSize)
                         item.ModuleName = lastModuleName;
                     else
                         item.ModuleName = null;

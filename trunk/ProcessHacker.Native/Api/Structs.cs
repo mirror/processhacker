@@ -32,19 +32,11 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct Address64
     {
-        public long Offset;
-        public short Segment;
+        public ulong Offset;
+        public ushort Segment;
         public AddressMode Mode;
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    public struct CatalogInfo
-    {
-        public int Size;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-        public string CatalogFile;
-    }
     
     [StructLayout(LayoutKind.Sequential)]
     public struct ClientId
@@ -124,6 +116,17 @@ namespace ProcessHacker.Native.Api
         public int EventState;
     }
 
+    [StructLayout(LayoutKind.Explicit, Size = 8)]
+    public struct LargeInteger
+    {
+        [FieldOffset(0)]
+        public Int64 QuadPart;
+        [FieldOffset(0)]
+        public UInt32 LowPart;
+        [FieldOffset(4)]
+        public UInt32 HighPart;
+    }
+    
     [StructLayout(LayoutKind.Sequential)]
     public struct FloatingSaveArea
     {
@@ -191,7 +194,7 @@ namespace ProcessHacker.Native.Api
     {
         public int dwSize;
         public int th32ProcessID;
-        public int th32HeapID;
+        public IntPtr th32HeapID;
         public int dwFlags;
     }
 
@@ -238,8 +241,8 @@ namespace ProcessHacker.Native.Api
         public ListEntry InLoadOrderModuleList;
         public ListEntry InMemoryOrderModuleList;
         public ListEntry InInitializationOrderModuleList;
-        public int BaseAddress;
-        public int EntryPoint;
+        public IntPtr BaseAddress;
+        public IntPtr EntryPoint;
         public int SizeOfImage;
         public UnicodeString FullDllName;
         public UnicodeString BaseDllName;
@@ -274,7 +277,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MemoryBasicInformation
     {
-        public int BaseAddress;
+        public IntPtr BaseAddress;
         public int AllocationBase;
         public MemoryProtection AllocationProtect;
         public int RegionSize;
@@ -307,21 +310,21 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct MibTcpStats
     {
-        public int RtoAlgorithm;
-        public int RtoMin;
-        public int RtoMax;
-        public int MaxConn;
-        public int ActiveOpens;
-        public int PassiveOpens;
-        public int AttemptFails;
-        public int EstabResets;
-        public int CurrEstab;
-        public int InSegs;
-        public int OutSegs;
-        public int RetransSegs;
-        public int InErrs;
-        public int OutRsts;
-        public int NumConns;
+        public uint RtoAlgorithm;
+        public uint RtoMin;
+        public uint RtoMax;
+        public uint MaxConn;
+        public uint ActiveOpens;
+        public uint PassiveOpens;
+        public uint AttemptFails;
+        public uint EstabResets;
+        public uint CurrEstab;
+        public uint InSegs;
+        public uint OutSegs;
+        public uint RetransSegs;
+        public uint InErrs;
+        public uint OutRsts;
+        public uint NumConns;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -534,7 +537,7 @@ namespace ProcessHacker.Native.Api
     public struct ProcessBasicInformation
     {
         public int ExitStatus;
-        public int PebBaseAddress;
+        public IntPtr PebBaseAddress;
         public int AffinityMask;
         public int BasePriority;
         public int UniqueProcessId;
@@ -561,8 +564,8 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessInformation
     {
-        public int hProcess;
-        public int hThread;
+        public IntPtr hProcess;
+        public IntPtr hThread;
         public int dwProcessId;
         public int dwThreadId;
     }
@@ -671,22 +674,21 @@ namespace ProcessHacker.Native.Api
     public struct ShellExecuteInfo
     {
         public int cbSize;
-        public int fMask;
+        public uint fMask;
         public IntPtr hWnd;
         public string lpVerb;
         public string lpFile;
         public string lpParameters;
         public string lpDirectory;
         public ShowWindowType nShow;
-        public short unused;
-        public int hInstApp;
+        public IntPtr hInstApp;
 
-        public int lpIDList;
+        public IntPtr lpIDList;
         public string lpClass;
-        public int hkeyClass;
-        public int dwHotKey;
-        public int hIcon;
-        public int hProcess;
+        public IntPtr hkeyClass;
+        public uint dwHotKey;
+        public IntPtr hIcon;
+        public IntPtr hProcess;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -704,7 +706,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct SidAndAttributes
     {
-        public int SID; // ptr to a SID object
+        public IntPtr SID; // ptr to a SID object
         public SidAttributes Attributes;
     }
 
@@ -1312,12 +1314,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadBasicInformation
     {
-        public int ExitStatus;
-        public int TebBaseAddress;
+        public uint ExitStatus;
+        public IntPtr TebBaseAddress;
         public ClientId ClientId;
-        public int AffinityMask;
-        public int Priority;
-        public int BasePriority;
+        public uint AffinityMask;
+        public uint Priority;
+        public uint BasePriority;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1373,7 +1375,8 @@ namespace ProcessHacker.Native.Api
     {
         public ushort Length;
         public ushort MaximumLength;
-        public int Buffer;
+        public IntPtr Buffer;
+
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1427,6 +1430,7 @@ namespace ProcessHacker.Native.Api
         public string ClassName;
     }
 
+    /*
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WintrustCatalogInfo
     {
@@ -1440,7 +1444,6 @@ namespace ProcessHacker.Native.Api
         public int CalculatedFileHashSize;
         public int CatalogContext;
     }
-
     [StructLayout(LayoutKind.Sequential)]
     public struct WintrustData
     {
@@ -1448,13 +1451,13 @@ namespace ProcessHacker.Native.Api
         public int PolicyCallbackData;
         public int SIPClientData;
         public int UIChoice;
-        public WtRevocationChecks RevocationChecks;
+        public int RevocationChecks;
         public int UnionChoice;
         public IntPtr UnionData;
-        public WtStateAction StateAction;
+        public int StateAction;
         public int StateData;
         public int URLReference;
-        public WtProvFlags ProvFlags;
+        public int ProvFlags;
         public int UIContext;
     }
 
@@ -1466,7 +1469,7 @@ namespace ProcessHacker.Native.Api
         public int FileHandle;
         public int KnownSubject;
     }
-
+    */
     [StructLayout(LayoutKind.Sequential)]
     public struct WtsClientDisplay
     {
@@ -1496,5 +1499,26 @@ namespace ProcessHacker.Native.Api
         public string WinStationName;
 
         WtsConnectStateClass State;
+    }
+    /// <summary>
+    /// To convert a FILETIME structure into a time that is easy to display to a user, use the FileTimeToSystemTime function.
+    ///
+    ///It is not recommended that you add and subtract values from the FILETIME structure to obtain relative times. Instead, you should copy the low- and high-order parts of the file time to a ULARGE_INTEGER structure, perform 64-bit arithmetic on the QuadPart member, and copy the LowPart and HighPart members into the FILETIME structure.
+    ///
+    ///Do not cast a pointer to a FILETIME structure to either a ULARGE_INTEGER* or __int64* value because it can cause alignment faults on 64-bit Windows.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileTime
+    {
+        public uint LowDateTime;
+        public uint HighDateTime;
+
+        public static implicit operator long (FileTime fileTime)
+        {
+            LargeInteger integer = new LargeInteger();
+            integer.LowPart = fileTime.LowDateTime;
+            integer.HighPart = fileTime.HighDateTime;
+            return integer.QuadPart;
+        }
     }
 }

@@ -40,9 +40,9 @@ namespace ProcessHacker.Native
         /// Creates a new WindowsSid instance, specifying a pointer to a SID.
         /// </summary>
         /// <param name="sid">A pointer to a SID.</param>
-        public WindowsSid(int sid)
+        public WindowsSid(IntPtr sid)
         {
-            _id = new SecurityIdentifier(new IntPtr(sid));
+            _id = new SecurityIdentifier(sid);
             _name = Windows.GetAccountName(sid, true);
             _nameNoDomain = Windows.GetAccountName(sid, false);
         }

@@ -19,7 +19,7 @@ namespace ProcessHacker.Native
             if (str.Length == 0)
                 return null;
 
-            return Marshal.PtrToStringUni(new IntPtr(str.Buffer), str.Length / 2);
+            return Marshal.PtrToStringUni(str.Buffer, str.Length / 2);
         }
 
         public static string ReadUnicodeString(ProcessHandle processHandle, UnicodeString str)

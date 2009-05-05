@@ -21,6 +21,7 @@
  */
 
 using ProcessHacker.Native.Api;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -30,7 +31,7 @@ namespace ProcessHacker.Native.Objects
     public class LsaHandle<TAccess> : Win32Handle<TAccess>
         where TAccess : struct
     {
-        public LsaHandle(int handle, bool owned)
+        public LsaHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 

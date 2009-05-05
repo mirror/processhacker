@@ -30,10 +30,10 @@ namespace ProcessHacker
     public partial class StructWindow : Form
     {
         private int _pid;
-        private int _address;
+        private IntPtr _address;
         private StructDef _struct;
 
-        public StructWindow(int pid, int address, StructDef struc)
+        public StructWindow(int pid, IntPtr address, StructDef struc)
         {
             InitializeComponent();
             this.AddEscapeToClose();

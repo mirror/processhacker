@@ -38,12 +38,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="Handle">The handle value.</param>
         /// <returns>The service handle.</returns>
-        public static ServiceHandle FromHandle(int handle)
+        public static ServiceHandle FromHandle(IntPtr handle)
         {
             return new ServiceHandle(handle, false);
         }
 
-        internal ServiceHandle(int handle, bool owned)
+        internal ServiceHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -67,7 +67,7 @@ namespace ProcessHacker.Native.Objects
             {
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
-                if (this.Handle == 0)
+                if (this.Handle == IntPtr.Zero)
                     Win32.ThrowLastError();
             }
         }
@@ -80,7 +80,7 @@ namespace ProcessHacker.Native.Objects
         {
             ServiceStatus status = new ServiceStatus();
 
-            if (!Win32.ControlService(this.Handle, control, ref status))
+            if (!Win32.ControlService(this.Handle, control, out status))
                 Win32.ThrowLastError();
         }
 
@@ -100,11 +100,11 @@ namespace ProcessHacker.Native.Objects
         {
             int requiredSize = 0;
 
-            Win32.QueryServiceConfig(this, IntPtr.Zero, 0, ref requiredSize);
+            Win32.QueryServiceConfig(this, IntPtr.Zero, 0, out requiredSize);
 
             using (MemoryAlloc data = new MemoryAlloc(requiredSize))
             {
-                if (!Win32.QueryServiceConfig(this, data, data.Size, ref requiredSize))
+                if (!Win32.QueryServiceConfig(this, data, data.Size, out requiredSize))
                     Win32.ThrowLastError();
 
                 return data.ReadStruct<QueryServiceConfig>();
@@ -139,7 +139,7 @@ namespace ProcessHacker.Native.Objects
             ServiceStatusProcess status = new ServiceStatusProcess();
             int retLen;
 
-            if (!Win32.QueryServiceStatusEx(this, 0, ref status, Marshal.SizeOf(status), out retLen))
+            if (!Win32.QueryServiceStatusEx(this, IntPtr.Zero, status, Marshal.SizeOf(status), out retLen))
                 Win32.ThrowLastError();
 
             return status;
@@ -150,12 +150,12 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Start()
         {
-            if (!Win32.StartService(this.Handle, 0, 0))
+            if (!Win32.StartService(this.Handle, 0, null))
                 Win32.ThrowLastError();
         }
     }
 
-    public enum ServiceAccept : int
+    public enum ServiceAccept : uint
     {
         NetBindChange = 0x10,
         ParamChange = 0x8,
@@ -168,7 +168,7 @@ namespace ProcessHacker.Native.Objects
         SessionChange = 0x80
     }
 
-    public enum ServiceControl : int
+    public enum ServiceControl : uint
     {
         Continue = 0x3,
         Interrogate = 0x4,
@@ -181,7 +181,7 @@ namespace ProcessHacker.Native.Objects
         Stop = 0x1
     }
 
-    public enum ServiceErrorControl : int
+    public enum ServiceErrorControl : uint
     {
         Critical = 0x3,
         Ignore = 0x0,
@@ -189,13 +189,13 @@ namespace ProcessHacker.Native.Objects
         Severe = 0x2
     }
 
-    public enum ServiceFlags : int
+    public enum ServiceFlags : uint
     {
         None = 0,
         RunsInSystemProcess = 0x1
     }
 
-    public enum ServiceInfoLevel : int
+    public enum ServiceInfoLevel : uint
     {
         Description = 1,
         FailureActions = 2,
@@ -208,7 +208,7 @@ namespace ProcessHacker.Native.Objects
         PreferredNode = 9
     }
 
-    public enum ServiceQueryState : int
+    public enum ServiceQueryState : uint
     {
         Active = 1,
         Inactive = 2,
@@ -216,13 +216,13 @@ namespace ProcessHacker.Native.Objects
     }
 
     [Flags]
-    public enum ServiceQueryType : int
+    public enum ServiceQueryType : uint
     {
         Driver = 0xb,
         Win32 = 0x30
     }
 
-    public enum ServiceStartType : int
+    public enum ServiceStartType : uint
     {
         AutoStart = 0x2,
         BootStart = 0x0,
@@ -231,7 +231,7 @@ namespace ProcessHacker.Native.Objects
         SystemStart = 0x1
     }
 
-    public enum ServiceState : int
+    public enum ServiceState : uint
     {
         ContinuePending = 0x5,
         PausePending = 0x6,
@@ -243,7 +243,7 @@ namespace ProcessHacker.Native.Objects
     }
 
     [Flags]
-    public enum ServiceType : int
+    public enum ServiceType : uint
     {
         FileSystemDriver = 0x2,
         KernelDriver = 0x1,

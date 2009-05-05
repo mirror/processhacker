@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -90,21 +91,25 @@ namespace ProcessHacker
 
             try
             {
-                int kernel32 = Win32.GetModuleHandle("kernel32.dll");
-                int setProcessDEPPolicy = Win32.GetProcAddress(kernel32, "SetProcessDEPPolicy");
+                IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
+                IntPtr setProcessDEPPolicy = Win32.GetProcAddress(kernel32, "SetProcessDEPPolicy");
 
-                if (setProcessDEPPolicy == 0)
+                if (setProcessDEPPolicy == IntPtr.Zero)
                     throw new Exception("This feature is not supported on your version of Windows.");
 
                 using (ProcessHandle phandle = new ProcessHandle(_pid, 
                     Program.MinProcessQueryRights | ProcessAccess.CreateThread))
                 {
-                    var thread = phandle.CreateThread(setProcessDEPPolicy, (int)flags,
+                    IntPtr param = Marshal.AllocHGlobal(sizeof(DepFlags));
+                    Marshal.WriteInt32(param, (int)flags);
+                    var thread = phandle.CreateThread(setProcessDEPPolicy, param,
                         ThreadAccess.All);
 
                     thread.Wait(1000);
 
                     int exitCode = thread.GetExitCode();
+
+                    Marshal.FreeHGlobal(param);
 
                     if (exitCode == 0)
                     {

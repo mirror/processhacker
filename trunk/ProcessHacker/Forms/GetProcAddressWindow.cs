@@ -43,17 +43,17 @@ namespace ProcessHacker
 
         private void buttonLookup_Click(object sender, EventArgs e)
         {
-            bool loaded = Win32.GetModuleHandle(_fileName) != 0;
-            int module;
-            int address = 0;
+            bool loaded = Win32.GetModuleHandle(_fileName) != IntPtr.Zero;
+            IntPtr module;
+            IntPtr address = IntPtr.Zero;
             int ordinal = 0;
 
             if (loaded)
                 module = Win32.GetModuleHandle(_fileName);
             else
-                module = Win32.LoadLibraryEx(_fileName, 0, Win32.DontResolveDllReferences);
+                module = Win32.LoadLibraryEx(_fileName, IntPtr.Zero, Win32.DontResolveDllReferences);
 
-            if (module == 0)
+            if (module == IntPtr.Zero)
             {
                 textProcAddress.Text = "Could not load library!";
             }
@@ -64,14 +64,14 @@ namespace ProcessHacker
 
             if (ordinal != 0)
             {
-                address = Win32.GetProcAddress(module, ordinal);
+                address = Win32.GetProcAddress(module, new IntPtr(ordinal));
             }
             else
             {
                 address = Win32.GetProcAddress(module, textProcName.Text);
             }
 
-            if (address != 0)
+            if (address != IntPtr.Zero)
             {
                 textProcAddress.Text = String.Format("0x{0:x8}", address);
                 textProcAddress.SelectAll();
@@ -83,7 +83,7 @@ namespace ProcessHacker
             }
 
             // don't unload libraries we had before
-            if (module != 0 && !loaded)
+            if (module != IntPtr.Zero && !loaded)
                 Win32.FreeLibrary(module);
         }
 

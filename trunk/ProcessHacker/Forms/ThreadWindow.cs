@@ -265,11 +265,11 @@ namespace ProcessHacker
             var stackFrame = new StackFrame64();
 
             stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrPC.Offset = context.Eip;
+            stackFrame.AddrPC.Offset = (ulong)context.Eip;
             stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrStack.Offset = context.Esp;
+            stackFrame.AddrStack.Offset = (ulong)context.Esp;
             stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrFrame.Offset = context.Ebp;
+            stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
 
             while (true)
             {
@@ -280,7 +280,7 @@ namespace ProcessHacker
                     if (KProcessHacker.Instance != null)
                     {
                         readMemoryProc = new Win32.ReadProcessMemoryProc64(
-                            delegate(int processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
+                            delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
                             {
                                 return KProcessHacker.Instance.KphReadVirtualMemorySafe(
                                     ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
@@ -288,7 +288,7 @@ namespace ProcessHacker
                     }
 
                     if (!Win32.StackWalk64(MachineType.I386, _phandle, _thandle,
-                        ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, 0))
+                        ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, IntPtr.Zero))
                         break;
 
                     if (stackFrame.AddrPC.Offset == 0)

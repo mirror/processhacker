@@ -43,7 +43,7 @@ namespace ProcessHacker.Native.Objects
         /// this object is disposed or garbage-collected.
         /// </summary>
         /// <param name="handle">The handle value.</param>
-        public Win32Handle(int handle)
+        public Win32Handle(IntPtr handle)
             : base(handle)
         { }
 
@@ -53,7 +53,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="handle">The handle value.</param>
         /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
-        public Win32Handle(int handle, bool owned)
+        public Win32Handle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
@@ -62,7 +62,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="handle">The existing handle.</param>
         /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(int handle, int desiredAccess)
+        public Win32Handle(IntPtr handle, int desiredAccess)
             : base(handle, desiredAccess)
         { }
 
@@ -72,7 +72,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
         /// <param name="handle">The existing handle.</param>
         /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(ProcessHandle processHandle, int handle, int desiredAccess)
+        public Win32Handle(ProcessHandle processHandle, IntPtr handle, int desiredAccess)
             : base(processHandle, handle, desiredAccess)
         { }
     }
@@ -86,16 +86,16 @@ namespace ProcessHacker.Native.Objects
         private object _disposeLock = new object();
         private bool _owned = true;
         private bool _disposed = false;
-        private int _handle;
+        private IntPtr _handle;
 
         public static implicit operator int(Win32Handle<TAccess> handle)
         {
-            return handle.Handle;
+            return handle.Handle.ToInt32();
         }
 
         public static implicit operator IntPtr(Win32Handle<TAccess> handle)
         {
-            return new IntPtr(handle.Handle);
+            return handle.Handle;
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace ProcessHacker.Native.Objects
         /// this object is disposed or garbage-collected.
         /// </summary>
         /// <param name="handle">The handle value.</param>
-        public Win32Handle(int handle)
+        public Win32Handle(IntPtr handle)
         {
             _handle = handle;
         }
@@ -120,7 +120,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="handle">The handle value.</param>
         /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
-        public Win32Handle(int handle, bool owned)
+        public Win32Handle(IntPtr handle, bool owned)
         {
             _handle = handle;
             _owned = owned;
@@ -131,10 +131,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="handle">The existing handle.</param>
         /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(int handle, TAccess access)
+        public Win32Handle(IntPtr handle, TAccess access)
         {
-            Win32.DuplicateObject(-1, handle, -1, out _handle,
-                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
+            Win32.DuplicateObject(new IntPtr(-1), handle, new IntPtr(-1), out _handle,
+                (int)Convert.ChangeType(access, typeof(int)), false, 0);
             _owned = true;
         }
 
@@ -144,10 +144,10 @@ namespace ProcessHacker.Native.Objects
         /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
         /// <param name="handle">The existing handle.</param>
         /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(ProcessHandle processHandle, int handle, TAccess access)
+        public Win32Handle(ProcessHandle processHandle, IntPtr handle, TAccess access)
         {
-            Win32.DuplicateObject(processHandle, handle, -1, out _handle,
-                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
+            Win32.DuplicateObject(processHandle, handle, new IntPtr(-1), out _handle,
+                (int)Convert.ChangeType(access, typeof(int)),false, 0);
             _owned = true;
         }
 
@@ -170,7 +170,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the handle value.
         /// </summary>
-        public int Handle
+        public IntPtr Handle
         {
             get { return _handle; }
             protected set { _handle = value; }

@@ -33,6 +33,7 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -184,7 +185,7 @@ namespace ProcessHacker
             ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
 
-            Win32.CreateMutex(0, false, "Global\\ProcessHackerMutex");
+            Win32.CreateMutex(IntPtr.Zero, false, "Global\\ProcessHackerMutex");
 
             try
             {
@@ -528,7 +529,7 @@ namespace ProcessHacker
             PE.PEFile file = new ProcessHacker.PE.PEFile(Environment.SystemDirectory + "\\ntdll.dll");
             System.IO.BinaryReader br = new System.IO.BinaryReader(
                 new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read));
-            int ntdll = Win32.GetModuleHandle("ntdll.dll");
+            IntPtr ntdll = Win32.GetModuleHandle("ntdll.dll");
             MemoryProtection oldProtection;
 
             oldProtection = ProcessHandle.GetCurrent().ProtectMemory(
@@ -558,7 +559,7 @@ namespace ProcessHacker
 
                 for (int j = 0; j < 5; j++)
                 {
-                    System.Runtime.InteropServices.Marshal.WriteByte(new IntPtr(ntdll + address + j), br.ReadByte());
+                    System.Runtime.InteropServices.Marshal.WriteByte(ntdll.Increment((int)address + j), br.ReadByte());
                 }
             }
 
@@ -725,7 +726,7 @@ namespace ProcessHacker
             GC.Collect();
 
             /* Compact the native heaps */
-            int[] heaps = new int[128];
+            IntPtr[] heaps = new IntPtr[128];
             int count = Win32.GetProcessHeaps(heaps.Length, heaps);
 
             if (count <= heaps.Length)
@@ -927,7 +928,7 @@ namespace ProcessHacker
         /// <param name="PID">The PID of the process to edit</param>
         /// <param name="address">The address to start editing at</param>
         /// <param name="length">The length to edit</param>
-        public static MemoryEditor GetMemoryEditor(int PID, int address, int length)
+        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, int length)
         {
             return GetMemoryEditor(PID, address, length, new MemoryEditorInvokeAction(delegate {}));
         }
@@ -940,7 +941,7 @@ namespace ProcessHacker
         /// <param name="length">The length to edit</param>
         /// <param name="action">The action to be invoked on the memory editor's thread</param>
         /// <returns>Memory editor form</returns>
-        public static MemoryEditor GetMemoryEditor(int PID, int address, int length, MemoryEditorInvokeAction action)
+        public static MemoryEditor GetMemoryEditor(int PID, IntPtr address, int length, MemoryEditorInvokeAction action)
         {
             MemoryEditor ed = null;
             string id = PID.ToString() + "-" + address.ToString() + "-" + length.ToString();

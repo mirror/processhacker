@@ -22,6 +22,7 @@
 
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -36,14 +37,14 @@ namespace ProcessHacker.Native.Objects
 
         public TokenHandle GetToken()
         {
-            int linkedToken;
+            MemoryAlloc linkedToken = new MemoryAlloc(4);
             int retLen;
 
             if (!Win32.GetTokenInformation(_token, TokenInformationClass.TokenLinkedToken,
-                out linkedToken, 4, out retLen))
+                linkedToken.Memory, 4, out retLen))
                 Win32.ThrowLastError();
 
-            return new TokenHandle(linkedToken, true);
+            return new TokenHandle(linkedToken.Memory, true);
         }
 
         public TokenHandle GetToken(TokenAccess access)

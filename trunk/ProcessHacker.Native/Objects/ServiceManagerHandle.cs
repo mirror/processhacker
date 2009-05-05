@@ -22,6 +22,7 @@
 
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -36,9 +37,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the service manager.</param>
         public ServiceManagerHandle(ScManagerAccess desiredAccess)
         {
-            this.Handle = Win32.OpenSCManager(0, 0, desiredAccess);
+            this.Handle = Win32.OpenSCManager(null, null, desiredAccess);
 
-            if (this.Handle == 0)
+            if (this.Handle == System.IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -60,10 +61,10 @@ namespace ProcessHacker.Native.Objects
             ServiceType type, ServiceStartType startType, ServiceErrorControl errorControl,
             string binaryPath, string group, string accountName, string password)
         {
-            int service;
-
+            IntPtr service;
+            int tagId;
             if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
-                type, startType, errorControl, binaryPath, group, 0, 0, accountName, password)) == 0)
+                type, startType, errorControl, binaryPath, group, out tagId, null, accountName, password)) == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return new ServiceHandle(service, true);

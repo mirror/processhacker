@@ -102,7 +102,7 @@ namespace ProcessHacker.Native.Api
         CreateIgnoreSystemDefault = 0x80000000
     }
 
-    public enum DepFlags : int
+    public enum DepFlags : uint
     {
         Disable = 0x00000000,
         Enable = 0x00000001,
@@ -129,7 +129,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum ExitWindowsFlags : int
+    public enum ExitWindowsFlags : uint
     {
         Logoff = 0x0,
         Poweroff = 0x8,
@@ -197,13 +197,13 @@ namespace ProcessHacker.Native.Api
         MaximumWaitReason = 37
     }
 
-    public enum LogonFlags : int
+    public enum LogonFlags : uint
     {
         LogonWithProfile = 1,
         NetCredentialsOnly = 2
     }
 
-    public enum LogonType : int
+    public enum LogonType : uint
     {
         Interactive = 2,
         Network = 3,
@@ -214,7 +214,7 @@ namespace ProcessHacker.Native.Api
         NewCredentials = 9
     }
 
-    public enum LogonProvider : int
+    public enum LogonProvider : uint
     {
         Default = 0,
         WinNT35 = 1,
@@ -222,7 +222,7 @@ namespace ProcessHacker.Native.Api
         WinNT50 = 3
     }
 
-    public enum MachineType : int
+    public enum MachineType : uint
     {
         I386 = 0x014c,
         Ia64 = 0x0200,
@@ -239,7 +239,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum MemoryProtection : int
+    public enum MemoryProtection : uint
     {
         AccessDenied = 0x0,
         Execute = 0x10,
@@ -256,7 +256,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum MemoryState : int
+    public enum MemoryState : uint
     {
         Commit = 0x1000,
         Reserve = 0x2000,
@@ -443,7 +443,7 @@ namespace ProcessHacker.Native.Api
         SecurityDelegation
     }
 
-    public enum ShowWindowType : short
+    public enum ShowWindowType : uint
     {
         Hide = 0,
         ShowNormal = 1,
@@ -720,7 +720,7 @@ namespace ProcessHacker.Native.Api
         OwnerModuleAll
     }
 
-    public enum ThreadInformationClass
+    public enum ThreadInformationClass : uint
     {
         ThreadBasicInformation,
         ThreadTimes,
@@ -799,7 +799,7 @@ namespace ProcessHacker.Native.Api
         Impersonation
     }
 
-    public enum UipiFilterFlag : int
+    public enum UipiFilterFlag : uint
     {
         Add = 1,
         Remove = 2
@@ -812,11 +812,12 @@ namespace ProcessHacker.Native.Api
         OwnerModule
     }
 
-    public enum WaitResult : int
+    public enum WaitResult : uint
     {
         Object0 = 0x0,
         Abandoned = 0x80,
-        Timeout = 0x102
+        Timeout = 0x102,
+        Failed = 0xFFFFFFFF
     }
 
     public enum WindowMessage : uint
@@ -1134,5 +1135,33 @@ namespace ProcessHacker.Native.Api
         OutgoingBytes,
         IncomingFrames,
         OutgoingFrames
+    }
+    [Flags]
+    public enum RunFileDialogFlags : uint
+    {
+        /// <summary>
+        /// Don't use any of the flags (only works alone)
+        /// </summary>
+        None = 0x0000,
+        /// <summary>
+        /// Removes the browse button
+        /// </summary>
+        NoBrowse = 0x0001,
+        /// <summary>
+        /// No default item selected
+        /// </summary>
+        NoDefault = 0x0002,
+        /// <summary>
+        /// Calculates the working directory from the file name
+        /// </summary>
+        CalcDirectory = 0x0004,
+        /// <summary>
+        /// Removes the edit box label
+        /// </summary>
+        NoLabel = 0x0008,
+        /// <summary>
+        /// Removes the seperate memory space checkbox (Windows NT only)
+        /// </summary>
+        NoSeperateMemory = 0x0020
     }
 }

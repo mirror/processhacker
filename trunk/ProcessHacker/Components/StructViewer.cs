@@ -37,10 +37,10 @@ namespace ProcessHacker.Components
     {
         private StructModel _model = new StructModel();
         int _pid;
-        int _address;
+        IntPtr _address;
         StructDef _struct;
 
-        public StructViewer(int pid, int address, StructDef struc)
+        public StructViewer(int pid, IntPtr address, StructDef struc)
         {
             InitializeComponent();
 

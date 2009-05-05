@@ -30,6 +30,7 @@ using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using System.Text;
 
 namespace ProcessHacker.Symbols
 {
@@ -56,12 +57,12 @@ namespace ProcessHacker.Symbols
         private bool _disposed = false;
         private object _disposeLock = new object();
         private ProcessHandle _processHandle;
-        private int _handle;
+        private IntPtr _handle;
         private List<KeyValuePair<long, string>> _modules = new List<KeyValuePair<long, string>>();
 
         public SymbolProvider()
         {
-            _handle = _idGen.Pop();
+            _handle = new IntPtr(_idGen.Pop());
 
             lock (_callLock)
             {
@@ -82,7 +83,7 @@ namespace ProcessHacker.Symbols
             }
         }
 
-        public int Handle
+        public IntPtr Handle
         {
             get { return _handle; }
         }
@@ -91,16 +92,14 @@ namespace ProcessHacker.Symbols
         {
             get
             {
-                using (var data = new MemoryAlloc(0x1000))
-                {
-                    lock (_callLock)
-                    {
-                        if (!Win32.SymGetSearchPath(_handle, data, data.Size))
-                            return "";
-                    }
 
-                    return Marshal.PtrToStringAnsi(data);
+                StringBuilder data = new StringBuilder(0x1000);
+                lock (_callLock)
+                {
+                    if (!Win32.SymGetSearchPath(_handle, data, data.Capacity))
+                        return "";
                 }
+                return data.ToString();
             }
 
             set
@@ -222,7 +221,7 @@ namespace ProcessHacker.Symbols
         {
             lock (_callLock)
             {
-                if (Win32.SymLoadModule64(_handle, 0, fileName, null, baseAddress, size) == 0)
+                if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, (ulong)baseAddress, size) == 0)
                     Win32.ThrowLastError();
             }
 
@@ -247,7 +246,7 @@ namespace ProcessHacker.Symbols
         {
             lock (_callLock)
             {
-                if (!Win32.SymUnloadModule64(_handle, baseAddress))
+                if (!Win32.SymUnloadModule64(_handle, (ulong)baseAddress))
                     Win32.ThrowLastError();
             }
 
@@ -344,7 +343,7 @@ namespace ProcessHacker.Symbols
         public string GetSymbolFromAddress(long address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName)
         {
             const int maxNameLen = 0x100;
-            long displacement;
+            ulong displacement;
 
             if (address == 0)
             {
@@ -371,7 +370,7 @@ namespace ProcessHacker.Symbols
                         this.GetModuleFromAddress(address, out b);
 
                         lock (_callLock)
-                            Win32.SymFromAddr(_handle, b, out displacement, data);
+                            Win32.SymFromAddr(_handle, (ulong)b, out displacement, data);
 
                         Marshal.StructureToPtr(info, data, false);
                     }
@@ -383,7 +382,7 @@ namespace ProcessHacker.Symbols
 
                 lock (_callLock)
                 {
-                    if (Win32.SymFromAddr(_handle, address, out displacement, data))
+                    if (Win32.SymFromAddr(_handle, (ulong)address, out displacement, data))
                     {
                         info = data.ReadStruct<SymbolInfo>();
                     }
@@ -481,7 +480,7 @@ namespace ProcessHacker.Symbols
 
                     // If we didn't use a process handle, we got it from the ID generator
                     if (_processHandle == null)
-                        _idGen.Push(_handle);
+                        _idGen.Push(_handle.ToInt32());
  
                     _disposed = true;
                 }

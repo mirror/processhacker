@@ -206,7 +206,7 @@ namespace ProcessHacker.FormHelper
             OnMatchListView(item);
         }
 
-        private void CallMappedFileMatchListView(int pid, int address, string fileName)
+        private void CallMappedFileMatchListView(int pid, IntPtr address, string fileName)
         {
             ListViewItem item = new ListViewItem();
             item.Name = pid.ToString() + " " + address.ToString();

@@ -767,7 +767,7 @@ namespace ProcessHacker.Components
             {
                 using (ThreadHandle thandle = new ThreadHandle(int.Parse(listThreads.SelectedItems[0].Text)))
                 {
-                    int tebBaseAddress = thandle.GetBasicInformation().TebBaseAddress;
+                    IntPtr tebBaseAddress = thandle.GetBasicInformation().TebBaseAddress;
 
                     Program.HackerWindow.BeginInvoke(new MethodInvoker(delegate
                         {

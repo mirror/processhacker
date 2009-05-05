@@ -180,7 +180,7 @@ namespace ProcessHacker
             var perfInfo = Program.ProcessProvider.Performance;
             var info = new PerformanceInformation();
 
-            Win32.GetPerformanceInfo(ref info, System.Runtime.InteropServices.Marshal.SizeOf(info));
+            Win32.GetPerformanceInfo(out info, System.Runtime.InteropServices.Marshal.SizeOf(info));
 
             var cacheInfo = new SystemCacheInformation();
             int retLen;

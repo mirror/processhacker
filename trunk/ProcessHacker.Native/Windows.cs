@@ -27,15 +27,15 @@ namespace ProcessHacker.Native
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
             int requiredSize = 0;
-            int[] imageBases;
+            IntPtr[] imageBases;
 
             Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new int[requiredSize / 4];
+            imageBases = new IntPtr[requiredSize / 4];
             Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
 
             for (int i = 0; i < imageBases.Length; i++)
             {
-                if (imageBases[i] == 0)
+                if (imageBases[i] == IntPtr.Zero)
                     continue;
 
                 StringBuilder name = new StringBuilder(0x400);
@@ -52,7 +52,7 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static string GetAccountName(int sid, bool includeDomain)
+        public static string GetAccountName(IntPtr sid, bool includeDomain)
         {
             StringBuilder name = new StringBuilder(255);
             StringBuilder domain = new StringBuilder(255);
@@ -62,13 +62,13 @@ namespace ProcessHacker.Native
 
             try
             {
-                if (!Win32.LookupAccountSid(null, sid, name, out namelen, domain, out domainlen, out use))
+                if (!Win32.LookupAccountSid(null, sid, name, ref namelen, domain, ref domainlen, out use))
                 {
                     // if the name is longer than 255 characters, increase the capacity.
                     name.EnsureCapacity(namelen);
                     domain.EnsureCapacity(domainlen);
 
-                    if (!Win32.LookupAccountSid(null, sid, name, out namelen, domain, out domainlen, out use))
+                    if (!Win32.LookupAccountSid(null, sid, name, ref namelen, domain, ref domainlen, out use))
                     {
                         if (name.ToString() == "" && domain.ToString() == "")
                             Win32.ThrowLastError();
@@ -78,7 +78,7 @@ namespace ProcessHacker.Native
             catch
             {
                 // if we didn't find a name, then return the string SID version.
-                return (new System.Security.Principal.SecurityIdentifier(new IntPtr(sid))).ToString();
+                return (new System.Security.Principal.SecurityIdentifier(sid)).ToString();
             }
 
             if (includeDomain)
@@ -91,7 +91,7 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static SidNameUse GetAccountType(int SID)
+        public static SidNameUse GetAccountType(IntPtr SID)
         {
             StringBuilder name = new StringBuilder(255);
             StringBuilder domain = new StringBuilder(255);
@@ -100,12 +100,12 @@ namespace ProcessHacker.Native
             SidNameUse use = SidNameUse.User;
 
             // we don't actually need to get the account name
-            if (!Win32.LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
+            if (!Win32.LookupAccountSid(null, SID, name, ref namelen, domain, ref domainlen, out use))
             {
                 name.EnsureCapacity(namelen);
                 domain.EnsureCapacity(domainlen);
 
-                if (!Win32.LookupAccountSid(null, SID, name, out namelen, domain, out domainlen, out use))
+                if (!Win32.LookupAccountSid(null, SID, name, ref namelen, domain, ref domainlen, out use))
                 {
                     if (name.ToString() == "" && domain.ToString() == "")
                         throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
@@ -132,8 +132,12 @@ namespace ProcessHacker.Native
                 // This is needed because NtQuerySystemInformation with SystemHandleInformation doesn't 
                 // actually give a real return length when called with an insufficient buffer. This code 
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while ((uint)(status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemHandleInformation,
-                    data.Memory, data.Size, out retLength)) == Win32.STATUS_INFO_LENGTH_MISMATCH)
+                while ((uint)(status = Win32.NtQuerySystemInformation(
+                    SystemInformationClass.SystemHandleInformation,
+                    data.Memory, 
+                    data.Size, 
+                    out retLength)
+                    ) == Win32.STATUS_INFO_LENGTH_MISMATCH)
                 {
                     data.Resize(data.Size * 2);
 
@@ -162,17 +166,17 @@ namespace ProcessHacker.Native
         public static KernelModule[] GetKernelModules()
         {
             int requiredSize = 0;
-            int[] imageBases;
+            IntPtr[] imageBases;
 
             Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new int[requiredSize / 4];
+            imageBases = new IntPtr[requiredSize / 4];
             Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
 
             KernelModule[] kernelModules = new KernelModule[imageBases.Length];
 
             for (int i = 0; i < imageBases.Length; i++)
             {
-                if (imageBases[i] == 0)
+                if (imageBases[i] == IntPtr.Zero)
                     continue;
 
                 StringBuilder name = new StringBuilder(0x400);
@@ -255,9 +259,9 @@ namespace ProcessHacker.Native
             int size = 0;
             int languageId = 0;
 
-            Win32.LookupPrivilegeDisplayName(0, PrivilegeName, sb, out size, out languageId);
+            Win32.LookupPrivilegeDisplayName(null, PrivilegeName, sb, ref size, out languageId);
             sb = new StringBuilder(size);
-            Win32.LookupPrivilegeDisplayName(0, PrivilegeName, sb, out size, out languageId);
+            Win32.LookupPrivilegeDisplayName(null, PrivilegeName, sb, ref size, out languageId);
 
             return sb.ToString();
         }
@@ -267,9 +271,9 @@ namespace ProcessHacker.Native
             StringBuilder sb = null;
             int size = 0;
 
-            Win32.LookupPrivilegeName(0, ref Luid, sb, out size);
+            Win32.LookupPrivilegeName(null, ref Luid, sb, ref size);
             sb = new StringBuilder(size);
-            Win32.LookupPrivilegeName(0, ref Luid, sb, out size);
+            Win32.LookupPrivilegeName(null, ref Luid, sb, ref size);
 
             return sb.ToString();
         }
@@ -413,21 +417,21 @@ namespace ProcessHacker.Native
             {
                 int requiredSize;
                 int servicesReturned;
-                int resume;
+                int resume = 0;
 
                 // get required size
-                Win32.EnumServicesStatusEx(manager, 0, ServiceQueryType.Win32 | ServiceQueryType.Driver,
+                Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
                     ServiceQueryState.All, IntPtr.Zero, 0, out requiredSize, out servicesReturned,
-                    out resume, 0);
+                    ref resume, null);
 
                 using (MemoryAlloc data = new MemoryAlloc(requiredSize))
                 {
                     var dictionary = new Dictionary<string, EnumServiceStatusProcess>();
 
-                    if (!Win32.EnumServicesStatusEx(manager, 0, ServiceQueryType.Win32 | ServiceQueryType.Driver,
+                    if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
                         ServiceQueryState.All, data,
                         data.Size, out requiredSize, out servicesReturned,
-                        out resume, 0))
+                        ref resume, null))
                         Win32.ThrowLastError();
 
                     for (int i = 0; i < servicesReturned; i++)
@@ -484,19 +488,21 @@ namespace ProcessHacker.Native
 
         public ObjectInformation GetHandleInfo(ProcessHandle process)
         {
-            int objectHandleI;
+            IntPtr objectHandleI;
             int retLength = 0;
             Win32Handle objectHandle = null;
 
             if (this.Handle == 0 || this.Handle == -1 || this.Handle == -2)
                 throw new WindowsException(6);
 
+            IntPtr handle = new IntPtr(this.Handle);
+
             // Duplicate the handle if we're not using KPH
             if (KProcessHacker.Instance == null)
             {
                 int status;
 
-                if ((status = Win32.NtDuplicateObject(process, this.Handle, -1, out objectHandleI, 0, 0, 0)) < 0)
+                if ((status = Win32.NtDuplicateObject(process, handle, new IntPtr(-1), out objectHandleI, 0, false, 0)) < 0)
                     Win32.ThrowLastError();
 
                 objectHandle = new Win32Handle(objectHandleI);
@@ -518,7 +524,8 @@ namespace ProcessHacker.Native
 
                     if (KProcessHacker.Instance != null)
                     {
-                        KProcessHacker.Instance.ZwQueryObject(process, this.Handle, ObjectInformationClass.ObjectTypeInformation,
+
+                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
                             IntPtr.Zero, 0, out retLength, out baseAddress);
                     }
                     else
@@ -533,7 +540,7 @@ namespace ProcessHacker.Native
                         {
                             if (KProcessHacker.Instance != null)
                             {
-                                if (KProcessHacker.Instance.ZwQueryObject(process, this.Handle, ObjectInformationClass.ObjectTypeInformation,
+                                if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
                                     otiMem, otiMem.Size, out retLength, out baseAddress) < 0)
                                     throw new Exception("ZwQueryObject failed.");
                             }
@@ -548,7 +555,7 @@ namespace ProcessHacker.Native
                             var str = oti.Name;
 
                             if (KProcessHacker.Instance != null)
-                                str.Buffer += -baseAddress + otiMem;
+                                str.Buffer = str.Buffer.Increment(-baseAddress + otiMem);
 
                             info.TypeName = Utils.ReadUnicodeString(str);
                             Windows.ObjectTypes.Add(this.ObjectTypeNumber, info.TypeName);
@@ -572,7 +579,7 @@ namespace ProcessHacker.Native
 
                 if (KProcessHacker.Instance != null)
                 {
-                    KProcessHacker.Instance.ZwQueryObject(process, this.Handle, ObjectInformationClass.ObjectNameInformation,
+                    KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
                         IntPtr.Zero, 0, out retLength, out baseAddress);
                 }
                 else
@@ -587,7 +594,7 @@ namespace ProcessHacker.Native
                     {
                         if (KProcessHacker.Instance != null)
                         {
-                            if (KProcessHacker.Instance.ZwQueryObject(process, this.Handle, ObjectInformationClass.ObjectNameInformation,
+                            if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
                                 oniMem, oniMem.Size, out retLength, out baseAddress) < 0)
                                 throw new Exception("ZwQueryObject failed.");
                         }
@@ -602,7 +609,7 @@ namespace ProcessHacker.Native
                         var str = oni.Name;
 
                         if (KProcessHacker.Instance != null)
-                            str.Buffer += -baseAddress + oniMem;
+                            str.Buffer =str.Buffer.Increment(-baseAddress + oniMem);
 
                         info.OrigName = Utils.ReadUnicodeString(str);
                     }
@@ -650,7 +657,7 @@ namespace ProcessHacker.Native
 
                             if (KProcessHacker.Instance != null)
                             {
-                                processId = KProcessHacker.Instance.KphGetProcessId(process, this.Handle);
+                                processId = KProcessHacker.Instance.KphGetProcessId(process, handle);
 
                                 if (processId == 0)
                                     throw new Exception("Invalid PID");
@@ -658,7 +665,7 @@ namespace ProcessHacker.Native
                             else
                             {
                                 using (Win32Handle processHandle =
-                                    new Win32Handle(process, this.Handle, (int)OSVersion.MinProcessQueryInfoAccess))
+                                    new Win32Handle(process, handle, (int)OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
                                         Win32.ThrowLastError();
@@ -682,7 +689,7 @@ namespace ProcessHacker.Native
 
                             if (KProcessHacker.Instance != null)
                             {
-                                threadId = KProcessHacker.Instance.KphGetThreadId(process, this.Handle, out processId);
+                                threadId = KProcessHacker.Instance.KphGetThreadId(process, handle, out processId);
 
                                 if (threadId == 0 || processId == 0)
                                     throw new Exception("Invalid TID or PID");
@@ -690,7 +697,7 @@ namespace ProcessHacker.Native
                             else
                             {
                                 using (Win32Handle threadHandle =
-                                    new Win32Handle(process, this.Handle, (int)OSVersion.MinThreadQueryInfoAccess))
+                                    new Win32Handle(process, handle, (int)OSVersion.MinThreadQueryInfoAccess))
                                 {
                                     if ((threadId = Win32.GetThreadId(threadHandle)) == 0)
                                         Win32.ThrowLastError();
@@ -715,7 +722,7 @@ namespace ProcessHacker.Native
                     case "Token":
                         {
                             using (Win32Handle tokenHandle = 
-                                new Win32Handle(process, this.Handle, (int)TokenAccess.Query))
+                                new Win32Handle(process, handle, (int)TokenAccess.Query))
                             {
                                 info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
                             }

@@ -91,7 +91,7 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            structDef.Offset = info.BaseAddress + i;
+                            structDef.Offset = info.BaseAddress.Increment(i);
                             structDef.Read();
 
                             // read succeeded, add it to the results

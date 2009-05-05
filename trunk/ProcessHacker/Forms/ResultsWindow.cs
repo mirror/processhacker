@@ -326,7 +326,7 @@ namespace ProcessHacker
 
                 phandle.EnumMemory((info) =>
                     {
-                        if (info.BaseAddress > s_a)
+                        if (info.BaseAddress.ToInt32() > s_a)
                         {
                             int selectlength =
                                 (int)BaseConverter.ToNumberParse(_so.Searcher.Results[listResults.SelectedIndices[0]][2]);
@@ -338,7 +338,7 @@ namespace ProcessHacker
                                 {
                                     f.ReadOnly = false;
                                     f.Activate();
-                                    f.Select(s_a - lastInfo.BaseAddress, selectlength);
+                                    f.Select(s_a - lastInfo.BaseAddress.ToInt64(), selectlength);
                                 }
                                 catch
                                 { }

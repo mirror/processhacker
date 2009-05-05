@@ -408,17 +408,17 @@ namespace ProcessHacker.Components
 
             try
             {
-                int kernel32 = Win32.GetModuleHandle("kernel32.dll");
-                int freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
+                IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
+                IntPtr freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
 
-                if (freeLibrary == 0)
+                if (freeLibrary == IntPtr.Zero)
                     throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
 
                 using (ProcessHandle phandle = new ProcessHandle(_pid, 
                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights | 
                     Program.MinProcessWriteMemoryRights | ProcessAccess.CreateThread))
                 {
-                    int baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
+                    IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
 
                     phandle.SetModuleReferenceCount(baseAddress, 1);
 
