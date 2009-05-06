@@ -626,7 +626,7 @@ namespace ProcessHacker.Native.Objects
             int retLength;
 
             if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, value.Memory, 4, out retLength)) < 0)
+                this, infoClass, value, 4, out retLength)) < 0)
                 Win32.ThrowLastError(status);
 
             return value.ReadInt32(0);
@@ -970,18 +970,7 @@ namespace ProcessHacker.Native.Objects
 
             return buffer;
         }
-        /*
-        /// <summary>
-        /// Reads data from the process' virtual memory.
-        /// </summary>
-        /// <param name="offset">The offset at which to begin reading.</param>
-        /// <param name="length">The length, in bytes, to read.</param>
-        /// <returns>An array of bytes</returns>
-        public byte[] ReadMemory(IntPtr offset, int length)
-        {
-            return this.ReadMemory(offset.ToInt32(), length);
-        }
-        */
+
         public unsafe int ReadMemory(IntPtr offset, byte[] buffer, int length)
         {
             fixed (byte* bufferPtr = buffer)
@@ -1004,12 +993,7 @@ namespace ProcessHacker.Native.Objects
 
             return readLen;
         }
-/*
-        public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
-        {
-            return this.ReadMemory(offset.ToInt32(), buffer, length);
-        }
-        */
+
         /// <summary>
         /// Resumes the process. This requires the PROCESS_SUSPEND_RESUME permission.
         /// </summary>

@@ -58,7 +58,7 @@ namespace ProcessHacker.Symbols
         private object _disposeLock = new object();
         private ProcessHandle _processHandle;
         private IntPtr _handle;
-        private List<KeyValuePair<long, string>> _modules = new List<KeyValuePair<long, string>>();
+        private List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
 
         public SymbolProvider()
         {
@@ -212,29 +212,34 @@ namespace ProcessHacker.Symbols
             }
         }
 
-        public void LoadModule(string fileName, long baseAddress)
+        public void LoadModule(string fileName, ulong baseAddress)
         {
             this.LoadModule(fileName, baseAddress, 0);
         }
 
-        public void LoadModule(string fileName, long baseAddress, int size)
+        public void LoadModule(string fileName, IntPtr baseAddress, int size)
+        {
+            this.LoadModule(fileName, baseAddress.ToUInt64(), size);
+        }
+
+        public void LoadModule(string fileName, ulong baseAddress, int size)
         {
             lock (_callLock)
             {
-                if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, (ulong)baseAddress, size) == 0)
+                if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
                     Win32.ThrowLastError();
             }
 
             lock (_modules)
             {
-                _modules.Add(new KeyValuePair<long, string>(baseAddress, fileName));
+                _modules.Add(new KeyValuePair<ulong, string>(baseAddress, fileName));
                 _modules.Sort((kvp1, kvp2) => kvp2.Key.CompareTo(kvp1.Key));
             }
         }
 
         public void UnloadModule(string fileName)
         {
-            KeyValuePair<long, string> pair;
+            KeyValuePair<ulong, string> pair;
 
             lock (_modules)
                 pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
@@ -242,11 +247,11 @@ namespace ProcessHacker.Symbols
             this.UnloadModule(pair.Key);
         }
 
-        public void UnloadModule(long baseAddress)
+        public void UnloadModule(ulong baseAddress)
         {
             lock (_callLock)
             {
-                if (!Win32.SymUnloadModule64(_handle, (ulong)baseAddress))
+                if (!Win32.SymUnloadModule64(_handle, baseAddress))
                     Win32.ThrowLastError();
             }
 
@@ -254,7 +259,7 @@ namespace ProcessHacker.Symbols
                 _modules.RemoveAll(kvp => kvp.Key == baseAddress);
         }
 
-        public string GetLineFromAddress(long address)
+        public string GetLineFromAddress(ulong address)
         {
             string fileName;
             int lineNumber;
@@ -267,14 +272,14 @@ namespace ProcessHacker.Symbols
                 return null;
         }
 
-        public void GetLineFromAddress(long address, out string fileName, out int lineNumber)
+        public void GetLineFromAddress(ulong address, out string fileName, out int lineNumber)
         {
             int displacement;
 
             this.GetLineFromAddress(address, out fileName, out lineNumber, out displacement);
         }
 
-        public void GetLineFromAddress(long address, out string fileName, out int lineNumber, out int lineDisplacement)
+        public void GetLineFromAddress(ulong address, out string fileName, out int lineNumber, out int lineDisplacement)
         {
             ImagehlpLine64 line;
             int displacement;
@@ -290,7 +295,7 @@ namespace ProcessHacker.Symbols
             }
         }
 
-        public string GetModuleFromAddress(long address, out long baseAddress)
+        public string GetModuleFromAddress(ulong address, out ulong baseAddress)
         {
             lock (_modules)
             {
@@ -309,14 +314,14 @@ namespace ProcessHacker.Symbols
             return null;
         }
 
-        public string GetSymbolFromAddress(long address)
+        public string GetSymbolFromAddress(ulong address)
         {
             SymbolFlags flags;
 
             return this.GetSymbolFromAddress(address, out flags);
         }
 
-        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level)
+        public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level)
         {
             SymbolFlags flags;
             string fileName;
@@ -324,7 +329,7 @@ namespace ProcessHacker.Symbols
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out SymbolFlags flags)
+        public string GetSymbolFromAddress(ulong address, out SymbolFlags flags)
         {
             SymbolResolveLevel level;
             string fileName;
@@ -332,7 +337,7 @@ namespace ProcessHacker.Symbols
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out string fileName)
+        public string GetSymbolFromAddress(ulong address, out string fileName)
         {
             SymbolResolveLevel level;
             SymbolFlags flags;
@@ -340,7 +345,7 @@ namespace ProcessHacker.Symbols
             return this.GetSymbolFromAddress(address, out level, out flags, out fileName);
         }
 
-        public string GetSymbolFromAddress(long address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName)
+        public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName)
         {
             const int maxNameLen = 0x100;
             ulong displacement;
@@ -365,12 +370,12 @@ namespace ProcessHacker.Symbols
                 {
                     if (this.PreloadModules)
                     {
-                        long b;
+                        ulong b;
 
                         this.GetModuleFromAddress(address, out b);
 
                         lock (_callLock)
-                            Win32.SymFromAddr(_handle, (ulong)b, out displacement, data);
+                            Win32.SymFromAddr(_handle, b, out displacement, data);
 
                         Marshal.StructureToPtr(info, data, false);
                     }
@@ -382,14 +387,14 @@ namespace ProcessHacker.Symbols
 
                 lock (_callLock)
                 {
-                    if (Win32.SymFromAddr(_handle, (ulong)address, out displacement, data))
+                    if (Win32.SymFromAddr(_handle, address, out displacement, data))
                     {
                         info = data.ReadStruct<SymbolInfo>();
                     }
                 }
 
                 string modFileName;
-                long modBase;
+                ulong modBase;
 
                 if (info.ModBase == 0)
                 {

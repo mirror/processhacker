@@ -68,7 +68,7 @@ namespace ProcessHacker
         }
 
         public delegate void LoadingStateChangedDelegate(bool loading);
-        private delegate void ResolveThreadStartAddressDelegate(int tid, long startAddress);
+        private delegate void ResolveThreadStartAddressDelegate(int tid, ulong startAddress);
 
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
@@ -144,7 +144,7 @@ namespace ProcessHacker
                                 {
                                     try
                                     {
-                                        _symbols.LoadModule(module.FileName, module.BaseAddress.ToInt32(), module.Size);
+                                        _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
                                     }
                                     catch (Exception ex)
                                     {
@@ -220,7 +220,7 @@ namespace ProcessHacker
             }
         }
 
-        private void ResolveThreadStartAddress(int tid, long startAddress)
+        private void ResolveThreadStartAddress(int tid, ulong startAddress)
         {
             ResolveResult result = new ResolveResult();
 
@@ -270,7 +270,7 @@ namespace ProcessHacker
             this.QueueThreadResolveStartAddress(tid, this.Dictionary[tid].StartAddressI);
         }
 
-        public void QueueThreadResolveStartAddress(int tid, long startAddress)
+        public void QueueThreadResolveStartAddress(int tid, ulong startAddress)
         {
             WorkQueue.GlobalQueueWorkItem(
                 new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress),
@@ -278,9 +278,9 @@ namespace ProcessHacker
                 );
         }
 
-        private string GetThreadBasicStartAddress(long startAddress, out SymbolResolveLevel level)
+        private string GetThreadBasicStartAddress(ulong startAddress, out SymbolResolveLevel level)
         {
-            long modBase;
+            ulong modBase;
             string fileName = _symbols.GetModuleFromAddress(startAddress, out modBase);
 
             if (fileName == null)

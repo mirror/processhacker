@@ -20,10 +20,10 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System;
-using ProcessHacker.Native.Api;
+using ProcessHacker.Native;
 
 namespace ProcessHacker.Structs
 {

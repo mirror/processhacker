@@ -771,7 +771,7 @@ namespace ProcessHacker.Native.Api
         public unsafe fixed long Reserved[2];
         public int Index;
         public int Size;
-        public long ModBase;
+        public ulong ModBase;
         public SymbolFlags Flags;
         public long Value;
         public long Address;
