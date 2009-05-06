@@ -742,8 +742,6 @@ namespace ProcessHacker.Native.Api
             [Out] out int ReturnLength
             );
 
-
-
         #endregion
 
         #region Processes
@@ -914,13 +912,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DebugActiveProcess(
-            [In] int PID
+            [In] int Pid
             );
 
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DebugActiveProcessStop(
-            [In] int PID
+            [In] int Pid
             );
 
         [DllImport("psapi.dll")]
@@ -1351,11 +1349,11 @@ namespace ProcessHacker.Native.Api
         [DllImport("shell32.dll", EntryPoint = "#61", CharSet = CharSet.Unicode)]
         public static extern int RunFileDlg(
             [In] IntPtr hWnd,
-            [In] IntPtr hIcon,
+            [In] IntPtr Icon,
             [In] string Path,
-            [In] string title,
-            [In] string prompt,
-            [In] RunFileDialogFlags flags
+            [In] string Title,
+            [In] string Prompt,
+            [In] RunFileDialogFlags Flags
             );
 
         [DllImport("shell32.dll")]
