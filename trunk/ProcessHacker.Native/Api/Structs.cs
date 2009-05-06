@@ -37,7 +37,15 @@ namespace ProcessHacker.Native.Api
         public AddressMode Mode;
     }
 
-    
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct CatalogInfo
+    {
+        public int Size;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public string CatalogFile;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct ClientId
     {
@@ -126,7 +134,22 @@ namespace ProcessHacker.Native.Api
         [FieldOffset(4)]
         public UInt32 HighPart;
     }
-    
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileTime
+    {
+        public uint LowDateTime;
+        public uint HighDateTime;
+
+        public static implicit operator long(FileTime fileTime)
+        {
+            LargeInteger integer = new LargeInteger();
+            integer.LowPart = fileTime.LowDateTime;
+            integer.HighPart = fileTime.HighDateTime;
+            return integer.QuadPart;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct FloatingSaveArea
     {
@@ -162,17 +185,6 @@ namespace ProcessHacker.Native.Api
         public int GenericWrite;
         public int GenericExecute;
         public int GenericAll;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct Guid
-    {
-        public uint Data1;
-        public ushort Data2;
-        public ushort Data3;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        public byte[] Data4;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1430,7 +1442,6 @@ namespace ProcessHacker.Native.Api
         public string ClassName;
     }
 
-    /*
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WintrustCatalogInfo
     {
@@ -1439,25 +1450,26 @@ namespace ProcessHacker.Native.Api
         public string CatalogFilePath;
         public string MemberTag;
         public string MemberFilePath;
-        public int MemberFile;
+        public IntPtr MemberFile;
         public byte[] CalculatedFileHash;
         public int CalculatedFileHashSize;
-        public int CatalogContext;
+        public IntPtr CatalogContext;
     }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct WintrustData
     {
         public int Size;
-        public int PolicyCallbackData;
-        public int SIPClientData;
+        public IntPtr PolicyCallbackData;
+        public IntPtr SIPClientData;
         public int UIChoice;
-        public int RevocationChecks;
+        public WtRevocationChecks RevocationChecks;
         public int UnionChoice;
         public IntPtr UnionData;
         public int StateAction;
-        public int StateData;
-        public int URLReference;
-        public int ProvFlags;
+        public IntPtr StateData;
+        public IntPtr URLReference;
+        public WtProvFlags ProvFlags;
         public int UIContext;
     }
 
@@ -1466,10 +1478,10 @@ namespace ProcessHacker.Native.Api
     {
         public int Size;
         public IntPtr FilePath;
-        public int FileHandle;
-        public int KnownSubject;
+        public IntPtr FileHandle;
+        public IntPtr KnownSubject;
     }
-    */
+
     [StructLayout(LayoutKind.Sequential)]
     public struct WtsClientDisplay
     {
@@ -1499,26 +1511,5 @@ namespace ProcessHacker.Native.Api
         public string WinStationName;
 
         WtsConnectStateClass State;
-    }
-    /// <summary>
-    /// To convert a FILETIME structure into a time that is easy to display to a user, use the FileTimeToSystemTime function.
-    ///
-    ///It is not recommended that you add and subtract values from the FILETIME structure to obtain relative times. Instead, you should copy the low- and high-order parts of the file time to a ULARGE_INTEGER structure, perform 64-bit arithmetic on the QuadPart member, and copy the LowPart and HighPart members into the FILETIME structure.
-    ///
-    ///Do not cast a pointer to a FILETIME structure to either a ULARGE_INTEGER* or __int64* value because it can cause alignment faults on 64-bit Windows.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct FileTime
-    {
-        public uint LowDateTime;
-        public uint HighDateTime;
-
-        public static implicit operator long (FileTime fileTime)
-        {
-            LargeInteger integer = new LargeInteger();
-            integer.LowPart = fileTime.LowDateTime;
-            integer.HighPart = fileTime.HighDateTime;
-            return integer.QuadPart;
-        }
     }
 }

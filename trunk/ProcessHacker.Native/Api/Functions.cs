@@ -31,7 +31,6 @@ using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Native.Security.WinTrust;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -44,7 +43,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATCatalogInfoFromContext(
             [In] IntPtr CatInfoHandle,
-            [MarshalAs(UnmanagedType.LPStruct)] ref CatalogInfo CatInfo,
+            [Out] out CatalogInfo CatInfo,
             [In] int Flags
         );
 
@@ -60,13 +59,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminAcquireContext(
             [Out] out IntPtr CatAdminHandle,
-            [In] [MarshalAs(UnmanagedType.LPStruct)] System.Guid Subsystem,
+            [In] [MarshalAs(UnmanagedType.LPStruct)] Guid Subsystem,
             [In] int Flags
         );
 
         [DllImport("wintrust.dll", SetLastError = true)]
         public static extern bool CryptCATAdminCalcHashFromFileHandle(
-            [In] int FileHandle,
+            [In] IntPtr FileHandle,
             ref int HashSize,
             [In] byte[] Hash,
             [In] int Flags
@@ -86,10 +85,10 @@ namespace ProcessHacker.Native.Api
         );
 
         [DllImport("wintrust.dll", SetLastError = true)]
-        public static extern WinVerifyTrustResult WinVerifyTrust(
-             [In] IntPtr hwnd,
-             [In] [MarshalAs(UnmanagedType.LPStruct)] System.Guid pgActionID,
-             [In] WinTrustData pWVTData
+        public static extern uint WinVerifyTrust(
+             [In] IntPtr hWnd,
+             [In] [MarshalAs(UnmanagedType.LPStruct)] Guid ActionId,
+             [In] ref WintrustData WintrustData
         );
 
         #endregion

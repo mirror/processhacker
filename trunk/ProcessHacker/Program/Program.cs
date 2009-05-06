@@ -173,14 +173,6 @@ namespace ProcessHacker
                 Application.Exit();
             }
 
-            if (IntPtr.Size == 8)
-            {
-                MessageBox.Show("Process Hacker cannot run on 64-bit versions of Windows.", "Process Hacker",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                Application.Exit();
-            }
-
             ThreadPool.SetMinThreads(1, 1);
             ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
@@ -221,7 +213,8 @@ namespace ProcessHacker
 
             try
             {
-                if (Properties.Settings.Default.EnableKPH && !NoKph)
+                // Only load KPH if we're on 32-bit and it's enabled.
+                if (IntPtr.Size == 4 && Properties.Settings.Default.EnableKPH && !NoKph)
                     KProcessHacker.Instance = new KProcessHacker("KProcessHacker");
             }
             catch
