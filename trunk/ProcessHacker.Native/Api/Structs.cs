@@ -290,12 +290,26 @@ namespace ProcessHacker.Native.Api
     public struct MemoryBasicInformation
     {
         public IntPtr BaseAddress;
-        public int AllocationBase;
+        public IntPtr AllocationBase;
         public MemoryProtection AllocationProtect;
         public int RegionSize;
         public MemoryState State;
         public MemoryProtection Protect;
         public MemoryType Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    public struct MemoryBasicInformation64
+    {
+        public IntPtr BaseAddress;
+        public IntPtr AllocationBase;
+        public MemoryProtection AllocationProtect;
+        private int _alignment1;
+        public ulong RegionSize;
+        public MemoryState State;
+        public MemoryProtection Protect;
+        public MemoryType Type;
+        private int _alignment2;
     }
 
     [StructLayout(LayoutKind.Sequential)]
