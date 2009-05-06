@@ -23,14 +23,13 @@ namespace ProcessHacker.Native
     public static class Cryptography
     {
         // GUID of the action to perform
-
-        public static readonly System.Guid DRIVER_ACTION_VERIFY = new System.Guid("{F750E6C3-38EE-11d1-85E5-00C04FC295EE}");
-        public static readonly System.Guid HTTPSPROV_ACTION = new System.Guid("{573E31F8-AABA-11d0-8CCB-00C04FC295EE}");
-        public static readonly System.Guid OFFICESIGN_ACTION_VERIFY = new System.Guid("{5555C2CD-17FB-11d1-85C4-00C04FC295EE}");
-        public static readonly System.Guid WINTRUST_ACTION_GENERIC_CERT_VERIFY = new System.Guid("{189A3842-3041-11d1-85E1-00C04FC295EE}");
-        public static readonly System.Guid WINTRUST_ACTION_GENERIC_CHAIN_VERIFY = new System.Guid("{fc451c16-ac75-11d1-b4b8-00c04fb66ea0}");
-        public static readonly System.Guid WINTRUST_ACTION_GENERIC_VERIFY_V2 = new System.Guid("{00AAC56B-CD44-11d0-8CC2-00C04FC295EE}");
-        public static readonly System.Guid WINTRUST_ACTION_TRUSTPROVIDER_TEST = new System.Guid("{573E31F8-DDBA-11d0-8CCB-00C04FC295EE}");
+        public static readonly System.Guid DriverActionVerify = new System.Guid("{f750e6c3-38ee-11d1-85e5-00c04fc295ee}");
+        public static readonly System.Guid HttpsProvAction = new System.Guid("{573e31f8-aaba-11d0-8ccb-00c04fc295ee}");
+        public static readonly System.Guid OfficeSignActionVerify = new System.Guid("{5555c2cd-17fb-11d1-85c4-00c04fc295ee}");
+        public static readonly System.Guid WintrustActionGenericCertVerify = new System.Guid("{189a3842-3041-11d1-85e1-00c04fc295ee}");
+        public static readonly System.Guid WintrustActionGenericChainVerify = new System.Guid("{fc451c16-ac75-11d1-b4b8-00c04fb66ea0}");
+        public static readonly System.Guid WintrustActionGenericVerifyV2 = new System.Guid("{00aac56b-cd44-11d0-8cc2-00c04fc295ee}");
+        public static readonly System.Guid WintrustActionTrustProviderTest = new System.Guid("{573e31f8-ddba-11d0-8ccb-00c04fc295ee}");
 
         public static VerifyResult StatusToVerifyResult(uint status)
         {
@@ -66,9 +65,11 @@ namespace ProcessHacker.Native
             if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
                 trustData.ProvFlags |= WinTrustDataProvFlags.CacheOnlyUrlRetrieval;
 
-            result = Win32.WinVerifyTrust(new IntPtr(-1)
-                                          , WINTRUST_ACTION_GENERIC_VERIFY_V2
-                                          , trustData);
+            result = Win32.WinVerifyTrust(
+                new IntPtr(-1),
+                WintrustActionGenericVerifyV2,
+                trustData
+                );
 
             if (StatusToVerifyResult((uint)result) == VerifyResult.NoSignature)
             {
@@ -91,7 +92,7 @@ namespace ProcessHacker.Native
 
                 IntPtr catAdmin;
 
-                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DRIVER_ACTION_VERIFY, 0))
+                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DriverActionVerify, 0))
                     return VerifyResult.NoSignature;
 
                 IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
@@ -129,9 +130,10 @@ namespace ProcessHacker.Native
                     trustData.ProvFlags |= WinTrustDataProvFlags.CacheOnlyUrlRetrieval;
 
                 trustData.UnionData = wci;
+
                 try
                 {
-                    result = Win32.WinVerifyTrust(new IntPtr(-1), DRIVER_ACTION_VERIFY, trustData);
+                    result = Win32.WinVerifyTrust(new IntPtr(-1), DriverActionVerify, trustData);
                 }
                 finally
                 {
@@ -139,6 +141,7 @@ namespace ProcessHacker.Native
                     Win32.CryptCATAdminReleaseContext(catAdmin, 0);
                 }
             }
+
             return StatusToVerifyResult((uint)result);
         }
     }
