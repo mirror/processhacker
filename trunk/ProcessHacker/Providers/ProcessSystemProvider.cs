@@ -752,9 +752,7 @@ namespace ProcessHacker
                     if (pid >= 0)
                     {
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
-                        catch (Exception e)
-                        {
-                        }
+                        catch (Exception ex) { Logging.Log(ex); }
                     }
 
                     item.RunId = this.RunCount;
@@ -910,8 +908,9 @@ namespace ProcessHacker
                                             }
                                         }
                                     }
-                                    catch(Exception e)
+                                    catch (Exception ex)
                                     {
+                                        Logging.Log(ex);
                                         item.IsInJob = false;
                                         item.IsInSignificantJob = false;
                                     }

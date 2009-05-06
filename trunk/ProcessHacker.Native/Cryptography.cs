@@ -3,7 +3,7 @@ using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using Security.WinTrust;
+using ProcessHacker.Native.Security.WinTrust;
 using System;
 
 namespace ProcessHacker.Native

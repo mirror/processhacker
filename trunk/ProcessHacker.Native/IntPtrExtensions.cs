@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 
-namespace ProcessHacker.Native.Api
+namespace ProcessHacker.Native
 {
     public static class IntPtrExtensions
     {
@@ -26,7 +24,6 @@ namespace ProcessHacker.Native.Api
         {
             return Increment(ptr, -cbSize);
         }
-
 
         public static IntPtr Increment<T>(this IntPtr ptr)
         {

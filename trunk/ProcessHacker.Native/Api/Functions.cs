@@ -31,7 +31,7 @@ using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using Security.WinTrust;
+using ProcessHacker.Native.Security.WinTrust;
 
 // you won't get some of this stuff from anywhere else... :)
 
@@ -1536,6 +1536,15 @@ namespace ProcessHacker.Native.Api
             [In] ulong BaseOfDll,
             [In] int Index,
             IntPtr Symbol
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymGetLineFromAddr64(
+            [In] IntPtr ProcessHandle,
+            [In] ulong Address,
+            [Out] out int Displacement,
+            [Out] out ImagehlpLine64 Line
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]

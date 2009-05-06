@@ -1,4 +1,4 @@
-﻿namespace Security.WinTrust
+﻿namespace ProcessHacker.Native.Security.WinTrust
 {
     using System;
     using System.Runtime.InteropServices;

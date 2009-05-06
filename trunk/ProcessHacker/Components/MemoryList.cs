@@ -456,7 +456,7 @@ namespace ProcessHacker.Components
 
                 foreach (MemoryItem item in items)
                 {
-                    if (item.Address.CompareTo ( address) > 0)
+                    if (item.Address.CompareTo(address) > 0)
                     {
                         MemoryItem regionItem = items[i - 1];
 

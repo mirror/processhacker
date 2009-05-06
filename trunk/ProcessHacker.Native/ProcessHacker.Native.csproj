@@ -48,7 +48,7 @@
     <Compile Include="FileUtils.cs" />
     <Compile Include="ImpersonationContext.cs" />
     <Compile Include="KProcessHacker.cs" />
-    <Compile Include="Api\IntPtrExtensions.cs" />
+    <Compile Include="IntPtrExtensions.cs" />
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
     <Compile Include="Objects\SectionHandle.cs" />
