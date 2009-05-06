@@ -522,8 +522,8 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr SourceHandle,
             [In] IntPtr TargetProcessHandle,
             [Out] out IntPtr TargetHandle,
-            [In] [Optional] int DesiredAccess,
-            [In] bool Attributes,
+            [In] int DesiredAccess,
+            [In] int Attributes,
             [In] int Options
             );
 
@@ -1089,7 +1089,7 @@ namespace ProcessHacker.Native.Api
         public static extern bool SetTokenInformation(
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,
-            [In] ref IntPtr TokenInformation,
+            [In] ref int TokenInformation,
             [In] int TokenInformationLength
             );
 
@@ -1099,6 +1099,16 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,
             [Out] [Optional] IntPtr TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] out int ReturnLength
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetTokenInformation(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Out] out IntPtr TokenInformation,
             [In] int TokenInformationLength,
             [Out] out int ReturnLength
             );
@@ -1178,14 +1188,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool InitializeSecurityDescriptor(
-            [Out] out IntPtr SecurityDescriptor, 
+            IntPtr SecurityDescriptor, 
             [In] int Revision
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetSecurityDescriptorDacl(
-            ref IntPtr SecurityDescriptor,
+            IntPtr SecurityDescriptor,
             [In] [MarshalAs(UnmanagedType.Bool)] bool DaclPresent,
             [In] [Optional] IntPtr Dacl,
             [In] [MarshalAs(UnmanagedType.Bool)] bool DaclDefaulted
@@ -1244,8 +1254,8 @@ namespace ProcessHacker.Native.Api
             [In] ServiceErrorControl ErrorControl,
             [In] [Optional] string BinaryPathName,
             [In] [Optional] string LoadOrderGroup,
-            [Out] [Optional] out int TagID,
-            [In] [Optional] string Dependencies,
+            [Out] [Optional] IntPtr TagID,
+            [In] [Optional] IntPtr Dependencies,
             [In] [Optional] string ServiceStartName,
             [In] [Optional] string Password
             );

@@ -109,7 +109,7 @@ namespace ProcessHacker
                             HideHandlesWithNoName)
                             continue;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         continue;
                     }

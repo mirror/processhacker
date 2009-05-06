@@ -244,7 +244,7 @@ namespace ProcessHacker
                     try
                     {
                         IntPtr dummy;
-                        Win32.DuplicateObject(phandle, new IntPtr(i), new IntPtr(-1), out dummy, 0, false, 0x1);
+                        Win32.DuplicateObject(phandle, new IntPtr(i), new IntPtr(-1), out dummy, 0, 0, 0x1);
                     }
                     catch
                     { }

@@ -25,12 +25,15 @@ namespace ProcessHacker.Native
 
         public static IntPtr Decrement(this IntPtr ptr, IntPtr ptr2)
         {
-            return new IntPtr(ptr.ToInt64() - ptr2.ToInt64());
+            if (IntPtr.Size == sizeof(Int32))
+                return new IntPtr(ptr.ToInt32() - ptr2.ToInt32());
+            else
+                return new IntPtr(ptr.ToInt64() - ptr2.ToInt64());
         }
 
-        public static IntPtr Decrement(this IntPtr ptr, int cbSize)
+        public static IntPtr Decrement(this IntPtr ptr, int value)
         {
-            return Increment(ptr, -cbSize);
+            return Increment(ptr, -value);
         }
 
         public static T ElementAt<T>(this IntPtr ptr, int index)
@@ -40,14 +43,26 @@ namespace ProcessHacker.Native
             return (T)Marshal.PtrToStructure(offsetPtr, typeof(T));
         }
 
-        public static IntPtr Increment(this IntPtr ptr, int cbSize)
+        public static IntPtr Increment(this IntPtr ptr, int value)
         {
-            return new IntPtr(ptr.ToInt64() + cbSize);
+            unchecked
+            {
+                if (IntPtr.Size == sizeof(Int32))
+                    return new IntPtr(ptr.ToInt32() + value);
+                else
+                    return new IntPtr(ptr.ToInt64() + value);
+            }
         }
 
         public static IntPtr Increment(this IntPtr ptr, IntPtr ptr2)
         {
-            return new IntPtr(ptr.ToInt64() + ptr2.ToInt64());
+            unchecked
+            {
+                if (IntPtr.Size == sizeof(Int32))
+                    return new IntPtr(ptr.ToInt32() + ptr2.ToInt32());
+                else
+                    return new IntPtr(ptr.ToInt64() + ptr2.ToInt64());
+            }
         }
 
         public static IntPtr Increment<T>(this IntPtr ptr)

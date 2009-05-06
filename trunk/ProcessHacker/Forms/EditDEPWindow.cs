@@ -92,24 +92,20 @@ namespace ProcessHacker
             try
             {
                 IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
-                IntPtr setProcessDEPPolicy = Win32.GetProcAddress(kernel32, "SetProcessDEPPolicy");
+                IntPtr setProcessDepPolicy = Win32.GetProcAddress(kernel32, "SetProcessDEPPolicy");
 
-                if (setProcessDEPPolicy == IntPtr.Zero)
+                if (setProcessDepPolicy == IntPtr.Zero)
                     throw new Exception("This feature is not supported on your version of Windows.");
 
                 using (ProcessHandle phandle = new ProcessHandle(_pid, 
                     Program.MinProcessQueryRights | ProcessAccess.CreateThread))
                 {
-                    IntPtr param = Marshal.AllocHGlobal(sizeof(DepFlags));
-                    Marshal.WriteInt32(param, (int)flags);
-                    var thread = phandle.CreateThread(setProcessDEPPolicy, param,
+                    var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags),
                         ThreadAccess.All);
 
                     thread.Wait(1000);
 
                     int exitCode = thread.GetExitCode();
-
-                    Marshal.FreeHGlobal(param);
 
                     if (exitCode == 0)
                     {

@@ -20,9 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenSCManager(null, null, desiredAccess);
 
-            if (this.Handle == System.IntPtr.Zero)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -62,9 +62,9 @@ namespace ProcessHacker.Native.Objects
             string binaryPath, string group, string accountName, string password)
         {
             IntPtr service;
-            int tagId;
+
             if ((service = Win32.CreateService(this, name, displayName, ServiceAccess.All,
-                type, startType, errorControl, binaryPath, group, out tagId, null, accountName, password)) == IntPtr.Zero)
+                type, startType, errorControl, binaryPath, group, IntPtr.Zero, IntPtr.Zero, accountName, password)) == IntPtr.Zero)
                 Win32.ThrowLastError();
 
             return new ServiceHandle(service, true);

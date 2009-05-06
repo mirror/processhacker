@@ -66,7 +66,7 @@ namespace ProcessHacker
                         {
                             for (int i = 0; i < length; i++)
                             {
-                                IntPtr sid = new IntPtr(System.Runtime.InteropServices.Marshal.ReadInt32(sids, i * 4));
+                                IntPtr sid = memory.ReadIntPtr(0, i);
                                 SidNameUse type = Windows.GetAccountType(sid);
 
                                 if (type == SidNameUse.User)

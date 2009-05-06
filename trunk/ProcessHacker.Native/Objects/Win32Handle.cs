@@ -133,8 +133,8 @@ namespace ProcessHacker.Native.Objects
         /// <param name="desiredAccess">The desired access to the object.</param>
         public Win32Handle(IntPtr handle, TAccess access)
         {
-            Win32.DuplicateObject(new IntPtr(-1), handle, new IntPtr(-1), out _handle,
-                (int)Convert.ChangeType(access, typeof(int)), false, 0);
+            Win32.DuplicateObject(ProcessHandle.GetCurrent(), handle, ProcessHandle.GetCurrent(), out _handle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             _owned = true;
         }
 
@@ -146,8 +146,8 @@ namespace ProcessHacker.Native.Objects
         /// <param name="desiredAccess">The desired access to the object.</param>
         public Win32Handle(ProcessHandle processHandle, IntPtr handle, TAccess access)
         {
-            Win32.DuplicateObject(processHandle, handle, new IntPtr(-1), out _handle,
-                (int)Convert.ChangeType(access, typeof(int)),false, 0);
+            Win32.DuplicateObject(processHandle, handle, ProcessHandle.GetCurrent(), out _handle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             _owned = true;
         }
 

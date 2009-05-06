@@ -36,13 +36,12 @@ namespace Assistant
     {
         static void SetAllAccess(IntPtr handle)
         {
-            /*
             using (var sd = new LocalMemoryAlloc(Win32.SecurityDescriptorMinLength))
             {
-                if (!Win32.InitializeSecurityDescriptor(out sd.Memory, Win32.SecurityDescriptorRevision))
+                if (!Win32.InitializeSecurityDescriptor(sd, Win32.SecurityDescriptorRevision))
                     Win32.ThrowLastError();
 
-                if (!Win32.SetSecurityDescriptorDacl(sd, true, 0, false))
+                if (!Win32.SetSecurityDescriptorDacl(sd, true, IntPtr.Zero, false))
                     Win32.ThrowLastError();
 
                 SiRequested si = SiRequested.DaclSecurityInformation;
@@ -50,18 +49,6 @@ namespace Assistant
                 if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
                     Win32.ThrowLastError();
             }
-             */
-            IntPtr sd;
-            if (!Win32.InitializeSecurityDescriptor(out sd, Win32.SecurityDescriptorRevision))
-                Win32.ThrowLastError();
-
-            if (!Win32.SetSecurityDescriptorDacl(ref sd, true, IntPtr.Zero, false))
-                Win32.ThrowLastError();
-
-            SiRequested si = SiRequested.DaclSecurityInformation;
-
-            if (!Win32.SetUserObjectSecurity(handle, ref si, sd))
-                Win32.ThrowLastError();
         }
 
         static void SetDesktopWinStaAccess()
@@ -319,10 +306,8 @@ namespace Assistant
             if (args.ContainsKey("-s"))
             {
                 int sessionId = int.Parse(args["-s"]);
-                IntPtr buffer = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(int)));
-                Marshal.WriteInt32(buffer, sessionId);
 
-                if (!Win32.SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref buffer, 4))
+                if (!Win32.SetTokenInformation(token, TokenInformationClass.TokenSessionId, ref sessionId, 4))
                 {
                     Console.WriteLine("Error: Could not set token session Id: " + Win32.GetLastErrorMessage());
                 }

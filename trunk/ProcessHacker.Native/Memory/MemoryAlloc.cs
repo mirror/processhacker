@@ -119,8 +119,17 @@ namespace ProcessHacker.Native
         /// <returns>The integer.</returns>
         public int ReadInt32(int offset, int index)
         {
-            return Marshal.ReadInt32(_memory,
-                offset + index * 4);
+            return Marshal.ReadInt32(_memory, offset + index * sizeof(int));
+        }
+
+        public IntPtr ReadIntPtr(int offset)
+        {
+            return this.ReadIntPtr(offset, 0);
+        }
+
+        public IntPtr ReadIntPtr(int offset, int index)
+        {
+            return Marshal.ReadIntPtr(_memory, offset + index * IntPtr.Size);
         }
 
         /// <summary>

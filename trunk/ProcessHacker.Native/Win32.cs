@@ -146,20 +146,21 @@ namespace ProcessHacker.Native.Api
             IntPtr targetProcessHandle,
             out IntPtr targetHandle,
             int desiredAccess,
-            bool handleAttributes,
+            int handleAttributes,
             int options
             )
         {
             if (KProcessHacker.Instance != null)
             {
-                int target = 0;
+                int target;
+
                 KProcessHacker.Instance.KphDuplicateObject(
                     sourceProcessHandle.ToInt32(),
                     sourceHandle.ToInt32(),
                     targetProcessHandle.ToInt32(),
-                    target,
+                    out target,
                     desiredAccess,
-                    handleAttributes ? 1 : 0,
+                    handleAttributes,
                     options);
                 targetHandle = new IntPtr(target);
             }

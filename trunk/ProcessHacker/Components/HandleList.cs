@@ -29,7 +29,6 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using System.Drawing;
 
 namespace ProcessHacker.Components
 {
@@ -323,7 +322,7 @@ namespace ProcessHacker.Components
                     {
                         IntPtr newHandle;
 
-                        Win32.DuplicateObject(phandle, handle, new IntPtr(-1), out newHandle, (int)Program.MinProcessQueryRights, false, 0);
+                        Win32.DuplicateObject(phandle, handle, new IntPtr(-1), out newHandle, (int)Program.MinProcessQueryRights, 0, 0);
                         processId = Win32.GetProcessId(newHandle);
                         Win32.CloseHandle(newHandle);
                     }
@@ -421,7 +420,7 @@ namespace ProcessHacker.Components
                         using (ProcessHandle process =
                                new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                         {
-                            Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, false,
+                            Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, 0,
                                 0x1 // DUPLICATE_CLOSE_SOURCE
                                 );
                         }

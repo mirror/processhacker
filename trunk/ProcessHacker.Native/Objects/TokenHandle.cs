@@ -190,7 +190,7 @@ namespace ProcessHacker.Native.Objects
 
             MemoryAlloc data = new MemoryAlloc(retLen);
 
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data.Memory,
+            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data,
                 data.Size, out retLen))
                 Win32.ThrowLastError();
 
@@ -437,17 +437,12 @@ namespace ProcessHacker.Native.Objects
         /// <param name="enabled">Whether virtualization is enabled.</param>
         public void SetVirtualizationEnabled(bool enabled)
         {
-            //int value = enabled ? 1 : 0;
-
-            IntPtr value = Marshal.AllocHGlobal(4);
-            Marshal.WriteInt32(value,enabled ? 1 : 0);
+            int value = enabled ? 1 : 0;
 
             if (!Win32.SetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled, ref value, 4))
             {
-                Marshal.FreeHGlobal(value);
                 Win32.ThrowLastError();
             }
-            Marshal.FreeHGlobal(value);
         }
     }
 }

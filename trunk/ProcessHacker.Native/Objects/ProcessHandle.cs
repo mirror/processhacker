@@ -134,7 +134,7 @@ namespace ProcessHacker.Native.Objects
             else
                 this.Handle = Win32.OpenProcess(access, false, pid);
 
-            if (this.Handle == System.IntPtr.Zero)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 

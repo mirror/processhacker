@@ -134,7 +134,7 @@ namespace ProcessHacker.Native
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
                 while ((uint)(status = Win32.NtQuerySystemInformation(
                     SystemInformationClass.SystemHandleInformation,
-                    data.Memory, 
+                    data, 
                     data.Size, 
                     out retLength)
                     ) == Win32.STATUS_INFO_LENGTH_MISMATCH)
@@ -475,7 +475,7 @@ namespace ProcessHacker.Native
         public byte ObjectTypeNumber;
         public HandleFlags Flags;
         public short Handle;
-        public int Object;
+        public IntPtr Object;
         public int GrantedAccess;
 
         public ObjectInformation GetHandleInfo()
@@ -488,6 +488,7 @@ namespace ProcessHacker.Native
 
         public ObjectInformation GetHandleInfo(ProcessHandle process)
         {
+            IntPtr handle = new IntPtr(this.Handle);
             IntPtr objectHandleI;
             int retLength = 0;
             Win32Handle objectHandle = null;
@@ -495,14 +496,13 @@ namespace ProcessHacker.Native
             if (this.Handle == 0 || this.Handle == -1 || this.Handle == -2)
                 throw new WindowsException(6);
 
-            IntPtr handle = new IntPtr(this.Handle);
-
             // Duplicate the handle if we're not using KPH
             if (KProcessHacker.Instance == null)
             {
                 int status;
 
-                if ((status = Win32.NtDuplicateObject(process, handle, new IntPtr(-1), out objectHandleI, 0, false, 0)) < 0)
+                if ((status = Win32.NtDuplicateObject(
+                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) < 0)
                     Win32.ThrowLastError();
 
                 objectHandle = new Win32Handle(objectHandleI);
@@ -524,7 +524,6 @@ namespace ProcessHacker.Native
 
                     if (KProcessHacker.Instance != null)
                     {
-
                         KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
                             IntPtr.Zero, 0, out retLength, out baseAddress);
                     }
@@ -609,7 +608,7 @@ namespace ProcessHacker.Native
                         var str = oni.Name;
 
                         if (KProcessHacker.Instance != null)
-                            str.Buffer =str.Buffer.Increment(-baseAddress + oniMem);
+                            str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
 
                         info.OrigName = Utils.ReadUnicodeString(str);
                     }
@@ -744,7 +743,7 @@ namespace ProcessHacker.Native
                         break;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 if (info.OrigName != null && info.OrigName != "")
                 {
