@@ -54,6 +54,7 @@
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
             this.buttonDiagnostics = new System.Windows.Forms.Button();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -102,7 +103,7 @@
             // linkFamFamFam
             // 
             this.linkFamFamFam.AutoSize = true;
-            this.linkFamFamFam.Location = new System.Drawing.Point(6, 81);
+            this.linkFamFamFam.Location = new System.Drawing.Point(6, 94);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -113,7 +114,7 @@
             // linkVistaMenu
             // 
             this.linkVistaMenu.AutoSize = true;
-            this.linkVistaMenu.Location = new System.Drawing.Point(6, 94);
+            this.linkVistaMenu.Location = new System.Drawing.Point(6, 107);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -124,7 +125,7 @@
             // linkHexBox
             // 
             this.linkHexBox.AutoSize = true;
-            this.linkHexBox.Location = new System.Drawing.Point(6, 68);
+            this.linkHexBox.Location = new System.Drawing.Point(6, 81);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -167,7 +168,7 @@
             // linkAsm
             // 
             this.linkAsm.AutoSize = true;
-            this.linkAsm.Location = new System.Drawing.Point(6, 107);
+            this.linkAsm.Location = new System.Drawing.Point(6, 120);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;
@@ -178,7 +179,7 @@
             // linkTreeViewAdv
             // 
             this.linkTreeViewAdv.AutoSize = true;
-            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 120);
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 133);
             this.linkTreeViewAdv.Name = "linkTreeViewAdv";
             this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
             this.linkTreeViewAdv.TabIndex = 12;
@@ -194,9 +195,10 @@
             this.flowCredits.AutoScroll = true;
             this.flowCredits.Controls.Add(this.label5);
             this.flowCredits.Controls.Add(this.label6);
-            this.flowCredits.Controls.Add(this.label1);
+            this.flowCredits.Controls.Add(this.label10);
             this.flowCredits.Controls.Add(this.label9);
             this.flowCredits.Controls.Add(this.label7);
+            this.flowCredits.Controls.Add(this.label1);
             this.flowCredits.Controls.Add(this.linkHexBox);
             this.flowCredits.Controls.Add(this.linkFamFamFam);
             this.flowCredits.Controls.Add(this.linkVistaMenu);
@@ -238,7 +240,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 29);
+            this.label1.Location = new System.Drawing.Point(6, 68);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(188, 13);
             this.label1.TabIndex = 13;
@@ -265,7 +267,7 @@
             // linkTaskDialog
             // 
             this.linkTaskDialog.AutoSize = true;
-            this.linkTaskDialog.Location = new System.Drawing.Point(6, 133);
+            this.linkTaskDialog.Location = new System.Drawing.Point(6, 146);
             this.linkTaskDialog.Name = "linkTaskDialog";
             this.linkTaskDialog.Size = new System.Drawing.Size(114, 13);
             this.linkTaskDialog.TabIndex = 21;
@@ -276,7 +278,7 @@
             // linkICSharpCode
             // 
             this.linkICSharpCode.AutoSize = true;
-            this.linkICSharpCode.Location = new System.Drawing.Point(6, 146);
+            this.linkICSharpCode.Location = new System.Drawing.Point(6, 159);
             this.linkICSharpCode.Name = "linkICSharpCode";
             this.linkICSharpCode.Size = new System.Drawing.Size(144, 13);
             this.linkICSharpCode.TabIndex = 19;
@@ -287,7 +289,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 159);
+            this.label8.Location = new System.Drawing.Point(6, 172);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(100, 13);
             this.label8.TabIndex = 20;
@@ -296,7 +298,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 172);
+            this.label4.Location = new System.Drawing.Point(6, 185);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(199, 26);
             this.label4.TabIndex = 16;
@@ -305,7 +307,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 198);
+            this.label3.Location = new System.Drawing.Point(6, 211);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(202, 26);
             this.label3.TabIndex = 15;
@@ -314,7 +316,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 224);
+            this.label2.Location = new System.Drawing.Point(6, 237);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(193, 26);
             this.label2.TabIndex = 14;
@@ -323,7 +325,7 @@
             // labelFiller
             // 
             this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 250);
+            this.labelFiller.Location = new System.Drawing.Point(6, 263);
             this.labelFiller.Name = "labelFiller";
             this.labelFiller.Size = new System.Drawing.Size(31, 13);
             this.labelFiller.TabIndex = 17;
@@ -352,6 +354,15 @@
             this.buttonDiagnostics.Text = "Diagnostics...";
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 29);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(89, 13);
+            this.label10.TabIndex = 23;
+            this.label10.Text = "Fliser - Developer";
             // 
             // AboutWindow
             // 
@@ -414,6 +425,7 @@
         private System.Windows.Forms.LinkLabel linkTaskDialog;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button buttonDiagnostics;
+        private System.Windows.Forms.Label label10;
 
     }
 }

@@ -29,8 +29,11 @@ Hacker > Help).
 
 Process Hacker is brought to you by the small Process Hacker team:
  * wj32 (Project Manager)
+ * Fliser (Developer)
+ * XhmikosR (Installer Developer, Tester)
+Inactive:
  * Dean (Developer)
  * Mikalai Chaly (Developer)
- * XhmikosR (Installer Developer, Tester)
+ * Uday Shanbhag (Developer)
 
 See http://processhacker.sourceforge.net for more details.
