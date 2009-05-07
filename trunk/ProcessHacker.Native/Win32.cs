@@ -319,12 +319,12 @@ namespace ProcessHacker.Native.Api
             sids = new IntPtr[count];
 
             WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
-            int* dataP = (int*)data.Memory.ToPointer();
+            WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory.ToPointer();
 
             for (int i = 0; i < count; i++)
             {
-                pids[i] = dataP[i * 4 + 1];
-                sids[i] = new IntPtr(dataP[i * 4 + 3]);
+                pids[i] = dataP[i].ProcessId;
+                sids[i] = dataP[i].Sid;
             }
 
             return new WtsEnumProcessesFastData() { PIDs = pids, SIDs = sids, Memory = data };

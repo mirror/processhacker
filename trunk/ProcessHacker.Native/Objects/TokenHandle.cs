@@ -171,7 +171,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevationType,
-                value.Memory, 4, out retLen))
+                value, 4, out retLen))
                 Win32.ThrowLastError();
 
             return (TokenElevationType)value.ReadInt32(0);
@@ -229,7 +229,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(Marshal.ReadIntPtr(data.Memory));
+                return new WindowsSid(data.ReadIntPtr(0));
             }
         }
 
@@ -249,7 +249,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(Marshal.ReadIntPtr(data.Memory));
+                return new WindowsSid(data.ReadIntPtr(0));
             }
         }
 
@@ -265,7 +265,7 @@ namespace ProcessHacker.Native.Objects
 
             using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data.Memory,
+                if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenPrivileges, data,
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
@@ -313,7 +313,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSessionId,
-                sessionId.Memory, 4, out retLen))
+                sessionId, 4, out retLen))
                 Win32.ThrowLastError();
 
             return sessionId.ReadInt32(0);
@@ -367,7 +367,7 @@ namespace ProcessHacker.Native.Objects
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevation,
-                value.Memory, 4, out retLen))
+                value, 4, out retLen))
                 Win32.ThrowLastError();
 
             return value.ReadInt32(0) != 0;

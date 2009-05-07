@@ -217,7 +217,7 @@ namespace ProcessHacker.Native.Objects
                 using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                 {
                     if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
-                        oniMem.Memory, oniMem.Size, out retLength)) < 0)
+                        oniMem, oniMem.Size, out retLength)) < 0)
                         Win32.ThrowLastError(status);
 
                     ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();

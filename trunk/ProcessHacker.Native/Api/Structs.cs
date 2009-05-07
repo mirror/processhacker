@@ -1504,26 +1504,20 @@ namespace ProcessHacker.Native.Api
         public int ColorDepth;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WtsProcessInfo
     {
         public int SessionId;
         public int ProcessId;
-
-        [MarshalAs(UnmanagedType.LPTStr)]
-        public string ProcessName;
-
-        public int Sid;
+        public IntPtr ProcessName;
+        public IntPtr Sid;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct WtsSessionInfo
     {
         public int SessionID;
-
-        [MarshalAs(UnmanagedType.LPTStr)]
         public string WinStationName;
-
         WtsConnectStateClass State;
     }
 }

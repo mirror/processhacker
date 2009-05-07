@@ -69,10 +69,7 @@ namespace ProcessHacker.Native
                     domain.EnsureCapacity(domainlen);
 
                     if (!Win32.LookupAccountSid(null, sid, name, ref namelen, domain, ref domainlen, out use))
-                    {
-                        if (name.ToString() == "" && domain.ToString() == "")
-                            Win32.ThrowLastError();
-                    }
+                        Win32.ThrowLastError();
                 }
             }
             catch
@@ -743,7 +740,7 @@ namespace ProcessHacker.Native
                         break;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 if (info.OrigName != null && info.OrigName != "")
                 {
