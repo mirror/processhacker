@@ -11,7 +11,8 @@ Process Hacker
    * Incomplete or inaccurate thread call stacks
    * Unexpected actions being performed when a key was pressed in 
      the memory and handle lists
-   * I/O tray icon tooltip from ROW to RWO
+   * Changed I/O tray icon tooltip from ROW to RWO
+   * Corrupted usernames
 
 1.3.7.5
  * NEW/IMPROVED:
