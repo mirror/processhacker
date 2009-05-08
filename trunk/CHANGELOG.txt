@@ -9,6 +9,7 @@ Process Hacker
  * FIXED:
    * #2785648 - "cursor down crashes PH"
    * Incomplete or inaccurate thread call stacks
+   * Windows 7 BSOD
    * Unexpected actions being performed when a key was pressed in 
      the memory and handle lists
    * Changed I/O tray icon tooltip from ROW to RWO
