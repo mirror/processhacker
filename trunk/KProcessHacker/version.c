@@ -24,24 +24,12 @@
 #include "include/version.h"
 #include "include/debug.h"
 
+/*
+ * mov      edi, edi
+ * push     ebp
+ * mov      ebp, esp
+ */
 static char StandardPrologue[] = { 0x8b, 0xff, 0x55, 0x8b, 0xec };
-
-/* ExpGetProcessInformation */
-static char ExpGetProcessInformation51[] =
-{
-    0x33, 0xff, 0x89, 0x7d, 0xe4, 0x89, 0x7d, 0xdc,
-    0x8b, 0x45, 0x10, 0x89, 0x38, 0x39, 0x7d, 0x0c
-};
-static char ExpGetProcessInformation60[] =
-{
-    0x8b, 0x45, 0x10, 0x33, 0xdb, 0x89, 0x5d, 0xdc,
-    0x89, 0x5d, 0xe4, 0x89, 0x5d, 0xe0, 0x3b, 0xc3
-};
-static char ExpGetProcessInformation61[] =
-{
-    0x8b, 0x45, 0x10, 0x33, 0xff, 0x89, 0x7d, 0xdc,
-    0x89, 0x7d, 0xe0, 0x89, 0x7d, 0xe4, 0x89, 0x7d
-};
 
 /* PsTerminateProcess/PspTerminateProcess */
 static char PspTerminateProcess51[] =
@@ -106,7 +94,7 @@ NTSTATUS KvInit()
     
     __NtClose = GetSystemRoutineAddress(L"NtClose");
     
-    /* NtClose is used as a reference point for any addresses 
+    /* NtClose is used as a reference point for most addresses 
        dependent on where the kernel is loaded, so if we don't 
        have it, we can't proceed.
      */
@@ -136,11 +124,6 @@ NTSTATUS KvInit()
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper on XP.
          */
-        INIT_SCAN(
-            ExpGetProcessInformationScan,
-            ExpGetProcessInformation51,
-            16, searchOffset - 0x100000, SCAN_LENGTH, -12
-            );
         INIT_SCAN(
             PsTerminateProcessScan,
             PspTerminateProcess51,
@@ -200,11 +183,6 @@ NTSTATUS KvInit()
         OffEpRundownProtect = 0x98;
         
         INIT_SCAN(
-            ExpGetProcessInformationScan,
-            ExpGetProcessInformation60,
-            16, searchOffset - 0x200000, SCAN_LENGTH, -12
-            );
-        INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess60,
             16, searchOffset, SCAN_LENGTH, 0
@@ -235,7 +213,11 @@ NTSTATUS KvInit()
     /* Windows 7 */
     else if (majorVersion == 6 && minorVersion == 1)
     {
-        ULONG searchOffset = (ULONG)__NtClose - 0x100000;
+        ULONG psSearchOffset = (ULONG)GetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
+        ULONG psScanLength = 0x200000;
+        
+        if (!psSearchOffset)
+            return STATUS_NOT_SUPPORTED;
         
         WindowsVersion = WINDOWS_7;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -251,19 +233,14 @@ NTSTATUS KvInit()
         OffOtiGenericMapping = 0x28 + 0xc;
         
         INIT_SCAN(
-            ExpGetProcessInformationScan,
-            ExpGetProcessInformation61,
-            16, searchOffset - 0x50000, SCAN_LENGTH, -12
-            );
-        INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess61,
-            16, searchOffset, SCAN_LENGTH, 0
+            16, psSearchOffset, psScanLength, 0
             );
         INIT_SCAN(
             PspTerminateThreadByPointerScan,
             PspTerminateThreadByPointer61,
-            24, searchOffset, SCAN_LENGTH, 0
+            24, psSearchOffset, psScanLength, 0
             );
         
         /* SP0 */

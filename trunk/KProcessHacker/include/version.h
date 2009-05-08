@@ -100,7 +100,6 @@ EXT ULONG OffOtiGenericMapping;
 
 /* Functions
  */
-EXT KV_SCANPROC ExpGetProcessInformationScan SCANNULL;
 EXT KV_SCANPROC PsTerminateProcessScan SCANNULL;
 EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;
 

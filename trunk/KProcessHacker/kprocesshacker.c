@@ -233,8 +233,6 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphTerminateThread";
     else if (ControlCode == KPH_GETFEATURES)
         return "Get Features";
-    else if (ControlCode == KPH_EXPGETPROCESSINFORMATION)
-        return "ExpGetProcessInformation";
     else if (ControlCode == KPH_ASSIGNIMPERSONATIONTOKEN)
         return "KphAssignImpersonationToken";
     else
@@ -1155,8 +1153,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            if (ExpGetProcessInformation)
-                features |= KPHF_EXPGETPROCESSINFORMATION;
             if (__PsTerminateProcess)
                 features |= KPHF_PSTERMINATEPROCESS;
             if (__PspTerminateThreadByPointer)
@@ -1164,44 +1160,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             ret->Features = features;
             retLength = sizeof(*ret);
-        }
-        break;
-        
-        /* ExpGetProcessInformation
-         * 
-         * Calls ExpGetProcessInformation. This call will fail if 
-         * ExpGetProcessInformation could not be located.
-         */
-        case KPH_EXPGETPROCESSINFORMATION:
-        {
-            struct
-            {
-                PVOID Buffer;
-                ULONG BufferLength;
-                PULONG ReturnLength;
-                ULONG SessionId;
-                BOOL ExtendedInformation;
-            } *args = dataBuffer;
-            
-            if (!ExpGetProcessInformation)
-            {
-                status = STATUS_NOT_SUPPORTED;
-                goto IoControlEnd;
-            }
-            
-            if (inLength < sizeof(*args))
-            {
-                status = STATUS_BUFFER_TOO_SMALL;
-                goto IoControlEnd;
-            }
-            
-            status = ExpGetProcessInformation(
-                args->Buffer,
-                args->BufferLength,
-                args->ReturnLength,
-                args->SessionId,
-                !!args->ExtendedInformation
-                );
         }
         break;
         

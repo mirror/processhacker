@@ -75,16 +75,15 @@ namespace ProcessHacker.Native
             KphGetThreadId,
             KphTerminateThread,
             GetFeatures,
-            ExpGetProcessInformation,
+            Reserved2,
             KphAssignImpersonationToken
         }
 
         [Flags]
         public enum KphFeatures : int
         {
-            ExpGetProcessInformation = 0x1,
-            PsTerminateProcess = 0x2,
-            PspTerminateThreadByPointer = 0x4
+            PsTerminateProcess = 0x1,
+            PspTerminateThreadByPointer = 0x2
         }
 
         private string _deviceName;
@@ -179,38 +178,6 @@ namespace ProcessHacker.Native
         public void Close()
         {
             _fileHandle.Dispose();
-        }
-
-        public bool ExpGetProcessInformation(
-            IntPtr buffer,
-            int bufferLength,
-            out int returnLength,
-            int sessionId,
-            bool extendedInformation
-            )
-        {
-            byte* inData = stackalloc byte[0x14];
-            int expReturnLength;
-            int ioReturnLength;
-
-            *(int*)inData = buffer.ToInt32();
-            *(int*)(inData + 0x4) = bufferLength;
-            *(int*)(inData + 0x8) = (int)&expReturnLength;
-            *(int*)(inData + 0xc) = sessionId;
-            *(int*)(inData + 0x10) = extendedInformation ? 1 : 0;
-
-            bool success = Win32.DeviceIoControl(
-                _fileHandle,
-                (int)CtlCode(Control.ExpGetProcessInformation),
-                inData, 0x14,
-                inData, 0,
-                out ioReturnLength,
-                IntPtr.Zero
-                );
-
-            returnLength = expReturnLength;
-
-            return success;
         }
 
         public KphFeatures GetFeatures()
