@@ -221,7 +221,7 @@ NTSTATUS KphOpenProcess(
      * from the stack frame of PsOpenProcess that AUX_ACCESS_DATA has 
      * a size of 0x34 bytes.
      */
-    char auxData[0x34];
+    CHAR auxData[0x34];
     PEPROCESS processObject = NULL;
     PETHREAD threadObject = NULL;
     HANDLE processHandle = NULL;
@@ -328,7 +328,7 @@ NTSTATUS KphOpenProcessJob(
     PVOID jobObject;
     HANDLE jobHandle;
     ACCESS_STATE accessState;
-    char auxData[0x34];
+    CHAR auxData[0x34];
     
     status = SeCreateAccessState(
         &accessState,
@@ -409,7 +409,7 @@ NTSTATUS KphOpenThread(
     ULONG attributes = ObjectAttributes->Attributes;
     NTSTATUS status = STATUS_SUCCESS;
     ACCESS_STATE accessState;
-    char auxData[0x34];
+    CHAR auxData[0x34];
     PETHREAD threadObject = NULL;
     HANDLE threadHandle = NULL;
     

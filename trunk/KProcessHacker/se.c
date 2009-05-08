@@ -40,7 +40,7 @@ NTSTATUS KphOpenProcessTokenEx(
     PVOID tokenObject;
     HANDLE tokenHandle;
     ACCESS_STATE accessState;
-    char auxData[0x34];
+    CHAR auxData[0x34];
     
     status = SeCreateAccessState(
         &accessState,

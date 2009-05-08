@@ -104,7 +104,7 @@ NTSTATUS KvInit()
     /* Windows XP */
     if (majorVersion == 5 && minorVersion == 1)
     {
-        ULONG searchOffset = (ULONG)__NtClose;
+        ULONG_PTR searchOffset = (ULONG_PTR)__NtClose;
         
         WindowsVersion = WINDOWS_XP;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xfff;
@@ -168,7 +168,7 @@ NTSTATUS KvInit()
     /* Windows Vista, Windows Server 2008 */
     else if (majorVersion == 6 && minorVersion == 0)
     {
-        ULONG searchOffset = (ULONG)__NtClose;
+        ULONG_PTR searchOffset = (ULONG_PTR)__NtClose;
         
         WindowsVersion = WINDOWS_VISTA;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -213,7 +213,7 @@ NTSTATUS KvInit()
     /* Windows 7 */
     else if (majorVersion == 6 && minorVersion == 1)
     {
-        ULONG psSearchOffset = (ULONG)GetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
+        ULONG_PTR psSearchOffset = (ULONG_PTR)GetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
         ULONG psScanLength = 0x200000;
         
         if (!psSearchOffset)
@@ -263,10 +263,10 @@ NTSTATUS KvInit()
 }
 
 PVOID KvVerifyPrologue(
-    ULONG Offset
+    ULONG_PTR Offset
     )
 {
-    PVOID address = (PVOID)((ULONG)__NtClose + Offset);
+    PVOID address = (PVOID)((ULONG_PTR)__NtClose + Offset);
     
     if (memcmp(address, StandardPrologue, 5) == 0)
         return address;
@@ -280,13 +280,13 @@ PVOID KvScanProc(
 {
     PCHAR bytes = ScanProc->Bytes;
     ULONG length = ScanProc->Length;
-    ULONG endAddress = ScanProc->StartAddress + ScanProc->ScanLength;
-    ULONG i;
+    ULONG_PTR endAddress = ScanProc->StartAddress + ScanProc->ScanLength;
+    ULONG_PTR i;
     
     for (i = ScanProc->StartAddress; i < endAddress; i++)
     {
         if (memcmp((PVOID)i, bytes, length) == 0)
-            return (PVOID)((PCHAR)i + ScanProc->Displacement);
+            return (PVOID)(i + ScanProc->Displacement);
     }
     
     return NULL;

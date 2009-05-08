@@ -244,9 +244,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
     PVOID dataBuffer;
-    int controlCode;
-    unsigned int inLength, outLength;
-    int retLength = 0;
+    ULONG controlCode;
+    ULONG inLength, outLength;
+    ULONG retLength = 0;
     
     Irp->IoStatus.Status = STATUS_SUCCESS;
     Irp->IoStatus.Information = 0;
@@ -378,20 +378,12 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 {
                     status = GetObjectName((PFILE_OBJECT)object, dataBuffer, outLength, &retLength);
                     ObDereferenceObject(object);
-                    
-                    if (NT_SUCCESS(status))
-                        dprintf("Resolved object name (indirect): %ws\n", 
-                            (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
                 else
                 {
                     status = ObQueryNameString(
                         object, (POBJECT_NAME_INFORMATION)dataBuffer, outLength, &retLength);
                     ObDereferenceObject(object);
-                    
-                    if (NT_SUCCESS(status))
-                        dprintf("Resolved object name (direct): %ws\n", 
-                            (WCHAR *)((PCHAR)dataBuffer + 8));
                 }
             }
             __except (EXCEPTION_EXECUTE_HANDLER)
@@ -578,7 +570,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             PEPROCESS processObject;
             
             if (inLength < sizeof(*args))
-            {dprintf("%d\n", sizeof(*args));
+            {
                 status = STATUS_BUFFER_TOO_SMALL;
                 goto IoControlEnd;
             }
@@ -1206,14 +1198,14 @@ NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     PIO_STACK_LOCATION ioStackIrp = NULL;
-    int retLength = 0;
+    ULONG retLength = 0;
     
     ioStackIrp = IoGetCurrentIrpStackLocation(Irp);
     
     if (ioStackIrp != NULL)
     {
         PCHAR readDataBuffer = (PCHAR)Irp->AssociatedIrp.SystemBuffer;
-        int readLength = ioStackIrp->Parameters.Read.Length;
+        ULONG readLength = ioStackIrp->Parameters.Read.Length;
         
         if (readDataBuffer != NULL)
         {
@@ -1221,7 +1213,7 @@ NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             if (readLength == 4)
             {
-                *(int *)readDataBuffer = KPH_CTL_CODE(0);
+                *(ULONG *)readDataBuffer = KPH_CTL_CODE(0);
                 retLength = 4;
             }
             else

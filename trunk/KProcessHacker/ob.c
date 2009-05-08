@@ -226,7 +226,7 @@ NTSTATUS ObDuplicateObject(
     {
         POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
         ACCESS_STATE accessState;
-        char auxData[0x34];
+        CHAR auxData[0x34];
         
         if (!objectType && AccessMode != KernelMode)
         {

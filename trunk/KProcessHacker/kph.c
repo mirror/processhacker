@@ -184,7 +184,7 @@ NTSTATUS OpenProcess(
     
     objAttr.Length = sizeof(objAttr);
     clientId.UniqueThread = 0;
-    clientId.UniqueProcess = (HANDLE)ProcessId;
+    clientId.UniqueProcess = ProcessId;
     
     return KphOpenProcess(ProcessHandle, DesiredAccess, &objAttr, &clientId, KernelMode);
 }

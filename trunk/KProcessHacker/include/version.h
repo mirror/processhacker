@@ -49,7 +49,7 @@ typedef struct _KV_SCANPROC
     BOOLEAN Initialized;
     PCHAR Bytes;
     ULONG Length;
-    ULONG StartAddress;
+    ULONG_PTR StartAddress;
     ULONG ScanLength;
     LONG Displacement;
 } KV_SCANPROC, *PKV_SCANPROC;
@@ -57,7 +57,7 @@ typedef struct _KV_SCANPROC
 NTSTATUS KvInit();
 
 PVOID KvVerifyPrologue(
-    ULONG Offset
+    ULONG_PTR Offset
     );
 
 PVOID KvScanProc(
