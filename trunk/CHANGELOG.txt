@@ -1,6 +1,6 @@
 Process Hacker
 
-1.3.7.6
+1.3.8.0
  * NEW/IMPROVED:
    * KProcessHacker can now perform process memory reading/writing 
      by itself and does not require MmCopyVirtualMemory
