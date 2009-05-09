@@ -617,14 +617,14 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(ProcessInformationClass infoClass)
         {
             int status;
-            MemoryAlloc value = new MemoryAlloc(4);
+            int value;
             int retLength;
 
             if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, value, 4, out retLength)) < 0)
+                this, infoClass, out value, sizeof(int), out retLength)) < 0)
                 Win32.ThrowLastError(status);
 
-            return value.ReadInt32(0);
+            return value;
         }
 
         /// <summary>

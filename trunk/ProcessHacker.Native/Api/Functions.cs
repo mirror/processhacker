@@ -607,9 +607,9 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtSetInformationThread(
-            [In] IntPtr ThreadHandle, 
+            [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
-            [In] IntPtr ThreadInformation, 
+            [In] IntPtr ThreadInformation,
             [In] int ThreadInformationLength
             );
 
@@ -626,8 +626,26 @@ namespace ProcessHacker.Native.Api
         public static extern int NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
+            [Out] out int ThreadInformation,
+            [In] int ThreadInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
             IntPtr ThreadInformation,
             [In] int ThreadInformationLength, 
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public unsafe static extern int NtQueryInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
+            void* ThreadInformation,
+            [In] int ThreadInformationLength,
             [Out] [Optional] out int ReturnLength
             );
 
@@ -635,7 +653,16 @@ namespace ProcessHacker.Native.Api
         public static extern int NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
-            [Out] IntPtr ProcessInformation,
+            IntPtr ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out int ProcessInformation,
             [In] int ProcessInformationLength,
             [Out] [Optional] out int ReturnLength
             );

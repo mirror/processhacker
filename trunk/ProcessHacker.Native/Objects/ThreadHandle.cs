@@ -177,15 +177,14 @@ namespace ProcessHacker.Native.Objects
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
             int status;
-            IntPtr value = Marshal.AllocCoTaskMem(4);
+            int value;
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, infoClass, value, 4, out retLength)) < 0)
+                this, infoClass, out value, sizeof(int), out retLength)) < 0)
                 Win32.ThrowLastError(status);
-            int ret = Marshal.ReadInt32(value);
-            Marshal.FreeCoTaskMem(value);
-            return ret;
+
+            return value;
         }
 
         /// <summary>
@@ -212,20 +211,16 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="firstArgument">The first argument to the last system call.</param>
         /// <returns>A system call number.</returns>
-        public int GetLastSystemCall(out int firstArgument)
+        public unsafe int GetLastSystemCall(out int firstArgument)
         {
             int status;
-            int[] data = new int[2];
-            IntPtr value = Marshal.AllocCoTaskMem(8);
+            int* data = stackalloc int[2];
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, ThreadInformationClass.ThreadLastSystemCall, value, 8, out retLength)) < 0)
+                this, ThreadInformationClass.ThreadLastSystemCall, data, sizeof(int) * 2, out retLength)) < 0)
                 Win32.ThrowLastError(status);
 
-            data[0] = Marshal.ReadInt32(value);
-            data[1] = Marshal.ReadInt32(value,4);
-            Marshal.FreeCoTaskMem(value);
             firstArgument = data[0];
 
             return data[1];
