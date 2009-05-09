@@ -50,10 +50,11 @@ namespace ProcessHacker
             this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
-            this.AddTest("M1", "Writes garbage to the process' memory regions"); 
-            this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
             this.AddTest("CH1", "Closes the process' handles");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
+            this.AddTest("TT3", "Terminates the process' threads in kernel-mode (if possible)");
+            this.AddTest("M1", "Writes garbage to the process' memory regions");
+            this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
         }
 
         private void AddTest(string id, string description)
@@ -164,12 +165,8 @@ namespace ProcessHacker
             {
                 using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.Terminate))
                 {
-                    try
-                    {
-                        thandle.Terminate();
-                    }
-                    catch
-                    { }
+                    // don't use KPH
+                    Win32.TerminateThread(thandle, 0);
                 }
             }
         }
@@ -198,21 +195,33 @@ namespace ProcessHacker
             }
         }
 
-        private unsafe void M1()
+        private void M1()
+        {
+            this.M1Internal();
+        }
+
+        private unsafe void M1Internal()
         {
             using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
             {
-                using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                    ProcessAccess.QueryInformation | 
+                using (ProcessHandle phandle = new ProcessHandle(_pid,
+                    ProcessAccess.QueryInformation |
                     Program.MinProcessWriteMemoryRights))
                 {
                     phandle.EnumMemory((info) =>
+                    {
+                        for (int i = 0; i < info.RegionSize; i += 0x1000)
                         {
-                            for (int i = 0; i < info.RegionSize; i += 0x1000)
+                            try
+                            {
                                 phandle.WriteMemory(info.BaseAddress.Increment(i), alloc, 0x1000);
+                            }
+                            catch
+                            { }
+                        }
 
-                            return true;
-                        });
+                        return true;
+                    });
                 }
             }
         }
@@ -259,6 +268,19 @@ namespace ProcessHacker
             using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
             {
                 phandle.Terminate();
+            }
+        }
+
+        private void TT3()
+        {
+            System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
+
+            foreach (System.Diagnostics.ProcessThread t in p.Threads)
+            {
+                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.Terminate))
+                {
+                    thandle.Terminate();
+                }
             }
         }
 

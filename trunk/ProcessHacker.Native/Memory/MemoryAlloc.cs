@@ -51,17 +51,17 @@ namespace ProcessHacker.Native
 
         public unsafe static implicit operator byte*(MemoryAlloc memory)
         {
-            return (byte*)memory;
+            return (byte*)memory.Memory;
         }
 
         public unsafe static explicit operator void*(MemoryAlloc memory)
         {
-            return (void*)memory;
+            return (void*)memory.Memory;
         }
 
         public unsafe static explicit operator int*(MemoryAlloc memory)
         {
-            return (int*)memory;
+            return (int*)memory.Memory;
         }
 
         /// <summary>
