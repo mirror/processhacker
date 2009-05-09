@@ -801,15 +801,12 @@ namespace ProcessHacker
                         }
                     }
 
-                    if (queryLimitedHandle != null)
+                    try
                     {
-                        try
-                        {
-                            item.CreateTime = Misc.DateTimeFromFileTime(queryLimitedHandle.GetCreateTime());
-                        }
-                        catch
-                        { }
+                        item.CreateTime = Misc.DateTimeFromFileTime(processInfo.CreateTime);
                     }
+                    catch
+                    { }
 
                     if (pid > 0)
                     {

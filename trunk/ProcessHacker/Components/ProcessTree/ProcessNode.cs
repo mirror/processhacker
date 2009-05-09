@@ -595,7 +595,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (Pid < 4)
+                if (Pid < 4 || _pitem.CreateTime.Year == 1)
                     return "";
                 else
                     return _pitem.CreateTime.ToString();
@@ -606,7 +606,7 @@ namespace ProcessHacker
         {
             get
             {
-                if (Pid < 4)
+                if (Pid < 4 || _pitem.CreateTime.Year == 1)
                     return "";
                 else
                     return Misc.GetNiceRelativeDateTime(_pitem.CreateTime);
