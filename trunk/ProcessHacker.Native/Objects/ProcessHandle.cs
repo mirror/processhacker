@@ -1009,11 +1009,11 @@ namespace ProcessHacker.Native.Objects
 
         public unsafe void SetModuleReferenceCount(IntPtr baseAddress, ushort count)
         {
-            byte* buffer = stackalloc byte[4];
+            byte* buffer = stackalloc byte[IntPtr.Size];
 
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, 4);
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, IntPtr.Size);
 
-            IntPtr loaderData = new IntPtr(*(int*)buffer);
+            IntPtr loaderData = *(IntPtr*)buffer;
 
             PebLdrData* data = stackalloc PebLdrData[1];
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
