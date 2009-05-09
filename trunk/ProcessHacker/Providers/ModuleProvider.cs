@@ -111,7 +111,7 @@ namespace ProcessHacker
             {
                 if (!bases.ContainsKey(b))
                 {
-                    this.CallDictionaryRemoved(this.Dictionary[b]);
+                    this.OnDictionaryRemoved(this.Dictionary[b]);
                     newdictionary.Remove(b);
                 }
             }
@@ -147,7 +147,7 @@ namespace ProcessHacker
                     { }
 
                     newdictionary.Add(b, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
             }
 
@@ -201,7 +201,7 @@ namespace ProcessHacker
             {
                 if (!modules.ContainsKey(b))
                 {
-                    this.CallDictionaryRemoved(this.Dictionary[b]);
+                    this.OnDictionaryRemoved(this.Dictionary[b]);
                     newdictionary.Remove(b);
                 }
             }
@@ -238,7 +238,7 @@ namespace ProcessHacker
                     { }
                           
                     newdictionary.Add(b, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
             }
 

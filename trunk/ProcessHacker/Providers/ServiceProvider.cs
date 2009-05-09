@@ -60,7 +60,7 @@ namespace ProcessHacker
                 Status = item.Status
             };
 
-            this.CallDictionaryModified(item, Dictionary[name]);
+            this.OnDictionaryModified(item, Dictionary[name]);
         }
 
         private void UpdateOnce()
@@ -74,7 +74,7 @@ namespace ProcessHacker
                 {
                     ServiceItem service = Dictionary[s];
 
-                    this.CallDictionaryRemoved(service);
+                    this.OnDictionaryRemoved(service);
                     Dictionary.Remove(s);
                 }
             }
@@ -97,7 +97,7 @@ namespace ProcessHacker
                     catch
                     { }
 
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                     Dictionary.Add(s, item);
                 }
             }
@@ -138,7 +138,7 @@ namespace ProcessHacker
                         Config = service.Config
                     };
 
-                    this.CallDictionaryModified(service, newServiceItem);
+                    this.OnDictionaryModified(service, newServiceItem);
                     toModify.Add(service.Status.ServiceName, newServiceItem);
                 }         
             }

@@ -58,6 +58,7 @@ namespace ProcessHacker
         private void ServiceWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             _serviceProps.SaveSettings();
+            _serviceProps.Dispose();
         }
     }
 }

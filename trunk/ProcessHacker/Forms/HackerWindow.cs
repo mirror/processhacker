@@ -2439,8 +2439,6 @@ namespace ProcessHacker
             serviceP.DictionaryModified += serviceP_DictionaryModified_Process;
             serviceP.DictionaryRemoved += serviceP_DictionaryRemoved_Process;
             serviceP.Updated += serviceP_Updated;
-            serviceP.RunOnceAsync();
-            serviceP.Enabled = true;
             updateServicesMenuItem.Checked = true;
 
             networkP.Interval = Properties.Settings.Default.RefreshInterval;
@@ -2631,6 +2629,9 @@ namespace ProcessHacker
                 this.LoadUac();
                 this.LoadAddShortcuts();
                 this.LoadStructs();
+
+                serviceP.RunOnceAsync();
+                serviceP.Enabled = true;
             }
         }
     }

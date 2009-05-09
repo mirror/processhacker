@@ -128,45 +128,51 @@ namespace ProcessHacker.Components
 
         private void _provider_DictionaryRemoved(ServiceItem item)
         {
-            // remove the item from the list if it's there
-            if (listServices.Items.ContainsKey(item.Status.ServiceName))
-                listServices.Items[item.Status.ServiceName].Remove();
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    // remove the item from the list if it's there
+                    if (listServices.Items.ContainsKey(item.Status.ServiceName))
+                        listServices.Items[item.Status.ServiceName].Remove();
+                }));
         }
 
         private void _provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
-            // update the state of the service
-            if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
-                listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
-                    newItem.Status.ServiceStatusProcess.CurrentState.ToString();
-
-            // update the start and stop buttons if we have a service selected
-            if (listServices.SelectedItems.Count == 1)
-            {
-                if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
-                    buttonStart.Enabled = false;
-                    buttonStop.Enabled = false;
+                    // update the state of the service
+                    if (listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                        listServices.Items[newItem.Status.ServiceName].SubItems[2].Text =
+                            newItem.Status.ServiceStatusProcess.CurrentState.ToString();
 
-                    if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
-                        buttonStop.Enabled = true;
-                    else if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
-                        buttonStart.Enabled = true;
-                }
-            }
+                    // update the start and stop buttons if we have a service selected
+                    if (listServices.SelectedItems.Count == 1)
+                    {
+                        if (listServices.SelectedItems[0].Name == newItem.Status.ServiceName)
+                        {
+                            buttonStart.Enabled = false;
+                            buttonStop.Enabled = false;
 
-            // if the service was just started in this process, add it to the list
-            if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
-            {
-                if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
-                {
-                    listServices.Items.Add(new ListViewItem(new string[] { 
-                    newItem.Status.ServiceName, 
-                    newItem.Status.DisplayName,
-                    newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
-                })).Name = newItem.Status.ServiceName;
-                }
-            }
+                            if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Running)
+                                buttonStop.Enabled = true;
+                            else if (newItem.Status.ServiceStatusProcess.CurrentState == ServiceState.Stopped)
+                                buttonStart.Enabled = true;
+                        }
+                    }
+
+                    // if the service was just started in this process, add it to the list
+                    if (newItem.Status.ServiceStatusProcess.ProcessID == this.PID && oldItem.Status.ServiceStatusProcess.ProcessID == 0)
+                    {
+                        if (!listServices.Items.ContainsKey(newItem.Status.ServiceName))
+                        {
+                            listServices.Items.Add(new ListViewItem(new string[] { 
+                                newItem.Status.ServiceName, 
+                                newItem.Status.DisplayName,
+                                newItem.Status.ServiceStatusProcess.CurrentState.ToString() 
+                            })).Name = newItem.Status.ServiceName;
+                        }
+                    }
+                }));
         }
 
         private void listServices_SelectedIndexChanged(object sender, EventArgs e)

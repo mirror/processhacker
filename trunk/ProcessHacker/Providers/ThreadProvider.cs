@@ -123,7 +123,7 @@ namespace ProcessHacker
                 }
 
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
-                WorkQueue.GlobalQueueWorkItem(new Action(() =>
+                WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
                     _symbols = new SymbolProvider(_processHandle);
 
@@ -182,7 +182,7 @@ namespace ProcessHacker
                         if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
                             _moduleLoadCompletedEvent.Set();
                     }
-                }));
+                }), "symbols-load");
             }
             catch (Exception ex)
             {
@@ -272,8 +272,9 @@ namespace ProcessHacker
 
         public void QueueThreadResolveStartAddress(int tid, ulong startAddress)
         {
-            WorkQueue.GlobalQueueWorkItem(
+            WorkQueue.GlobalQueueWorkItemTag(
                 new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress),
+                "thread-resolve",
                 tid, startAddress
                 );
         }
@@ -314,7 +315,7 @@ namespace ProcessHacker
                     if (item.ThreadQueryLimitedHandle != null)
                         item.ThreadQueryLimitedHandle.Dispose();
 
-                    this.CallDictionaryRemoved(item);
+                    this.OnDictionaryRemoved(item);
                     newdictionary.Remove(tid);
                 }
             }
@@ -431,7 +432,7 @@ namespace ProcessHacker
                     this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
 
                     newdictionary.Add(tid, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
                 // look for modified threads
                 else
@@ -511,7 +512,7 @@ namespace ProcessHacker
                         )
                     {
                         newdictionary[tid] = newitem;
-                        this.CallDictionaryModified(item, newitem);
+                        this.OnDictionaryModified(item, newitem);
                     }
                 }
             }

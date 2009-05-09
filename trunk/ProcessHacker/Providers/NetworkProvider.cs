@@ -78,7 +78,7 @@ namespace ProcessHacker
                 {
                     lock (Dictionary)
                     {
-                        CallDictionaryRemoved(connection);   
+                        OnDictionaryRemoved(connection);   
                         newDict.Remove(connection.Id);
                     }
                 }
@@ -92,15 +92,16 @@ namespace ProcessHacker
 
                     newConnection.Tag = this.RunCount;
                     newDict.Add(newConnection.Id, newConnection);
-                    CallDictionaryAdded(newConnection);
+                    OnDictionaryAdded(newConnection);
 
                     // resolve the IP addresses
                     if (newConnection.Local != null)
                     {
                         if (newConnection.Local.Address.ToString() != "0.0.0.0")
                         {
-                            WorkQueue.GlobalQueueWorkItem(
+                            WorkQueue.GlobalQueueWorkItemTag(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                "network-resolve",
                                 newConnection.Id,
                                 false,
                                 newConnection.Local.Address
@@ -111,8 +112,9 @@ namespace ProcessHacker
                     {
                         if (newConnection.Remote.Address.ToString() != "0.0.0.0")
                         {
-                            WorkQueue.GlobalQueueWorkItem(
+                            WorkQueue.GlobalQueueWorkItemTag(
                                 new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                "network-resolve",
                                 newConnection.Id,
                                 true,
                                 newConnection.Remote.Address
@@ -130,7 +132,7 @@ namespace ProcessHacker
 
                             newConnection.State = connection.State;
 
-                            CallDictionaryModified(Dictionary[connection.Id], newConnection);
+                            OnDictionaryModified(Dictionary[connection.Id], newConnection);
                             Dictionary[connection.Id] = connection;
                         }
                     }
@@ -169,7 +171,7 @@ namespace ProcessHacker
                             else
                                 modConnection.LocalString = entry.HostName;
 
-                            CallDictionaryModified(Dictionary[id], modConnection);
+                            OnDictionaryModified(Dictionary[id], modConnection);
                             Dictionary[id] = modConnection;
                         }
                         catch { }

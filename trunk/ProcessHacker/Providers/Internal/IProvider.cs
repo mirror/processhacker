@@ -10,7 +10,6 @@ namespace ProcessHacker
         bool Busy { get; }
         bool CreateThread { get; set; }
         bool Enabled { get; set; }
-        bool UseInvoke { get; set; }
         void RunOnce();
         void RunOnceAsync();
         void InterlockedExecute(Delegate action, params object[] args);

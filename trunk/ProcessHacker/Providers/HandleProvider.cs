@@ -88,7 +88,7 @@ namespace ProcessHacker
                 if (!processHandles.ContainsKey(h) ||
                     processHandles[h].Object != this.Dictionary[h].Handle.Object)
                 {
-                    this.CallDictionaryRemoved(this.Dictionary[h]);
+                    this.OnDictionaryRemoved(this.Dictionary[h]);
                     newdictionary.Remove(h);
                 }
             }
@@ -119,7 +119,7 @@ namespace ProcessHacker
                     item.ObjectInfo = info;
 
                     newdictionary.Add(h, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
             }
 

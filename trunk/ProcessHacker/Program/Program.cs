@@ -770,6 +770,12 @@ namespace ProcessHacker
             info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
             info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount.ToString());
 
+            foreach (WorkQueue.WorkItem workItem in WorkQueue.GlobalWorkQueue.GetQueuedWorkItems())
+                if (workItem.Tag != null)
+                    info.AppendLine("[" + workItem.Tag + "]: " + workItem.Work.Method.Name);
+                else
+                    info.AppendLine(workItem.Work.Method.Name);
+
             info.AppendLine();
             info.AppendLine("CLR THREAD POOL");
             int maxWt, maxIoc, minWt, minIoc, wt, ioc;

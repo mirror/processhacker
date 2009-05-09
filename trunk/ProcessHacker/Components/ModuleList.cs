@@ -150,8 +150,6 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.UseInvoke = true;
-                    _provider.Invoke = new ModuleProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new ModuleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new ModuleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new ModuleProvider.ProviderUpdateOnce(provider_Updated);
@@ -234,26 +232,32 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ModuleItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
-                item.RunId > 0 && _runCount > 0);
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                        item.RunId > 0 && _runCount > 0);
 
-            litem.Name = item.BaseAddress.ToString();
-            litem.Text = item.Name;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Misc.GetNiceSizeName(item.Size) : ""));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
-            litem.ToolTipText = item.FileName;
-            litem.Tag = item;
+                    litem.Name = item.BaseAddress.ToString();
+                    litem.Text = item.Name;
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Misc.GetNiceSizeName(item.Size) : ""));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
+                    litem.ToolTipText = item.FileName;
+                    litem.Tag = item;
 
-            if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
-                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
+                    if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
+                        litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
 
-            listModules.Items.Add(litem);
+                    listModules.Items.Add(litem);
+                }));
         }
 
         private void provider_DictionaryRemoved(ModuleItem item)
         {
-            listModules.Items[item.BaseAddress.ToString()].Remove();
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    listModules.Items[item.BaseAddress.ToString()].Remove();
+                }));
         }
 
         public void SaveSettings()

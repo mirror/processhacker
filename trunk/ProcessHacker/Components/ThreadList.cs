@@ -273,8 +273,6 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.UseInvoke = true;
-                    _provider.Invoke = new ThreadProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new ThreadProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new ThreadProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new ThreadProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
@@ -318,8 +316,14 @@ namespace ProcessHacker.Components
 
             if (_needsSort)
             {
-                listThreads.Sort();
-                _needsSort = false;
+                this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        if (_needsSort)
+                        {
+                            listThreads.Sort();
+                            _needsSort = false;
+                        }
+                    }));
             }
 
             _runCount++;
@@ -337,65 +341,77 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
-                item.RunId > 0 && _runCount > 0);
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                        item.RunId > 0 && _runCount > 0);
 
-            litem.Name = item.Tid.ToString();
-            litem.Text = item.Tid.ToString();
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
-            litem.Tag = item;
-            litem.NormalColor = GetThreadColor(item);
+                    litem.Name = item.Tid.ToString();
+                    litem.Text = item.Tid.ToString();
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
+                    litem.Tag = item;
+                    litem.NormalColor = GetThreadColor(item);
 
-            listThreads.Items.Add(litem);
+                    listThreads.Items.Add(litem);
+                }));
         }
 
         private void provider_DictionaryModified(ThreadItem oldItem, ThreadItem newItem)
         {
-            lock (listThreads)
-            {
-                ListViewItem litem = listThreads.Items[newItem.Tid.ToString()];
-
-                if (litem == null)
-                    return;
-
-                if (!OSVersion.HasCycleTime)
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
-                    if (newItem.ContextSwitchesDelta == 0)
-                        litem.SubItems[1].Text = "";
-                    else
-                        litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
-                }
-                else
-                {
-                    if (newItem.CyclesDelta == 0)
-                        litem.SubItems[1].Text = "";
-                    else
-                        litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
-                }
+                    lock (listThreads)
+                    {
+                        ListViewItem litem = listThreads.Items[newItem.Tid.ToString()];
 
-                litem.SubItems[2].Text = newItem.StartAddress;
-                litem.SubItems[3].Text = newItem.Priority;
-                litem.Tag = newItem;
+                        if (litem == null)
+                            return;
 
-                (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
-                _needsSort = true;
-            }
+                        if (!OSVersion.HasCycleTime)
+                        {
+                            if (newItem.ContextSwitchesDelta == 0)
+                                litem.SubItems[1].Text = "";
+                            else
+                                litem.SubItems[1].Text = newItem.ContextSwitchesDelta.ToString("N0");
+                        }
+                        else
+                        {
+                            if (newItem.CyclesDelta == 0)
+                                litem.SubItems[1].Text = "";
+                            else
+                                litem.SubItems[1].Text = newItem.CyclesDelta.ToString("N0");
+                        }
+
+                        litem.SubItems[2].Text = newItem.StartAddress;
+                        litem.SubItems[3].Text = newItem.Priority;
+                        litem.Tag = newItem;
+
+                        (litem as HighlightedListViewItem).NormalColor = GetThreadColor(newItem);
+                        _needsSort = true;
+                    }
+                }));
         }
 
         private void provider_DictionaryRemoved(ThreadItem item)
         {
-            int index = listThreads.Items[item.Tid.ToString()].Index;
-            bool selected = listThreads.Items[item.Tid.ToString()].Selected;
-            int selectedCount = listThreads.SelectedItems.Count;
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    lock (listThreads)
+                    {
+                        int index = listThreads.Items[item.Tid.ToString()].Index;
+                        bool selected = listThreads.Items[item.Tid.ToString()].Selected;
+                        int selectedCount = listThreads.SelectedItems.Count;
 
-            listThreads.Items[item.Tid.ToString()].Remove();
+                        listThreads.Items[item.Tid.ToString()].Remove();
+                    }
+                }));
         }
 
         private void provider_LoadingStateChanged(bool loading)
         {
-            this.BeginInvoke(new MethodInvoker(delegate
+            this.BeginInvoke(new MethodInvoker(() =>
                 {
                     if (loading)
                         listThreads.Cursor = Cursors.AppStarting;

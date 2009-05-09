@@ -41,15 +41,21 @@ namespace ProcessHacker
     /// </summary>
     public class WorkQueue
     {
-        private class WorkItem
-        {              
-            public Delegate _work;
-            public object[] _args;
+        public class WorkItem
+        {
+            private string _tag;
+            private Delegate _work;
+            private object[] _args;
 
             public WorkItem(Delegate work, object[] args)
+                : this(work, args, null)
+            { }
+
+            public WorkItem(Delegate work, object[] args, string tag)
             {
                 _work = work;
                 _args = args;
+                _tag = tag;
             }
 
             public Delegate Work
@@ -57,9 +63,14 @@ namespace ProcessHacker
                 get { return _work; }
             }
 
-            public object[] Parameter
+            public object[] Arguments
             {
                 get { return _args; }
+            }
+
+            public string Tag
+            {
+                get { return _tag; }
             }
 
             public void PerformWork()
@@ -97,7 +108,28 @@ namespace ProcessHacker
         /// <param name="args">The arguments to pass to the delegate.</param>
         public static void GlobalQueueWorkItem(Delegate work, params object[] args)
         {
-            _globalWorkQueue.QueueWorkItem(work, true, args);
+            _globalWorkQueue.QueueWorkItemTag(work, null, true, args);
+        }
+
+        /// <summary>
+        /// Queues work for the global work queue.
+        /// </summary>
+        /// <param name="work">The work to be executed.</param>
+        /// <param name="tag">A tag for the work item.</param>
+        public static void GlobalQueueWorkItemTag(Delegate work, string tag)
+        {
+            _globalWorkQueue.QueueWorkItemTag(work, tag, true, null);
+        }
+
+        /// <summary>
+        /// Queues work for the global work queue.
+        /// </summary>
+        /// <param name="work">The work to be executed.</param>
+        /// <param name="tag">A tag for the work item.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        public static void GlobalQueueWorkItemTag(Delegate work, string tag, params object[] args)
+        {
+            _globalWorkQueue.QueueWorkItemTag(work, tag, true, args);
         }
 
         /// <summary>
@@ -201,12 +233,22 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets the work items in the queue.
+        /// </summary>
+        /// <returns>An array of WorkItem objects.</returns>
+        public WorkItem[] GetQueuedWorkItems()
+        {
+            lock (_workQueue)
+                return _workQueue.ToArray();
+        }   
+
+        /// <summary>
         /// Queues work for the worker thread(s).
         /// </summary>
         /// <param name="work">The work to be performed.</param>
         public void QueueWorkItem(Delegate work)
         {
-            this.QueueWorkItem(work, true, null);
+            this.QueueWorkItemTag(work, null, true, null);
         }
 
         /// <summary>
@@ -216,19 +258,41 @@ namespace ProcessHacker
         /// <param name="args">The arguments to pass to the delegate.</param>
         public void QueueWorkItem(Delegate work, params object[] args)
         {
-            this.QueueWorkItem(work, true, args);
+            this.QueueWorkItemTag(work, null, true, args);
         }
 
         /// <summary>
         /// Queues work for the worker thread(s).
         /// </summary>
         /// <param name="work">The work to be performed.</param>
+        /// <param name="tag">A tag for the work item.</param>
+        public void QueueWorkItemTag(Delegate work, string tag)
+        {
+            this.QueueWorkItemTag(work, tag, true, null);
+        }
+
+        /// <summary>
+        /// Queues work for the worker thread(s).
+        /// </summary>
+        /// <param name="work">The work to be performed.</param>
+        /// <param name="tag">A tag for the work item.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        public void QueueWorkItemTag(Delegate work, string tag, params object[] args)
+        {
+            this.QueueWorkItemTag(work, tag, true, args);
+        }
+
+        /// <summary>
+        /// Queues work for the worker thread(s).
+        /// </summary>
+        /// <param name="work">The work to be performed.</param>
+        /// <param name="tag">A tag for the work item.</param>
         /// <param name="isArray">Ignored.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public void QueueWorkItem(Delegate work, bool isArray, object[] args)
+        public void QueueWorkItemTag(Delegate work, string tag, bool isArray, object[] args)
         {
             lock (_workQueue)
-                _workQueue.Enqueue(new WorkItem(work, args));
+                _workQueue.Enqueue(new WorkItem(work, args, tag));
 
             _workArrivedEvent.Set();
 

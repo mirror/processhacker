@@ -165,8 +165,6 @@ namespace ProcessHacker.Components
 
                 if (_provider != null)
                 {
-                    _provider.UseInvoke = true;
-                    _provider.Invoke = new MemoryProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new MemoryProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryModified += new MemoryProvider.ProviderDictionaryModified(provider_DictionaryModified);
                     _provider.DictionaryRemoved += new MemoryProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
@@ -283,8 +281,14 @@ namespace ProcessHacker.Components
         {
             if (_needsSort)
             {
-                this.Sort();
-                _needsSort = false;
+                this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        if (_needsSort)
+                        {
+                            this.Sort();
+                            _needsSort = false;
+                        }
+                    }));
             }
 
             _runCount++;
@@ -292,24 +296,36 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(MemoryItem item)
         {
-            _memoryItems.Add(item);
-
-            if (this.AutomaticSort)
-                this.Sort();
-
-            listMemory.VirtualListSize = _memoryItems.Count;
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    _memoryItems.Add(item);
+                    listMemory.VirtualListSize = _memoryItems.Count;
+                    _needsSort = true;
+                }));
         }
 
         private void provider_DictionaryModified(MemoryItem oldItem, MemoryItem newItem)
         {
-            _memoryItems[_memoryItems.IndexOf(oldItem)] = newItem;
-            _needsSort = true;
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    lock (_memoryItems)
+                    {
+                        _memoryItems[_memoryItems.IndexOf(oldItem)] = newItem;
+                        _needsSort = true;
+                    }
+                }));
         }
 
         private void provider_DictionaryRemoved(MemoryItem item)
         {
-            _memoryItems.Remove(item);
-            listMemory.VirtualListSize = _provider.Dictionary.Count;
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    lock (_memoryItems)
+                    {
+                        _memoryItems.Remove(item);
+                        listMemory.VirtualListSize = _provider.Dictionary.Count;
+                    }
+                }));
         }
 
         public ListViewItem MakeListViewItem(MemoryItem item)
@@ -347,7 +363,10 @@ namespace ProcessHacker.Components
 
         public void listMemory_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            e.Item = this.MakeListViewItem(this.GetMemoryItem(e.ItemIndex));
+            lock (listMemory)
+            {
+                e.Item = this.MakeListViewItem(this.GetMemoryItem(e.ItemIndex));
+            }
         }
 
         public void SaveSettings()

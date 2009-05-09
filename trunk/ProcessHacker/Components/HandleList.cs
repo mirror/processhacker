@@ -168,8 +168,6 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.UseInvoke = true;
-                    _provider.Invoke = new HandleProvider.ProviderInvokeMethod(this.BeginInvoke);
                     _provider.DictionaryAdded += new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                     _provider.DictionaryRemoved += new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
                     _provider.Updated += new HandleProvider.ProviderUpdateOnce(provider_Updated);
@@ -212,36 +210,42 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(HandleItem item)
         {
-            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext, 
-                item.RunId > 0 && _runCount > 0);
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                        item.RunId > 0 && _runCount > 0);
 
-            litem.Name = item.Handle.Handle.ToString();
-            litem.Text = item.ObjectInfo.TypeName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
+                    litem.Name = item.Handle.Handle.ToString();
+                    litem.Text = item.ObjectInfo.TypeName;
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
 
-            if (Properties.Settings.Default.UseColorProtectedHandles && 
-                (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
-                )
-                litem.NormalColor = Properties.Settings.Default.ColorProtectedHandles;
-            if (Properties.Settings.Default.UseColorInheritHandles && 
-                (item.Handle.Flags & HandleFlags.Inherit) != 0
-                )
-                litem.NormalColor = Properties.Settings.Default.ColorInheritHandles;
+                    if (Properties.Settings.Default.UseColorProtectedHandles &&
+                        (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
+                        )
+                        litem.NormalColor = Properties.Settings.Default.ColorProtectedHandles;
+                    if (Properties.Settings.Default.UseColorInheritHandles &&
+                        (item.Handle.Flags & HandleFlags.Inherit) != 0
+                        )
+                        litem.NormalColor = Properties.Settings.Default.ColorInheritHandles;
 
-            listHandles.Items.Add(litem);
+                    listHandles.Items.Add(litem);
+                }));
         }
 
         private void provider_DictionaryRemoved(HandleItem item)
         {
-            lock (_listLock)
-            {
-                int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
-                bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
-                int selectedCount = listHandles.SelectedItems.Count;
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    lock (_listLock)
+                    {
+                        int index = listHandles.Items[item.Handle.Handle.ToString()].Index;
+                        bool selected = listHandles.Items[item.Handle.Handle.ToString()].Selected;
+                        int selectedCount = listHandles.SelectedItems.Count;
 
-                listHandles.Items[item.Handle.Handle.ToString()].Remove();
-            }
+                        listHandles.Items[item.Handle.Handle.ToString()].Remove();
+                    }
+                }));
         }
 
         private int _pid;

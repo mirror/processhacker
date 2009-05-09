@@ -98,7 +98,7 @@ namespace ProcessHacker
             {
                 if (!memoryInfo.ContainsKey(address))
                 {
-                    this.CallDictionaryRemoved(this.Dictionary[address]);
+                    this.OnDictionaryRemoved(this.Dictionary[address]);
                     newdictionary.Remove(address);
                 }
             }
@@ -135,7 +135,7 @@ namespace ProcessHacker
                         item.ModuleName = null;
                                                     
                     newdictionary.Add(address, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
                 else
                 {
@@ -156,7 +156,7 @@ namespace ProcessHacker
                         newitem.Protection = info.Protect;
 
                         newdictionary[address] = newitem;
-                        this.CallDictionaryModified(item, newitem);
+                        this.OnDictionaryModified(item, newitem);
                     }
                 }
             }

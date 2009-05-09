@@ -33,7 +33,6 @@ namespace ProcessHacker.Components
         private ServiceProvider _provider;
         private int _runCount = 0;
         private HighlightingContext _highlightingContext;
-        private SortedListViewComparer _lvComparer;
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -52,10 +51,7 @@ namespace ProcessHacker.Components
             listServices.MouseUp += new MouseEventHandler(listServices_MouseUp);
             listServices.DoubleClick += new EventHandler(listServices_DoubleClick);
             listServices.SelectedIndexChanged += new System.EventHandler(listServices_SelectedIndexChanged);
-
-            _lvComparer = new SortedListViewComparer(listServices);
-            listServices.Sorting = SortOrder.None;
-            listServices.ListViewItemSorter = null;
+            listServices.ListViewItemSorter = new SortedListViewComparer(listServices);
         }
 
         private void listServices_DoubleClick(object sender, EventArgs e)
@@ -150,8 +146,6 @@ namespace ProcessHacker.Components
                 {
                     //_provider.InterlockedExecute(new MethodInvoker(() =>
                     //{
-                        _provider.UseInvoke = true;
-                        _provider.Invoke = new ServiceProvider.ProviderInvokeMethod(this.BeginInvoke);
                         _provider.DictionaryAdded += new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
                         _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified);
                         _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
@@ -196,13 +190,16 @@ namespace ProcessHacker.Components
         {
             _highlightingContext.Tick();
 
-            if (_runCount > 0 && listServices.ListViewItemSorter != _lvComparer)
-                listServices.ListViewItemSorter = _lvComparer;
-
             if (_needsSort)
             {
-                listServices.Sort();
-                _needsSort = false;
+                this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        if (_needsSort)
+                        {
+                            listServices.Sort();
+                            _needsSort = false;
+                        }
+                    }));
             }
 
             _runCount++;
@@ -210,17 +207,28 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded), item);
+                return;
+            }
+
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
                 item.RunId > 0 && _runCount > 0);
 
             litem.Name = item.Status.ServiceName;
             litem.Text = item.Status.ServiceName;
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.DisplayName));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.ServiceStatusProcess.ServiceType.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Status.ServiceStatusProcess.CurrentState.ToString()));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Config.StartType.ToString()));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
-                item.Status.ServiceStatusProcess.ProcessID == 0 ? "" : item.Status.ServiceStatusProcess.ProcessID.ToString()));
+                item.Status.DisplayName));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                item.Status.ServiceStatusProcess.ServiceType.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                item.Status.ServiceStatusProcess.CurrentState.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                item.Config.StartType.ToString()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem,
+                item.Status.ServiceStatusProcess.ProcessID == 0 ? "" :
+                item.Status.ServiceStatusProcess.ProcessID.ToString()));
 
             if ((item.Status.ServiceStatusProcess.ServiceType & ServiceType.InteractiveProcess) != 0)
                 litem.ImageKey = "Interactive";
@@ -244,6 +252,12 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ServiceProvider.ProviderDictionaryModified(provider_DictionaryModified), oldItem, newItem);
+                return;
+            }
+
             lock (listServices)
             {
                 ListViewItem litem = listServices.Items[newItem.Status.ServiceName];
@@ -263,12 +277,21 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryRemoved(ServiceItem item)
         {
-            int index = listServices.Items[item.Status.ServiceName].Index;
-            bool selected = listServices.Items[item.Status.ServiceName].Selected;
-            int selectedCount = listServices.SelectedItems.Count;
-            ListViewItem litem = listServices.Items[item.Status.ServiceName];
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new ServiceProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved), item);
+                return;
+            }
 
-            litem.Remove();
+            lock (listServices)
+            {
+                int index = listServices.Items[item.Status.ServiceName].Index;
+                bool selected = listServices.Items[item.Status.ServiceName].Selected;
+                int selectedCount = listServices.SelectedItems.Count;
+                ListViewItem litem = listServices.Items[item.Status.ServiceName];
+
+                litem.Remove();
+            }
         }
     }
 }

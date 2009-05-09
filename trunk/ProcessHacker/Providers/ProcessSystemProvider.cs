@@ -304,12 +304,14 @@ namespace ProcessHacker
                     _fpResults.Enqueue(fpResult);
             }
 
-            WorkQueue.GlobalQueueWorkItem(
+            WorkQueue.GlobalQueueWorkItemTag(
                 new ProcessFileDelegate(this.ProcessFileStage1a),
+                "process-stage1a",
                 pid, fileName, forced
                 );
-            WorkQueue.GlobalQueueWorkItem(
+            WorkQueue.GlobalQueueWorkItemTag(
                 new ProcessFileDelegate(this.ProcessFileStage2),
+                "process-stage2",
                 pid, fileName, forced
                 );
 
@@ -555,8 +557,9 @@ namespace ProcessHacker
 
         public void QueueFileProcessing(int pid)
         {
-            WorkQueue.GlobalQueueWorkItem(
+            WorkQueue.GlobalQueueWorkItemTag(
                 new ProcessFileDelegate(this.ProcessFileStage1),
+                "process-stage1",
                 pid, this.Dictionary[pid].FileName, true
                 );
         }
@@ -708,7 +711,7 @@ namespace ProcessHacker
                 {
                     ProcessItem item = this.Dictionary[pid];
 
-                    this.CallDictionaryRemoved(item);
+                    this.OnDictionaryRemoved(item);
 
                     if (item.ProcessQueryHandle != null)
                         item.ProcessQueryHandle.Dispose();
@@ -950,8 +953,9 @@ namespace ProcessHacker
                     {
                         if (pid > 0)
                         {
-                            WorkQueue.GlobalQueueWorkItem(
+                            WorkQueue.GlobalQueueWorkItemTag(
                                 new ProcessFileDelegate(this.ProcessFileStage1),
+                                "process-stage1",
                                 pid, item.FileName, false);
                         }
                     }
@@ -984,7 +988,7 @@ namespace ProcessHacker
                         queryLimitedHandle.Dispose();
 
                     newdictionary.Add(pid, item);
-                    this.CallDictionaryAdded(item);
+                    this.OnDictionaryAdded(item);
                 }
                 // look for modified processes
                 else
@@ -1065,8 +1069,9 @@ namespace ProcessHacker
                     {
                         if (item.IsPacked && item.ProcessingAttempts < 3)
                         {
-                            WorkQueue.GlobalQueueWorkItem(
+                            WorkQueue.GlobalQueueWorkItemTag(
                                 new ProcessFileDelegate(this.ProcessFileStage2),
+                                "process-stage2",
                                 pid, item.FileName, true
                                 );
                             item.ProcessingAttempts++;
@@ -1078,7 +1083,7 @@ namespace ProcessHacker
 
                     if (fullUpdate)
                     {
-                        this.CallDictionaryModified(null, item);
+                        this.OnDictionaryModified(null, item);
                     }
 
                     item.JustProcessed = false;

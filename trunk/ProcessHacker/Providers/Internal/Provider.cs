@@ -38,14 +38,6 @@ namespace ProcessHacker
         public delegate void ProviderUpdateOnce();
 
         /// <summary>
-        /// Represents an invoke method (either Invoke() or BeginInvoke() on a form).
-        /// </summary>
-        /// <param name="method">The method to invoke.</param>
-        /// <param name="args">The arguments to pass to the method.</param>
-        /// <returns></returns>
-        public delegate object ProviderInvokeMethod(Delegate method, params object[] args);
-
-        /// <summary>
         /// Represents a handler called when a dictionary item is added.
         /// </summary>
         /// <param name="item">The added item.</param>
@@ -69,9 +61,6 @@ namespace ProcessHacker
         /// <param name="ex">The raised exception.</param>
         public delegate void ProviderError(Exception ex);
 
-        private delegate void InvokeDelegate(TValue item);
-        private delegate void InvokeDelegate2(TValue oldItem, TValue newItem);
-
         /// <summary>
         /// Occurs when the provider needs to update the dictionary (after waiting the duration of the interval).
         /// </summary>
@@ -85,11 +74,6 @@ namespace ProcessHacker
         /// Occurs when the provider has been updated.
         /// </summary>
         public event ProviderUpdateOnce Updated;
-
-        /// <summary>
-        /// Occurs when the provider needs to invoke a method on another thread.
-        /// </summary>
-        public ProviderInvokeMethod Invoke;
 
         /// <summary>
         /// Occurs when the provider adds an item to the dictionary.
@@ -122,7 +106,6 @@ namespace ProcessHacker
         private bool _busy = false;
         private bool _createThread = true;
         private bool _enabled = false;
-        private bool _useInvoke = false;
         private int _runCount = 0;
         private int _interval;
 
@@ -263,15 +246,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Determines whether the provider should invoke the DictionaryAdded, Modified and Removed events.
-        /// </summary>
-        public bool UseInvoke
-        {
-            get { return _useInvoke; }
-            set { _useInvoke = value; }
-        }
-
-        /// <summary>
         /// Gets the number of times this provider has updated.
         /// </summary>
         public int RunCount
@@ -375,7 +349,7 @@ namespace ProcessHacker
         /// </summary>
         public void RunOnceAsync()
         {
-            WorkQueue.GlobalQueueWorkItem(new Action(this.RunOnce));
+            WorkQueue.GlobalQueueWorkItemTag(new Action(this.RunOnce), "provider-runonceasync");
         }
 
         /// <summary>
@@ -414,80 +388,34 @@ namespace ProcessHacker
             Monitor.Wait(_busyLock, timeout);
         }
 
-        private void CallEvent(Delegate e, TValue item, bool useInvoke)
+        private void CallEvent(Delegate e, params object[] args)
         {
-            if (useInvoke)
+            if (e != null)
             {
-                this.Invoke(new InvokeDelegate(delegate(TValue item_)
+                try
                 {
-                    CallEvent(e, item_, false);
-                }), item);
-            }
-            else
-            {
-                if (e != null)
+                    e.DynamicInvoke(args);
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        e.DynamicInvoke(item);
-                    }
-                    catch
-                    { }
+                    Logging.Log(ex);
                 }
             }
         }
 
-        private void CallEvent(Delegate e, TValue oldItem, TValue newItem, bool useInvoke)
+        protected void OnDictionaryAdded(TValue item)
         {
-            if (useInvoke)
-            {
-                this.Invoke(new InvokeDelegate2(delegate(TValue oldItem_, TValue newItem_)
-                {
-                    CallEvent(e, oldItem_, newItem_, false);
-                }), oldItem, newItem);
-            }
-            else
-            {
-                if (e != null)
-                {
-                    try
-                    {
-                        e.DynamicInvoke(oldItem, newItem);
-                    }
-                    catch
-                    { }
-                }
-            }
+            this.CallEvent(this.DictionaryAdded, item);
         }
 
-        protected void CallDictionaryAdded(TValue item)
+        protected void OnDictionaryModified(TValue oldItem, TValue newItem)
         {
-            CallDictionaryAdded(item, _useInvoke);
+            this.CallEvent(this.DictionaryModified, oldItem, newItem);
         }
 
-        protected void CallDictionaryAdded(TValue item, bool useInvoke)
+        protected void OnDictionaryRemoved(TValue item)
         {
-            CallEvent(this.DictionaryAdded, item, useInvoke);
-        }
-
-        protected void CallDictionaryModified(TValue oldItem, TValue newItem)
-        {
-            CallDictionaryModified(oldItem, newItem, _useInvoke);
-        }
-
-        protected void CallDictionaryModified(TValue oldItem, TValue newItem, bool useInvoke)
-        {
-            CallEvent(this.DictionaryModified, oldItem, newItem, useInvoke);
-        }
-
-        protected void CallDictionaryRemoved(TValue item)
-        {
-            CallDictionaryRemoved(item, _useInvoke);
-        }
-
-        protected void CallDictionaryRemoved(TValue item, bool useInvoke)
-        {
-            CallEvent(this.DictionaryRemoved, item, useInvoke);
+            this.CallEvent(this.DictionaryRemoved, item);
         }
     }
 }
