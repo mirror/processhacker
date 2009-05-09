@@ -439,11 +439,6 @@ namespace ProcessHacker.Native.Objects
         /// Gets the process' DEP policy.
         /// </summary>
         /// <returns>A DEPStatus enum.</returns>
-        /// <remarks>This function does not work on 
-        /// Windows XP SP2 or lower, since they do not 
-        /// have the GetProcessDEPPolicy function. It is possible 
-        /// to use NtQueryInformationProcess with ProcessExecuteFlags, 
-        /// but it doesn't seem to work.</remarks>
         public DepStatus GetDepStatus()
         {
             int status;
@@ -484,10 +479,10 @@ namespace ProcessHacker.Native.Objects
         public unsafe IDictionary<string, string> GetEnvironmentVariables()
         {
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
-            byte* buffer = stackalloc byte[4];
+            byte* buffer = stackalloc byte[IntPtr.Size];
 
-            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, 4);
-            int processParameters = *(int*)buffer;
+            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, IntPtr.Size);
+            IntPtr processParameters = *(IntPtr*)buffer;
 
             /*
              * RTL_USER_PROCESS_PARAMETERS
@@ -508,22 +503,22 @@ namespace ProcessHacker.Native.Objects
              * +40 UNICODE_STRING CommandLine
              * +48 PVOID Environment
              */
-            this.ReadMemory(new IntPtr( processParameters + 0x48), buffer, 4);
-            int envBase = *(int*)buffer;
+            this.ReadMemory(processParameters.Increment(0x48), buffer, IntPtr.Size);
+            IntPtr envBase = *(IntPtr*)buffer;
             int length = 0;
 
             {
-                MemoryBasicInformation mbi = this.QueryMemory(new IntPtr(envBase));
+                MemoryBasicInformation mbi = this.QueryMemory(envBase);
 
                 if (mbi.Protect == MemoryProtection.NoAccess)
                     throw new WindowsException();
 
-                length = mbi.RegionSize - (envBase - mbi.BaseAddress.ToInt32());
+                length = mbi.RegionSize - envBase.Decrement(mbi.BaseAddress).ToInt32();
             }
 
             // Now we read in the entire region of memory
             // And yes, some memory is wasted.
-            byte[] memory = this.ReadMemory(new IntPtr(envBase), length);
+            byte[] memory = this.ReadMemory(envBase, length);
 
             /* The environment variables block is a series of Unicode strings separated by 
              * two null bytes. The entire block is terminated by four null bytes.
@@ -756,7 +751,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A string.</returns>
         public unsafe string GetPebString(PebOffset offset)
         {
-            byte* buffer = stackalloc byte[4];
+            byte* buffer = stackalloc byte[IntPtr.Size];
             IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
 
             /* read address of parameter information block
@@ -772,8 +767,8 @@ namespace ProcessHacker.Native.Objects
              * +0c PVOID LoaderData;
              * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
              */
-            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, 4);
-            int processParameters = *(int*)buffer;
+            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, IntPtr.Size);
+            IntPtr processParameters = *(IntPtr*)buffer;
 
             // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
             // specified in the enum.
@@ -783,13 +778,13 @@ namespace ProcessHacker.Native.Objects
             // +00 USHORT Length;
             // +02 USHORT MaximumLength;
             // +04 PWSTR Buffer;
-            this.ReadMemory(new IntPtr(processParameters + (int)offset), buffer, 2);
+            this.ReadMemory(processParameters.Increment((int)offset), buffer, 2);
             ushort stringLength = *(ushort*)buffer;
             byte[] stringData = new byte[stringLength];
 
             // read address of string
-            this.ReadMemory(new IntPtr(processParameters + (int)offset + 0x4), buffer, 4);
-            IntPtr stringAddr = new IntPtr(*(int*)buffer);
+            this.ReadMemory(processParameters.Increment((int)offset + 0x4), buffer, 4);
+            IntPtr stringAddr = *(IntPtr*)buffer;
 
             // read string and decode it
             return UnicodeEncoding.Unicode.GetString(
