@@ -138,9 +138,56 @@ BOOLEAN KphEnumProcessHandleTable(
         handleTable,
         EnumHandleProcedure,
         Context,
-        Handle);
+        Handle
+        );
     ObDereferenceProcessHandleTable(Process);
+    
     return result;
+}
+
+/* KphpSetHandleGrantedAccessEnumCallback
+ * 
+ * The callback for KphEnumProcessHandleTable, used by 
+ * KphSetHandleGrantedAccess.
+ */
+BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
+    PHANDLE_TABLE_ENTRY HandleTableEntry,
+    HANDLE Handle,
+    PSET_HANDLE_GRANTED_ACCESS_DATA Context
+    )
+{
+    if (Handle != Context->Handle)
+        return FALSE;
+    
+    HandleTableEntry->GrantedAccess = Context->GrantedAccess;
+    
+    return TRUE;
+}
+
+/* KphSetHandleGrantedAccess
+ * 
+ * Sets the granted access of a handle.
+ */
+NTSTATUS KphSetHandleGrantedAccess(
+    PEPROCESS Process,
+    HANDLE Handle,
+    ACCESS_MASK GrantedAccess
+    )
+{
+    BOOLEAN result;
+    SET_HANDLE_GRANTED_ACCESS_DATA context;
+    
+    context.Handle = Handle;
+    context.GrantedAccess = GrantedAccess;
+    
+    result = KphEnumProcessHandleTable(
+        Process,
+        KphpSetHandleGrantedAccessEnumCallback,
+        &context,
+        NULL
+        );
+    
+    return result ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 }
 
 /* ObDereferenceProcessHandleTable

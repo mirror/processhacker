@@ -233,6 +233,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphTerminateThread";
     else if (ControlCode == KPH_GETFEATURES)
         return "Get Features";
+    else if (ControlCode == KPH_SETHANDLEGRANTEDACCESS)
+        return "KphSetHandleGrantedAccess";
     else if (ControlCode == KPH_ASSIGNIMPERSONATIONTOKEN)
         return "KphAssignImpersonationToken";
     else
@@ -1152,6 +1154,32 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             ret->Features = features;
             retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* KphSetHandleGrantedAccess
+         * 
+         * Sets the granted access for a handle.
+         */
+        case KPH_SETHANDLEGRANTEDACCESS:
+        {
+            struct
+            {
+                HANDLE Handle;
+                ACCESS_MASK GrantedAccess;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphSetHandleGrantedAccess(
+                PsGetCurrentProcess(),
+                args->Handle,
+                args->GrantedAccess
+                );
         }
         break;
         

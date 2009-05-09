@@ -78,7 +78,17 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the job object.</param>
         public JobObjectHandle(ProcessHandle processHandle, JobObjectAccess access)
         {
-            this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, access));
+            try
+            {
+                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle, access));
+            }
+            catch (WindowsException)
+            {
+                // Use KPH to set the handle's granted access.
+                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle,
+                    (JobObjectAccess)StandardRights.Synchronize));
+                KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+            }
 
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();

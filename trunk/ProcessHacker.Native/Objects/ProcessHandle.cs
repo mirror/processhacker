@@ -129,10 +129,28 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(int pid, ProcessAccess access)
         {
+            // If we have KPH, use it.
             if (KProcessHacker.Instance != null)
-                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, access));
+            {
+                try
+                {
+                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid, access));
+                }
+                catch (WindowsException)
+                {
+                    // This would only happen if the process is DRM-protected or if 
+                    // some part of ObReferenceObjectByHandle is hooked. We can 
+                    // open the process with SYNCHRONIZE access and set the granted access 
+                    // using KPH.
+                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcess(pid,
+                        (ProcessAccess)StandardRights.Synchronize));
+                    KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+                }
+            }
             else
+            {
                 this.Handle = Win32.OpenProcess(access, false, pid);
+            }
 
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();

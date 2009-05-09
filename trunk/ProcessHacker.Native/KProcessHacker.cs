@@ -75,7 +75,7 @@ namespace ProcessHacker.Native
             KphGetThreadId,
             KphTerminateThread,
             GetFeatures,
-            Reserved2,
+            KphSetHandleGrantedAccess,
             KphAssignImpersonationToken
         }
 
@@ -461,6 +461,16 @@ namespace ProcessHacker.Native
             *(int*)(inData + 4) = (int)context;
 
             _fileHandle.IoControl(CtlCode(Control.KphSetContextThread), inData, 8, null, 0);
+        }
+
+        public void KphSetHandleGrantedAccess(IntPtr handle, int grantedAccess)
+        {
+            byte* inData = stackalloc byte[8];
+
+            *(int*)inData = handle.ToInt32();
+            *(int*)(inData + 4) = grantedAccess;
+
+            _fileHandle.IoControl(CtlCode(Control.KphSetHandleGrantedAccess), inData, 8, null, 0);
         }
 
         public void KphSuspendProcess(ProcessHandle processHandle)

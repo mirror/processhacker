@@ -96,6 +96,7 @@ EXT ULONG OffEpObjectTable;
 EXT ULONG OffEpProtectedProcessOff;
 EXT ULONG OffEpProtectedProcessBit;
 EXT ULONG OffEpRundownProtect;
+EXT ULONG OffOhBody;
 EXT ULONG OffOtiGenericMapping;
 
 /* Functions

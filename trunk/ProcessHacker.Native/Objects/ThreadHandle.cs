@@ -73,9 +73,23 @@ namespace ProcessHacker.Native.Objects
         public ThreadHandle(int tid, ThreadAccess access)
         {
             if (KProcessHacker.Instance != null)
-                this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread((int)tid, access));
+            {
+                try
+                {
+                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, access));
+                }
+                catch (WindowsException)
+                {
+                    // Open the thread with minimum access (SYNCHRONIZE) and set the granted access.
+                    this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThread(tid, 
+                        (ThreadAccess)StandardRights.Synchronize));
+                    KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+                }
+            }
             else
+            {
                 this.Handle = Win32.OpenThread(access, false, tid);
+            }
 
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();

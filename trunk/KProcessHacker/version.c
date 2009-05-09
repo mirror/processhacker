@@ -119,6 +119,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
         OffOtiGenericMapping = 0x60 + 0x8;
+        OffOhBody = 0x18;
         
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
@@ -181,6 +182,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0x224;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
+        OffOhBody = 0x18;
         
         INIT_SCAN(
             PsTerminateProcessScan,
@@ -231,6 +233,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
         OffOtiGenericMapping = 0x28 + 0xc;
+        OffOhBody = 0x18;
         
         INIT_SCAN(
             PsTerminateProcessScan,

@@ -199,6 +199,12 @@ NTSTATUS KphSetContextThread(
     KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphSetHandleGrantedAccess(
+    PEPROCESS Process,
+    HANDLE Handle,
+    ACCESS_MASK GrantedAccess
+    );
+
 NTSTATUS KphSuspendProcess(
     HANDLE ProcessHandle
     );

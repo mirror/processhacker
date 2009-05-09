@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * KProcessHacker can now perform process memory reading/writing 
      by itself and does not require MmCopyVirtualMemory
+   * KProcessHacker can now bypass all handle-opening protections
    * Better highlighting
    * Shows function file and line numbers where available
  * FIXED:
