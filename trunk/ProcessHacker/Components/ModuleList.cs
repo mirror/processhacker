@@ -359,14 +359,17 @@ namespace ProcessHacker.Components
                 PEWindow pw = Program.GetPEWindow(listModules.SelectedItems[0].ToolTipText,
                     new Program.PEWindowInvokeAction(delegate(PEWindow f)
                     {
-                        try
+                        if (!f.IsDisposed)
                         {
-                            f.Show();
-                            f.Activate();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
+                            try
+                            {
+                                f.Show();
+                                f.Activate();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
                         }
                     }));
             }
