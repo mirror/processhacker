@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   local security authority handle
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 

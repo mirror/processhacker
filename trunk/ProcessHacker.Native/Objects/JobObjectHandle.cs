@@ -185,13 +185,15 @@ namespace ProcessHacker.Native.Objects
     public enum JobObjectInformationClass : int
     {
         JobObjectBasicAccountingInformation = 1,
-        JobObjectBasicLimitInformation = 2,
-        JobObjectBasicProcessIdList = 3,
-        JobObjectBasicUIRestrictions = 4,
-        JobObjectSecurityLimitInformation = 5,
-        JobObjectBasicAndIoAccountingInformation = 8,
-        JobObjectExtendedLimitInformation = 9,
-        JobObjectGroupInformation = 11
+        JobObjectBasicLimitInformation,
+        JobObjectBasicProcessIdList,
+        JobObjectBasicUIRestrictions,
+        JobObjectSecurityLimitInformation,
+        JobObjectEndOfJobTimeInformation,
+        JobObjectAssociateCompletionPortInformation,
+        JobObjectBasicAndIoAccountingInformation,
+        JobObjectExtendedLimitInformation,
+        JobObjectJobSetInformation
     }
 
     [Flags]

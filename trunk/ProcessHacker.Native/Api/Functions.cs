@@ -93,6 +93,28 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Debugging
+
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DebugActiveProcess(
+            [In] int Pid
+            );
+
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DebugActiveProcessStop(
+            [In] int Pid
+            );
+
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DebugSetProcessKillOnExit(
+            [In] bool KillOnExit
+            );
+
+        #endregion
+
         #region Error Handling
 
         [DllImport("ntdll.dll")]
@@ -494,6 +516,20 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtAlertResumeThread(
+            [In] IntPtr ThreadHandle,
+            [Out] [Optional] out int PreviousSuspendCount
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtCreateDebugObject(
+            [Out] out IntPtr DebugObjectHandle,
+            [In] DebugObjectAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] DebugObjectFlags Flags
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtCreateProcess(
             [Out] out IntPtr ProcessHandle,
             [In] ProcessAccess DesiredAccess,
@@ -517,6 +553,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtDebugActiveProcess(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr DebugObjectHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtDuplicateObject(
             [In] IntPtr SourceProcessHandle,
             [In] IntPtr SourceHandle,
@@ -529,7 +571,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtGetNextProcess(
-            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr ProcessHandle,
             [In] ProcessAccess DesiredAccess,
             [In] int HandleAttributes,
             [In] int Flags,
@@ -538,11 +580,12 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtGetNextThread(
-            [In] IntPtr ProcessHandle,
-            [In] ProcessAccess DesiredAccess,
+            [In] [Optional] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr ThreadHandle,
+            [In] ThreadAccess DesiredAccess,
             [In] int HandleAttributes,
             [In] int Flags,
-            [Out] out int NewProcessHandle
+            [Out] out IntPtr NewThreadHandle
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -560,6 +603,12 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtRemoveProcessDebug(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr DebugObjectHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtResumeProcess(
             [In] IntPtr ProcessHandle
             );
@@ -567,6 +616,15 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtSuspendProcess(
             [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtQueueApcThread(
+            [In] IntPtr ThreadHandle,
+            [In] IntPtr ApcRoutine,
+            [In] [Optional] IntPtr ApcArgument1,
+            [In] [Optional] IntPtr ApcArgument2,
+            [In] [Optional] IntPtr ApcArgument3
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
@@ -933,18 +991,6 @@ namespace ProcessHacker.Native.Api
             [In] ProcessAccess DesiredAccess, 
             [In] bool InheritHandle, 
             [In] int ProcessId
-            );
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DebugActiveProcess(
-            [In] int Pid
-            );
-
-        [DllImport("kernel32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DebugActiveProcessStop(
-            [In] int Pid
             );
 
         [DllImport("psapi.dll")]

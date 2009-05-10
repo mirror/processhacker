@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -47,10 +48,11 @@ namespace ProcessHacker
 
             this.AddTest("TP1", "Terminates the process using TerminateProcess");
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
-            this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
             this.AddTest("CH1", "Closes the process' handles");
+            this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
+            this.AddTest("TD1", "Debugs the process and closes the debug object");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
             this.AddTest("TT3", "Terminates the process' threads in kernel-mode (if possible)");
             this.AddTest("M1", "Writes garbage to the process' memory regions");
@@ -122,6 +124,97 @@ namespace ProcessHacker
             return false;
         }
 
+        private void CH1()
+        {
+            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.DupHandle))
+            {
+                int i = 0;
+
+                while (true)
+                {
+                    if (i >= 0x1000)
+                        break;
+
+                    try
+                    {
+                        Win32.DuplicateObject(phandle, new IntPtr(i), 0, 0, 0x1);
+                    }
+                    catch
+                    { }
+
+                    i++;
+                }
+            }
+        }
+
+        private void M1()
+        {
+            this.M1Internal();
+        }
+
+        private unsafe void M1Internal()
+        {
+            using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
+            {
+                using (ProcessHandle phandle = new ProcessHandle(_pid,
+                    ProcessAccess.QueryInformation |
+                    Program.MinProcessWriteMemoryRights))
+                {
+                    phandle.EnumMemory((info) =>
+                    {
+                        for (int i = 0; i < info.RegionSize; i += 0x1000)
+                        {
+                            try
+                            {
+                                phandle.WriteMemory(info.BaseAddress.Increment(i), alloc, 0x1000);
+                            }
+                            catch
+                            { }
+                        }
+
+                        return true;
+                    });
+                }
+            }
+        }
+
+        private void M2()
+        {
+            using (ProcessHandle phandle = new ProcessHandle(_pid,
+                ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
+            {
+                phandle.EnumMemory((info) =>
+                {
+                    phandle.ProtectMemory(info.BaseAddress, info.RegionSize, MemoryProtection.NoAccess);
+                    return true;
+                });
+            }
+        }
+
+        private void TD1()
+        {
+            using (var dhandle =
+                DebugObjectHandle.Create(DebugObjectAccess.ProcessAssign, DebugObjectFlags.KillOnClose))
+            {
+                using (var phandle = new ProcessHandle(_pid, ProcessAccess.SuspendResume))
+                    phandle.Debug(dhandle);
+            }
+        }
+
+        private void TJ1()
+        {
+            using (var jhandle = JobObjectHandle.Create(null))
+            {
+                using (ProcessHandle phandle =
+                    new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
+                {
+                    phandle.AssignToJobObject(jhandle);
+                }
+
+                jhandle.Terminate();
+            }
+        }
+
         private void TP1()
         {
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.Terminate))
@@ -143,17 +236,11 @@ namespace ProcessHacker
                     Win32.ThrowLastError();
         }
 
-        private void TJ1()
+        private void TP3()
         {
-            using (var jhandle = JobObjectHandle.Create(null))
+            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
             {
-                using (ProcessHandle phandle =
-                    new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))
-                {
-                    phandle.AssignToJobObject(jhandle);
-                }
-
-                jhandle.Terminate();
+                phandle.Terminate();
             }
         }
 
@@ -192,81 +279,6 @@ namespace ProcessHacker
                     catch
                     { }
                 }
-            }
-        }
-
-        private void M1()
-        {
-            this.M1Internal();
-        }
-
-        private unsafe void M1Internal()
-        {
-            using (MemoryAlloc alloc = new MemoryAlloc(0x1000))
-            {
-                using (ProcessHandle phandle = new ProcessHandle(_pid,
-                    ProcessAccess.QueryInformation |
-                    Program.MinProcessWriteMemoryRights))
-                {
-                    phandle.EnumMemory((info) =>
-                    {
-                        for (int i = 0; i < info.RegionSize; i += 0x1000)
-                        {
-                            try
-                            {
-                                phandle.WriteMemory(info.BaseAddress.Increment(i), alloc, 0x1000);
-                            }
-                            catch
-                            { }
-                        }
-
-                        return true;
-                    });
-                }
-            }
-        }
-
-        private void M2()
-        {
-            using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
-            {
-                phandle.EnumMemory((info) =>
-                    {
-                        phandle.ProtectMemory(info.BaseAddress, info.RegionSize, MemoryProtection.NoAccess);
-                        return true;
-                    });
-            }
-        }
-
-        private void CH1()
-        {
-            using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.DupHandle))
-            {
-                int i = 0;
-
-                while (true)
-                {
-                    if (i >= 0x1000)
-                        break;
-
-                    try
-                    {
-                        Win32.DuplicateObject(phandle, new IntPtr(i), 0, 0, 0x1);
-                    }
-                    catch
-                    { }
-
-                    i++;
-                }
-            }
-        }
-
-        private void TP3()
-        {
-            using (ProcessHandle phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-            {
-                phandle.Terminate();
             }
         }
 

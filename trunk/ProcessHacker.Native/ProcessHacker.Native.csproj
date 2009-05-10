@@ -49,6 +49,7 @@
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="IntPtrExtensions.cs" />
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
+    <Compile Include="Objects\DebugObjectHandle.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
     <Compile Include="Objects\SectionHandle.cs" />
     <Compile Include="Objects\WindowStationHandle.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Memory\LsaMemoryAlloc.cs" />
     <Compile Include="Memory\MemoryAlloc.cs" />
     <Compile Include="Memory\WtsMemoryAlloc.cs" />
+    <Compile Include="Security\DebugObjectAccess.cs" />
     <Compile Include="Security\DesktopAccess.cs" />
     <Compile Include="Security\TimerAccess.cs" />
     <Compile Include="Security\SemaphoreAccess.cs" />

@@ -1,8 +1,8 @@
 ﻿/*
  * Process Hacker - 
- *   local security policy handle
+ *   debug object handle
  * 
- * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -20,31 +20,34 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System;
 
 namespace ProcessHacker.Native.Objects
 {
-    /// <summary>
-    /// Represents a handle to the Windows service manager.
-    /// </summary>
-    public class LsaPolicyHandle : LsaHandle<PolicyAccess>
+    public class DebugObjectHandle : Win32Handle<DebugObjectAccess>
     {
-        /// <summary>
-        /// Connects to the local LSA policy.
-        /// </summary>
-        /// <param name="access">The desired access to the policy.</param>
-        public LsaPolicyHandle(PolicyAccess access)
+        public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
         {
             int status;
-            ObjectAttributes attributes = new ObjectAttributes();
-            IntPtr handle = IntPtr.Zero;
+            IntPtr handle;
 
-            if ((status = Win32.LsaOpenPolicy(IntPtr.Zero, ref attributes, access, ref handle)) < 0)
+            if ((status = Win32.NtCreateDebugObject(
+                out handle,
+                access,
+                IntPtr.Zero,
+                flags
+                )) < 0)
                 Win32.ThrowLastError(status);
 
-            this.Handle = handle;
+            return new DebugObjectHandle(handle, true);
         }
+
+        private DebugObjectHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
     }
 }

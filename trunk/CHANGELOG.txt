@@ -7,6 +7,7 @@ Process Hacker
    * KProcessHacker can now bypass all handle-opening protections
    * Ability to set handle flags such as protect-from-close and inherit
    * Better highlighting
+   * Terminator test: TD1 (debugs a process and closes the debug object)
    * Terminator test: TT3 (TT1 is now completely user-mode)
    * Shows function file and line numbers where available
  * FIXED:

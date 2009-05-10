@@ -235,6 +235,19 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Debugs the process with the specified debug object. This requires the
+        /// PROCESS_SUSPEND_RESUME permission.
+        /// </summary>
+        /// <param name="debugObjectHandle">A handle to a debug object.</param>
+        public void Debug(DebugObjectHandle debugObjectHandle)
+        {
+            int status;
+
+            if ((status = Win32.NtDebugActiveProcess(this, debugObjectHandle)) < 0)
+                Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
         /// Removes as many pages as possible from the process' working set. This requires the 
         /// PROCESS_QUERY_INFORMATION and PROCESS_SET_INFORMATION permissions.
         /// </summary>
@@ -745,6 +758,52 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Opens the next linked process.
+        /// </summary>
+        /// <param name="access">The desired access to the next process.</param>
+        /// <returns>A process handle.</returns>
+        public ProcessHandle GetNextProcess(ProcessAccess access)
+        {
+            int status;
+            IntPtr handle;
+
+            if ((status = Win32.NtGetNextProcess(
+                this,
+                access,
+                0,
+                0,
+                out handle
+                )) < 0)
+                Win32.ThrowLastError(status);
+
+            return new ProcessHandle(handle, true);
+        }
+
+        /// <summary>
+        /// Opens the next linked thread belonging to the process.
+        /// </summary>
+        /// <param name="threadHandle">A thread handle. You may specify null.</param>
+        /// <param name="access">The desired access to the next thread.</param>
+        /// <returns>A thread handle.</returns>
+        public ThreadHandle GetNextThread(ThreadHandle threadHandle, ThreadAccess access)
+        {
+            int status;
+            IntPtr handle;
+
+            if ((status = Win32.NtGetNextThread(
+                this,
+                threadHandle != null ? threadHandle : IntPtr.Zero,
+                access,
+                0,
+                0,
+                out handle
+                )) < 0)
+                Win32.ThrowLastError(status);
+
+            return new ThreadHandle(handle, true);
+        }
+
+        /// <summary>
         /// Gets the process' page priority, ranging from 0-7.
         /// </summary>
         public int GetPagePriority()
@@ -909,9 +968,6 @@ namespace ProcessHacker.Native.Objects
         /// Determines whether the process is running in a job.
         /// </summary>
         /// <returns>A boolean.</returns>
-        /// <remarks>According to this function, almost every single 
-        /// process is in a job! This function does not tell us 
-        /// the name of the job though.</remarks>
         public bool IsInJob()
         {
             bool result;
@@ -921,6 +977,22 @@ namespace ProcessHacker.Native.Objects
 
             return result;
         }
+
+        /// <summary>
+        /// Determines whether the process is running in the specified job.
+        /// </summary>
+        /// <param name="jobObjectHandle">The job object to check.</param>
+        /// <returns>A boolean.</returns>
+        public bool IsInJob(JobObjectHandle jobObjectHandle)
+        {
+            bool result;
+
+            if (!Win32.IsProcessInJob(this, jobObjectHandle, out result))
+                Win32.ThrowLastError();
+
+            return result;
+        }
+
         /// <summary>
         /// Gets whether the process is a NTVDM process.
         /// </summary>
@@ -1005,6 +1077,18 @@ namespace ProcessHacker.Native.Objects
             }
 
             return readLen;
+        }
+
+        /// <summary>
+        /// Stops debugging the process attached to the specified debug object.
+        /// </summary>
+        /// <param name="debugObjectHandle">The debug object which was used to debug the process.</param>
+        public void RemoveDebug(DebugObjectHandle debugObjectHandle)
+        {
+            int status;
+
+            if ((status = Win32.NtRemoveProcessDebug(this, debugObjectHandle)) < 0)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>

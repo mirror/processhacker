@@ -102,6 +102,12 @@ namespace ProcessHacker.Native.Api
         CreateIgnoreSystemDefault = 0x80000000
     }
 
+    [Flags]
+    public enum DebugObjectFlags : uint
+    {
+        KillOnClose = 0x1
+    }
+
     public enum DepFlags : uint
     {
         Disable = 0x00000000,
