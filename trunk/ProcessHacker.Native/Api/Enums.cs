@@ -820,6 +820,13 @@ namespace ProcessHacker.Native.Api
         Failed = 0xFFFFFFFF
     }
 
+    [Flags]
+    public enum Win32HandleFlags : int
+    {
+        Inherit = 0x1,
+        ProtectFromClose = 0x2
+    }
+
     public enum WindowMessage : uint
     {
         Null = 0x00,

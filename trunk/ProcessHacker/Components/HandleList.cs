@@ -29,6 +29,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using System.Drawing;
 
 namespace ProcessHacker.Components
 {
@@ -64,6 +65,12 @@ namespace ProcessHacker.Components
             listHandles.ContextMenu = menuHandle;
             GenericViewMenu.AddMenuItems(copyHandleMenuItem.MenuItems, listHandles, null);
             ColumnSettings.LoadSettings(Properties.Settings.Default.HandleListViewColumns, listHandles);
+
+            if (KProcessHacker.Instance == null)
+            {
+                protectedMenuItem.Visible = false;
+                inheritMenuItem.Visible = false;
+            }
         }
 
         private void listHandles_DoubleClick(object sender, EventArgs e)
@@ -151,9 +158,10 @@ namespace ProcessHacker.Components
             {
                 if (_provider != null)
                 {
-                    _provider.DictionaryAdded -= new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved -= new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated -= new HandleProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded -= provider_DictionaryAdded;
+                    _provider.DictionaryModified -= provider_DictionaryModified;
+                    _provider.DictionaryRemoved -= provider_DictionaryRemoved;
+                    _provider.Updated -= provider_Updated;
                 }
 
                 _provider = value;
@@ -168,9 +176,10 @@ namespace ProcessHacker.Components
                         provider_DictionaryAdded(item);
                     }
 
-                    _provider.DictionaryAdded += new HandleProvider.ProviderDictionaryAdded(provider_DictionaryAdded);
-                    _provider.DictionaryRemoved += new HandleProvider.ProviderDictionaryRemoved(provider_DictionaryRemoved);
-                    _provider.Updated += new HandleProvider.ProviderUpdateOnce(provider_Updated);
+                    _provider.DictionaryAdded += provider_DictionaryAdded;
+                    _provider.DictionaryModified += provider_DictionaryModified;
+                    _provider.DictionaryRemoved += provider_DictionaryRemoved;
+                    _provider.Updated += provider_Updated;
                     _pid = _provider.Pid;
                 }
             }
@@ -208,6 +217,20 @@ namespace ProcessHacker.Components
             _runCount++;
         }
 
+        private Color GetHandleColor(HandleItem item)
+        {
+            if (Properties.Settings.Default.UseColorProtectedHandles &&
+                (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
+                )
+                return Properties.Settings.Default.ColorProtectedHandles;
+            else if (Properties.Settings.Default.UseColorInheritHandles &&
+                (item.Handle.Flags & HandleFlags.Inherit) != 0
+                )
+                return Properties.Settings.Default.ColorInheritHandles;
+            else
+                return SystemColors.Window;
+        }
+
         private void provider_DictionaryAdded(HandleItem item)
         {
             this.BeginInvoke(new MethodInvoker(() =>
@@ -219,17 +242,23 @@ namespace ProcessHacker.Components
                     litem.Text = item.ObjectInfo.TypeName;
                     litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.ObjectInfo.BestName));
                     litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Handle.Handle.ToString("x")));
+                    litem.Tag = item;
 
-                    if (Properties.Settings.Default.UseColorProtectedHandles &&
-                        (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0
-                        )
-                        litem.NormalColor = Properties.Settings.Default.ColorProtectedHandles;
-                    if (Properties.Settings.Default.UseColorInheritHandles &&
-                        (item.Handle.Flags & HandleFlags.Inherit) != 0
-                        )
-                        litem.NormalColor = Properties.Settings.Default.ColorInheritHandles;
+                    litem.NormalColor = this.GetHandleColor(item);
 
                     listHandles.Items.Add(litem);
+                }));
+        }
+
+        private void provider_DictionaryModified(HandleItem oldItem, HandleItem newItem)
+        {
+            this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    lock (_listLock)
+                    {
+                        (listHandles.Items[newItem.Handle.Handle.ToString()] as
+                            HighlightedListViewItem).NormalColor = this.GetHandleColor(newItem);
+                    }
                 }));
         }
 
@@ -257,6 +286,9 @@ namespace ProcessHacker.Components
 
         private void menuHandle_Popup(object sender, EventArgs e)
         {
+            protectedMenuItem.Checked = false;
+            inheritMenuItem.Checked = false;
+
             if (listHandles.SelectedItems.Count == 0)
             {
                 menuHandle.DisableAll();
@@ -271,11 +303,18 @@ namespace ProcessHacker.Components
 
                 if (HasHandleProperties(type))
                     propertiesHandleMenuItem.Enabled = true;
+
+                HandleItem item = (HandleItem)listHandles.SelectedItems[0].Tag;
+
+                protectedMenuItem.Checked = (item.Handle.Flags & HandleFlags.ProtectFromClose) != 0;
+                inheritMenuItem.Checked = (item.Handle.Flags & HandleFlags.Inherit) != 0;
             }
             else
             {
                 menuHandle.EnableAll();
                 propertiesHandleMenuItem.Enabled = false;
+                protectedMenuItem.Enabled = false;
+                inheritMenuItem.Enabled = false;
             }
         }
 
@@ -415,22 +454,26 @@ namespace ProcessHacker.Components
         {
             lock (_listLock)
             {
+                bool allGood = true;
+
                 foreach (ListViewItem item in listHandles.SelectedItems)
                 {
                     try
                     {
                         IntPtr handle = new IntPtr((int)BaseConverter.ToNumberParse(item.SubItems[2].Text));
-                        IntPtr dummy;
+
                         using (ProcessHandle process =
                                new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                         {
-                            Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, 0,
+                            Win32.DuplicateObject(process.Handle, handle, 0, 0,
                                 0x1 // DUPLICATE_CLOSE_SOURCE
                                 );
                         }
                     }
                     catch (Exception ex)
                     {
+                        allGood = false;
+
                         var result = MessageBox.Show(
                             "Could not close handle \"" + item.SubItems[1].Text + "\":\n\n" + ex.Message,
                              "Process Hacker", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
@@ -439,6 +482,54 @@ namespace ProcessHacker.Components
                             return;
                     }
                 }
+
+                if (allGood)
+                {
+                    foreach (ListViewItem item in listHandles.SelectedItems)
+                        item.Selected = false;
+                }
+            }
+        }
+
+        private void protectedMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleItem item = (HandleItem)listHandles.SelectedItems[0].Tag;
+            HandleFlags flags = item.Handle.Flags;
+
+            if ((flags & HandleFlags.ProtectFromClose) != 0)
+                flags &= ~HandleFlags.ProtectFromClose;
+            else
+                flags |= HandleFlags.ProtectFromClose;
+
+            try
+            {
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void inheritMenuItem_Click(object sender, EventArgs e)
+        {
+            HandleItem item = (HandleItem)listHandles.SelectedItems[0].Tag;
+            HandleFlags flags = item.Handle.Flags;
+
+            if ((flags & HandleFlags.Inherit) != 0)
+                flags &= ~HandleFlags.Inherit;
+            else
+                flags |= HandleFlags.Inherit;
+
+            try
+            {
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    KProcessHacker.Instance.SetHandleAttributes(phandle, new IntPtr(item.Handle.Handle), flags);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

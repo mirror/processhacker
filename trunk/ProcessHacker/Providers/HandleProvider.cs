@@ -85,6 +85,7 @@ namespace ProcessHacker
             // look for closed handles
             foreach (short h in this.Dictionary.Keys)
             {
+                // If a handle now points to a different object, force a re-add.
                 if (!processHandles.ContainsKey(h) ||
                     processHandles[h].Object != this.Dictionary[h].Handle.Object)
                 {
@@ -120,6 +121,15 @@ namespace ProcessHacker
 
                     newdictionary.Add(h, item);
                     this.OnDictionaryAdded(item);
+                }
+                else
+                {
+                    // check if the handle has been modified
+                    if (this.Dictionary[h].Handle.Flags != processHandles[h].Flags)
+                    {
+                        this.Dictionary[h].Handle.Flags = processHandles[h].Flags;
+                        this.OnDictionaryModified(null, this.Dictionary[h]);
+                    }
                 }
             }
 

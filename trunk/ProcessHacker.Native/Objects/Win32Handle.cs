@@ -190,9 +190,9 @@ namespace ProcessHacker.Native.Objects
         /// Gets certain information about the handle.
         /// </summary>
         /// <returns>A HANDLE_FLAGS value.</returns>
-        public HandleFlags GetHandleInformation()
+        public Win32HandleFlags GetHandleInformation()
         {
-            HandleFlags flags;
+            Win32HandleFlags flags;
 
             if (!Win32.GetHandleInformation(this, out flags))
                 Win32.ThrowLastError();
@@ -238,7 +238,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="mask">Specifies which flags to set.</param>
         /// <param name="flags">The values of the flags to set.</param>
-        public void SetHandleInformation(HandleFlags mask, HandleFlags flags)
+        public void SetHandleInformation(Win32HandleFlags mask, Win32HandleFlags flags)
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
                 Win32.ThrowLastError();

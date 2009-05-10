@@ -996,15 +996,15 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetHandleInformation(
             [In] IntPtr handle,
-            [In] HandleFlags mask,
-            [In] HandleFlags flags
+            [In] Win32HandleFlags mask,
+            [In] Win32HandleFlags flags
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetHandleInformation(
-            [In] IntPtr handle, 
-            [Out] out HandleFlags flags
+            [In] IntPtr handle,
+            [Out] out Win32HandleFlags flags
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]

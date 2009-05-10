@@ -63,7 +63,7 @@ namespace ProcessHacker.Native
             KphWriteVirtualMemory,
             SetProcessToken,
             GetThreadStartAddress,
-            Reserved1,
+            SetHandleAttributes,
             GetHandleObjectName,
             KphOpenProcessJob,
             KphGetContextThread,
@@ -135,6 +135,7 @@ namespace ProcessHacker.Native
                 FileShareMode.Read | FileShareMode.Write,
                 FileCreationDisposition.OpenAlways
                 );
+            _fileHandle.SetHandleInformation(Win32HandleFlags.ProtectFromClose, Win32HandleFlags.ProtectFromClose);
 
             try
             {
@@ -177,6 +178,7 @@ namespace ProcessHacker.Native
         /// </summary>
         public void Close()
         {
+            _fileHandle.SetHandleInformation(Win32HandleFlags.ProtectFromClose, 0);
             _fileHandle.Dispose();
         }
 
@@ -560,6 +562,17 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.Read), (byte*)&address, 4, buffer);
 
             return buffer;
+        }
+
+        public void SetHandleAttributes(ProcessHandle processHandle, IntPtr handle, HandleFlags flags)
+        {
+            byte* inData = stackalloc byte[12];
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 4) = handle.ToInt32();
+            *(int*)(inData + 8) = (int)flags;
+
+            _fileHandle.IoControl(CtlCode(Control.SetHandleAttributes), inData, 12, null, 0);
         }
 
         public void SetProcessProtected(int pid, bool protecte)

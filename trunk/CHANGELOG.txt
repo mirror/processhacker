@@ -5,12 +5,15 @@ Process Hacker
    * KProcessHacker can now perform process memory reading/writing 
      by itself and does not require MmCopyVirtualMemory
    * KProcessHacker can now bypass all handle-opening protections
+   * Ability to set handle flags such as protect-from-close and inherit
    * Better highlighting
+   * Terminator test: TT3 (TT1 is now completely user-mode)
    * Shows function file and line numbers where available
  * FIXED:
    * #2785648 - "cursor down crashes PH"
    * Incomplete or inaccurate thread call stacks
    * Windows 7 BSOD
+   * Crash upon executing terminator test M1
    * Unexpected actions being performed when a key was pressed in 
      the memory and handle lists
    * Changed I/O tray icon tooltip from ROW to RWO

@@ -143,6 +143,27 @@ namespace ProcessHacker.Native.Api
         public unsafe static void DuplicateObject(
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
+            int desiredAccess,
+            int handleAttributes,
+            int options
+            )
+        {
+            IntPtr dummy;
+
+            DuplicateObject(
+                sourceProcessHandle,
+                sourceHandle,
+                IntPtr.Zero,
+                out dummy,
+                desiredAccess,
+                handleAttributes,
+                options
+                );
+        }
+
+        public unsafe static void DuplicateObject(
+            IntPtr sourceProcessHandle,
+            IntPtr sourceHandle,
             IntPtr targetProcessHandle,
             out IntPtr targetHandle,
             int desiredAccess,

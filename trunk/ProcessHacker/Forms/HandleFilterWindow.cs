@@ -128,8 +128,7 @@ namespace ProcessHacker
                     using (ProcessHandle process =
                            new ProcessHandle((int)listHandles.Items[index].Tag, ProcessAccess.DupHandle))
                     {
-                        IntPtr dummy;
-                        Win32.DuplicateObject(process.Handle, handle, IntPtr.Zero, out dummy, 0, 0, 0x1);
+                        Win32.DuplicateObject(process.Handle, handle, 0, 0, 0x1);
                         remove.Add(listHandles.Items[index]);
                     }
                 }

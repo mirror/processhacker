@@ -41,6 +41,8 @@
             this.closeHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.copyHandleMenuItem = new System.Windows.Forms.MenuItem();
             this.menuHandle = new System.Windows.Forms.ContextMenu();
+            this.protectedMenuItem = new System.Windows.Forms.MenuItem();
+            this.inheritMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.propertiesHandleMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
@@ -82,6 +84,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // closeHandleMenuItem
             // 
@@ -93,26 +96,40 @@
             // copyHandleMenuItem
             // 
             this.vistaMenu.SetImage(this.copyHandleMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyHandleMenuItem.Index = 1;
+            this.copyHandleMenuItem.Index = 4;
             this.copyHandleMenuItem.Text = "&Copy";
             // 
             // menuHandle
             // 
             this.menuHandle.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.closeHandleMenuItem,
-            this.copyHandleMenuItem,
+            this.protectedMenuItem,
+            this.inheritMenuItem,
             this.menuItem11,
+            this.copyHandleMenuItem,
             this.propertiesHandleMenuItem});
             this.menuHandle.Popup += new System.EventHandler(this.menuHandle_Popup);
             // 
+            // protectedMenuItem
+            // 
+            this.protectedMenuItem.Index = 1;
+            this.protectedMenuItem.Text = "Protected";
+            this.protectedMenuItem.Click += new System.EventHandler(this.protectedMenuItem_Click);
+            // 
+            // inheritMenuItem
+            // 
+            this.inheritMenuItem.Index = 2;
+            this.inheritMenuItem.Text = "Inherit";
+            this.inheritMenuItem.Click += new System.EventHandler(this.inheritMenuItem_Click);
+            // 
             // menuItem11
             // 
-            this.menuItem11.Index = 2;
+            this.menuItem11.Index = 3;
             this.menuItem11.Text = "-";
             // 
             // propertiesHandleMenuItem
             // 
-            this.propertiesHandleMenuItem.Index = 3;
+            this.propertiesHandleMenuItem.Index = 5;
             this.propertiesHandleMenuItem.Text = "&Properties...";
             this.propertiesHandleMenuItem.Click += new System.EventHandler(this.propertiesHandleMenuItem_Click);
             // 
@@ -141,5 +158,7 @@
         private System.Windows.Forms.MenuItem copyHandleMenuItem;
         private System.Windows.Forms.MenuItem menuItem11;
         private System.Windows.Forms.MenuItem propertiesHandleMenuItem;
+        private System.Windows.Forms.MenuItem protectedMenuItem;
+        private System.Windows.Forms.MenuItem inheritMenuItem;
     }
 }

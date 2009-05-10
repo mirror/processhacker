@@ -211,6 +211,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "Set Process Token";
     else if (ControlCode == KPH_GETTHREADSTARTADDRESS)
         return "Get Thread Start Address";
+    else if (ControlCode == KPH_SETHANDLEATTRIBUTES)
+        return "Set Handle Attributes";
     else if (ControlCode == KPH_GETHANDLEOBJECTNAME)
         return "Get Handle Object Name";
     else if (ControlCode == KPH_OPENPROCESSJOB)
@@ -796,6 +798,38 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             ObDereferenceObject(threadObject);
             retLength = sizeof(*ret);
+        }
+        break;
+        
+        case KPH_SETHANDLEATTRIBUTES:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                HANDLE Handle;
+                ULONG Flags;
+            } *args = dataBuffer;
+            KPH_ATTACH_STATE attachState;
+            OBJECT_HANDLE_FLAG_INFORMATION handleFlags = { 0 };
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            if (args->Flags & OBJ_PROTECT_CLOSE)
+                handleFlags.ProtectFromClose = TRUE;
+            if (args->Flags & OBJ_INHERIT)
+                handleFlags.Inherit = TRUE;
+            
+            status = ObSetHandleAttributes(args->Handle, &handleFlags, UserMode);
+            KphDetachProcess(&attachState);
         }
         break;
         

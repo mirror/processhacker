@@ -23,6 +23,12 @@
 #include "include/kph.h"
 #include "include/ob.h"
 
+BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
+    PHANDLE_TABLE_ENTRY HandleTableEntry,
+    HANDLE Handle,
+    POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
+    );
+
 /* KphDuplicateObject
  * 
  * Duplicates a handle from the source process to the target process.
@@ -145,25 +151,6 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
-/* KphpSetHandleGrantedAccessEnumCallback
- * 
- * The callback for KphEnumProcessHandleTable, used by 
- * KphSetHandleGrantedAccess.
- */
-BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
-    PHANDLE_TABLE_ENTRY HandleTableEntry,
-    HANDLE Handle,
-    PSET_HANDLE_GRANTED_ACCESS_DATA Context
-    )
-{
-    if (Handle != Context->Handle)
-        return FALSE;
-    
-    HandleTableEntry->GrantedAccess = Context->GrantedAccess;
-    
-    return TRUE;
-}
-
 /* KphSetHandleGrantedAccess
  * 
  * Sets the granted access of a handle.
@@ -175,7 +162,7 @@ NTSTATUS KphSetHandleGrantedAccess(
     )
 {
     BOOLEAN result;
-    SET_HANDLE_GRANTED_ACCESS_DATA context;
+    OBP_SET_HANDLE_GRANTED_ACCESS_DATA context;
     
     context.Handle = Handle;
     context.GrantedAccess = GrantedAccess;
@@ -340,4 +327,23 @@ PHANDLE_TABLE ObReferenceProcessHandleTable(
     }
     
     return handleTable;
+}
+
+/* KphpSetHandleGrantedAccessEnumCallback
+ * 
+ * The callback for KphEnumProcessHandleTable, used by 
+ * KphSetHandleGrantedAccess.
+ */
+BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
+    PHANDLE_TABLE_ENTRY HandleTableEntry,
+    HANDLE Handle,
+    POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
+    )
+{
+    if (Handle != Context->Handle)
+        return FALSE;
+    
+    HandleTableEntry->GrantedAccess = Context->GrantedAccess;
+    
+    return TRUE;
 }
