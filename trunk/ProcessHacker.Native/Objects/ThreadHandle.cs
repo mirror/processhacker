@@ -100,8 +100,24 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Alert()
         {
-            if (Win32.NtAlertThread(this) < 0)
-                Win32.ThrowLastError();
+            int status;
+
+            if ((status = Win32.NtAlertThread(this)) < 0)
+                Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
+        /// Resumes the thread in an alerted state.
+        /// </summary>
+        public int AlertResume()
+        {
+            int status;
+            int suspendCount;
+
+            if ((status = Win32.NtAlertResumeThread(this, out suspendCount)) < 0)
+                Win32.ThrowLastError(status);
+
+            return suspendCount;
         }
 
         /// <summary>
@@ -330,6 +346,20 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        public void QueueApc(IntPtr address, IntPtr param1, IntPtr param2, IntPtr param3)
+        {
+            int status;
+
+            if ((status = Win32.NtQueueApcThread(
+                this,
+                address,
+                param1,
+                param2,
+                param3
+                )) < 0)
+                Win32.ThrowLastError(status);
+        }
+
         /// <summary>
         /// Sets the thread's context.
         /// </summary>
@@ -360,19 +390,29 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Suspends the thread.
         /// </summary>
-        public void Suspend()
+        public int Suspend()
         {
-            if (Win32.SuspendThread(this) == -1)
-                Win32.ThrowLastError();
+            int status;
+            int suspendCount;
+
+            if ((status = Win32.NtSuspendThread(this, out suspendCount)) < 0)
+                Win32.ThrowLastError(status);
+
+            return suspendCount;
         }
 
         /// <summary>
         /// Resumes the thread.
         /// </summary>
-        public void Resume()
+        public int Resume()
         {
-            if (Win32.ResumeThread(this) == -1)
-                Win32.ThrowLastError();
+            int status;
+            int suspendCount;
+
+            if ((status = Win32.NtResumeThread(this, out suspendCount)) < 0)
+                Win32.ThrowLastError(status);
+
+            return suspendCount;
         }
 
         /// <summary>

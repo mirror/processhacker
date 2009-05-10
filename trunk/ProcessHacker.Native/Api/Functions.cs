@@ -603,22 +603,6 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtRemoveProcessDebug(
-            [In] IntPtr ProcessHandle,
-            [In] IntPtr DebugObjectHandle
-            );
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtResumeProcess(
-            [In] IntPtr ProcessHandle
-            );
-
-        [DllImport("ntdll.dll", SetLastError = true)]
-        public static extern int NtSuspendProcess(
-            [In] IntPtr ProcessHandle
-            );
-
-        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtQueueApcThread(
             [In] IntPtr ThreadHandle,
             [In] IntPtr ApcRoutine,
@@ -824,6 +808,34 @@ namespace ProcessHacker.Native.Api
             [Out] IntPtr ObjectInformation,
             [In] int ObjectInformationLength, 
             [Out] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtRemoveProcessDebug(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr DebugObjectHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtResumeProcess(
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtResumeThread(
+            [In] IntPtr ThreadHandle,
+            [Out] [Optional] out int PreviousSuspendCount
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtSuspendProcess(
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtSuspendThread(
+            [In] IntPtr ThreadHandle,
+            [Out] [Optional] out int PreviousSuspendCount
             );
 
         #endregion
