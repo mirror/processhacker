@@ -82,7 +82,7 @@ typedef NTSTATUS (NTAPI *_PspTerminateThreadByPointer51)(
 typedef NTSTATUS (NTAPI *_PspTerminateThreadByPointer60)(
     PETHREAD Thread,
     NTSTATUS ExitStatus,
-    BOOLEAN TerminateSelf
+    BOOLEAN DirectTerminate
     );
 
 /* STRUCTS */
