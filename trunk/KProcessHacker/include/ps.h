@@ -69,7 +69,7 @@ typedef NTSTATUS (NTAPI *_PsSuspendProcess)(
     PEPROCESS Process
     );
 
-typedef NTSTATUS (__fastcall *_PsTerminateProcess)(
+typedef NTSTATUS (NTAPI *_PsTerminateProcess)(
     PEPROCESS Process,
     NTSTATUS ExitStatus
     );
