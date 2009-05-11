@@ -1,7 +1,7 @@
-;ISTool Version 5.3.0 and Inno Setup 5.3.0 Beta, Script by XhmikosR
+;ISTool Version 5.2.1 and Inno Setup 5.2.4 dev, Script by XhmikosR
 ;
 ;Requirements:
-;*Inno Setup QuickStart Pack
+;*Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define installer_build_number "31"
@@ -110,6 +110,7 @@ Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= a
 Name: {group}\Process Hacker; Filename: {app}\ProcessHacker.exe; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {group}\{cm:sm_help}\{cm:sm_changelog}; Filename: {app}\CHANGELOG.txt; Comment: {cm:sm_com_changelog}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:sm_helpfile}; Filename: {app}\Help.htm; Comment: {cm:sm_helpfile}; WorkingDir: {app}
+Name: {group}\{cm:sm_help}\{cm:sm_readmefile}; Filename: {app}\README.txt; Comment: {cm:sm_readmefile}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:ProgramOnTheWeb,Process Hacker}; Filename: {#= app_updates_url}; Comment: {cm:ProgramOnTheWeb,Process Hacker}
 Name: {group}\{cm:UninstallProgram,Process Hacker}; Filename: {uninstallexe}; IconFilename: {app}\uninstall.ico; Comment: {cm:UninstallProgram,Process Hacker}; WorkingDir: {app}
 
@@ -134,6 +135,7 @@ Type: files; Name: {group}\Help and Support\Process Hacker on the Web.url
 Type: files; Name: {group}\Help and Support\Change Log.lnk
 Type: files; Name: {group}\Help and Support\Changelog.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker's Help.lnk
+Type: files; Name: {group}\Help and Support\ReadMe File.lnk
 Type: dirifempty; Name: {group}\Help and Support
 
 Type: files; Name: {group}\Αρχείο βοήθειας του Process Hacker.lnk
@@ -142,6 +144,7 @@ Type: files; Name: {group}\Απεγκατάσταση του Process Hacker.lnk
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Το Process Hacker στο Internet.url
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Ιστορικό Εκδόσεων.lnk
 Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Αρχείο βοήθειας του Process Hacker.lnk
+Type: files; Name: {group}\Βοήθεια και Υποστήριξη\Αρχείο ReadMe.lnk
 Type: dirifempty; Name: {group}\Βοήθεια και Υποστήριξη
 
 Type: filesandordirs; Name: {localappdata}\wj32; Tasks: resetsettings

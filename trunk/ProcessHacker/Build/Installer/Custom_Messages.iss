@@ -22,10 +22,11 @@ en.tsk_startupdescr=Start Process Hacker on system startup
 en.tsk_startupdescrmin=Minimized on system tray
 en.tsk_startup=Startup options:
 en.run_visitwebsite=Visit Process Hacker's Website
-en.sm_help=Help and Support
-en.sm_helpfile=Process Hacker's Help
 en.sm_changelog=Changelog
 en.sm_com_changelog=Process Hacker's Changelog
+en.sm_help=Help and Support
+en.sm_helpfile=Process Hacker's Help
+en.sm_readmefile=ReadMe File
 
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
@@ -50,6 +51,7 @@ gr.tsk_startupdescrmin=Ελαχιστοποιημένο στο tray του συστήματος
 gr.tsk_startup=Επιλογές εκκίνησης:
 gr.run_visitwebsite=Επισκεφτείτε την ιστοσελίδα του Process Hacker
 gr.sm_changelog=Ιστορικό Εκδόσεων
+gr.sm_com_changelog=Ιστορικό Εκδόσεων του Process Hacker
 gr.sm_help=Βοήθεια και Υποστήριξη
 gr.sm_helpfile=Αρχείο βοήθειας του Process Hacker
-gr.sm_com_changelog=Ιστορικό Εκδόσεων του Process Hacker
+gr.sm_readmefile=Αρχείο ReadMe
