@@ -19,6 +19,7 @@ Process Hacker
      the memory and handle lists
    * Changed I/O tray icon tooltip from ROW to RWO
    * Corrupted usernames
+   * .NET processes getting recognized as packed
    * Start times like "20 centuries ago"
 
 1.3.7.5

@@ -576,10 +576,13 @@ namespace ProcessHacker
             else if (result.Stage == 0x1a)
             {
                 item.IsDotNet = result.IsDotNet;
+
+                if (item.IsDotNet)
+                    item.IsPacked = false;
             }
             else if (result.Stage == 0x2)
             {
-                item.IsPacked = result.IsDotNet ? false : result.IsPacked;
+                item.IsPacked = (item.IsDotNet || result.IsDotNet) ? false : result.IsPacked;
                 item.VerifyResult = result.VerifyResult;
                 item.ImportFunctions = result.ImportFunctions;
                 item.ImportModules = result.ImportModules;
