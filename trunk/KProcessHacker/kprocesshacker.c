@@ -431,7 +431,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->DesiredAccess,
                 &objectAttributes,
                 &clientId,
-                UserMode
+                KernelMode
                 );
             
             if (!NT_SUCCESS(status))
@@ -475,7 +475,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->DesiredAccess,
                 &objectAttributes,
                 &clientId,
-                UserMode
+                KernelMode
                 );
             
             if (!NT_SUCCESS(status))
@@ -513,7 +513,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->DesiredAccess,
                 0,
                 &ret->TokenHandle,
-                UserMode
+                KernelMode
                 );
             
             if (!NT_SUCCESS(status))
@@ -894,7 +894,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             }
             
-            status = KphOpenProcessJob(args->ProcessHandle, args->DesiredAccess, &ret->JobHandle, UserMode);
+            status = KphOpenProcessJob(args->ProcessHandle, args->DesiredAccess, &ret->JobHandle, KernelMode);
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
