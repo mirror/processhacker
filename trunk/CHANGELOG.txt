@@ -12,6 +12,7 @@ Process Hacker
    * Shows function file and line numbers where available
  * FIXED:
    * #2785648 - "cursor down crashes PH"
+   * #2790404 - "System.InvalidOperationException"
    * Incomplete or inaccurate thread call stacks
    * Windows 7 BSOD
    * Crash upon executing terminator test M1

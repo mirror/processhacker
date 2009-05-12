@@ -59,8 +59,10 @@ namespace ProcessHacker
             // Add the process to the list of all processes.
             _processes.Add(item.Pid, itemNode);
 
-            // Find this process' children and add them.
-            foreach (ProcessNode node in _roots)
+            // Find this process' children and add them.  
+            ProcessNode[] roots = _roots.ToArray();
+
+            foreach (ProcessNode node in roots)
             {
                 if (node.ProcessItem.HasParent && node.PPid == item.Pid)
                 {
