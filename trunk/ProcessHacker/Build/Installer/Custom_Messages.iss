@@ -26,7 +26,7 @@ en.sm_changelog=Changelog
 en.sm_com_changelog=Process Hacker's Changelog
 en.sm_help=Help and Support
 en.sm_helpfile=Process Hacker's Help
-en.sm_readmefile=ReadMe File
+en.sm_readmefile=ReadMe
 
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!

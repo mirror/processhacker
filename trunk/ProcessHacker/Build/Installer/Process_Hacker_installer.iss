@@ -136,6 +136,7 @@ Type: files; Name: {group}\Help and Support\Change Log.lnk
 Type: files; Name: {group}\Help and Support\Changelog.lnk
 Type: files; Name: {group}\Help and Support\Process Hacker's Help.lnk
 Type: files; Name: {group}\Help and Support\ReadMe File.lnk
+Type: files; Name: {group}\Help and Support\ReadMe.lnk
 Type: dirifempty; Name: {group}\Help and Support
 
 Type: files; Name: {group}\Αρχείο βοήθειας του Process Hacker.lnk
