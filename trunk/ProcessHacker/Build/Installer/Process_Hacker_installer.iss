@@ -4,7 +4,7 @@
 ;*Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
-#define installer_build_number "31"
+#define installer_build_number "32"
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_updates_url "http://processhacker.sourceforge.net/"
@@ -107,16 +107,16 @@ Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription
 Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= app_updates_url}
 
 [Icons]
-Name: {group}\Process Hacker; Filename: {app}\ProcessHacker.exe; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
+Name: {group}\Process Hacker; Filename: {app}\ProcessHacker.exe; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {group}\{cm:sm_help}\{cm:sm_changelog}; Filename: {app}\CHANGELOG.txt; Comment: {cm:sm_com_changelog}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:sm_helpfile}; Filename: {app}\Help.htm; Comment: {cm:sm_helpfile}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:sm_readmefile}; Filename: {app}\README.txt; Comment: {cm:sm_readmefile}; WorkingDir: {app}
 Name: {group}\{cm:sm_help}\{cm:ProgramOnTheWeb,Process Hacker}; Filename: {#= app_updates_url}; Comment: {cm:ProgramOnTheWeb,Process Hacker}
 Name: {group}\{cm:UninstallProgram,Process Hacker}; Filename: {uninstallexe}; IconFilename: {app}\uninstall.ico; Comment: {cm:UninstallProgram,Process Hacker}; WorkingDir: {app}
 
-Name: {commondesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\common; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
-Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\user; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
-Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
+Name: {commondesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\common; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
+Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\user; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
+Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 
 [InstallDelete]
 ;Remove files from the install folder which are not needed anymore
