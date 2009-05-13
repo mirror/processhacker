@@ -56,3 +56,4 @@ gr.sm_com_changelog=Ιστορικό Εκδόσεων του Process Hacker
 gr.sm_help=Βοήθεια και Υποστήριξη
 gr.sm_helpfile=Αρχείο βοήθειας του Process Hacker
 gr.sm_readmefile=Αρχείο ReadMe
+gr.sm_com_readmefile=Αρχείο ReadMe του Process Hacker
