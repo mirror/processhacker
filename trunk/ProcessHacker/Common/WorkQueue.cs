@@ -41,18 +41,28 @@ namespace ProcessHacker
     /// </summary>
     public class WorkQueue
     {
+        /// <summary>
+        /// Represents a work item to be executed on a worker thread.
+        /// </summary>
         public class WorkItem
         {
+            private WorkQueue _owner;
             private string _tag;
             private Delegate _work;
             private object[] _args;
+            private bool _enabled = true;
+            private bool _completed = false;
+            private object _completedEventLock = new object();
+            private ManualResetEvent _completedEvent;
+            private Exception _exception;
 
-            public WorkItem(Delegate work, object[] args)
-                : this(work, args, null)
+            public WorkItem(WorkQueue owner, Delegate work, object[] args)
+                : this(owner, work, args, null)
             { }
 
-            public WorkItem(Delegate work, object[] args, string tag)
+            public WorkItem(WorkQueue owner, Delegate work, object[] args, string tag)
             {
+                _owner = owner;
                 _work = work;
                 _args = args;
                 _tag = tag;
@@ -68,17 +78,108 @@ namespace ProcessHacker
                 get { return _args; }
             }
 
+            /// <summary>
+            /// The tag associated with the work item.
+            /// </summary>
             public string Tag
             {
                 get { return _tag; }
             }
 
-            public void PerformWork()
+            /// <summary>
+            /// Whether the work item is to be executed.
+            /// </summary>
+            internal bool Enabled
             {
-                if (_args == null)
-                    _work.Method.Invoke(_work.Target, null);
-                else
-                    _work.Method.Invoke(_work.Target, _args.Length != 0 ? _args : null);
+                get { return _enabled; }
+                set { _enabled = value; }
+            }
+
+            /// <summary>
+            /// Whether the work item has been completed.
+            /// </summary>
+            public bool Completed
+            {
+                get { return _completed; }
+            }
+
+            /// <summary>
+            /// The exception thrown by the work item target, if any.
+            /// </summary>
+            public Exception Exception
+            {
+                get { return _exception; }
+            }
+
+            /// <summary>
+            /// If the work item has not been executed yet, prevents the 
+            /// work item from executing. Otherwise, takes no action.
+            /// </summary>
+            /// <returns>True if the work item has not been executed yet; otherwise false.</returns>
+            public bool Abort()
+            {
+                return _owner.RemoveQueuedWorkItem(this);
+            }
+
+            /// <summary>
+            /// Performs the work.
+            /// </summary>
+            internal void PerformWork()
+            {
+                if (!_enabled)
+                    return;
+
+                try
+                {
+                    if (_args == null)
+                        _work.Method.Invoke(_work.Target, null);
+                    else
+                        _work.Method.Invoke(_work.Target, _args.Length != 0 ? _args : null);
+                }
+                catch (Exception ex)
+                {
+                    _exception = ex;
+                    Logging.Log(ex);
+                }
+
+                _completed = true;
+
+                lock (_completedEventLock)
+                {
+                    if (_completedEvent != null)
+                        _completedEvent.Set();
+                }
+            }
+
+            /// <summary>
+            /// Waits for the work item to be completed.
+            /// </summary>
+            /// <returns>Always returns true.</returns>
+            public bool WaitOne()
+            {
+                return this.WaitOne(-1);
+            }
+
+            /// <summary>
+            /// Waits for the work item to be completed.
+            /// </summary>
+            /// <param name="timeout">The timeout for the wait operation.</param>
+            /// <returns>
+            /// True if the work item was completed within the timeout 
+            /// (or was already completed); otherwise false.
+            /// </returns>
+            public bool WaitOne(int timeout)
+            {
+                lock (_completedEventLock)
+                {
+                    if (_completed)
+                        return true;
+
+                    if (_completedEvent == null)
+                        _completedEvent = new ManualResetEvent(false);
+                }
+
+                return _completedEvent.WaitOne(timeout, false);
             }
         }
 
@@ -96,9 +197,9 @@ namespace ProcessHacker
         /// Queues work for the global work queue.
         /// </summary>
         /// <param name="work">The work to be executed.</param>
-        public static void GlobalQueueWorkItem(Delegate work)
+        public static WorkItem GlobalQueueWorkItem(Delegate work)
         {
-            _globalWorkQueue.QueueWorkItem(work);
+            return _globalWorkQueue.QueueWorkItem(work);
         }
 
         /// <summary>
@@ -106,9 +207,9 @@ namespace ProcessHacker
         /// </summary>
         /// <param name="work">The work to be executed.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public static void GlobalQueueWorkItem(Delegate work, params object[] args)
+        public static WorkItem GlobalQueueWorkItem(Delegate work, params object[] args)
         {
-            _globalWorkQueue.QueueWorkItemTag(work, null, true, args);
+            return _globalWorkQueue.QueueWorkItemTag(work, null, true, args);
         }
 
         /// <summary>
@@ -116,9 +217,9 @@ namespace ProcessHacker
         /// </summary>
         /// <param name="work">The work to be executed.</param>
         /// <param name="tag">A tag for the work item.</param>
-        public static void GlobalQueueWorkItemTag(Delegate work, string tag)
+        public static WorkItem GlobalQueueWorkItemTag(Delegate work, string tag)
         {
-            _globalWorkQueue.QueueWorkItemTag(work, tag, true, null);
+            return _globalWorkQueue.QueueWorkItemTag(work, tag, true, null);
         }
 
         /// <summary>
@@ -127,13 +228,13 @@ namespace ProcessHacker
         /// <param name="work">The work to be executed.</param>
         /// <param name="tag">A tag for the work item.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public static void GlobalQueueWorkItemTag(Delegate work, string tag, params object[] args)
+        public static WorkItem GlobalQueueWorkItemTag(Delegate work, string tag, params object[] args)
         {
-            _globalWorkQueue.QueueWorkItemTag(work, tag, true, args);
+            return _globalWorkQueue.QueueWorkItemTag(work, tag, true, args);
         }
 
         /// <summary>
-        /// The work queue.
+        /// The work queue. This object is used as a lock.
         /// </summary>
         private Queue<WorkItem> _workQueue = new Queue<WorkItem>();
         /// <summary>
@@ -144,7 +245,7 @@ namespace ProcessHacker
         /// </summary>
         private int _maxWorkerThreads = 1;
         /// <summary>
-        /// The pool of worker threads.
+        /// The pool of worker threads. This object is used as a lock.
         /// </summary>
         private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
         /// <summary>
@@ -240,15 +341,40 @@ namespace ProcessHacker
         {
             lock (_workQueue)
                 return _workQueue.ToArray();
-        }   
+        }
+
+        /// <summary>
+        /// Removes the work item from the work queue.
+        /// </summary>
+        /// <param name="workItem">The work item to remove</param>
+        /// <returns>If the work item was in the work queue, true. Otherwise, false.</returns>
+        public bool RemoveQueuedWorkItem(WorkItem workItem)
+        {
+            // Lock the work queue to prevent data corruption.
+            lock (_workQueue)
+            {
+                // Check if the work queue (still) contains the work item.
+                if (_workQueue.Contains(workItem))
+                {
+                    // The work item is in the queue. Prevent it from executing.
+                    workItem.Enabled = false;
+                    return true;
+                }
+                else
+                {
+                    // The work item is no longer in the queue.
+                    return false;
+                }
+            }
+        }
 
         /// <summary>
         /// Queues work for the worker thread(s).
         /// </summary>
         /// <param name="work">The work to be performed.</param>
-        public void QueueWorkItem(Delegate work)
+        public WorkItem QueueWorkItem(Delegate work)
         {
-            this.QueueWorkItemTag(work, null, true, null);
+            return this.QueueWorkItemTag(work, null, true, null);
         }
 
         /// <summary>
@@ -256,9 +382,9 @@ namespace ProcessHacker
         /// </summary>
         /// <param name="work">The work to be performed.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public void QueueWorkItem(Delegate work, params object[] args)
+        public WorkItem QueueWorkItem(Delegate work, params object[] args)
         {
-            this.QueueWorkItemTag(work, null, true, args);
+            return this.QueueWorkItemTag(work, null, true, args);
         }
 
         /// <summary>
@@ -266,9 +392,9 @@ namespace ProcessHacker
         /// </summary>
         /// <param name="work">The work to be performed.</param>
         /// <param name="tag">A tag for the work item.</param>
-        public void QueueWorkItemTag(Delegate work, string tag)
+        public WorkItem QueueWorkItemTag(Delegate work, string tag)
         {
-            this.QueueWorkItemTag(work, tag, true, null);
+            return this.QueueWorkItemTag(work, tag, true, null);
         }
 
         /// <summary>
@@ -277,9 +403,9 @@ namespace ProcessHacker
         /// <param name="work">The work to be performed.</param>
         /// <param name="tag">A tag for the work item.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public void QueueWorkItemTag(Delegate work, string tag, params object[] args)
+        public WorkItem QueueWorkItemTag(Delegate work, string tag, params object[] args)
         {
-            this.QueueWorkItemTag(work, tag, true, args);
+            return this.QueueWorkItemTag(work, tag, true, args);
         }
 
         /// <summary>
@@ -289,10 +415,12 @@ namespace ProcessHacker
         /// <param name="tag">A tag for the work item.</param>
         /// <param name="isArray">Ignored.</param>
         /// <param name="args">The arguments to pass to the delegate.</param>
-        public void QueueWorkItemTag(Delegate work, string tag, bool isArray, object[] args)
+        public WorkItem QueueWorkItemTag(Delegate work, string tag, bool isArray, object[] args)
         {
+            WorkItem workItem;
+
             lock (_workQueue)
-                _workQueue.Enqueue(new WorkItem(work, args, tag));
+                _workQueue.Enqueue(workItem = new WorkItem(this, work, args, tag));
 
             _workArrivedEvent.Set();
 
@@ -312,6 +440,8 @@ namespace ProcessHacker
                     }
                 }
             }
+
+            return workItem;
         }
 
         /// <summary>
@@ -351,16 +481,7 @@ namespace ProcessHacker
                     }
 
                     Interlocked.Increment(ref _busyCount);
-
-                    try
-                    {
-                        item.PerformWork();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log(ex);
-                    }
-
+                    item.PerformWork();
                     Interlocked.Decrement(ref _busyCount);
                 }
                 else
