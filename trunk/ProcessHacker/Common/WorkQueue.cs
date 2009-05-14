@@ -56,11 +56,11 @@ namespace ProcessHacker
             private object _result;
             private Exception _exception;
 
-            public WorkItem(WorkQueue owner, Delegate work, object[] args)
+            internal WorkItem(WorkQueue owner, Delegate work, object[] args)
                 : this(owner, work, args, null)
             { }
 
-            public WorkItem(WorkQueue owner, Delegate work, object[] args, string tag)
+            internal WorkItem(WorkQueue owner, Delegate work, object[] args, string tag)
             {
                 _owner = owner;
                 _work = work;
@@ -286,6 +286,10 @@ namespace ProcessHacker
         /// they will block on this event.
         /// </summary>
         private AutoResetEvent _workArrivedEvent = new AutoResetEvent(false);
+        /// <summary>
+        /// If true, prevents new work items from being queued.
+        /// </summary>
+        private bool _isJoining = false;
 
         /// <summary>
         /// Creates a new work queue.
@@ -396,6 +400,32 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Waits for all work items to complete and prevents new work items from being queued.
+        /// </summary>
+        public void JoinAll()
+        {
+            _isJoining = true;
+
+            // Check for work items.
+            while (_workQueue.Count > 0)
+            {
+                WorkItem workItem = null;
+
+                // Lock and re-check.
+                lock (_workQueue)
+                {
+                    if (_workQueue.Count > 0)
+                        workItem = _workQueue.Peek();
+                    else
+                        continue;
+                }
+
+                // Wait for this work item to finish.
+                workItem.WaitOne();
+            }
+        }
+
+        /// <summary>
         /// Removes the work item from the work queue.
         /// </summary>
         /// <param name="workItem">The work item to remove</param>
@@ -418,6 +448,14 @@ namespace ProcessHacker
                     return false;
                 }
             }
+        }
+
+        /// <summary>
+        /// Allows new work items to be queued.
+        /// </summary>
+        public void ResetJoin()
+        {
+            _isJoining = false;
         }
 
         /// <summary>
@@ -471,6 +509,10 @@ namespace ProcessHacker
         {
             WorkItem workItem;
 
+            // Can't queue any work items if joining.
+            if (_isJoining)
+                return null;
+
             lock (_workQueue)
                 _workQueue.Enqueue(workItem = new WorkItem(this, work, args, tag));
 
@@ -523,19 +565,19 @@ namespace ProcessHacker
                 // Check for work
                 if (_workQueue.Count > 0)
                 {
-                    WorkItem item = null;
+                    WorkItem workItem = null;
 
                     // There is work, but we must lock and re-check.
                     lock (_workQueue)
                     {
                         if (_workQueue.Count > 0)
-                            item = _workQueue.Dequeue();
+                            workItem = _workQueue.Dequeue();
                         else
                             continue;
                     }
 
                     Interlocked.Increment(ref _busyCount);
-                    item.PerformWork();
+                    workItem.PerformWork();
                     Interlocked.Decrement(ref _busyCount);
                 }
                 else
