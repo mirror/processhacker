@@ -289,7 +289,7 @@ namespace ProcessHacker
         /// <summary>
         /// If true, prevents new work items from being queued.
         /// </summary>
-        private bool _isJoining = false;
+        private volatile bool _isJoining = false;
 
         /// <summary>
         /// Creates a new work queue.
