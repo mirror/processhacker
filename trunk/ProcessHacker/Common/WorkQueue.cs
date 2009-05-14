@@ -245,6 +245,12 @@ namespace ProcessHacker
         /// </summary>
         private int _maxWorkerThreads = 1;
         /// <summary>
+        /// The minimum number of worker threads. Worker threads will be created 
+        /// as necessary and the number of worker threads will never drop below 
+        /// this number.
+        /// </summary>
+        private int _minWorkerThreads = 0;
+        /// <summary>
         /// The pool of worker threads. This object is used as a lock.
         /// </summary>
         private Dictionary<int, Thread> _workerThreads = new Dictionary<int, Thread>();
@@ -278,7 +284,7 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Gets or sets the worker thread limit.
+        /// Gets or sets the maximum number of worker threads.
         /// </summary>
         public int MaxWorkerThreads
         {
@@ -287,8 +293,19 @@ namespace ProcessHacker
         }
 
         /// <summary>
+        /// Gets or sets the minimum number of worker threads.
+        /// </summary>
+        public int MinWorkerThreads
+        {
+            get { return _minWorkerThreads; }
+            set { _minWorkerThreads = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the time, in milliseconds, after which a 
-        /// worker thread with no work will terminate.
+        /// worker thread with no work will terminate. Specify 0 so that
+        /// worker threads will terminate immediately, or specify -1 so that
+        /// worker threads will wait indefinitely for work.
         /// </summary>
         public int NoWorkTimeout
         {
@@ -457,7 +474,9 @@ namespace ProcessHacker
                     // Lock and re-check.
                     lock (_workerThreads)
                     {
-                        if (_workerThreads.Count > _maxWorkerThreads)
+                        // Check the minimum as well.
+                        if (_workerThreads.Count > _maxWorkerThreads && 
+                            _workerThreads.Count > _minWorkerThreads)
                         {
                             // We have an excess amount of worker threads.
                             this.DestroyWorkerThread();
@@ -496,7 +515,11 @@ namespace ProcessHacker
                     {
                         // No work arrived during the timeout period. Delete the thread.
                         lock (_workerThreads)
-                            this.DestroyWorkerThread();
+                        {
+                            // Check the minimum.
+                            if (_workerThreads.Count > _minWorkerThreads)
+                                this.DestroyWorkerThread();
+                        }
 
                         return;
                     }
