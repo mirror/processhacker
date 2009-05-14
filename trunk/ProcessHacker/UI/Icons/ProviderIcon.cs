@@ -39,7 +39,8 @@ namespace ProcessHacker
 
         private void ProcessProvider_Updated()
         {
-            this.Parent.BeginInvoke(new MethodInvoker(this.ProviderUpdated));
+            //this.Parent.BeginInvoke(new MethodInvoker(this.ProviderUpdated));
+            this.ProviderUpdated();
         }
 
         public bool Enabled

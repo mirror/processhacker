@@ -10,6 +10,8 @@ Process Hacker
    * Terminator test: TD1 (debugs a process and closes the debug object)
    * Terminator test: TT3 (TT1 is now completely user-mode)
    * Shows function file and line numbers where available
+   * Icon updating is now done on the shared thread to avoid the GUI 
+     blocking when explorer.exe is suspended or is hanging
  * FIXED:
    * #2785648 - "cursor down crashes PH"
    * #2790404 - "System.InvalidOperationException"
