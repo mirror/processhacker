@@ -506,6 +506,12 @@ namespace ProcessHacker
             if (pArgs.ContainsKey("-v"))
                 StartVisible = true;
 
+            if (pArgs.ContainsKey("-a") || true)
+            {
+                try { Unhook(); }
+                catch { }
+            }
+
             if (pArgs.ContainsKey("-t"))
             {
                 if (pArgs["-t"] == "0")
@@ -521,7 +527,8 @@ namespace ProcessHacker
         {
             PE.PEFile file = new ProcessHacker.PE.PEFile(Environment.SystemDirectory + "\\ntdll.dll");
             System.IO.BinaryReader br = new System.IO.BinaryReader(
-                new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", System.IO.FileMode.Open, System.IO.FileAccess.Read));
+                new System.IO.FileStream(Environment.SystemDirectory + "\\ntdll.dll", 
+                    System.IO.FileMode.Open, System.IO.FileAccess.Read));
             IntPtr ntdll = Win32.GetModuleHandle("ntdll.dll");
             MemoryProtection oldProtection;
 

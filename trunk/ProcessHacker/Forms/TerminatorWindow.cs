@@ -203,6 +203,26 @@ namespace ProcessHacker
 
         private void TJ1()
         {
+            if (KProcessHacker.Instance != null)
+            {
+                try
+                {
+                    using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    {
+                        using (var jhandle = phandle.GetJob(JobObjectAccess.Query | JobObjectAccess.Terminate))
+                        {
+                            if (jhandle.GetProcessIdList().Length == 1)
+                            {
+                                jhandle.Terminate();
+                                return;
+                            }
+                        }
+                    }
+                }
+                catch
+                { }
+            }
+
             using (var jhandle = JobObjectHandle.Create(null))
             {
                 using (ProcessHandle phandle =
