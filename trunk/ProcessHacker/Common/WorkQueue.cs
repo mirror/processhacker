@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace ProcessHacker
@@ -54,6 +53,7 @@ namespace ProcessHacker
             private bool _completed = false;
             private object _completedEventLock = new object();
             private ManualResetEvent _completedEvent;
+            private object _result;
             private Exception _exception;
 
             public WorkItem(WorkQueue owner, Delegate work, object[] args)
@@ -104,6 +104,14 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// The value returned by the target method.
+            /// </summary>
+            public object Result
+            {
+                get { return _result; }
+            }
+
+            /// <summary>
             /// The exception thrown by the work item target, if any.
             /// </summary>
             public Exception Exception
@@ -122,6 +130,16 @@ namespace ProcessHacker
             }
 
             /// <summary>
+            /// Waits for the work item to complete and returns the result.
+            /// </summary>
+            /// <returns>The value returned by the target method.</returns>
+            public object GetResult()
+            {
+                this.WaitOne();
+                return _result;
+            }
+
+            /// <summary>
             /// Performs the work.
             /// </summary>
             internal void PerformWork()
@@ -132,9 +150,9 @@ namespace ProcessHacker
                 try
                 {
                     if (_args == null)
-                        _work.Method.Invoke(_work.Target, null);
+                        _result = _work.Method.Invoke(_work.Target, null);
                     else
-                        _work.Method.Invoke(_work.Target, _args.Length != 0 ? _args : null);
+                        _result = _work.Method.Invoke(_work.Target, _args.Length != 0 ? _args : null);
                 }
                 catch (Exception ex)
                 {
@@ -327,6 +345,23 @@ namespace ProcessHacker
         public int WorkerCount
         {
             get { return _workerThreads.Count; }
+        }
+
+        /// <summary>
+        /// Creates worker threads if necessary to satisfy the 
+        /// worker thread minimum.
+        /// </summary>
+        public void CreateMinimumWorkerThreads()
+        {
+            if (_workerThreads.Count < _minWorkerThreads)
+            {
+                lock (_workerThreads)
+                {
+                    // Create worker threads until we have enough.
+                    while (_workerThreads.Count < _minWorkerThreads)
+                        this.CreateWorkerThread();
+                }
+            }
         }
 
         /// <summary>

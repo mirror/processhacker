@@ -785,7 +785,8 @@ namespace ProcessHacker
 
             info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");
-            info.AppendLine("Worker thread limit: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
+            info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
+            info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads.ToString());
             info.AppendLine("Busy worker threads: " + WorkQueue.GlobalWorkQueue.BusyCount.ToString());
             info.AppendLine("Total worker threads: " + WorkQueue.GlobalWorkQueue.WorkerCount.ToString());
             info.AppendLine("Queued work items: " + WorkQueue.GlobalWorkQueue.QueuedCount.ToString());
