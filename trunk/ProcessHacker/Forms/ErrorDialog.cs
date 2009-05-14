@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   unhandled exception dialog
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 using ProcessHacker.Native.Api;
 
@@ -43,22 +42,9 @@ namespace ProcessHacker
             { }
         }
 
-        private void TryStart(string command)
-        {
-            try
-            {
-                Process.Start(command);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
         private void labelLink_Click(object sender, EventArgs e)
         {
-            TryStart("http://sourceforge.net/tracker2/?group_id=242527");
+            Program.TryStart("http://sourceforge.net/tracker2/?group_id=242527");
         }
 
         private void buttonContinue_Click(object sender, EventArgs e)

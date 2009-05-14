@@ -673,6 +673,19 @@ namespace ProcessHacker
             }
         }
 
+        public static void TryStart(string command)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(command);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
         private static Dictionary<string, string> ParseArgs(string[] args)
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();

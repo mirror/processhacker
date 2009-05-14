@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   about window
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -45,62 +45,49 @@ namespace ProcessHacker
             this.Close();
         }
 
-        private void TryStart(string command)
-        {
-            try
-            {
-                Process.Start(command);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Could not start process:\n\n" + ex.Message, "Process Hacker", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-        }
-
         private void linkHexBox_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://sourceforge.net/projects/hexbox");
+            Program.TryStart("http://sourceforge.net/projects/hexbox");
         }
 
         private void linkVistaMenu_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://wyday.com");
+            Program.TryStart("http://wyday.com");
         }
 
         private void linkFamFamFam_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://www.famfamfam.com/lab/icons/silk/");
+            Program.TryStart("http://www.famfamfam.com/lab/icons/silk/");
         }
 
         private void linkSourceforge_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://sourceforge.net/projects/processhacker");
+            Program.TryStart("http://sourceforge.net/projects/processhacker");
         }
 
         private void linkEmail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://sourceforge.net/tracker2/?group_id=242527");
+            Program.TryStart("http://sourceforge.net/tracker2/?group_id=242527");
         }
 
         private void linkAsm_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://www.ollydbg.de");
+            Program.TryStart("http://www.ollydbg.de");
         }
 
         private void linkTreeViewAdv_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://sourceforge.net/projects/treeviewadv");
+            Program.TryStart("http://sourceforge.net/projects/treeviewadv");
         }
 
         private void linkICSharpCode_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://www.icsharpcode.net");
+            Program.TryStart("http://www.icsharpcode.net");
         }
 
         private void linkTaskDialog_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            TryStart("http://www.codeproject.com/KB/vista/TaskDialogWinForms.aspx");
+            Program.TryStart("http://www.codeproject.com/KB/vista/TaskDialogWinForms.aspx");
         }
 
         private void buttonChangelog_Click(object sender, EventArgs e)
