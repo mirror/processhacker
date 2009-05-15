@@ -508,7 +508,7 @@ namespace ProcessHacker
             if (pArgs.ContainsKey("-v"))
                 StartVisible = true;
 
-            if (pArgs.ContainsKey("-a") || true)
+            if (pArgs.ContainsKey("-a"))
             {
                 try { Unhook(); }
                 catch { }
