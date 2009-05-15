@@ -354,15 +354,14 @@ namespace ProcessHacker.Native.Objects
 
                     try
                     {
-                        baseDllName = Utils.ReadUnicodeString(this, currentModule->BaseDllName).TrimEnd('\0');
+                        baseDllName = currentModule->BaseDllName.Read(this).TrimEnd('\0');
                     }
                     catch
                     { }
 
                     try
                     {
-                        fullDllName =
-                            FileUtils.FixPath(Utils.ReadUnicodeString(this, currentModule->FullDllName).TrimEnd('\0'));
+                        fullDllName = FileUtils.FixPath(currentModule->FullDllName.Read(this).TrimEnd('\0'));
                     }
                     catch
                     { }

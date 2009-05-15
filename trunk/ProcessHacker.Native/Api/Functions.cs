@@ -589,6 +589,11 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtLoadDriver(
+            [In] ref UnicodeString DriverPath
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
         public static extern int NtOpenSymbolicLinkObject(
             [Out] out IntPtr LinkHandle,
             [In] int DesiredAccess,
@@ -836,6 +841,11 @@ namespace ProcessHacker.Native.Api
         public static extern int NtSuspendThread(
             [In] IntPtr ThreadHandle,
             [Out] [Optional] out int PreviousSuspendCount
+            );
+
+        [DllImport("ntdll.dll", SetLastError = true)]
+        public static extern int NtUnloadDriver(
+            [In] ref UnicodeString DriverPath
             );
 
         #endregion

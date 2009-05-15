@@ -320,7 +320,7 @@ namespace ProcessHacker.Native
                 while (true)
                 {
                     currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
-                    currentProcess.Name = Utils.ReadUnicodeString(currentProcess.Process.ImageName);
+                    currentProcess.Name = currentProcess.Process.ImageName.Read();
 
                     if (getThreads &&
                         currentProcess.Process.ProcessId != 0)
@@ -442,6 +442,42 @@ namespace ProcessHacker.Native
                 }
             }
         }
+
+        public static void LoadDriver(string serviceName)
+        {
+            var str = UnicodeString.Create(
+                "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
+
+            try
+            {
+                int status;
+
+                if ((status = Win32.NtLoadDriver(ref str)) < 0)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                str.Dispose();
+            }
+        }
+
+        public static void UnloadDriver(string serviceName)
+        {
+            var str = UnicodeString.Create(
+                "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
+
+            try
+            {
+                int status;
+
+                if ((status = Win32.NtUnloadDriver(ref str)) < 0)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                str.Dispose();
+            }
+        }
     }
 
     public class KernelModule
@@ -553,7 +589,7 @@ namespace ProcessHacker.Native
                             if (KProcessHacker.Instance != null)
                                 str.Buffer = str.Buffer.Increment(-baseAddress + otiMem);
 
-                            info.TypeName = Utils.ReadUnicodeString(str);
+                            info.TypeName = str.Read();
                             Windows.ObjectTypes.Add(this.ObjectTypeNumber, info.TypeName);
                         }
                     }
@@ -607,7 +643,7 @@ namespace ProcessHacker.Native
                         if (KProcessHacker.Instance != null)
                             str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
 
-                        info.OrigName = Utils.ReadUnicodeString(str);
+                        info.OrigName = str.Read();
                     }
                 }
             }

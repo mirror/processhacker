@@ -618,6 +618,17 @@ namespace ProcessHacker
             return sb.ToString();
         }
 
+        public static string MakeRandomString(int length)
+        {
+            Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
+            StringBuilder sb = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+                sb.Append((char)('A' + r.Next(25)));
+
+            return sb.ToString();
+        }
+
         public static System.Diagnostics.ProcessPriorityClass NativeToWindowsBasePriority(int priority)
         {
             if (priority >= 24)

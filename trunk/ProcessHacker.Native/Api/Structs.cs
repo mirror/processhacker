@@ -1397,12 +1397,40 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct UnicodeString
+    public struct UnicodeString : IDisposable
     {
         public ushort Length;
         public ushort MaximumLength;
         public IntPtr Buffer;
 
+        public static UnicodeString Create(string str)
+        {
+            UnicodeString unicodeString = new UnicodeString();
+
+            unicodeString.Buffer = Marshal.StringToHGlobalUni(str);
+            unicodeString.Length = (ushort)(str.Length * 2);
+            unicodeString.MaximumLength = unicodeString.Length;
+
+            return unicodeString;
+        }
+
+        public void Dispose()
+        {
+            if (this.Buffer == IntPtr.Zero)
+                return;
+
+            Marshal.FreeHGlobal(this.Buffer);
+        }
+
+        public string Read()
+        {
+            return Utils.ReadUnicodeString(this);
+        }
+
+        public string Read(ProcessHandle processHandle)
+        {
+            return Utils.ReadUnicodeString(processHandle, this);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

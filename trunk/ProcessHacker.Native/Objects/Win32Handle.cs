@@ -222,7 +222,7 @@ namespace ProcessHacker.Native.Objects
 
                     ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
 
-                    return Utils.ReadUnicodeString(oni.Name);
+                    return oni.Name.Read();
                 }
             }
             else

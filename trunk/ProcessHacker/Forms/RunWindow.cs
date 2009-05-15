@@ -189,11 +189,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    Random r = new Random((int)(DateTime.Now.ToFileTime() & 0xffffffff));
-                    string serviceName = "";
-
-                    for (int i = 0; i < 8; i++)
-                        serviceName += (char)('A' + r.Next(25));
+                    string serviceName = Misc.MakeRandomString(8);
 
                     using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {
