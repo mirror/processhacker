@@ -1,16 +1,25 @@
-;ISTool Version 5.2.1 and Inno Setup 5.2.4 dev, Script by XhmikosR
+;ISTool v5.3.0/Inno Setup v5.3.1 beta/ISSI v5.1.9.0, Script by XhmikosR
 ;
 ;Requirements:
 ;*Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
+;*Inno Setup Script Includes:
+;	http://members.home.nl/albartus/issi/ISSI-Setup.exe
 
-#define installer_build_number "32"
+#define installer_build_number "33"
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://processhacker.sourceforge.net/"
 #define app_contact "http://processhacker.sourceforge.net/"
 #define app_publisher_url "http://processhacker.sourceforge.net/"
+
+#define ISSI_IncludePath ReadReg(HKLM,"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup Script Includes_is1","InstallLocation")
+#define ISSI_URL
+#define ISSI_URLText
+
+; Include ISSI
+#include ISSI_IncludePath+"\_issi.isi"
 
 ; From now on you'll probably won't have to change anything, so be carefull
 [Setup]
