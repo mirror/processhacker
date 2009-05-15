@@ -72,6 +72,9 @@ IF NOT DEFINED N_ (START "" /B /WAIT "..\..\Build\7za\7za.exe" a -tzip^
  "processhacker-bin.zip" "*" -x!*setup.exe -mx=9 >NUL&&(
 	ECHO:ZIP created successfully!))
 
+:END
+GOTO :EOF
+
 :Sub
 SET InnoSetupPath=%*
 
