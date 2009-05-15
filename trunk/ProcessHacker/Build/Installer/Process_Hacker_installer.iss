@@ -1,4 +1,4 @@
-;ISTool v5.3.0/Inno Setup v5.3.1 beta/ISSI v5.1.9.0, Script by XhmikosR
+;ISTool v5.2.1/Inno Setup v5.2.4 dev/ISSI v5.1.9.0, Script by XhmikosR
 ;
 ;Requirements:
 ;*Inno Setup QuickStart Pack:
@@ -14,7 +14,7 @@
 #define app_contact "http://processhacker.sourceforge.net/"
 #define app_publisher_url "http://processhacker.sourceforge.net/"
 
-#define ISSI_IncludePath ReadReg(HKLM,"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup Script Includes_is1","InstallLocation")
+#define ISSI_IncludePath ReadReg(HKLM, "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup Script Includes_is1", "InstallLocation")
 #define ISSI_URL
 #define ISSI_URLText
 
