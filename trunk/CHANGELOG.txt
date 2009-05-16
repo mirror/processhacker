@@ -24,6 +24,7 @@ Process Hacker
    * Corrupted usernames
    * .NET processes getting recognized as packed
    * Start times like "20 centuries ago"
+   * Unable to change service configurations
 
 1.3.7.5
  * NEW/IMPROVED:
