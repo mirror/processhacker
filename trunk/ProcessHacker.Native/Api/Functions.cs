@@ -1372,9 +1372,9 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool QueryServiceStatusEx(
             [In] IntPtr Service, 
-            [In] IntPtr InfoLevel,
-            [Out] [Optional] ServiceStatusProcess ServiceStatus,
-            [In] int BufSize, 
+            [In] int InfoLevel,
+            [Out] [Optional] out ServiceStatusProcess ServiceStatus,
+            [In] int BufferSize, 
             [Out] out int BytesNeeded
             );
 
@@ -1383,7 +1383,7 @@ namespace ProcessHacker.Native.Api
         public static extern bool QueryServiceConfig(
             [In] IntPtr Service,
             [Out] [Optional] IntPtr ServiceConfig,
-            [In] int BufSize, 
+            [In] int BufferSize, 
             [Out] out int BytesNeeded
             );
 

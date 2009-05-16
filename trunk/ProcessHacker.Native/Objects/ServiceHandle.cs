@@ -80,7 +80,7 @@ namespace ProcessHacker.Native.Objects
         {
             ServiceStatus status = new ServiceStatus();
 
-            if (!Win32.ControlService(this.Handle, control, out status))
+            if (!Win32.ControlService(this, control, out status))
                 Win32.ThrowLastError();
         }
 
@@ -89,7 +89,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Delete()
         {
-            if (!Win32.DeleteService(this.Handle))
+            if (!Win32.DeleteService(this))
                 Win32.ThrowLastError();
         }
 
@@ -136,10 +136,10 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A SERVICE_STATUS_PROCESS structure.</returns>
         public ServiceStatusProcess GetStatus()
         {
-            ServiceStatusProcess status = new ServiceStatusProcess();
+            ServiceStatusProcess status;
             int retLen;
 
-            if (!Win32.QueryServiceStatusEx(this, IntPtr.Zero, status, Marshal.SizeOf(status), out retLen))
+            if (!Win32.QueryServiceStatusEx(this, 0, out status, Marshal.SizeOf(typeof(ServiceStatusProcess)), out retLen))
                 Win32.ThrowLastError();
 
             return status;
@@ -150,7 +150,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void Start()
         {
-            if (!Win32.StartService(this.Handle, 0, null))
+            if (!Win32.StartService(this, 0, null))
                 Win32.ThrowLastError();
         }
     }

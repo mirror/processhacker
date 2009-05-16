@@ -268,10 +268,10 @@ namespace ProcessHacker
                                                 userAccount = args["-serviceuseraccount"];
                                             if (args.ContainsKey("-servicepassword"))
                                                 password = args["-servicepassword"];
-                                            int TagId;
+
                                             if (!Win32.ChangeServiceConfig(service,
                                                 serviceType, startType, errorControl,
-                                                binaryPath, loadOrderGroup, out TagId, null, userAccount, password, null))
+                                                binaryPath, loadOrderGroup, IntPtr.Zero, null, userAccount, password, null))
                                                 Win32.ThrowLastError();
                                         }
                                     }
