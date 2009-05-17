@@ -39,6 +39,7 @@ typedef struct _KPH_PROCESS_ENTRY
     LIST_ENTRY ListEntry;
     PEPROCESS Process;
     HANDLE Tag;
+    LOGICAL AllowKernelMode;
     ACCESS_MASK ProcessAllowMask;
     ACCESS_MASK ThreadAllowMask;
 } KPH_PROCESS_ENTRY, *PKPH_PROCESS_ENTRY;
@@ -52,6 +53,7 @@ NTSTATUS KphProtectDeinit();
 PKPH_PROCESS_ENTRY KphProtectAddEntry(
     PEPROCESS Process,
     HANDLE Tag,
+    LOGICAL AllowKernelMode,
     ACCESS_MASK ProcessAllowMask,
     ACCESS_MASK ThreadAllowMask
     );

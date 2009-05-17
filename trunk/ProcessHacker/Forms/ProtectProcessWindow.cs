@@ -22,11 +22,15 @@ namespace ProcessHacker
 
             _pid = pid;
 
+            bool allowKernelMode;
             ProcessAccess processAccess;
             ThreadAccess threadAccess;
 
-            if (ProtectQuery(_pid, out processAccess, out threadAccess))
+            if (ProtectQuery(_pid, out allowKernelMode, out processAccess, out threadAccess))
+            {
                 checkProtect.Checked = _isProtected = true;
+                checkDontAllowKernelMode.Checked = !allowKernelMode;
+            }
 
             foreach (string value in Enum.GetNames(typeof(ProcessAccess)))
             {
@@ -49,17 +53,18 @@ namespace ProcessHacker
             checkProtect_CheckedChanged(null, null);
         }
 
-        private bool ProtectQuery(int pid, out ProcessAccess processAccess, out ThreadAccess threadAccess)
+        private bool ProtectQuery(int pid, out bool allowKernelMode, out ProcessAccess processAccess, out ThreadAccess threadAccess)
         {
             try
             {
                 using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                    KProcessHacker.Instance.ProtectQuery(phandle, out processAccess, out threadAccess);
+                    KProcessHacker.Instance.ProtectQuery(phandle, out allowKernelMode, out processAccess, out threadAccess);
 
                 return true;
             }
             catch
             {
+                allowKernelMode = true;
                 processAccess = 0;
                 threadAccess = 0;
 
@@ -100,7 +105,12 @@ namespace ProcessHacker
                 try
                 {
                     using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        KProcessHacker.Instance.ProtectAdd(phandle, processAccess, threadAccess);
+                        KProcessHacker.Instance.ProtectAdd(
+                            phandle,
+                            !checkDontAllowKernelMode.Checked,
+                            processAccess, 
+                            threadAccess
+                            );
                 }
                 catch
                 { }
@@ -111,6 +121,7 @@ namespace ProcessHacker
 
         private void checkProtect_CheckedChanged(object sender, EventArgs e)
         {
+            checkDontAllowKernelMode.Enabled = checkProtect.Checked;
             listProcessAccess.Enabled = checkProtect.Checked;
             listThreadAccess.Enabled = checkProtect.Checked;
         }

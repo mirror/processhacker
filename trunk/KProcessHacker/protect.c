@@ -143,7 +143,6 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         processObject = *(PEPROCESS *)KVOFF(Object, OffKtProcess);
     
     if (
-        AccessMode != KernelMode && /* let kernel-mode callers through */
         processObject != PsGetCurrentProcess() /* let the caller open its own processes/threads */
         )
     {
@@ -163,7 +162,11 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
                 isThread ? processEntry.ThreadAllowMask : processEntry.ProcessAllowMask;
             
             /* The process/thread is protected. Check if the requested access is allowed. */
-            if ((access & mask) != access)
+            if (
+                /* check if kernel-mode is allowed */
+                !(processEntry.AllowKernelMode && AccessMode == KernelMode) && 
+                (access & mask) != access
+                )
             {
                 /* Access denied. */
                 dprintf(
@@ -200,6 +203,7 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
 PKPH_PROCESS_ENTRY KphProtectAddEntry(
     PEPROCESS Process,
     HANDLE Tag,
+    LOGICAL AllowKernelMode,
     ACCESS_MASK ProcessAllowMask,
     ACCESS_MASK ThreadAllowMask
     )
@@ -220,6 +224,7 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
     
     entry->Process = Process;
     entry->Tag = Tag;
+    entry->AllowKernelMode = AllowKernelMode;
     entry->ProcessAllowMask = ProcessAllowMask;
     entry->ThreadAllowMask = ThreadAllowMask;
     

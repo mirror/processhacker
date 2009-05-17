@@ -1276,6 +1276,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             struct
             {
                 HANDLE ProcessHandle;
+                LOGICAL AllowKernelMode;
                 ACCESS_MASK ProcessAllowMask;
                 ACCESS_MASK ThreadAllowMask;
             } *args = dataBuffer;
@@ -1312,6 +1313,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             if (!KphProtectAddEntry(
                 processObject,
                 PsGetCurrentProcessId(),
+                args->AllowKernelMode,
                 args->ProcessAllowMask,
                 args->ThreadAllowMask
                 ))
@@ -1366,6 +1368,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             struct
             {
                 HANDLE ProcessHandle;
+                PLOGICAL AllowKernelMode;
                 PACCESS_MASK ProcessAllowMask;
                 PACCESS_MASK ThreadAllowMask;
             } *args = dataBuffer;
@@ -1412,6 +1415,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             __try
             {
+                *(args->AllowKernelMode) = processEntry.AllowKernelMode;
                 *(args->ProcessAllowMask) = processEntry.ProcessAllowMask;
                 *(args->ThreadAllowMask) = processEntry.ThreadAllowMask;
             }

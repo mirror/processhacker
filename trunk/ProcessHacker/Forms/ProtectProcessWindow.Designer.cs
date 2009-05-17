@@ -35,6 +35,7 @@
             this.listThreadAccess = new System.Windows.Forms.CheckedListBox();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
+            this.checkDontAllowKernelMode = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // checkProtect
@@ -51,8 +52,10 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 42);
+            this.label1.Location = new System.Drawing.Point(12, 62);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(124, 13);
             this.label1.TabIndex = 1;
@@ -60,8 +63,10 @@
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 155);
+            this.label2.Location = new System.Drawing.Point(12, 175);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(117, 13);
             this.label2.TabIndex = 2;
@@ -69,16 +74,20 @@
             // 
             // listProcessAccess
             // 
+            this.listProcessAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listProcessAccess.FormattingEnabled = true;
-            this.listProcessAccess.Location = new System.Drawing.Point(12, 58);
+            this.listProcessAccess.Location = new System.Drawing.Point(12, 78);
             this.listProcessAccess.Name = "listProcessAccess";
             this.listProcessAccess.Size = new System.Drawing.Size(474, 94);
             this.listProcessAccess.TabIndex = 3;
             // 
             // listThreadAccess
             // 
+            this.listThreadAccess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listThreadAccess.FormattingEnabled = true;
-            this.listThreadAccess.Location = new System.Drawing.Point(12, 171);
+            this.listThreadAccess.Location = new System.Drawing.Point(12, 191);
             this.listThreadAccess.Name = "listThreadAccess";
             this.listThreadAccess.Size = new System.Drawing.Size(474, 94);
             this.listThreadAccess.TabIndex = 3;
@@ -86,7 +95,7 @@
             // buttonCancel
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.Location = new System.Drawing.Point(411, 271);
+            this.buttonCancel.Location = new System.Drawing.Point(411, 291);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 4;
@@ -97,7 +106,7 @@
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(330, 271);
+            this.buttonOK.Location = new System.Drawing.Point(330, 291);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 4;
@@ -105,12 +114,24 @@
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
             // 
+            // checkDontAllowKernelMode
+            // 
+            this.checkDontAllowKernelMode.AutoSize = true;
+            this.checkDontAllowKernelMode.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkDontAllowKernelMode.Location = new System.Drawing.Point(12, 36);
+            this.checkDontAllowKernelMode.Name = "checkDontAllowKernelMode";
+            this.checkDontAllowKernelMode.Size = new System.Drawing.Size(270, 18);
+            this.checkDontAllowKernelMode.TabIndex = 5;
+            this.checkDontAllowKernelMode.Text = "Don\'t allow kernel-mode code to bypass protection";
+            this.checkDontAllowKernelMode.UseVisualStyleBackColor = true;
+            // 
             // ProtectProcessWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(498, 306);
+            this.ClientSize = new System.Drawing.Size(498, 326);
+            this.Controls.Add(this.checkDontAllowKernelMode);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.listThreadAccess);
@@ -139,5 +160,6 @@
         private System.Windows.Forms.CheckedListBox listThreadAccess;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOK;
+        private System.Windows.Forms.CheckBox checkDontAllowKernelMode;
     }
 }

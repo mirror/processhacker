@@ -548,29 +548,33 @@ namespace ProcessHacker.Native
             bytesWritten = returnLength;
         }
 
-        public void ProtectAdd(ProcessHandle processHandle, ProcessAccess ProcessAllowMask, ThreadAccess ThreadAllowMask)
+        public void ProtectAdd(ProcessHandle processHandle, bool allowKernelMode, ProcessAccess ProcessAllowMask, ThreadAccess ThreadAllowMask)
         {
-            byte* inData = stackalloc byte[12];
+            byte* inData = stackalloc byte[16];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = (int)ProcessAllowMask;
-            *(int*)(inData + 8) = (int)ThreadAllowMask;
+            *(int*)(inData + 0x4) = allowKernelMode ? 1 : 0;
+            *(int*)(inData + 0x8) = (int)ProcessAllowMask;
+            *(int*)(inData + 0xc) = (int)ThreadAllowMask;
 
-            _fileHandle.IoControl(CtlCode(Control.ProtectAdd), inData, 12, null, 0);
+            _fileHandle.IoControl(CtlCode(Control.ProtectAdd), inData, 16, null, 0);
         }
 
-        public void ProtectQuery(ProcessHandle processHandle, out ProcessAccess ProcessAllowMask, out ThreadAccess ThreadAllowMask)
+        public void ProtectQuery(ProcessHandle processHandle, out bool AllowKernelMode, out ProcessAccess ProcessAllowMask, out ThreadAccess ThreadAllowMask)
         {
-            byte* inData = stackalloc byte[12];
+            byte* inData = stackalloc byte[16];
+            int allowKernelMode;
             ProcessAccess processAllowMask;
             ThreadAccess threadAllowMask;
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = (int)&processAllowMask;
-            *(int*)(inData + 8) = (int)&threadAllowMask;
+            *(int*)(inData + 0x4) = (int)&allowKernelMode;
+            *(int*)(inData + 0x8) = (int)&processAllowMask;
+            *(int*)(inData + 0xc) = (int)&threadAllowMask;
 
-            _fileHandle.IoControl(CtlCode(Control.ProtectQuery), inData, 12, null, 0);
+            _fileHandle.IoControl(CtlCode(Control.ProtectQuery), inData, 16, null, 0);
 
+            AllowKernelMode = allowKernelMode != 0;
             ProcessAllowMask = processAllowMask;
             ThreadAllowMask = threadAllowMask;
         }
