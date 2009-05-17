@@ -25,19 +25,6 @@
 
 #include "types.h"
 
-typedef struct _SYSTEM_MODULE_INFORMATION
-{
-    ULONG Reserved[2];
-    PVOID Base;
-    ULONG Size;
-    ULONG Flags;
-    USHORT Index;
-    USHORT Unknown;
-    USHORT LoadCount;
-    USHORT ModuleNameOffset;
-    CHAR ImageName[256];
-} SYSTEM_MODULE_INFORMATION, *PSYSTEM_MODULE_INFORMATION;
-
 NTSTATUS NTAPI ZwOpenProcessToken(
     HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,

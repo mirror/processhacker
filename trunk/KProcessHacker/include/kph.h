@@ -43,7 +43,6 @@
 #define EQNULL
 #endif
 
-EXT _ExpGetProcessInformation ExpGetProcessInformation EQNULL;
 EXT _NtClose __NtClose EQNULL;
 EXT _PsGetProcessJob PsGetProcessJob EQNULL;
 EXT _PsResumeProcess PsResumeProcess EQNULL;

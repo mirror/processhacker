@@ -813,7 +813,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 PVOID StartAddress;
             } *ret = dataBuffer;
-            PETHREAD2 threadObject;
+            PETHREAD threadObject;
             
             if (inLength < sizeof(*args) || outLength < sizeof(*ret))
             {

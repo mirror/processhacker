@@ -68,29 +68,14 @@ typedef struct _OBJECT_HANDLE_FLAG_INFORMATION
     BOOLEAN ProtectFromClose;
 } OBJECT_HANDLE_FLAG_INFORMATION, *POBJECT_HANDLE_FLAG_INFORMATION;
 
-typedef struct _OBJECT_CREATE_INFORMATION
-{
-    ULONG Attributes;
-    PVOID RootDirectory;
-    PVOID ParseContext;
-    CHAR ProbeMode;
-    ULONG PagedPoolCharge;
-    ULONG NonPagedPoolCharge;
-    ULONG SecurityDescriptorCharge;
-    PVOID SecurityDescriptor;
-    PSECURITY_QUALITY_OF_SERVICE SecurityQos;
-    SECURITY_QUALITY_OF_SERVICE SecurityQualityOfService;
-} OBJECT_CREATE_INFORMATION, *POBJECT_CREATE_INFORMATION;
+typedef struct _OBJECT_CREATE_INFORMATION OBJECT_CREATE_INFORMATION, *POBJECT_CREATE_INFORMATION;
 
 typedef struct _OBJECT_HEADER
 {
     LONG PointerCount;
     union
     {
-        struct
-        {
-            LONG HandleCount;
-        };
+        LONG HandleCount;
         PVOID NextToFree;
     };
     POBJECT_TYPE Type;
@@ -107,112 +92,16 @@ typedef struct _OBJECT_HEADER
     QUAD Body;
 } OBJECT_HEADER, *POBJECT_HEADER;
 
-typedef struct _OBJECT_TYPE_INITIALIZER
-{
-	USHORT Length;
-	UCHAR ObjectTypeFlags;
-	ULONG CaseInsensitive: 1;
-	ULONG UnnamedObjectsOnly: 1;
-	ULONG UseDefaultObject: 1;
-	ULONG SecurityRequired: 1;
-	ULONG MaintainHandleCount: 1;
-	ULONG MaintainTypeList: 1;
-	ULONG ObjectTypeCode;
-	ULONG InvalidAttributes;
-	GENERIC_MAPPING GenericMapping;
-	ULONG ValidAccessMask;
-	POOL_TYPE PoolType;
-    ULONG DefaultPagedPoolCharge;
-    ULONG DefaultNonPagedPoolCharge;
-    PVOID DumpProcedure;
-    PVOID OpenProcedure;
-    PVOID CloseProcedure;
-    PVOID DeleteProcedure;
-    PVOID ParseProcedure;
-    PVOID SecurityProcedure;
-    PVOID QueryNameProcedure;
-    PVOID OkayToCloseProcedure;
-} OBJECT_TYPE_INITIALIZER, *POBJECT_TYPE_INITIALIZER;
-
-typedef struct _OBJECT_TYPE
-{
-    ERESOURCE Mutex;
-    LIST_ENTRY TypeList;
-    UNICODE_STRING Name;
-    PVOID DefaultObject;
-    ULONG Index;
-    ULONG TotalNumberOfObjects;
-    ULONG TotalNumberOfHandles;
-    ULONG HighWaterNumberOfObjects;
-    ULONG HighWaterNumberOfHandles;
-    OBJECT_TYPE_INITIALIZER TypeInfo;
-    ULONG Key;
-    EX_PUSH_LOCK ObjectLocks[32];
-} OBJECT_TYPE;
-
-typedef struct _HANDLE_TRACE_DB_ENTRY
-{
-    CLIENT_ID ClientId;
-    PVOID Handle;
-    ULONG Type;
-    VOID *StackTrace[16];
-} HANDLE_TRACE_DB_ENTRY, *PHANDLE_TRACE_DB_ENTRY;
-
-typedef struct _HANDLE_TRACE_DEBUG_INFO
-{
-    LONG RefCount;
-    ULONG TableSize;
-    ULONG BitMaskFlags;
-    FAST_MUTEX CloseCompactionLock;
-    ULONG CurrentStackIndex;
-    HANDLE_TRACE_DB_ENTRY TraceDb[1];
-} HANDLE_TRACE_DEBUG_INFO, *PHANDLE_TRACE_DEBUG_INFO;
-
-typedef struct _HANDLE_TABLE_ENTRY_INFO
-{
-    ULONG AuditMask;
-} HANDLE_TABLE_ENTRY_INFO, *PHANDLE_TABLE_ENTRY_INFO;
-
 typedef struct _HANDLE_TABLE_ENTRY
 {
     union
     {
         PVOID Object;
-        ULONG ObAttributes;
-        PHANDLE_TABLE_ENTRY_INFO InfoTable;
         ULONG Value;
     };
-    union
-    {
-        ULONG GrantedAccess;
-        struct
-        {
-            SHORT GrantedAccessIndex;
-            SHORT CreatorBackTraceIndex;
-        };
-        LONG NextFreeTableEntry;
-    };
+    ULONG GrantedAccess;
 } HANDLE_TABLE_ENTRY, *PHANDLE_TABLE_ENTRY;
 
-typedef struct _HANDLE_TABLE
-{
-    ULONG TableCode;
-    PEPROCESS QuotaProcess;
-    PVOID UniqueProcessId;
-    EX_PUSH_LOCK HandleLock;
-    LIST_ENTRY HandleTableList;
-    EX_PUSH_LOCK HandleContentionEvent;
-    PHANDLE_TRACE_DEBUG_INFO DebugInfo;
-    LONG ExtraInfoPages;
-    union
-    {
-        ULONG Flags;
-        ULONG StrictFIFO: 1;
-    };
-    LONG FirstFreeHandle;
-    PHANDLE_TABLE_ENTRY LastFreeHandleEntry;
-    LONG HandleCount;
-    ULONG NextHandleNeedingPool;
-} HANDLE_TABLE, *PHANDLE_TABLE;
+typedef struct _HANDLE_TABLE HANDLE_TABLE, *PHANDLE_TABLE;
 
 #endif
