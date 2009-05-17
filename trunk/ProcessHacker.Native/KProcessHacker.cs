@@ -76,7 +76,10 @@ namespace ProcessHacker.Native
             KphTerminateThread,
             GetFeatures,
             KphSetHandleGrantedAccess,
-            KphAssignImpersonationToken
+            KphAssignImpersonationToken,
+            ProtectAdd,
+            ProtectRemove,
+            ProtectQuery
         }
 
         [Flags]
@@ -113,9 +116,8 @@ namespace ProcessHacker.Native
                         shandle.Delete();
                 }
             }
-            catch (Exception)
-            {
-            }
+            catch
+            { }
 
             try
             {
@@ -544,6 +546,41 @@ namespace ProcessHacker.Native
 
             _fileHandle.IoControl(CtlCode(Control.KphWriteVirtualMemory), inData, 0x14, null, 0);
             bytesWritten = returnLength;
+        }
+
+        public void ProtectAdd(ProcessHandle processHandle, ProcessAccess ProcessAllowMask, ThreadAccess ThreadAllowMask)
+        {
+            byte* inData = stackalloc byte[12];
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 4) = (int)ProcessAllowMask;
+            *(int*)(inData + 8) = (int)ThreadAllowMask;
+
+            _fileHandle.IoControl(CtlCode(Control.ProtectAdd), inData, 12, null, 0);
+        }
+
+        public void ProtectQuery(ProcessHandle processHandle, out ProcessAccess ProcessAllowMask, out ThreadAccess ThreadAllowMask)
+        {
+            byte* inData = stackalloc byte[12];
+            ProcessAccess processAllowMask;
+            ThreadAccess threadAllowMask;
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 4) = (int)&processAllowMask;
+            *(int*)(inData + 8) = (int)&threadAllowMask;
+
+            _fileHandle.IoControl(CtlCode(Control.ProtectQuery), inData, 12, null, 0);
+
+            ProcessAllowMask = processAllowMask;
+            ThreadAllowMask = threadAllowMask;
+        }
+
+        public void ProtectRemove(ProcessHandle processHandle)
+        {
+            int processHandleInt = processHandle;
+
+            _fileHandle.IoControl(CtlCode(Control.ProtectRemove),
+                (byte*)&processHandleInt, 4, null, 0);
         }
 
         public byte[] Read(int address, int length)

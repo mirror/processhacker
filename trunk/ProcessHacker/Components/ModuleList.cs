@@ -29,6 +29,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using Microsoft.Win32;
 
 namespace ProcessHacker.Components
 {
@@ -409,41 +410,83 @@ namespace ProcessHacker.Components
 
         private void unloadMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to unload this library?", "Process Hacker",
+            if (MessageBox.Show("Are you sure you want to unload this " + 
+                (_pid != 4 ? "library" : "driver") + "?", "Process Hacker",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 return;
 
-            try
+            if (_pid == 4)
             {
-                IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
-                IntPtr freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
-
-                if (freeLibrary == IntPtr.Zero)
-                    throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
-
-                using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                    Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights | 
-                    Program.MinProcessWriteMemoryRights | ProcessAccess.CreateThread))
+                try
                 {
-                    IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
+                    string fileName = ((ModuleItem)listModules.SelectedItems[0].Tag).FileName;
+                    RegistryKey servicesKey =
+                        Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services", true);
+                    string serviceName = Misc.MakeRandomString(8);
+                    RegistryKey serviceKey = servicesKey.CreateSubKey(serviceName);
 
-                    phandle.SetModuleReferenceCount(baseAddress, 1);
+                    serviceKey.SetValue("ErrorControl", 1, RegistryValueKind.DWord);
+                    serviceKey.SetValue("ImagePath", "\\??\\" + fileName, RegistryValueKind.ExpandString);
+                    serviceKey.SetValue("Start", 1, RegistryValueKind.DWord);
+                    serviceKey.SetValue("Type", 1, RegistryValueKind.DWord);
+                    serviceKey.Close();
+                    servicesKey.Flush();
 
-                    var thread = phandle.CreateThread(freeLibrary, baseAddress, ThreadAccess.All);
-
-                    thread.Wait(1000);
-
-                    int exitCode = thread.GetExitCode();
-
-                    if (exitCode == 0)
+                    try
                     {
-                        throw new Exception("Error unloading the library.");
+                        Windows.UnloadDriver(serviceName);
+                    }
+                    finally
+                    {
+                        servicesKey.DeleteSubKeyTree(serviceName);
+                        servicesKey.Close();
                     }
                 }
+                catch (System.Security.SecurityException ex)
+                {
+                    MessageBox.Show("Could not unload the driver. Make sure Process Hacker " +
+                        "is running with administrative privileges. Error:\n\n" +
+                        ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
+                    IntPtr freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
+
+                    if (freeLibrary == IntPtr.Zero)
+                        throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
+
+                    using (ProcessHandle phandle = new ProcessHandle(_pid,
+                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights |
+                        Program.MinProcessWriteMemoryRights | ProcessAccess.CreateThread))
+                    {
+                        IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
+
+                        phandle.SetModuleReferenceCount(baseAddress, 1);
+
+                        var thread = phandle.CreateThread(freeLibrary, baseAddress, ThreadAccess.All);
+
+                        thread.Wait(1000);
+
+                        int exitCode = thread.GetExitCode();
+
+                        if (exitCode == 0)
+                        {
+                            throw new Exception("Error unloading the library.");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

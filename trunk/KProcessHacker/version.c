@@ -118,6 +118,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0;
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
+        OffKtProcess = 0x220; /* it's actually in the ETHREAD, but let's ignore that */
         OffOtiGenericMapping = 0x60 + 0x8;
         OffOhBody = 0x18;
         
@@ -182,6 +183,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0x224;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
+        OffKtProcess = 0x144;
         OffOhBody = 0x18;
         
         INIT_SCAN(
@@ -232,6 +234,7 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0x25c;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
+        OffKtProcess = 0x154;
         OffOtiGenericMapping = 0x28 + 0xc;
         OffOhBody = 0x18;
         
@@ -266,13 +269,11 @@ NTSTATUS KvInit()
 }
 
 PVOID KvVerifyPrologue(
-    ULONG_PTR Offset
+    PVOID Address
     )
 {
-    PVOID address = (PVOID)((ULONG_PTR)__NtClose + Offset);
-    
-    if (memcmp(address, StandardPrologue, 5) == 0)
-        return address;
+    if (memcmp(Address, StandardPrologue, 5) == 0)
+        return Address;
     else
         return NULL;
 }

@@ -70,10 +70,16 @@
 #define KPH_GETFEATURES KPH_CTL_CODE(26)
 #define KPH_SETHANDLEGRANTEDACCESS KPH_CTL_CODE(27)
 #define KPH_ASSIGNIMPERSONATIONTOKEN KPH_CTL_CODE(28)
+#define KPH_PROTECTADD KPH_CTL_CODE(29)
+#define KPH_PROTECTREMOVE KPH_CTL_CODE(30)
+#define KPH_PROTECTQUERY KPH_CTL_CODE(31)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
 #define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
+
+#define KPH_TIMEOUT_TO_SEC  ((LONGLONG) 1 * 10 * 1000 * 1000)
+#define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
 
 NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);

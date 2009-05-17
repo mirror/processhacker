@@ -235,6 +235,7 @@ namespace ProcessHacker
             checkVerifySignatures.Checked = Properties.Settings.Default.VerifySignatures;
             checkHideHandlesWithNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
+            checkEnableExperimentalFeatures.Checked = Properties.Settings.Default.EnableExperimentalFeatures;
             checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
             checkHidePhConnections.Checked = Properties.Settings.Default.HideProcessHackerNetworkConnections;
 
@@ -341,6 +342,7 @@ namespace ProcessHacker
             Properties.Settings.Default.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
             Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
+            Properties.Settings.Default.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
             Properties.Settings.Default.ImposterNames = textImposterNames.Text.ToLower();
             Properties.Settings.Default.HideProcessHackerNetworkConnections = checkHidePhConnections.Checked;
 
@@ -414,6 +416,7 @@ namespace ProcessHacker
                 Program.ImposterNames.Add(s.Trim());
 
             Program.HackerWindow.ApplyIconVisibilities();
+            Program.HackerWindow.LoadFixMenuItems();
             Program.ProcessProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.ServiceProvider.Interval = Properties.Settings.Default.RefreshInterval;
             Program.HackerWindow.NetworkProvider.Interval = Properties.Settings.Default.RefreshInterval;

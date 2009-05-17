@@ -22,7 +22,9 @@
 
 #include "include/kprocesshacker.h"
 #include "include/debug.h"
+
 #include "include/kph.h"
+#include "include/protect.h"
 #include "include/ps.h"
 #include "include/version.h"
 
@@ -33,6 +35,8 @@
 #pragma alloc_text(PAGE, KphUnsupported)
 #pragma pack(1)
 
+static BOOLEAN ProtectionInitialized = FALSE;
+
 VOID DriverUnload(PDRIVER_OBJECT DriverObject)
 {
     UNICODE_STRING dosDeviceName;
@@ -40,6 +44,18 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     IoDeleteSymbolicLink(&dosDeviceName);
     IoDeleteDevice(DriverObject->DeviceObject);
+    
+    if (ProtectionInitialized)
+    {
+        LARGE_INTEGER waitLi;
+        
+        KphProtectDeinit();
+        ProtectionInitialized = FALSE;
+        
+        /* Wait for a bit before unloading to prevent BSODs. */
+        waitLi.QuadPart = KPH_REL_TIMEOUT_IN_SEC(5);
+        KeDelayExecutionThread(KernelMode, FALSE, &waitLi);
+    }
     
     dprintf("Driver unloaded\n");
 }
@@ -119,9 +135,24 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
+    if (ProtectionInitialized)
+    {
+        ULONG count = KphProtectRemoveByTag(PsGetCurrentProcessId());
+        dprintf("Removed %d protection entries\n", count);
+    }
+    
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
     return status;
+}
+
+VOID InitProtection()
+{
+    if (!ProtectionInitialized)
+    {
+        KphProtectInit();
+        ProtectionInitialized = TRUE;
+    }
 }
 
 /* from YAPM */
@@ -239,6 +270,12 @@ PCHAR GetIoControlName(ULONG ControlCode)
         return "KphSetHandleGrantedAccess";
     else if (ControlCode == KPH_ASSIGNIMPERSONATIONTOKEN)
         return "KphAssignImpersonationToken";
+    else if (ControlCode == KPH_PROTECTADD)
+        return "Add Process Protection";
+    else if (ControlCode == KPH_PROTECTREMOVE)
+        return "Remove Process Protection";
+    else if (ControlCode == KPH_PROTECTQUERY)
+        return "Query Process Protection";
     else
         return "Unknown";
 }
@@ -1236,6 +1273,158 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             }
             
             status = KphAssignImpersonationToken(args->ThreadHandle, args->TokenHandle);
+        }
+        break;
+        
+        /* Add Process Protection */
+        case KPH_PROTECTADD:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                ACCESS_MASK ProcessAllowMask;
+                ACCESS_MASK ThreadAllowMask;
+            } *args = dataBuffer;
+            PEPROCESS processObject;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = ObReferenceObjectByHandle(
+                args->ProcessHandle,
+                0,
+                *PsProcessType,
+                KernelMode,
+                &processObject,
+                NULL
+                );
+            ObDereferenceObject(processObject);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            InitProtection();
+            
+            /* Don't protect the same process twice. */
+            if (KphProtectFindEntry(processObject, NULL))
+            {
+                status = STATUS_NOT_SUPPORTED;
+                goto IoControlEnd;
+            }
+            
+            if (!KphProtectAddEntry(
+                processObject,
+                PsGetCurrentProcessId(),
+                args->ProcessAllowMask,
+                args->ThreadAllowMask
+                ))
+            {
+                status = STATUS_UNSUCCESSFUL;
+                goto IoControlEnd;
+            }
+        }
+        break;
+        
+        /* Remove Process Protection */
+        case KPH_PROTECTREMOVE:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+            } *args = dataBuffer;
+            PEPROCESS processObject;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = ObReferenceObjectByHandle(
+                args->ProcessHandle,
+                0,
+                *PsProcessType,
+                KernelMode,
+                &processObject,
+                NULL
+                );
+            ObDereferenceObject(processObject);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            InitProtection();
+            
+            if (!KphProtectRemoveByProcess(processObject))
+            {
+                status = STATUS_UNSUCCESSFUL;
+                goto IoControlEnd;
+            }
+        }
+        break;
+        
+        /* Query Process Protection */
+        case KPH_PROTECTQUERY:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                PACCESS_MASK ProcessAllowMask;
+                PACCESS_MASK ThreadAllowMask;
+            } *args = dataBuffer;
+            PEPROCESS processObject;
+            KPH_PROCESS_ENTRY processEntry;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                ProbeForWrite(args->ProcessAllowMask, sizeof(ACCESS_MASK), 1);
+                ProbeForWrite(args->ThreadAllowMask, sizeof(ACCESS_MASK), 1);
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+                goto IoControlEnd;
+            }
+            
+            status = ObReferenceObjectByHandle(
+                args->ProcessHandle,
+                0,
+                *PsProcessType,
+                KernelMode,
+                &processObject,
+                NULL
+                );
+            ObDereferenceObject(processObject);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            InitProtection();
+            
+            if (!KphProtectCopyEntry(processObject, &processEntry))
+            {
+                status = STATUS_UNSUCCESSFUL;
+                goto IoControlEnd;
+            }
+            
+            __try
+            {
+                *(args->ProcessAllowMask) = processEntry.ProcessAllowMask;
+                *(args->ThreadAllowMask) = processEntry.ThreadAllowMask;
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
         }
         break;
         

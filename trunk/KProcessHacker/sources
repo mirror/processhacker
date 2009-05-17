@@ -9,6 +9,8 @@ SOURCES= \
     kprocesshacker.c \
     version.c \
     kph.c \
+    hook.c \
+    protect.c \
     mm.c \
     ob.c \
     ps.c \

@@ -563,7 +563,7 @@
             this.tabStatistics.Location = new System.Drawing.Point(4, 42);
             this.tabStatistics.Name = "tabStatistics";
             this.tabStatistics.Padding = new System.Windows.Forms.Padding(3);
-            this.tabStatistics.Size = new System.Drawing.Size(454, 383);
+            this.tabStatistics.Size = new System.Drawing.Size(481, 409);
             this.tabStatistics.TabIndex = 9;
             this.tabStatistics.Text = "Statistics";
             this.tabStatistics.UseVisualStyleBackColor = true;
@@ -575,7 +575,7 @@
             this.tabPerformance.Location = new System.Drawing.Point(4, 42);
             this.tabPerformance.Name = "tabPerformance";
             this.tabPerformance.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPerformance.Size = new System.Drawing.Size(454, 383);
+            this.tabPerformance.Size = new System.Drawing.Size(481, 409);
             this.tabPerformance.TabIndex = 8;
             this.tabPerformance.Text = "Performance";
             this.tabPerformance.UseVisualStyleBackColor = true;
@@ -594,7 +594,7 @@
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tablePerformance.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tablePerformance.Size = new System.Drawing.Size(448, 377);
+            this.tablePerformance.Size = new System.Drawing.Size(475, 403);
             this.tablePerformance.TabIndex = 1;
             // 
             // groupCPUUsage
@@ -603,7 +603,7 @@
             this.groupCPUUsage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupCPUUsage.Location = new System.Drawing.Point(3, 3);
             this.groupCPUUsage.Name = "groupCPUUsage";
-            this.groupCPUUsage.Size = new System.Drawing.Size(442, 119);
+            this.groupCPUUsage.Size = new System.Drawing.Size(469, 128);
             this.groupCPUUsage.TabIndex = 0;
             this.groupCPUUsage.TabStop = false;
             this.groupCPUUsage.Text = "CPU Usage (Kernel, User)";
@@ -626,7 +626,7 @@
             this.plotterCPUUsage.Name = "plotterCPUUsage";
             this.plotterCPUUsage.OverlaySecondLine = false;
             this.plotterCPUUsage.ShowGrid = true;
-            this.plotterCPUUsage.Size = new System.Drawing.Size(436, 100);
+            this.plotterCPUUsage.Size = new System.Drawing.Size(463, 109);
             this.plotterCPUUsage.TabIndex = 0;
             this.plotterCPUUsage.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterCPUUsage.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -640,9 +640,9 @@
             // 
             this.groupBox3.Controls.Add(this.plotterIO);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(3, 253);
+            this.groupBox3.Location = new System.Drawing.Point(3, 271);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(442, 121);
+            this.groupBox3.Size = new System.Drawing.Size(469, 129);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "I/O (R+O, W)";
@@ -665,7 +665,7 @@
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = true;
             this.plotterIO.ShowGrid = true;
-            this.plotterIO.Size = new System.Drawing.Size(436, 102);
+            this.plotterIO.Size = new System.Drawing.Size(463, 110);
             this.plotterIO.TabIndex = 0;
             this.plotterIO.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterIO.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -679,9 +679,9 @@
             // 
             this.groupBox2.Controls.Add(this.plotterMemory);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 128);
+            this.groupBox2.Location = new System.Drawing.Point(3, 137);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(442, 119);
+            this.groupBox2.Size = new System.Drawing.Size(469, 128);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Memory (Private Pages, Working Set)";
@@ -704,7 +704,7 @@
             this.plotterMemory.Name = "plotterMemory";
             this.plotterMemory.OverlaySecondLine = true;
             this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(436, 100);
+            this.plotterMemory.Size = new System.Drawing.Size(463, 109);
             this.plotterMemory.TabIndex = 0;
             this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
@@ -720,7 +720,7 @@
             this.tabThreads.ImageKey = "hourglass";
             this.tabThreads.Location = new System.Drawing.Point(4, 42);
             this.tabThreads.Name = "tabThreads";
-            this.tabThreads.Size = new System.Drawing.Size(454, 383);
+            this.tabThreads.Size = new System.Drawing.Size(481, 409);
             this.tabThreads.TabIndex = 3;
             this.tabThreads.Text = "Threads";
             this.tabThreads.UseVisualStyleBackColor = true;
@@ -733,7 +733,7 @@
             this.listThreads.Location = new System.Drawing.Point(0, 0);
             this.listThreads.Name = "listThreads";
             this.listThreads.Provider = null;
-            this.listThreads.Size = new System.Drawing.Size(454, 383);
+            this.listThreads.Size = new System.Drawing.Size(481, 409);
             this.listThreads.TabIndex = 0;
             // 
             // tabToken
@@ -742,7 +742,7 @@
             this.tabToken.Location = new System.Drawing.Point(4, 42);
             this.tabToken.Name = "tabToken";
             this.tabToken.Padding = new System.Windows.Forms.Padding(3);
-            this.tabToken.Size = new System.Drawing.Size(454, 383);
+            this.tabToken.Size = new System.Drawing.Size(481, 409);
             this.tabToken.TabIndex = 1;
             this.tabToken.Text = "Token";
             this.tabToken.UseVisualStyleBackColor = true;
@@ -753,7 +753,7 @@
             this.tabModules.ImageKey = "page_white_wrench";
             this.tabModules.Location = new System.Drawing.Point(4, 42);
             this.tabModules.Name = "tabModules";
-            this.tabModules.Size = new System.Drawing.Size(454, 383);
+            this.tabModules.Size = new System.Drawing.Size(481, 409);
             this.tabModules.TabIndex = 6;
             this.tabModules.Text = "Modules";
             this.tabModules.UseVisualStyleBackColor = true;
@@ -765,7 +765,7 @@
             this.listModules.Location = new System.Drawing.Point(0, 0);
             this.listModules.Name = "listModules";
             this.listModules.Provider = null;
-            this.listModules.Size = new System.Drawing.Size(454, 383);
+            this.listModules.Size = new System.Drawing.Size(481, 409);
             this.listModules.TabIndex = 0;
             // 
             // tabMemory
@@ -778,7 +778,7 @@
             this.tabMemory.Location = new System.Drawing.Point(4, 42);
             this.tabMemory.Name = "tabMemory";
             this.tabMemory.Padding = new System.Windows.Forms.Padding(3);
-            this.tabMemory.Size = new System.Drawing.Size(454, 383);
+            this.tabMemory.Size = new System.Drawing.Size(481, 409);
             this.tabMemory.TabIndex = 4;
             this.tabMemory.Text = "Memory";
             this.tabMemory.UseVisualStyleBackColor = true;
@@ -874,7 +874,7 @@
             this.listMemory.Location = new System.Drawing.Point(6, 59);
             this.listMemory.Name = "listMemory";
             this.listMemory.Provider = null;
-            this.listMemory.Size = new System.Drawing.Size(442, 318);
+            this.listMemory.Size = new System.Drawing.Size(469, 344);
             this.listMemory.TabIndex = 0;
             // 
             // tabEnvironment
@@ -884,7 +884,7 @@
             this.tabEnvironment.Location = new System.Drawing.Point(4, 42);
             this.tabEnvironment.Name = "tabEnvironment";
             this.tabEnvironment.Padding = new System.Windows.Forms.Padding(3);
-            this.tabEnvironment.Size = new System.Drawing.Size(454, 383);
+            this.tabEnvironment.Size = new System.Drawing.Size(481, 409);
             this.tabEnvironment.TabIndex = 10;
             this.tabEnvironment.Text = "Environment";
             this.tabEnvironment.UseVisualStyleBackColor = true;
@@ -900,7 +900,7 @@
             this.listEnvironment.Location = new System.Drawing.Point(3, 3);
             this.listEnvironment.Name = "listEnvironment";
             this.listEnvironment.ShowItemToolTips = true;
-            this.listEnvironment.Size = new System.Drawing.Size(448, 377);
+            this.listEnvironment.Size = new System.Drawing.Size(475, 403);
             this.listEnvironment.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listEnvironment.TabIndex = 0;
             this.listEnvironment.UseCompatibleStateImageBehavior = false;
@@ -924,7 +924,7 @@
             this.tabHandles.Location = new System.Drawing.Point(4, 42);
             this.tabHandles.Name = "tabHandles";
             this.tabHandles.Padding = new System.Windows.Forms.Padding(3);
-            this.tabHandles.Size = new System.Drawing.Size(454, 383);
+            this.tabHandles.Size = new System.Drawing.Size(481, 409);
             this.tabHandles.TabIndex = 5;
             this.tabHandles.Text = "Handles";
             this.tabHandles.UseVisualStyleBackColor = true;
@@ -950,7 +950,7 @@
             this.listHandles.Location = new System.Drawing.Point(6, 30);
             this.listHandles.Name = "listHandles";
             this.listHandles.Provider = null;
-            this.listHandles.Size = new System.Drawing.Size(442, 347);
+            this.listHandles.Size = new System.Drawing.Size(469, 373);
             this.listHandles.TabIndex = 0;
             // 
             // tabJob
@@ -958,7 +958,7 @@
             this.tabJob.ImageKey = "wrench";
             this.tabJob.Location = new System.Drawing.Point(4, 42);
             this.tabJob.Name = "tabJob";
-            this.tabJob.Size = new System.Drawing.Size(454, 383);
+            this.tabJob.Size = new System.Drawing.Size(481, 409);
             this.tabJob.TabIndex = 11;
             this.tabJob.Text = "Job";
             this.tabJob.UseVisualStyleBackColor = true;
@@ -968,7 +968,7 @@
             this.tabServices.ImageKey = "cog";
             this.tabServices.Location = new System.Drawing.Point(4, 42);
             this.tabServices.Name = "tabServices";
-            this.tabServices.Size = new System.Drawing.Size(454, 383);
+            this.tabServices.Size = new System.Drawing.Size(481, 409);
             this.tabServices.TabIndex = 7;
             this.tabServices.Text = "Services";
             this.tabServices.UseVisualStyleBackColor = true;

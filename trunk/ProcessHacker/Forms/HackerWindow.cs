@@ -1163,6 +1163,11 @@ namespace ProcessHacker
             }
         }
 
+        private void protectionProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            (new ProtectProcessWindow(processSelectedPID)).ShowDialog();
+        }
+
         private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
         {
             ProcessPickerWindow picker = new ProcessPickerWindow();
@@ -2318,7 +2323,7 @@ namespace ProcessHacker
             treeProcesses.RefreshItems();
         }
 
-        private void LoadFixMenuItems()
+        public void LoadFixMenuItems()
         {
             if (!System.IO.File.Exists(Application.StartupPath + "\\Assistant.exe"))
             {
@@ -2331,6 +2336,9 @@ namespace ProcessHacker
 
             if (KProcessHacker.Instance == null || !OSVersion.HasSetAccessToken)
                 setTokenProcessMenuItem.Visible = false;
+
+            if (KProcessHacker.Instance == null || !Properties.Settings.Default.EnableExperimentalFeatures)
+                protectionProcessMenuItem.Visible = false;
 
             if (!OSVersion.HasUac)
                 virtualizationProcessMenuItem.Visible = false;

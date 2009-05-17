@@ -1452,5 +1452,17 @@ namespace ProcessHacker.Properties {
                 this["HideProcessHackerNetworkConnections"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableExperimentalFeatures {
+            get {
+                return ((bool)(this["EnableExperimentalFeatures"]));
+            }
+            set {
+                this["EnableExperimentalFeatures"] = value;
+            }
+        }
     }
 }

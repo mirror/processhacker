@@ -5,6 +5,7 @@ Process Hacker
    * KProcessHacker can now perform process memory reading/writing 
      by itself and does not require MmCopyVirtualMemory
    * KProcessHacker can now bypass all handle-opening protections
+   * Experimental process protection feature
    * Ability to set handle flags such as protect-from-close and inherit
    * Better highlighting
    * Terminator test: TD1 (debugs a process and closes the debug object)
