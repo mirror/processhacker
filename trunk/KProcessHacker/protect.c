@@ -22,8 +22,28 @@
 
 #include "include/protect.h"
 
+/* ProtectedProcessRundownProtect
+ * 
+ * Rundown protection making sure this module doesn't deinitialize before all hook targets 
+ * have finished executing and no one is accessing the lookaside list.
+ */
+EX_RUNDOWN_REF ProtectedProcessRundownProtect;
+/* ProtectedProcessListHead
+ * 
+ * The head of the process protection linked list. Each entry stores protection 
+ * information for a process.
+ */
 LIST_ENTRY ProtectedProcessListHead;
+/* ProtectedProcessListLock
+ * 
+ * The spinlock which protects all accesses to the protected process list (even 
+ * the individual entries)
+ */
 KSPIN_LOCK ProtectedProcessListLock;
+/* ProtectedProcessLookasideList
+ * 
+ * The lookaside list for protected process entries.
+ */
 NPAGED_LOOKASIDE_LIST ProtectedProcessLookasideList;
 
 KPH_HOOK ObOpenObjectByPointerHook = { 0 };
@@ -48,6 +68,8 @@ NTSTATUS KphProtectInit()
 {
     NTSTATUS status;
     
+    /* Initialize rundown protection. */
+    ExInitializeRundownProtection(&ProtectedProcessRundownProtect);
     /* Initialize list structures. */
     InitializeListHead(&ProtectedProcessListHead);
     KeInitializeSpinLock(&ProtectedProcessListLock);
@@ -77,9 +99,18 @@ NTSTATUS KphProtectInit()
 NTSTATUS KphProtectDeinit()
 {
     KIRQL oldIrql;
+    LARGE_INTEGER waitLi;
     
     /* Unhook. */
     KphUnhook(&ObOpenObjectByPointerHook);
+    
+    /* Wait for all activity to finish. */
+    ExWaitForRundownProtectionRelease(&ProtectedProcessRundownProtect);
+    /* Wait for a bit (some regions of hook target functions 
+       are NOT guarded by rundown protection, e.g. 
+       prologues and epilogues). */
+    waitLi.QuadPart = KPH_REL_TIMEOUT_IN_SEC(1);
+    KeDelayExecutionThread(KernelMode, FALSE, &waitLi);
     
     KeAcquireSpinLock(&ProtectedProcessListLock, &oldIrql);
     
@@ -102,6 +133,7 @@ NTSTATUS KphProtectDeinit()
     }
     
     KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
+    ExDeleteNPagedLookasideList(&ProtectedProcessLookasideList);
     
     return STATUS_SUCCESS;
 }
@@ -114,6 +146,11 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     OBOPENOBJECTBYPOINTER_ARGS
     )
 {
+    NTSTATUS status = STATUS_SUCCESS;
+    
+    /* Prevent the driver from unloading while this routine is executing. */
+    ExAcquireRundownProtection(&ProtectedProcessRundownProtect);
+    
     if (
         AccessMode != KernelMode && /* let kernel-mode callers through */
         !KphpIsCurrentProcessProtected() /* let protected process callers through */
@@ -143,19 +180,21 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
             /* The process/thread is protected. Check if the requested access is allowed. */
             if ((access & mask) != access)
             {
+                /* Access denied. */
                 dprintf(
                     "%d: Access denied: 0x%08x (%s)\n",
                     PsGetCurrentProcessId(),
                     access,
                     isThread ? "Thread" : "Process"
                     );
-                /* Access denied. */
+                ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
+                
                 return STATUS_ACCESS_DENIED;
             }
         }
     }
     
-    return KphOldObOpenObjectByPointer(
+    status = KphOldObOpenObjectByPointer(
         Object,
         HandleAttributes,
         PassedAccessState,
@@ -164,6 +203,9 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         AccessMode,
         Handle
         );
+    ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
+    
+    return status;
 }
 
 /* KphProtectAddEntry
@@ -178,8 +220,15 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
     )
 {
     KIRQL oldIrql;
-    PKPH_PROCESS_ENTRY entry = 
-        ExAllocateFromNPagedLookasideList(&ProtectedProcessLookasideList);
+    PKPH_PROCESS_ENTRY entry;
+    
+    /* Prevent the lookaside list from being freed. */
+    if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
+        return NULL;
+    
+    entry = ExAllocateFromNPagedLookasideList(&ProtectedProcessLookasideList);
+    /* Lookaside list no longer needed. */
+    ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
     
     if (entry == NULL)
         return NULL;
@@ -329,9 +378,14 @@ VOID KphpProtectRemoveEntry(
     
     KeAcquireSpinLock(&ProtectedProcessListLock, &oldIrql);
     RemoveEntryList(&Entry->ListEntry);
+    
+    /* Prevent the lookaside list from being destroyed. */
+    ExAcquireRundownProtection(&ProtectedProcessRundownProtect);
     ExFreeToNPagedLookasideList(
         &ProtectedProcessLookasideList,
         Entry
         );
+    ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
+    
     KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
 }

@@ -78,7 +78,7 @@
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))
 #define CLEAR_BIT(integer, bit) ((integer) &= ~(1 << (bit)))
 
-#define KPH_TIMEOUT_TO_SEC  ((LONGLONG) 1 * 10 * 1000 * 1000)
+#define KPH_TIMEOUT_TO_SEC ((LONGLONG) 1 * 10 * 1000 * 1000)
 #define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
 
 NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);

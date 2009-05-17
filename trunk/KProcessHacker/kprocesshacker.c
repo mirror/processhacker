@@ -47,14 +47,8 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     
     if (ProtectionInitialized)
     {
-        LARGE_INTEGER waitLi;
-        
         KphProtectDeinit();
         ProtectionInitialized = FALSE;
-        
-        /* Wait for a bit before unloading to prevent BSODs. */
-        waitLi.QuadPart = KPH_REL_TIMEOUT_IN_SEC(5);
-        KeDelayExecutionThread(KernelMode, FALSE, &waitLi);
     }
     
     dprintf("Driver unloaded\n");
