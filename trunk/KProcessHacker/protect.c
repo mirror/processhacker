@@ -144,7 +144,7 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     
     /* If this is a thread, get its parent process. */
     if (isThread)
-        processObject = *(PEPROCESS *)KVOFF(Object, OffKtProcess);
+        processObject = IoThreadToProcess((PETHREAD)Object);
     
     if (
         processObject != PsGetCurrentProcess() /* let the caller open its own processes/threads */
