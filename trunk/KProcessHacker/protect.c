@@ -131,7 +131,11 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     BOOLEAN isThread;
     
     /* Prevent the driver from unloading while this routine is executing. */
-    ExAcquireRundownProtection(&ProtectedProcessRundownProtect);
+    if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
+    {
+        /* Should never happen. */
+        return STATUS_INTERNAL_ERROR;
+    }
     
     /* It doesn't matter if it isn't actually a process because we won't be 
        dereferencing it. */
