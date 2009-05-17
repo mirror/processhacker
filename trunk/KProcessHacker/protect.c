@@ -127,17 +127,26 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
+    PEPROCESS processObject;
+    BOOLEAN isThread;
     
     /* Prevent the driver from unloading while this routine is executing. */
     ExAcquireRundownProtection(&ProtectedProcessRundownProtect);
     
+    /* It doesn't matter if it isn't actually a process because we won't be 
+       dereferencing it. */
+    processObject = (PEPROCESS)Object;
+    isThread = ObjectType == *PsThreadType;
+    
+    /* If this is a thread, get its parent process. */
+    if (isThread)
+        processObject = *(PEPROCESS *)KVOFF(Object, OffKtProcess);
+    
     if (
         AccessMode != KernelMode && /* let kernel-mode callers through */
-        !KphpIsCurrentProcessProtected() /* let protected process callers through */
+        processObject != PsGetCurrentProcess() /* let the caller open its own processes/threads */
         )
     {
-        PEPROCESS processObject = (PEPROCESS)Object;
-        BOOLEAN isThread = ObjectType == *PsThreadType;
         ACCESS_MASK access;
         KPH_PROCESS_ENTRY processEntry;
         
@@ -147,10 +156,6 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         /* If we have an access state, get the desired access from it. */
         if (PassedAccessState != NULL)
             access = PassedAccessState->OriginalDesiredAccess;
-        
-        /* If this is a thread, get its parent process. */
-        if (isThread)
-            processObject = *(PEPROCESS *)KVOFF(Object, OffKtProcess);
         
         if (KphProtectCopyEntry(processObject, &processEntry))
         {
