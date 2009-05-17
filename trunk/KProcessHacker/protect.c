@@ -112,27 +112,7 @@ NTSTATUS KphProtectDeinit()
     waitLi.QuadPart = KPH_REL_TIMEOUT_IN_SEC(1);
     KeDelayExecutionThread(KernelMode, FALSE, &waitLi);
     
-    KeAcquireSpinLock(&ProtectedProcessListLock, &oldIrql);
-    
-    /* Free and remove all process entries from the list. */
-    while (!IsListEmpty(&ProtectedProcessListHead))
-    {
-        PKPH_PROCESS_ENTRY entry = 
-            CONTAINING_RECORD(
-                RemoveHeadList(&ProtectedProcessListHead),
-                KPH_PROCESS_ENTRY, 
-                ListEntry
-            );
-        
-        dprintf("KphProtectDeinit: removing entry 0x%08x\n", entry);
-        
-        ExFreeToNPagedLookasideList(
-            &ProtectedProcessLookasideList,
-            entry
-            );
-    }
-    
-    KeReleaseSpinLock(&ProtectedProcessListLock, oldIrql);
+    /* Free all process protection entries. */
     ExDeleteNPagedLookasideList(&ProtectedProcessLookasideList);
     
     return STATUS_SUCCESS;
