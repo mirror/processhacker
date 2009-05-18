@@ -127,8 +127,9 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
+    POBJECT_TYPE objectType;
     PEPROCESS processObject;
-    BOOLEAN isThread;
+    BOOLEAN isThread = FALSE;
     
     /* Prevent the driver from unloading while this routine is executing. */
     if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
@@ -137,22 +138,25 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         return STATUS_INTERNAL_ERROR;
     }
     
+    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
     /* It doesn't matter if it isn't actually a process because we won't be 
        dereferencing it. */
     processObject = (PEPROCESS)Object;
-    isThread = ObjectType == *PsThreadType;
+    isThread = objectType == *PsThreadType;
     
     /* If this is a thread, get its parent process. */
     if (isThread)
         processObject = IoThreadToProcess((PETHREAD)Object);
     
     if (
-        processObject != PsGetCurrentProcess() /* let the caller open its own processes/threads */
+        processObject != PsGetCurrentProcess() && /* let the caller open its own processes/threads */
+        (objectType == *PsProcessType || objectType == *PsThreadType) /* only protect processes and threads */
         )
     {
         ACCESS_MASK access;
         KPH_PROCESS_ENTRY processEntry;
         
+        /* Assume failure. */
         *Handle = NULL;
         access = DesiredAccess;
         
@@ -160,6 +164,7 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         if (PassedAccessState != NULL)
             access = PassedAccessState->OriginalDesiredAccess;
         
+        /* Search for and copy the corresponding process protection entry. */
         if (KphProtectCopyEntry(processObject, &processEntry))
         {
             ACCESS_MASK mask = 
@@ -167,7 +172,7 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
             
             /* The process/thread is protected. Check if the requested access is allowed. */
             if (
-                /* check if kernel-mode is allowed */
+                /* check if kernel-mode is exempt from protection */
                 !(processEntry.AllowKernelMode && AccessMode == KernelMode) && 
                 (access & mask) != access
                 )

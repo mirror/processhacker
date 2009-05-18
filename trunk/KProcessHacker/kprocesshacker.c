@@ -1333,6 +1333,14 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             } *args = dataBuffer;
             PEPROCESS processObject;
             
+            /* Can't remove anything if process protection hasn't been initialized - 
+               there isn't anything to remove. */
+            if (!ProtectionInitialized)
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
+            
             if (inLength < sizeof(*args))
             {
                 status = STATUS_BUFFER_TOO_SMALL;
@@ -1351,8 +1359,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
-            
-            InitProtection();
             
             if (!KphProtectRemoveByProcess(processObject))
             {
@@ -1374,6 +1380,14 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             } *args = dataBuffer;
             PEPROCESS processObject;
             KPH_PROCESS_ENTRY processEntry;
+            
+            /* Can't query anything if process protection hasn't been initialized - 
+               there isn't anything to query. */
+            if (!ProtectionInitialized)
+            {
+                status = STATUS_INVALID_PARAMETER;
+                goto IoControlEnd;
+            }
             
             if (inLength < sizeof(*args))
             {
@@ -1404,8 +1418,6 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             if (!NT_SUCCESS(status))
                 goto IoControlEnd;
-            
-            InitProtection();
             
             if (!KphProtectCopyEntry(processObject, &processEntry))
             {

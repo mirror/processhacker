@@ -722,6 +722,18 @@ namespace ProcessHacker
                     if (item.Icon != null)
                         Win32.DestroyIcon(item.Icon.Handle);
 
+                    // Remove process protection if needed.
+                    if (KProcessHacker.Instance != null)
+                    {
+                        try
+                        {
+                            using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
+                                KProcessHacker.Instance.ProtectRemove(phandle);
+                        }
+                        catch
+                        { }
+                    }
+
                     newdictionary.Remove(pid);
                 }
             }
