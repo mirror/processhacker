@@ -38,6 +38,7 @@ typedef struct _KPH_PROCESS_ENTRY
 {
     LIST_ENTRY ListEntry;
     PEPROCESS Process;
+    PEPROCESS CreatorProcess;
     HANDLE Tag;
     LOGICAL AllowKernelMode;
     ACCESS_MASK ProcessAllowMask;

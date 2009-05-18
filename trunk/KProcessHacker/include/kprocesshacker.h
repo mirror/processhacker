@@ -81,10 +81,16 @@
 #define KPH_TIMEOUT_TO_SEC ((LONGLONG) 1 * 10 * 1000 * 1000)
 #define KPH_REL_TIMEOUT_IN_SEC(Time) (Time * -1 * KPH_TIMEOUT_TO_SEC)
 
+NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath);
+VOID DriverUnload(PDRIVER_OBJECT DriverObject);
 NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphDispatchRead(PDEVICE_OBJECT DeviceObject, PIRP Irp);
 NTSTATUS KphUnsupported(PDEVICE_OBJECT DeviceObject, PIRP Irp);
+
+BOOLEAN AddClientEntry(HANDLE ProcessId);
+BOOLEAN IsProcessClient(HANDLE ProcessId);
+BOOLEAN RemoveClientEntry(HANDLE ProcessId);
 
 #endif

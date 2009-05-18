@@ -161,7 +161,7 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         access = DesiredAccess;
         
         /* If we have an access state, get the desired access from it. */
-        if (PassedAccessState != NULL)
+        if (PassedAccessState)
             access = PassedAccessState->OriginalDesiredAccess;
         
         /* Search for and copy the corresponding process protection entry. */
@@ -174,6 +174,8 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
             if (
                 /* check if kernel-mode is exempt from protection */
                 !(processEntry.AllowKernelMode && AccessMode == KernelMode) && 
+                /* allow the creator of the rule to bypass protection */
+                processEntry.CreatorProcess != PsGetCurrentProcess() && 
                 (access & mask) != access
                 )
             {
@@ -228,10 +230,11 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
     /* Lookaside list no longer needed. */
     ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
     
-    if (entry == NULL)
+    if (!entry)
         return NULL;
     
     entry->Process = Process;
+    entry->CreatorProcess = PsGetCurrentProcess();
     entry->Tag = Tag;
     entry->AllowKernelMode = AllowKernelMode;
     entry->ProcessAllowMask = ProcessAllowMask;
@@ -326,7 +329,7 @@ BOOLEAN KphProtectRemoveByProcess(
 {
     PKPH_PROCESS_ENTRY entry = KphProtectFindEntry(Process, NULL);
     
-    if (entry == NULL)
+    if (!entry)
         return FALSE;
     
     KphpProtectRemoveEntry(entry);

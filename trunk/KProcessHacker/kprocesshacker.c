@@ -28,31 +28,23 @@
 #include "include/ps.h"
 #include "include/version.h"
 
+typedef struct _KPH_CLIENT_ENTRY
+{
+    LIST_ENTRY ListEntry;
+    HANDLE ProcessId;
+} KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
+
+LIST_ENTRY ClientListHead;
+KSPIN_LOCK ClientListLock;
+NPAGED_LOOKASIDE_LIST ClientLookasideList;
+static BOOLEAN ProtectionInitialized = FALSE;
+
 #pragma alloc_text(PAGE, KphDispatchCreate)
 #pragma alloc_text(PAGE, KphDispatchClose)
 #pragma alloc_text(PAGE, KphDispatchDeviceControl)
 #pragma alloc_text(PAGE, KphDispatchRead)
 #pragma alloc_text(PAGE, KphUnsupported)
 #pragma pack(1)
-
-static BOOLEAN ProtectionInitialized = FALSE;
-
-VOID DriverUnload(PDRIVER_OBJECT DriverObject)
-{
-    UNICODE_STRING dosDeviceName;
-    
-    RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
-    IoDeleteSymbolicLink(&dosDeviceName);
-    IoDeleteDevice(DriverObject->DeviceObject);
-    
-    if (ProtectionInitialized)
-    {
-        KphProtectDeinit();
-        ProtectionInitialized = FALSE;
-    }
-    
-    dprintf("Driver unloaded\n");
-}
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 {
@@ -77,6 +69,19 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     
     if (!NT_SUCCESS(status))
         return status;
+    
+    /* Initialize client list structures */
+    InitializeListHead(&ClientListHead);
+    KeInitializeSpinLock(&ClientListLock);
+    ExInitializeNPagedLookasideList(
+        &ClientLookasideList,
+        NULL,
+        NULL,
+        0,
+        sizeof(KPH_CLIENT_ENTRY),
+        KPH_TAG,
+        0
+        );
     
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
@@ -105,6 +110,26 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
     return STATUS_SUCCESS;
 }
 
+VOID DriverUnload(PDRIVER_OBJECT DriverObject)
+{
+    UNICODE_STRING dosDeviceName;
+    
+    RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
+    IoDeleteSymbolicLink(&dosDeviceName);
+    IoDeleteDevice(DriverObject->DeviceObject);
+    
+    /* Destroy client list structures */
+    ExDeleteNPagedLookasideList(&ClientLookasideList);
+    
+    if (ProtectionInitialized)
+    {
+        KphProtectDeinit();
+        ProtectionInitialized = FALSE;
+    }
+    
+    dprintf("Driver unloaded\n");
+}
+
 NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -118,6 +143,13 @@ NTSTATUS KphDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         return STATUS_PRIVILEGE_NOT_HELD;
     }
 #endif
+    
+    /* Add a client entry. */
+    if (!AddClientEntry(PsGetCurrentProcessId()))
+    {
+        Irp->IoStatus.Status = STATUS_INSUFFICIENT_RESOURCES;
+        return STATUS_INSUFFICIENT_RESOURCES;
+    }
     
     dprintf("Client (PID %d) connected\n", PsGetCurrentProcessId());
     dprintf("Base IOCTL is 0x%08x\n", KPH_CTL_CODE(0));
@@ -135,6 +167,9 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         dprintf("Removed %d protection entries\n", count);
     }
     
+    /* Remove the client entry. */
+    RemoveClientEntry(PsGetCurrentProcessId());
+    
     dprintf("Client (PID %d) disconnected\n", PsGetCurrentProcessId());
     
     return status;
@@ -147,6 +182,80 @@ VOID InitProtection()
         KphProtectInit();
         ProtectionInitialized = TRUE;
     }
+}
+
+BOOLEAN AddClientEntry(HANDLE ProcessId)
+{
+    KIRQL oldIrql;
+    PKPH_CLIENT_ENTRY entry = ExAllocateFromNPagedLookasideList(&ClientLookasideList);
+    
+    if (!entry)
+        return FALSE;
+    
+    KeAcquireSpinLock(&ClientListLock, &oldIrql);
+    InsertHeadList(&ClientListHead, &entry->ListEntry);
+    KeReleaseSpinLock(&ClientListLock, oldIrql);
+    
+    return TRUE;
+}
+
+BOOLEAN IsProcessClient(HANDLE ProcessId)
+{
+    KIRQL oldIrql;
+    PLIST_ENTRY entry = ClientListHead.Flink;
+    
+    KeAcquireSpinLock(&ClientListLock, &oldIrql);
+    
+    while (entry != &ClientListHead)
+    {
+        PKPH_CLIENT_ENTRY clientEntry = 
+            CONTAINING_RECORD(entry, KPH_CLIENT_ENTRY, ListEntry);
+        
+        if (clientEntry->ProcessId == ProcessId)
+        {
+            KeReleaseSpinLock(&ClientListLock, oldIrql);
+            
+            return TRUE;
+        }
+        
+        entry = entry->Flink;
+    }
+    
+    KeReleaseSpinLock(&ClientListLock, oldIrql);
+    
+    return FALSE;
+}
+
+BOOLEAN RemoveClientEntry(HANDLE ProcessId)
+{
+    KIRQL oldIrql;
+    PLIST_ENTRY entry = ClientListHead.Flink;
+    
+    KeAcquireSpinLock(&ClientListLock, &oldIrql);
+    
+    while (entry != &ClientListHead)
+    {
+        PKPH_CLIENT_ENTRY clientEntry = 
+            CONTAINING_RECORD(entry, KPH_CLIENT_ENTRY, ListEntry);
+        
+        if (clientEntry->ProcessId == ProcessId)
+        {
+            RemoveEntryList(&clientEntry->ListEntry);
+            ExFreeToNPagedLookasideList(
+                &ClientLookasideList,
+                clientEntry
+                );
+            KeReleaseSpinLock(&ClientListLock, oldIrql);
+            
+            return TRUE;
+        }
+        
+        entry = entry->Flink;
+    }
+    
+    KeReleaseSpinLock(&ClientListLock, oldIrql);
+    
+    return FALSE;
 }
 
 /* from YAPM */
