@@ -498,9 +498,9 @@ namespace ProcessHacker.Native
             }
             catch (WindowsException ex)
             {
-                // STATUS_DISK_FULL means we tried to terminate ourself. Kernel-mode can't do it, 
+                // STATUS_CANT_TERMINATE_SELF means we tried to terminate ourself. Kernel-mode can't do it, 
                 // so we do it now.
-                if (ex.ErrorCode == 112)
+                if (ex.ErrorCode == 0x22b)
                     Win32.TerminateProcess(new IntPtr(-1), exitStatus);
                 else
                     throw ex;
@@ -520,7 +520,7 @@ namespace ProcessHacker.Native
             }
             catch (WindowsException ex)
             {
-                if (ex.ErrorCode == 112)
+                if (ex.ErrorCode == 0x22b)
                     Win32.TerminateThread(new IntPtr(-2), exitStatus);
                 else
                     throw ex;

@@ -748,7 +748,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
          * Terminates the specified process. This call will never fail unless
          * PsTerminateProcess could not be located and Zw/NtTerminateProcess 
          * is hooked, or an attempt was made to terminate the current process. 
-         * In that case, the call will fail with STATUS_DISK_FULL.
+         * In that case, the call will fail with STATUS_CANT_TERMINATE_SELF.
          */
         case KPH_TERMINATEPROCESS:
         {
@@ -770,9 +770,8 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         /* KphSuspendProcess
          * 
-         * Suspends the specified process. This call will never fail unless 
-         * PsSuspendProcess could not be located and Zw/NtSuspendProcess 
-         * is hooked.
+         * Suspends the specified process. This call will fail on Windows XP 
+         * and below.
          */
         case KPH_SUSPENDPROCESS:
         {
@@ -793,9 +792,8 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         /* KphResumeProcess
          * 
-         * Resumes the specified process. This call will never fail unless 
-         * PsResumeProcess could not be located and Zw/NtResumeProcess 
-         * is hooked.
+         * Resumes the specified process. This call will fail on Windows XP 
+         * and below.
          */
         case KPH_RESUMEPROCESS:
         {
@@ -816,8 +814,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         /* KphReadVirtualMemory
          * 
-         * Reads process memory. This call will fail if MmCopyVirtualMemory 
-         * could not be located.
+         * Reads process memory.
          */
         case KPH_READVIRTUALMEMORY:
         {
@@ -849,8 +846,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         
         /* KphWriteVirtualMemory
          * 
-         * Writes process memory. This call will fail if MmCopyVirtualMemory 
-         * could not be located.
+         * Writes to process memory.
          */
         case KPH_WRITEVIRTUALMEMORY:
         {
@@ -941,6 +937,10 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* Set Handle Attributes
+         * 
+         * Sets handle flags in the specified process.
+         */
         case KPH_SETHANDLEATTRIBUTES:
         {
             struct
@@ -1283,7 +1283,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
          * Terminates the specified thread. This call will fail if 
          * PspTerminateThreadByPointer could not be located or if an attempt 
          * was made to terminate the current thread. In that case, the call 
-         * will return STATUS_DISK_FULL.
+         * will return STATUS_CANT_TERMINATE_SELF.
          */
         case KPH_TERMINATETHREAD:
         {

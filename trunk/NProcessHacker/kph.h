@@ -26,7 +26,7 @@
 #include "nph.h"
 
 #define KPH_DEVICE_TYPE (0x9999)
-#define KPH_DEVICE_NAME (L"\\\\.\\Device\\KProcessHacker")
+#define KPH_DEVICE_NAME (L"\\\\.\\KProcessHacker")
 
 #define KPHF_MMCOPYVIRTUALMEMORY 0x1
 #define KPHF_EXPGETPROCESSINFORMATION 0x2
@@ -38,10 +38,12 @@
 #define METHOD_OUT_DIRECT 2
 #define METHOD_NEITHER 3
 
+#ifndef FILE_ANY_ACCESS
 #define FILE_ANY_ACCESS 0
 #define FILE_SPECIAL_ACCESS (FILE_ANY_ACCESS)
 #define FILE_READ_ACCESS (0x0001)
 #define FILE_WRITE_ACCESS (0x0002)
+#endif
 
 #define CTL_CODE(DeviceType, Function, Method, Access) ( \
     ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) \
@@ -62,7 +64,7 @@
 #define KPH_WRITEVIRTUALMEMORY KPH_CTL_CODE(12)
 #define KPH_SETPROCESSTOKEN KPH_CTL_CODE(13)
 #define KPH_GETTHREADSTARTADDRESS KPH_CTL_CODE(14)
-#define KPH_RESERVED1 KPH_CTL_CODE(15)
+#define KPH_SETHANDLEATTRIBUTES KPH_CTL_CODE(15)
 #define KPH_GETHANDLEOBJECTNAME KPH_CTL_CODE(16)
 #define KPH_OPENPROCESSJOB KPH_CTL_CODE(17)
 #define KPH_GETCONTEXTTHREAD KPH_CTL_CODE(18)
@@ -74,7 +76,11 @@
 #define KPH_GETTHREADID KPH_CTL_CODE(24)
 #define KPH_TERMINATETHREAD KPH_CTL_CODE(25)
 #define KPH_GETFEATURES KPH_CTL_CODE(26)
-#define KPH_EXPGETPROCESSINFORMATION KPH_CTL_CODE(27)
+#define KPH_SETHANDLEGRANTEDACCESS KPH_CTL_CODE(27)
+#define KPH_ASSIGNIMPERSONATIONTOKEN KPH_CTL_CODE(28)
+#define KPH_PROTECTADD KPH_CTL_CODE(29)
+#define KPH_PROTECTREMOVE KPH_CTL_CODE(30)
+#define KPH_PROTECTQUERY KPH_CTL_CODE(31)
 
 typedef struct _IO_STATUS_BLOCK
 {
@@ -105,16 +111,6 @@ NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle);
 
 NPHAPI NTSTATUS KphDisconnect(HANDLE KphHandle);
 
-NTSTATUS KphpDeviceIoControl(
-    HANDLE KphHandle,
-    ULONG KphControlCode,
-    PVOID InBuffer,
-    ULONG InBufferLength,
-    PVOID OutBuffer,
-    ULONG OutBufferLength,
-    PULONG ReturnLength
-    );
-
 NPHAPI NTSTATUS KphGetFeatures(
     HANDLE KphHandle,
     PULONG Features
@@ -137,8 +133,99 @@ NPHAPI NTSTATUS KphWrite(
 NPHAPI NTSTATUS KphOpenProcess(
     HANDLE KphHandle,
     PHANDLE ProcessHandle,
-    ULONG ProcessId,
+    ULONG_PTR ProcessId,
     ACCESS_MASK DesiredAccess
+    );
+
+NPHAPI NTSTATUS KphOpenThread(
+    HANDLE KphHandle,
+    PHANDLE ThreadHandle,
+    ULONG_PTR ThreadId,
+    ACCESS_MASK DesiredAccess
+    );
+
+NPHAPI NTSTATUS KphOpenProcessToken(
+    HANDLE KphHandle,
+    PHANDLE TokenHandle,
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess
+    );
+
+NPHAPI NTSTATUS KphGetProcessProtected(
+    HANDLE KphHandle,
+    ULONG_PTR ProcessId,
+    PBOOLEAN IsProtected
+    );
+
+NPHAPI NTSTATUS KphSetProcessProtected(
+    HANDLE KphHandle,
+    ULONG_PTR ProcessId,
+    BOOLEAN IsProtected
+    );
+
+NPHAPI NTSTATUS KphTerminateProcess(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    NTSTATUS ExitStatus
+    );
+
+NPHAPI NTSTATUS KphSuspendProcess(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle
+    );
+
+NPHAPI NTSTATUS KphResumeProcess(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle
+    );
+
+NPHAPI NTSTATUS KphReadVirtualMemory(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength
+    );
+
+NPHAPI NTSTATUS KphWriteVirtualMemory(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength
+    );
+
+NPHAPI NTSTATUS KphOpenProcessJob(
+    HANDLE KphHandle,
+    PHANDLE JobHandle,
+    HANDLE ProcessHandle,
+    ACCESS_MASK DesiredAccess
+    );
+
+NPHAPI NTSTATUS KphGetContextThread(
+    HANDLE KphHandle,
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext
+    );
+
+NPHAPI NTSTATUS KphSetContextThread(
+    HANDLE KphHandle,
+    HANDLE ThreadHandle,
+    PCONTEXT ThreadContext
+    );
+
+NPHAPI NTSTATUS KphTerminateThread(
+    HANDLE KphHandle,
+    HANDLE ThreadHandle,
+    NTSTATUS ExitStatus
+    );
+
+NPHAPI NTSTATUS KphSetHandleGrantedAccess(
+    HANDLE KphHandle,
+    HANDLE Handle,
+    ACCESS_MASK GrantedAccess
     );
 
 #endif

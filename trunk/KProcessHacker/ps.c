@@ -622,7 +622,7 @@ NTSTATUS KphTerminateProcess(
     if (processObject == PsGetCurrentProcess())
     {
         ObDereferenceObject(processObject);
-        return STATUS_DISK_FULL;
+        return STATUS_CANT_TERMINATE_SELF;
     }
     
     /* If we have located PsTerminateProcess/PspTerminateProcess, 
@@ -690,7 +690,7 @@ NTSTATUS KphTerminateThread(
         status = PspTerminateThreadByPointer(PsGetCurrentThread(), ExitStatus); */
         /* Leads to bugs, so don't terminate self. */
         ObDereferenceObject(threadObject);
-        return STATUS_DISK_FULL;
+        return STATUS_CANT_TERMINATE_SELF;
     }
     
     return status;

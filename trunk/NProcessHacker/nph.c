@@ -21,6 +21,7 @@
  */
 
 #include "nph.h"
+#include "kph.h"
 #include "verify.h"
 
 NPHAPI PVOID PhAlloc(SIZE_T Size)

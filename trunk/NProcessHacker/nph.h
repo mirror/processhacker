@@ -23,15 +23,28 @@
 #ifndef _NPH_H
 #define _NPH_H
 
+/* If the user has already included windows.h, don't include ntstatus.h 
+ * to avoid duplicate macro definitions. */
+#ifndef _WINDOWS_
 #include <ntstatus.h>
+#endif
 
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_NO_STATUS /* Need ntstatus.h instead */
 #include <windows.h>
 #include <stdlib.h>
 
+#ifndef STATUS_SUCCESS
+#define STATUS_SUCCESS (0)
+#endif
+
+#ifndef NTSTATUS
 #define NTSTATUS LONG
+#endif
+
+#ifndef NT_SUCCESS
 #define NT_SUCCESS(x) ((x) >= STATUS_SUCCESS)
+#endif
 
 #ifdef NPH_EXPORTS
 #define NPHAPI __declspec(dllexport)
