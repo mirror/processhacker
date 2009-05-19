@@ -144,7 +144,7 @@ namespace ProcessHacker.Native.Api
             IntPtr sourceProcessHandle,
             IntPtr sourceHandle,
             int desiredAccess,
-            int handleAttributes,
+            HandleFlags handleAttributes,
             int options
             )
         {
@@ -167,7 +167,7 @@ namespace ProcessHacker.Native.Api
             IntPtr targetProcessHandle,
             out IntPtr targetHandle,
             int desiredAccess,
-            int handleAttributes,
+            HandleFlags handleAttributes,
             int options
             )
         {
@@ -181,7 +181,7 @@ namespace ProcessHacker.Native.Api
                     targetProcessHandle.ToInt32(),
                     out target,
                     desiredAccess,
-                    handleAttributes,
+                    (int)handleAttributes,
                     options);
                 targetHandle = new IntPtr(target);
             }

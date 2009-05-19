@@ -277,6 +277,17 @@ namespace ProcessHacker.Native.Api
     {
         public int LowPart;
         public int HighPart;
+
+        public Luid Allocate()
+        {
+            int status;
+            Luid luid = new Luid();
+
+            if ((status = Win32.NtAllocateLocallyUniqueId(ref luid)) < 0)
+                Win32.ThrowLastError(status);
+
+            return luid;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -453,14 +464,55 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct ObjectAttributes
+    public struct ObjectAttributes : IDisposable
     {
         public int Length;
-        public int RootDirectory;
+        public IntPtr RootDirectory;
         public IntPtr ObjectName;
-        public uint Attributes;
-        public int SecurityDescriptor;
-        public int SecurityQualityOfService;
+        public ObjectFlags Attributes;
+        public IntPtr SecurityDescriptor;
+        public IntPtr SecurityQualityOfService;
+
+        public void Dispose()
+        {
+            if (this.ObjectName == IntPtr.Zero)
+                return;
+
+            UnicodeString unicodeString =
+                (UnicodeString)Marshal.PtrToStructure(this.ObjectName, typeof(UnicodeString));
+
+            unicodeString.Dispose();
+            Marshal.FreeHGlobal(this.ObjectName);
+
+            this.ObjectName = IntPtr.Zero;
+        }
+
+        public static ObjectAttributes Create(
+            string objectName,
+            ObjectFlags attributes,
+            DirectoryHandle rootDirectory
+            )
+        {
+            ObjectAttributes oa = new ObjectAttributes();
+
+            oa.Length = Marshal.SizeOf(oa);
+
+            if (objectName != null)
+            {
+                UnicodeString unicodeString = UnicodeString.Create(objectName);
+                IntPtr unicodeStringMemory = Marshal.AllocHGlobal(Marshal.SizeOf(unicodeString));
+
+                Marshal.StructureToPtr(unicodeString, unicodeStringMemory, false);
+                oa.ObjectName = unicodeStringMemory;
+            }
+
+            oa.Attributes = attributes;
+
+            if (rootDirectory != null)
+                oa.RootDirectory = rootDirectory;
+
+            return oa;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -480,6 +532,13 @@ namespace ProcessHacker.Native.Api
         public uint TypeInformationLength;
         public uint SecurityDescriptorLength;
         public ulong CreateTime;
+    }   
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ObjectDirectoryInformation
+    {
+        public UnicodeString Name;
+        public UnicodeString TypeName;
     }
 
     [StructLayout(LayoutKind.Sequential)]

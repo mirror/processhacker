@@ -234,6 +234,29 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Makes the object referenced by the handle permanent.
+        /// </summary>
+        public void MakePermanent()
+        {
+            int status;
+
+            if ((status = Win32.NtMakePermanentObject(this)) < 0)
+                Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
+        /// Makes the object referenced by the handle temporary. The object 
+        /// will be deleted once the last handle to it is closed.
+        /// </summary>
+        public void MakeTemporary()
+        {
+            int status;
+
+            if ((status = Win32.NtMakeTemporaryObject(this)) < 0)
+                Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
         /// Sets certain information about the handle.
         /// </summary>
         /// <param name="mask">Specifies which flags to set.</param>
@@ -242,6 +265,14 @@ namespace ProcessHacker.Native.Objects
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
                 Win32.ThrowLastError();
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        public int SignalAndWait(Win32Handle waitObject, bool alertable, long timeout)
+        {
+            return Win32.NtSignalAndWaitForSingleObject(this, waitObject, alertable, ref timeout);
         }
 
         /// <summary>

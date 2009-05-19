@@ -311,6 +311,19 @@ namespace ProcessHacker.Native.Api
         MutantBasicInformation
     }
 
+    public enum ObjectFlags : uint
+    {
+        Inherit = 0x2,
+        Permanent = 0x10,
+        Exclusive = 0x20,
+        CaseInsensitive = 0x40,
+        OpenIf = 0x80,
+        OpenLink = 0x100,
+        KernelHandle = 0x200,
+        ForceAccessCheck = 0x400,
+        ValidAttributes = 0x7f2
+    }
+
     public enum ObjectInformationClass : int
     {
         ObjectBasicInformation = 0,

@@ -110,7 +110,7 @@ namespace ProcessHacker.Native.Objects
             return new ProcessHandle(new IntPtr(-1), false);
         }
 
-        internal ProcessHandle(IntPtr handle, bool owned)
+        private ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 

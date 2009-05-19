@@ -391,11 +391,11 @@ namespace ProcessHacker.Components
                 else if (type == "Event")
                 {
                     var eventHandle = new Win32Handle<EventAccess>(phandle, handle, EventAccess.All);
-                    var ebi = new EventBasicInformation();
+                    EventBasicInformation ebi;
                     int retLen;
 
                     Win32.NtQueryEvent(eventHandle, EventInformationClass.EventBasicInformation,
-                        ref ebi, Marshal.SizeOf(ebi), out retLen);
+                        out ebi, Marshal.SizeOf(typeof(EventBasicInformation)), out retLen);
 
                     InformationBox info = new InformationBox(
                         "Type: " + ebi.EventType.ToString().Replace("Event", "") +
@@ -407,11 +407,11 @@ namespace ProcessHacker.Components
                 else if (type == "Mutant")
                 {
                     var mutantHandle = new Win32Handle<MutantAccess>(phandle, handle, MutantAccess.All);
-                    var mbi = new MutantBasicInformation();
+                    MutantBasicInformation mbi;
                     int retLen;
 
                     Win32.NtQueryMutant(mutantHandle, MutantInformationClass.MutantBasicInformation,
-                        ref mbi, Marshal.SizeOf(mbi), out retLen);
+                        out mbi, Marshal.SizeOf(typeof(MutantBasicInformation)), out retLen);
 
                     InformationBox info = new InformationBox(
                         "Count: " + mbi.CurrentCount +
@@ -424,15 +424,15 @@ namespace ProcessHacker.Components
                 else if (type == "Section")
                 {
                     var sectionHandle = new Win32Handle<SectionAccess>(phandle, handle, SectionAccess.Query);
-                    var sbi = new SectionBasicInformation();
-                    var sii = new SectionImageInformation();
+                    SectionBasicInformation sbi;
+                    SectionImageInformation sii;
                     int retLen;
                     int retVal;
 
                     Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionBasicInformation,
-                        ref sbi, Marshal.SizeOf(sbi), out retLen);
+                        out sbi, Marshal.SizeOf(typeof(SectionBasicInformation)), out retLen);
                     retVal = Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionImageInformation,
-                        ref sii, Marshal.SizeOf(sii), out retLen);
+                        out sii, Marshal.SizeOf(typeof(SectionImageInformation)), out retLen);
 
                     InformationBox info = new InformationBox(
                         "Attributes: " + Misc.FlagsToString(typeof(SectionAttributes), (long)sbi.SectionAttributes) +

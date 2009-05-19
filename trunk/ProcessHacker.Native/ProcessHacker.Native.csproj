@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\NativeFunctions.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="FileUtils.cs" />
@@ -51,6 +52,9 @@
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
     <Compile Include="Objects\DebugObjectHandle.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
+    <Compile Include="Objects\DirectoryHandle.cs" />
+    <Compile Include="Objects\EventPairHandle.cs" />
+    <Compile Include="Objects\SymbolicLinkHandle.cs" />
     <Compile Include="Security\DirectoryAccess.cs" />
     <Compile Include="Security\ObjectTypeAccess.cs" />
     <Compile Include="Security\PortAccess.cs" />

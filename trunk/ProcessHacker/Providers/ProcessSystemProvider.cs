@@ -150,11 +150,11 @@ namespace ProcessHacker
             this.Name = this.GetType().Name;
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
 
-            var basic = new SystemBasicInformation();
+            SystemBasicInformation basic;
             int retLen;
 
-            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, ref basic,
-                Marshal.SizeOf(basic), out retLen);
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic,
+                Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
             this.System = basic;
             this.ProcessorPerfArray = new SystemProcessorPerformanceInformation[this.System.NumberOfProcessors];
 
@@ -242,10 +242,10 @@ namespace ProcessHacker
         private void UpdatePerformance()
         {
             int retLen;
-            var performance = new SystemPerformanceInformation();
+            SystemPerformanceInformation performance;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                 ref performance, Marshal.SizeOf(performance), out retLen);
+                 out performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
             this.Performance = performance;
         }
 

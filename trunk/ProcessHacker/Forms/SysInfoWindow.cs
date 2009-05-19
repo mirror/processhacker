@@ -23,6 +23,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Components;
 using ProcessHacker.Native.Api;
@@ -182,11 +183,11 @@ namespace ProcessHacker
 
             Win32.GetPerformanceInfo(out info, System.Runtime.InteropServices.Marshal.SizeOf(info));
 
-            var cacheInfo = new SystemCacheInformation();
+            SystemCacheInformation cacheInfo;
             int retLen;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemFileCacheInformation,
-                ref cacheInfo, System.Runtime.InteropServices.Marshal.SizeOf(cacheInfo), out retLen);
+                out cacheInfo, Marshal.SizeOf(typeof(SystemCacheInformation)), out retLen);
 
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");
             labelTotalsThreads.Text = ((ulong)info.ThreadCount).ToString("N0");
