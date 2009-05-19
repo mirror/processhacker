@@ -462,6 +462,11 @@ namespace ProcessHacker.Native.Api
         SecurityDelegation
     }
 
+    public enum SemaphoreInformationClass : int
+    {
+        SemaphoreBasicInformation
+    }
+
     public enum ShowWindowType : uint
     {
         Hide = 0,
@@ -770,6 +775,17 @@ namespace ProcessHacker.Native.Api
         ThreadTebInformation,
         ThreadCSwitchMon,
         MaxThreadInfoClass
+    }
+
+    public enum TimerInformationClass : int
+    {
+        TimerBasicInformation
+    }
+
+    public enum TimerType : int
+    {
+        NotificationTimer,
+        SynchronizationTimer
     }
 
     public enum TokenElevationType : int

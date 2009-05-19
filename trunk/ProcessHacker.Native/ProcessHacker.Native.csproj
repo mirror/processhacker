@@ -53,8 +53,13 @@
     <Compile Include="Objects\DebugObjectHandle.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
     <Compile Include="Objects\DirectoryHandle.cs" />
+    <Compile Include="Objects\EventHandle.cs" />
     <Compile Include="Objects\EventPairHandle.cs" />
+    <Compile Include="Objects\KeyedEventHandle.cs" />
+    <Compile Include="Objects\MutantHandle.cs" />
+    <Compile Include="Objects\SemaphoreHandle.cs" />
     <Compile Include="Objects\SymbolicLinkHandle.cs" />
+    <Compile Include="Objects\TimerHandle.cs" />
     <Compile Include="Security\DirectoryAccess.cs" />
     <Compile Include="Security\ObjectTypeAccess.cs" />
     <Compile Include="Security\PortAccess.cs" />

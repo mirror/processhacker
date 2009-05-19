@@ -44,7 +44,13 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("ntdll.dll")]
         public static extern int NtAllocateLocallyUniqueId(
-            [Out] ref Luid Luid
+            [Out] out Luid Luid
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCancelTimer(
+            [In] IntPtr TimerHandle,
+            [Out] [Optional] out bool CurrentState
             );
 
         [DllImport("ntdll.dll")]
@@ -108,6 +114,22 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtCreateKeyedEvent(
+            [Out] out IntPtr KeyedEventHandle,
+            [In] KeyedEventAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] int Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateKeyedEvent(
+            [Out] out IntPtr KeyedEventHandle,
+            [In] KeyedEventAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] int Flags
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtCreateMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
@@ -167,6 +189,24 @@ namespace ProcessHacker.Native.Api
             [In] int PageAttributes,
             [In] int SectionAttributes,
             [In] [Optional] IntPtr FileHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateSemaphore(
+            [Out] out IntPtr SemaphoreHandle,
+            [In] SemaphoreAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] int InitialCount,
+            [In] int MaximumCount
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateSemaphore(
+            [Out] out IntPtr SemaphoreHandle,
+            [In] SemaphoreAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] int InitialCount,
+            [In] int MaximumCount
             );
 
         [DllImport("ntdll.dll")]
@@ -175,6 +215,22 @@ namespace ProcessHacker.Native.Api
             [In] SymbolicLinkAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes,
             [In] ref UnicodeString LinkTarget
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateTimer(
+            [Out] out IntPtr TimerHandle,
+            [In] TimerAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] TimerType TimerType
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtCreateTimer(
+            [Out] out IntPtr TimerHandle,
+            [In] TimerAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] TimerType TimerType
             );
 
         [DllImport("ntdll.dll")]
@@ -256,6 +312,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtOpenKeyedEvent(
+            [Out] out IntPtr KeyedEventHandle,
+            [In] KeyedEventAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtOpenMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
@@ -263,9 +326,23 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtOpenSemaphore(
+            [Out] out IntPtr SemaphoreHandle,
+            [In] SemaphoreAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtOpenSymbolicLinkObject(
             [Out] out IntPtr LinkHandle,
             [In] SymbolicLinkAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtOpenTimer(
+            [Out] out IntPtr TimerHandle,
+            [In] TimerAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
@@ -431,6 +508,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtQuerySemaphore(
+            [In] IntPtr SemaphoreHandle,
+            [In] SemaphoreInformationClass SemaphoreInformationClass,
+            [Out] out SemaphoreBasicInformation SemaphoreInformation,
+            [In] int SemaphoreInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtQuerySymbolicLinkObject(
             [In] IntPtr LinkHandle,
             ref UnicodeString LinkName,
@@ -478,6 +564,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtQueryTimer(
+            [In] IntPtr TimerHandle,
+            [In] TimerInformationClass TimerInformationClass,
+            [Out] out TimerBasicInformation TimerInformation,
+            [In] int TimerInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtQueueApcThread(
             [In] IntPtr ThreadHandle,
             [In] IntPtr ApcRoutine,
@@ -487,8 +582,23 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtReleaseKeyedEvent(
+            [In] IntPtr KeyedEventHandle,
+            [In] IntPtr KeyValue,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtReleaseMutant(
             [In] IntPtr MutantHandle,
+            [Out] [Optional] out int PreviousCount
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtReleaseSemaphore(
+            [In] IntPtr SemaphoreHandle,
+            [In] int ReleaseCount,
             [Out] [Optional] out int PreviousCount
             );
 
@@ -562,6 +672,17 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern int NtSetTimer(
+            [In] IntPtr TimerHandle,
+            [In] ref long DueTime,
+            [In] [Optional] ProcessHacker.Native.Objects.TimerHandle.TimerApcRoutine TimerApcRoutine,
+            [In] [Optional] IntPtr TimerContext,
+            [In] bool ResumeTimer,
+            [In] [Optional] int Period,
+            [Out] [Optional] out bool PreviousState
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern int NtSignalAndWaitForSingleObject(
             [In] IntPtr SignalHandle,
             [In] IntPtr WaitHandle,
@@ -583,6 +704,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern int NtUnloadDriver(
             [In] ref UnicodeString DriverPath
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int NtWaitForKeyedEvent(
+            [In] int KeyedEventHandle,
+            [In] IntPtr KeyValue,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout
             );
 
         [DllImport("ntdll.dll")]

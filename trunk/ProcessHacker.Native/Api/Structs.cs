@@ -281,9 +281,9 @@ namespace ProcessHacker.Native.Api
         public Luid Allocate()
         {
             int status;
-            Luid luid = new Luid();
+            Luid luid;
 
-            if ((status = Win32.NtAllocateLocallyUniqueId(ref luid)) < 0)
+            if ((status = Win32.NtAllocateLocallyUniqueId(out luid)) < 0)
                 Win32.ThrowLastError(status);
 
             return luid;
@@ -720,6 +720,13 @@ namespace ProcessHacker.Native.Api
         public int Unknown2;
         public int Unknown3;
         public int Unknown4;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SemaphoreBasicInformation
+    {
+        public int CurrentCount;
+        public int MaximumCount;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1420,6 +1427,14 @@ namespace ProcessHacker.Native.Api
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         public string szExeFile;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TimerBasicInformation
+    {
+        public LargeInteger RemainingTime;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool TimerState;
     }
 
     [StructLayout(LayoutKind.Sequential)]
