@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Native.Security
 {
@@ -9,15 +7,17 @@ namespace ProcessHacker.Native.Security
     {
         Terminate = 0x0001,
         SuspendResume = 0x0002,
+        Alert = 0x0004,
         GetContext = 0x0008,
         SetContext = 0x0010,
-        QueryInformation = 0x0040,
         SetInformation = 0x0020,
+        QueryInformation = 0x0040,
         SetThreadToken = 0x0080,
         Impersonate = 0x0100,
         DirectImpersonation = 0x0200,
         SetLimitedInformation = 0x0400,
         QueryLimitedInformation = 0x0800,
-        All = StandardRights.Required | StandardRights.Synchronize | 0xffff
+        // should be 0xffff on Vista, but is 0xfff for backwards compatibility
+        All = StandardRights.Required | StandardRights.Synchronize | 0xfff
     }
 }

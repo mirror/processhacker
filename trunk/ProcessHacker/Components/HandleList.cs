@@ -406,7 +406,7 @@ namespace ProcessHacker.Components
                 }
                 else if (type == "Mutant")
                 {
-                    var mutantHandle = new Win32Handle<MutexAccess>(phandle, handle, MutexAccess.All);
+                    var mutantHandle = new Win32Handle<MutantAccess>(phandle, handle, MutantAccess.All);
                     var mbi = new MutantBasicInformation();
                     int retLen;
 

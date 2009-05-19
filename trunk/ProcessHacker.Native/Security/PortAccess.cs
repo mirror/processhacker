@@ -3,11 +3,10 @@
 namespace ProcessHacker.Native.Security
 {
     [Flags]
-    public enum EventAccess : uint
+    public enum PortAccess : uint
     {
-        QueryState = 0x1,
-        ModifyState = 0x2,
+        Connect = 0x1,
         All = StandardRights.Required | StandardRights.Synchronize |
-            QueryState | ModifyState
+            Connect
     }
 }
