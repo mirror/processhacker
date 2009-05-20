@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   semaphore handle
+ *
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
@@ -14,19 +36,19 @@ namespace ProcessHacker.Native.Objects
 
         public static SemaphoreHandle Create(SemaphoreAccess access, string name, int initialCount, int maximumCount)
         {
-            return Create(access, name, null, initialCount, maximumCount);
+            return Create(access, name, 0, null, initialCount, maximumCount);
         }
 
-        public static SemaphoreHandle Create(SemaphoreAccess access, string name, DirectoryHandle rootDirectory, int initialCount, int maximumCount)
+        public static SemaphoreHandle Create(SemaphoreAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, int initialCount, int maximumCount)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateSemaphore(out handle, access, ref oa, 
-                    initialCount, maximumCount)) < 0)
+                if ((status = Win32.NtCreateSemaphore(out handle, access, ref oa,
+                    initialCount, maximumCount)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -37,19 +59,24 @@ namespace ProcessHacker.Native.Objects
             return new SemaphoreHandle(handle, true);
         }
 
+        public static SemaphoreHandle FromHandle(IntPtr handle)
+        {
+            return new SemaphoreHandle(handle, false);
+        }
+
         private SemaphoreHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
-        public SemaphoreHandle(string name, DirectoryHandle rootDirectory, SemaphoreAccess access)
+        public SemaphoreHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, SemaphoreAccess access)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenSemaphore(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtOpenSemaphore(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -61,17 +88,17 @@ namespace ProcessHacker.Native.Objects
         }
 
         public SemaphoreHandle(string name, SemaphoreAccess access)
-            : this(name, null, access)
+            : this(name, 0, null, access)
         { }
 
-        public SemaphoreBasicInformation Query()
+        public SemaphoreBasicInformation GetBasicInformation()
         {
-            int status;
+            NtStatus status;
             SemaphoreBasicInformation sbi;
             int retLength;
 
             if ((status = Win32.NtQuerySemaphore(this, SemaphoreInformationClass.SemaphoreBasicInformation,
-                out sbi, Marshal.SizeOf(typeof(SemaphoreBasicInformation)), out retLength)) < 0)
+                out sbi, Marshal.SizeOf(typeof(SemaphoreBasicInformation)), out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return sbi;
@@ -79,10 +106,10 @@ namespace ProcessHacker.Native.Objects
 
         public int Release(int count)
         {
-            int status;
+            NtStatus status;
             int previousCount;
 
-            if ((status = Win32.NtReleaseSemaphore(this, count, out previousCount)) < 0)
+            if ((status = Win32.NtReleaseSemaphore(this, count, out previousCount)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return previousCount;

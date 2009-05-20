@@ -124,17 +124,17 @@ namespace ProcessHacker.Native
 
             using (MemoryAlloc data = new MemoryAlloc(0x1000))
             {
-                int status;
+                NtStatus status;
 
                 // This is needed because NtQuerySystemInformation with SystemHandleInformation doesn't 
                 // actually give a real return length when called with an insufficient buffer. This code 
                 // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while ((uint)(status = Win32.NtQuerySystemInformation(
+                while ((status = Win32.NtQuerySystemInformation(
                     SystemInformationClass.SystemHandleInformation,
                     data, 
                     data.Size, 
                     out retLength)
-                    ) == Win32.STATUS_INFO_LENGTH_MISMATCH)
+                    ) == NtStatus.InfoLengthMismatch)
                 {
                     data.Resize(data.Size * 2);
 
@@ -291,7 +291,7 @@ namespace ProcessHacker.Native
 
             using (MemoryAlloc data = new MemoryAlloc(0x4000))
             {
-                int status;
+                NtStatus status;
                 int attempts = 0;
 
                 while (true)
@@ -299,7 +299,7 @@ namespace ProcessHacker.Native
                     attempts++;
 
                     if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
-                        data.Size, out retLength)) < 0)
+                        data.Size, out retLength)) >= NtStatus.Error)
                     {
                         if (attempts > 3)
                             Win32.ThrowLastError(status);
@@ -332,7 +332,7 @@ namespace ProcessHacker.Native
                             var thread = data.ReadStruct<SystemThreadInformation>(i +
                                 Marshal.SizeOf(typeof(SystemProcessInformation)), j);
 
-                            currentProcess.Threads.Add(thread.ClientId.UniqueThread, thread);
+                            currentProcess.Threads.Add(thread.ClientId.ThreadId, thread);
                         }
                     }
 
@@ -354,7 +354,7 @@ namespace ProcessHacker.Native
 
             using (MemoryAlloc data = new MemoryAlloc(0x4000))
             {
-                int status;
+                NtStatus status;
                 int attempts = 0;
 
                 while (true)
@@ -362,7 +362,7 @@ namespace ProcessHacker.Native
                     attempts++;
 
                     if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
-                        data.Size, out retLength)) < 0)
+                        data.Size, out retLength)) >= NtStatus.Error)
                     {
                         if (attempts > 3)
                             Win32.ThrowLastError(status);
@@ -391,7 +391,7 @@ namespace ProcessHacker.Native
                             var thread = data.ReadStruct<SystemThreadInformation>(i +
                                 Marshal.SizeOf(typeof(SystemProcessInformation)), j);
 
-                            threads.Add(thread.ClientId.UniqueThread, thread);
+                            threads.Add(thread.ClientId.ThreadId, thread);
                         }
 
                         return threads;
@@ -445,14 +445,14 @@ namespace ProcessHacker.Native
 
         public static void LoadDriver(string serviceName)
         {
-            var str = UnicodeString.Create(
+            var str = new UnicodeString(
                 "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
 
             try
             {
-                int status;
+                NtStatus status;
 
-                if ((status = Win32.NtLoadDriver(ref str)) < 0)
+                if ((status = Win32.NtLoadDriver(ref str)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -463,14 +463,14 @@ namespace ProcessHacker.Native
 
         public static void UnloadDriver(string serviceName)
         {
-            var str = UnicodeString.Create(
+            var str = new UnicodeString(
                 "\\REGISTRY\\MACHINE\\SYSTEM\\CurrentControlSet\\Services\\" + serviceName);
 
             try
             {
-                int status;
+                NtStatus status;
 
-                if ((status = Win32.NtUnloadDriver(ref str)) < 0)
+                if ((status = Win32.NtUnloadDriver(ref str)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -532,10 +532,10 @@ namespace ProcessHacker.Native
             // Duplicate the handle if we're not using KPH
             if (KProcessHacker.Instance == null)
             {
-                int status;
+                NtStatus status;
 
                 if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) < 0)
+                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
                     Win32.ThrowLastError();
 
                 objectHandle = new Win32Handle(objectHandleI);
@@ -573,13 +573,13 @@ namespace ProcessHacker.Native
                             if (KProcessHacker.Instance != null)
                             {
                                 if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength, out baseAddress) < 0)
+                                    otiMem, otiMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
                                     throw new Exception("ZwQueryObject failed.");
                             }
                             else
                             {
                                 if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength) < 0)
+                                    otiMem, otiMem.Size, out retLength) >= NtStatus.Error)
                                     throw new Exception("NtQueryObject failed.");
                             }
 
@@ -627,13 +627,13 @@ namespace ProcessHacker.Native
                         if (KProcessHacker.Instance != null)
                         {
                             if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength, out baseAddress) < 0)
+                                oniMem, oniMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
                                 throw new Exception("ZwQueryObject failed.");
                         }
                         else
                         {
                             if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength) < 0)
+                                oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
                                 throw new Exception("NtQueryObject failed.");
                         }
 
@@ -696,8 +696,8 @@ namespace ProcessHacker.Native
                             }
                             else
                             {
-                                using (Win32Handle processHandle =
-                                    new Win32Handle(process, handle, (int)OSVersion.MinProcessQueryInfoAccess))
+                                using (var processHandle =
+                                    new Win32Handle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
                                         Win32.ThrowLastError();
@@ -728,14 +728,13 @@ namespace ProcessHacker.Native
                             }
                             else
                             {
-                                using (Win32Handle threadHandle =
-                                    new Win32Handle(process, handle, (int)OSVersion.MinThreadQueryInfoAccess))
+                                using (var threadHandle =
+                                    new Win32Handle<ThreadAccess>(process, handle, OSVersion.MinThreadQueryInfoAccess))
                                 {
-                                    if ((threadId = Win32.GetThreadId(threadHandle)) == 0)
-                                        Win32.ThrowLastError();
+                                    var basicInfo = ThreadHandle.FromHandle(threadHandle).GetBasicInformation();
 
-                                    if ((processId = Win32.GetProcessIdOfThread(threadHandle)) == 0)
-                                        Win32.ThrowLastError();
+                                    threadId = basicInfo.ClientId.ThreadId;
+                                    processId = basicInfo.ClientId.ProcessId;
                                 }
                             }
 
@@ -753,8 +752,8 @@ namespace ProcessHacker.Native
 
                     case "Token":
                         {
-                            using (Win32Handle tokenHandle = 
-                                new Win32Handle(process, handle, (int)TokenAccess.Query))
+                            using (var tokenHandle = 
+                                new Win32Handle<TokenAccess>(process, handle, TokenAccess.Query))
                             {
                                 info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
                             }
@@ -825,7 +824,7 @@ namespace ProcessHacker.Native
             int result = Win32.SetTcpEntry(ref row);
 
             if (result != 0)
-                Win32.ThrowLastError(result, false);
+                Win32.ThrowLastError(result);
         }
     }
 

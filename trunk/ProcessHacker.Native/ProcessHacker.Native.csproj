@@ -42,7 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\NativeDefinitions.cs" />
+    <Compile Include="Api\NativeEnums.cs" />
     <Compile Include="Api\NativeFunctions.cs" />
+    <Compile Include="Api\NativeStructs.cs" />
+    <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="FileUtils.cs" />
@@ -50,6 +54,8 @@
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="IntPtrExtensions.cs" />
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
+    <Compile Include="Memory\PebMemoryAlloc.cs" />
+    <Compile Include="Memory\SectionView.cs" />
     <Compile Include="Objects\DebugObjectHandle.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
     <Compile Include="Objects\DirectoryHandle.cs" />
@@ -57,6 +63,8 @@
     <Compile Include="Objects\EventPairHandle.cs" />
     <Compile Include="Objects\KeyedEventHandle.cs" />
     <Compile Include="Objects\MutantHandle.cs" />
+    <Compile Include="Objects\PortHandle.cs" />
+    <Compile Include="Objects\ProfileHandle.cs" />
     <Compile Include="Objects\SemaphoreHandle.cs" />
     <Compile Include="Objects\SymbolicLinkHandle.cs" />
     <Compile Include="Objects\TimerHandle.cs" />

@@ -37,11 +37,11 @@ namespace ProcessHacker.Native.Objects
         /// <param name="access">The desired access to the policy.</param>
         public LsaPolicyHandle(PolicyAccess access)
         {
-            int status;
+            NtStatus status;
             ObjectAttributes attributes = new ObjectAttributes();
             IntPtr handle = IntPtr.Zero;
 
-            if ((status = Win32.LsaOpenPolicy(IntPtr.Zero, ref attributes, access, ref handle)) < 0)
+            if ((status = Win32.LsaOpenPolicy(IntPtr.Zero, ref attributes, access, ref handle)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             this.Handle = handle;

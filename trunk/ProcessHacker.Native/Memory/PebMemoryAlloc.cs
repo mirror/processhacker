@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
- *   debug object handle
- * 
+ *   PEB memory allocation
+ *                       
  * Copyright (C) 2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -24,30 +24,37 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Security;
 
-namespace ProcessHacker.Native.Objects
+namespace ProcessHacker.Native.Memory
 {
-    public class DebugObjectHandle : Win32Handle<DebugObjectAccess>
+    /// <summary>
+    /// Represents a memory allocation from the PEB.
+    /// </summary>
+    public class PebMemoryAlloc : MemoryAlloc
     {
-        public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
+        public PebMemoryAlloc(int size)
         {
             NtStatus status;
-            IntPtr handle;
+            IntPtr block;
 
-            if ((status = Win32.NtCreateDebugObject(
-                out handle,
-                access,
-                IntPtr.Zero,
-                flags
-                )) >= NtStatus.Error)
+            if ((status = Win32.RtlAllocateFromPeb(size, out block)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new DebugObjectHandle(handle, true);
+            this.Memory = block;
+            this.Size = size;
         }
 
-        private DebugObjectHandle(IntPtr handle, bool owned)
-            : base(handle, owned)
-        { }
+        public override void Resize(int newSize)
+        {
+            throw new NotSupportedException();
+        }
+
+        protected override void Free()
+        {
+            NtStatus status;
+
+            if ((status = Win32.RtlFreeToPeb(this, this.Size)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
     }
 }

@@ -55,39 +55,69 @@ namespace ProcessHacker.Native.Objects
         /// <returns>Return true to continue enumerating; return false to stop.</returns>
         public delegate bool EnumModulesDelegate(ProcessModule module);
 
-        public static ProcessHandle Create(SectionHandle sectionHandle, ProcessAccess access, ProcessHandle parent, bool inheritHandles)
-        {
-            int status;
-            IntPtr process;
-
-            if ((status = Win32.NtCreateProcess(
-                out process,
-                access,
-                IntPtr.Zero,
-                parent,
-                inheritHandles,
-                sectionHandle,
-                IntPtr.Zero,
-                IntPtr.Zero)) < 0)
-                Win32.ThrowLastError(status);
-
-            return new ProcessHandle(process, true);
-        }
-
-        public static ProcessHandle Create(string fileName, ProcessAccess access, bool inheritHandles)
+        public static ProcessHandle Create(ProcessAccess access, string fileName, bool inheritHandles)
         {
             using (var fhandle = new FileHandle(
                 fileName,
                 (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData,
                 FileShareMode.Delete | FileShareMode.Read, FileCreationDisposition.OpenAlways))
             {
-                using (var shandle = new SectionHandle(
-                    SectionAccess.All, fhandle,
-                    SectionAttributes.Image, MemoryProtection.Execute))
+                using (var shandle = 
+                    SectionHandle.Create(
+                    SectionAccess.All,
+                    SectionAttributes.Image,
+                    MemoryProtection.Execute,
+                    fhandle))
                 {
-                    return Create(shandle, access, ProcessHandle.GetCurrent(), inheritHandles);
+                    return Create(access, ProcessHandle.GetCurrent(), inheritHandles, shandle);
                 }
             }
+        }
+
+        public static ProcessHandle Create(
+            ProcessAccess access,
+            ProcessHandle parentProcess,
+            bool inheritHandles,
+            SectionHandle sectionHandle)
+        {
+            return Create(access, null, 0, null, parentProcess, inheritHandles, sectionHandle, null);
+        }
+
+        public static ProcessHandle Create(
+            ProcessAccess access,
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory,
+            ProcessHandle parentProcess,
+            bool inheritHandles,
+            SectionHandle sectionHandle,
+            DebugObjectHandle debugPort
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateProcess(
+                    out handle,
+                    access,
+                    ref oa,
+                    parentProcess != null ? parentProcess : IntPtr.Zero,
+                    inheritHandles,
+                    sectionHandle != null ? sectionHandle : IntPtr.Zero,
+                    debugPort != null ? debugPort : IntPtr.Zero,
+                    IntPtr.Zero
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new ProcessHandle(handle, true);
         }
 
         /// <summary>
@@ -112,14 +142,6 @@ namespace ProcessHacker.Native.Objects
 
         private ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
-        { }
-
-        /// <summary>
-        /// Creates a new process handle.
-        /// </summary>
-        /// <param name="PID">The ID of the process to open.</param>
-        public ProcessHandle(int pid)
-            : this(pid, ProcessAccess.All)
         { }
 
         /// <summary>
@@ -155,6 +177,66 @@ namespace ProcessHacker.Native.Objects
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
+
+        /// <summary>
+        /// Creates a new process handle.
+        /// </summary>
+        /// <param name="PID">The ID of the process to open.</param>
+        public ProcessHandle(int pid)
+            : this(pid, ProcessAccess.All)
+        { }
+
+        public ProcessHandle(
+            string name, 
+            ObjectFlags objectFlags, 
+            DirectoryHandle rootDirectory, 
+            ClientId clientId, 
+            ProcessAccess access
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                // NtOpenProcess fails when both a client ID and a name is specified.
+                if (clientId.ProcessId == 0 && clientId.ThreadId == 0)
+                {
+                    if ((status = Win32.NtOpenProcess(
+                        out handle,
+                        access,
+                        ref oa,
+                        IntPtr.Zero
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+                else
+                {
+                    if ((status = Win32.NtOpenProcess(
+                        out handle,
+                        access,
+                        ref oa,
+                        ref clientId
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            this.Handle = handle;
+        }
+
+        public ProcessHandle(string name, ProcessAccess access)
+            : this(name, 0, null, new ClientId(), access)
+        { }
+
+        public ProcessHandle(ClientId clientId, ProcessAccess access)
+            : this(null, 0, null, clientId, access)
+        { }
 
         /// <summary>
         /// Allocates a memory region in the process' virtual memory.
@@ -241,9 +323,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="debugObjectHandle">A handle to a debug object.</param>
         public void Debug(DebugObjectHandle debugObjectHandle)
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtDebugActiveProcess(this, debugObjectHandle)) < 0)
+            if ((status = Win32.NtDebugActiveProcess(this, debugObjectHandle)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -415,12 +497,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A PROCESS_BASIC_INFORMATION structure.</returns>
         public ProcessBasicInformation GetBasicInformation()
         {
-            int status;
+            NtStatus status;
             ProcessBasicInformation pbi;
             int retLen;
 
             if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessBasicInformation,
-                out pbi, Marshal.SizeOf(typeof(ProcessBasicInformation)), out retLen)) < 0)
+                out pbi, Marshal.SizeOf(typeof(ProcessBasicInformation)), out retLen)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return pbi;
@@ -471,12 +553,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A DEPStatus enum.</returns>
         public DepStatus GetDepStatus()
         {
-            int status;
+            NtStatus status;
             MemExecuteOptions options;
             int retLength;
 
             if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessExecuteFlags,
-                out options, 4, out retLength)) < 0)
+                out options, 4, out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             DepStatus depStatus = 0;
@@ -646,12 +728,12 @@ namespace ProcessHacker.Native.Objects
 
         private int GetInformationInt32(ProcessInformationClass infoClass)
         {
-            int status;
+            NtStatus status;
             int value;
             int retLength;
 
             if ((status = Win32.NtQueryInformationProcess(
-                this, infoClass, out value, sizeof(int), out retLength)) < 0)
+                this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return value;
@@ -738,7 +820,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A file name, in device/native format.</returns>
         public string GetNativeImageFileName()
         {
-            int status;
+            NtStatus status;
             int retLen;
 
             Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessImageFileName,
@@ -747,7 +829,7 @@ namespace ProcessHacker.Native.Objects
             using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
                 if ((status = Win32.NtQueryInformationProcess(this, ProcessInformationClass.ProcessImageFileName,
-                    data, retLen, out retLen)) < 0)
+                    data, retLen, out retLen)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
 
                 UnicodeString str = data.ReadStruct<UnicodeString>();
@@ -763,7 +845,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A process handle.</returns>
         public ProcessHandle GetNextProcess(ProcessAccess access)
         {
-            int status;
+            NtStatus status;
             IntPtr handle;
 
             if ((status = Win32.NtGetNextProcess(
@@ -772,7 +854,7 @@ namespace ProcessHacker.Native.Objects
                 0,
                 0,
                 out handle
-                )) < 0)
+                )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return new ProcessHandle(handle, true);
@@ -786,7 +868,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A thread handle.</returns>
         public ThreadHandle GetNextThread(ThreadHandle threadHandle, ThreadAccess access)
         {
-            int status;
+            NtStatus status;
             IntPtr handle;
 
             if ((status = Win32.NtGetNextThread(
@@ -796,7 +878,7 @@ namespace ProcessHacker.Native.Objects
                 0,
                 0,
                 out handle
-                )) < 0)
+                )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return new ThreadHandle(handle, true);
@@ -1084,9 +1166,9 @@ namespace ProcessHacker.Native.Objects
         /// <param name="debugObjectHandle">The debug object which was used to debug the process.</param>
         public void RemoveDebug(DebugObjectHandle debugObjectHandle)
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtRemoveProcessDebug(this, debugObjectHandle)) < 0)
+            if ((status = Win32.NtRemoveProcessDebug(this, debugObjectHandle)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -1101,11 +1183,25 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                int status;
+                NtStatus status;
 
-                if ((status = Win32.NtResumeProcess(this)) < 0)
+                if ((status = Win32.NtResumeProcess(this)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
+        }
+
+        public void SetCritical(bool critical)
+        {
+            this.SetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination, critical ? 1 : 0);
+        }
+
+        private void SetInformationInt32(ProcessInformationClass infoClass, int value)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtSetInformationProcess(
+                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         public unsafe void SetModuleReferenceCount(IntPtr baseAddress, ushort count)
@@ -1169,9 +1265,9 @@ namespace ProcessHacker.Native.Objects
             }
             else
             {
-                int status;
+                NtStatus status;
 
-                if ((status = Win32.NtSuspendProcess(this)) < 0)
+                if ((status = Win32.NtSuspendProcess(this)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
         }

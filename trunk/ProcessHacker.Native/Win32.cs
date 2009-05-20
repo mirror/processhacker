@@ -48,19 +48,13 @@ namespace ProcessHacker.Native.Api
 
         #region Consts
 
-        public const int AnysizeArray = 1;
         public const int DontResolveDllReferences = 0x1;
         public const int ErrorNoMoreItems = 259;
-        public const int MaximumSupportedExtension = 512;
-        public const int SecurityDescriptorMinLength = 20;
-        public const int SecurityDescriptorRevision = 1;
         public const int SeeMaskInvokeIdList = 0xc;
         public const uint ServiceNoChange = 0xffffffff;
         public const uint ShgFiIcon = 0x100;
         public const uint ShgFiLargeIcon = 0x0;
         public const uint ShgFiSmallIcon = 0x1;
-        public const int SizeOf80387Registers = 80;
-        public const uint STATUS_INFO_LENGTH_MISMATCH = 0xc0000004;
 
         #endregion    
 
@@ -110,27 +104,24 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         public static void ThrowLastError()
         {
-            ThrowLastError(Marshal.GetLastWin32Error(), false);
+            ThrowLastError(Marshal.GetLastWin32Error());
         }
 
-        public static void ThrowLastError(int status)
+        public static void ThrowLastError(NtStatus status)
         {
-            ThrowLastError(status, true);
+            ThrowLastError(RtlNtStatusToDosError(status));
         }
 
-        public static void ThrowLastError(int status, bool isNtStatus)
+        public static void ThrowLastError(int error)
         {
-            if (isNtStatus)
-                status = RtlNtStatusToDosError(status);
-
             // No error, but the caller requested us throw an exception so do it anyway.
-            if (status == 0)
+            if (error == 0)
             {
                 throw new WindowsException();
             }
             else
             {
-                var ex = new WindowsException(status);
+                var ex = new WindowsException(error);
 
                 throw ex;
             }
@@ -145,7 +136,7 @@ namespace ProcessHacker.Native.Api
             IntPtr sourceHandle,
             int desiredAccess,
             HandleFlags handleAttributes,
-            int options
+            DuplicateOptions options
             )
         {
             IntPtr dummy;
@@ -168,7 +159,7 @@ namespace ProcessHacker.Native.Api
             out IntPtr targetHandle,
             int desiredAccess,
             HandleFlags handleAttributes,
-            int options
+            DuplicateOptions options
             )
         {
             if (KProcessHacker.Instance != null)
@@ -181,13 +172,13 @@ namespace ProcessHacker.Native.Api
                     targetProcessHandle.ToInt32(),
                     out target,
                     desiredAccess,
-                    (int)handleAttributes,
+                    handleAttributes,
                     options);
                 targetHandle = new IntPtr(target);
             }
             else
             {
-                int status;
+                NtStatus status;
 
                 if ((status = NtDuplicateObject(
                     sourceProcessHandle,
@@ -196,7 +187,7 @@ namespace ProcessHacker.Native.Api
                     out targetHandle,
                     desiredAccess,
                     handleAttributes,
-                    options)) < 0)
+                    options)) >= NtStatus.Error)
                     ThrowLastError(status);
             }
         }

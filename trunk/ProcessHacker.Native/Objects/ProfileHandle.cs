@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
- *   debug object handle
- * 
+ *   profile handle
+ *
  * Copyright (C) 2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -28,26 +28,8 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class DebugObjectHandle : Win32Handle<DebugObjectAccess>
+    public class ProfileHandle : Win32Handle<ProfileAccess>
     {
-        public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
-        {
-            NtStatus status;
-            IntPtr handle;
-
-            if ((status = Win32.NtCreateDebugObject(
-                out handle,
-                access,
-                IntPtr.Zero,
-                flags
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return new DebugObjectHandle(handle, true);
-        }
-
-        private DebugObjectHandle(IntPtr handle, bool owned)
-            : base(handle, owned)
-        { }
+        // TODO: Implement basics
     }
 }

@@ -19,7 +19,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+                            
+using System;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Objects
@@ -29,7 +30,11 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public interface ISynchronizable
     {
-        WaitResult Wait();
-        WaitResult Wait(uint timeout);
+        IntPtr Handle { get; }
+
+        NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout);
+        NtStatus Wait();
+        NtStatus Wait(long timeout);
+        NtStatus Wait(bool alertable, long timeout);
     }
 }

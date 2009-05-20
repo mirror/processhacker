@@ -9,8 +9,6 @@ namespace ProcessHacker.Native.Objects
 {
     public class TimerHandle : Win32Handle<TimerAccess>
     {
-        public delegate void TimerApcRoutine(IntPtr context, int lowValue, int highValue);
-
         public static TimerHandle Create(TimerAccess access, TimerType type)
         {
             return Create(access, null, type);
@@ -23,13 +21,13 @@ namespace ProcessHacker.Native.Objects
 
         public static TimerHandle Create(TimerAccess access, string name, DirectoryHandle rootDirectory, TimerType type)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, 0, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) < 0)
+                if ((status = Win32.NtCreateTimer(out handle, access, ref oa, type)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -48,13 +46,13 @@ namespace ProcessHacker.Native.Objects
 
         public TimerHandle(string name, DirectoryHandle rootDirectory, TimerAccess access)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, 0, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtOpenTimer(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -71,23 +69,23 @@ namespace ProcessHacker.Native.Objects
 
         public bool Cancel()
         {
-            int status;
+            NtStatus status;
             bool currentState;
 
-            if ((status = Win32.NtCancelTimer(this, out currentState)) < 0)
+            if ((status = Win32.NtCancelTimer(this, out currentState)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return currentState;
         }
 
-        public TimerBasicInformation Query()
+        public TimerBasicInformation GetBasicInformation()
         {
-            int status;
+            NtStatus status;
             TimerBasicInformation tbi;
             int retLength;
 
             if ((status = Win32.NtQueryTimer(this, TimerInformationClass.TimerBasicInformation,
-                out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) < 0)
+                out tbi, Marshal.SizeOf(typeof(TimerBasicInformation)), out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return tbi;
@@ -95,13 +93,13 @@ namespace ProcessHacker.Native.Objects
 
         public bool Set(long dueTime, TimerApcRoutine routine, IntPtr context, bool resume, int period)
         {
-            int status;
+            NtStatus status;
             bool previousState;
 
             _routine = routine;
 
             if ((status = Win32.NtSetTimer(this, ref dueTime, routine, context,
-                resume, period, out previousState)) < 0)
+                resume, period, out previousState)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return previousState;

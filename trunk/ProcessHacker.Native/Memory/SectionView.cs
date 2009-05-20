@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker - 
- *   debug object handle
- * 
+ *   mapped view of section
+ *                       
  * Copyright (C) 2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -24,30 +24,40 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Objects;
 
-namespace ProcessHacker.Native.Objects
+namespace ProcessHacker.Native.Memory
 {
-    public class DebugObjectHandle : Win32Handle<DebugObjectAccess>
+    /// <summary>
+    /// Represents a mapped view of a section.
+    /// </summary>
+    public class SectionView : MemoryAlloc
     {
-        public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
+        internal SectionView(IntPtr baseAddress, IntPtr commitSize)
         {
-            NtStatus status;
-            IntPtr handle;
-
-            if ((status = Win32.NtCreateDebugObject(
-                out handle,
-                access,
-                IntPtr.Zero,
-                flags
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
-
-            return new DebugObjectHandle(handle, true);
+            this.Memory = baseAddress;
+            this.Size = commitSize.ToInt32();
         }
 
-        private DebugObjectHandle(IntPtr handle, bool owned)
-            : base(handle, owned)
-        { }
+        protected override void Free()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.GetCurrent(), this)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public bool IsSameFile(SectionView mappedAsFile)
+        {
+            if ((uint)Win32.NtAreMappedFilesTheSame(this, mappedAsFile) == this.Memory.ToUInt32())
+                return true;
+            else
+                return false;
+        }
+
+        public override void Resize(int newSize)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

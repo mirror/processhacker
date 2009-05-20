@@ -31,35 +31,103 @@ namespace ProcessHacker.Native.Api
 {
     public partial class Win32
     {
+        #region System Calls
+
         [DllImport("ntdll.dll")]
-        public static extern int NtAlertThread(
+        public static extern NtStatus NtAcceptConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] [Optional] IntPtr PortContext,
+            [In] ref PortMessage ConnectionRequest,
+            [In] bool AcceptConnection,
+            [Optional] ref PortView ServerView,
+            [Out] [Optional] out RemotePortView ClientView
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAlertThread(
             [In] IntPtr ThreadHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtAlertResumeThread(
+        public static extern NtStatus NtAlertResumeThread(
             [In] IntPtr ThreadHandle,
             [Out] [Optional] out int PreviousSuspendCount
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtAllocateLocallyUniqueId(
+        public static extern NtStatus NtAllocateLocallyUniqueId(
             [Out] out Luid Luid
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCancelTimer(
+        public static extern NtStatus NtAllocateVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            [In] IntPtr ZeroBits,
+            ref IntPtr RegionSize,
+            [In] MemoryFlags AllocationType,
+            [In] MemoryProtection Protect
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAreMappedFilesTheSame(
+            [In] IntPtr File1MappedAsAnImage,
+            [In] IntPtr File2MappedAsFile
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtAssignProcessToJobObject(
+            [In] IntPtr JobHandle,
+            [In] IntPtr ProcessHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCancelTimer(
             [In] IntPtr TimerHandle,
             [Out] [Optional] out bool CurrentState
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtClearEvent(
+        public static extern NtStatus NtClearEvent(
             [In] IntPtr EventHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateDebugObject(
+        public static extern NtStatus NtClose(
+            [In] IntPtr Handle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCompleteConnectPort(
+            [In] IntPtr PortHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] ref UnicodeString PortName,
+            [In] ref SecurityQualityOfService SecurityQos,
+            [Optional] ref PortView ClientView,
+            [Optional] ref RemotePortView ServerView,
+            [Out] [Optional] out int MaxMessageLength,
+            [Optional] IntPtr ConnectionInformation,
+            [Optional] out int ConnectionInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] ref UnicodeString PortName,
+            [In] ref SecurityQualityOfService SecurityQos,
+            [Optional] ref PortView ClientView,
+            [Optional] ref RemotePortView ServerView,
+            [Out] [Optional] out int MaxMessageLength,
+            [Optional] IntPtr ConnectionInformation,
+            [Optional] int ConnectionInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateDebugObject(
             [Out] out IntPtr DebugObjectHandle,
             [In] DebugObjectAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -67,7 +135,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateDebugObject(
+        public static extern NtStatus NtCreateDebugObject(
             [Out] out IntPtr DebugObjectHandle,
             [In] DebugObjectAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -75,14 +143,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateDirectoryObject(
+        public static extern NtStatus NtCreateDirectoryObject(
             [Out] out IntPtr DirectoryHandle,
             [In] DirectoryAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateEvent(
+        public static extern NtStatus NtCreateEvent(
             [Out] out IntPtr EventHandle,
             [In] EventAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -91,7 +159,7 @@ namespace ProcessHacker.Native.Api
             ); 
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateEvent(
+        public static extern NtStatus NtCreateEvent(
             [Out] out IntPtr EventHandle,
             [In] EventAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -100,21 +168,42 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateEventPair(
+        public static extern NtStatus NtCreateEventPair(
             [Out] out IntPtr EventPairHandle,
             [In] EventPairAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateEventPair(
+        public static extern NtStatus NtCreateEventPair(
             [Out] out IntPtr EventPairHandle,
             [In] EventPairAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateKeyedEvent(
+        public static extern NtStatus NtCreateJobObject(
+            [Out] out IntPtr JobHandle,
+            [In] JobObjectAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateJobObject(
+            [Out] out IntPtr JobHandle,
+            [In] JobObjectAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateJobSet(
+            [In] int NumJob,
+            JobSetArray[] UserJobSet,
+            [In] int Flags
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateKeyedEvent(
             [Out] out IntPtr KeyedEventHandle,
             [In] KeyedEventAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -122,7 +211,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateKeyedEvent(
+        public static extern NtStatus NtCreateKeyedEvent(
             [Out] out IntPtr KeyedEventHandle,
             [In] KeyedEventAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -130,7 +219,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateMutant(
+        public static extern NtStatus NtCreateMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -138,7 +227,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateMutant(
+        public static extern NtStatus NtCreateMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -146,7 +235,16 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateProcess(
+        public static extern NtStatus NtCreatePort(
+            [Out] out IntPtr PortHandle,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] int MaxConnectionInfoLength,
+            [In] int MaxMessageLength,
+            [In] [Optional] int MaxPoolUsage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateProcess(
             [Out] out IntPtr ProcessHandle,
             [In] ProcessAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -158,7 +256,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateProcess(
+        public static extern NtStatus NtCreateProcess(
             [Out] out IntPtr ProcessHandle,
             [In] ProcessAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -170,29 +268,42 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateSection(
+        public static extern NtStatus NtCreateProfile(
+            [Out] out IntPtr ProfileHandle,
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ProfileBase,
+            [In] IntPtr ProfileSize,
+            [In] int BucketSize,
+            [In] IntPtr Buffer,
+            [In] int BufferSize,
+            [In] KProfileSource ProfileSource,
+            [In] IntPtr Affinity
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateSection(
             [Out] out IntPtr SectionHandle,
             [In] SectionAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
-            [In] [Optional] ref LargeInteger MaximumSize,
+            [In] [Optional] ref long MaximumSize,
             [In] int PageAttributes,
             [In] int SectionAttributes,
             [In] [Optional] IntPtr FileHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateSection(
+        public static extern NtStatus NtCreateSection(
             [Out] out IntPtr SectionHandle,
             [In] SectionAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
-            [In] [Optional] ref LargeInteger MaximumSize,
+            [In] [Optional] ref long MaximumSize,
             [In] int PageAttributes,
             [In] int SectionAttributes,
             [In] [Optional] IntPtr FileHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateSemaphore(
+        public static extern NtStatus NtCreateSemaphore(
             [Out] out IntPtr SemaphoreHandle,
             [In] SemaphoreAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -201,7 +312,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateSemaphore(
+        public static extern NtStatus NtCreateSemaphore(
             [Out] out IntPtr SemaphoreHandle,
             [In] SemaphoreAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -210,7 +321,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateSymbolicLinkObject(
+        public static extern NtStatus NtCreateSymbolicLinkObject(
             [Out] out IntPtr LinkHandle,
             [In] SymbolicLinkAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes,
@@ -218,7 +329,19 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateTimer(
+        public static extern NtStatus NtCreateThread(
+            [Out] out IntPtr ThreadHandle,
+            [In] ThreadAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] IntPtr ProcessHandle,
+            [Out] out ClientId ClientId,
+            [In] ref Context ThreadContext,
+            [In] ref InitialTeb InitialTeb,
+            [In] bool CreateSuspended
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
@@ -226,7 +349,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtCreateTimer(
+        public static extern NtStatus NtCreateTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
             [In] [Optional] IntPtr ObjectAttributes,
@@ -234,30 +357,70 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtDebugActiveProcess(
+        public static extern NtStatus NtCreateWaitablePort(
+            [Out] out IntPtr PortHandle,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] int MaxConnectionInfoLength,
+            [In] int MaxMessageLength,
+            [In] [Optional] int MaxPoolUsage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDebugActiveProcess(
             [In] IntPtr ProcessHandle,
             [In] IntPtr DebugObjectHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtDelayExecution(
+        public static extern NtStatus NtDelayExecution(
             [In] bool Alertable,
             [In] ref long DelayInterval
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtDuplicateObject(
+        public static extern NtStatus NtDuplicateObject(
             [In] IntPtr SourceProcessHandle,
             [In] IntPtr SourceHandle,
             [In] IntPtr TargetProcessHandle,
             [Out] out IntPtr TargetHandle,
             [In] int DesiredAccess,
             [In] HandleFlags Attributes,
-            [In] int Options
+            [In] DuplicateOptions Options
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtGetNextProcess(
+        public static extern NtStatus NtExtendSection(
+            [In] IntPtr SectionHandle,
+            ref long NewSectionSize
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFlushVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            [Out] out IoStatusBlock IoStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtFreeVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            [In] MemoryFlags FreeType
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetContextThread(
+            [In] IntPtr ThreadHandle,
+            ref Context ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetCurrentProcessorNumber();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtGetNextProcess(
             [In] [Optional] IntPtr ProcessHandle,
             [In] ProcessAccess DesiredAccess,
             [In] HandleFlags HandleAttributes,
@@ -266,7 +429,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtGetNextThread(
+        public static extern NtStatus NtGetNextThread(
             [In] [Optional] IntPtr ProcessHandle,
             [In] [Optional] IntPtr ThreadHandle,
             [In] ThreadAccess DesiredAccess,
@@ -276,84 +439,191 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtLoadDriver(
+        public static extern NtStatus NtImpersonateAnonymousToken(
+            [In] IntPtr ThreadHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtImpersonateClientOfPort(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage Message
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtImpersonateThread(
+            [In] IntPtr ServerThreadHandle,
+            [In] IntPtr ClientThreadHandle,
+            [In] ref SecurityQualityOfService SecurityQos
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtIsProcessInJob(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr JobHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtListenPort(
+            [In] IntPtr PortHandle,
+            [Out] out PortMessage ConnectionRequest
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtLoadDriver(
             [In] ref UnicodeString DriverPath
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtMakePermanentObject(
+        public static extern NtStatus NtLockVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            [In] MemoryFlags MapType
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtMakePermanentObject(
             [In] IntPtr Handle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtMakeTemporaryObject(
+        public static extern NtStatus NtMakeTemporaryObject(
             [In] IntPtr Handle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenDirectoryObject(
+        public static extern NtStatus NtMapViewOfSection(
+            [In] IntPtr SectionHandle,
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            [In] IntPtr ZeroBits,
+            [In] IntPtr CommitSize,
+            [Optional] ref long SectionOffset,
+            ref IntPtr ViewSize,
+            [In] SectionInherit InheritDisposition,
+            [In] MemoryFlags AllocationType,
+            [In] MemoryProtection Win32Protect
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenDirectoryObject(
             [Out] out IntPtr DirectoryHandle,
             [In] DirectoryAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenEvent(
+        public static extern NtStatus NtOpenEvent(
             [Out] out IntPtr EventHandle,
             [In] EventAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenEventPair(
+        public static extern NtStatus NtOpenEventPair(
             [Out] out IntPtr EventPairHandle,
             [In] EventPairAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenKeyedEvent(
+        public static extern NtStatus NtOpenJobObject(
+            [Out] out IntPtr JobHandle,
+            [In] JobObjectAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenKeyedEvent(
             [Out] out IntPtr KeyedEventHandle,
             [In] KeyedEventAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenMutant(
+        public static extern NtStatus NtOpenMutant(
             [Out] out IntPtr MutantHandle,
             [In] MutantAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenSemaphore(
+        public static extern NtStatus NtOpenProcess(
+            [Out] out IntPtr ProcessHandle,
+            [In] ProcessAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ref ClientId ClientId
+            );      
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenProcess(
+            [Out] out IntPtr ProcessHandle,
+            [In] ProcessAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] IntPtr ClientId
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenSection(
+            [Out] out IntPtr SectionHandle,
+            [In] SectionAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenSemaphore(
             [Out] out IntPtr SemaphoreHandle,
             [In] SemaphoreAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenSymbolicLinkObject(
+        public static extern NtStatus NtOpenSymbolicLinkObject(
             [Out] out IntPtr LinkHandle,
             [In] SymbolicLinkAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtOpenTimer(
+        public static extern NtStatus NtOpenThread(
+            [Out] out IntPtr ThreadHandle,
+            [In] ThreadAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] ref ClientId ClientId
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenThread(
+            [Out] out IntPtr ThreadHandle,
+            [In] ThreadAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] IntPtr ClientId
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenTimer(
             [Out] out IntPtr TimerHandle,
             [In] TimerAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtPulseEvent(
+        public static extern NtStatus NtProtectVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            [In] MemoryProtection NewProtect,
+            [Out] out MemoryProtection OldProtect
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtPulseEvent(
             [In] IntPtr EventHandle,
             [Out] [Optional] out int PreviousState
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryDirectoryObject(
+        public static extern NtStatus NtQueryDirectoryObject(
             [In] IntPtr DirectoryHandle,
             [In] IntPtr Buffer,
             [In] int Length,
@@ -364,7 +634,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryEvent(
+        public static extern NtStatus NtQueryEvent(
             [In] IntPtr EventHandle,
             [In] EventInformationClass EventInformationClass,
             [Out] out EventBasicInformation EventInformation,
@@ -373,7 +643,16 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationJobObject(
+            [In] [Optional] IntPtr JobHandle,
+            [In] JobObjectInformationClass JobObjectInformationClass,
+            [In] IntPtr JobObjectInformation,
+            [In] int JobObjectInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             IntPtr ProcessInformation,
@@ -382,7 +661,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out int ProcessInformation,
@@ -391,7 +670,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out PooledUsageAndLimits ProcessInformation,
@@ -400,7 +679,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out QuotaLimits ProcessInformation,
@@ -409,7 +688,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out MemExecuteOptions ProcessInformation,
@@ -418,7 +697,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out ProcessBasicInformation ProcessInformation,
@@ -427,7 +706,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationProcess(
+        public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
             [Out] out UnicodeString ProcessInformation,
@@ -436,7 +715,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationThread(
+        public static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
             ref ThreadBasicInformation ThreadInformation,
@@ -445,7 +724,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationThread(
+        public static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
             [Out] out int ThreadInformation,
@@ -454,7 +733,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryInformationThread(
+        public static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
             IntPtr ThreadInformation,
@@ -463,7 +742,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public unsafe static extern int NtQueryInformationThread(
+        public unsafe static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
             void* ThreadInformation,
@@ -472,7 +751,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryMutant(
+        public static extern NtStatus NtQueryIntervalProfile(
+            [In] KProfileSource Source,
+            [Out] out int Interval 
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryMutant(
             [In] IntPtr MutantHandle,
             [In] MutantInformationClass MutantInformationClass,
             [Out] out MutantBasicInformation MutantInformation,
@@ -481,7 +766,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryObject(
+        public static extern NtStatus NtQueryObject(
             [In] IntPtr Handle,
             [In] ObjectInformationClass ObjectInformationClass,
             [Out] IntPtr ObjectInformation,
@@ -490,25 +775,28 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySection(
+        public static extern NtStatus NtQueryPortInformationProcess();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQuerySection(
             [In] IntPtr SectionHandle,
             [In] SectionInformationClass SectionInformationClass,
             [Out] out SectionBasicInformation SectionInformation,
-            [In] int SectionInformationLength,
-            [Out] [Optional] out int ReturnLength
+            [In] IntPtr SectionInformationLength,
+            [Out] [Optional] out IntPtr ReturnLength
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySection(
+        public static extern NtStatus NtQuerySection(
             [In] IntPtr SectionHandle,
             [In] SectionInformationClass SectionInformationClass,
             [Out] out SectionImageInformation SectionInformation,
-            [In] int SectionInformationLength,
-            [Out] [Optional] out int ReturnLength
+            [In] IntPtr SectionInformationLength,
+            [Out] [Optional] out IntPtr ReturnLength
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySemaphore(
+        public static extern NtStatus NtQuerySemaphore(
             [In] IntPtr SemaphoreHandle,
             [In] SemaphoreInformationClass SemaphoreInformationClass,
             [Out] out SemaphoreBasicInformation SemaphoreInformation,
@@ -517,14 +805,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySymbolicLinkObject(
+        public static extern NtStatus NtQuerySymbolicLinkObject(
             [In] IntPtr LinkHandle,
             ref UnicodeString LinkName,
             [Out] [Optional] out int ReturnLength
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySystemInformation(
+        public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [Out] out SystemBasicInformation SystemInformation,
             [In] int SystemInformationLength,
@@ -532,7 +820,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySystemInformation(
+        public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             IntPtr SystemInformation,
             [In] int SystemInformationLength,
@@ -540,7 +828,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySystemInformation(
+        public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [MarshalAs(UnmanagedType.LPArray)] SystemProcessorPerformanceInformation[] SystemInformation,
             [In] int SystemInformationLength,
@@ -548,7 +836,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySystemInformation(
+        public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [Out] out SystemPerformanceInformation SystemInformation,
             [In] int SystemInformationLength,
@@ -556,7 +844,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQuerySystemInformation(
+        public static extern NtStatus NtQuerySystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [Out] out SystemCacheInformation SystemInformation,
             [In] int SystemInformationLength,
@@ -564,7 +852,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueryTimer(
+        public static extern NtStatus NtQueryTimer(
             [In] IntPtr TimerHandle,
             [In] TimerInformationClass TimerInformationClass,
             [Out] out TimerBasicInformation TimerInformation,
@@ -573,7 +861,17 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtQueueApcThread(
+        public static extern NtStatus NtQueryVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr BaseAddress,
+            [In] MemoryInformationClass MemoryInformationClass,
+            [In] IntPtr Buffer,
+            [In] IntPtr MemoryInformationLength,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueueApcThread(
             [In] IntPtr ThreadHandle,
             [In] IntPtr ApcRoutine,
             [In] [Optional] IntPtr ApcArgument1,
@@ -582,7 +880,31 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtReleaseKeyedEvent(
+        public static extern NtStatus NtReadRequestData(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage Message,
+            [In] int DataEntryIndex,
+            [In] IntPtr Buffer,
+            [In] IntPtr BufferSize,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReadVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr BaseAddress,
+            [In] IntPtr Buffer,
+            [In] IntPtr BufferSize,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRegisterThreadTerminatePort(
+            [In] IntPtr PortHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReleaseKeyedEvent(
             [In] IntPtr KeyedEventHandle,
             [In] IntPtr KeyValue,
             [In] bool Alertable,
@@ -590,64 +912,136 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtReleaseMutant(
+        public static extern NtStatus NtReleaseMutant(
             [In] IntPtr MutantHandle,
             [Out] [Optional] out int PreviousCount
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtReleaseSemaphore(
+        public static extern NtStatus NtReleaseSemaphore(
             [In] IntPtr SemaphoreHandle,
             [In] int ReleaseCount,
             [Out] [Optional] out int PreviousCount
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtRemoveProcessDebug(
+        public static extern NtStatus NtRemoveProcessDebug(
             [In] IntPtr ProcessHandle,
             [In] IntPtr DebugObjectHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtResetEvent(
+        public static extern NtStatus NtReplyPort(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage ReplyMessage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReplyWaitReceivePort(
+            [In] IntPtr PortHandle,
+            [Out] [Optional] out IntPtr PortContext,
+            [In] [Optional] ref PortMessage ReplyMessage,
+            [Out] out PortMessage ReceiveMessage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReplyWaitReceivePortEx(
+            [In] IntPtr PortHandle,
+            [Out] [Optional] out IntPtr PortContext,
+            [In] [Optional] ref PortMessage ReplyMessage,
+            [Out] out PortMessage ReceiveMessage,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtReplyWaitReplyPort(
+            [In] IntPtr PortHandle,
+            ref PortMessage ReplyMessage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRequestPort(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage RequestMessage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRequestWaitReplyPort(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage RequestMessage,
+            [Out] out PortMessage ReplyMessage
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtResetEvent(
             [In] IntPtr EventHandle,
             [Out] [Optional] out int PreviousState
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtResumeProcess(
+        public static extern NtStatus NtResumeProcess(
             [In] IntPtr ProcessHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtResumeThread(
+        public static extern NtStatus NtResumeThread(
             [In] IntPtr ThreadHandle,
             [Out] [Optional] out int PreviousSuspendCount
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetEvent(
+        public static extern NtStatus NtSetContextThread(
+            [In] IntPtr ThreadHandle,
+            [In] ref Context ThreadContext
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetEvent(
             [In] IntPtr EventHandle,
             [Out] [Optional] out int PreviousState
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetEventBoostPriority(
+        public static extern NtStatus NtSetEventBoostPriority(
             [In] IntPtr EventHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetHighEventPair(
+        public static extern NtStatus NtSetHighEventPair(
             [In] IntPtr EventPairHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetHighWaitLowEventPair(
+        public static extern NtStatus NtSetHighWaitLowEventPair(
             [In] IntPtr EventPairHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetInformationThread(
+        public static extern NtStatus NtSetInformationJobObject(
+            [In] IntPtr JobHandle,
+            [In] JobObjectInformationClass JobObjectInformationClass,
+            [In] IntPtr JobObjectInformation,
+            [In] int JobObjectInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [In] IntPtr ProcessInformation,
+            [In] int ProcessInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [In] ref int ProcessInformation,
+            [In] int ProcessInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
             [In] IntPtr ThreadInformation,
@@ -655,27 +1049,41 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetLowEventPair(
+        public static extern NtStatus NtSetInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
+            [In] ref int ThreadInformation,
+            [In] int ThreadInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetIntervalProfile(
+            [In] int Interval,
+            [In] KProfileSource Source
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetLowEventPair(
             [In] IntPtr EventPairHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetLowWaitHighEventPair(
+        public static extern NtStatus NtSetLowWaitHighEventPair(
             [In] IntPtr EventPairHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetSystemInformation(
+        public static extern NtStatus NtSetSystemInformation(
             [In] SystemInformationClass SystemInformationClass,
             [In] ref SystemLoadAndCallImage SystemInformation,
             [In] int SystemInformationLength
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSetTimer(
+        public static extern NtStatus NtSetTimer(
             [In] IntPtr TimerHandle,
             [In] ref long DueTime,
-            [In] [Optional] ProcessHacker.Native.Objects.TimerHandle.TimerApcRoutine TimerApcRoutine,
+            [In] [Optional] TimerApcRoutine TimerApcRoutine,
             [In] [Optional] IntPtr TimerContext,
             [In] bool ResumeTimer,
             [In] [Optional] int Period,
@@ -683,7 +1091,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSignalAndWaitForSingleObject(
+        public static extern NtStatus NtSignalAndWaitForSingleObject(
             [In] IntPtr SignalHandle,
             [In] IntPtr WaitHandle,
             [In] bool Alertable,
@@ -691,37 +1099,415 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSuspendProcess(
+        public static extern NtStatus NtStartProfile(
+            [In] IntPtr ProfileHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtStopProfile(
+            [In] IntPtr ProfileHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSuspendProcess(
             [In] IntPtr ProcessHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtSuspendThread(
+        public static extern NtStatus NtSuspendThread(
             [In] IntPtr ThreadHandle,
             [Out] [Optional] out int PreviousSuspendCount
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtUnloadDriver(
+        public static extern NtStatus NtTerminateJobObject(
+            [In] IntPtr JobHandle,
+            [In] int ExitStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtTerminateProcess(
+            [In] [Optional] IntPtr ProcessHandle,
+            [In] int ExitStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtTerminateThread(
+            [In] [Optional] IntPtr ThreadHandle,
+            [In] int ExitStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtTestAlert();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtUnloadDriver(
             [In] ref UnicodeString DriverPath
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtWaitForKeyedEvent(
-            [In] int KeyedEventHandle,
+        public static extern NtStatus NtUnlockVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr BaseAddress,
+            ref IntPtr RegionSize,
+            [In] MemoryFlags MapType
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtUnmapViewOfSection(
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr BaseAddress
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWaitForKeyedEvent(
+            [In] IntPtr KeyedEventHandle,
             [In] IntPtr KeyValue,
             [In] bool Alertable,
             [In] [Optional] ref long Timeout
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtWaitHighEventPair(
+        public static extern NtStatus NtWaitForMultipleObjects(
+            [In] int Count,
+            [In] IntPtr[] Handles,
+            [In] WaitType WaitType,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWaitForMultipleObjects32(
+            [In] int Count,
+            [In] int[] Handles,
+            [In] WaitType WaitType,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWaitForSingleObject(
+            [In] IntPtr Handle,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWaitHighEventPair(
             [In] IntPtr EventPairHandle
             );
 
         [DllImport("ntdll.dll")]
-        public static extern int NtWaitLowEventPair(
+        public static extern NtStatus NtWaitLowEventPair(
             [In] IntPtr EventPairHandle
             );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWriteRequestData(
+            [In] IntPtr PortHandle,
+            [In] ref PortMessage Message,
+            [In] int DataEntryIndex,
+            [In] IntPtr Buffer,
+            [In] IntPtr BufferSize,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWriteVirtualMemory(
+            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr BaseAddress,
+            [In] IntPtr Buffer,
+            [In] IntPtr BufferSize,
+            [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        #endregion
+
+        #region Run-Time Library
+
+        #region Processes and Threads
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlAcquirePebLock();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAllocateFromPeb(
+            [In] int Size,
+            [Out] out IntPtr Block
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateEnvironment(
+            [In] bool CloneCurrentEnvironment,
+            [Out] out IntPtr Environment
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateProcessParameters(
+            [Out] out IntPtr ProcessParameters,
+            [In] ref UnicodeString ImagePathName,
+            [In] ref UnicodeString DllPath,
+            [In] ref UnicodeString CurrentDirectory,
+            [In] ref UnicodeString CommandLine,
+            [In] IntPtr Environment,
+            [In] ref UnicodeString WindowTitle,
+            [In] ref UnicodeString DesktopInfo,
+            [In] ref UnicodeString ShellInfo,
+            [In] ref UnicodeString RuntimeData
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateUserProcess(
+            [In] ref UnicodeString NtImagePathName,
+            [In] int Attributes,
+            [In] IntPtr ProcessParameters,
+            [In] IntPtr ProcessSecurityDescriptor,
+            [In] IntPtr ThreadSecurityDescriptor,
+            [In] IntPtr ParentProcess,
+            [In] bool InheritHandles,
+            [In] IntPtr DebugPort,
+            [In] IntPtr ExceptionPort,
+            [In] ref RtlUserProcessInformation ProcessInformation
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCreateUserThread(
+            [In] IntPtr Process,
+            [In] IntPtr ThreadSecurityDescriptor,
+            [In] bool CreateSuspended,
+            [In] int StackZeroBits,
+            [In] [Optional] IntPtr MaximumStackSize,
+            [In] [Optional] IntPtr InitialStackSize,
+            [In] IntPtr StartAddress,
+            [In] IntPtr Parameter,
+            [Out] out IntPtr Thread,
+            [Out] out ClientId ClientId
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlDeNormalizeProcessParameters(
+            [In] IntPtr ProcessParameters
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDestroyEnvironment(
+            [In] IntPtr Environment
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDestroyProcessParameters(
+            [In] IntPtr ProcessParameters
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlExitUserThread(
+            [In] int ExitStatus
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlFreeUserThreadStack(
+            [In] IntPtr Process,
+            [In] IntPtr Thread
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlFreeToPeb(
+            [In] IntPtr Block,
+            [In] int Size
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlInitializeContext(
+            [In] IntPtr Process,
+            ref Context Context,
+            [In] IntPtr Parameter,
+            [In] IntPtr InitialPc,
+            [In] IntPtr InitialSp
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlNormalizeProcessParameters(
+            [In] IntPtr ProcessParameters
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlNtStatusToDosError(
+            [In] NtStatus Status
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlReleasePebLock();
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlRemoteCall(
+            [In] IntPtr Process,
+            [In] IntPtr Thread,
+            [In] IntPtr CallSite,
+            [In] int ArgumentCount,
+            [In] IntPtr[] Arguments,
+            [In] bool PassContext,
+            [In] bool AlreadySuspended
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlSetCurrentEnvironment(
+            [In] IntPtr Environment,
+            [Out] out IntPtr PreviousEnvironment
+            );
+
+        #endregion
+
+        #region Security ID Routines
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlAllocateAndInitializeSid(
+            [In] ref SidIdentifierAuthority IdentifierAuthority,
+            [In] int SubAuthorityCount,
+            [In] int SubAuthority0,
+            [In] int SubAuthority1,
+            [In] int SubAuthority2,
+            [In] int SubAuthority3,
+            [In] int SubAuthority4,
+            [In] int SubAuthority5,
+            [In] int SubAuthority6,
+            [In] int SubAuthority7,
+            [Out] out IntPtr Sid
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlConvertSidToUnicodeString(
+            ref UnicodeString UnicodeString,
+            [In] IntPtr Sid,
+            [In] bool AllocateDestinationString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlCopySid(
+            [In] int DestinationSidLength,
+            [In] IntPtr DestinationSid,
+            [In] IntPtr SourceSid
+            );
+
+        [DllImport("ntdll.dll")]  
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlEqualSid(
+            [In] IntPtr Sid1,
+            [In] IntPtr Sid2
+            );
+
+        [DllImport("ntdll.dll")]  
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlEqualPrefixSid(
+            [In] IntPtr Sid1,
+            [In] IntPtr Sid2
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlFreeSid(
+            [In] IntPtr Sid
+            );
+
+        [DllImport("ntdll.dll")]
+        public unsafe static extern SidIdentifierAuthority* RtlIdentifierAuthoritySid(
+            [In] IntPtr Sid
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlInitializeSid(
+            [In] IntPtr Sid,
+            [In] ref SidIdentifierAuthority IdentifierAuthority,
+            [In] int SubAuthorityCount
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlLengthRequiredSid(
+            [In] int SubAuthorityCount
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlLengthSid(
+            [In] IntPtr Sid
+            );
+
+        [DllImport("ntdll.dll")]
+        public unsafe static extern int* RtlSubAuthoritySid(
+            [In] IntPtr Sid,
+            [In] int SubAuthority
+            );
+
+        [DllImport("ntdll.dll")]
+        public unsafe static extern byte* RtlSubAuthorityCountSid(
+            [In] IntPtr Sid
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlValidSid(
+            [In] IntPtr Sid
+            );
+
+        #endregion
+
+        #region Strings
+
+        [DllImport("ntdll.dll")]
+        public static extern int RtlCompareUnicodeString(
+            [In] ref UnicodeString String1,
+            [In] ref UnicodeString String2,
+            [In] bool CaseInSensitive
+            );
+
+        [DllImport("ntdll.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlCreateUnicodeString(
+            [Out] out UnicodeString DestinationString,
+            [In] string SourceString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDuplicateUnicodeString(
+            [In] RtlDuplicateUnicodeStringFlags Flags,
+            [In] ref UnicodeString StringIn,
+            [Out] out UnicodeString StringOut
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlEqualUnicodeString(
+            [In] ref UnicodeString String1,
+            [In] ref UnicodeString String2,
+            [In] bool CaseInSensitive
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlFreeUnicodeString(
+            [In] ref UnicodeString UnicodeString
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlHashUnicodeString(
+            [In] ref UnicodeString String,
+            [In] bool CaseInSensitive,
+            [In] HashStringAlgorithm HashAlgorithm,
+            [Out] out int HashValue
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlPrefixUnicodeString(
+            [In] ref UnicodeString String1,
+            [In] ref UnicodeString String2,
+            [In] bool CaseInSensitive
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlValidateUnicodeString(
+            [In] int Flags,
+            [In] ref UnicodeString String
+            );
+
+        #endregion
+
+        #endregion
     }
 }

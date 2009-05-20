@@ -271,8 +271,8 @@ namespace ProcessHacker.Native
             int targetProcessHandle,
             out int targetHandle,
             int desiredAccess,
-            int handleAttributes,
-            int options
+            HandleFlags handleAttributes,
+            DuplicateOptions options
             )
         {
             int handle;
@@ -296,8 +296,8 @@ namespace ProcessHacker.Native
             int targetProcessHandle,
             int targetHandle,
             int desiredAccess,
-            int handleAttributes,
-            int options
+            HandleFlags handleAttributes,
+            DuplicateOptions options
             )
         {
             byte[] data = new byte[7 * sizeof(int)];
@@ -309,8 +309,8 @@ namespace ProcessHacker.Native
                 *(int*)(dataPtr + 0x8) = targetProcessHandle;
                 *(int*)(dataPtr + 0xc) = targetHandle;
                 *(int*)(dataPtr + 0x10) = desiredAccess;
-                *(int*)(dataPtr + 0x14) = handleAttributes;
-                *(int*)(dataPtr + 0x18) = options;
+                *(int*)(dataPtr + 0x14) = (int)handleAttributes;
+                *(int*)(dataPtr + 0x18) = (int)options;
 
                 _fileHandle.IoControl(CtlCode(Control.KphDuplicateObject), data, null);
             }
@@ -646,7 +646,7 @@ namespace ProcessHacker.Native
             return _fileHandle.IoControl(CtlCode(Control.Write), inData, data.Length + 4, null, 0);
         }
 
-        public int ZwQueryObject(
+        public NtStatus ZwQueryObject(
             ProcessHandle processHandle,
             IntPtr handle,
             ObjectInformationClass objectInformationClass,
@@ -665,11 +665,11 @@ namespace ProcessHacker.Native
 
             _fileHandle.IoControl(CtlCode(Control.ZwQueryObject), inData, 12, outData);
 
-            int status;
+            NtStatus status;
 
             fixed (byte* outDataPtr = outData)
             {
-                status = *(int*)outDataPtr;
+                status = *(NtStatus*)outDataPtr;
                 returnLength = *(int*)(outDataPtr + 4);
                 baseAddress = *(int*)(outDataPtr + 8);
             }

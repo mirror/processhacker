@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   event handle
+ *                       
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
@@ -14,18 +36,18 @@ namespace ProcessHacker.Native.Objects
 
         public static EventHandle Create(EventAccess access, string name, EventType type, bool initialState)
         {
-            return Create(access, name, null, type, initialState);
+            return Create(access, name, 0, null, type, initialState);
         }
 
-        public static EventHandle Create(EventAccess access, string name, DirectoryHandle rootDirectory, EventType type, bool initialState)
+        public static EventHandle Create(EventAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventType type, bool initialState)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateEvent(out handle, access, ref oa, type, initialState)) < 0)
+                if ((status = Win32.NtCreateEvent(out handle, access, ref oa, type, initialState)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -36,19 +58,24 @@ namespace ProcessHacker.Native.Objects
             return new EventHandle(handle, true);
         }
 
+        public static EventHandle FromHandle(IntPtr handle)
+        {
+            return new EventHandle(handle, false);
+        }
+
         private EventHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
-        public EventHandle(string name, DirectoryHandle rootDirectory, EventAccess access)
+        public EventHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventAccess access)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenEvent(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtOpenEvent(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -59,44 +86,48 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        public EventHandle(string name, EventAccess access)
+            : this(name, 0, null, access)
+        { }
+
         public void Clear()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtClearEvent(this)) < 0)
+            if ((status = Win32.NtClearEvent(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
-        public int Pulse()
+        public EventBasicInformation GetBasicInformation()
         {
-            int status;
-            int previousState;
-
-            if ((status = Win32.NtPulseEvent(this, out previousState)) < 0)
-                Win32.ThrowLastError(status);
-
-            return previousState;
-        }
-
-        public EventBasicInformation Query()
-        {
-            int status;
+            NtStatus status;
             EventBasicInformation ebi;
             int retLength;
 
             if ((status = Win32.NtQueryEvent(this, EventInformationClass.EventBasicInformation,
-                out ebi, Marshal.SizeOf(typeof(EventBasicInformation)), out retLength)) < 0)
+                out ebi, Marshal.SizeOf(typeof(EventBasicInformation)), out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return ebi;
         }
 
-        public int Reset()
+        public int Pulse()
         {
-            int status;
+            NtStatus status;
             int previousState;
 
-            if ((status = Win32.NtResetEvent(this, out previousState)) < 0)
+            if ((status = Win32.NtPulseEvent(this, out previousState)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return previousState;
+        }
+
+        public int Reset()
+        {
+            NtStatus status;
+            int previousState;
+
+            if ((status = Win32.NtResetEvent(this, out previousState)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return previousState;
@@ -104,10 +135,10 @@ namespace ProcessHacker.Native.Objects
 
         public int Set()
         {
-            int status;
+            NtStatus status;
             int previousState;
 
-            if ((status = Win32.NtSetEvent(this, out previousState)) < 0)
+            if ((status = Win32.NtSetEvent(this, out previousState)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return previousState;
@@ -119,9 +150,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetBoostPriority()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtSetEventBoostPriority(this)) < 0)
+            if ((status = Win32.NtSetEventBoostPriority(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
     }

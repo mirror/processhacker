@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   event pair handle
+ *                       
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Native.Api;
@@ -18,7 +40,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to an event pair.</returns>
         public static EventPairHandle Create(EventPairAccess access)
         {
-            return Create(access, null, null);
+            return Create(access, null, 0, null);
         }
 
         /// <summary>
@@ -33,15 +55,15 @@ namespace ProcessHacker.Native.Objects
         /// The directory in which to place the event pair. This can be null.
         /// </param>
         /// <returns>A handle to an event pair.</returns>
-        public static EventPairHandle Create(EventPairAccess access, string name, DirectoryHandle rootDirectory)
+        public static EventPairHandle Create(EventPairAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateEventPair(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtCreateEventPair(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -64,15 +86,15 @@ namespace ProcessHacker.Native.Objects
         /// you must specify a fully qualified name.</param>
         /// <param name="rootDirectory">The directory object in which the event pair can be found.</param>
         /// <param name="access">The desired access to the event pair.</param>
-        public EventPairHandle(string name, DirectoryHandle rootDirectory, EventPairAccess access)
+        public EventPairHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventPairAccess access)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenEventPair(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtOpenEventPair(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -84,7 +106,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         public EventPairHandle(string name, EventPairAccess access)
-            : this(name, null, access)
+            : this(name, 0, null, access)
         { }
 
         /// <summary>
@@ -92,9 +114,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetHigh()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtSetHighEventPair(this)) < 0)
+            if ((status = Win32.NtSetHighEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -103,9 +125,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetHighWaitLow()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtSetHighWaitLowEventPair(this)) < 0)
+            if ((status = Win32.NtSetHighWaitLowEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -114,9 +136,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetLow()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtSetLowEventPair(this)) < 0)
+            if ((status = Win32.NtSetLowEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -125,9 +147,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void SetLowWaitHigh()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtSetLowWaitHighEventPair(this)) < 0)
+            if ((status = Win32.NtSetLowWaitHighEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -136,9 +158,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void WaitHigh()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtWaitHighEventPair(this)) < 0)
+            if ((status = Win32.NtWaitHighEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -147,9 +169,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void WaitLow()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtWaitLowEventPair(this)) < 0)
+            if ((status = Win32.NtWaitLowEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
     }

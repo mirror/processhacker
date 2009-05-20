@@ -33,6 +33,44 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class ThreadHandle : Win32Handle<ThreadAccess>, IWithToken
     {
+        public static ThreadHandle Create(
+            ThreadAccess access,
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory,
+            ProcessHandle processHandle,
+            out ClientId clientId,
+            ref Context threadContext,
+            ref InitialTeb initialTeb,
+            bool createSuspended
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateThread(
+                    out handle,
+                    access,
+                    ref oa,
+                    processHandle,
+                    out clientId,
+                    ref threadContext,
+                    ref initialTeb,
+                    createSuspended
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new ThreadHandle(handle, true);
+        }
+
         /// <summary>
         /// Creates a thread handle using an existing handle. 
         /// The handle will not be closed automatically.
@@ -51,6 +89,22 @@ namespace ProcessHacker.Native.Objects
         public static ThreadHandle GetCurrent()
         {
             return new ThreadHandle(new IntPtr(-2), false);
+        }
+
+        public static void RegisterTerminationPort(PortHandle portHandle)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtRegisterThreadTerminatePort(portHandle)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public static void TestAlert()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtTestAlert()) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         internal ThreadHandle(IntPtr handle, bool owned)
@@ -95,14 +149,61 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        public ThreadHandle(
+            string name,
+            ObjectFlags objectFlags,
+            DirectoryHandle rootDirectory, 
+            ClientId clientId, 
+            ThreadAccess access
+            )
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                if (clientId.ProcessId == 0 && clientId.ThreadId == 0)
+                {
+                    if ((status = Win32.NtOpenThread(
+                        out handle,
+                        access,
+                        ref oa,
+                        IntPtr.Zero
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+                else
+                {
+                    if ((status = Win32.NtOpenThread(
+                        out handle,
+                        access,
+                        ref oa,
+                        ref clientId
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            this.Handle = handle;
+        }
+
+        public ThreadHandle(string name, ThreadAccess access)
+            : this(name, 0, null, new ClientId(), access)
+        { }
+
         /// <summary>
         /// Puts the thread in an alerted state.
         /// </summary>
         public void Alert()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtAlertThread(this)) < 0)
+            if ((status = Win32.NtAlertThread(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -111,10 +212,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int AlertResume()
         {
-            int status;
+            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtAlertResumeThread(this, out suspendCount)) < 0)
+            if ((status = Win32.NtAlertResumeThread(this, out suspendCount)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return suspendCount;
@@ -134,12 +235,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A THREAD_BASIC_INFORMATION structure.</returns>
         public ThreadBasicInformation GetBasicInformation()
         {
-            int status;
+            NtStatus status;
             ThreadBasicInformation basicInfo = new ThreadBasicInformation();
             int retLen;
 
             if ((status = Win32.NtQueryInformationThread(this, ThreadInformationClass.ThreadBasicInformation,
-                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen)) < 0)
+                ref basicInfo, Marshal.SizeOf(basicInfo), out retLen)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return basicInfo;
@@ -206,12 +307,12 @@ namespace ProcessHacker.Native.Objects
 
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
-            int status;
+            NtStatus status;
             int value;
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, infoClass, out value, sizeof(int), out retLength)) < 0)
+                this, infoClass, out value, sizeof(int), out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return value;
@@ -243,12 +344,12 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A system call number.</returns>
         public unsafe int GetLastSystemCall(out int firstArgument)
         {
-            int status;
+            NtStatus status;
             int* data = stackalloc int[2];
             int retLength;
 
             if ((status = Win32.NtQueryInformationThread(
-                this, ThreadInformationClass.ThreadLastSystemCall, data, sizeof(int) * 2, out retLength)) < 0)
+                this, ThreadInformationClass.ThreadLastSystemCall, data, sizeof(int) * 2, out retLength)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             firstArgument = data[0];
@@ -292,6 +393,24 @@ namespace ProcessHacker.Native.Objects
         public int GetWin32StartAddress()
         {
             return this.GetInformationInt32(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
+        }
+
+        public void Impersonate(ThreadHandle clientThreadHandle, SecurityImpersonationLevel impersonationLevel)
+        {
+            NtStatus status;
+            SecurityQualityOfService securityQos =
+                new SecurityQualityOfService(impersonationLevel, false, false);
+
+            if ((status = Win32.NtImpersonateThread(this, clientThreadHandle, ref securityQos)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public void ImpersonateAnonymous()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtImpersonateAnonymousToken(this)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -348,7 +467,7 @@ namespace ProcessHacker.Native.Objects
 
         public void QueueApc(IntPtr address, IntPtr param1, IntPtr param2, IntPtr param3)
         {
-            int status;
+            NtStatus status;
 
             if ((status = Win32.NtQueueApcThread(
                 this,
@@ -356,7 +475,7 @@ namespace ProcessHacker.Native.Objects
                 param1,
                 param2,
                 param3
-                )) < 0)
+                )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -375,6 +494,20 @@ namespace ProcessHacker.Native.Objects
                 if (!Win32.SetThreadContext(this, ref context))
                     Win32.ThrowLastError();
             }
+        }   
+
+        public void SetCritical(bool critical)
+        {
+            this.SetInformationInt32(ThreadInformationClass.ThreadBreakOnTermination, critical ? 1 : 0);
+        }
+
+        private void SetInformationInt32(ThreadInformationClass infoClass, int value)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtSetInformationThread(
+                this, infoClass, ref value, sizeof(int))) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -392,10 +525,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int Suspend()
         {
-            int status;
+            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtSuspendThread(this, out suspendCount)) < 0)
+            if ((status = Win32.NtSuspendThread(this, out suspendCount)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return suspendCount;
@@ -406,10 +539,10 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int Resume()
         {
-            int status;
+            NtStatus status;
             int suspendCount;
 
-            if ((status = Win32.NtResumeThread(this, out suspendCount)) < 0)
+            if ((status = Win32.NtResumeThread(this, out suspendCount)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             return suspendCount;

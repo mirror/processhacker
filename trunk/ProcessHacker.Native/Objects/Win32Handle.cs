@@ -31,6 +31,56 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class Win32Handle : Win32Handle<int>
     {
+        public static NtStatus WaitAll(ISynchronizable[] objects, bool alertable, long timeout)
+        {
+            return WaitForMultipleObjects(objects, WaitType.WaitAll, alertable, timeout);
+        }
+
+        public static NtStatus WaitAll(ISynchronizable[] objects, long timeout)
+        {
+            return WaitAll(objects, false, timeout);
+        }
+
+        public static NtStatus WaitAll(ISynchronizable[] objects)
+        {
+            return WaitAll(objects, -1);
+        }
+
+        public static NtStatus WaitAny(ISynchronizable[] objects, bool alertable, long timeout)
+        {
+            return WaitForMultipleObjects(objects, WaitType.WaitAny, alertable, timeout);
+        }
+
+        public static NtStatus WaitAny(ISynchronizable[] objects, long timeout)
+        {
+            return WaitAny(objects, false, timeout);
+        }
+
+        public static NtStatus WaitAny(ISynchronizable[] objects)
+        {
+            return WaitAny(objects, -1);
+        }
+
+        private static NtStatus WaitForMultipleObjects(ISynchronizable[] objects, WaitType waitType, bool alertable, long timeout)
+        {
+            NtStatus status;
+            IntPtr[] handles = new IntPtr[objects.Length];
+
+            for (int i = 0; i < objects.Length; i++)
+                handles[i] = objects[i].Handle;
+
+            if ((status = Win32.NtWaitForMultipleObjects(
+                handles.Length,
+                handles,
+                waitType,
+                alertable,
+                ref timeout
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return status;
+        }
+
         /// <summary>
         /// Creates a new, invalid handle. You must set the handle using the Handle property.
         /// </summary>
@@ -206,7 +256,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A string.</returns>
         public string GetHandleName()
         {
-            int status;
+            NtStatus status;
             int retLength;
 
             status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
@@ -217,7 +267,7 @@ namespace ProcessHacker.Native.Objects
                 using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
                 {
                     if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectNameInformation,
-                        oniMem, oniMem.Size, out retLength)) < 0)
+                        oniMem, oniMem.Size, out retLength)) >= NtStatus.Error)
                         Win32.ThrowLastError(status);
 
                     ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
@@ -238,9 +288,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void MakePermanent()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtMakePermanentObject(this)) < 0)
+            if ((status = Win32.NtMakePermanentObject(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -250,9 +300,9 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public void MakeTemporary()
         {
-            int status;
+            NtStatus status;
 
-            if ((status = Win32.NtMakeTemporaryObject(this)) < 0)
+            if ((status = Win32.NtMakeTemporaryObject(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
         }
 
@@ -270,26 +320,36 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
-        public int SignalAndWait(Win32Handle waitObject, bool alertable, long timeout)
+        public NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout)
         {
-            return Win32.NtSignalAndWaitForSingleObject(this, waitObject, alertable, ref timeout);
+            return Win32.NtSignalAndWaitForSingleObject(this, waitObject.Handle, alertable, ref timeout);
         }
 
         /// <summary>
         /// Waits for the object.
         /// </summary>
-        public WaitResult Wait()
+        public NtStatus Wait()
         {
-            return Win32.WaitForSingleObject(this, 0xffffffff);
+            return this.Wait(-1);
         }
 
-        /// <summary>
-        /// Waits for the object with a timeout.
-        /// </summary>
-        /// <param name="Timeout">The timeout of the wait.</param>
-        public WaitResult Wait(uint timeout)
+        public NtStatus Wait(long timeout)
         {
-            return Win32.WaitForSingleObject(this, timeout);
+            return this.Wait(false, timeout);
+        }
+
+        public NtStatus Wait(bool alertable, long timeout)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtWaitForSingleObject(
+                this,
+                alertable,
+                ref timeout
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return status;
         }
 
         /// <summary>

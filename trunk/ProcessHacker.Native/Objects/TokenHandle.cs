@@ -353,7 +353,7 @@ namespace ProcessHacker.Native.Objects
 
                 TokenUser user = data.ReadStruct<TokenUser>();
 
-                return new WindowsSid(user.User.SID);
+                return new WindowsSid(user.User.Sid);
             }
         }
 

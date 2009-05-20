@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 

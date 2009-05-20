@@ -39,7 +39,7 @@ namespace ProcessHacker.Components
             {
                 ListViewItem item = listGroups.Items.Add(new ListViewItem());
 
-                item.Text = Windows.GetAccountName(groups.Groups.Groups[i].SID, Properties.Settings.Default.ShowAccountDomains);
+                item.Text = Windows.GetAccountName(groups.Groups.Groups[i].Sid, Properties.Settings.Default.ShowAccountDomains);
                 item.BackColor = GetAttributeColor(groups.Groups.Groups[i].Attributes);
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
                     GetAttributeString(groups.Groups.Groups[i].Attributes)));

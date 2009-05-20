@@ -322,6 +322,7 @@ namespace ProcessHacker.Components
         {
             if (type == "Token" || type == "Process" || type == "File" || 
                 type == "Event" || type == "Mutant" || type == "Section" || 
+                type == "Semaphore" || 
                 type == "DLL" || type == "Mapped File")
                 return true;
             else
@@ -390,28 +391,22 @@ namespace ProcessHacker.Components
                 }
                 else if (type == "Event")
                 {
-                    var eventHandle = new Win32Handle<EventAccess>(phandle, handle, EventAccess.All);
-                    EventBasicInformation ebi;
-                    int retLen;
-
-                    Win32.NtQueryEvent(eventHandle, EventInformationClass.EventBasicInformation,
-                        out ebi, Marshal.SizeOf(typeof(EventBasicInformation)), out retLen);
+                    var dupHandle = new Win32Handle<EventAccess>(phandle, handle, EventAccess.All);
+                    var eventHandle = EventHandle.FromHandle(dupHandle);
+                    EventBasicInformation ebi = eventHandle.GetBasicInformation();
 
                     InformationBox info = new InformationBox(
                         "Type: " + ebi.EventType.ToString().Replace("Event", "") +
                         "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
 
                     info.ShowDialog();
-                    eventHandle.Dispose();
+                    dupHandle.Dispose();
                 }
                 else if (type == "Mutant")
                 {
-                    var mutantHandle = new Win32Handle<MutantAccess>(phandle, handle, MutantAccess.All);
-                    MutantBasicInformation mbi;
-                    int retLen;
-
-                    Win32.NtQueryMutant(mutantHandle, MutantInformationClass.MutantBasicInformation,
-                        out mbi, Marshal.SizeOf(typeof(MutantBasicInformation)), out retLen);
+                    var dupHandle = new Win32Handle<MutantAccess>(phandle, handle, MutantAccess.All);
+                    var mutantHandle = MutantHandle.FromHandle(dupHandle);
+                    MutantBasicInformation mbi = mutantHandle.GetBasicInformation();
 
                     InformationBox info = new InformationBox(
                         "Count: " + mbi.CurrentCount +
@@ -419,33 +414,47 @@ namespace ProcessHacker.Components
                         "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
 
                     info.ShowDialog();
-                    mutantHandle.Dispose();
+                    dupHandle.Dispose();
                 }
                 else if (type == "Section")
                 {
-                    var sectionHandle = new Win32Handle<SectionAccess>(phandle, handle, SectionAccess.Query);
+                    var dupHandle = new Win32Handle<SectionAccess>(phandle, handle, SectionAccess.Query);
+                    var sectionHandle = SectionHandle.FromHandle(dupHandle);
                     SectionBasicInformation sbi;
-                    SectionImageInformation sii;
-                    int retLen;
-                    int retVal;
+                    SectionImageInformation sii = new SectionImageInformation();
+                    bool haveImageInfo = true;
 
-                    Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionBasicInformation,
-                        out sbi, Marshal.SizeOf(typeof(SectionBasicInformation)), out retLen);
-                    retVal = Win32.NtQuerySection(sectionHandle, SectionInformationClass.SectionImageInformation,
-                        out sii, Marshal.SizeOf(typeof(SectionImageInformation)), out retLen);
+                    sbi = sectionHandle.GetBasicInformation();
+
+                    try { sii = sectionHandle.GetImageInformation(); }
+                    catch { haveImageInfo = false; }
 
                     InformationBox info = new InformationBox(
                         "Attributes: " + Misc.FlagsToString(typeof(SectionAttributes), (long)sbi.SectionAttributes) +
                         "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" +
 
-                        (retVal == 0 ? ("\r\n\r\nImage Entry Point: 0x" + sii.EntryPoint.ToString("x8") +
+                        (haveImageInfo ? ("\r\n\r\nImage Entry Point: 0x" + sii.TransferAddress.ToString("x8") +
                         "\r\nImage Machine Type: " + ((PE.MachineType)sii.ImageMachineType).ToString() +
                         "\r\nImage Characteristics: " + ((PE.ImageCharacteristics)sii.ImageCharacteristics).ToString() +
                         "\r\nImage Subsystem: " + ((PE.ImageSubsystem)sii.ImageSubsystem).ToString() +
                         "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
 
                     info.ShowDialog();
-                    sectionHandle.Dispose();
+                    dupHandle.Dispose();
+                }
+                else if (type == "Semaphore")
+                {
+                    var dupHandle = new Win32Handle<SemaphoreAccess>(phandle, handle, SemaphoreAccess.QueryState);
+                    var semaphoreHandle = SemaphoreHandle.FromHandle(dupHandle);
+                    SemaphoreBasicInformation sbi = semaphoreHandle.GetBasicInformation();
+
+                    InformationBox info = new InformationBox(
+                        "Current Count: " + sbi.CurrentCount.ToString() +
+                        "\r\nMaximum Count: " + sbi.MaximumCount.ToString()
+                        );
+
+                    info.ShowDialog();
+                    dupHandle.Dispose();
                 }
             }
         }
@@ -465,9 +474,7 @@ namespace ProcessHacker.Components
                         using (ProcessHandle process =
                                new ProcessHandle(_pid, Program.MinProcessGetHandleInformationRights))
                         {
-                            Win32.DuplicateObject(process.Handle, handle, 0, 0,
-                                0x1 // DUPLICATE_CLOSE_SOURCE
-                                );
+                            Win32.DuplicateObject(process.Handle, handle, 0, 0, DuplicateOptions.CloseSource);
                         }
                     }
                     catch (Exception ex)

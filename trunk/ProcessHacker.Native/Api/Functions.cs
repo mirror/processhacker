@@ -117,9 +117,6 @@ namespace ProcessHacker.Native.Api
 
         #region Error Handling
 
-        [DllImport("ntdll.dll")]
-        public static extern int RtlNtStatusToDosError([In] int Status);
-
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int FormatMessage(
             [In] int Flags,
@@ -752,12 +749,12 @@ namespace ProcessHacker.Native.Api
         #region LSA
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaFreeMemory(
+        public static extern NtStatus LsaFreeMemory(
             [In] IntPtr Memory
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaEnumerateAccountsWithUserRight(
+        public static extern NtStatus LsaEnumerateAccountsWithUserRight(
             [In] IntPtr PolicyHandle, 
             [In] IntPtr UserRights,
             [Out] out IntPtr SIDs,
@@ -765,7 +762,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaAddAccountRights(
+        public static extern NtStatus LsaAddAccountRights(
             [In] IntPtr PolicyHandle, 
             [In] IntPtr AccountSid,
             [In] UnicodeString[] UserRights, 
@@ -773,7 +770,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaOpenPolicy(
+        public static extern NtStatus LsaOpenPolicy(
             [In] IntPtr SystemName, 
             [In] ref ObjectAttributes ObjectAttributes,
             [In] PolicyAccess DesiredAccess,
@@ -781,7 +778,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern int LsaClose(
+        public static extern NtStatus LsaClose(
             [In] IntPtr Handle
             );
 

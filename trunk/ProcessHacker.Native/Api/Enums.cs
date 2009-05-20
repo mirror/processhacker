@@ -53,21 +53,6 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum ContextFlags : int
-    {
-        I386 = 0x00010000,
-        I486 = 0x00010000,
-        Control = I386 | 0x00000001,
-        Integer = I386 | 0x00000002,
-        Segments = I386 | 0x00000004,
-        FloatingPoint = I386 | 0x00000008,
-        DebugRegisters = I386 | 0x00000010,
-        ExtendedRegisters = I386 | 0x00000020,
-        Full = Control | Integer | Segments,
-        All = Control | Integer | Segments | FloatingPoint | DebugRegisters | ExtendedRegisters
-    }
-
-    [Flags]
     public enum CreationFlags : uint
     {
         DebugProcess = 0x1,
@@ -102,12 +87,6 @@ namespace ProcessHacker.Native.Api
         CreateIgnoreSystemDefault = 0x80000000
     }
 
-    [Flags]
-    public enum DebugObjectFlags : uint
-    {
-        KillOnClose = 0x1
-    }
-
     public enum DepFlags : uint
     {
         Disable = 0x00000000,
@@ -123,17 +102,6 @@ namespace ProcessHacker.Native.Api
         OptOut
     }
 
-    public enum EventInformationClass : int
-    {
-        EventBasicInformation
-    }
-
-    public enum EventType : int
-    {
-        NotificationEvent,
-        SynchronizationEvent
-    }
-
     [Flags]
     public enum ExitWindowsFlags : uint
     {
@@ -147,18 +115,43 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum HandleFlags : byte
-    {
-        ProtectFromClose = 0x1,
-        Inherit = 0x2
-    }
-
-    [Flags]
     public enum HeapEntry32Flags : int
     {
         Fixed = 0x00000001,
         Free = 0x00000002,
         Moveable = 0x00000004
+    }
+
+    [Flags]
+    public enum JobObjectLimitFlags : uint
+    {
+        WorkingSet = 0x1,
+        ProcessTime = 0x2,
+        JobTime = 0x4,
+        ActiveProcess = 0x8,
+        Affinity = 0x10,
+        PriorityClass = 0x20,
+        PreserveJobTime = 0x40,
+        SchedulingClass = 0x80,
+        ProcessMemory = 0x100,
+        JobMemory = 0x200,
+        DieOnUnhandledException = 0x400,
+        BreakawayOk = 0x800,
+        SilentBreakawayOk = 0x1000,
+        KillOnJobClose = 0x2000,
+    }
+
+    [Flags]
+    public enum JobObjectBasicUiRestrictions : uint
+    {
+        Handles = 0x1,
+        ReadClipboard = 0x2,
+        WriteClipboard = 0x4,
+        SystemParameters = 0x8,
+        DisplaySettings = 0x10,
+        GlobalAtoms = 0x20,
+        Desktop = 0x40,
+        ExitWindows = 0x80
     }
 
     public enum KWaitReason : int
@@ -236,32 +229,6 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
-    public enum MemExecuteOptions : int
-    {
-        ExecuteDisable = 0x1,
-        ExecuteEnable = 0x2,
-        DisableThunkEmulation = 0x4,
-        Permanent = 0x8
-    }
-
-    [Flags]
-    public enum MemoryProtection : uint
-    {
-        AccessDenied = 0x0,
-        Execute = 0x10,
-        ExecuteRead = 0x20,
-        ExecuteReadWrite = 0x40,
-        ExecuteWriteCopy = 0x80,
-        Guard = 0x100,
-        NoCache = 0x200,
-        WriteCombine = 0x400,
-        NoAccess = 0x01,
-        ReadOnly = 0x02,
-        ReadWrite = 0x04,
-        WriteCopy = 0x08
-    }
-
-    [Flags]
     public enum MemoryState : uint
     {
         Commit = 0x1000,
@@ -278,7 +245,6 @@ namespace ProcessHacker.Native.Api
         Release = 0x8000,
         Free = 0x10000,
         Reset = 0x80000,
-        TopDown = 0x100000,
         Physical = 0x400000,
         LargePages = 0x20000000
     }
@@ -306,34 +272,6 @@ namespace ProcessHacker.Native.Api
         DeleteTcb
     }
 
-    public enum MutantInformationClass : int
-    {
-        MutantBasicInformation
-    }
-
-    public enum ObjectFlags : uint
-    {
-        Inherit = 0x2,
-        Permanent = 0x10,
-        Exclusive = 0x20,
-        CaseInsensitive = 0x40,
-        OpenIf = 0x80,
-        OpenLink = 0x100,
-        KernelHandle = 0x200,
-        ForceAccessCheck = 0x400,
-        ValidAttributes = 0x7f2
-    }
-
-    public enum ObjectInformationClass : int
-    {
-        ObjectBasicInformation = 0,
-        ObjectNameInformation = 1,
-        ObjectTypeInformation = 2,
-        ObjectTypesInformation = 3,
-        ObjectHandleFlagInformation = 4,
-        ObjectSessionInformation = 5
-    }
-
     public enum PeekMessageFlags : int
     {
         NoRemove = 0,
@@ -352,58 +290,6 @@ namespace ProcessHacker.Native.Api
         NonPagedPoolCacheAlignedMustS
     }
 
-    public enum ProcessInformationClass : int
-    {
-        ProcessBasicInformation, // 0
-        ProcessQuotaLimits,
-        ProcessIoCounters,
-        ProcessVmCounters,
-        ProcessTimes,
-        ProcessBasePriority,
-        ProcessRaisePriority,
-        ProcessDebugPort,
-        ProcessExceptionPort,
-        ProcessAccessToken,
-        ProcessLdtInformation, // 10
-        ProcessLdtSize,
-        ProcessDefaultHardErrorMode,
-        ProcessIoPortHandlers,
-        ProcessPooledUsageAndLimits,
-        ProcessWorkingSetWatch,
-        ProcessUserModeIOPL,
-        ProcessEnableAlignmentFaultFixup,
-        ProcessPriorityClass,
-        ProcessWx86Information,
-        ProcessHandleCount, // 20
-        ProcessAffinityMask,
-        ProcessPriorityBoost,
-        ProcessDeviceMap,
-        ProcessSessionInformation,
-        ProcessForegroundInformation,
-        ProcessWow64Information,
-        ProcessImageFileName,
-        ProcessLUIDDeviceMapsEnabled,
-        ProcessBreakOnTermination,
-        ProcessDebugObjectHandle, // 30
-        ProcessDebugFlags,
-        ProcessHandleTracing,
-        ProcessIoPriority,
-        ProcessExecuteFlags,
-        ProcessResourceManagement,
-        ProcessCookie,
-        ProcessImageInformation,
-        ProcessCycleTime,
-        ProcessPagePriority,
-        ProcessInstrumentationCallback, // 40
-        ProcessThreadStackAllocation,
-        ProcessWorkingSetWatchEx,
-        ProcessImageFileNameWin32,
-        ProcessImageFileMapping,
-        ProcessAffinityUpdateMode,
-        ProcessMemoryAllocationMode,
-        MaxProcessInfoClass
-    }
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct ProfileInformation
     {
@@ -415,6 +301,35 @@ namespace ProcessHacker.Native.Api
         public string ServerName;
         public string PolicyPath;
         public int ProfileHandle;
+    }
+
+    [Flags]
+    public enum RunFileDialogFlags : uint
+    {
+        /// <summary>
+        /// Don't use any of the flags (only works alone)
+        /// </summary>
+        None = 0x0000,
+        /// <summary>
+        /// Removes the browse button
+        /// </summary>
+        NoBrowse = 0x0001,
+        /// <summary>
+        /// No default item selected
+        /// </summary>
+        NoDefault = 0x0002,
+        /// <summary>
+        /// Calculates the working directory from the file name
+        /// </summary>
+        CalcDirectory = 0x0004,
+        /// <summary>
+        /// Removes the edit box label
+        /// </summary>
+        NoLabel = 0x0008,
+        /// <summary>
+        /// Removes the seperate memory space checkbox (Windows NT only)
+        /// </summary>
+        NoSeparateMemory = 0x0020
     }
 
     public enum ScActionType : int
@@ -435,38 +350,6 @@ namespace ProcessHacker.Native.Api
         UsedForAccess = 0x80000000
     }
 
-    [Flags]
-    public enum SectionAttributes : uint
-    {
-        File = 0x800000,
-        Image = 0x1000000,
-        Reserve = 0x4000000,
-        Commit = 0x8000000,
-        NoCache = 0x10000000,
-        Global = 0x20000000,
-        LargePages = 0x80000000
-    }
-
-    [Flags]
-    public enum SectionInformationClass : int
-    {
-        SectionBasicInformation,
-        SectionImageInformation
-    }
-
-    public enum SecurityImpersonationLevel : int
-    {
-        SecurityAnonymous,
-        SecurityIdentification,
-        SecurityImpersonation,
-        SecurityDelegation
-    }
-
-    public enum SemaphoreInformationClass : int
-    {
-        SemaphoreBasicInformation
-    }
-
     public enum ShowWindowType : uint
     {
         Hide = 0,
@@ -484,43 +367,6 @@ namespace ProcessHacker.Native.Api
         ShowDefault = 10,
         ForceMinimize = 11,
         Max = 11
-    }
-
-    public enum SidAttributes : uint
-    {
-        Mandatory = 0x00000001,
-        EnabledByDefault = 0x00000002,
-        Enabled = 0x00000004,
-        Owner = 0x00000008,
-        UseForDenyOnly = 0x00000010,
-        Integrity = 0x00000020,
-        IntegrityEnabled = 0x00000040,
-        LogonId = 0xc0000000,
-        Resource = 0x20000000
-    }
-
-    public enum SidNameUse : int
-    {
-        User = 1,
-        Group,
-        Domain,
-        Alias,
-        WellKnownGroup,
-        DeletedAccount,
-        Invalid,
-        Unknown,
-        Computer,
-        Label
-    }
-
-    [Flags]
-    public enum SiRequested : uint
-    {
-        OwnerSecurityInformation = 0x1,
-        GroupSecurityInformation = 0x2,
-        DaclSecurityInformation = 0x4,
-        SaclSecurityInformation = 0x8,
-        LabelSecurityInformation = 0x10
     }
 
     [Flags]
@@ -620,117 +466,6 @@ namespace ProcessHacker.Native.Api
         ParentWin = 0x80,
     }
 
-    public enum SystemInformationClass : int
-    {
-        SystemBasicInformation,
-        SystemProcessorInformation,
-        SystemPerformanceInformation,
-        SystemTimeOfDayInformation,
-        SystemPathInformation,
-        SystemProcessInformation,
-        SystemCallCountInformation,
-        SystemDeviceInformation,
-        SystemProcessorPerformanceInformation,
-        SystemFlagsInformation,
-        SystemCallTimeInformation, // 10
-        SystemModuleInformation,
-        SystemLocksInformation,
-        SystemStackTraceInformation,
-        SystemPagedPoolInformation,
-        SystemNonPagedPoolInformation,
-        SystemHandleInformation,
-        SystemObjectInformation,
-        SystemPageFileInformation,
-        SystemVdmInstemulInformation,
-        SystemVdmBopInformation, // 20
-        SystemFileCacheInformation,
-        SystemPoolTagInformation,
-        SystemInterruptInformation,
-        SystemDpcBehaviorInformation,
-        SystemFullMemoryInformation,
-        SystemLoadGdiDriverInformation,
-        SystemUnloadGdiDriverInformation,
-        SystemTimeAdjustmentInformation,
-        SystemSummaryMemoryInformation,
-        SystemMirrorMemoryInformation, // 30
-        SystemPerformanceTraceInformation,
-        SystemCrashDumpInformation,
-        SystemExceptionInformation,
-        SystemCrashDumpStateInformation,
-        SystemKernelDebuggerInformation,
-        SystemContextSwitchInformation,
-        SystemRegistryQuotaInformation,
-        SystemExtendServiceTableInformation, // used to be SystemLoadAndCallImage
-        SystemPrioritySeparation,
-        SystemVerifierAddDriverInformation, // 40
-        SystemVerifierRemoveDriverInformation,
-        SystemProcessorIdleInformation,
-        SystemLegacyDriverInformation,
-        SystemCurrentTimeZoneInformation,
-        SystemLookasideInformation,
-        SystemTimeSlipNotification,
-        SystemSessionCreate,
-        SystemSessionDetach,
-        SystemSessionInformation,
-        SystemRangeStartInformation, // 50
-        SystemVerifierInformation,
-        SystemVerifierThunkExtend,
-        SystemSessionProcessInformation,
-        SystemLoadGdiDriverInSystemSpace,
-        SystemNumaProcessorMap,
-        SystemPrefetcherInformation,
-        SystemExtendedProcessInformation,
-        SystemRecommendedSharedDataAlignment,
-        SystemComPlusPackage,
-        SystemNumaAvailableMemory, // 60
-        SystemProcessorPowerInformation,
-        SystemEmulationBasicInformation,
-        SystemEmulationProcessorInformation,
-        SystemExtendedHandleInformation,
-        SystemLostDelayedWriteInformation,
-        SystemBigPoolInformation,
-        SystemSessionPoolTagInformation,
-        SystemSessionMappedViewInformation,
-        SystemHotpatchInformation,
-        SystemObjectSecurityMode, // 70
-        SystemWatchdogTimerHandler, // doesn't seem to be implemented
-        SystemWatchdogTimerInformation,
-        SystemLogicalProcessorInformation,
-        SystemWow64SharedInformation,
-        SystemRegisterFirmwareTableInformationHandler,
-        SystemFirmwareTableInformation,
-        SystemModuleInformationEx,
-        SystemVerifierTriageInformation,
-        SystemSuperfetchInformation,
-        SystemMemoryListInformation, // 80
-        SystemFileCacheInformationEx,
-        SystemNotImplemented19,
-        SystemProcessorDebugInformation,
-        SystemVerifierInformation2,
-        SystemNotImplemented20,
-        SystemRefTraceInformation,
-        SystemSpecialPoolTag, // MmSpecialPoolTag, then MmSpecialPoolCatchOverruns != 0
-        SystemProcessImageName,
-        SystemNotImplemented21,
-        SystemBootEnvironmentInformation, // 90
-        SystemEnlightenmentInformation,
-        SystemVerifierInformationEx,
-        SystemNotImplemented22,
-        SystemNotImplemented23,
-        SystemCovInformation,
-        SystemNotImplemented24,
-        SystemNotImplemented25,
-        SystemPartitionInformation,
-        SystemSystemDiskInformation, // this and SystemPartitionInformation both call IoQuerySystemDeviceName
-        SystemPerformanceDistributionInformation, // 100
-        SystemNumaProximityNodeInformation,
-        SystemTimeZoneInformation2,
-        SystemCodeIntegrityInformation,
-        SystemNotImplemented26,
-        SystemUnknownInformation, // No symbols for this case, very strange...
-        SystemVaInformation // 106, calls MmQuerySystemVaInformation
-    }
-
     public enum TcpTableClass : int
     {
         BasicListener,
@@ -742,96 +477,6 @@ namespace ProcessHacker.Native.Api
         OwnerModuleListener,
         OwnerModuleConnections,
         OwnerModuleAll
-    }
-
-    public enum ThreadInformationClass : uint
-    {
-        ThreadBasicInformation,
-        ThreadTimes,
-        ThreadPriority,
-        ThreadBasePriority,
-        ThreadAffinityMask,
-        ThreadImpersonationToken,
-        ThreadDescriptorTableEntry,
-        ThreadEnableAlignmentFaultFixup,
-        ThreadEventPair,
-        ThreadQuerySetWin32StartAddress,
-        ThreadZeroTlsCell,
-        ThreadPerformanceCount,
-        ThreadAmILastThread,
-        ThreadIdealProcessor,
-        ThreadPriorityBoost,
-        ThreadSetTlsArrayAddress,
-        ThreadIsIoPending,
-        ThreadHideFromDebugger,
-        ThreadBreakOnTermination,
-        ThreadSwitchLegacyState,
-        ThreadIsTerminated,
-        ThreadLastSystemCall,
-        ThreadIoPriority,
-        ThreadCycleTime,
-        ThreadPagePriority,
-        ThreadActualBasePriority,
-        ThreadTebInformation,
-        ThreadCSwitchMon,
-        MaxThreadInfoClass
-    }
-
-    public enum TimerInformationClass : int
-    {
-        TimerBasicInformation
-    }
-
-    public enum TimerType : int
-    {
-        NotificationTimer,
-        SynchronizationTimer
-    }
-
-    public enum TokenElevationType : int
-    {
-        Default = 1,
-        Full,
-        Limited
-    }
-
-    public enum TokenInformationClass
-    {
-        TokenUser = 1,
-        TokenGroups,
-        TokenPrivileges,
-        TokenOwner,
-        TokenPrimaryGroup,
-        TokenDefaultDacl,
-        TokenSource,
-        TokenType,
-        TokenImpersonationLevel,
-        TokenStatistics,
-        TokenRestrictedSids,
-        TokenSessionId,
-        TokenGroupsAndPrivileges,
-        TokenSessionReference,
-        TokenSandBoxInert,
-        TokenAuditPolicy,
-        TokenOrigin,
-        TokenElevationType,
-        TokenLinkedToken,
-        TokenElevation,
-        TokenHasRestrictions,
-        TokenAccessInformation,
-        TokenVirtualizationAllowed,
-        TokenVirtualizationEnabled,
-        TokenIntegrityLevel,
-        TokenUIAccess,
-        TokenMandatoryPolicy,
-        TokenLogonSid,
-        MaxTokenInfoClass  // MaxTokenInfoClass should always be the last enum
-    }
-
-    public enum TokenType : int
-    {
-        Primary = 1,
-        Impersonation
     }
 
     public enum UipiFilterFlag : uint
@@ -852,7 +497,7 @@ namespace ProcessHacker.Native.Api
         Object0 = 0x0,
         Abandoned = 0x80,
         Timeout = 0x102,
-        Failed = 0xFFFFFFFF
+        Failed = 0xffffffff
     }
 
     [Flags]
@@ -1177,33 +822,5 @@ namespace ProcessHacker.Native.Api
         OutgoingBytes,
         IncomingFrames,
         OutgoingFrames
-    }
-    [Flags]
-    public enum RunFileDialogFlags : uint
-    {
-        /// <summary>
-        /// Don't use any of the flags (only works alone)
-        /// </summary>
-        None = 0x0000,
-        /// <summary>
-        /// Removes the browse button
-        /// </summary>
-        NoBrowse = 0x0001,
-        /// <summary>
-        /// No default item selected
-        /// </summary>
-        NoDefault = 0x0002,
-        /// <summary>
-        /// Calculates the working directory from the file name
-        /// </summary>
-        CalcDirectory = 0x0004,
-        /// <summary>
-        /// Removes the edit box label
-        /// </summary>
-        NoLabel = 0x0008,
-        /// <summary>
-        /// Removes the seperate memory space checkbox (Windows NT only)
-        /// </summary>
-        NoSeperateMemory = 0x0020
     }
 }

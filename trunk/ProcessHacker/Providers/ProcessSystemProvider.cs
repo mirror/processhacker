@@ -880,7 +880,7 @@ namespace ProcessHacker
                                                 if ((groups.Groups.Groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
                                                 {
                                                     item.Integrity = Windows.GetAccountName(
-                                                        groups.Groups.Groups[i].SID, false).Replace(" Mandatory Level", "");
+                                                        groups.Groups.Groups[i].Sid, false).Replace(" Mandatory Level", "");
 
                                                     if (item.Integrity == "Untrusted")
                                                         item.IntegrityLevel = 0;

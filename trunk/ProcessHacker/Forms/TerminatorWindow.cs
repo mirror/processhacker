@@ -137,7 +137,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        Win32.DuplicateObject(phandle, new IntPtr(i), 0, 0, 0x1);
+                        Win32.DuplicateObject(phandle, new IntPtr(i), 0, 0, DuplicateOptions.CloseSource);
                     }
                     catch
                     { }

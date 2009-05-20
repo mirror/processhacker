@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+ * Process Hacker - 
+ *   directory handle
+ *
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
@@ -24,18 +46,18 @@ namespace ProcessHacker.Native.Objects
 
         public DirectoryHandle Create(DirectoryAccess access, string name)
         {
-            return this.Create(access, name, null);
+            return this.Create(access, name, 0, null);
         }
 
-        public DirectoryHandle Create(DirectoryAccess access, string name, DirectoryHandle rootDirectory)
+        public DirectoryHandle Create(DirectoryAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtCreateDirectoryObject(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtCreateDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -50,15 +72,15 @@ namespace ProcessHacker.Native.Objects
             : base(handle, owned)
         { }
 
-        public DirectoryHandle(string name, DirectoryHandle rootDirectory, DirectoryAccess access)
+        public DirectoryHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DirectoryAccess access)
         {
-            int status;
-            ObjectAttributes oa = ObjectAttributes.Create(name, 0, rootDirectory);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
             try
             {
-                if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) < 0)
+                if ((status = Win32.NtOpenDirectoryObject(out handle, access, ref oa)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
             }
             finally
@@ -70,7 +92,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         public DirectoryHandle(string name, DirectoryAccess access)
-            : this(name, null, access)
+            : this(name, 0, null, access)
         { }
 
         /// <summary>
@@ -79,7 +101,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An array of object entries.</returns>
         public ObjectEntry[] Query()
         {
-            int status;
+            NtStatus status;
             int context = 0;
             int retLength;
             var objectList = new List<ObjectEntry>();
@@ -87,7 +109,7 @@ namespace ProcessHacker.Native.Objects
             using (var data = new MemoryAlloc(0x400))
             {
                 // NtQueryDirectoryObject isn't very nice.
-                while ((uint)(status = Win32.NtQueryDirectoryObject(
+                while ((status = Win32.NtQueryDirectoryObject(
                     this,
                     data,
                     data.Size,
@@ -95,7 +117,7 @@ namespace ProcessHacker.Native.Objects
                     false,
                     ref context,
                     out retLength
-                    )) == Win32.STATUS_INFO_LENGTH_MISMATCH)
+                    )) == NtStatus.InfoLengthMismatch)
                 {
                     if (data.Size > 16 * 1024 * 1024)
                         Win32.ThrowLastError(status);
