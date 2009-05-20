@@ -122,80 +122,6 @@ namespace ProcessHacker.Native.Api
         Moveable = 0x00000004
     }
 
-    [Flags]
-    public enum JobObjectLimitFlags : uint
-    {
-        WorkingSet = 0x1,
-        ProcessTime = 0x2,
-        JobTime = 0x4,
-        ActiveProcess = 0x8,
-        Affinity = 0x10,
-        PriorityClass = 0x20,
-        PreserveJobTime = 0x40,
-        SchedulingClass = 0x80,
-        ProcessMemory = 0x100,
-        JobMemory = 0x200,
-        DieOnUnhandledException = 0x400,
-        BreakawayOk = 0x800,
-        SilentBreakawayOk = 0x1000,
-        KillOnJobClose = 0x2000,
-    }
-
-    [Flags]
-    public enum JobObjectBasicUiRestrictions : uint
-    {
-        Handles = 0x1,
-        ReadClipboard = 0x2,
-        WriteClipboard = 0x4,
-        SystemParameters = 0x8,
-        DisplaySettings = 0x10,
-        GlobalAtoms = 0x20,
-        Desktop = 0x40,
-        ExitWindows = 0x80
-    }
-
-    public enum KWaitReason : int
-    {
-        Executive = 0,
-        FreePage = 1,
-        PageIn = 2,
-        PoolAllocation = 3,
-        DelayExecution = 4,
-        Suspended = 5,
-        UserRequest = 6,
-        WrExecutive = 7,
-        WrFreePage = 8,
-        WrPageIn = 9,
-        WrPoolAllocation = 10,
-        WrDelayExecution = 11,
-        WrSuspended = 12,
-        WrUserRequest = 13,
-        WrEventPair = 14,
-        WrQueue = 15,
-        WrLpcReceive = 16,
-        WrLpcReply = 17,
-        WrVirtualMemory = 18,
-        WrPageOut = 19,
-        WrRendezvous = 20,
-        Spare2 = 21,
-        Spare3 = 22,
-        Spare4 = 23,
-        Spare5 = 24,
-        WrCalloutStack = 25,
-        WrKernel = 26,
-        WrResource = 27,
-        WrPushLock = 28,
-        WrMutex = 29,
-        WrQuantumEnd = 30,
-        WrDispatchInt = 31,
-        WrPreempted = 32,
-        WrYieldExecution = 33,
-        WrFastMutex = 34,
-        WrGuardedMutex = 35,
-        WrRundown = 36,
-        MaximumWaitReason = 37
-    }
-
     public enum LogonFlags : uint
     {
         LogonWithProfile = 1,
@@ -327,7 +253,7 @@ namespace ProcessHacker.Native.Api
         /// </summary>
         NoLabel = 0x0008,
         /// <summary>
-        /// Removes the seperate memory space checkbox (Windows NT only)
+        /// Removes the separate memory space checkbox (Windows NT only)
         /// </summary>
         NoSeparateMemory = 0x0020
     }
