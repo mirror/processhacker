@@ -34,6 +34,11 @@
 #include <windows.h>
 #include <stdlib.h>
 
+#ifndef LOGICAL
+#define LOGICAL ULONG
+#define PLOGICAL PULONG
+#endif
+
 #ifndef STATUS_SUCCESS
 #define STATUS_SUCCESS (0)
 #endif

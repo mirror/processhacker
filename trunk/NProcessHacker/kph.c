@@ -630,3 +630,96 @@ NTSTATUS KphSetHandleGrantedAccess(
         NULL
         );
 }
+
+NTSTATUS KphProtectAdd(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    BOOLEAN AllowKernelMode,
+    ACCESS_MASK ProcessAllowMask,
+    ACCESS_MASK ThreadAllowMask
+    )
+{
+    struct
+    {
+        HANDLE ProcessHandle;
+        LOGICAL AllowKernelMode;
+        ACCESS_MASK ProcessAllowMask;
+        ACCESS_MASK ThreadAllowMask;
+    } args;
+
+    args.ProcessHandle = ProcessHandle;
+    args.AllowKernelMode = AllowKernelMode;
+    args.ProcessAllowMask = ProcessAllowMask;
+    args.ThreadAllowMask = ThreadAllowMask;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_PROTECTADD,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+}
+
+NTSTATUS KphProtectRemove(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle
+    )
+{
+    struct
+    {
+        HANDLE ProcessHandle;
+    } args;
+
+    args.ProcessHandle = ProcessHandle;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_PROTECTREMOVE,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+}
+
+NTSTATUS KphProtectQuery(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    PBOOLEAN AllowKernelMode,
+    PACCESS_MASK ProcessAllowMask,
+    PACCESS_MASK ThreadAllowMask
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    struct
+    {
+        HANDLE ProcessHandle;
+        PLOGICAL AllowKernelMode;
+        PACCESS_MASK ProcessAllowMask;
+        PACCESS_MASK ThreadAllowMask;
+    } args;
+    LOGICAL allowKernelMode;
+
+    args.ProcessHandle = ProcessHandle;
+    args.AllowKernelMode = &allowKernelMode;
+    args.ProcessAllowMask = ProcessAllowMask;
+    args.ThreadAllowMask = ThreadAllowMask;
+
+    status = KphpDeviceIoControl(
+        KphHandle,
+        KPH_PROTECTQUERY,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+
+    *AllowKernelMode = (BOOLEAN)allowKernelMode;
+
+    return status;
+}

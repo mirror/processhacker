@@ -228,4 +228,25 @@ NPHAPI NTSTATUS KphSetHandleGrantedAccess(
     ACCESS_MASK GrantedAccess
     );
 
+NTSTATUS KphProtectAdd(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    BOOLEAN AllowKernelMode,
+    ACCESS_MASK ProcessAllowMask,
+    ACCESS_MASK ThreadAllowMask
+    );
+
+NTSTATUS KphProtectRemove(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle
+    );
+
+NTSTATUS KphProtectQuery(
+    HANDLE KphHandle,
+    HANDLE ProcessHandle,
+    PBOOLEAN AllowKernelMode,
+    PACCESS_MASK ProcessAllowMask,
+    PACCESS_MASK ThreadAllowMask
+    );
+
 #endif
