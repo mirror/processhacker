@@ -393,6 +393,98 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct Peb
+    {
+        [MarshalAs(UnmanagedType.I1)]
+        public bool InheritedAddressSpace;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool ReadImageFileExecOptions;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool BeingDebugged;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool BitField;
+        public IntPtr Mutant;
+
+        public IntPtr ImageBaseAddress;
+        public IntPtr Ldr; // ptr to PebLdrData
+        public IntPtr ProcessParameters; // ptr to RtlUserProcessParameters
+        public IntPtr SubSystemData;
+        public IntPtr ProcessHeap;
+        public IntPtr FastPebLock;
+        public IntPtr AtlThunkSListPtr;
+        public IntPtr SparePrt2;
+        public int EnvironmentUpdateCount;
+        public IntPtr KernelCallbackTable;
+        public int SystemReserved;
+        public int SpareUlong;
+        public IntPtr FreeList;
+        public int TlsExpansionCounter;
+        public IntPtr TlsBitmap;
+        public unsafe fixed int TlsBitmapBits[2];
+        public IntPtr ReadOnlySharedMemoryBase;
+        public IntPtr ReadOnlySharedMemoryHeap;
+        public IntPtr ReadOnlyStaticServerData;
+        public IntPtr AnsiCodePageData;
+        public IntPtr OemCodePageData;
+        public IntPtr UnicodeCaseTableData;
+
+        public int NumberOfProcessors;
+        public int NtGlobalFlag;
+
+        public long CriticalSectionTimeout;
+        public IntPtr HeapSegmentReserve;
+        public IntPtr HeapSegmentCommit;
+        public IntPtr HeapDeCommitTotalFreeThreshold;
+        public IntPtr HeapDeCommitFreeBlockThreshold;
+
+        public int NumberOfHeaps;
+        public int MaximumNumberOfHeaps;
+        public IntPtr ProcessHeaps;
+
+        public IntPtr GdiSharedHandleTable;
+        public IntPtr ProcessStarterHelper;
+        public int GdiDCAttributeList;
+        public IntPtr LoaderLock;
+
+        public int OSMajorVersion;
+        public int OSMinorVersion;
+        public short OSBuildNumber;
+        public short OSCSDVersion;
+        public int OSPlatformId;
+        public int ImageSubsystem;
+        public int ImageSubsystemMajorVersion;
+        public int ImageSubsystemMinorVersion;
+        public IntPtr ImageProcessAffinityMask;
+        public unsafe fixed byte GdiHandleBuffer[Win32.GdiHandleBufferSize];
+        public IntPtr PostProcessInitRoutine;
+
+        public IntPtr TlsExpansionBitmap;
+        public unsafe fixed int TlsExpansionBitmapBits[32];
+
+        public int SessionId;
+
+        public long AppCompatFlags;
+        public long AppCompatFlagsUser;
+        public IntPtr pShimData;
+        public IntPtr AppCompatInfo;
+
+        public UnicodeString CSDVersion;
+
+        public IntPtr ActivationContextData;
+        public IntPtr ProcessAssemblyStorageMap;
+        public IntPtr SystemDefaultActivationContextData;
+        public IntPtr SystemAssemblyStorageMap;
+
+        public IntPtr MinimumStackCommit;
+
+        public IntPtr FlsCallback;
+        public ListEntry FlsListHead;
+        public IntPtr FlsBitmap;
+        public unsafe fixed int FlsBitmapBits[Win32.FlsMaximumAvailable / (sizeof(int) * 8)];
+        public int FlsHighIndex;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct PebLdrData
     {
         public int Length;

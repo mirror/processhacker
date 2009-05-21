@@ -34,10 +34,11 @@ typedef struct _KPH_CLIENT_ENTRY
     HANDLE ProcessId;
 } KPH_CLIENT_ENTRY, *PKPH_CLIENT_ENTRY;
 
-LIST_ENTRY ClientListHead;
-KSPIN_LOCK ClientListLock;
-NPAGED_LOOKASIDE_LIST ClientLookasideList;
+static LIST_ENTRY ClientListHead;
+static KSPIN_LOCK ClientListLock;
+static NPAGED_LOOKASIDE_LIST ClientLookasideList;
 static BOOLEAN ProtectionInitialized = FALSE;
+static FAST_MUTEX ProtectionMutex;
 
 #pragma alloc_text(PAGE, KphDispatchCreate)
 #pragma alloc_text(PAGE, KphDispatchClose)
@@ -83,6 +84,9 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         0
         );
     
+    /* Initialize process protection. */
+    ExInitializeFastMutex(&ProtectionMutex);
+    
     RtlInitUnicodeString(&deviceName, KPH_DEVICE_NAME);
     RtlInitUnicodeString(&dosDeviceName, KPH_DEVICE_DOS_NAME);
     
@@ -121,11 +125,15 @@ VOID DriverUnload(PDRIVER_OBJECT DriverObject)
     /* Destroy client list structures */
     ExDeleteNPagedLookasideList(&ClientLookasideList);
     
+    ExAcquireFastMutex(&ProtectionMutex);
+    
     if (ProtectionInitialized)
     {
         KphProtectDeinit();
         ProtectionInitialized = FALSE;
     }
+    
+    ExReleaseFastMutex(&ProtectionMutex);
     
     dprintf("Driver unloaded\n");
 }
@@ -161,11 +169,15 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     NTSTATUS status = STATUS_SUCCESS;
     
+    ExAcquireFastMutex(&ProtectionMutex);
+    
     if (ProtectionInitialized)
     {
         ULONG count = KphProtectRemoveByTag(PsGetCurrentProcessId());
         dprintf("Removed %d protection entries\n", count);
     }
+    
+    ExReleaseFastMutex(&ProtectionMutex);
     
     /* Remove the client entry. */
     RemoveClientEntry(PsGetCurrentProcessId());
@@ -177,11 +189,15 @@ NTSTATUS KphDispatchClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 
 VOID InitProtection()
 {
+    ExAcquireFastMutex(&ProtectionMutex);
+    
     if (!ProtectionInitialized)
     {
-        KphProtectInit();
-        ProtectionInitialized = TRUE;
+        if (NT_SUCCESS(KphProtectInit()))
+            ProtectionInitialized = TRUE;
     }
+    
+    ExReleaseFastMutex(&ProtectionMutex);
 }
 
 BOOLEAN AddClientEntry(HANDLE ProcessId)

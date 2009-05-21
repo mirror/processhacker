@@ -11,6 +11,7 @@ SOURCES= \
     kph.c \
     hook.c \
     protect.c \
+    sync.c \
     mm.c \
     ob.c \
     ps.c \

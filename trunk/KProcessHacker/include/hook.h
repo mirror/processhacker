@@ -53,6 +53,8 @@ NTSTATUS KphHook(
     PKPH_HOOK Hook
     );
 
+NTSTATUS KphHookInit();
+
 NTSTATUS KphUnhook(
     PKPH_HOOK Hook
     );

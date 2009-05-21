@@ -31,14 +31,23 @@ namespace ProcessHacker.Native.Api
 
     public partial class Win32
     {
+        public const int FlsMaximumAvailable = 128;
+#if _X64
+        public const int GdiHandleBufferSize = 60;
+#else
+        public const int GdiHandleBufferSize = 34;
+#endif
         public const int MaximumSupportedExtension = 512;
         public const int SecurityDescriptorMinLength = 20;
         public const int SecurityDescriptorRevision = 1;
-        public readonly int SecurityMaxSidSize =
+        public static readonly int SecurityMaxSidSize =
             Marshal.SizeOf(typeof(Sid)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
         public const int SidMaxSubAuthorities = 15;
         public const int SidRecommendedSubAuthorities = 1;
         public const int SidRevision = 1;
         public const int SizeOf80387Registers = 80;
+
+        public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");
+        public static readonly IntPtr PebProcessParametersOffset = Marshal.OffsetOf(typeof(Peb), "ProcessParameters");
     }
 }

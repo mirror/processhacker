@@ -1,0 +1,234 @@
+/*
+ * Process Hacker Driver - 
+ *   synchronization code
+ * 
+ * Copyright (C) 2009 wj32
+ * 
+ * This file is part of Process Hacker.
+ * 
+ * Process Hacker is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Process Hacker is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "include/sync.h"
+#include "include/debug.h"
+
+ULONG KphpCountBits(
+    ULONG_PTR Number
+    );
+
+VOID KphpProcessorLockDpc(
+    PKDPC Dpc,
+    PVOID DeferredContext,
+    PVOID SystemArgument1,
+    PVOID SystemArgument2
+    );
+
+/* KphAcquireProcessorLock
+ * 
+ * Raises the IRQL to DISPATCH_LEVEL and prevents threads from 
+ * executing on other processors until the processor lock is released. 
+ * Blocks if the supplied processor lock is already in use.
+ * 
+ * ProcessorLock: A processor lock structure that is present in 
+ * non-paged memory.
+ * 
+ * Thread safety: Full
+ * IRQL: <= APC_LEVEL
+ */
+BOOLEAN KphAcquireProcessorLock(
+    PKPH_PROCESSOR_LOCK ProcessorLock
+    )
+{
+    ULONG i;
+    ULONG numberProcessors;
+    ULONG currentProcessor;
+    
+    /* Acquire the processor lock mutex. */
+    ExAcquireFastMutex(&ProcessorLock->Mutex);
+    
+    /* Reset some state. */
+    ASSERT(ProcessorLock->AcquiredProcessors == 0);
+    ProcessorLock->AcquiredProcessors = 0;
+    ProcessorLock->ReleaseSignal = 0;
+    
+    /* Get the number of processors. */
+    numberProcessors = KphpCountBits(KeQueryActiveProcessors());
+    
+    /* If there's only one processor we can simply raise the IRQL and exit. */
+    if (numberProcessors == 1)
+    {
+        dprintf("KphAcquireProcessorLock: Only one processor, raising IRQL and exiting...\n");
+        KeRaiseIrql(DISPATCH_LEVEL, &ProcessorLock->OldIrql);
+        ProcessorLock->Acquired = TRUE;
+        
+        return TRUE;
+    }
+    
+    /* Allocate storage for the DPCs. */
+    ProcessorLock->Dpcs = ExAllocatePoolWithTag(
+        NonPagedPool,
+        sizeof(KDPC) * numberProcessors,
+        KPH_TAG
+        );
+    
+    if (!ProcessorLock->Dpcs)
+    {
+        dprintf("KphAcquireProcessorLock: Could not allocate storage for DPCs!\n");
+        return FALSE;
+    }
+    
+    /* Initialize the DPCs. */
+    for (i = 0; i < numberProcessors; i++)
+    {
+        KeInitializeDpc(&ProcessorLock->Dpcs[i], KphpProcessorLockDpc, NULL);
+        KeSetTargetProcessorDpc(&ProcessorLock->Dpcs[i], (CCHAR)i);
+        KeSetImportanceDpc(&ProcessorLock->Dpcs[i], HighImportance);
+    }
+    
+    /* Raise the IRQL to DISPATCH_LEVEL to prevent context switching. */
+    KeRaiseIrql(DISPATCH_LEVEL, &ProcessorLock->OldIrql);
+    /* Get the current processor number. */
+    currentProcessor = KeGetCurrentProcessorNumber();
+    
+    /* Queue the DPCs (except on the current processor). */
+    for (i = 0; i < numberProcessors; i++)
+        if (i != currentProcessor)
+            KeInsertQueueDpc(&ProcessorLock->Dpcs[i], ProcessorLock, NULL);
+    
+    /* Spinwait for all (other) processors to be acquired. */
+    while (InterlockedCompareExchange(
+        &ProcessorLock->AcquiredProcessors,
+        numberProcessors - 1,
+        numberProcessors - 1
+        ) != numberProcessors - 1)
+        NOTHING;
+    
+    dprintf("KphAcquireProcessorLock: All processors acquired.\n");
+    ProcessorLock->Acquired = TRUE;
+    
+    return TRUE;
+}
+
+/* KphInitializeProcessorLock
+ * 
+ * Initializes a processor lock.
+ * 
+ * ProcessorLock: A processor lock structure that is present in 
+ * non-paged memory.
+ * 
+ * IRQL: Any
+ */
+VOID KphInitializeProcessorLock(
+    PKPH_PROCESSOR_LOCK ProcessorLock
+    )
+{
+    ExInitializeFastMutex(&ProcessorLock->Mutex);
+    ProcessorLock->Dpcs = NULL;
+    ProcessorLock->AcquiredProcessors = 0;
+    ProcessorLock->ReleaseSignal = 0;
+    ProcessorLock->OldIrql = PASSIVE_LEVEL;
+    ProcessorLock->Acquired = FALSE;
+}
+
+/* KphReleaseProcessorLock
+ * 
+ * Allows threads to execute on other processors and restores the IRQL.
+ * 
+ * ProcessorLock: A processor lock structure that is present in 
+ * non-paged memory.
+ * 
+ * Thread safety: Full
+ * IRQL: <= APC_LEVEL
+ */
+VOID KphReleaseProcessorLock(
+    PKPH_PROCESSOR_LOCK ProcessorLock
+    )
+{
+    if (!ProcessorLock->Acquired)
+        return;
+    
+    /* Signal for the acquired processors to be released. */
+    InterlockedExchange(&ProcessorLock->ReleaseSignal, 1);
+    
+    /* Spinwait for all acquired processors to be released. */
+    while (InterlockedCompareExchange(
+        &ProcessorLock->AcquiredProcessors,
+        0,
+        0
+        ))
+        NOTHING;
+    
+    dprintf("KphReleaseProcessorLock: All processors released.\n");
+    
+    /* Restore the old IRQL (should always be APC_LEVEL due to the 
+     * fast mutex). */
+    KeLowerIrql(ProcessorLock->OldIrql);
+    
+    /* Free the DPCs if necessary. */
+    if (ProcessorLock->Dpcs != NULL)
+    {
+        ExFreePoolWithTag(ProcessorLock->Dpcs, KPH_TAG);
+        ProcessorLock->Dpcs = NULL;
+    }
+    
+    ProcessorLock->Acquired = FALSE;
+    
+    /* Release the processor lock mutex. */
+    ExReleaseFastMutex(&ProcessorLock->Mutex);
+}
+
+ULONG KphpCountBits(
+    ULONG_PTR Number
+    )
+{
+    ULONG count = 0;
+    
+    while (Number)
+    {
+        count++;
+        Number &= Number - 1;
+    }
+    
+    return count;
+}
+
+VOID KphpProcessorLockDpc(
+    PKDPC Dpc,
+    PVOID DeferredContext,
+    PVOID SystemArgument1,
+    PVOID SystemArgument2
+    )
+{
+    PKPH_PROCESSOR_LOCK processorLock = (PKPH_PROCESSOR_LOCK)SystemArgument1;
+    
+    ASSERT(processorLock != NULL);
+    
+    dprintf("KphpProcessorLockDpc: Acquiring processor %d.\n", KeGetCurrentProcessorNumber());
+    
+    /* Increase the number of acquired processors. */
+    InterlockedIncrement(&processorLock->AcquiredProcessors);
+    
+    /* Spin until we get the signal to release the processor. */
+    while (!InterlockedCompareExchange(
+        &processorLock->ReleaseSignal,
+        1,
+        1
+        ))
+        NOTHING;
+    
+    /* Decrease the number of acquired processors. */
+    InterlockedDecrement(&processorLock->AcquiredProcessors);
+    
+    dprintf("KphpProcessorLockDpc: Releasing processor %d.\n", KeGetCurrentProcessorNumber());
+}

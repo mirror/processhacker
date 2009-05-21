@@ -87,7 +87,7 @@ NTSTATUS KvInit()
     minorVersion = RtlWindowsVersion.dwMinorVersion;
     servicePack = RtlWindowsVersion.wServicePackMajor;
     buildNumber = RtlWindowsVersion.dwBuildNumber;
-    dprintf("Windows %d.%d, SP%d.%d, build %d\n",
+    dfprintf("Windows %d.%d, SP%d.%d, build %d\n",
         majorVersion, minorVersion, servicePack,
         RtlWindowsVersion.wServicePackMinor, buildNumber
         );

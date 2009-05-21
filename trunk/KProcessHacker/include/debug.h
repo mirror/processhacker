@@ -20,12 +20,16 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _DEBUG_H
+#define _DEBUG_H
+
 #ifdef DBG
 #define dprintf(fs, ...) DbgPrint("KProcessHacker: " fs, __VA_ARGS__)
-#define dfprintf DbgPrint
 #else
 #define dprintf
-#define dfprintf DbgPrint
 #endif
 
+#define dfprintf(fs, ...) DbgPrint("KProcessHacker: " fs, __VA_ARGS__)
 #define dwprintf DbgPrint
+
+#endif

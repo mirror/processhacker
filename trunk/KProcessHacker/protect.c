@@ -22,37 +22,37 @@
 
 #include "include/protect.h"
 
-/* ProtectedProcessRundownProtect
- * 
- * Rundown protection making sure this module doesn't deinitialize before all hook targets 
- * have finished executing and no one is accessing the lookaside list.
- */
-EX_RUNDOWN_REF ProtectedProcessRundownProtect;
-/* ProtectedProcessListHead
- * 
- * The head of the process protection linked list. Each entry stores protection 
- * information for a process.
- */
-LIST_ENTRY ProtectedProcessListHead;
-/* ProtectedProcessListLock
- * 
- * The spinlock which protects all accesses to the protected process list (even 
- * the individual entries)
- */
-KSPIN_LOCK ProtectedProcessListLock;
-/* ProtectedProcessLookasideList
- * 
- * The lookaside list for protected process entries.
- */
-NPAGED_LOOKASIDE_LIST ProtectedProcessLookasideList;
-
-KPH_HOOK ObOpenObjectByPointerHook = { 0 };
-
 BOOLEAN KphpIsCurrentProcessProtected();
 
 VOID KphpProtectRemoveEntry(
     PKPH_PROCESS_ENTRY Entry
     );
+
+/* ProtectedProcessRundownProtect
+ * 
+ * Rundown protection making sure this module doesn't deinitialize before all hook targets 
+ * have finished executing and no one is accessing the lookaside list.
+ */
+static EX_RUNDOWN_REF ProtectedProcessRundownProtect;
+/* ProtectedProcessListHead
+ * 
+ * The head of the process protection linked list. Each entry stores protection 
+ * information for a process.
+ */
+static LIST_ENTRY ProtectedProcessListHead;
+/* ProtectedProcessListLock
+ * 
+ * The spinlock which protects all accesses to the protected process list (even 
+ * the individual entries)
+ */
+static KSPIN_LOCK ProtectedProcessListLock;
+/* ProtectedProcessLookasideList
+ * 
+ * The lookaside list for protected process entries.
+ */
+static NPAGED_LOOKASIDE_LIST ProtectedProcessLookasideList;
+
+static KPH_HOOK ObOpenObjectByPointerHook = { 0 };
 
 KPH_DEFINE_HOOK_CALL(
     NTSTATUS NTAPI KphOldObOpenObjectByPointer,
@@ -63,6 +63,8 @@ KPH_DEFINE_HOOK_CALL(
 /* KphProtectInit
  * 
  * Initializes process protection.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphProtectInit()
 {
@@ -83,6 +85,9 @@ NTSTATUS KphProtectInit()
         0
         );
     
+    /* Initialize hooking. */
+    KphHookInit();
+    
     /* Hook various functions. */
     ObOpenObjectByPointerHook.Function = ObOpenObjectByPointer;
     ObOpenObjectByPointerHook.Target = KphNewObOpenObjectByPointer;
@@ -95,14 +100,20 @@ NTSTATUS KphProtectInit()
 /* KphProtectDeinit
  * 
  * Removes process protection and frees associated structures.
+ * 
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphProtectDeinit()
 {
+    NTSTATUS status = STATUS_SUCCESS;
     KIRQL oldIrql;
     LARGE_INTEGER waitLi;
     
     /* Unhook. */
-    KphUnhook(&ObOpenObjectByPointerHook);
+    status = KphUnhook(&ObOpenObjectByPointerHook);
+    
+    if (!NT_SUCCESS(status))
+        return status;
     
     /* Wait for all activity to finish. */
     ExWaitForRundownProtectionRelease(&ProtectedProcessRundownProtect);
@@ -115,12 +126,15 @@ NTSTATUS KphProtectDeinit()
     /* Free all process protection entries. */
     ExDeleteNPagedLookasideList(&ProtectedProcessLookasideList);
     
-    return STATUS_SUCCESS;
+    return status;
 }
 
 /* KphNewObOpenObjectByPointer
  * 
  * New ObOpenObjectByPointer function.
+ * 
+ * Thread safety: Full
+ * IRQL: PASSIVE_LEVEL
  */
 NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     OBOPENOBJECTBYPOINTER_ARGS
@@ -210,6 +224,9 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
 /* KphProtectAddEntry
  * 
  * Protects the specified process.
+ * 
+ * Thread safety: Full
+ * IRQL: <= DISPATCH_LEVEL
  */
 PKPH_PROCESS_ENTRY KphProtectAddEntry(
     PEPROCESS Process,
@@ -250,6 +267,9 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
 /* KphProtectCopyEntry
  * 
  * Copies process protection data for the specified process.
+ * 
+ * Thread safety: Full
+ * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphProtectCopyEntry(
     PEPROCESS Process,
@@ -285,6 +305,10 @@ BOOLEAN KphProtectCopyEntry(
 /* KphProtectFindEntry
  * 
  * Finds process protection data.
+ * 
+ * Thread safety: Limited. The returned pointer is not guaranteed to 
+ * point to a valid process entry.
+ * IRQL: <= DISPATCH_LEVEL
  */
 PKPH_PROCESS_ENTRY KphProtectFindEntry(
     PEPROCESS Process,
@@ -322,6 +346,10 @@ PKPH_PROCESS_ENTRY KphProtectFindEntry(
 /* KphProtectRemoveByProcess
  * 
  * Removes protection from the specified process.
+ * 
+ * Thread safety: Limited. Callers must synchronize remove calls such 
+ * as KphProtectRemoveByProcess and KphProtectRemoveByTag.
+ * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphProtectRemoveByProcess(
     PEPROCESS Process
@@ -340,6 +368,10 @@ BOOLEAN KphProtectRemoveByProcess(
 /* KphProtectRemoveByTag
  * 
  * Removes protection from all processes with the specified tag.
+ * 
+ * Thread safety: Limited. Callers must synchronize remove calls such 
+ * as KphProtectRemoveByProcess and KphProtectRemoveByTag.
+ * IRQL: <= DISPATCH_LEVEL
  */
 ULONG KphProtectRemoveByTag(
     HANDLE Tag
@@ -362,6 +394,9 @@ ULONG KphProtectRemoveByTag(
 /* KphpIsCurrentProcessProtected
  * 
  * Determines whether the current process is protected.
+ * 
+ * Thread safety: Full
+ * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphpIsCurrentProcessProtected()
 {
@@ -371,6 +406,9 @@ BOOLEAN KphpIsCurrentProcessProtected()
 /* KphpProtectRemoveEntry
  * 
  * Removes and frees process protection data.
+ * 
+ * Thread safety: Full
+ * IRQL: <= DISPATCH_LEVEL
  */
 VOID KphpProtectRemoveEntry(
     PKPH_PROCESS_ENTRY Entry

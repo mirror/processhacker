@@ -401,11 +401,11 @@ namespace ProcessHacker.Native.Objects
 
         private unsafe void EnumModulesNative(EnumModulesDelegate enumModulesCallback)
         {
-            byte* buffer = stackalloc byte[4];
+            byte* buffer = stackalloc byte[IntPtr.Size];
 
-            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(0xc), buffer, 4);
+            this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebLdrOffset), buffer, IntPtr.Size);
 
-            IntPtr loaderData = new IntPtr(*(int*)buffer);
+            IntPtr loaderData = *(IntPtr*)buffer;
 
             PebLdrData* data = stackalloc PebLdrData[1];
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
@@ -925,7 +925,7 @@ namespace ProcessHacker.Native.Objects
              * +0c PVOID LoaderData;
              * +10 PRTL_USER_PROCESS_PARAMETERS ProcessParameters; 
              */
-            this.ReadMemory(pebBaseAddress.Increment(0x10), buffer, IntPtr.Size);
+            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
             IntPtr processParameters = *(IntPtr*)buffer;
 
             // Read length (in bytes) of string. The offset of the UNICODE_STRING structure is 
@@ -941,7 +941,7 @@ namespace ProcessHacker.Native.Objects
             byte[] stringData = new byte[stringLength];
 
             // read address of string
-            this.ReadMemory(processParameters.Increment((int)offset + 0x4), buffer, 4);
+            this.ReadMemory(processParameters.Increment((int)offset + 0x4), buffer, IntPtr.Size);
             IntPtr stringAddr = *(IntPtr*)buffer;
 
             // read string and decode it

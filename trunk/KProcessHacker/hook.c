@@ -21,6 +21,7 @@
  */
 
 #include "include/hook.h"
+#include "include/sync.h"
 
 typedef struct _MAPPED_MDL
 {
@@ -38,10 +39,15 @@ VOID KphpFreeMappedMdl(
     PMAPPED_MDL MappedMdl
     );
 
+static KPH_PROCESSOR_LOCK HookProcessorLock;
+
 /* KphHook
  * 
  * Hooks a kernel-mode function.
- * WARNING: DO NOT HOOK A FUNCTION THAT IS CALLABLE ABOVE PASSIVE_LEVEL.
+ * WARNING: DO NOT HOOK A FUNCTION THAT IS CALLABLE ABOVE APC_LEVEL.
+ * 
+ * Thread safety: Full
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphHook(
     PKPH_HOOK Hook
@@ -62,27 +68,49 @@ NTSTATUS KphHook(
         return status;
     
     function = (PCHAR)mappedMdl.Address;
-    /* Raise to APC_LEVEL to prevent drivers calling the function while we're patching it. */
-    /* If they do, it's their problem because the function we're patching should only be 
-       called at PASSIVE_LEVEL anyway (see hook.h for definition of KPH_HOOK). */
-    KeRaiseIrql(APC_LEVEL, &oldIrql);
-    memcpy(Hook->Bytes, function, 5);
-    Hook->Hooked = TRUE;
-    /* jmp Target */
-    *function = 0xe9;
-    *(PULONG_PTR)(function + 1) = (ULONG_PTR)Hook->Target - (ULONG_PTR)Hook->Function - 5;
-    /* Lower the IRQL back. */
-    KeLowerIrql(oldIrql);
+    
+    /* Acquire a lock on all other processors. */
+    if (KphAcquireProcessorLock(&HookProcessorLock))
+    {
+        /* Patch the function. */
+        memcpy(Hook->Bytes, function, 5);
+        Hook->Hooked = TRUE;
+        /* jmp Target */
+        *function = 0xe9;
+        *(PULONG_PTR)(function + 1) = (ULONG_PTR)Hook->Target - (ULONG_PTR)Hook->Function - 5;
+        
+        /* Release the processor lock. */
+        KphReleaseProcessorLock(&HookProcessorLock);
+    }
+    else
+    {
+        dprintf("KphHook: Could not acquire processor lock!\n");
+        status = STATUS_INSUFFICIENT_RESOURCES;
+    }
     
     KphpFreeMappedMdl(&mappedMdl);
     
     return status;
 }
 
+/* KphHookInit
+ * 
+ * Initializes the hooking module.
+ */
+NTSTATUS KphHookInit()
+{
+    KphInitializeProcessorLock(&HookProcessorLock);
+    
+    return STATUS_SUCCESS;
+}
+
 /* KphUnhook
  * 
  * Unhooks a kernel-mode function.
- * WARNING: DO NOT UNHOOK A FUNCTION THAT IS CALLABLE ABOVE PASSIVE_LEVEL.
+ * WARNING: DO NOT UNHOOK A FUNCTION THAT IS CALLABLE ABOVE APC_LEVEL.
+ * 
+ * Thread safety: Full
+ * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphUnhook(
     PKPH_HOOK Hook
@@ -104,10 +132,20 @@ NTSTATUS KphUnhook(
     if (!NT_SUCCESS(status))
         return status;
     
-    KeRaiseIrql(APC_LEVEL, &oldIrql);
-    memcpy(mappedMdl.Address, Hook->Bytes, 5);
-    Hook->Hooked = FALSE;
-    KeLowerIrql(oldIrql);
+    /* Acquire a lock on all other processors. */
+    if (KphAcquireProcessorLock(&HookProcessorLock))
+    {
+        /* Unpatch the function. */
+        memcpy(mappedMdl.Address, Hook->Bytes, 5);
+        Hook->Hooked = FALSE;
+        /* Release the processor lock. */
+        KphReleaseProcessorLock(&HookProcessorLock);
+    }
+    else
+    {
+        dprintf("KphUnhook: Could not acquire processor lock!\n");
+        status = STATUS_INSUFFICIENT_RESOURCES;
+    }
     
     KphpFreeMappedMdl(&mappedMdl);
     
@@ -117,6 +155,9 @@ NTSTATUS KphUnhook(
 /* KphpCreateMappedMdl
  * 
  * Creates and maps a MDL.
+ * 
+ * Thread safety: Full
+ * IRQL: Any
  */
 NTSTATUS KphpCreateMappedMdl(
     PVOID Address,
@@ -158,6 +199,9 @@ NTSTATUS KphpCreateMappedMdl(
 /* KphpFreeMappedMdl
  * 
  * Unmaps and frees a MDL.
+ * 
+ * Thread safety: Full
+ * IRQL: Any
  */
 VOID KphpFreeMappedMdl(
     PMAPPED_MDL MappedMdl
