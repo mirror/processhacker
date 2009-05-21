@@ -784,6 +784,76 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        [DllImport("aclui.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EditSecurity(
+            [In] IntPtr hWnd,
+            [MarshalAs(UnmanagedType.Interface)]
+            [In] ISecurityInformation SecurityInformation
+            );
+
+        [DllImport("advapi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetSecurityDescriptorDacl(
+            [In] IntPtr SecurityDescriptor,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool DaclPresent,
+            [Out] out IntPtr Dacl,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool DaclDefaulted
+            );
+
+        [DllImport("advapi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetSecurityDescriptorGroup(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out IntPtr Group,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool GroupDefaulted
+            );
+
+        [DllImport("advapi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetSecurityDescriptorOwner(
+            [In] IntPtr SecurityDescriptor,
+            [Out] out IntPtr Owner,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool OwnerDefaulted
+            );
+
+        [DllImport("advapi32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetSecurityDescriptorSacl(
+            [In] IntPtr SecurityDescriptor,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool SaclPresent,
+            [Out] out IntPtr Sacl,
+            [MarshalAs(UnmanagedType.Bool)]
+            [Out] out bool SaclDefaulted
+            );
+
+        [DllImport("advapi32.dll")]
+        public static extern int GetSecurityInfo(
+            [In] IntPtr Handle,
+            [In] SeObjectType ObjectType,
+            [In] SecurityInformation SecurityInformation,
+            [Out] [Optional] out IntPtr OwnerSid,
+            [Out] [Optional] out IntPtr GroupSid,
+            [Out] [Optional] out IntPtr Dacl,
+            [Out] [Optional] out IntPtr Sacl,
+            [Out] [Optional] out IntPtr SecurityDescriptor
+            );
+
+        [DllImport("advapi32.dll")]
+        public static extern int SetSecurityInfo(
+            [In] IntPtr Handle,
+            [In] SeObjectType ObjectType,
+            [In] SecurityInformation SecurityInformation,
+            [In] [Optional] IntPtr OwnerSid,
+            [In] [Optional] IntPtr GroupSid,
+            [In] [Optional] IntPtr Dacl,
+            [In] [Optional] IntPtr Sacl
+            );
 
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

@@ -35,6 +35,7 @@ namespace ProcessHacker.Native
     {
         private object _disposeLock = new object();
         private bool _disposed = false;
+        private bool _owned = true;
         private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
         private IntPtr _memory;
         private int _size;
@@ -221,9 +222,24 @@ namespace ProcessHacker.Native
             Marshal.Copy(b, 0, new IntPtr(this + offset), b.Length);
         }
 
+        public void WriteInt16(int offset, short i)
+        {
+            Marshal.WriteInt16(this, offset, i);
+        }
+
         public void WriteInt32(int offset, int i)
         {
             Marshal.WriteInt32(this, offset, i);
+        }
+
+        public void WriteIntPtr(int offset, IntPtr i)
+        {
+            Marshal.WriteIntPtr(this, offset, i);
+        }
+
+        public void WriteStruct<T>(int offset, T s)
+        {
+            Marshal.StructureToPtr(s, _memory.Increment(offset), false);
         }
 
         /// <summary>
@@ -237,6 +253,15 @@ namespace ProcessHacker.Native
 
             for (int i = 0; i < b.Length; i++)
                 Marshal.WriteByte(this.Memory, offset + i, b[i]);
+        }
+
+        /// <summary>
+        /// Gets or sets whether the memory allocation should be freed automatically.
+        /// </summary>
+        public bool Owned
+        {
+            get { return _owned; }
+            set { _owned = value; }
         }
 
         /// <summary>
@@ -271,7 +296,7 @@ namespace ProcessHacker.Native
                 if (disposing)
                     Monitor.Enter(_disposeLock);
 
-                if (!_disposed)
+                if (!_disposed && _owned)
                 {
                     this.Free();
                     _disposed = true;

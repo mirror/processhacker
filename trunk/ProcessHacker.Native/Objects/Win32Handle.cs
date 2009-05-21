@@ -23,6 +23,7 @@
 using System;
 using System.Threading;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -130,7 +131,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a generic Windows handle.
     /// </summary>
-    public class Win32Handle<TAccess> : ISynchronizable, IDisposable
+    public class Win32Handle<TAccess> : IDisposable, ISecurable, ISynchronizable
         where TAccess : struct
     {
         private object _disposeLock = new object();
@@ -283,6 +284,23 @@ namespace ProcessHacker.Native.Objects
             return null;
         }
 
+        public virtual SecurityDescriptor GetSecurity()
+        {
+            int result;
+            IntPtr dummy, securityDescriptor;
+
+            if ((result = Win32.GetSecurityInfo(
+                this,
+                SeObjectType.KernelObject,
+                0,
+                out dummy, out dummy, out dummy, out dummy,
+                out securityDescriptor
+                )) != 0)
+                Win32.ThrowLastError(result);
+
+            return new SecurityDescriptor(LocalMemoryAlloc.FromPointer(securityDescriptor));
+        }
+
         /// <summary>
         /// Makes the object referenced by the handle permanent.
         /// </summary>
@@ -317,10 +335,61 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        public virtual void SetSecurity(SecurityDescriptor securityDescriptor)
+        {
+            int result;
+            IntPtr owner, group, dacl, sacl;
+            bool present, dummy;
+            SecurityInformation si = SecurityInformation.Group | SecurityInformation.Owner;
+
+            owner = securityDescriptor.GetOwner(out dummy);  
+            group = securityDescriptor.GetGroup(out dummy);
+            dacl = securityDescriptor.GetDacl(out present, out dummy);
+            if (present)
+                si |= SecurityInformation.Dacl;
+            sacl = securityDescriptor.GetSacl(out present, out dummy);
+            if (present)
+                si |= SecurityInformation.Sacl;
+
+            if ((result = Win32.SetSecurityInfo(
+                this,
+                SeObjectType.KernelObject,
+                si,
+                owner,
+                group,
+                dacl,
+                sacl
+                )) != 0)
+                Win32.ThrowLastError(result);
+        }
+
+        public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        {
+            int result;
+            IntPtr owner, group, dacl, sacl;
+            bool dummy;
+
+            owner = securityDescriptor.GetOwner(out dummy);
+            group = securityDescriptor.GetGroup(out dummy);
+            dacl = securityDescriptor.GetDacl(out dummy, out dummy);
+            sacl = securityDescriptor.GetSacl(out dummy, out dummy);
+
+            if ((result = Win32.SetSecurityInfo(
+                this,
+                SeObjectType.KernelObject,
+                securityInformation,
+                owner,
+                group,
+                dacl,
+                sacl
+                )) != 0)
+                Win32.ThrowLastError(result);
+        }
+
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
-        public NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout)
+        public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout)
         {
             return Win32.NtSignalAndWaitForSingleObject(this, waitObject.Handle, alertable, ref timeout);
         }
@@ -328,17 +397,17 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Waits for the object.
         /// </summary>
-        public NtStatus Wait()
+        public virtual NtStatus Wait()
         {
             return this.Wait(-1);
         }
 
-        public NtStatus Wait(long timeout)
+        public virtual NtStatus Wait(long timeout)
         {
             return this.Wait(false, timeout);
         }
 
-        public NtStatus Wait(bool alertable, long timeout)
+        public virtual NtStatus Wait(bool alertable, long timeout)
         {
             NtStatus status;
 

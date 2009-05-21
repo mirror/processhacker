@@ -187,6 +187,8 @@ namespace ProcessHacker
                     catch { }
                     try { thandle.SetPrivilege("SeLoadDriverPrivilege", SePrivilegeAttributes.Enabled); }
                     catch { }
+                    try { thandle.SetPrivilege("SeSecurityPrivilege", SePrivilegeAttributes.Enabled); }
+                    catch { }
                     try { thandle.SetPrivilege("SeShutdownPrivilege", SePrivilegeAttributes.Enabled); }
                     catch { }
 

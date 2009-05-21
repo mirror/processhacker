@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\ISecurityInformation.cs" />
     <Compile Include="Api\NativeDefinitions.cs" />
     <Compile Include="Api\NativeEnums.cs" />
     <Compile Include="Api\NativeFunctions.cs" />
@@ -69,6 +70,8 @@
     <Compile Include="Objects\SymbolicLinkHandle.cs" />
     <Compile Include="Objects\TimerHandle.cs" />
     <Compile Include="Security\DirectoryAccess.cs" />
+    <Compile Include="Security\ISecurable.cs" />
+    <Compile Include="Security\ObjectSecurityInformation.cs" />
     <Compile Include="Security\ObjectTypeAccess.cs" />
     <Compile Include="Security\PortAccess.cs" />
     <Compile Include="Objects\SectionHandle.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="Security\EventPairAccess.cs" />
     <Compile Include="Security\KeyedEventAccess.cs" />
     <Compile Include="Security\ProfileAccess.cs" />
+    <Compile Include="Security\SecurityDescriptor.cs" />
     <Compile Include="Security\SymbolicLinkAccess.cs" />
     <Compile Include="Security\TimerAccess.cs" />
     <Compile Include="Security\SemaphoreAccess.cs" />

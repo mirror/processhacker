@@ -90,6 +90,14 @@ namespace ProcessHacker.Native.Api
             return result.ToString().Replace("\r\n", "");
         }
 
+        public static int GetHR(int error)
+        {
+            if ((error & 0x80000000) == 0x80000000)
+                return error;
+
+            return (int)(0x80070000 | (uint)(error & 0xffff));
+        }
+
         /// <summary>
         /// Gets the error message associated with the last error that occured.
         /// </summary>

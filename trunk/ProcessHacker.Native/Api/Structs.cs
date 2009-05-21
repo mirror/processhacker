@@ -454,6 +454,34 @@ namespace ProcessHacker.Native.Api
         public string szTypeName;
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct SiAccess
+    {
+        public IntPtr Guid;
+        public int Mask;
+        public IntPtr Name; // string
+        public SiAccessFlags Flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct SiInheritType
+    {
+        public IntPtr Guid;
+        public int Flags;
+        public IntPtr Name; // string
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct SiObjectInfo
+    {
+        public SiObjectInfoFlags Flags;
+        public IntPtr Instance;
+        public IntPtr ServerName; // string
+        public IntPtr ObjectName; // string
+        public IntPtr PageTitle; // string
+        public Guid ObjectType;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct StackFrame64
     {

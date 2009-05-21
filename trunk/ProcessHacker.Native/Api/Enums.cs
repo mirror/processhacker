@@ -266,6 +266,23 @@ namespace ProcessHacker.Native.Api
         RunCommand = 3
     }
 
+    public enum SeObjectType : int
+    {
+        Unknown = 0,
+        FileObject,
+        Service,
+        Printer,
+        RegistryKey,
+        LmShare,
+        KernelObject,
+        WindowObject,
+        DsObject,
+        DsObjectAll,
+        ProviderDefinedObject,
+        WmiGuidObject,
+        RegistryWow6432Key
+    }
+
     [Flags]
     public enum SePrivilegeAttributes : uint
     {
@@ -293,6 +310,63 @@ namespace ProcessHacker.Native.Api
         ShowDefault = 10,
         ForceMinimize = 11,
         Max = 11
+    }
+
+    public enum SiAccessFlags : int
+    {
+        Specific = 0x00010000,
+        General = 0x00020000,
+        Container = 0x00040000,
+        Property = 0x00080000
+    }
+
+    public enum SiCallbackMessage : uint
+    {
+        Release = 1,
+        Create = 2,
+        InitDialog = WindowMessage.User + 1
+    }
+
+    public enum SiObjectInfoFlags : int
+    {
+        EditPerms = 0x00000000,
+        EditOwner = 0x00000001,
+        EditAudits = 0x00000002,
+        Container = 0x00000004,
+        ReadOnly = 0x00000008,
+        Advanced = 0x00000010,
+        Reset = 0x00000020,
+        OwnerReadOnly = 0x00000040,
+        EditProperties = 0x00000080,
+        Recurse = 0x00000100,
+        NoAclProtect = 0x00000200,
+        NoTreeApply = 0x00000400,
+        PageTitle = 0x00000800,
+        ServerIsDc = 0x00001000,
+        ResetDaclTree = 0x00004000,
+        ResetSaclTree = 0x00008000,
+        ObjectGuid = 0x00010000,
+        EditEffective = 0x00020000,
+        ResetDacl = 0x00040000,
+        ResetSacl = 0x00080000,
+        ResetOwner = 0x00100000,
+        NoAdditionalPermission = 0x00200000,
+        ViewOnly = 0x00400000,
+        PermsElevationRequired = 0x01000000,
+        AuditsElevationRequired = 0x02000000,
+        OwnerElevationRequested = 0x04000000,
+        MayWrite = 0x10000000,
+        All = EditPerms | EditOwner | EditAudits
+    }
+
+    public enum SiPageType : int
+    {
+        Perm,
+        AdvPerm,
+        Audit,
+        Owner,
+        Effective,
+        TakeOwnership
     }
 
     [Flags]

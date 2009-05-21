@@ -796,6 +796,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQuerySecurityObject(
+            [In] IntPtr Handle,
+            [In] SecurityInformation SecurityInformation,
+            [In] IntPtr SecurityDescriptor,
+            [In] int SecurityDescriptorLength,
+            [Out] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQuerySemaphore(
             [In] IntPtr SemaphoreHandle,
             [In] SemaphoreInformationClass SemaphoreInformationClass,
@@ -1070,6 +1079,13 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetLowWaitHighEventPair(
             [In] IntPtr EventPairHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetSecurityObject(
+            [In] IntPtr Handle,
+            [In] SecurityInformation SecurityInformation,
+            [In] IntPtr SecurityDescriptor
             );
 
         [DllImport("ntdll.dll")]
