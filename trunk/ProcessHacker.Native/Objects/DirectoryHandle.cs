@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the objects contained in the directory object.
         /// </summary>
         /// <returns>An array of object entries.</returns>
-        public ObjectEntry[] Query()
+        public ObjectEntry[] GetObjects()
         {
             NtStatus status;
             int context = 0;
@@ -114,10 +114,10 @@ namespace ProcessHacker.Native.Objects
                     data,
                     data.Size,
                     false,
-                    false,
+                    true,
                     ref context,
                     out retLength
-                    )) == NtStatus.InfoLengthMismatch)
+                    )) == NtStatus.MoreEntries)
                 {
                     if (data.Size > 16 * 1024 * 1024)
                         Win32.ThrowLastError(status);

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Process Hacker Native Library")]
-[assembly: AssemblyDescription("Process Hacker Native Library")]
+[assembly: AssemblyTitle("NtObjects")]
+[assembly: AssemblyDescription("NtObjects")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("wj32")]
-[assembly: AssemblyProduct("Process Hacker")]
-[assembly: AssemblyCopyright("Licensed under the GNU GPL, v3.")]
+[assembly: AssemblyProduct("NtObjects")]
+[assembly: AssemblyCopyright("Copyright © 2009 wj32. Licensed under the GNU GPL, v3.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("55693337-3b82-490c-a33f-5cd16846b2f9")]
+[assembly: Guid("5cea10c2-8c9e-45c7-be29-93a5ec8e3f30")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.8.1")]
-[assembly: AssemblyFileVersion("1.3.8.1")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

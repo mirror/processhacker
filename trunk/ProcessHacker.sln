@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "TreeViewAdv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessHacker.Native", "ProcessHacker.Native\ProcessHacker.Native.csproj", "{8A448157-E1A7-4DDF-954E-287F1117832B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NtObjects", "NtObjects\NtObjects.csproj", "{06AC6477-D3DA-4997-9A4A-4F809F7C9396}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A448157-E1A7-4DDF-954E-287F1117832B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06AC6477-D3DA-4997-9A4A-4F809F7C9396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AC6477-D3DA-4997-9A4A-4F809F7C9396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06AC6477-D3DA-4997-9A4A-4F809F7C9396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06AC6477-D3DA-4997-9A4A-4F809F7C9396}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
