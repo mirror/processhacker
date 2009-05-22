@@ -2584,6 +2584,12 @@ namespace ProcessHacker
 
             this.LoadOther();
 
+            this.LoadStructs();
+            vistaMenu.DelaySetImageCalls = false;
+            vistaMenu.PerformPendingSetImageCalls();
+            serviceP.RunOnceAsync();
+            serviceP.Enabled = true;
+
             dontCalculate = false;
         }
 
@@ -2630,16 +2636,10 @@ namespace ProcessHacker
             if (isFirstPaint)
             {
                 isFirstPaint = false;
-                vistaMenu.DelaySetImageCalls = false;
-                vistaMenu.PerformPendingSetImageCalls();
                 this.CreateShutdownMenuItems();
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
-                this.LoadStructs();
-
-                serviceP.RunOnceAsync();
-                serviceP.Enabled = true;
             }
         }
     }
