@@ -62,6 +62,36 @@ NTSTATUS NTAPI ObSetHandleAttributes(
     KPROCESSOR_MODE PreviousMode
     );
 
+/* FUNCTION TYPEDEFS */
+enum _OB_OPEN_REASON;
+
+typedef NTSTATUS (NTAPI *OB_OPEN_METHOD_51)(
+    enum _OB_OPEN_REASON OpenReason,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    );
+
+typedef NTSTATUS (NTAPI *OB_OPEN_METHOD_60)(
+    enum _OB_OPEN_REASON OpenReason,
+    KPROCESSOR_MODE AccessMode,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    );
+
+/* ENUMS */
+typedef enum _OB_OPEN_REASON
+{
+    ObCreateHandle,
+    ObOpenHandle,
+    ObDuplicateHandle,
+    ObInheritHandle,
+    ObMaxOpenReason
+} OB_OPEN_REASON, *POB_OPEN_REASON;
+
 /* STRUCTS */
 
 typedef struct _OBP_SET_HANDLE_GRANTED_ACCESS_DATA

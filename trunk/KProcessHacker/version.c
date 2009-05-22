@@ -119,8 +119,9 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
         OffKtProcess = 0x220; /* it's actually in the ETHREAD, but let's ignore that */
-        OffOtiGenericMapping = 0x60 + 0x8;
         OffOhBody = 0x18;
+        OffOtiGenericMapping = 0x60 + 0x8;
+        OffOtiOpenProcedure = 0x60 + 0x30;
         
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
@@ -201,11 +202,13 @@ NTSTATUS KvInit()
         if (servicePack == 0)
         {
             OffOtiGenericMapping = 0x60 + 0xc;
+            OffOtiOpenProcedure = 0x60 + 0x30;
         }
         /* SP1 */
         else if (servicePack == 1)
         {
             OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
+            OffOtiOpenProcedure = 0x28 + 0x34;
         }
         else
         {
@@ -235,8 +238,9 @@ NTSTATUS KvInit()
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
         OffKtProcess = 0x154;
-        OffOtiGenericMapping = 0x28 + 0xc;
         OffOhBody = 0x18;
+        OffOtiGenericMapping = 0x28 + 0xc;
+        OffOtiOpenProcedure = 0x28 + 0x34;
         
         INIT_SCAN(
             PsTerminateProcessScan,

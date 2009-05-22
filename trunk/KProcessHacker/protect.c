@@ -22,6 +22,12 @@
 
 #include "include/protect.h"
 
+BOOLEAN KphpIsAccessAllowed(
+    PVOID Object,
+    KPROCESSOR_MODE AccessMode,
+    ACCESS_MASK DesiredAccess
+    );
+
 BOOLEAN KphpIsCurrentProcessProtected();
 
 VOID KphpProtectRemoveEntry(
@@ -53,6 +59,8 @@ static KSPIN_LOCK ProtectedProcessListLock;
 static NPAGED_LOOKASIDE_LIST ProtectedProcessLookasideList;
 
 static KPH_HOOK ObOpenObjectByPointerHook = { 0 };
+static KPH_OB_OPEN_HOOK ProcessOpenHook = { 0 };
+static KPH_OB_OPEN_HOOK ThreadOpenHook = { 0 };
 
 KPH_DEFINE_HOOK_CALL(
     NTSTATUS NTAPI KphOldObOpenObjectByPointer,
@@ -89,9 +97,23 @@ NTSTATUS KphProtectInit()
     KphHookInit();
     
     /* Hook various functions. */
+    /* Hooking ObOpenObjectByPointer allows us to intercept process/thread 
+     * handle creation. */
     ObOpenObjectByPointerHook.Function = ObOpenObjectByPointer;
     ObOpenObjectByPointerHook.Target = KphNewObOpenObjectByPointer;
     if (!NT_SUCCESS(status = KphHook(&ObOpenObjectByPointerHook)))
+        return status;
+    /* Hooking the open procedure calls for processes and threads allows 
+     * us to intercept handle duplication/inheritance. */
+    ProcessOpenHook.ObjectType = *PsProcessType;
+    ProcessOpenHook.Target51 = KphNewOpenProcedure51;
+    ProcessOpenHook.Target60 = KphNewOpenProcedure60;
+    if (!NT_SUCCESS(status = KphObOpenHook(&ProcessOpenHook)))
+        return status;
+    ThreadOpenHook.ObjectType = *PsThreadType;
+    ThreadOpenHook.Target51 = KphNewOpenProcedure51;
+    ThreadOpenHook.Target60 = KphNewOpenProcedure60;
+    if (!NT_SUCCESS(status = KphObOpenHook(&ThreadOpenHook)))
         return status;
     
     return STATUS_SUCCESS;
@@ -111,9 +133,8 @@ NTSTATUS KphProtectDeinit()
     
     /* Unhook. */
     status = KphUnhook(&ObOpenObjectByPointerHook);
-    
-    if (!NT_SUCCESS(status))
-        return status;
+    status = KphObOpenUnhook(&ProcessOpenHook);
+    status = KphObOpenUnhook(&ThreadOpenHook);
     
     /* Wait for all activity to finish. */
     ExWaitForRundownProtectionRelease(&ProtectedProcessRundownProtect);
@@ -141,9 +162,6 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
-    POBJECT_TYPE objectType;
-    PEPROCESS processObject;
-    BOOLEAN isThread = FALSE;
     
     /* Prevent the driver from unloading while this routine is executing. */
     if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
@@ -152,70 +170,117 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
         return STATUS_INTERNAL_ERROR;
     }
     
-    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
-    /* It doesn't matter if it isn't actually a process because we won't be 
-       dereferencing it. */
-    processObject = (PEPROCESS)Object;
-    isThread = objectType == *PsThreadType;
+    /* Assume failure. */
+    *Handle = NULL;
     
-    /* If this is a thread, get its parent process. */
-    if (isThread)
-        processObject = IoThreadToProcess((PETHREAD)Object);
-    
-    if (
-        processObject != PsGetCurrentProcess() && /* let the caller open its own processes/threads */
-        (objectType == *PsProcessType || objectType == *PsThreadType) /* only protect processes and threads */
-        )
+    if (KphpIsAccessAllowed(
+        Object,
+        AccessMode,
+        PassedAccessState ? PassedAccessState->OriginalDesiredAccess : DesiredAccess
+        ))
     {
-        ACCESS_MASK access;
-        KPH_PROCESS_ENTRY processEntry;
-        
-        /* Assume failure. */
-        *Handle = NULL;
-        access = DesiredAccess;
-        
-        /* If we have an access state, get the desired access from it. */
-        if (PassedAccessState)
-            access = PassedAccessState->OriginalDesiredAccess;
-        
-        /* Search for and copy the corresponding process protection entry. */
-        if (KphProtectCopyEntry(processObject, &processEntry))
-        {
-            ACCESS_MASK mask = 
-                isThread ? processEntry.ThreadAllowMask : processEntry.ProcessAllowMask;
-            
-            /* The process/thread is protected. Check if the requested access is allowed. */
-            if (
-                /* check if kernel-mode is exempt from protection */
-                !(processEntry.AllowKernelMode && AccessMode == KernelMode) && 
-                /* allow the creator of the rule to bypass protection */
-                processEntry.CreatorProcess != PsGetCurrentProcess() && 
-                (access & mask) != access
-                )
-            {
-                /* Access denied. */
-                dprintf(
-                    "%d: Access denied: 0x%08x (%s)\n",
-                    PsGetCurrentProcessId(),
-                    access,
-                    isThread ? "Thread" : "Process"
-                    );
-                ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
-                
-                return STATUS_ACCESS_DENIED;
-            }
-        }
+        status = KphOldObOpenObjectByPointer(
+            Object,
+            HandleAttributes,
+            PassedAccessState,
+            DesiredAccess,
+            ObjectType,
+            AccessMode,
+            Handle
+            );
+    }
+    else
+    {
+        dprintf("KphNewObOpenObjectByPointer: Access denied.\n");
+        status = STATUS_ACCESS_DENIED;
     }
     
-    status = KphOldObOpenObjectByPointer(
+    ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
+    
+    return status;
+}
+
+/* KphNewOpenProcedure51
+ * 
+ * New process/thread open procedure for NT 5.1.
+ */
+NTSTATUS NTAPI KphNewOpenProcedure51(
+    OB_OPEN_REASON OpenReason,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    )
+{
+    /* Simply call the 6.0 open procedure. */
+    return KphNewOpenProcedure60(
+        OpenReason,
+        /* Assume worst case. */
+        UserMode,
+        Process,
         Object,
-        HandleAttributes,
-        PassedAccessState,
-        DesiredAccess,
-        ObjectType,
-        AccessMode,
-        Handle
+        GrantedAccess,
+        HandleCount
         );
+}
+
+/* KphNewOpenProcedure60
+ * 
+ * New process/thread open procedure for NT 6.0 and 6.1.
+ */
+NTSTATUS NTAPI KphNewOpenProcedure60(
+    OB_OPEN_REASON OpenReason,
+    KPROCESSOR_MODE AccessMode,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    BOOLEAN accessAllowed = TRUE;
+    
+    /* Prevent the driver from unloading while this routine is executing. */
+    if (!ExAcquireRundownProtection(&ProtectedProcessRundownProtect))
+    {
+        /* Should never happen. */
+        return STATUS_INTERNAL_ERROR;
+    }
+    
+    /* We only care about handle duplication and inheritance. */
+    if (
+        OpenReason == ObDuplicateHandle || 
+        OpenReason == ObInheritHandle
+        )
+    {
+        accessAllowed = KphpIsAccessAllowed(
+            Object,
+            AccessMode,
+            /* Assume worst case if granted access not available. */
+            !GrantedAccess ? (ACCESS_MASK)-1 : GrantedAccess
+            );
+    }
+    
+    if (accessAllowed)
+    {
+        POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+        
+        status = KphObOpenCall(
+            objectType == *PsProcessType ? &ProcessOpenHook : &ThreadOpenHook,
+            OpenReason,
+            AccessMode,
+            Process,
+            Object,
+            GrantedAccess,
+            HandleCount
+            );
+    }
+    else
+    {
+        dprintf("KphNewOpenProcedure60: Access denied.\n");
+        status = STATUS_ACCESS_DENIED;
+    }
+    
     ExReleaseRundownProtection(&ProtectedProcessRundownProtect);
     
     return status;
@@ -389,6 +454,72 @@ ULONG KphProtectRemoveByTag(
     }
     
     return count;
+}
+
+/* KphpIsAccessAllowed
+ * 
+ * Checks if the specified access is allowed, according to process 
+ * protection rules.
+ * 
+ * Thread safety: Full
+ * IRQL: <= DISPATCH_LEVEL
+ */
+BOOLEAN KphpIsAccessAllowed(
+    PVOID Object,
+    KPROCESSOR_MODE AccessMode,
+    ACCESS_MASK DesiredAccess
+    )
+{
+    POBJECT_TYPE objectType;
+    PEPROCESS processObject;
+    BOOLEAN isThread = FALSE;
+    
+    objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
+    /* It doesn't matter if it isn't actually a process because we won't be 
+       dereferencing it. */
+    processObject = (PEPROCESS)Object;
+    isThread = objectType == *PsThreadType;
+    
+    /* If this is a thread, get its parent process. */
+    if (isThread)
+        processObject = IoThreadToProcess((PETHREAD)Object);
+    
+    if (
+        processObject != PsGetCurrentProcess() && /* let the caller open its own processes/threads */
+        (objectType == *PsProcessType || objectType == *PsThreadType) /* only protect processes and threads */
+        )
+    {
+        KPH_PROCESS_ENTRY processEntry;
+        
+        /* Search for and copy the corresponding process protection entry. */
+        if (KphProtectCopyEntry(processObject, &processEntry))
+        {
+            ACCESS_MASK mask = 
+                isThread ? processEntry.ThreadAllowMask : processEntry.ProcessAllowMask;
+            
+            /* The process/thread is protected. Check if the requested access is allowed. */
+            if (
+                /* check if kernel-mode is exempt from protection */
+                !(processEntry.AllowKernelMode && AccessMode == KernelMode) && 
+                /* allow the creator of the rule to bypass protection */
+                processEntry.CreatorProcess != PsGetCurrentProcess() && 
+                (DesiredAccess & mask) != DesiredAccess
+                )
+            {
+                /* Access denied. */
+                dprintf(
+                    "%d: Access denied: 0x%08x (%s)\n",
+                    PsGetCurrentProcessId(),
+                    DesiredAccess,
+                    isThread ? "Thread" : "Process"
+                    );
+                
+                return FALSE;
+            }
+        }
+    }
+    
+    return TRUE;
 }
 
 /* KphpIsCurrentProcessProtected

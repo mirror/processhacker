@@ -100,6 +100,7 @@ EXT ULONG OffEpRundownProtect;
 EXT ULONG OffKtProcess;
 EXT ULONG OffOhBody;
 EXT ULONG OffOtiGenericMapping;
+EXT ULONG OffOtiOpenProcedure;
 
 /* Functions
  */

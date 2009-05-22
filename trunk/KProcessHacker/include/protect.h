@@ -48,6 +48,23 @@ typedef struct _KPH_PROCESS_ENTRY
 NTSTATUS NTAPI KphNewObOpenObjectByPointer(OBOPENOBJECTBYPOINTER_ARGS);
 NTSTATUS NTAPI KphOldObOpenObjectByPointer(OBOPENOBJECTBYPOINTER_ARGS);
 
+NTSTATUS NTAPI KphNewOpenProcedure51(
+    OB_OPEN_REASON OpenReason,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    );
+
+NTSTATUS NTAPI KphNewOpenProcedure60(
+    OB_OPEN_REASON OpenReason,
+    KPROCESSOR_MODE AccessMode,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    );
+
 NTSTATUS KphProtectInit();
 NTSTATUS KphProtectDeinit();
 

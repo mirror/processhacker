@@ -763,20 +763,21 @@ NTSTATUS PspTerminateThreadByPointer(
     
     if (WindowsVersion == WINDOWS_XP)
     {
-        _PspTerminateThreadByPointer51 func = 
-            (_PspTerminateThreadByPointer51)pspTerminateThreadByPointer;
-        
-        return func(Thread, ExitStatus);
+        return ((_PspTerminateThreadByPointer51)pspTerminateThreadByPointer)(
+            Thread,
+            ExitStatus
+            );
     }
     else if (
         WindowsVersion == WINDOWS_VISTA || 
         WindowsVersion == WINDOWS_7
         )
     {
-        _PspTerminateThreadByPointer60 func = 
-            (_PspTerminateThreadByPointer60)pspTerminateThreadByPointer;
-        
-        return func(Thread, ExitStatus, Thread == PsGetCurrentThread());
+        return ((_PspTerminateThreadByPointer60)pspTerminateThreadByPointer)(
+            Thread,
+            ExitStatus,
+            Thread == PsGetCurrentThread()
+            );
     }
     else
     {

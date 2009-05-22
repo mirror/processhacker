@@ -24,6 +24,7 @@
 #define _HOOK_H
 
 #include "kph.h"
+#include "ob.h"
 
 #define KPH_DEFINE_HOOK_CALL(Name, Arguments, Hook) \
     __declspec(naked) Name(Arguments) \
@@ -49,14 +50,46 @@ typedef struct _KPH_HOOK
     CHAR Bytes[5];
 } KPH_HOOK, *PKPH_HOOK;
 
+typedef struct _KPH_OB_OPEN_HOOK
+{
+    /* The object type that is being hooked. */
+    POBJECT_TYPE ObjectType;
+    /* The original open procedure. */
+    PVOID Function;
+    /* The new open procedure for NT 5.1 (XP). */
+    OB_OPEN_METHOD_51 Target51;
+    /* The new open procedure for NT 6.1 and above (Vista, 7 or higher). */
+    OB_OPEN_METHOD_60 Target60;
+    /* Whether the open procedure is hooked. */
+    BOOLEAN Hooked;
+} KPH_OB_OPEN_HOOK, *PKPH_OB_OPEN_HOOK;
+
+NTSTATUS KphHookInit();
+
 NTSTATUS KphHook(
     PKPH_HOOK Hook
     );
 
-NTSTATUS KphHookInit();
-
 NTSTATUS KphUnhook(
     PKPH_HOOK Hook
+    );
+
+NTSTATUS NTAPI KphObOpenCall(
+    PKPH_OB_OPEN_HOOK ObOpenHook,
+    OB_OPEN_REASON OpenReason,
+    KPROCESSOR_MODE AccessMode,
+    PEPROCESS Process,
+    PVOID Object,
+    ACCESS_MASK GrantedAccess,
+    ULONG HandleCount
+    );
+
+NTSTATUS KphObOpenHook(
+    PKPH_OB_OPEN_HOOK ObOpenHook
+    );
+
+NTSTATUS KphObOpenUnhook(
+    PKPH_OB_OPEN_HOOK ObOpenHook
     );
 
 #endif
