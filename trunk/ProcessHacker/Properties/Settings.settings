@@ -285,10 +285,10 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MaxSamples" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">750</Value>
+      <Value Profile="(Default)">600</Value>
     </Setting>
     <Setting Name="PlotterStep" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="ServiceMiniListColumns" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
