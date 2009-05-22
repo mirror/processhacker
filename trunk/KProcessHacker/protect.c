@@ -213,6 +213,7 @@ NTSTATUS NTAPI KphNewOpenProcedure51(
     )
 {
     /* Simply call the 6.0 open procedure. */
+    /* NOTE: GrantedAccess is always 0 on XP... */
     return KphNewOpenProcedure60(
         OpenReason,
         /* Assume worst case. */
@@ -265,6 +266,10 @@ NTSTATUS NTAPI KphNewOpenProcedure60(
     {
         POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(Object)->Type;
         
+        /* Call the original open procedure. There shouldn't be any for Windows XP, 
+         * while on Windows Vista and 7 it is used for implementing protected 
+         * processes (Big Content's DRM protection, not KProcessHacker's protection).
+         */
         status = KphObOpenCall(
             objectType == *PsProcessType ? &ProcessOpenHook : &ThreadOpenHook,
             OpenReason,
