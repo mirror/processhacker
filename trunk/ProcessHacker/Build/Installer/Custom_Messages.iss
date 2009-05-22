@@ -28,8 +28,6 @@ en.sm_help=Help and Support
 en.sm_helpfile=Process Hacker's Help
 en.sm_readmefile=ReadMe
 en.sm_com_readmefile=Process Hacker's ReadMe
-en.issiUrl=http://processhacker.sourceforge.net/
-en.issiUrlText=Process Hacker's Homepage
 
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
@@ -59,5 +57,3 @@ gr.sm_help=Βοήθεια και Υποστήριξη
 gr.sm_helpfile=Αρχείο βοήθειας του Process Hacker
 gr.sm_readmefile=Αρχείο ReadMe
 gr.sm_com_readmefile=Αρχείο ReadMe του Process Hacker
-gr.issiUrl=http://processhacker.sourceforge.net/
-gr.issiUrlText=Ιστοσελίδα του Process Hacker

@@ -40,7 +40,7 @@ ECHO.
 DEL/f/a "ProcessHacker_in.exe" "Assistant_in.exe" "Aga.Controls.dll"^
  "ProcessHacker.Native.dll" >NUL 2>&1
 
-:: Set the path of Inno Setup
+:: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 SET "I_=Inno Setup"
 SET "A_=%I_% 5"
@@ -49,19 +49,9 @@ FOR /f "delims=" %%a IN (
 	'REG QUERY "%U_%\%A_%_is1" /v "%I_%: App Path"2^>Nul^|FIND "REG_"') DO (
 	SET "InnoSetupPath=%%a"&Call :Sub %%InnoSetupPath:*Z=%%)
 
-IF DEFINED InnoSetupPath (GOTO :ISSI_INSTALLED) ELSE (ECHO:%M_%&&GOTO:CLEANUP)
-
-:ISSI_INSTALLED
-:: Set the path of ISSI and compile installer
-SET "K_=Inno Setup Script Includes"
-SET "J_=ISSI IS NOT INSTALLED!!!"
-FOR /f "delims=" %%a IN (
-	'REG QUERY "%U_%\%K_%_is1" /v "%I_%: App Path"2^>Nul^|FIND "REG_"') DO (
-	SET "ISSIPath=%%a"&Call :Sub2 %%ISSIPath:*W=%%)
-
-IF DEFINED ISSIPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
+IF DEFINED InnoSetupPath ("%InnoSetupPath%\iscc.exe" /Q /O"..\..\bin\Release"^
  "..\..\Build\Installer\Process_Hacker_installer.iss"&&(
-	ECHO:Installer compiled successfully!)) ELSE (ECHO:%J_%)
+	ECHO:Installer compiled successfully!)) ELSE (ECHO:%M_%)
 
 :CLEANUP
 :: Clean up the .pdb files in "Release" folder
@@ -77,6 +67,3 @@ GOTO :EOF
 
 :Sub
 SET InnoSetupPath=%*
-
-:Sub2
-SET ISSIPath=%*
