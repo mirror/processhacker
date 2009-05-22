@@ -104,6 +104,7 @@ EXT ULONG OffOtiOpenProcedure;
 
 /* Functions
  */
+EXT KV_SCANPROC PsExitSpecialApcScan SCANNULL;
 EXT KV_SCANPROC PsTerminateProcessScan SCANNULL;
 EXT KV_SCANPROC PspTerminateThreadByPointerScan SCANNULL;
 

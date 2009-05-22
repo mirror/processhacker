@@ -21,6 +21,7 @@
  */
 
 #include "include/kph.h"
+#include "include/ke.h"
 #include "include/ps.h"
 
 /* KphAcquireProcessRundownProtection
