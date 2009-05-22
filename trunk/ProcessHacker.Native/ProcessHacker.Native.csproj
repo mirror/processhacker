@@ -69,6 +69,7 @@
     <Compile Include="Objects\SemaphoreHandle.cs" />
     <Compile Include="Objects\SymbolicLinkHandle.cs" />
     <Compile Include="Objects\TimerHandle.cs" />
+    <Compile Include="Objects\UserHandle.cs" />
     <Compile Include="Security\DirectoryAccess.cs" />
     <Compile Include="Security\ISecurable.cs" />
     <Compile Include="Security\ObjectSecurityInformation.cs" />

@@ -32,9 +32,11 @@ namespace ProcessHacker.Native.Objects
     {
         IntPtr Handle { get; }
 
+        NtStatus SignalAndWait(ISynchronizable waitObject);
+        NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable);
         NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout);
         NtStatus Wait();
-        NtStatus Wait(long timeout);
+        NtStatus Wait(bool alertable);
         NtStatus Wait(bool alertable, long timeout);
     }
 }

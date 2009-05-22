@@ -28,13 +28,13 @@ using ProcessHacker.Native.Security;
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
-    /// Represents a generic Windows handle.
+    /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
     public class Win32Handle : Win32Handle<int>
     {
-        public static NtStatus WaitAll(ISynchronizable[] objects, bool alertable, long timeout)
+        public static NtStatus WaitAll(ISynchronizable[] objects)
         {
-            return WaitForMultipleObjects(objects, WaitType.WaitAll, alertable, timeout);
+            return WaitAll(objects, long.MinValue);
         }
 
         public static NtStatus WaitAll(ISynchronizable[] objects, long timeout)
@@ -42,19 +42,14 @@ namespace ProcessHacker.Native.Objects
             return WaitAll(objects, false, timeout);
         }
 
-        public static NtStatus WaitAll(ISynchronizable[] objects)
+        public static NtStatus WaitAll(ISynchronizable[] objects, bool alertable, long timeout)
         {
-            return WaitAll(objects, long.MinValue);
+            return WaitAll(objects, alertable, timeout, true);
         }
 
-        public static NtStatus WaitAny(ISynchronizable[] objects, bool alertable, long timeout)
+        public static NtStatus WaitAll(ISynchronizable[] objects, bool alertable, long timeout, bool relative)
         {
-            return WaitForMultipleObjects(objects, WaitType.WaitAny, alertable, timeout);
-        }
-
-        public static NtStatus WaitAny(ISynchronizable[] objects, long timeout)
-        {
-            return WaitAny(objects, false, timeout);
+            return WaitForMultipleObjects(objects, WaitType.WaitAll, alertable, timeout, relative);
         }
 
         public static NtStatus WaitAny(ISynchronizable[] objects)
@@ -62,10 +57,26 @@ namespace ProcessHacker.Native.Objects
             return WaitAny(objects, long.MinValue);
         }
 
-        private static NtStatus WaitForMultipleObjects(ISynchronizable[] objects, WaitType waitType, bool alertable, long timeout)
+        public static NtStatus WaitAny(ISynchronizable[] objects, long timeout)
+        {
+            return WaitAny(objects, false, timeout);
+        }
+
+        public static NtStatus WaitAny(ISynchronizable[] objects, bool alertable, long timeout)
+        {
+            return WaitAny(objects, alertable, timeout, true);
+        }
+
+        public static NtStatus WaitAny(ISynchronizable[] objects, bool alertable, long timeout, bool relative)
+        {
+            return WaitForMultipleObjects(objects, WaitType.WaitAny, alertable, timeout, relative);
+        }
+
+        private static NtStatus WaitForMultipleObjects(ISynchronizable[] objects, WaitType waitType, bool alertable, long timeout, bool relative)
         {
             NtStatus status;
             IntPtr[] handles = new IntPtr[objects.Length];
+            long realTimeout = relative ? -timeout : timeout;
 
             for (int i = 0; i < objects.Length; i++)
                 handles[i] = objects[i].Handle;
@@ -75,7 +86,7 @@ namespace ProcessHacker.Native.Objects
                 handles,
                 waitType,
                 alertable,
-                ref timeout
+                ref realTimeout
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
@@ -129,7 +140,7 @@ namespace ProcessHacker.Native.Objects
     }
 
     /// <summary>
-    /// Represents a generic Windows handle.
+    /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
     public class Win32Handle<TAccess> : IDisposable, ISecurable, ISynchronizable
         where TAccess : struct
@@ -286,12 +297,17 @@ namespace ProcessHacker.Native.Objects
 
         public virtual SecurityDescriptor GetSecurity()
         {
+            return this.GetSecurity(SeObjectType.KernelObject);
+        }
+
+        protected SecurityDescriptor GetSecurity(SeObjectType objectType)
+        {
             int result;
             IntPtr dummy, securityDescriptor;
 
             if ((result = Win32.GetSecurityInfo(
                 this,
-                SeObjectType.KernelObject,
+                objectType,
                 0,
                 out dummy, out dummy, out dummy, out dummy,
                 out securityDescriptor
@@ -337,6 +353,16 @@ namespace ProcessHacker.Native.Objects
 
         public virtual void SetSecurity(SecurityDescriptor securityDescriptor)
         {
+            this.SetSecurity(SeObjectType.KernelObject, securityDescriptor);
+        }
+
+        public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        {
+            this.SetSecurity(SeObjectType.KernelObject, securityInformation, securityDescriptor);
+        }
+
+        protected void SetSecurity(SeObjectType objectType, SecurityDescriptor securityDescriptor)
+        {
             int result;
             IntPtr owner, group, dacl, sacl;
             bool present, dummy;
@@ -353,7 +379,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((result = Win32.SetSecurityInfo(
                 this,
-                SeObjectType.KernelObject,
+                objectType,
                 si,
                 owner,
                 group,
@@ -363,7 +389,7 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(result);
         }
 
-        public virtual void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        protected void SetSecurity(SeObjectType objectType, SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
         {
             int result;
             IntPtr owner, group, dacl, sacl;
@@ -376,7 +402,7 @@ namespace ProcessHacker.Native.Objects
 
             if ((result = Win32.SetSecurityInfo(
                 this,
-                SeObjectType.KernelObject,
+                objectType,
                 securityInformation,
                 owner,
                 group,
@@ -389,9 +415,44 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
+        public virtual NtStatus SignalAndWait(ISynchronizable waitObject)
+        {
+            return this.SignalAndWait(waitObject, false);
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable)
+        {
+            return this.SignalAndWait(waitObject, alertable, long.MinValue, false);
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
         public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout)
         {
-            return Win32.NtSignalAndWaitForSingleObject(this, waitObject.Handle, alertable, ref timeout);
+            return this.SignalAndWait(waitObject, alertable, timeout, true);
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        public virtual NtStatus SignalAndWait(ISynchronizable waitObject, bool alertable, long timeout, bool relative)
+        {
+            NtStatus status;
+            long realTimeout = relative ? -timeout : timeout;
+
+            if ((status = Win32.NtSignalAndWaitForSingleObject(
+                this,
+                waitObject.Handle,
+                alertable,
+                ref timeout
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return status;
         }
 
         /// <summary>
@@ -410,26 +471,16 @@ namespace ProcessHacker.Native.Objects
         /// </param>
         public virtual NtStatus Wait(bool alertable)
         {
-            return this.Wait(alertable, long.MinValue);
+            return this.Wait(alertable, long.MinValue, false);
         }
 
         /// <summary>
         /// Waits for the object to be signaled.
         /// </summary>
         /// <param name="timeout">The timeout value.</param>
-        public virtual NtStatus Wait(long timeout)
+        public NtStatus Wait(long timeout)
         {
-            return this.Wait(timeout, true);
-        }
-
-        /// <summary>
-        /// Waits for the object to be signaled.
-        /// </summary>
-        /// <param name="timeout">The timeout value.</param>
-        /// <param name="relative">Whether the timeout value is relative.</param>
-        public virtual NtStatus Wait(long timeout, bool relative)
-        {
-            return this.Wait(false, relative ? -timeout : timeout);
+            return this.Wait(false, timeout);
         }
 
         /// <summary>
@@ -438,18 +489,39 @@ namespace ProcessHacker.Native.Objects
         /// <param name="alertable">
         /// Whether user-mode APCs can be delivered during the wait.
         /// </param>
-        /// <param name="timeout">
-        /// Zero for no timeout (immediate return if the object is not signaled), 
-        /// a negative relative timeout or a positive absolute timeout.
-        /// </param>
+        /// <param name="timeout">The timeout value.</param>
         public virtual NtStatus Wait(bool alertable, long timeout)
         {
+            return this.Wait(alertable, timeout, true);
+        }
+
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="timeout">The timeout value.</param>
+        /// <param name="relative">Whether the timeout value is relative.</param>
+        public NtStatus Wait(long timeout, bool relative)
+        {
+            return this.Wait(false, timeout, relative);
+        }
+
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="alertable">
+        /// Whether user-mode APCs can be delivered during the wait.
+        /// </param>
+        /// <param name="timeout">The timeout value.</param>
+        /// <param name="relative">Whether the timeout value is relative.</param>
+        public virtual NtStatus Wait(bool alertable, long timeout, bool relative)
+        {
             NtStatus status;
+            long realTimeout = relative ? -timeout : timeout;
 
             if ((status = Win32.NtWaitForSingleObject(
                 this,
                 alertable,
-                ref timeout
+                ref realTimeout
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 

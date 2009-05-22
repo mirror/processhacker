@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   window station handle
+ *   USER handle
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -28,39 +28,30 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class WindowStationHandle : UserHandle<WindowStationAccess>
+    public abstract class UserHandle<TAccess> : Win32Handle<TAccess>
+        where TAccess : struct
     {
-        public static WindowStationHandle GetCurrent()
-        {
-            IntPtr handle = Win32.GetProcessWindowStation();
+        protected UserHandle()
+            : base()
+        { }
 
-            if (handle == IntPtr.Zero)
-                Win32.ThrowLastError();
-
-            return new WindowStationHandle(handle, false);
-        }
-
-        public WindowStationHandle(string name, WindowStationAccess access)
-        {
-            this.Handle = Win32.OpenWindowStation(name, false, access);
-
-            if (this.Handle == System.IntPtr.Zero)
-                Win32.ThrowLastError();
-        }
-
-        private WindowStationHandle(IntPtr handle, bool owned)
+        protected UserHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
-        protected override void Close()
+        public override SecurityDescriptor GetSecurity()
         {
-            Win32.CloseWindowStation(this);
+            return this.GetSecurity(SeObjectType.WindowObject);
         }
 
-        public void SetCurrent()
+        public override void SetSecurity(SecurityDescriptor securityDescriptor)
         {
-            if (!Win32.SetProcessWindowStation(this))
-                Win32.ThrowLastError();
+            this.SetSecurity(SeObjectType.WindowObject, securityDescriptor);
+        }
+
+        public override void SetSecurity(SecurityInformation securityInformation, SecurityDescriptor securityDescriptor)
+        {
+            this.SetSecurity(SeObjectType.WindowObject, securityInformation, securityDescriptor);
         }
     }
 }

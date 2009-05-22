@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class DesktopHandle : Win32Handle<DesktopAccess>
+    public class DesktopHandle : UserHandle<DesktopAccess>
     {
         public static DesktopHandle GetCurrent()
         {

@@ -86,50 +86,66 @@ namespace ProcessHacker.Native.Objects
             : this(name, null, 0, access)
         { }
 
-        public void Release(IntPtr key, bool alertable, long timeout)
+        public NtStatus ReleaseKey(int key)
+        {
+            return this.ReleaseKey(key, -1);
+        }
+
+        public NtStatus ReleaseKey(int key, long timeout)
+        {
+            return this.ReleaseKey(key, false, timeout);
+        }
+
+        public NtStatus ReleaseKey(int key, bool alertable, long timeout)
+        {
+            return this.ReleaseKey(new IntPtr(key), alertable, timeout, true);
+        }
+
+        public NtStatus ReleaseKey(IntPtr key, bool alertable, long timeout, bool relative)
         {
             NtStatus status;
+            long realTimeout = relative ? -timeout : timeout;
 
-            if ((status = Win32.NtReleaseKeyedEvent(this, key, alertable, ref timeout)) >= NtStatus.Error)
+            if ((status = Win32.NtReleaseKeyedEvent(
+                this,
+                key,
+                alertable,
+                ref realTimeout
+                )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
 
-        public void Release(int key, bool alertable, long timeout)
+        public NtStatus WaitKey(int key)
         {
-            this.Release(new IntPtr(key), alertable, timeout);
+            return this.WaitKey(key, -1);
         }
 
-        public void Release(int key, long timeout)
+        public NtStatus WaitKey(int key, long timeout)
         {
-            this.Release(key, false, timeout);
+            return this.WaitKey(key, false, timeout);
         }
 
-        public void Release(int key)
+        public NtStatus WaitKey(int key, bool alertable, long timeout)
         {
-            this.Release(key, -1);
+            return this.WaitKey(new IntPtr(key), alertable, timeout, true);
         }
 
-        public void Wait(IntPtr key, bool alertable, long timeout)
+        public NtStatus WaitKey(IntPtr key, bool alertable, long timeout, bool relative)
         {
             NtStatus status;
+            long realTimeout = relative ? -timeout : timeout;
 
-            if ((status = Win32.NtWaitForKeyedEvent(this, key, alertable, ref timeout)) >= NtStatus.Error)
+            if ((status = Win32.NtWaitForKeyedEvent(
+                this,
+                key,
+                alertable,
+                ref realTimeout
+                )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
-        }
 
-        public void Wait(int key, bool alertable, long timeout)
-        {
-            this.Wait(new IntPtr(key), alertable, timeout);
-        }
-
-        public void Wait(int key, long timeout)
-        {
-            this.Wait(key, false, timeout);
-        }
-
-        public void Wait(int key)
-        {
-            this.Wait(key, -1);
+            return status;
         }
     }
 }

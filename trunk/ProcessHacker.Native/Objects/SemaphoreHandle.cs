@@ -104,6 +104,11 @@ namespace ProcessHacker.Native.Objects
             return sbi;
         }
 
+        public int Release()
+        {
+            return this.Release(1);
+        }
+
         public int Release(int count)
         {
             NtStatus status;
@@ -113,11 +118,6 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return previousCount;
-        }
-
-        public int Release()
-        {
-            return this.Release(1);
         }
     }
 }
