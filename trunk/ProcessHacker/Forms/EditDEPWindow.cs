@@ -98,10 +98,11 @@ namespace ProcessHacker
                     throw new Exception("This feature is not supported on your version of Windows.");
 
                 using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                    Program.MinProcessQueryRights | ProcessAccess.CreateThread))
+                    Program.MinProcessQueryRights | ProcessAccess.VmOperation | 
+                    ProcessAccess.VmRead | ProcessAccess.CreateThread))
                 {
                     var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags),
-                        ThreadAccess.All);
+                        Program.MinThreadQueryRights | (ThreadAccess)StandardRights.Synchronize);
 
                     thread.Wait(1000);
 

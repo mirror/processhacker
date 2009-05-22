@@ -44,7 +44,7 @@ namespace ProcessHacker.Native.Objects
 
         public static NtStatus WaitAll(ISynchronizable[] objects)
         {
-            return WaitAll(objects, -1);
+            return WaitAll(objects, long.MinValue);
         }
 
         public static NtStatus WaitAny(ISynchronizable[] objects, bool alertable, long timeout)
@@ -59,7 +59,7 @@ namespace ProcessHacker.Native.Objects
 
         public static NtStatus WaitAny(ISynchronizable[] objects)
         {
-            return WaitAny(objects, -1);
+            return WaitAny(objects, long.MinValue);
         }
 
         private static NtStatus WaitForMultipleObjects(ISynchronizable[] objects, WaitType waitType, bool alertable, long timeout)
@@ -395,18 +395,53 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Waits for the object.
+        /// Waits for the object to be signaled.
         /// </summary>
         public virtual NtStatus Wait()
         {
-            return this.Wait(-1);
+            return this.Wait(false);
         }
 
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="alertable">
+        /// Whether user-mode APCs can be delivered during the wait.
+        /// </param>
+        public virtual NtStatus Wait(bool alertable)
+        {
+            return this.Wait(alertable, long.MinValue);
+        }
+
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="timeout">The timeout value.</param>
         public virtual NtStatus Wait(long timeout)
         {
-            return this.Wait(false, timeout);
+            return this.Wait(timeout, true);
         }
 
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="timeout">The timeout value.</param>
+        /// <param name="relative">Whether the timeout value is relative.</param>
+        public virtual NtStatus Wait(long timeout, bool relative)
+        {
+            return this.Wait(false, relative ? -timeout : timeout);
+        }
+
+        /// <summary>
+        /// Waits for the object to be signaled.
+        /// </summary>
+        /// <param name="alertable">
+        /// Whether user-mode APCs can be delivered during the wait.
+        /// </param>
+        /// <param name="timeout">
+        /// Zero for no timeout (immediate return if the object is not signaled), 
+        /// a negative relative timeout or a positive absolute timeout.
+        /// </param>
         public virtual NtStatus Wait(bool alertable, long timeout)
         {
             NtStatus status;

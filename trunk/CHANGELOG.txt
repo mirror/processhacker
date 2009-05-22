@@ -26,6 +26,8 @@ Process Hacker
    * .NET processes getting recognized as packed
    * Start times like "20 centuries ago"
    * Unable to change service configurations
+   * "Access denied" when changing DEP status or unloading a module 
+     on Windows XP
 
 1.3.7.5
  * NEW/IMPROVED:

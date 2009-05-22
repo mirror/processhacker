@@ -464,14 +464,15 @@ namespace ProcessHacker.Components
                         throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
 
                     using (ProcessHandle phandle = new ProcessHandle(_pid,
-                        Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights |
-                        Program.MinProcessWriteMemoryRights | ProcessAccess.CreateThread))
+                        Program.MinProcessQueryRights | ProcessAccess.VmOperation |
+                        ProcessAccess.VmRead | ProcessAccess.VmWrite | ProcessAccess.CreateThread))
                     {
                         IntPtr baseAddress = ((ModuleItem)listModules.SelectedItems[0].Tag).BaseAddress;
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
-                        var thread = phandle.CreateThread(freeLibrary, baseAddress, ThreadAccess.All);
+                        var thread = phandle.CreateThread(freeLibrary, baseAddress, 
+                            Program.MinThreadQueryRights | (ThreadAccess)StandardRights.Synchronize);
 
                         thread.Wait(1000);
 

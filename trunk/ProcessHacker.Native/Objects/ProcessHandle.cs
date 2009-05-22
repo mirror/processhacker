@@ -1005,12 +1005,12 @@ namespace ProcessHacker.Native.Objects
         /// <param name="timeout">The timeout, in seconds, for the process to load the library.</param>
         public void InjectDll(string path, uint timeout)
         {
-            IntPtr stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ExecuteReadWrite);
+            IntPtr stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ReadWrite);
 
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
             this.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "LoadLibraryW"),
-                stringPage, ThreadAccess.All).Wait(timeout);
+                stringPage, (ThreadAccess)StandardRights.Synchronize).Wait(timeout);
 
             this.FreeMemory(stringPage, path.Length * 2 + 2, false);
         }

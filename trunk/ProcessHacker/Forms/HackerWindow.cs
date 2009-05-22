@@ -1153,7 +1153,7 @@ namespace ProcessHacker
                     using (var phandle = new ProcessHandle(processSelectedPID,
                         ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
                     {
-                        phandle.InjectDll(ofd.FileName, 2000);
+                        phandle.InjectDll(ofd.FileName, 5000);
                     }
                 }
                 catch (Exception ex)
