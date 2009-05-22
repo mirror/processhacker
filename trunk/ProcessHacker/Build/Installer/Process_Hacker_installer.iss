@@ -14,13 +14,6 @@
 #define app_contact "http://processhacker.sourceforge.net/"
 #define app_publisher_url "http://processhacker.sourceforge.net/"
 
-#define ISSI_IncludePath ReadReg(HKLM, "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup Script Includes_is1", "InstallLocation")
-#define ISSI_URL
-#define ISSI_URLText
-
-; Include ISSI
-#include ISSI_IncludePath+"\_issi.isi"
-
 ; From now on you'll probably won't have to change anything, so be carefull
 [Setup]
 AppID=Process_Hacker
