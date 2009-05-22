@@ -143,7 +143,7 @@ namespace ProcessHacker.Native.Api
     public struct IoStatusBlock
     {
         [FieldOffset(0)]
-        public NtStatus status;
+        public NtStatus Status;
         [FieldOffset(0)]
         public IntPtr Pointer;
 

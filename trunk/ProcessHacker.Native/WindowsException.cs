@@ -37,7 +37,9 @@ namespace ProcessHacker.Native
     /// </remarks>
     public class WindowsException : Exception
     {
+        private bool _isNtStatus = false;
         private int _errorCode = 0;
+        private NtStatus _status;
         private string _message = null;
 
         public WindowsException()
@@ -48,9 +50,26 @@ namespace ProcessHacker.Native
             _errorCode = errorCode;
         }
 
+        public WindowsException(NtStatus status)
+        {
+            _status = status;
+            _errorCode = Win32.RtlNtStatusToDosError(status);
+            _isNtStatus = true;
+        }
+
+        public bool IsNtStatus
+        {
+            get { return _isNtStatus; }
+        }
+
         public int ErrorCode
         {
             get { return _errorCode; }
+        }
+
+        public NtStatus Status
+        {
+            get { return _status; }
         }
 
         public override string Message

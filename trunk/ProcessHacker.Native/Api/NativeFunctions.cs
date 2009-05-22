@@ -378,6 +378,34 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDeviceIoControlFile(
+            [In] IntPtr FileHandle,
+            [In] IntPtr Event,
+            [In] IntPtr ApcRoutine,
+            [In] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] int IoControlCode,
+            [In] IntPtr InputBuffer,
+            [In] int InputBufferLength,
+            [In] IntPtr OutputBuffer,
+            [In] int OutputBufferLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public unsafe static extern NtStatus NtDeviceIoControlFile(
+            [In] IntPtr FileHandle,
+            [In] IntPtr Event,
+            [In] IntPtr ApcRoutine,
+            [In] IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] int IoControlCode,
+            [In] void* InputBuffer,
+            [In] int InputBufferLength,
+            [In] void* OutputBuffer,
+            [In] int OutputBufferLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtDuplicateObject(
             [In] IntPtr SourceProcessHandle,
             [In] IntPtr SourceHandle,

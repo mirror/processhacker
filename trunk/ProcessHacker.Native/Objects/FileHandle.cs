@@ -58,18 +58,20 @@ namespace ProcessHacker.Native.Objects
         /// <param name="inBuffer">The input.</param>
         /// <param name="outBuffer">The output buffer.</param>
         /// <returns>The bytes returned in the output buffer.</returns>
-        public int IoControl(uint controlCode, byte[] inBuffer, byte[] outBuffer)
+        public unsafe int IoControl(uint controlCode, byte[] inBuffer, byte[] outBuffer)
         {
-            int returnBytes;
             byte[] inArr = inBuffer;
             int inLen = inArr != null ? inBuffer.Length : 0;
             byte[] outArr = outBuffer;
             int outLen = outArr != null ? outBuffer.Length : 0;
 
-            if (!Win32.DeviceIoControl(this, (int)controlCode, inArr, inLen, outArr, outLen, out returnBytes, IntPtr.Zero))
-                Win32.ThrowLastError();
-
-            return returnBytes;
+            fixed (byte* inArrPtr = inArr)
+            {
+                fixed (byte* outArrPtr = outArr)
+                {
+                    return this.IoControl(controlCode, inArrPtr, inLen, outArrPtr, outLen);
+                }
+            }
         }
 
         public unsafe int IoControl(uint controlCode,
@@ -88,7 +90,6 @@ namespace ProcessHacker.Native.Objects
             byte* inBuffer, int inBufferLength,
             byte* outBuffer, int outBufferLength)
         {
-            int returnBytes;
             byte* dummy = stackalloc byte[0];
             int inLen = inBuffer != null ? inBufferLength : 0;
             int outLen = outBuffer != null ? outBufferLength : 0;
@@ -98,10 +99,32 @@ namespace ProcessHacker.Native.Objects
             if (outBuffer == null)
                 outBuffer = dummy;
 
-            if (!Win32.DeviceIoControl(this, (int)controlCode, inBuffer, inLen, outBuffer, outLen, out returnBytes, IntPtr.Zero))
-                Win32.ThrowLastError();
+            NtStatus status;
+            IoStatusBlock isb;
 
-            return returnBytes;
+            // The reason I'm using NtDeviceIoControlFile is because DeviceIoControl 
+            // converts the NTSTATUS to a Win32 error, and sometimes I need 
+            // the actual NTSTATUS value.
+            if ((status = Win32.NtDeviceIoControlFile(
+                this,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                out isb,
+                (int)controlCode,
+                inBuffer,
+                inLen,
+                outBuffer,
+                outLen
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            // Not a good idea, but...
+            if (isb.Status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            // Information contains the return length.
+            return isb.Information.ToInt32();
         }
 
         /// <summary>

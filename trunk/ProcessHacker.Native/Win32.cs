@@ -117,22 +117,12 @@ namespace ProcessHacker.Native.Api
 
         public static void ThrowLastError(NtStatus status)
         {
-            ThrowLastError(RtlNtStatusToDosError(status));
+            throw new WindowsException(status);
         }
 
         public static void ThrowLastError(int error)
         {
-            // No error, but the caller requested us throw an exception so do it anyway.
-            if (error == 0)
-            {
-                throw new WindowsException();
-            }
-            else
-            {
-                var ex = new WindowsException(error);
-
-                throw ex;
-            }
+            throw new WindowsException(error);
         }
 
         #endregion
