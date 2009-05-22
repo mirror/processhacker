@@ -44,12 +44,12 @@ namespace ProcessHacker.Native.Objects
             public string TypeName { get { return _typeName; } }
         }
 
-        public DirectoryHandle Create(DirectoryAccess access, string name)
+        public static DirectoryHandle Create(DirectoryAccess access, string name)
         {
-            return this.Create(access, name, 0, null);
+            return Create(access, name, 0, null);
         }
 
-        public DirectoryHandle Create(DirectoryAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
+        public static DirectoryHandle Create(DirectoryAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
         {
             NtStatus status;
             ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);

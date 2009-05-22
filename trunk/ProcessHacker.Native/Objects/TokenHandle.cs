@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows token.
     /// </summary>
-    public class TokenHandle : Win32Handle<TokenAccess>
+    public class TokenHandle : Win32Handle<TokenAccess>, IEquatable<TokenHandle>
     {
         public struct TokenGroupsData
         {
@@ -159,6 +159,26 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return new TokenHandle(token, true);
+        }
+
+        /// <summary>
+        /// Determins whether the token is the same as another token.
+        /// </summary>
+        /// <param name="other">The other token.</param>
+        /// <returns>Whether they are equal.</returns>
+        public bool Equals(TokenHandle other)
+        {
+            NtStatus status;
+            bool equal;
+
+            if ((status = Win32.NtCompareTokens(
+                this,
+                other,
+                out equal
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return equal;
         }
 
         /// <summary>

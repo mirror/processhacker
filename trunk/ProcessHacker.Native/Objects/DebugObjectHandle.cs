@@ -32,16 +32,34 @@ namespace ProcessHacker.Native.Objects
     {
         public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
         {
+            return Create(access, null, flags);
+        }
+
+        public static DebugObjectHandle Create(DebugObjectAccess access, string name, DebugObjectFlags flags)
+        {
+            return Create(access, name, 0, null, flags);
+        }
+
+        public static DebugObjectHandle Create(DebugObjectAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, DebugObjectFlags flags)
+        {
             NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
             IntPtr handle;
 
-            if ((status = Win32.NtCreateDebugObject(
-                out handle,
-                access,
-                IntPtr.Zero,
-                flags
-                )) >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+            try
+            {
+                if ((status = Win32.NtCreateDebugObject(
+                    out handle,
+                    access,
+                    ref oa,
+                    flags
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
 
             return new DebugObjectHandle(handle, true);
         }
@@ -49,5 +67,49 @@ namespace ProcessHacker.Native.Objects
         private DebugObjectHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
+
+        public void Continue(ClientId cid, NtStatus continueStatus)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtDebugContinue(
+                this,
+                ref cid,
+                continueStatus
+                )) > NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public void SetFlags(DebugObjectFlags flags)
+        {
+            unsafe
+            {
+                NtStatus status;
+                int retLength;
+
+                if ((status = Win32.NtSetInformationDebugObject(
+                    this,
+                    DebugObjectInformationClass.DebugObjectFlags,
+                    new IntPtr(&flags),
+                    sizeof(DebugObjectFlags),
+                    out retLength
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+        }
+
+        public void WaitForDebugEvent(out DbgUiWaitStateChange waitStateChange, bool alertable, long timeout, bool timeoutRelative)
+        {
+            NtStatus status;
+            long realTimeout = timeoutRelative ? -timeout : timeout;
+
+            if ((status = Win32.NtWaitForDebugEvent(
+                this,
+                alertable,
+                ref realTimeout,
+                out waitStateChange
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
     }
 }

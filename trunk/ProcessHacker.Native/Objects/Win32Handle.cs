@@ -252,7 +252,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets certain information about the handle.
         /// </summary>
         /// <returns>A HANDLE_FLAGS value.</returns>
-        public Win32HandleFlags GetHandleInformation()
+        public Win32HandleFlags GetHandleFlags()
         {
             Win32HandleFlags flags;
 
@@ -266,7 +266,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the handle's name.
         /// </summary>
         /// <returns>A string.</returns>
-        public string GetHandleName()
+        public string GetObjectName()
         {
             NtStatus status;
             int retLength;
@@ -320,7 +320,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Makes the object referenced by the handle permanent.
         /// </summary>
-        public void MakePermanent()
+        public void MakeObjectPermanent()
         {
             NtStatus status;
 
@@ -332,7 +332,7 @@ namespace ProcessHacker.Native.Objects
         /// Makes the object referenced by the handle temporary. The object 
         /// will be deleted once the last handle to it is closed.
         /// </summary>
-        public void MakeTemporary()
+        public void MakeObjectTemporary()
         {
             NtStatus status;
 
@@ -345,7 +345,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="mask">Specifies which flags to set.</param>
         /// <param name="flags">The values of the flags to set.</param>
-        public void SetHandleInformation(Win32HandleFlags mask, Win32HandleFlags flags)
+        public void SetHandleFlags(Win32HandleFlags mask, Win32HandleFlags flags)
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
                 Win32.ThrowLastError();

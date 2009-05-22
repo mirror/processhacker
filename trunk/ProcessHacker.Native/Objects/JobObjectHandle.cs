@@ -33,6 +33,39 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class JobObjectHandle : Win32Handle<JobObjectAccess>
     {
+        public static JobObjectHandle Create(JobObjectAccess access)
+        {
+            return Create(access, null);
+        }
+
+        public static JobObjectHandle Create(JobObjectAccess access, string name)
+        {
+            return Create(access, name, 0, null);
+        }
+
+        public static JobObjectHandle Create(JobObjectAccess access, string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory)
+        {
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
+
+            try
+            {
+                if ((status = Win32.NtCreateJobObject(
+                    out handle,
+                    access,
+                    ref oa
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            return new JobObjectHandle(handle, true);
+        }
+
         /// <summary>
         /// Creates a service handle using an existing handle. 
         /// The handle will not be closed automatically.
@@ -44,32 +77,36 @@ namespace ProcessHacker.Native.Objects
             return new JobObjectHandle(handle, false);
         }
 
-        public static JobObjectHandle Create(string name)
-        {
-            IntPtr jobHandle = Win32.CreateJobObject(IntPtr.Zero, name);
-
-            if (jobHandle == IntPtr.Zero)
-                Win32.ThrowLastError();
-
-            return new JobObjectHandle(jobHandle, true);
-        }
-
         private JobObjectHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
-        /// <summary>
-        /// Opens a job by its name.
-        /// </summary>
-        /// <param name="name">The job name.</param>
-        /// <param name="access">The desired access to the job object.</param>
-        public JobObjectHandle(string name, JobObjectAccess access)
+        public JobObjectHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, JobObjectAccess access)
         {
-            this.Handle = Win32.OpenJobObject(access, false, name);
+            NtStatus status;
+            ObjectAttributes oa = new ObjectAttributes(name, objectFlags, rootDirectory);
+            IntPtr handle;
 
-            if (this.Handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+            try
+            {
+                if ((status = Win32.NtOpenJobObject(
+                    out handle,
+                    access,
+                    ref oa
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
+            finally
+            {
+                oa.Dispose();
+            }
+
+            this.Handle = handle;
         }
+
+        public JobObjectHandle(string name, JobObjectAccess access)
+            : this(name, 0, null, access)
+        { }
 
         /// <summary>
         /// Opens the job associated with the specified process.

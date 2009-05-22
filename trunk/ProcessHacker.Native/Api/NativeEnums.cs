@@ -49,6 +49,29 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum DebugObjectInformationClass : int
+    {
+        DebugObjectFlags,
+        MaxDebugObjectInfoClass
+    }
+
+    [Flags]
+    public enum DbgState : int
+    {
+        DbgIdle,
+        DbgReplyPending,
+        DbgCreateThreadStateChange,
+        DbgCreateProcessStateChange,
+        DbgExitThreadStateChange,
+        DbgExitProcessStateChange,
+        DbgExceptionStateChange,
+        DbgBreakpointStateChange,
+        DbgSingleStepStateChange,
+        DbgLoadDllStateChange,
+        DbgUnloadDllStateChange
+    }
+
+    [Flags]
     public enum DuplicateOptions : int
     {
         CloseSource = 0x1,

@@ -211,6 +211,7 @@ namespace ProcessHacker
                     {
                         using (var jhandle = phandle.GetJob(JobObjectAccess.Query | JobObjectAccess.Terminate))
                         {
+                            // Make sure we're not terminating more than one process
                             if (jhandle.GetProcessIdList().Length == 1)
                             {
                                 jhandle.Terminate();
@@ -223,7 +224,7 @@ namespace ProcessHacker
                 { }
             }
 
-            using (var jhandle = JobObjectHandle.Create(null))
+            using (var jhandle = JobObjectHandle.Create(JobObjectAccess.AssignProcess | JobObjectAccess.Terminate))
             {
                 using (ProcessHandle phandle =
                     new ProcessHandle(_pid, ProcessAccess.SetQuota | ProcessAccess.Terminate))

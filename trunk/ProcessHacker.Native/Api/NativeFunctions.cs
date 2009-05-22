@@ -25,7 +25,7 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Security;
 
-// you won't get some of this stuff from anywhere else... :)
+// you won't get most of this stuff from anywhere else... :)
 
 namespace ProcessHacker.Native.Api
 {
@@ -95,6 +95,14 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtClose(
             [In] IntPtr Handle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCompareTokens(
+            [In] IntPtr FirstTokenHandle,
+            [In] IntPtr SecondTokenHandle,
+            [MarshalAs(UnmanagedType.I1)]
+            [Out] out bool Equal
             );
 
         [DllImport("ntdll.dll")]
@@ -372,6 +380,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDebugContinue(
+            [In] IntPtr DebugObjectHandle,
+            [In] ref ClientId ClientId,
+            [In] NtStatus ContinueStatus
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtDelayExecution(
             [In] bool Alertable,
             [In] ref long DelayInterval
@@ -414,6 +429,16 @@ namespace ProcessHacker.Native.Api
             [In] int DesiredAccess,
             [In] HandleFlags Attributes,
             [In] DuplicateOptions Options
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtDuplicateToken(
+            [In] IntPtr ExistingTokenHandle,
+            [In] TokenAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [In] bool EffectiveOnly,
+            [In] TokenType TokenType,
+            [Out] out IntPtr NewTokenHandle
             );
 
         [DllImport("ntdll.dll")]
@@ -592,6 +617,21 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenProcessToken(
+            [In] IntPtr ProcessHandle,
+            [In] TokenAccess DesiredAccess,
+            [Out] out IntPtr TokenHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenProcessTokenEx(
+            [In] IntPtr ProcessHandle,
+            [In] TokenAccess DesiredAccess,
+            [In] int HandleAttributes,
+            [Out] out IntPtr TokenHandle
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtOpenSection(
             [Out] out IntPtr SectionHandle,
             [In] SectionAccess DesiredAccess,
@@ -626,6 +666,23 @@ namespace ProcessHacker.Native.Api
             [In] ThreadAccess DesiredAccess,
             [In] ref ObjectAttributes ObjectAttributes,
             [In] [Optional] IntPtr ClientId
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenThreadToken(
+            [In] IntPtr ThreadHandle,
+            [In] TokenAccess DesiredAccess,
+            [In] bool OpenAsSelf,
+            [Out] out IntPtr TokenHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenThreadTokenEx(
+            [In] IntPtr ThreadHandle,
+            [In] TokenAccess DesiredAccess,
+            [In] bool OpenAsSelf,
+            [In] int HandleAttributes,
+            [Out] out IntPtr TokenHandle
             );
 
         [DllImport("ntdll.dll")]
@@ -1054,11 +1111,28 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationDebugObject(
+            [In] IntPtr DebugObjectHandle,
+            [In] DebugObjectInformationClass DebugObjectInformationClass,
+            [In] IntPtr DebugObjectInformation,
+            [In] int DebugObjectInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetInformationJobObject(
             [In] IntPtr JobHandle,
             [In] JobObjectInformationClass JobObjectInformationClass,
             [In] IntPtr JobObjectInformation,
             [In] int JobObjectInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationObject(
+            [In] IntPtr Handle,
+            [In] ObjectInformationClass ObjectInformationClass,
+            [In] IntPtr ObjectInformation,
+            [In] int ObjectInformationLength
             );
 
         [DllImport("ntdll.dll")]
@@ -1201,6 +1275,14 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtUnmapViewOfSection(
             [In] IntPtr ProcessHandle,
             [In] IntPtr BaseAddress
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtWaitForDebugEvent(
+            [In] IntPtr DebugObjectHandle,
+            [In] bool Alertable,
+            [In] [Optional] ref long Timeout,
+            [Out] out DbgUiWaitStateChange WaitStateChange
             );
 
         [DllImport("ntdll.dll")]

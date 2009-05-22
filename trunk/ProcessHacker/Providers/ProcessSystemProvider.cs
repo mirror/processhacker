@@ -915,7 +915,7 @@ namespace ProcessHacker
                                             var limits = jhandle.GetBasicLimitInformation();
 
                                             item.IsInJob = true;
-                                            item.JobName = jhandle.GetHandleName();
+                                            item.JobName = jhandle.GetObjectName();
 
                                             if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
                                             {

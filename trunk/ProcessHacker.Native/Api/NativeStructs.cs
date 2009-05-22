@@ -82,10 +82,117 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmCreateProcess
+    {
+        public int SubSystemKey;
+        public IntPtr FileHandle;
+        public IntPtr BaseOfImage;
+        public int DebugInfoFileOffset;
+        public int DebugInfoSize;
+        public DbgKmCreateThread InitialThread;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmCreateThread
+    {
+        public int SubSystemKey;
+        public IntPtr StartAddress;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmException
+    {
+        public ExceptionRecord ExceptionRecord;
+        public int FirstChance;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmExitProcess
+    {
+        public NtStatus ExitStatus;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmExitThread
+    {
+        public NtStatus ExitStatus;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmLoadDll
+    {
+        public IntPtr FileHandle;
+        public IntPtr BaseOfDll;
+        public int DebugInfoFileOffset;
+        public int DebugInfoSize;
+        public IntPtr NamePointer;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgKmUnloadDll
+    {
+        public IntPtr BaseAddress;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgUiCreateProcess
+    {
+        public IntPtr HandleToProcess;
+        public IntPtr HandleToThread;
+        public DbgKmCreateProcess NewProcess;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgUiCreateThread
+    {
+        public IntPtr HandleToThread;
+        public DbgKmCreateThread NewThread;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DbgUiWaitStateChange
+    {
+        [StructLayout(LayoutKind.Explicit)]
+        public struct StateInfoUnion
+        {
+            [FieldOffset(0)]
+            public DbgKmException Exception;
+            [FieldOffset(0)]
+            public DbgUiCreateThread CreateThread;
+            [FieldOffset(0)]
+            public DbgUiCreateProcess CreateProcess;
+            [FieldOffset(0)]
+            public DbgKmExitThread ExitThread;
+            [FieldOffset(0)]
+            public DbgKmExitProcess ExitProcess;
+            [FieldOffset(0)]
+            public DbgKmLoadDll LoadDll;
+            [FieldOffset(0)]
+            public DbgKmUnloadDll UnloadDll;
+        }
+
+        public DbgState NewState;
+        public ClientId AppClientId;
+        public StateInfoUnion StateInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct EventBasicInformation
     {
         public EventType EventType;
         public int EventState;
+    }
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ExceptionRecord
+    {
+        public NtStatus ExceptionCode;
+        public int ExceptionFlags;
+        public IntPtr ExceptionRecordPtr;
+        public IntPtr ExceptionAddress;
+        public int NumberParameters;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = Win32.ExceptionMaximumParameters)]
+        public IntPtr[] ExceptionInformation;
     }
 
     [StructLayout(LayoutKind.Sequential)]

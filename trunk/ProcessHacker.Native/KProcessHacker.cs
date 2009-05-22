@@ -137,7 +137,7 @@ namespace ProcessHacker.Native
                 FileShareMode.Read | FileShareMode.Write,
                 FileCreationDisposition.OpenAlways
                 );
-            _fileHandle.SetHandleInformation(Win32HandleFlags.ProtectFromClose, Win32HandleFlags.ProtectFromClose);
+            _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, Win32HandleFlags.ProtectFromClose);
 
             try
             {
@@ -180,7 +180,7 @@ namespace ProcessHacker.Native
         /// </summary>
         public void Close()
         {
-            _fileHandle.SetHandleInformation(Win32HandleFlags.ProtectFromClose, 0);
+            _fileHandle.SetHandleFlags(Win32HandleFlags.ProtectFromClose, 0);
             _fileHandle.Dispose();
         }
 

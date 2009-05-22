@@ -43,7 +43,7 @@ namespace ProcessHacker.Components
 
             try
             {
-                string name = _jobObject.GetHandleName();
+                string name = _jobObject.GetObjectName();
 
                 if (string.IsNullOrEmpty(name))
                     textJobName.Text = "(unnamed job)";
