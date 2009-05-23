@@ -191,6 +191,8 @@ VOID ObDereferenceProcessHandleTable(
 /* ObDuplicateObject
  * 
  * Duplicates a handle from the source process to the target process.
+ * WARNING: This does not actually duplicate a handle. It simply 
+ * re-opens an object in another process.
  */
 NTSTATUS ObDuplicateObject(
     PEPROCESS SourceProcess,

@@ -1,0 +1,16 @@
+==== KProcessHacker ====
+
+== IMPORTANT ==
+KProcessHacker has been developed from either reverse engineering of 
+the Windows kernel or ReactOS code (http://www.reactos.org). The 
+following files contain "ported" ReactOS code (with modifications):
+
+ * mm.c
+   * MiDoMappedCopy
+   * MiDoPoolCopy (added smarter buffer management)
+   * MiGetExceptionInfo
+ * ps.c
+   * KphOpenProcess
+   * KphOpenThread
+ * se.c
+   * KphOpenProcessTokenEx
