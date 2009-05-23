@@ -61,9 +61,9 @@ static char PsTerminateProcess60[] =
 };
 static char PsTerminateProcess61[] =
 {
-    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x53, 0x56, 0x57,
-    0x33, 0xd2, 0x6a, 0x08, 0x42, 0x5e, 0x8d, 0xb9
-}; /* same as 6.0 */
+    0x8b, 0xff, 0x55, 0x8b, 0xec, 0x51, 0x51, 0x53,
+    0x56, 0x64, 0x8b, 0x35, 0x24, 0x01, 0x00, 0x00
+};
 
 /* PspTerminateThreadByPointer */
 static char PspTerminateThreadByPointer51[] =
@@ -81,8 +81,8 @@ static char PspTerminateThreadByPointer61[] =
 {
     0x8b, 0xff, 0x55, 0x8b, 0xec, 0x83, 0xe4, 0xf8,
     0x51, 0x53, 0x56, 0x8b, 0x75, 0x08, 0x57, 0x8d,
-    0xbe, 0x60, 0x02, 0x00, 0x00, 0xf6, 0x07, 0x40
-}; /* same as 6.0 */
+    0xbe, 0x80, 0x02, 0x00, 0x00, 0xf6, 0x07, 0x40
+};
 
 /* The following offsets took me a long time to work out, so 
    please do not steal them. If you want to use them, please 
@@ -140,11 +140,6 @@ NTSTATUS KvInit()
         OffOtiGenericMapping = 0x60 + 0x8;
         OffOtiOpenProcedure = 0x60 + 0x30;
         
-        INIT_SCAN(
-            PsExitSpecialApcScan,
-            PsExitSpecialApc51,
-            16, searchOffset, SCAN_LENGTH, 0
-            );
         /* We are scanning for PspTerminateProcess which has 
            the same signature as PsTerminateProcess because 
            PsTerminateProcess is simply a wrapper on XP.
@@ -193,11 +188,7 @@ NTSTATUS KvInit()
     /* Windows Vista, Windows Server 2008 */
     else if (majorVersion == 6 && minorVersion == 0)
     {
-        ULONG_PTR psSearchOffset = (ULONG_PTR)GetSystemRoutineAddress(L"PsSetCreateProcessNotifyRoutine");
         ULONG_PTR searchOffset = (ULONG_PTR)__NtClose;
-        
-        if (!psSearchOffset)
-            return STATUS_NOT_SUPPORTED;
         
         WindowsVersion = WINDOWS_VISTA;
         ProcessAllAccess = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff;
@@ -213,11 +204,6 @@ NTSTATUS KvInit()
         OffKtProcess = 0x144;
         OffOhBody = 0x18;
         
-        INIT_SCAN(
-            PsExitSpecialApcScan,
-            PsExitSpecialApc60,
-            16, psSearchOffset, SCAN_LENGTH, 0
-            );
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess60,
@@ -273,11 +259,6 @@ NTSTATUS KvInit()
         OffOtiGenericMapping = 0x28 + 0xc;
         OffOtiOpenProcedure = 0x28 + 0x34;
         
-        INIT_SCAN(
-            PsExitSpecialApcScan,
-            PsExitSpecialApc61,
-            16, psSearchOffset, psScanLength, 0
-            );
         INIT_SCAN(
             PsTerminateProcessScan,
             PsTerminateProcess61,
