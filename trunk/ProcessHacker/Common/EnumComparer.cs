@@ -11,9 +11,6 @@ using System.Reflection.Emit;
 
 namespace ProcessHacker
 {
-    delegate U Func<T, U>(T a1);
-    delegate V Func<T, U, V>(T a1, U a2);
-
     public sealed class EnumComparer<TEnum> : IEqualityComparer<TEnum>
         where TEnum : struct, IComparable, IConvertible, IFormattable
     {
