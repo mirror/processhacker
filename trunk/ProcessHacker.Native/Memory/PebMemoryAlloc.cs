@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Native.Api;
 
-namespace ProcessHacker.Native.Memory
+namespace ProcessHacker.Native
 {
     /// <summary>
     /// Represents a memory allocation from the PEB.

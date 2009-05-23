@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Native.Memory;
 using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects

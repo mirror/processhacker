@@ -26,7 +26,7 @@ using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
-namespace ProcessHacker.Native.Memory
+namespace ProcessHacker.Native
 {
     /// <summary>
     /// Represents a mapped view of a section.
