@@ -4,6 +4,7 @@ Process Hacker
  * FIXED:
    * #2795871 - "Hidden Processes window resizing problem"
    * Windows 7 RC BSOD (Windows 7 Beta is no longer supported)
+   * Memory search addresses being in decimal
 
 1.3.8.0
  * NEW/IMPROVED:
