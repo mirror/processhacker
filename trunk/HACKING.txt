@@ -19,36 +19,56 @@ GUIDE TO DIRECTORY ORGANIZATION
   Process Hacker with handle names and provides custom versions of Nt* 
   API functions.
 * ProcessHacker - contains all of Process Hacker's source code.
-  * Asm - this contains the assembler and disassembler, converted to unsafe 
-    C# code from Oleh Yuschuk's Free Disassembler and Assembler.
-  * Build - contains the build script - merges Aga.Controls.dll with 
-    ProcessHacker.exe and creates the installer.
-  * Components - contains various "user controls" like the (possibly 
-    reusable) ProcessList, ThreadList and ServiceList. It also contains 
-    third-party user controls like HexBox and VistaMenu.
-  * Forms - contains all of the forms (windows) in Process Hacker.
-  * Icons - contains *.ico files.
-  * PE - contains the PE reader for reading imports and exports from 
-    PE files (exe, dll, ocx, sys, etc.)
-  * Properties - whatever Visual C# put in there.
-  * Providers - contains the "providers" (classes which have threads updating 
-    some sort of list or dictionary in the background) for processes, threads 
-    and services.
-  * Resources - contains PNG silk icons (from famfamfam.com).
-  * Searchers - contains the "searchers" (classes which search process memory 
-    in the background and add items to a results list) - heap searcher, 
-    literal bytes searcher, regex searcher and string searcher/scanner.
-  * Structs - contains the struct reader and definition parser. Struct 
-    definition files have a syntax very similar to C.
-  * Symbols - contains the symbol "server". This is dependent on the PE reader 
-    because:
-      1. The P/Invoked APIs for dbghelp.dll didn't work when I tried them, and
-      2. The Win32 API sucks (and dbghelp.dll isn't thread-safe).
-  * Win32 - contains imported functions, various structs and enums, and wrapper 
-    code (handles memory issues). This also has a large number of "handle" classes - 
-    these contain handles and release them automatically (you can use the "using" 
-    statement as well if you want). There are also memory classes for allocating 
-    blocks of memory.
+  * Asm
+    - this contains the assembler and disassembler, converted to unsafe 
+      C# code from Oleh Yuschuk's Free Disassembler and Assembler.
+  * Build
+    - contains the build script - merges Aga.Controls.dll with 
+      ProcessHacker.exe and creates the installer.
+  * Common
+    - contains data structures and global utility functions.
+  * Components
+    - contains various "user controls" like the (possibly 
+      reusable) ProcessList, ThreadList and ServiceList. It also contains 
+      third-party user controls like HexBox and VistaMenu.
+  * Forms
+    - contains all of the forms (windows) in Process Hacker.
+  * Icons
+    - contains *.ico files.
+  * PE
+    - contains the PE reader for reading imports and exports from 
+      PE files (exe, dll, ocx, sys, etc.)
+  * Properties
+    - whatever Visual C# put in there.
+  * Providers
+    - contains the "providers" (classes which have threads updating 
+      some sort of list or dictionary in the background) for processes, threads 
+      and services.
+  * Resources
+    - contains PNG silk icons (from famfamfam.com).
+  * Searchers
+    - contains the "searchers" (classes which search process memory 
+      in the background and add items to a results list) - heap searcher, 
+      literal bytes searcher, regex searcher and string searcher/scanner.
+  * Structs
+    - contains the struct reader and definition parser. Struct 
+      definition files have a syntax very similar to C.
+  * Symbols
+    - contains the symbol server. Uses dbghelp.dll, and because it does 
+      not support multithreading, all calls are synchronized.
+  * UI
+    - contains reusable GUI code such as process/service actions and 
+      notification icons.
+ * ProcessHacker.Native - contains reusable Windows and Native API code.
+  * Api
+    - contains all function, enum and struct definitions. Native*.cs files 
+      contain Native API definitions.
+  * Memory
+    - contains memory allocation classes.
+  * Objects
+    - contains NT object wrapper classes.
+  * Security
+    - contains security-related code, most of which is access-mask-related.
 
 NOTES
  * Do not use OpenProcess, OpenThread, OpenProcessToken or OpenThreadToken. Instead, 

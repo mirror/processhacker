@@ -43,6 +43,24 @@ VOID KphpProcessorLockDpc(
  * ProcessorLock: A processor lock structure that is present in 
  * non-paged memory.
  * 
+ * Comments:
+ * Here is how the processor lock works:
+ *  1. Tries to acquire the mutex in the processor lock, and 
+ *     blocks until it can be obtained.
+ *  2. Initializes a DPC for each processor on the computer.
+ *  3. Raises the IRQL to DISPATCH_LEVEL to make sure the 
+ *     code is not interrupted by a context switch.
+ *  4. Queues each of the previously-initialized DPCs, except if 
+ *     it is targeted at the current processor.
+ *  5. Since DPCs run at DISPATCH_LEVEL, they have exclusive 
+ *     control of the processor. As each runs, they increment 
+ *     a counter in the processor lock. They then enter a loop.
+ *  6. The routine waits for the counter to become n - 1, 
+ *     signaling that all (other) processors have been acquired 
+ *     (where n is the number of processors).
+ *  7. It returns. Any code from here will be running in 
+ *     DISPATCH_LEVEL and will be the only code running on the 
+ *     machine.
  * Thread safety: Full
  * IRQL: <= APC_LEVEL
  */
@@ -60,7 +78,7 @@ BOOLEAN KphAcquireProcessorLock(
     /* Reset some state. */
     ASSERT(ProcessorLock->AcquiredProcessors == 0);
     ProcessorLock->AcquiredProcessors = 0;
-    ProcessorLock->ReleaseSignal = 0;
+    ProcessorLock->ReleaseSignal = 0; /* IMPORTANT */
     
     /* Get the number of processors. */
     numberProcessors = KphpCountBits(KeQueryActiveProcessors());
@@ -148,8 +166,19 @@ VOID KphInitializeProcessorLock(
  * ProcessorLock: A processor lock structure that is present in 
  * non-paged memory.
  * 
+ * Comments:
+ * Here is how the processor lock is released:
+ *  1. Sets the signal to release the processors. The DPCs that are 
+ *     currently waiting for the signal will return and decrement 
+ *     the acquired processors counter.
+ *  2. Waits for the acquired processors counter to become zero.
+ *  3. Restores the old IRQL. This will always be APC_LEVEL due to 
+ *     the mutex.
+ *  4. Frees the storage allocated for the DPCs.
+ *  5. Releases the processor lock mutex. This will restore the IRQL 
+ *     back to normal.
  * Thread safety: Full
- * IRQL: <= APC_LEVEL
+ * IRQL: DISPATCH_LEVEL
  */
 VOID KphReleaseProcessorLock(
     PKPH_PROCESSOR_LOCK ProcessorLock
@@ -184,10 +213,17 @@ VOID KphReleaseProcessorLock(
     
     ProcessorLock->Acquired = FALSE;
     
-    /* Release the processor lock mutex. */
+    /* Release the processor lock mutex. This will restore the 
+     * IRQL back to what it was before the processor lock was 
+     * acquired.
+     */
     ExReleaseFastMutex(&ProcessorLock->Mutex);
 }
 
+/* KphpCountBits
+ * 
+ * Counts the number of bits set in an integer.
+ */
 ULONG KphpCountBits(
     ULONG_PTR Number
     )
@@ -203,6 +239,13 @@ ULONG KphpCountBits(
     return count;
 }
 
+/* KphpProcessorLockDpc
+ * 
+ * The DPC routine which "locks" processors.
+ * 
+ * Thread safety: Full
+ * IRQL: DISPATCH_LEVEL
+ */
 VOID KphpProcessorLockDpc(
     PKDPC Dpc,
     PVOID DeferredContext,
