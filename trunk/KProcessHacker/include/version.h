@@ -85,7 +85,6 @@ EXT ACCESS_MASK ThreadAllAccess;
 /* Structures
  * Et: ETHREAD
  * Ep: EPROCESS
- * Kt: KTHREAD
  * Ot: OBJECT_TYPE
  * Oti: OBJECT_TYPE_INITIALIZER, offset measured from an OBJECT_TYPE
  */
@@ -97,7 +96,6 @@ EXT ULONG OffEpObjectTable;
 EXT ULONG OffEpProtectedProcessOff;
 EXT ULONG OffEpProtectedProcessBit;
 EXT ULONG OffEpRundownProtect;
-EXT ULONG OffKtProcess;
 EXT ULONG OffOhBody;
 EXT ULONG OffOtiGenericMapping;
 EXT ULONG OffOtiOpenProcedure;

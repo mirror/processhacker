@@ -262,7 +262,7 @@ NTSTATUS ObDuplicateObject(
     {
         POBJECT_TYPE objectType = OBJECT_TO_OBJECT_HEADER(object)->Type;
         ACCESS_STATE accessState;
-        CHAR auxData[0x34];
+        CHAR auxData[AUX_ACCESS_DATA_SIZE];
         
         if (!objectType && AccessMode != KernelMode)
         {

@@ -27,6 +27,9 @@
 
 extern POBJECT_TYPE *SeTokenObjectType;
 
+/* Was 0x38 on Vista, appears to be 0xc8 on 7. */
+#define AUX_ACCESS_DATA_SIZE (0xc8)
+
 typedef PVOID PAUX_ACCESS_DATA;
 
 /* FUNCTION DEFS */

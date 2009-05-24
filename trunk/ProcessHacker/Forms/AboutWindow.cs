@@ -45,6 +45,29 @@ namespace ProcessHacker
             this.Close();
         }
 
+        private void buttonChangelog_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt"));
+
+                box.ShowSaveButton = false;
+                box.Title = "Process Hacker Changelog";
+                box.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void buttonDiagnostics_Click(object sender, EventArgs e)
+        {
+            InformationBox box = new InformationBox(Program.GetDiagnosticInformation());
+
+            box.ShowDialog();
+        }
+
         private void linkHexBox_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Program.TryStart("http://sourceforge.net/projects/hexbox");
@@ -90,27 +113,19 @@ namespace ProcessHacker
             Program.TryStart("http://www.codeproject.com/KB/vista/TaskDialogWinForms.aspx");
         }
 
-        private void buttonChangelog_Click(object sender, EventArgs e)
+        private void linkSysinternals_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            try
-            {
-                InformationBox box = new InformationBox(System.IO.File.ReadAllText(Application.StartupPath + "\\CHANGELOG.txt"));
-
-                box.ShowSaveButton = false;
-                box.Title = "Process Hacker Changelog";
-                box.ShowDialog();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            Program.TryStart("http://forum.sysinternals.com");
         }
 
-        private void buttonDiagnostics_Click(object sender, EventArgs e)
+        private void linkNtInternals_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            InformationBox box = new InformationBox(Program.GetDiagnosticInformation());
+            Program.TryStart("http://undocumented.ntinternals.net");
+        }
 
-            box.ShowDialog();
+        private void linkReactOS_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Program.TryStart("http://www.reactos.org");
         }
     }
 }

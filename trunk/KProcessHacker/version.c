@@ -135,7 +135,6 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0;
         OffEpProtectedProcessBit = 0;
         OffEpRundownProtect = 0x80;
-        OffKtProcess = 0x220; /* it's actually in the ETHREAD, but let's ignore that */
         OffOhBody = 0x18;
         OffOtiGenericMapping = 0x60 + 0x8;
         OffOtiOpenProcedure = 0x60 + 0x30;
@@ -201,7 +200,6 @@ NTSTATUS KvInit()
         OffEpProtectedProcessOff = 0x224;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0x98;
-        OffKtProcess = 0x144;
         OffOhBody = 0x18;
         
         INIT_SCAN(
@@ -251,10 +249,9 @@ NTSTATUS KvInit()
         OffEtWin32StartAddress = 0x260;
         OffEpJob = 0x124;
         OffEpObjectTable = 0xf4;
-        OffEpProtectedProcessOff = 0x25c;
+        OffEpProtectedProcessOff = 0x268;
         OffEpProtectedProcessBit = 0xb;
         OffEpRundownProtect = 0xb0;
-        OffKtProcess = 0x154;
         OffOhBody = 0x18;
         OffOtiGenericMapping = 0x28 + 0xc;
         OffOtiOpenProcedure = 0x28 + 0x34;
