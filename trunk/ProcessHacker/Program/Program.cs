@@ -177,6 +177,7 @@ namespace ProcessHacker
             ThreadPool.SetMaxThreads(2, 2);
             WorkQueue.GlobalWorkQueue.MaxWorkerThreads = 3;
 
+            // Create or open the Process Hacker mutex, used only by the installer.
             Win32.CreateMutex(IntPtr.Zero, false, "Global\\ProcessHackerMutex");
 
             try

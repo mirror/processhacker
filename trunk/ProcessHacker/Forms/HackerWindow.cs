@@ -634,6 +634,7 @@ namespace ProcessHacker
                     }
                 }
 
+                // Remove zero CPU usage processes and processes running as other users
                 for (int i = 0; i < processes.Count && processes.Count > Properties.Settings.Default.IconMenuProcessCount; i++)
                 {
                     if (processes[i].CpuUsage == 0)
@@ -648,6 +649,7 @@ namespace ProcessHacker
                     }
                 }
 
+                // Sort the processes by CPU usage and remove processes with low CPU usage
                 processes.Sort((i1, i2) => -i1.CpuUsage.CompareTo(i2.CpuUsage));
 
                 if (processes.Count > Properties.Settings.Default.IconMenuProcessCount)
@@ -657,6 +659,10 @@ namespace ProcessHacker
                         processes.Count - Properties.Settings.Default.IconMenuProcessCount);
                 }
 
+                // Then sort the processes by name
+                processes.Sort((i1, i2) => i1.Name.CompareTo(i2.Name));
+
+                // Add the processes
                 foreach (var process in processes)
                 {
                     MenuItem processItem = new MenuItem();
