@@ -48,16 +48,17 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.linkTaskDialog = new System.Windows.Forms.LinkLabel();
-            this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
+            this.label2 = new System.Windows.Forms.Label();
             this.linkSysinternals = new System.Windows.Forms.LinkLabel();
             this.linkNtInternals = new System.Windows.Forms.LinkLabel();
             this.linkReactOS = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.linkTaskDialog = new System.Windows.Forms.LinkLabel();
+            this.linkICSharpCode = new System.Windows.Forms.LinkLabel();
             this.label3 = new System.Windows.Forms.Label();
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
             this.buttonDiagnostics = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -107,7 +108,7 @@
             // 
             this.linkFamFamFam.AutoSize = true;
             this.linkFamFamFam.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkFamFamFam.Location = new System.Drawing.Point(6, 133);
+            this.linkFamFamFam.Location = new System.Drawing.Point(6, 185);
             this.linkFamFamFam.Name = "linkFamFamFam";
             this.linkFamFamFam.Size = new System.Drawing.Size(136, 13);
             this.linkFamFamFam.TabIndex = 5;
@@ -119,7 +120,7 @@
             // 
             this.linkVistaMenu.AutoSize = true;
             this.linkVistaMenu.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkVistaMenu.Location = new System.Drawing.Point(6, 146);
+            this.linkVistaMenu.Location = new System.Drawing.Point(6, 198);
             this.linkVistaMenu.Name = "linkVistaMenu";
             this.linkVistaMenu.Size = new System.Drawing.Size(183, 13);
             this.linkVistaMenu.TabIndex = 6;
@@ -131,7 +132,7 @@
             // 
             this.linkHexBox.AutoSize = true;
             this.linkHexBox.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkHexBox.Location = new System.Drawing.Point(6, 120);
+            this.linkHexBox.Location = new System.Drawing.Point(6, 172);
             this.linkHexBox.Name = "linkHexBox";
             this.linkHexBox.Size = new System.Drawing.Size(151, 13);
             this.linkHexBox.TabIndex = 7;
@@ -175,7 +176,7 @@
             // 
             this.linkAsm.AutoSize = true;
             this.linkAsm.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkAsm.Location = new System.Drawing.Point(6, 159);
+            this.linkAsm.Location = new System.Drawing.Point(6, 211);
             this.linkAsm.Name = "linkAsm";
             this.linkAsm.Size = new System.Drawing.Size(198, 13);
             this.linkAsm.TabIndex = 12;
@@ -187,7 +188,7 @@
             // 
             this.linkTreeViewAdv.AutoSize = true;
             this.linkTreeViewAdv.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 172);
+            this.linkTreeViewAdv.Location = new System.Drawing.Point(6, 224);
             this.linkTreeViewAdv.Name = "linkTreeViewAdv";
             this.linkTreeViewAdv.Size = new System.Drawing.Size(165, 13);
             this.linkTreeViewAdv.TabIndex = 12;
@@ -210,6 +211,10 @@
             this.flowCredits.Controls.Add(this.label1);
             this.flowCredits.Controls.Add(this.label11);
             this.flowCredits.Controls.Add(this.label2);
+            this.flowCredits.Controls.Add(this.linkSysinternals);
+            this.flowCredits.Controls.Add(this.linkNtInternals);
+            this.flowCredits.Controls.Add(this.linkReactOS);
+            this.flowCredits.Controls.Add(this.label4);
             this.flowCredits.Controls.Add(this.linkHexBox);
             this.flowCredits.Controls.Add(this.linkFamFamFam);
             this.flowCredits.Controls.Add(this.linkVistaMenu);
@@ -217,9 +222,6 @@
             this.flowCredits.Controls.Add(this.linkTreeViewAdv);
             this.flowCredits.Controls.Add(this.linkTaskDialog);
             this.flowCredits.Controls.Add(this.linkICSharpCode);
-            this.flowCredits.Controls.Add(this.linkSysinternals);
-            this.flowCredits.Controls.Add(this.linkNtInternals);
-            this.flowCredits.Controls.Add(this.linkReactOS);
             this.flowCredits.Controls.Add(this.label3);
             this.flowCredits.Controls.Add(this.labelFiller);
             this.flowCredits.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -304,35 +306,20 @@
             this.label11.TabIndex = 17;
             this.label11.Text = "Thanks to:";
             // 
-            // linkTaskDialog
+            // label2
             // 
-            this.linkTaskDialog.AutoSize = true;
-            this.linkTaskDialog.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkTaskDialog.Location = new System.Drawing.Point(6, 185);
-            this.linkTaskDialog.Name = "linkTaskDialog";
-            this.linkTaskDialog.Size = new System.Drawing.Size(114, 13);
-            this.linkTaskDialog.TabIndex = 21;
-            this.linkTaskDialog.TabStop = true;
-            this.linkTaskDialog.Text = "KevinGre - TaskDialog";
-            this.linkTaskDialog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTaskDialog_LinkClicked);
-            // 
-            // linkICSharpCode
-            // 
-            this.linkICSharpCode.AutoSize = true;
-            this.linkICSharpCode.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkICSharpCode.Location = new System.Drawing.Point(6, 198);
-            this.linkICSharpCode.Name = "linkICSharpCode";
-            this.linkICSharpCode.Size = new System.Drawing.Size(144, 13);
-            this.linkICSharpCode.TabIndex = 19;
-            this.linkICSharpCode.TabStop = true;
-            this.linkICSharpCode.Text = "ic#code - .NET runtime code";
-            this.linkICSharpCode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkICSharpCode_LinkClicked);
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 107);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(134, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "EricJH - Windows 7 testing";
             // 
             // linkSysinternals
             // 
             this.linkSysinternals.AutoSize = true;
             this.linkSysinternals.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkSysinternals.Location = new System.Drawing.Point(6, 211);
+            this.linkSysinternals.Location = new System.Drawing.Point(6, 120);
             this.linkSysinternals.Name = "linkSysinternals";
             this.linkSysinternals.Size = new System.Drawing.Size(100, 13);
             this.linkSysinternals.TabIndex = 17;
@@ -344,7 +331,7 @@
             // 
             this.linkNtInternals.AutoSize = true;
             this.linkNtInternals.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkNtInternals.Location = new System.Drawing.Point(6, 224);
+            this.linkNtInternals.Location = new System.Drawing.Point(6, 133);
             this.linkNtInternals.Name = "linkNtInternals";
             this.linkNtInternals.Size = new System.Drawing.Size(61, 13);
             this.linkNtInternals.TabIndex = 24;
@@ -356,7 +343,7 @@
             // 
             this.linkReactOS.AutoSize = true;
             this.linkReactOS.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkReactOS.Location = new System.Drawing.Point(6, 237);
+            this.linkReactOS.Location = new System.Drawing.Point(6, 146);
             this.linkReactOS.Name = "linkReactOS";
             this.linkReactOS.Size = new System.Drawing.Size(237, 13);
             this.linkReactOS.TabIndex = 25;
@@ -364,10 +351,44 @@
             this.linkReactOS.Text = "ReactOS - free, open source Windows NT clone";
             this.linkReactOS.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkReactOS_LinkClicked);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(6, 159);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.TabIndex = 26;
+            this.label4.Text = "Components:";
+            // 
+            // linkTaskDialog
+            // 
+            this.linkTaskDialog.AutoSize = true;
+            this.linkTaskDialog.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.linkTaskDialog.Location = new System.Drawing.Point(6, 237);
+            this.linkTaskDialog.Name = "linkTaskDialog";
+            this.linkTaskDialog.Size = new System.Drawing.Size(114, 13);
+            this.linkTaskDialog.TabIndex = 21;
+            this.linkTaskDialog.TabStop = true;
+            this.linkTaskDialog.Text = "KevinGre - TaskDialog";
+            this.linkTaskDialog.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkTaskDialog_LinkClicked);
+            // 
+            // linkICSharpCode
+            // 
+            this.linkICSharpCode.AutoSize = true;
+            this.linkICSharpCode.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.linkICSharpCode.Location = new System.Drawing.Point(6, 250);
+            this.linkICSharpCode.Name = "linkICSharpCode";
+            this.linkICSharpCode.Size = new System.Drawing.Size(144, 13);
+            this.linkICSharpCode.TabIndex = 19;
+            this.linkICSharpCode.TabStop = true;
+            this.linkICSharpCode.Text = "ic#code - .NET runtime code";
+            this.linkICSharpCode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkICSharpCode_LinkClicked);
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 250);
+            this.label3.Location = new System.Drawing.Point(6, 263);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(0, 13);
             this.label3.TabIndex = 15;
@@ -375,7 +396,7 @@
             // labelFiller
             // 
             this.labelFiller.AutoSize = true;
-            this.labelFiller.Location = new System.Drawing.Point(6, 263);
+            this.labelFiller.Location = new System.Drawing.Point(6, 276);
             this.labelFiller.Name = "labelFiller";
             this.labelFiller.Size = new System.Drawing.Size(31, 13);
             this.labelFiller.TabIndex = 17;
@@ -404,15 +425,6 @@
             this.buttonDiagnostics.Text = "Diagnostics...";
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 107);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(134, 13);
-            this.label2.TabIndex = 17;
-            this.label2.Text = "EricJH - Windows 7 testing";
             // 
             // AboutWindow
             // 
@@ -479,6 +491,7 @@
         private System.Windows.Forms.LinkLabel linkNtInternals;
         private System.Windows.Forms.LinkLabel linkReactOS;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label4;
 
     }
 }
