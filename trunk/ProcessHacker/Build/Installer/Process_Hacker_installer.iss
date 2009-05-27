@@ -1,17 +1,15 @@
-;ISTool v5.2.1/Inno Setup v5.2.4 dev/ISSI v5.1.9.0, Script by XhmikosR
+;ISTool v5.2.1/Inno Setup v5.2.4 dev, Script by XhmikosR
 ;
 ;Requirements:
 ;*Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
-;*Inno Setup Script Includes:
-;	http://members.home.nl/albartus/issi/ISSI-Setup.exe
 
 #define installer_build_number "33"
 #define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_updates_url "http://processhacker.sourceforge.net/"
-#define app_support_url "http://processhacker.sourceforge.net/"
-#define app_contact "http://processhacker.sourceforge.net/"
+#define app_support_url "http://sourceforge.net/tracker/?group_id=242527"
+#define app_contact "http://sourceforge.net/tracker/?group_id=242527"
 #define app_publisher_url "http://processhacker.sourceforge.net/"
 
 ; From now on you'll probably won't have to change anything, so be carefull
@@ -29,11 +27,11 @@ UninstallDisplayName=Process Hacker {#= app_version}
 DefaultDirName={pf}\Process Hacker
 DefaultGroupName=Process Hacker
 VersionInfoCompany=wj32
-VersionInfoCopyright=wj32
+VersionInfoCopyright=Licensed under the GNU GPL, v3.
 VersionInfoDescription=Process Hacker {#= app_version} Setup
 VersionInfoTextVersion={#= app_version}
 VersionInfoVersion={#= app_version}
-VersionInfoProductName=Process Hacker {#= app_version}
+VersionInfoProductName=Process Hacker
 VersionInfoProductVersion={#= app_version}
 AppVersion={#= app_version}
 MinVersion=0,5.01.2600
