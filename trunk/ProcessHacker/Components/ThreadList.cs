@@ -933,6 +933,31 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
+                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport") ||
+                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") || 
+                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a LPC port:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!ntusergetmessage")
+                                )
+                            {
+                                found = true;
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
+                            }
+                            else if (
                                 name.StartsWith("ntdll.dll!zwdelayexecution") ||
                                 name.StartsWith("ntdll.dll!ntdelayexecution")
                                 )
