@@ -808,7 +808,38 @@ namespace ProcessHacker.Components
             }
         }
 
+        private SystemHandleInformation GetShiForHandle(int pid, IntPtr handle)
+        {
+            short handleValue = (short)handle.ToInt32();
+            var handles = Windows.GetHandles();
+
+            foreach (var handleInfo in handles)
+            {
+                if (handleInfo.ProcessId == pid && handleInfo.Handle == handleValue)
+                    return handleInfo;
+            }
+
+            return new SystemHandleInformation();
+        }
+
         #region Analyze
+
+        private string GetHandleString(int pid, IntPtr handle)
+        {
+            var shi = this.GetShiForHandle(pid, handle);
+
+            try
+            {
+                var handleInfo = shi.GetHandleInfo();
+
+                return "Handle 0x" + handle.ToString("x") + " (" + handleInfo.TypeName + "): " +
+                    (string.IsNullOrEmpty(handleInfo.BestName) ? "(unnamed object)" : handleInfo.BestName);
+            }
+            catch
+            {
+                return "Handle 0x" + handle.ToString("x") + ": (error querying name)";
+            }
+        }
 
         private unsafe void analyzeWaitMenuItem_Click(object sender, EventArgs e)
         {
@@ -849,17 +880,7 @@ namespace ProcessHacker.Components
                                 sb.AppendLine("Thread " + tid.ToString() + 
                                     " is waiting (alertable: " + alertable.ToString() + ") for:");
 
-                                using (var dupHandle = new Win32Handle(
-                                    processDupHandle, handle, (int)StandardRights.MaximumAllowed))
-                                {
-                                    string handleName = dupHandle.GetObjectName();
-
-                                    if (string.IsNullOrEmpty(handleName))
-                                        handleName = "(unnamed handle)";
-
-                                    sb.AppendLine("Handle 0x" + handle.ToString("x") + 
-                                        " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
-                                }
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
@@ -882,26 +903,7 @@ namespace ProcessHacker.Components
 
                                 for (int i = 0; i < handleCount; i++)
                                 {
-                                    IntPtr handle = handles[i];
-
-                                    try
-                                    {
-                                        using (var dupHandle = new Win32Handle(
-                                            processDupHandle, handle, (int)StandardRights.MaximumAllowed))
-                                        {
-                                            string handleName = dupHandle.GetObjectName();
-
-                                            if (string.IsNullOrEmpty(handleName))
-                                                handleName = "(unnamed handle)";
-
-                                            sb.AppendLine("Handle 0x" + handle.ToString("x") +
-                                                " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        sb.AppendLine("Handle 0x" + handle.ToString("x") + ": (" + ex.ToString() + ")");
-                                    }
+                                    sb.AppendLine(this.GetHandleString(_pid, handles[i]));
                                 }
                             }
                             else if (
@@ -913,19 +915,22 @@ namespace ProcessHacker.Components
 
                                 IntPtr handle = stackFrame.Params[0];
 
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for I/O completion object:");
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O completion object:");
 
-                                using (var dupHandle = new Win32Handle(
-                                    processDupHandle, handle, (int)StandardRights.MaximumAllowed))
-                                {
-                                    string handleName = dupHandle.GetObjectName();
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwreadfile") ||
+                                name.StartsWith("ntdll.dll!ntreadfile")
+                                )
+                            {
+                                found = true;
 
-                                    if (string.IsNullOrEmpty(handleName))
-                                        handleName = "(unnamed handle)";
+                                IntPtr handle = stackFrame.Params[0];
 
-                                    sb.AppendLine("Handle 0x" + handle.ToString("x") +
-                                        " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
-                                }
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwdelayexecution") ||
@@ -942,7 +947,7 @@ namespace ProcessHacker.Components
 
                                 if (timeout < 0)
                                 {
-                                    sb.Append("Thread is sleeping. Timeout: " + 
+                                    sb.Append("Thread is sleeping. Timeout: " +
                                         (new TimeSpan(-timeout)).TotalMilliseconds.ToString() + " milliseconds");
                                 }
                                 else

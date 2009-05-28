@@ -569,7 +569,8 @@ namespace ProcessHacker.Native
 
         public ObjectInformation GetHandleInfo()
         {
-            using (ProcessHandle process = new ProcessHandle(this.ProcessId, ProcessAccess.DupHandle))
+            using (ProcessHandle process = new ProcessHandle(this.ProcessId, 
+                KProcessHacker.Instance != null ? OSVersion.MinProcessQueryInfoAccess : ProcessAccess.DupHandle))
             {
                 return this.GetHandleInfo(process);
             }
