@@ -950,7 +950,8 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!ntusergetmessage")
+                                name.StartsWith("user32.dll!ntusergetmessage") || 
+                                name.StartsWith("user32.dll!ntuserwaitmessage")
                                 )
                             {
                                 found = true;
