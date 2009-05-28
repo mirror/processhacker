@@ -45,14 +45,14 @@
             this.textValues.Name = "textValues";
             this.textValues.ReadOnly = true;
             this.textValues.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textValues.Size = new System.Drawing.Size(472, 199);
+            this.textValues.Size = new System.Drawing.Size(525, 288);
             this.textValues.TabIndex = 0;
             // 
             // buttonClose
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(409, 217);
+            this.buttonClose.Location = new System.Drawing.Point(462, 306);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 1;
@@ -64,7 +64,7 @@
             // 
             this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonSave.Location = new System.Drawing.Point(247, 217);
+            this.buttonSave.Location = new System.Drawing.Point(300, 306);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 2;
@@ -76,7 +76,7 @@
             // 
             this.buttonCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCopy.Location = new System.Drawing.Point(328, 217);
+            this.buttonCopy.Location = new System.Drawing.Point(381, 306);
             this.buttonCopy.Name = "buttonCopy";
             this.buttonCopy.Size = new System.Drawing.Size(75, 23);
             this.buttonCopy.TabIndex = 2;
@@ -88,7 +88,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 252);
+            this.ClientSize = new System.Drawing.Size(549, 341);
             this.Controls.Add(this.buttonCopy);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonClose);
@@ -102,6 +102,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Information";
             this.Load += new System.EventHandler(this.InformationBox_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.InformationBox_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.InformationBox_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -33,6 +33,8 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class ThreadHandle : Win32Handle<ThreadAccess>, IWithToken
     {
+        public delegate bool WalkStackDelegate(ThreadStackFrame stackFrame);
+
         public static ThreadHandle Create(
             ThreadAccess access,
             string name,
@@ -581,6 +583,113 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Walks the call stack for the thread.
+        /// </summary>
+        /// <param name="walkStackCallback">A callback to execute.</param>
+        public void WalkStack(WalkStackDelegate walkStackCallback)
+        {
+            // We need to duplicate the handle to get QueryInformation access.
+            using (var dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
+            {
+                using (var phandle = new ProcessHandle(
+                    ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
+                    ProcessAccess.QueryInformation | ProcessAccess.VmRead
+                    ))
+                    this.WalkStack(phandle, walkStackCallback);
+            }
+        }
+
+        /// <summary>
+        /// Walks the call stack for the thread.
+        /// </summary>
+        /// <param name="parentProcess">A handle to the thread's parent process.</param>
+        /// <param name="walkStackCallback">A callback to execute.</param>
+        public unsafe void WalkStack(ProcessHandle parentProcess, WalkStackDelegate walkStackCallback)
+        {
+            var context = new Context();
+            bool suspended = false;
+
+            context.ContextFlags = ContextFlags.All;
+
+            // Suspend the thread to avoid inaccurate thread stacks.
+            try
+            {
+                this.Suspend();
+                suspended = true;
+            }
+            catch
+            {
+                suspended = false;
+            }
+
+            // Use KPH for reading memory if we can.
+            Win32.ReadProcessMemoryProc64 readMemoryProc = null;
+
+            if (KProcessHacker.Instance != null)
+            {
+                readMemoryProc = new Win32.ReadProcessMemoryProc64(
+                    delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
+                    {
+                        return KProcessHacker.Instance.KphReadVirtualMemorySafe(
+                            ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
+                    });
+            }
+
+            try
+            {
+                // Get the context.
+                this.GetContext(ref context);
+
+                // Set up the initial stack frame structure.
+                var stackFrame = new StackFrame64();
+
+                stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
+                stackFrame.AddrPC.Offset = (ulong)context.Eip;
+                stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
+                stackFrame.AddrStack.Offset = (ulong)context.Esp;
+                stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
+                stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
+
+                while (true)
+                {
+                    if (!Win32.StackWalk64(
+                        MachineType.I386,
+                        parentProcess,
+                        this,
+                        ref stackFrame,
+                        ref context,
+                        readMemoryProc,
+                        Win32.SymFunctionTableAccess64,
+                        Win32.SymGetModuleBase64,
+                        IntPtr.Zero
+                        ))
+                        break;
+
+                    // If we got an invalid eip, break.
+                    if (stackFrame.AddrPC.Offset == 0)
+                        break;
+
+                    // Execute the callback.
+                    if (!walkStackCallback(new ThreadStackFrame(ref stackFrame)))
+                        break;
+                }
+            }
+            finally
+            {
+                // If we suspended the thread before, resume it.
+                if (suspended)
+                {
+                    try
+                    {
+                        this.Resume();
+                    }
+                    catch
+                    { }
+                }
+            }
+        }
+
+        /// <summary>
         /// Opens and returns a handle to the thread's token.
         /// </summary>
         /// <returns>A handle to the thread's token.</returns>
@@ -598,5 +707,35 @@ namespace ProcessHacker.Native.Objects
         {
             return new TokenHandle(this, access);
         }
+    }
+
+    public class ThreadStackFrame
+    {
+        private IntPtr _pcAddress;
+        private IntPtr _returnAddress;
+        private IntPtr _frameAddress;
+        private IntPtr _stackAddress;
+        private IntPtr _bStoreAddress;
+        private IntPtr[] _params;
+
+        internal ThreadStackFrame(ref StackFrame64 stackFrame)
+        {
+            _pcAddress = new IntPtr((long)stackFrame.AddrPC.Offset);
+            _returnAddress = new IntPtr((long)stackFrame.AddrReturn.Offset);
+            _frameAddress = new IntPtr((long)stackFrame.AddrFrame.Offset);
+            _stackAddress = new IntPtr((long)stackFrame.AddrStack.Offset);
+            _bStoreAddress = new IntPtr((long)stackFrame.AddrBStore.Offset);
+            _params = new IntPtr[4];
+
+            for (int i = 0; i < 4; i++)
+                _params[i] = new IntPtr(stackFrame.Params[i]);
+        }
+
+        public IntPtr PcAddress { get { return _pcAddress; } }
+        public IntPtr ReturnAddress { get { return _returnAddress; } }
+        public IntPtr FrameAddress { get { return _frameAddress; } }
+        public IntPtr StackAddress { get { return _stackAddress; } }
+        public IntPtr BStoreAddress { get { return _bStoreAddress; } }
+        public IntPtr[] Params { get { return _params; } }
     }
 }

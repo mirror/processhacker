@@ -406,15 +406,12 @@ namespace ProcessHacker.Components
                         }
                         else
                         {
-                            lock (listNetwork)
+                            foreach (ListViewItem lvItem in listNetwork.Items)
                             {
-                                foreach (ListViewItem lvItem in listNetwork.Items)
+                                if (lvItem != litem && lvItem.ImageKey == item.Pid.ToString())
                                 {
-                                    if (lvItem != litem && lvItem.ImageKey == item.Pid.ToString())
-                                    {
-                                        imageStillUsed = true;
-                                        break;
-                                    }
+                                    imageStillUsed = true;
+                                    break;
                                 }
                             }
                         }
@@ -437,8 +434,7 @@ namespace ProcessHacker.Components
                             this.ResetImageKeys();
                         }
 
-                        lock (listNetwork)
-                            litem.Remove();
+                        litem.Remove();
                     }
                 }));
         }

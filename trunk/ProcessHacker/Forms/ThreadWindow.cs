@@ -228,129 +228,79 @@ namespace ProcessHacker
             return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3] << 0);
         }
 
-        private unsafe void WalkCallStack()
+        private void WalkCallStack()
         {
-            var context = new Context();
-
-            context.ContextFlags = ContextFlags.All;
-
-            Win32.SuspendThread(_thandle);
-
-            if (KProcessHacker.Instance != null)
+            try
             {
-                try
-                {
-                    KProcessHacker.Instance.KphGetContextThread(_thandle, &context);
-                    WalkCallStack(context);
-                }
-                catch
-                { }
-            }
-            else
-            {
-                if (Win32.GetThreadContext(_thandle, ref context))
-                {
-                    WalkCallStack(context);
-                }
-            }
+                listViewCallStack.BeginUpdate();
+                listViewCallStack.Items.Clear();
 
-            Win32.ResumeThread(_thandle);
+                _thandle.WalkStack(_phandle, this.WalkStackCallback);
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+            finally
+            {
+                listViewCallStack.EndUpdate();
+            }
         }
 
-        private unsafe void WalkCallStack(Context context)
+        private bool WalkStackCallback(ThreadStackFrame stackFrame)
         {
-            listViewCallStack.BeginUpdate();
-            listViewCallStack.Items.Clear();
+            uint address = stackFrame.PcAddress.ToUInt32();
 
-            var stackFrame = new StackFrame64();
-
-            stackFrame.AddrPC.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrPC.Offset = (ulong)context.Eip;
-            stackFrame.AddrStack.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrStack.Offset = (ulong)context.Esp;
-            stackFrame.AddrFrame.Mode = AddressMode.AddrModeFlat;
-            stackFrame.AddrFrame.Offset = (ulong)context.Ebp;
-
-            while (true)
+            try
             {
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
+                    new string[]
+                    {
+                        "0x" + address.ToString("x8"),
+                        _symbols.GetSymbolFromAddress(address)
+                    }));
+
+                newItem.Tag = address;
+
                 try
                 {
-                    Win32.ReadProcessMemoryProc64 readMemoryProc = null;
+                    if (stackFrame.Params.Length > 0)
+                        newItem.ToolTipText = "Parameters: ";
 
-                    if (KProcessHacker.Instance != null)
-                    {
-                        readMemoryProc = new Win32.ReadProcessMemoryProc64(
-                            delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
-                            {
-                                return KProcessHacker.Instance.KphReadVirtualMemorySafe(
-                                    ProcessHandle.FromHandle(processHandle), (int)baseAddress, buffer, size, out bytesRead);
-                            });
-                    }
+                    foreach (long arg in stackFrame.Params)
+                        newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
 
-                    if (!Win32.StackWalk64(MachineType.I386, _phandle, _thandle,
-                        ref stackFrame, ref context, readMemoryProc, Win32.SymFunctionTableAccess64, Win32.SymGetModuleBase64, IntPtr.Zero))
-                        break;
-
-                    if (stackFrame.AddrPC.Offset == 0)
-                        break;
-
-                    uint addr = (uint)(stackFrame.AddrPC.Offset & 0xffffffff);
+                    if (newItem.ToolTipText.EndsWith(", "))
+                        newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
 
                     try
                     {
-                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                            "0x" + addr.ToString("x8"),
-                            _symbols.GetSymbolFromAddress(addr)
-                        }));
+                        string fileAndLine = _symbols.GetLineFromAddress(address);
 
-                        newItem.Tag = addr;
-
-                        try
-                        {
-                            if (stackFrame.Params.Length > 0)
-                                newItem.ToolTipText = "Parameters: ";
-
-                            foreach (long arg in stackFrame.Params)
-                                newItem.ToolTipText += "0x" + (arg & 0xffffffff).ToString("x") + ", ";
-
-                            if (newItem.ToolTipText.EndsWith(", "))
-                                newItem.ToolTipText = newItem.ToolTipText.Remove(newItem.ToolTipText.Length - 2);
-
-                            try
-                            {
-                                string fileAndLine = _symbols.GetLineFromAddress(addr);
-
-                                if (fileAndLine != null)
-                                    newItem.ToolTipText += "\nFile: " + fileAndLine;
-                            }
-                            catch
-                            { }
-                        }
-                        catch (Exception ex3)
-                        {
-                            Logging.Log(ex3);
-                        }
+                        if (fileAndLine != null)
+                            newItem.ToolTipText += "\nFile: " + fileAndLine;
                     }
-                    catch (Exception ex2)
-                    {
-                        Logging.Log(ex2);
+                    catch
+                    { }
+                }
+                catch (Exception ex2)
+                {
+                    Logging.Log(ex2);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
 
-                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
-                            "0x" + addr.ToString("x8"),
+                ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(new string[] {
+                            "0x" + address.ToString("x8"),
                             "???"
                         }));
 
-                        newItem.Tag = addr;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                    break;
-                }
+                newItem.Tag = address;
             }
 
-            listViewCallStack.EndUpdate();
+            return true;
         }
 
         private void buttonWalk_Click(object sender, EventArgs e)

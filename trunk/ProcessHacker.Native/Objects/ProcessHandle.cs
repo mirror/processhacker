@@ -353,8 +353,8 @@ namespace ProcessHacker.Native.Objects
             {
                 if (!enumMemoryCallback(mbi))
                     break;
+
                 address = address.Increment(mbi.RegionSize);
-                //address += mbi.RegionSize;
             }
         }
 

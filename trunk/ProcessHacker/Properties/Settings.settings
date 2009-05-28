@@ -362,5 +362,8 @@
     <Setting Name="EnableExperimentalFeatures" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="InformationBoxSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">565, 377</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

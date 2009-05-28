@@ -282,7 +282,40 @@ namespace ProcessHacker.Native.Objects
                         oniMem, oniMem.Size, out retLength)) >= NtStatus.Error)
                         Win32.ThrowLastError(status);
 
-                    ObjectNameInformation oni = oniMem.ReadStruct<ObjectNameInformation>();
+                    var oni = oniMem.ReadStruct<ObjectNameInformation>();
+
+                    return oni.Name.Read();
+                }
+            }
+            else
+            {
+                Win32.ThrowLastError(status);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the handle's type name.
+        /// </summary>
+        /// <returns>A string.</returns>
+        public string GetObjectTypeName()
+        {
+            NtStatus status;
+            int retLength;
+
+            status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectTypeInformation,
+                  IntPtr.Zero, 0, out retLength);
+
+            if (retLength > 0)
+            {
+                using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
+                {
+                    if ((status = Win32.NtQueryObject(this, ObjectInformationClass.ObjectTypeInformation,
+                        otiMem, otiMem.Size, out retLength)) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+
+                    var oni = otiMem.ReadStruct<ObjectTypeInformation>();
 
                     return oni.Name.Read();
                 }

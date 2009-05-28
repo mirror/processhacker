@@ -29,6 +29,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using System.Text;
 
 namespace ProcessHacker.Components
 {
@@ -806,6 +807,171 @@ namespace ProcessHacker.Components
                 MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        #region Analyze
+
+        private unsafe void analyzeWaitMenuItem_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
+
+            try
+            {
+                ProcessHandle phandle = null;
+
+                if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
+                    phandle = _provider.ProcessHandle;
+                else
+                    phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation | ProcessAccess.VmRead);
+
+                ProcessHandle processDupHandle = new ProcessHandle(_pid, ProcessAccess.DupHandle);
+
+                bool found = false;
+
+                using (var thandle = new ThreadHandle(tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume))
+                {
+                    thandle.WalkStack(phandle, (stackFrame) =>
+                        {
+                            uint address = stackFrame.PcAddress.ToUInt32();
+                            string name = _provider.Symbols.GetSymbolFromAddress(address).ToLower();
+
+                            if (
+                                name.StartsWith("ntdll.dll!zwwaitforsingleobject") ||
+                                name.StartsWith("ntdll.dll!ntwaitforsingleobject") || 
+                                name.StartsWith("kernel32.dll!waitforsingleobject")
+                                )
+                            {
+                                found = true;
+                                
+                                IntPtr handle = stackFrame.Params[0];
+                                bool alertable = stackFrame.Params[1].ToInt32() != 0;
+
+                                sb.AppendLine("Thread " + tid.ToString() + 
+                                    " is waiting (alertable: " + alertable.ToString() + ") for:");
+
+                                using (var dupHandle = new Win32Handle(
+                                    processDupHandle, handle, (int)StandardRights.MaximumAllowed))
+                                {
+                                    string handleName = dupHandle.GetObjectName();
+
+                                    if (string.IsNullOrEmpty(handleName))
+                                        handleName = "(unnamed handle)";
+
+                                    sb.AppendLine("Handle 0x" + handle.ToString("x") + 
+                                        " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
+                                }
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
+                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects")
+                                )
+                            {
+                                found = true;
+
+                                int handleCount = stackFrame.Params[0].ToInt32();
+                                IntPtr handleAddress = stackFrame.Params[1];
+                                WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
+                                bool alertable = stackFrame.Params[3].ToInt32() != 0;
+                                IntPtr* handles = stackalloc IntPtr[handleCount];
+
+                                phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
+
+                                sb.AppendLine("Thread " + tid.ToString() +
+                                    " is waiting (alertable: " + alertable.ToString() + ", wait type: " + 
+                                    waitType.ToString() + ") for:");
+
+                                for (int i = 0; i < handleCount; i++)
+                                {
+                                    IntPtr handle = handles[i];
+
+                                    try
+                                    {
+                                        using (var dupHandle = new Win32Handle(
+                                            processDupHandle, handle, (int)StandardRights.MaximumAllowed))
+                                        {
+                                            string handleName = dupHandle.GetObjectName();
+
+                                            if (string.IsNullOrEmpty(handleName))
+                                                handleName = "(unnamed handle)";
+
+                                            sb.AppendLine("Handle 0x" + handle.ToString("x") +
+                                                " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        sb.AppendLine("Handle 0x" + handle.ToString("x") + ": (" + ex.ToString() + ")");
+                                    }
+                                }
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwremoveiocompletion") ||
+                                name.StartsWith("ntdll.dll!ntremoveiocompletion")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for I/O completion object:");
+
+                                using (var dupHandle = new Win32Handle(
+                                    processDupHandle, handle, (int)StandardRights.MaximumAllowed))
+                                {
+                                    string handleName = dupHandle.GetObjectName();
+
+                                    if (string.IsNullOrEmpty(handleName))
+                                        handleName = "(unnamed handle)";
+
+                                    sb.AppendLine("Handle 0x" + handle.ToString("x") +
+                                        " (" + dupHandle.GetObjectTypeName() + "): " + handleName);
+                                }
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwdelayexecution") ||
+                                name.StartsWith("ntdll.dll!ntdelayexecution")
+                                )
+                            {
+                                found = true;
+
+                                bool alertable = stackFrame.Params[0].ToInt32() != 0;
+                                IntPtr timeoutAddress = stackFrame.Params[1];
+                                long timeout;
+
+                                phandle.ReadMemory(timeoutAddress, &timeout, sizeof(long));
+
+                                if (timeout < 0)
+                                {
+                                    sb.Append("Thread is sleeping. Timeout: " + 
+                                        (new TimeSpan(-timeout)).TotalMilliseconds.ToString() + " milliseconds");
+                                }
+                                else
+                                {
+                                    sb.AppendLine("Thread is sleeping. Timeout: " + (new DateTime(timeout)).ToString());
+                                }
+                            }
+
+                            return !found;
+                        });
+                }
+
+                if (found)
+                {
+                    ScratchpadWindow.Create(sb.ToString());
+                }
+                else
+                {
+                    MessageBox.Show("The thread does not appear to be waiting.", "Process Hacker",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
 
         #region Priority
 

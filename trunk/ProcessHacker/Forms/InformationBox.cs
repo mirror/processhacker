@@ -36,6 +36,7 @@ namespace ProcessHacker
             InitializeComponent();
             this.AddEscapeToClose();
 
+            this.Size = Properties.Settings.Default.InformationBoxSize;
             textValues.Text = values;
             textValues.Select(0, 0);
         }
@@ -45,6 +46,11 @@ namespace ProcessHacker
             // doesn't work???
             textValues.Select();
             textValues.ScrollToCaret();
+        }
+
+        private void InformationBox_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.InformationBoxSize = this.Size;
         }
 
         public TextBox TextBox { get { return textValues; } }

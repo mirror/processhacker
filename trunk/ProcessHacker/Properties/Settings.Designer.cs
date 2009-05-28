@@ -1464,5 +1464,17 @@ namespace ProcessHacker.Properties {
                 this["EnableExperimentalFeatures"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("565, 377")]
+        public global::System.Drawing.Size InformationBoxSize {
+            get {
+                return ((global::System.Drawing.Size)(this["InformationBoxSize"]));
+            }
+            set {
+                this["InformationBoxSize"] = value;
+            }
+        }
     }
 }

@@ -233,6 +233,9 @@
     <EmbeddedResource Include="Forms\ProtectProcessWindow.resx">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScratchpadWindow.resx">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\StructWindow.resx">
       <DependentUpon>StructWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -338,6 +341,12 @@
     </Compile>
     <Compile Include="Forms\ProtectProcessWindow.Designer.cs">
       <DependentUpon>ProtectProcessWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ScratchpadWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScratchpadWindow.Designer.cs">
+      <DependentUpon>ScratchpadWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
