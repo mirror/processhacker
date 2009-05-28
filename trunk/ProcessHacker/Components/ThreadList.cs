@@ -884,7 +884,8 @@ namespace ProcessHacker.Components
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
-                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects")
+                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects") || 
+                                name.StartsWith("kernel32.dll!waitformultipleobjects")
                                 )
                             {
                                 found = true;
@@ -1006,6 +1007,15 @@ namespace ProcessHacker.Components
                                 {
                                     sb.AppendLine("Thread is sleeping. Timeout: " + (new DateTime(timeout)).ToString());
                                 }
+                            }
+                            else if (
+                                name.StartsWith("kernel32.dll!sleep")
+                                )
+                            {
+                                found = true;
+
+                                sb.Append("Thread is sleeping. Timeout: " +
+                                    stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
                             }
 
                             return !found;
