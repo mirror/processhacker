@@ -941,7 +941,20 @@ namespace ProcessHacker.Components
 
                                 IntPtr handle = stackFrame.Params[0];
 
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe:");
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe or a file:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile") ||
+                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O control request:");
 
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
