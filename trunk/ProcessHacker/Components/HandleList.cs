@@ -30,6 +30,7 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using System.Drawing;
+using ProcessHacker.Native.Ui;
 
 namespace ProcessHacker.Components
 {
@@ -329,133 +330,129 @@ namespace ProcessHacker.Components
                 return false;
         }
 
-        public static void ShowHandleProperties(int pid, string type, IntPtr handle, string name)
+        public static void ShowHandleProperties(SystemHandleInformation handleInfo)
         {
-            ProcessHandle phandle;
-
             try
             {
-                phandle = new ProcessHandle(pid, ProcessHacker.Native.Security.ProcessAccess.DupHandle);
-            }
-            catch
-            {
-                phandle = new ProcessHandle(pid, Program.MinProcessGetHandleInformationRights);
-            }
+                HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
+                IntPtr handle = new IntPtr(handleInfo.Handle);
+                ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
+                Win32Handle dupHandle; 
 
-            using (phandle)
-            {
-                if (type == "Token")
-                {
-                    TokenWindow tokForm = new TokenWindow(new RemoteTokenHandle(phandle, handle));
-
-                    tokForm.Text = String.Format("Token - Handle 0x{0:x} owned by {1} (PID {2})",
-                        handle,
-                        Program.ProcessProvider.Dictionary[pid].Name,
-                        pid);
-                    tokForm.ShowDialog();
-                }
-                else if (type == "Process")
-                {
-                    int processId;
-
-                    if (KProcessHacker.Instance != null)
+                window.HandlePropertiesCallback += (control, name, typeName) =>
                     {
-                        processId = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
-                    }
-                    else
-                    {
-                        IntPtr newHandle;
-
-                        Win32.DuplicateObject(phandle, handle, new IntPtr(-1), out newHandle, (int)Program.MinProcessQueryRights, 0, 0);
-                        processId = Win32.GetProcessId(newHandle);
-                        Win32.CloseHandle(newHandle);
-                    }
-
-                    if (!Program.ProcessProvider.Dictionary.ContainsKey(processId))
-                    {
-                        MessageBox.Show("The process does not exist.", "Process Hacker", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    ProcessWindow pForm = Program.GetProcessWindow(
-                        Program.ProcessProvider.Dictionary[processId],
-                        new Program.PWindowInvokeAction(delegate(ProcessWindow f)
+                        switch (typeName.ToLower())
                         {
-                            Program.FocusWindow(f);
-                        }));
-                }
-                else if (type == "File" || type == "DLL" || type == "Mapped File")
-                {
-                    FileUtils.ShowProperties(name);
-                }
-                else if (type == "Event")
-                {
-                    var dupHandle = new Win32Handle<EventAccess>(phandle, handle, EventAccess.All);
-                    var eventHandle = EventHandle.FromHandle(dupHandle);
-                    EventBasicInformation ebi = eventHandle.GetBasicInformation();
+                            // Objects with separate property windows:
+                            case "file":
+                            case "job":
+                            case "token":
+                            case "process":
+                                {
+                                    Button b = new Button();
 
-                    InformationBox info = new InformationBox(
-                        "Type: " + ebi.EventType.ToString().Replace("Event", "") +
-                        "\r\nState: " + (ebi.EventState != 0 ? "True" : "False"));
+                                    b.FlatStyle = FlatStyle.System;
+                                    b.Location = new Point(10, 20);
+                                    b.Text = "Properties...";
+                                    b.Click += (sender, e) =>
+                                        {
+                                            try
+                                            {
+                                                switch (typeName.ToLower())
+                                                {
+                                                    case "file":
+                                                        {
+                                                            FileUtils.ShowProperties(name);
+                                                        }
+                                                        break;
+                                                    case "job":
+                                                        {
+                                                            dupHandle =
+                                                                new Win32Handle(
+                                                                    phandle, handle, 
+                                                                    (int)JobObjectAccess.Query);
+                                                            (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "token":
+                                                        {
+                                                            (new TokenWindow(new RemoteTokenHandle(phandle, 
+                                                                handle))).ShowDialog();
+                                                        }
+                                                        break;
+                                                    case "process":
+                                                        {
+                                                            int pid;
 
-                    info.ShowDialog();
-                    dupHandle.Dispose();
-                }
-                else if (type == "Mutant")
-                {
-                    var dupHandle = new Win32Handle<MutantAccess>(phandle, handle, MutantAccess.All);
-                    var mutantHandle = MutantHandle.FromHandle(dupHandle);
-                    MutantBasicInformation mbi = mutantHandle.GetBasicInformation();
+                                                            if (KProcessHacker.Instance != null)
+                                                            {
+                                                                pid = KProcessHacker.Instance.KphGetProcessId(phandle, handle);
+                                                            }
+                                                            else
+                                                            {
+                                                                dupHandle =
+                                                                    new Win32Handle(
+                                                                        phandle, handle,
+                                                                        (int)OSVersion.MinProcessQueryInfoAccess);
+                                                                pid = ProcessHandle.FromHandle(dupHandle).
+                                                                    GetBasicInformation().UniqueProcessId;
+                                                            }
 
-                    InformationBox info = new InformationBox(
-                        "Count: " + mbi.CurrentCount +
-                        "\r\nOwned by Caller: " + (mbi.OwnedByCaller != 0 ? "True" : "False") +
-                        "\r\nAbandoned: " + (mbi.AbandonedState != 0 ? "True" : "False"));
+                                                            Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
+                                                                (f) => Program.FocusWindow(f));
+                                                        }
+                                                        break;
+                                                }
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            }
+                                        };
 
-                    info.ShowDialog();
-                    dupHandle.Dispose();
-                }
-                else if (type == "Section")
-                {
-                    var dupHandle = new Win32Handle<SectionAccess>(phandle, handle, SectionAccess.Query);
-                    var sectionHandle = SectionHandle.FromHandle(dupHandle);
-                    SectionBasicInformation sbi;
-                    SectionImageInformation sii = new SectionImageInformation();
-                    bool haveImageInfo = true;
+                                    control.Controls.Add(b);
+                                }
+                                break;
+                            case "event":
+                                {
+                                    dupHandle = new Win32Handle(phandle, handle, (int)EventAccess.QueryState);
+                                    var eventProps = new EventProperties(EventHandle.FromHandle(dupHandle));
+                                    eventProps.Location = new Point(10, 20);
+                                    control.Controls.Add(eventProps);
+                                }
+                                break;
+                            case "mutant":
+                                {
+                                    dupHandle = new Win32Handle(phandle, handle, (int)MutantAccess.QueryState);
+                                    var mutantProps = new MutantProperties(MutantHandle.FromHandle(dupHandle));
+                                    mutantProps.Location = new Point(10, 20);
+                                    control.Controls.Add(mutantProps);
+                                }
+                                break;
+                            case "section":
+                                {
+                                    dupHandle = new Win32Handle(phandle, handle, (int)SectionAccess.Query);
+                                    var sectionProps = new SectionProperties(SectionHandle.FromHandle(dupHandle));
+                                    sectionProps.Location = new Point(10, 20);
+                                    control.Controls.Add(sectionProps);
+                                }
+                                break;
+                            case "semaphore":
+                                {
+                                    dupHandle = new Win32Handle(phandle, handle, (int)SemaphoreAccess.QueryState);
+                                    var semaphoreProps = new SemaphoreProperties(SemaphoreHandle.FromHandle(dupHandle));
+                                    semaphoreProps.Location = new Point(10, 20);
+                                    control.Controls.Add(semaphoreProps);
+                                }
+                                break;
+                        }
+                    };
 
-                    sbi = sectionHandle.GetBasicInformation();
-
-                    try { sii = sectionHandle.GetImageInformation(); }
-                    catch { haveImageInfo = false; }
-
-                    InformationBox info = new InformationBox(
-                        "Attributes: " + Misc.FlagsToString(typeof(SectionAttributes), (long)sbi.SectionAttributes) +
-                        "\r\nSize: " + Misc.GetNiceSizeName(sbi.SectionSize) + " (" + sbi.SectionSize.ToString() + " B)" +
-
-                        (haveImageInfo ? ("\r\n\r\nImage Entry Point: 0x" + sii.TransferAddress.ToString("x8") +
-                        "\r\nImage Machine Type: " + ((PE.MachineType)sii.ImageMachineType).ToString() +
-                        "\r\nImage Characteristics: " + ((PE.ImageCharacteristics)sii.ImageCharacteristics).ToString() +
-                        "\r\nImage Subsystem: " + ((PE.ImageSubsystem)sii.ImageSubsystem).ToString() +
-                        "\r\nStack Reserve: 0x" + sii.StackReserved.ToString("x")) : ""));
-
-                    info.ShowDialog();
-                    dupHandle.Dispose();
-                }
-                else if (type == "Semaphore")
-                {
-                    var dupHandle = new Win32Handle<SemaphoreAccess>(phandle, handle, SemaphoreAccess.QueryState);
-                    var semaphoreHandle = SemaphoreHandle.FromHandle(dupHandle);
-                    SemaphoreBasicInformation sbi = semaphoreHandle.GetBasicInformation();
-
-                    InformationBox info = new InformationBox(
-                        "Current Count: " + sbi.CurrentCount.ToString() +
-                        "\r\nMaximum Count: " + sbi.MaximumCount.ToString()
-                        );
-
-                    info.ShowDialog();
-                    dupHandle.Dispose();
-                }
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -545,16 +542,11 @@ namespace ProcessHacker.Components
             if (listHandles.SelectedItems.Count != 1)
                 return;
 
-            string type = listHandles.SelectedItems[0].Text;
+            var handleInfo = ((HandleItem)listHandles.SelectedItems[0].Tag).Handle;
 
             try
             {
-                ShowHandleProperties(
-                    _pid,
-                    listHandles.SelectedItems[0].Text,
-                    new IntPtr(int.Parse(listHandles.SelectedItems[0].Name)),
-                    listHandles.SelectedItems[0].SubItems[1].Text
-                    );
+                ShowHandleProperties(handleInfo);
             }
             catch (Exception ex)
             {

@@ -1,10 +1,13 @@
 Process Hacker
 
-1.3.8.1
+1.3.8.5
  * NEW/IMPROVED:
    * Notification icon process list is now sorted
    * Thread wait analysis - right-click a thread and choose 
      Analyze > Wait to see what a thread is hanging on
+   * More detailed handle properties
+   * Event objects can now be modified - set, clear, pulse, reset
+   * Semaphore objects can now be modified - acquire, release
  * FIXED:
    * #2795871 - "Hidden Processes window resizing problem"
    * Windows 7 RC BSOD (Windows 7 Beta is no longer supported)

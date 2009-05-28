@@ -125,8 +125,14 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\EventProperties.resx">
+      <DependentUpon>EventProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\JobProperties.resx">
       <DependentUpon>JobProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\MutantProperties.resx">
+      <DependentUpon>MutantProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\NetworkList.resx">
       <DependentUpon>NetworkList.cs</DependentUpon>
@@ -152,6 +158,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ProcessStatistics.resx">
       <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SectionProperties.resx">
+      <DependentUpon>SectionProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SemaphoreProperties.resx">
+      <DependentUpon>SemaphoreProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ServiceList.resx">
       <DependentUpon>ServiceList.cs</DependentUpon>
@@ -209,6 +221,9 @@
     <EmbeddedResource Include="Forms\GetProcAddressWindow.resx">
       <DependentUpon>GetProcAddressWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\JobWindow.resx">
+      <DependentUpon>JobWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ListPickerWindow.resx">
       <DependentUpon>ListPickerWindow.cs</DependentUpon>
@@ -330,11 +345,41 @@
     <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Common\EnumComparer.cs" />
     <Compile Include="Common\WorkQueue.cs" />
+    <Compile Include="Components\EventProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\EventProperties.Designer.cs">
+      <DependentUpon>EventProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\MutantProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MutantProperties.Designer.cs">
+      <DependentUpon>MutantProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\ProcessStatistics.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Components\ProcessStatistics.Designer.cs">
       <DependentUpon>ProcessStatistics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SectionProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SectionProperties.Designer.cs">
+      <DependentUpon>SectionProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SemaphoreProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SemaphoreProperties.Designer.cs">
+      <DependentUpon>SemaphoreProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\JobWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\JobWindow.Designer.cs">
+      <DependentUpon>JobWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ProtectProcessWindow.cs">
       <SubType>Form</SubType>

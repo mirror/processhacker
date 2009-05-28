@@ -211,7 +211,13 @@ namespace ProcessHacker
 
         private void processPropertiesMenuItem_Click(object sender, EventArgs e)
         {
-            int pid = (int)listHandles.SelectedItems[0].Tag;
+            string type = listHandles.SelectedItems[0].SubItems[1].Text;
+            int pid;
+
+            if (type == "DLL" || type == "Mapped File")
+                pid = (int)listHandles.SelectedItems[0].Tag;
+            else
+                pid = ((ProcessHacker.Native.SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId;
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
@@ -231,10 +237,7 @@ namespace ProcessHacker
             try
             {
                 HandleList.ShowHandleProperties(
-                    (int)listHandles.SelectedItems[0].Tag,
-                    listHandles.SelectedItems[0].SubItems[1].Text,
-                    new IntPtr((int)BaseConverter.ToNumberParse(listHandles.SelectedItems[0].SubItems[3].Text)),
-                    listHandles.SelectedItems[0].SubItems[2].Text
+                    (ProcessHacker.Native.SystemHandleInformation)listHandles.SelectedItems[0].Tag
                     );
             }
             catch (Exception ex)

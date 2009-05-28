@@ -511,6 +511,62 @@ namespace ProcessHacker.Native
         public IntPtr Object;
         public int GrantedAccess;
 
+        public ObjectBasicInformation GetBasicInfo()
+        {
+            using (ProcessHandle process = new ProcessHandle(this.ProcessId, ProcessAccess.DupHandle))
+            {
+                return this.GetBasicInfo(process);
+            }
+        }
+
+        public ObjectBasicInformation GetBasicInfo(ProcessHandle process)
+        {
+            NtStatus status = NtStatus.Success;
+            IntPtr handle = new IntPtr(this.Handle);
+            IntPtr objectHandleI;
+            Win32Handle objectHandle = null;
+            int retLength;
+            int baseAddress;
+
+            if (KProcessHacker.Instance == null)
+            {
+                if ((status = Win32.NtDuplicateObject(
+                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
+                    Win32.ThrowLastError();
+
+                objectHandle = new Win32Handle(objectHandleI);
+            }
+
+            try
+            {
+                using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ObjectBasicInformation))))
+                {
+                    if (KProcessHacker.Instance != null)
+                    {
+                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation,
+                            data, data.Size, out retLength, out baseAddress);
+                    }
+                    else
+                    {
+                        status = Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation,
+                            data, data.Size, out retLength);
+                    }
+
+                    if (status >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+
+                    return data.ReadStruct<ObjectBasicInformation>();
+                }
+            }
+            finally
+            {
+                if (objectHandle != null)
+                    objectHandle.Dispose();
+            }
+
+            return new ObjectBasicInformation();
+        }
+
         public ObjectInformation GetHandleInfo()
         {
             using (ProcessHandle process = new ProcessHandle(this.ProcessId, ProcessAccess.DupHandle))
