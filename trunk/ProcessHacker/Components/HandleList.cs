@@ -322,9 +322,9 @@ namespace ProcessHacker.Components
         public static bool HasHandleProperties(string type)
         {
             if (type == "Token" || type == "Process" || type == "File" || 
+                type == "Job" || 
                 type == "Event" || type == "Mutant" || type == "Section" || 
-                type == "Semaphore" || 
-                type == "DLL" || type == "Mapped File")
+                type == "Semaphore")
                 return true;
             else
                 return false;

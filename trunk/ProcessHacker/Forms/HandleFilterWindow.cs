@@ -234,6 +234,11 @@ namespace ProcessHacker
 
         private void propertiesMenuItem_Click(object sender, EventArgs e)
         {
+            string type = listHandles.SelectedItems[0].SubItems[1].Text;
+
+            if (!HandleList.HasHandleProperties(type))
+                return;
+
             try
             {
                 HandleList.ShowHandleProperties(
