@@ -920,6 +920,19 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
+                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory") ||
+                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for work from a worker factory:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
                                 name.StartsWith("ntdll.dll!zwreadfile") ||
                                 name.StartsWith("ntdll.dll!ntreadfile")
                                 )
@@ -936,7 +949,7 @@ namespace ProcessHacker.Components
                                 name.StartsWith("ntdll.dll!zwreplywaitreceiveport") ||
                                 name.StartsWith("ntdll.dll!ntreplywaitreceiveport") ||
                                 name.StartsWith("ntdll.dll!zwrequestwaitreplyport") ||
-                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") || 
+                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") ||
                                 name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport") ||
                                 name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport")
                                 )
@@ -950,7 +963,7 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
-                                name.StartsWith("user32.dll!ntusergetmessage") || 
+                                name.StartsWith("user32.dll!ntusergetmessage") ||
                                 name.StartsWith("user32.dll!ntuserwaitmessage")
                                 )
                             {
