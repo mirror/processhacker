@@ -79,8 +79,10 @@
             this.Controls.Add(this.buttonCopy);
             this.Controls.Add(this.textText);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "ScratchpadWindow";
             this.Text = "Scratchpad";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScratchpadWindow_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

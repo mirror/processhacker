@@ -59,5 +59,11 @@ namespace ProcessHacker
             if (sfd.ShowDialog() == DialogResult.OK)
                 System.IO.File.WriteAllText(sfd.FileName, textText.Text);
         }
+
+        private void ScratchpadWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.A)
+                textText.SelectAll();
+        }
     }
 }

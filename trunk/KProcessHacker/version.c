@@ -225,6 +225,12 @@ NTSTATUS KvInit()
             OffOtiGenericMapping = 0x28 + 0xc; /* They got rid of the Mutex (an ERESOURCE) */
             OffOtiOpenProcedure = 0x28 + 0x34;
         }
+        /* SP2 */
+        else if (servicePack == 2)
+        {
+            OffOtiGenericMapping = 0x28 + 0xc;
+            OffOtiOpenProcedure = 0x28 + 0x34;
+        }
         else
         {
             return STATUS_NOT_SUPPORTED;
