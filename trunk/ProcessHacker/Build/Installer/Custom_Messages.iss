@@ -3,8 +3,8 @@
 ;English
 en.msg_SetupIsRunningWarningInstall=Process Hacker Setup is already running!
 en.msg_SetupIsRunningWarningUninstall=Process Hacker Setup is already running!
-en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again. Do you want to download the .NET Framework now?
-en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? If you plan on reinstalling Process Hacker you do not have to delete them.
+en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again.%nDo you want to download the .NET Framework now?
+en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings?%nIf you plan on reinstalling Process Hacker you do not have to delete them.
 en.msg_createkprocesshacker=Creating KProcessHacker service...
 en.msg_stopkprocesshacker=Stopping KProcessHacker service...
 en.msg_startkprocesshacker=Starting KProcessHacker service...
@@ -32,8 +32,8 @@ en.sm_com_readmefile=Process Hacker's ReadMe
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
-gr.msg_asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. Θέλετε να κατεβάσετε το .NET Framework τώρα;
-gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές του Process Hacker; Αν σκοπεύετε να εγκαταστήσετε πάλι το Process Hacker δεν χρειάζεται να τα διαγράψετε.
+gr.msg_asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι.%nΘέλετε να κατεβάσετε το .NET Framework τώρα;
+gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές του Process Hacker;%nΑν σκοπεύετε να εγκαταστήσετε πάλι το Process Hacker δεν χρειάζεται να τα διαγράψετε.
 gr.msg_createkprocesshacker=Δημιουργία της υπηρεσίας KProcessHacker...
 gr.msg_stopkprocesshacker=Σταμάτημα της υπηρεσίας KProcessHacker...
 gr.msg_startkprocesshacker=Εκκίνηση της υπηρεσίας KProcessHacker...
