@@ -55,7 +55,7 @@ AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
 PrivilegesRequired=Admin
-ShowLanguageDialog=Auto
+ShowLanguageDialog=True
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
@@ -103,9 +103,6 @@ Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {c
 Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck(); Flags: unchecked dontinheritcheck
 Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck(); Flags: unchecked dontinheritcheck
 
-[INI]
-Filename: {app}\Homepage.url; Section: InternetShortcut; Key: URL; String: {#= app_updates_url}
-
 [Icons]
 Name: {group}\Process Hacker; Filename: {app}\ProcessHacker.exe; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {group}\{cm:sm_help}\{cm:sm_changelog}; Filename: {app}\CHANGELOG.txt; Comment: {cm:sm_com_changelog}; WorkingDir: {app}
@@ -123,6 +120,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Fil
 Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
+Type: files; Name: {app}\Homepage.url
 
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
@@ -167,7 +165,7 @@ Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Tasks: deleteKPHservice
 Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservice; Flags: runhidden runascurrentuser
 
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
-Filename: {app}\Homepage.url; Description: {cm:run_visitwebsite}; Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
+Filename: {#= app_updates_url}; Description: {cm:run_visitwebsite}; Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
 
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url

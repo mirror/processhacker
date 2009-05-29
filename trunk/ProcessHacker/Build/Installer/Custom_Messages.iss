@@ -3,8 +3,8 @@
 ;English
 en.msg_SetupIsRunningWarningInstall=Process Hacker Setup is already running!
 en.msg_SetupIsRunningWarningUninstall=Process Hacker Setup is already running!
-en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again.%nDo you want to download the .NET Framework now?
-en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings?%nIf you plan on reinstalling Process Hacker you do not have to delete them.
+en.msg_asknetdown=Process Hacker requires the .NET Framework 2.0. Please download and install the .NET Framework and run setup again. %n%nDo you want to download the .NET Framework 2.0 now?
+en.msg_DeleteLogSettings=Do you also want to delete Process Hacker's logs and settings? %nIf you plan on reinstalling Process Hacker you do not have to delete them.
 en.msg_createkprocesshacker=Creating KProcessHacker service...
 en.msg_stopkprocesshacker=Stopping KProcessHacker service...
 en.msg_startkprocesshacker=Starting KProcessHacker service...
@@ -32,8 +32,8 @@ en.sm_com_readmefile=Process Hacker's ReadMe
 ;Greek
 gr.msg_SetupIsRunningWarningInstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
 gr.msg_SetupIsRunningWarningUninstall=Η εγκατάσταση του Process Hacker τρέχει ήδη!
-gr.msg_asknetdown=Το Process Hacker για να τρέξει χρειάζεται το .NET Framework 2. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι.%nΘέλετε να κατεβάσετε το .NET Framework τώρα;
-gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές του Process Hacker;%nΑν σκοπεύετε να εγκαταστήσετε πάλι το Process Hacker δεν χρειάζεται να τα διαγράψετε.
+gr.msg_asknetdown=Το Process Hacker χρειάζεται το .NET Framework 2.0. Παρακαλώ κατεβάστε και εγκαταστήσετε το .NET Framework και τρέξτε την εγκατάσταση πάλι. %n%nΘέλετε να κατεβάσετε το .NET Framework 2.0 τώρα;
+gr.msg_DeleteLogSettings=Θέλετε να διαγράψετε τις επιλογές και τα αρχεία καταγραφής του Process Hacker; %nΑν σκοπεύετε να εγκαταστήσετε πάλι το Process Hacker δεν χρειάζεται να τα διαγράψετε.
 gr.msg_createkprocesshacker=Δημιουργία της υπηρεσίας KProcessHacker...
 gr.msg_stopkprocesshacker=Σταμάτημα της υπηρεσίας KProcessHacker...
 gr.msg_startkprocesshacker=Εκκίνηση της υπηρεσίας KProcessHacker...
@@ -46,7 +46,7 @@ gr.tsk_other=Έξτρα:
 gr.tsk_removestartup=Αφαίρεση του Process Hacker από την εκκίνηση των Windows
 gr.tsk_resetsettings=Επαναφορά των αρχικών ρυθμίσεων του Process Hacker
 gr.tsk_restoretaskmgr=Επαναφορά του Windows Task Manager
-gr.tsk_setdefaulttaskmgr=Ορισμός του Process Hacker ως τον προκαθορισμένο task manager των Windows
+gr.tsk_setdefaulttaskmgr=Ορισμός του Process Hacker ως τον προκαθορισμένο task manager %nτων Windows
 gr.tsk_startupdescr=Έναρξη με την εκκίνηση των Windows
 gr.tsk_startupdescrmin=Ελαχιστοποιημένο στο tray του συστήματος
 gr.tsk_startup=Επιλογές εκκίνησης:
