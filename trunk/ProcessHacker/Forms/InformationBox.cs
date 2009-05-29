@@ -105,7 +105,10 @@ namespace ProcessHacker
         private void InformationBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.A)
-                textValues.SelectAll();
+            {
+                textValues.SelectAll();    
+                e.Handled = true;
+            }
         }
     }
 }

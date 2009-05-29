@@ -63,7 +63,10 @@ namespace ProcessHacker
         private void ScratchpadWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.A)
+            {
                 textText.SelectAll();
+                e.Handled = true;
+            }
         }
     }
 }
