@@ -55,7 +55,7 @@ AlwaysShowDirOnReadyPage=True
 AlwaysShowGroupOnReadyPage=True
 WizardImageStretch=False
 PrivilegesRequired=Admin
-ShowLanguageDialog=True
+ShowLanguageDialog=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
