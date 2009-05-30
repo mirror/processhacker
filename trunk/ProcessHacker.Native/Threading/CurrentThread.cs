@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Threading
@@ -24,7 +25,7 @@ namespace ProcessHacker.Native.Threading
         /// <param name="interval">The interval to sleep, in milliseconds.</param>
         public static void Sleep(int interval)
         {
-            ThreadHandle.Sleep(interval, true);
+            ThreadHandle.Sleep(interval * Win32.TimeMsTo100Ns, true);
         }
 
         /// <summary>
