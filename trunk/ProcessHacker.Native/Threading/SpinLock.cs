@@ -93,12 +93,12 @@ namespace ProcessHacker.Native.Threading
         {
             if (_spin)
             {
-                while (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
+                while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
                     Thread.SpinWait(_spinCount);
             }
             else
             {
-                while (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
+                while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
                     Thread.Sleep(0);
             }
         }
@@ -118,16 +118,6 @@ namespace ProcessHacker.Native.Threading
         public void Release()
         {
             Interlocked.Exchange(ref _value, 0);
-        }
-
-        /// <summary>
-        /// Attempts to acquire the spinlock.
-        /// </summary>
-        /// <returns>Whether the spinlock was acquired.</returns>
-        public bool TryAcquire()
-        {
-            Interlocked.CompareExchange(ref _value, 1, 0);
-            return Interlocked.CompareExchange(ref _value, 0, 0) == 1;
         }
     }
 }
