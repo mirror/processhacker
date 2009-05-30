@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// </summary>
     public class SpinLock
     {
-        public class SpinLockContext : IDisposable
+        public struct SpinLockContext : IDisposable
         {
             private SpinLock _spinLock;
 
@@ -50,26 +50,14 @@ namespace ProcessHacker.Native.Threading
 
         private int _value = 0;
         private bool _spin;
-        private int _spinCount;
+        private int _acquireCount = 0;
+        private int _spinCount = 0;
 
         /// <summary>
         /// Creates a spinlock.
         /// </summary>
         public SpinLock()
-            : this(10)
-        { }
-
-        /// <summary>
-        /// Creates a spinlock.
-        /// </summary>
-        /// <param name="spinCount">
-        /// The number of times to spin if waiting to acquire the lock. 
-        /// This value is ignored on uniprocessor systems.
-        /// </param>
-        public SpinLock(int spinCount)
         {
-            _spinCount = spinCount;
-
             // We don't want to spin on uniprocessor systems.
             if (Environment.ProcessorCount == 1)
                 _spin = false;
@@ -78,28 +66,21 @@ namespace ProcessHacker.Native.Threading
         }
 
         /// <summary>
-        /// Gets or sets the spin count.
-        /// </summary>
-        public int SpinCount
-        {
-            get { return _spinCount; }
-            set { _spinCount = value; }
-        }
-
-        /// <summary>
         /// Acquires the spinlock.
         /// </summary>
         public void Acquire()
         {
+            Interlocked.Increment(ref _acquireCount);
+
             if (_spin)
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    Thread.SpinWait(_spinCount);
+                    Thread.SpinWait((_spinCount++ % Thread.VolatileRead(ref _acquireCount)) + 1);
             }
             else
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    Thread.Sleep(0);
+                    CurrentThread.Yield();
             }
         }
 
@@ -118,6 +99,7 @@ namespace ProcessHacker.Native.Threading
         public void Release()
         {
             Interlocked.Exchange(ref _value, 0);
+            Interlocked.Decrement(ref _acquireCount);
         }
     }
 }
