@@ -38,7 +38,28 @@ namespace ProcessHacker.Native.Objects
             FileHandle fileHandle
             )
         {
-            return Create(access, null, 0, sectionAttributes, pageAttributes, fileHandle);
+            return Create(access, 0, sectionAttributes, pageAttributes, fileHandle);
+        }
+
+        public static SectionHandle Create(
+            SectionAccess access,
+            long maximumSize,
+            SectionAttributes sectionAttributes,
+            MemoryProtection pageAttributes,
+            FileHandle fileHandle
+            )
+        {
+            return Create(access, null, maximumSize, sectionAttributes, pageAttributes, fileHandle);
+        }
+
+        public static SectionHandle Create(
+            SectionAccess access,
+            long maximumSize,
+            SectionAttributes sectionAttributes,
+            MemoryProtection pageAttributes
+            )
+        {
+            return Create(access, null, maximumSize, sectionAttributes, pageAttributes, null);
         }
 
         public static SectionHandle Create(
@@ -70,15 +91,32 @@ namespace ProcessHacker.Native.Objects
 
             try
             {
-                if ((status = Win32.NtCreateSection(
-                    out handle,
-                    access,
-                    ref oa,
-                    ref maximumSize,
-                    (int)pageAttributes,
-                    (int)sectionAttributes,
-                    fileHandle)) >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
+                if (maximumSize != 0)
+                {
+                    if ((status = Win32.NtCreateSection(
+                        out handle,
+                        access,
+                        ref oa,
+                        ref maximumSize,
+                        pageAttributes,
+                        sectionAttributes,
+                        fileHandle != null ? fileHandle : IntPtr.Zero
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
+                else
+                {
+                    if ((status = Win32.NtCreateSection(
+                        out handle,
+                        access,
+                        ref oa,
+                        IntPtr.Zero,
+                        pageAttributes,
+                        sectionAttributes,
+                        fileHandle != null ? fileHandle : IntPtr.Zero
+                        )) >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+                }
             }
             finally
             {
@@ -156,6 +194,35 @@ namespace ProcessHacker.Native.Objects
             return sii;
         }
 
+        public SectionView MapView(int size, MemoryProtection protection)
+        {
+            return this.MapView(IntPtr.Zero, new IntPtr(size), protection);
+        }
+
+        public SectionView MapView(IntPtr baseAddress, IntPtr size, MemoryProtection protection)
+        {
+            return this.MapView(ProcessHandle.GetCurrent(), baseAddress, size, protection);
+        }
+
+        public SectionView MapView(
+            ProcessHandle processHandle,
+            IntPtr baseAddress,
+            IntPtr size,
+            MemoryProtection protection
+            )
+        {
+            return this.MapView(
+                processHandle,
+                baseAddress,
+                size,
+                0,
+                size,
+                SectionInherit.ViewShare,
+                0,
+                protection
+                );
+        }
+
         public SectionView MapView(
             ProcessHandle processHandle,
             IntPtr baseAddress,
@@ -184,35 +251,6 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
 
             return new SectionView(baseAddress, commitSize);
-        }
-
-        public SectionView MapView(
-            ProcessHandle processHandle,
-            IntPtr baseAddress,
-            IntPtr size,
-            MemoryProtection protection
-            )
-        {
-            return this.MapView(
-                processHandle,
-                baseAddress,
-                size,
-                0,
-                size,
-                SectionInherit.ViewShare,
-                0,
-                protection
-                );
-        }
-
-        public SectionView MapView(IntPtr baseAddress, IntPtr size, MemoryProtection protection)
-        {
-            return this.MapView(ProcessHandle.GetCurrent(), baseAddress, size, protection);
-        }
-
-        public SectionView MapView(int size, MemoryProtection protection)
-        {
-            return this.MapView(IntPtr.Zero, new IntPtr(size), protection);
         }
     }
 }

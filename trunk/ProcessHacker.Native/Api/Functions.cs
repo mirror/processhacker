@@ -132,6 +132,12 @@ namespace ProcessHacker.Native.Api
 
         #region Files
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetFileSizeEx(
+            [In] IntPtr FileHandle,
+            [Out] out long FileSize
+            );
+
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int QueryDosDevice(
             [In] [Optional] string DeviceName,

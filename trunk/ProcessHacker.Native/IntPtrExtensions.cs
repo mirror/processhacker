@@ -59,6 +59,11 @@ namespace ProcessHacker.Native
             return Increment(ptr, -value);
         }
 
+        public static IntPtr Decrement(this IntPtr ptr, long value)
+        {
+            return Increment(ptr, -value);
+        }
+
         public static T ElementAt<T>(this IntPtr ptr, int index)
         {
             var offset = Marshal.SizeOf(typeof(T)) * index;
@@ -67,6 +72,17 @@ namespace ProcessHacker.Native
         }
 
         public static IntPtr Increment(this IntPtr ptr, int value)
+        {
+            unchecked
+            {
+                if (IntPtr.Size == sizeof(Int32))
+                    return new IntPtr(ptr.ToInt32() + value);
+                else
+                    return new IntPtr(ptr.ToInt64() + value);
+            }
+        }
+
+        public static IntPtr Increment(this IntPtr ptr, long value)
         {
             unchecked
             {

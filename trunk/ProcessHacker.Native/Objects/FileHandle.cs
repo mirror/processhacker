@@ -31,7 +31,24 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class FileHandle : NativeHandle<FileAccess>
     {
+        public static FileHandle FromHandle(IntPtr handle)
+        {
+            return new FileHandle(handle, false);
+        }
+
         protected FileHandle()
+        { }
+
+        private FileHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
+
+        public FileHandle(string fileName, FileAccess desiredAccess)
+            : this(fileName, desiredAccess, FileShareMode.Exclusive)
+        { }
+
+        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
+            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenExisting)
         { }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode,
@@ -43,13 +60,15 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
-        public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
-            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenExisting)
-        { }
+        public long GetSize()
+        {
+            long fileSize;
 
-        public FileHandle(string fileName, FileAccess desiredAccess)
-            : this(fileName, desiredAccess, FileShareMode.Exclusive)
-        { }
+            if (!Win32.GetFileSizeEx(this, out fileSize))
+                Win32.ThrowLastError();
+
+            return fileSize;
+        }
 
         /// <summary>
         /// Sends an I/O control message to the device's associated driver.
@@ -130,6 +149,20 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Reads data from the file.
         /// </summary>
+        /// <param name="length">The length to read.</param>
+        /// <returns>The read data.</returns>
+        public byte[] Read(int length)
+        {
+            byte[] buffer = new byte[length];
+
+            this.Read(buffer);
+
+            return buffer;
+        }
+
+        /// <summary>
+        /// Reads data from the file.
+        /// </summary>
         /// <param name="buffer">The buffer to store the data in.</param>
         /// <returns>The number of bytes read from the file.</returns>
         public int Read(byte[] buffer)
@@ -140,20 +173,6 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return bytesRead;
-        }
-
-        /// <summary>
-        /// Reads data from the file.
-        /// </summary>
-        /// <param name="length">The length to read.</param>
-        /// <returns>The read data.</returns>
-        public byte[] Read(int length)
-        {
-            byte[] buffer = new byte[length];
-
-            this.Read(buffer);
-
-            return buffer;
         }
 
         /// <summary>

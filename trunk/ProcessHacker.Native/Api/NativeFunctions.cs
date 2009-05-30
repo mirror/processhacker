@@ -296,8 +296,19 @@ namespace ProcessHacker.Native.Api
             [In] SectionAccess DesiredAccess,
             [In] [Optional] ref ObjectAttributes ObjectAttributes,
             [In] [Optional] ref long MaximumSize,
-            [In] int PageAttributes,
-            [In] int SectionAttributes,
+            [In] MemoryProtection PageAttributes,
+            [In] SectionAttributes SectionAttributes,
+            [In] [Optional] IntPtr FileHandle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateSection(
+            [Out] out IntPtr SectionHandle,
+            [In] SectionAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] IntPtr MaximumSize,
+            [In] MemoryProtection PageAttributes,
+            [In] SectionAttributes SectionAttributes,
             [In] [Optional] IntPtr FileHandle
             );
 

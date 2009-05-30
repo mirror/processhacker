@@ -102,6 +102,35 @@ namespace ProcessHacker.Native
             this.Dispose(false);
         }
 
+        public MemoryAllocStream GetStream()
+        {
+            return new MemoryAllocStream(this);
+        }
+
+        public byte[] ReadBytes(int length)
+        {
+            return this.ReadBytes(0, length);
+        }
+
+        public byte[] ReadBytes(int offset, int length)
+        {
+            byte[] buffer = new byte[length];
+
+            this.ReadBytes(offset, buffer, 0, length);
+
+            return buffer;
+        }
+
+        public void ReadBytes(byte[] buffer, int startIndex, int length)
+        {
+            this.ReadBytes(0, buffer, startIndex, length);
+        }
+
+        public void ReadBytes(int offset, byte[] buffer, int startIndex, int length)
+        {
+            Marshal.Copy(_memory.Increment(offset), buffer, startIndex, length);
+        }
+
         /// <summary>
         /// Reads a signed integer.
         /// </summary>
@@ -219,7 +248,7 @@ namespace ProcessHacker.Native
 
         public void WriteBytes(int offset, byte[] b)
         {
-            Marshal.Copy(b, 0, new IntPtr(this + offset), b.Length);
+            Marshal.Copy(b, 0, _memory.Increment(offset), b.Length);
         }
 
         public void WriteInt16(int offset, short i)

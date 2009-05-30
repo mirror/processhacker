@@ -49,6 +49,8 @@
     <Compile Include="Api\NativeStructs.cs" />
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Memory\MemoryAllocStream.cs" />
+    <Compile Include="Memory\Section.cs" />
     <Compile Include="Threading\CurrentThread.cs" />
     <Compile Include="Threading\Event.cs" />
     <Compile Include="ExtensionAttribute.cs" />
