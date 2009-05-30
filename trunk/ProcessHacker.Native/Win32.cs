@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
  *   windows API wrapper code
- * 
+ *
+ * Copyright (C) 2009 Flavio Erlich 
  * Copyright (C) 2009 Dean
  * Copyright (C) 2008-2009 wj32
  * 

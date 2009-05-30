@@ -290,11 +290,6 @@ namespace ProcessHacker
         /// </summary>
         private int _noWorkTimeout = 1000;
         /// <summary>
-        /// Signalled whenever work arrives. If worker threads have no immediate work, 
-        /// they will block on this event.
-        /// </summary>
-        private AutoResetEvent _workArrivedEvent = new AutoResetEvent(false);
-        /// <summary>
         /// If true, prevents new work items from being queued.
         /// </summary>
         private volatile bool _isJoining = false;
@@ -522,9 +517,10 @@ namespace ProcessHacker
                 return null;
 
             lock (_workQueue)
+            {
                 _workQueue.Enqueue(workItem = new WorkItem(this, work, args, tag));
-
-            _workArrivedEvent.Set();
+                Monitor.Pulse(_workQueue);
+            }
 
             // Check if all worker threads are currently busy.
             if (Thread.VolatileRead(ref _busyCount) == _workerThreads.Count)
@@ -591,7 +587,12 @@ namespace ProcessHacker
                 else
                 {
                     // No work available. Wait for work.
-                    if (_workArrivedEvent.WaitOne(_noWorkTimeout, false))
+                    bool workArrived = false;
+
+                    lock (_workQueue)
+                        workArrived = Monitor.Wait(_workQueue, _noWorkTimeout);
+
+                    if (workArrived)
                     {
                         // Work arrived. Go back so we can perform it.
                         continue;

@@ -131,6 +131,7 @@
     <Compile Include="Security\TokenAccess.cs" />
     <Compile Include="Security\WindowStationAccess.cs" />
     <Compile Include="Threading\Semaphore.cs" />
+    <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="Ui\HandlePropertiesWindow.cs">
       <SubType>Form</SubType>
