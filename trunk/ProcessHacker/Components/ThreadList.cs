@@ -866,124 +866,18 @@ namespace ProcessHacker.Components
                             uint address = stackFrame.PcAddress.ToUInt32();
                             string name = _provider.Symbols.GetSymbolFromAddress(address).ToLower();
 
-                            if (
-                                name.StartsWith("ntdll.dll!zwwaitforsingleobject") ||
-                                name.StartsWith("ntdll.dll!ntwaitforsingleobject") || 
-                                name.StartsWith("kernel32.dll!waitforsingleobject")
-                                )
+                            if (name == null)
                             {
-                                found = true;
-                                
-                                IntPtr handle = stackFrame.Params[0];
-                                bool alertable = stackFrame.Params[1].ToInt32() != 0;
-
-                                sb.AppendLine("Thread " + tid.ToString() + 
-                                    " is waiting (alertable: " + alertable.ToString() + ") for:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                                // dummy
                             }
                             else if (
-                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
-                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects") || 
-                                name.StartsWith("kernel32.dll!waitformultipleobjects")
+                                name.StartsWith("kernel32.dll!sleep")
                                 )
                             {
                                 found = true;
 
-                                int handleCount = stackFrame.Params[0].ToInt32();
-                                IntPtr handleAddress = stackFrame.Params[1];
-                                WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
-                                bool alertable = stackFrame.Params[3].ToInt32() != 0;
-                                IntPtr* handles = stackalloc IntPtr[handleCount];
-
-                                phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
-
-                                sb.AppendLine("Thread " + tid.ToString() +
-                                    " is waiting (alertable: " + alertable.ToString() + ", wait type: " + 
-                                    waitType.ToString() + ") for:");
-
-                                for (int i = 0; i < handleCount; i++)
-                                {
-                                    sb.AppendLine(this.GetHandleString(_pid, handles[i]));
-                                }
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwremoveiocompletion") ||
-                                name.StartsWith("ntdll.dll!ntremoveiocompletion")
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O completion object:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory") ||
-                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory")
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for work from a worker factory:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwreadfile") ||
-                                name.StartsWith("ntdll.dll!ntreadfile")
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe or a file:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile") ||
-                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile")
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O control request:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport") ||
-                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport") ||
-                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport") ||
-                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") ||
-                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport") ||
-                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport")
-                                )
-                            {
-                                found = true;
-
-                                IntPtr handle = stackFrame.Params[0];
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a LPC port:");
-
-                                sb.AppendLine(this.GetHandleString(_pid, handle));
-                            }
-                            else if (
-                                name.StartsWith("user32.dll!ntusergetmessage") ||
-                                name.StartsWith("user32.dll!ntuserwaitmessage")
-                                )
-                            {
-                                found = true;
-
-                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
+                                sb.Append("Thread is sleeping. Timeout: " +
+                                    stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwdelayexecution") ||
@@ -1009,13 +903,174 @@ namespace ProcessHacker.Components
                                 }
                             }
                             else if (
-                                name.StartsWith("kernel32.dll!sleep")
+                                name.StartsWith("ntdll.dll!zwdeviceiocontrolfile") ||
+                                name.StartsWith("ntdll.dll!ntdeviceiocontrolfile")
                                 )
                             {
                                 found = true;
 
-                                sb.Append("Thread is sleeping. Timeout: " +
-                                    stackFrame.Params[0].ToInt32().ToString() + " milliseconds");
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O control request:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwreadfile") ||
+                                name.StartsWith("ntdll.dll!ntreadfile")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a named pipe or a file:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwremoveiocompletion") ||
+                                name.StartsWith("ntdll.dll!ntremoveiocompletion")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an I/O completion object:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntreplywaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!zwrequestwaitreplyport") ||
+                                name.StartsWith("ntdll.dll!ntrequestwaitreplyport") ||
+                                name.StartsWith("ntdll.dll!zwalpcsendwaitreceiveport") ||
+                                name.StartsWith("ntdll.dll!ntalpcsendwaitreceiveport")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a LPC port:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if
+                                (
+                                name.StartsWith("ntdll.dll!zwsethighwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!ntsethighwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!zwsetlowwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!ntsetlowwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!zwwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!ntwaithigheventpair") ||
+                                name.StartsWith("ntdll.dll!zwwaitloweventpair") ||
+                                name.StartsWith("ntdll.dll!ntwaitloweventpair")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting (" + name + ") for an event pair:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("user32.dll!ntusergetmessage") ||
+                                name.StartsWith("user32.dll!ntuserwaitmessage")
+                                )
+                            {
+                                found = true;
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a USER message.");
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitfordebugevent") ||
+                                name.StartsWith("ntdll.dll!ntwaitfordebugevent")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for a debug event:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitforkeyedevent") ||
+                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent") || 
+                                name.StartsWith("ntdll.dll!zwreleasekeyedevent") ||
+                                name.StartsWith("ntdll.dll!ntreleasekeyedevent") 
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+                                IntPtr key = stackFrame.Params[1];
+
+                                sb.AppendLine("Thread " + tid.ToString() + 
+                                    " is waiting (" + name + ") for a keyed event (key 0x" + 
+                                    key.ToString("x") + "):");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitformultipleobjects") ||
+                                name.StartsWith("ntdll.dll!ntwaitformultipleobjects") ||
+                                name.StartsWith("kernel32.dll!waitformultipleobjects")
+                                )
+                            {
+                                found = true;
+
+                                int handleCount = stackFrame.Params[0].ToInt32();
+                                IntPtr handleAddress = stackFrame.Params[1];
+                                WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
+                                bool alertable = stackFrame.Params[3].ToInt32() != 0;
+                                IntPtr* handles = stackalloc IntPtr[handleCount];
+
+                                phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
+
+                                sb.AppendLine("Thread " + tid.ToString() +
+                                    " is waiting (alertable: " + alertable.ToString() + ", wait type: " +
+                                    waitType.ToString() + ") for:");
+
+                                for (int i = 0; i < handleCount; i++)
+                                {
+                                    sb.AppendLine(this.GetHandleString(_pid, handles[i]));
+                                }
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitforsingleobject") ||
+                                name.StartsWith("ntdll.dll!ntwaitforsingleobject") ||
+                                name.StartsWith("kernel32.dll!waitforsingleobject")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+                                bool alertable = stackFrame.Params[1].ToInt32() != 0;
+
+                                sb.AppendLine("Thread " + tid.ToString() +
+                                    " is waiting (alertable: " + alertable.ToString() + ") for:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
+                                name.StartsWith("ntdll.dll!zwwaitforworkviaworkerfactory") ||
+                                name.StartsWith("ntdll.dll!ntwaitforworkviaworkerfactory")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for work from a worker factory:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
 
                             return !found;
