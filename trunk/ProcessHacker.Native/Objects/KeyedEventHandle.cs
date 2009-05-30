@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class KeyedEventHandle : Win32Handle<KeyedEventAccess>
+    public class KeyedEventHandle : NativeHandle<KeyedEventAccess>
     {
         public static KeyedEventHandle Create(KeyedEventAccess access)
         {
@@ -88,12 +88,17 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus ReleaseKey(int key)
         {
-            return this.ReleaseKey(key, -1);
+            return this.ReleaseKey(key, false);
         }
 
         public NtStatus ReleaseKey(int key, long timeout)
         {
             return this.ReleaseKey(key, false, timeout);
+        }
+
+        public NtStatus ReleaseKey(int key, bool alertable)
+        {
+            return this.ReleaseKey(new IntPtr(key), alertable, long.MinValue, false);
         }
 
         public NtStatus ReleaseKey(int key, bool alertable, long timeout)
@@ -105,6 +110,9 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
+
+            if (key.ToInt64() % 2 != 0)
+                throw new ArgumentException("Key must be divisible by 2.");
 
             if ((status = Win32.NtReleaseKeyedEvent(
                 this,
@@ -119,12 +127,17 @@ namespace ProcessHacker.Native.Objects
 
         public NtStatus WaitKey(int key)
         {
-            return this.WaitKey(key, -1);
+            return this.WaitKey(key, false);
         }
 
         public NtStatus WaitKey(int key, long timeout)
         {
             return this.WaitKey(key, false, timeout);
+        }
+
+        public NtStatus WaitKey(int key, bool alertable)
+        {
+            return this.WaitKey(new IntPtr(key), alertable, long.MinValue, false);
         }
 
         public NtStatus WaitKey(int key, bool alertable, long timeout)
@@ -136,6 +149,9 @@ namespace ProcessHacker.Native.Objects
         {
             NtStatus status;
             long realTimeout = relative ? -timeout : timeout;
+
+            if (key.ToInt64() % 2 != 0)
+                throw new ArgumentException("Key must be divisible by 2.");
 
             if ((status = Win32.NtWaitForKeyedEvent(
                 this,

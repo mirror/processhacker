@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class MutantHandle : Win32Handle<MutantAccess>
+    public class MutantHandle : NativeHandle<MutantAccess>
     {
         public static MutantHandle Create(MutantAccess access, bool initialOwner)
         {

@@ -14,7 +14,7 @@ namespace ProcessHacker.Components
     public partial class SemaphoreProperties : UserControl
     {
         private SemaphoreHandle _semaphoreHandle;
-        private Win32Handle<SemaphoreAccess> _dupHandle;
+        private NativeHandle<SemaphoreAccess> _dupHandle;
 
         public SemaphoreProperties(SemaphoreHandle semaphoreHandle)
         {

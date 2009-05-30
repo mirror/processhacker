@@ -92,33 +92,35 @@ namespace ProcessHacker.UI
 
             _list.BeginInvoke(new MethodInvoker(delegate
             {
+                // Execute the pre-queue items.
                 _list.BeginUpdate();
 
                 while (_preQueue.Count > 0)
                     _preQueue.Dequeue().Invoke();
 
                 _list.EndUpdate();
-            }));
 
-            System.Threading.Timer t = null;
+                // Execute the normal queue items.
+                System.Threading.Timer t = null;
 
-            t = new System.Threading.Timer(o =>
-            {
-                if (_list.IsHandleCreated)
+                t = new System.Threading.Timer(o =>
                 {
-                    _list.BeginInvoke(new MethodInvoker(delegate
+                    if (_list.IsHandleCreated)
                     {
-                        _list.BeginUpdate();
+                        _list.BeginInvoke(new MethodInvoker(delegate
+                        {
+                            _list.BeginUpdate();
 
-                        while (_queue.Count > 0)
-                            _queue.Dequeue().Invoke();
+                            while (_queue.Count > 0)
+                                _queue.Dequeue().Invoke();
 
-                        _list.EndUpdate();
-                    }));
-                }
+                            _list.EndUpdate();
+                        }));
+                    }
 
-                t.Dispose();
-            }, null, HighlightingContext.HighlightingDuration, System.Threading.Timeout.Infinite);
+                    t.Dispose();
+                }, null, HighlightingContext.HighlightingDuration, System.Threading.Timeout.Infinite);
+            }));
         }
 
         public void Enqueue(MethodInvoker method)

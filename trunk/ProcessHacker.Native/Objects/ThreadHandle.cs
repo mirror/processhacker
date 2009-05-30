@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows thread.
     /// </summary>
-    public class ThreadHandle : Win32Handle<ThreadAccess>, IWithToken
+    public class ThreadHandle : NativeHandle<ThreadAccess>, IWithToken
     {
         public delegate bool WalkStackDelegate(ThreadStackFrame stackFrame);
 
@@ -93,6 +93,11 @@ namespace ProcessHacker.Native.Objects
             return new ThreadHandle(new IntPtr(-2), false);
         }
 
+        public static int GetCurrentId()
+        {
+            return Win32.GetCurrentThreadId();
+        }
+
         public static void RegisterTerminationPort(PortHandle portHandle)
         {
             NtStatus status;
@@ -101,12 +106,35 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
         }
 
+        public static NtStatus Sleep(long time, bool relative)
+        {
+            return Sleep(false, time, relative);
+        }
+
+        public static NtStatus Sleep(bool alertable, long time, bool relative)
+        {
+            if (time == 0)
+            {
+                Yield();
+                return NtStatus.Success;
+            }
+
+            long realTime = relative ? -time : time;
+
+            return Win32.NtDelayExecution(alertable, ref realTime);
+        }
+
         public static void TestAlert()
         {
             NtStatus status;
 
             if ((status = Win32.NtTestAlert()) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public static void Yield()
+        {
+            Win32.NtYieldExecution();
         }
 
         internal ThreadHandle(IntPtr handle, bool owned)

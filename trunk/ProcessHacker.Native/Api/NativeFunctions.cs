@@ -31,6 +31,8 @@ namespace ProcessHacker.Native.Api
 {
     public partial class Win32
     {
+        // IMPORTANT: All timeouts, etc. are in 100ns units except when stated otherwise.
+
         #region System Calls
 
         [DllImport("ntdll.dll")]
@@ -1197,6 +1199,7 @@ namespace ProcessHacker.Native.Api
             [In] int SystemInformationLength
             );
 
+        /// <param name="Period">Period, in milliseconds.</param>
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetTimer(
             [In] IntPtr TimerHandle,
@@ -1346,6 +1349,9 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr BufferSize,
             [Out] [Optional] out IntPtr ReturnLength
             );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtYieldExecution();
 
         #endregion
 

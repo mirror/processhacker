@@ -1740,6 +1740,12 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SwitchDesktop(
+            [In] IntPtr DesktopHandle
+            );
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetUserObjectSecurity(
             [In] IntPtr Handle,
             [In] ref SiRequested SiRequested,

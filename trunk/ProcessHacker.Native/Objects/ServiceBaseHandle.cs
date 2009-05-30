@@ -28,7 +28,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle managed by the Windows service manager.
     /// </summary>
-    public class ServiceBaseHandle<TAccess> : Win32Handle<TAccess>
+    public class ServiceBaseHandle<TAccess> : NativeHandle<TAccess>
         where TAccess : struct
     {
         public ServiceBaseHandle(IntPtr handle, bool owned)

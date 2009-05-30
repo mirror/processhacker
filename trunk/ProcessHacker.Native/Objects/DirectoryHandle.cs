@@ -27,7 +27,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class DirectoryHandle : Win32Handle
+    public class DirectoryHandle : GenericHandle
     {
         public struct ObjectEntry
         {

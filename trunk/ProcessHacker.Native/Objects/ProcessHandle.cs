@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Objects
     /// time a query or set function is called, this lets the users control 
     /// when they want to open handles with certain permissions. This 
     /// means that handles can be cached (by the users).</remarks>
-    public class ProcessHandle : Win32Handle<ProcessAccess>, IWithToken
+    public class ProcessHandle : NativeHandle<ProcessAccess>, IWithToken
     {
         /// <summary>
         /// The callback for enumerating process memory regions.
@@ -138,6 +138,11 @@ namespace ProcessHacker.Native.Objects
         public static ProcessHandle GetCurrent()
         {
             return new ProcessHandle(new IntPtr(-1), false);
+        }
+
+        public static int GetCurrentId()
+        {
+            return Win32.GetCurrentProcessId();
         }
 
         private ProcessHandle(IntPtr handle, bool owned)
@@ -1002,7 +1007,7 @@ namespace ProcessHacker.Native.Objects
         /// Forces the process to load the specified library.
         /// </summary>
         /// <param name="path">The path to the library.</param>
-        /// <param name="timeout">The timeout, in seconds, for the process to load the library.</param>
+        /// <param name="timeout">The timeout, in milliseconds, for the process to load the library.</param>
         public void InjectDll(string path, uint timeout)
         {
             IntPtr stringPage = this.AllocMemory(path.Length * 2 + 2, MemoryProtection.ReadWrite);
@@ -1010,7 +1015,7 @@ namespace ProcessHacker.Native.Objects
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
             this.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "LoadLibraryW"),
-                stringPage, (ThreadAccess)StandardRights.Synchronize).Wait(timeout);
+                stringPage, (ThreadAccess)StandardRights.Synchronize).Wait(timeout * Win32.TimeMsTo100Ns);
 
             this.FreeMemory(stringPage, path.Length * 2 + 2, false);
         }

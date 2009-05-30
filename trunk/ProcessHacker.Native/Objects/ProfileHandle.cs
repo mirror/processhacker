@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class ProfileHandle : Win32Handle<ProfileAccess>
+    public class ProfileHandle : NativeHandle<ProfileAccess>
     {
         // TODO: Implement basics
     }

@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
-    public class Win32Handle : Win32Handle<int>
+    public class NativeHandle : IDisposable, ISecurable, ISynchronizable
     {
         public static NtStatus WaitAll(ISynchronizable[] objects)
         {
@@ -93,77 +93,25 @@ namespace ProcessHacker.Native.Objects
             return status;
         }
 
-        /// <summary>
-        /// Creates a new, invalid handle. You must set the handle using the Handle property.
-        /// </summary>
-        protected Win32Handle()
-            : base()
-        { }
+        public static implicit operator int(NativeHandle handle)
+        {
+            return handle.Handle.ToInt32();
+        }
 
-        /// <summary>
-        /// Creates a new handle using the specified value. The handle will be closed when 
-        /// this object is disposed or garbage-collected.
-        /// </summary>
-        /// <param name="handle">The handle value.</param>
-        public Win32Handle(IntPtr handle)
-            : base(handle)
-        { }
+        public static implicit operator IntPtr(NativeHandle handle)
+        {
+            return handle.Handle;
+        }
 
-        /// <summary>
-        /// Creates a new handle using the specified value. If owned is set to false, the 
-        /// handle will not be closed automatically.
-        /// </summary>
-        /// <param name="handle">The handle value.</param>
-        /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
-        public Win32Handle(IntPtr handle, bool owned)
-            : base(handle, owned)
-        { }
-
-        /// <summary>
-        /// Creates a new handle by duplicating an existing handle.
-        /// </summary>
-        /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(IntPtr handle, int desiredAccess)
-            : base(handle, desiredAccess)
-        { }
-
-        /// <summary>
-        /// Creates a new handle by duplicating an existing handle from another process.
-        /// </summary>
-        /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
-        /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(ProcessHandle processHandle, IntPtr handle, int desiredAccess)
-            : base(processHandle, handle, desiredAccess)
-        { }
-    }
-
-    /// <summary>
-    /// Represents a generic Windows handle which acts as a kernel handle by default.
-    /// </summary>
-    public class Win32Handle<TAccess> : IDisposable, ISecurable, ISynchronizable
-        where TAccess : struct
-    {
         private object _disposeLock = new object();
         private bool _owned = true;
         private bool _disposed = false;
         private IntPtr _handle;
 
-        public static implicit operator int(Win32Handle<TAccess> handle)
-        {
-            return handle.Handle.ToInt32();
-        }
-
-        public static implicit operator IntPtr(Win32Handle<TAccess> handle)
-        {
-            return handle.Handle;
-        }
-
         /// <summary>
         /// Creates a new, invalid handle. You must set the handle using the Handle property.
         /// </summary>
-        protected Win32Handle()
+        protected NativeHandle()
         { }
 
         /// <summary>
@@ -171,7 +119,7 @@ namespace ProcessHacker.Native.Objects
         /// this object is disposed or garbage-collected.
         /// </summary>
         /// <param name="handle">The handle value.</param>
-        public Win32Handle(IntPtr handle)
+        public NativeHandle(IntPtr handle)
         {
             _handle = handle;
         }
@@ -182,35 +130,54 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="handle">The handle value.</param>
         /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
-        public Win32Handle(IntPtr handle, bool owned)
+        public NativeHandle(IntPtr handle, bool owned)
         {
             _handle = handle;
             _owned = owned;
         }
 
-        /// <summary>
-        /// Creates a new handle by duplicating an existing handle.
-        /// </summary>
-        /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(IntPtr handle, TAccess access)
+        ~NativeHandle()
         {
-            Win32.DuplicateObject(ProcessHandle.GetCurrent(), handle, ProcessHandle.GetCurrent(), out _handle,
-                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
-            _owned = true;
+            this.Dispose(false);
         }
 
         /// <summary>
-        /// Creates a new handle by duplicating an existing handle from another process.
+        /// Closes the handle.
         /// </summary>
-        /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
-        /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
-        public Win32Handle(ProcessHandle processHandle, IntPtr handle, TAccess access)
+        public void Dispose()
         {
-            Win32.DuplicateObject(processHandle, handle, ProcessHandle.GetCurrent(), out _handle,
-                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
-            _owned = true;
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                    Monitor.Enter(_disposeLock);
+
+                if (!_disposed && _owned)
+                {
+                    this.Close();
+                    _disposed = true;
+                }
+            }
+            finally
+            {
+                if (disposing)
+                    Monitor.Exit(_disposeLock);
+            }
+        }
+
+        /// <summary>
+        /// Closes the handle. This method must not be called directly; instead, 
+        /// override this method in a derived class if your handle must be closed 
+        /// with a method other than CloseHandle.
+        /// </summary>
+        protected virtual void Close()
+        {
+            Win32.CloseHandle(_handle);
         }
 
         /// <summary>
@@ -236,16 +203,6 @@ namespace ProcessHacker.Native.Objects
         {
             get { return _handle; }
             protected set { _handle = value; }
-        }
-
-        /// <summary>
-        /// Duplicates the handle.
-        /// </summary>
-        /// <param name="desiredAccess">The desired access to the object.</param>
-        /// <returns>A handle.</returns>
-        public Win32Handle<TAccess> Duplicate(TAccess access)
-        {
-            return new Win32Handle<TAccess>(ProcessHandle.GetCurrent(), this, access);
         }
 
         /// <summary>
@@ -510,7 +467,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Waits for the object to be signaled.
         /// </summary>
-        /// <param name="timeout">The timeout value.</param>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
         public NtStatus Wait(long timeout)
         {
             return this.Wait(false, timeout);
@@ -522,7 +479,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="alertable">
         /// Whether user-mode APCs can be delivered during the wait.
         /// </param>
-        /// <param name="timeout">The timeout value.</param>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
         public virtual NtStatus Wait(bool alertable, long timeout)
         {
             return this.Wait(alertable, timeout, true);
@@ -531,7 +488,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Waits for the object to be signaled.
         /// </summary>
-        /// <param name="timeout">The timeout value.</param>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
         /// <param name="relative">Whether the timeout value is relative.</param>
         public NtStatus Wait(long timeout, bool relative)
         {
@@ -544,7 +501,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="alertable">
         /// Whether user-mode APCs can be delivered during the wait.
         /// </param>
-        /// <param name="timeout">The timeout value.</param>
+        /// <param name="timeout">The timeout, in 100ns units.</param>
         /// <param name="relative">Whether the timeout value is relative.</param>
         public virtual NtStatus Wait(bool alertable, long timeout, bool relative)
         {
@@ -560,49 +517,127 @@ namespace ProcessHacker.Native.Objects
 
             return status;
         }
+    }
+
+    /// <summary>
+    /// Represents a generic Windows handle which acts as a kernel handle by default.
+    /// </summary>
+    public class NativeHandle<TAccess> : NativeHandle
+        where TAccess : struct
+    {
+        /// <summary>
+        /// Creates a new, invalid handle. You must set the handle using the Handle property.
+        /// </summary>
+        protected NativeHandle()
+        { }
 
         /// <summary>
-        /// Closes the handle. This method must not be called directly; instead, 
-        /// override this method in a derived class if your handle must be closed 
-        /// with a method other than CloseHandle.
+        /// Creates a new handle using the specified value. The handle will be closed when 
+        /// this object is disposed or garbage-collected.
         /// </summary>
-        protected virtual void Close()
-        {
-            Win32.CloseHandle(_handle);
-        }
+        /// <param name="handle">The handle value.</param>
+        public NativeHandle(IntPtr handle)
+            : base(handle)
+        { }
 
-        ~Win32Handle()
-        {
-            this.Dispose(false);
-        }
+        /// <summary>
+        /// Creates a new handle using the specified value. If owned is set to false, the 
+        /// handle will not be closed automatically.
+        /// </summary>
+        /// <param name="handle">The handle value.</param>
+        /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
+        public NativeHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
 
-        private void Dispose(bool disposing)
+        /// <summary>
+        /// Creates a new handle by duplicating an existing handle.
+        /// </summary>
+        /// <param name="handle">The existing handle.</param>
+        /// <param name="desiredAccess">The desired access to the object.</param>
+        public NativeHandle(IntPtr handle, TAccess access)
         {
-            try
-            {
-                if (disposing)
-                    Monitor.Enter(_disposeLock);
+            IntPtr newHandle;
 
-                if (!_disposed && _owned)
-                {
-                    this.Close();
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                    Monitor.Exit(_disposeLock);
-            }
+            Win32.DuplicateObject(ProcessHandle.GetCurrent(), handle, ProcessHandle.GetCurrent(), out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
+            this.Handle = newHandle;
         }
 
         /// <summary>
-        /// Closes the handle.
+        /// Creates a new handle by duplicating an existing handle from another process.
         /// </summary>
-        public void Dispose()
+        /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
+        /// <param name="handle">The existing handle.</param>
+        /// <param name="desiredAccess">The desired access to the object.</param>
+        public NativeHandle(ProcessHandle processHandle, IntPtr handle, TAccess access)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            IntPtr newHandle;
+
+            Win32.DuplicateObject(processHandle, handle, ProcessHandle.GetCurrent(), out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
+            this.Handle = newHandle;
         }
+
+        /// <summary>
+        /// Duplicates the handle.
+        /// </summary>
+        /// <param name="desiredAccess">The desired access to the object.</param>
+        /// <returns>A handle.</returns>
+        public NativeHandle<TAccess> Duplicate(TAccess access)
+        {
+            return new NativeHandle<TAccess>(ProcessHandle.GetCurrent(), this, access);
+        }
+    }
+
+    /// <summary>
+    /// Represents a generic Windows handle which acts as a kernel handle by default.
+    /// </summary>
+    public class GenericHandle : NativeHandle<int>
+    {
+        /// <summary>
+        /// Creates a new, invalid handle. You must set the handle using the Handle property.
+        /// </summary>
+        protected GenericHandle()
+            : base()
+        { }
+
+        /// <summary>
+        /// Creates a new handle using the specified value. The handle will be closed when 
+        /// this object is disposed or garbage-collected.
+        /// </summary>
+        /// <param name="handle">The handle value.</param>
+        public GenericHandle(IntPtr handle)
+            : base(handle)
+        { }
+
+        /// <summary>
+        /// Creates a new handle using the specified value. If owned is set to false, the 
+        /// handle will not be closed automatically.
+        /// </summary>
+        /// <param name="handle">The handle value.</param>
+        /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
+        public GenericHandle(IntPtr handle, bool owned)
+            : base(handle, owned)
+        { }
+
+        /// <summary>
+        /// Creates a new handle by duplicating an existing handle.
+        /// </summary>
+        /// <param name="handle">The existing handle.</param>
+        /// <param name="desiredAccess">The desired access to the object.</param>
+        public GenericHandle(IntPtr handle, int desiredAccess)
+            : base(handle, desiredAccess)
+        { }
+
+        /// <summary>
+        /// Creates a new handle by duplicating an existing handle from another process.
+        /// </summary>
+        /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
+        /// <param name="handle">The existing handle.</param>
+        /// <param name="desiredAccess">The desired access to the object.</param>
+        public GenericHandle(ProcessHandle processHandle, IntPtr handle, int desiredAccess)
+            : base(processHandle, handle, desiredAccess)
+        { }
     }
 }

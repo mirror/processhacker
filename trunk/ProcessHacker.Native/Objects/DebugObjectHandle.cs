@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class DebugObjectHandle : Win32Handle<DebugObjectAccess>
+    public class DebugObjectHandle : NativeHandle<DebugObjectAccess>
     {
         public static DebugObjectHandle Create(DebugObjectAccess access, DebugObjectFlags flags)
         {

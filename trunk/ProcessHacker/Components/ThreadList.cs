@@ -328,7 +328,7 @@ namespace ProcessHacker.Components
             }
 
             _runCount++;
-        }   
+        }
 
         private System.Drawing.Color GetThreadColor(ThreadItem titem)
         {

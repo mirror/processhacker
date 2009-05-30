@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _tokenProps.Dispose();
+
             base.Dispose(disposing);
         }
 

@@ -13,7 +13,7 @@ namespace ProcessHacker.Components
     public partial class EventProperties : UserControl
     {
         private EventHandle _eventHandle;
-        private Win32Handle<EventAccess> _dupHandle;
+        private NativeHandle<EventAccess> _dupHandle;
 
         public EventProperties(EventHandle eventHandle)
         {

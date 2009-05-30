@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public abstract class UserHandle<TAccess> : Win32Handle<TAccess>
+    public abstract class UserHandle<TAccess> : NativeHandle<TAccess>
         where TAccess : struct
     {
         protected UserHandle()

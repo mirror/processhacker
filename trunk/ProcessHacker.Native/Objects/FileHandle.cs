@@ -29,7 +29,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a file.
     /// </summary>
-    public class FileHandle : Win32Handle<FileAccess>
+    public class FileHandle : NativeHandle<FileAccess>
     {
         protected FileHandle()
         { }

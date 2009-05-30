@@ -27,7 +27,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class EventHandle : Win32Handle<EventAccess>
+    public class EventHandle : NativeHandle<EventAccess>
     {
         public static EventHandle Create(EventAccess access, EventType type, bool initialState)
         {

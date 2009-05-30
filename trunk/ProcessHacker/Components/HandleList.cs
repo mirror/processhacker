@@ -337,7 +337,7 @@ namespace ProcessHacker.Components
                 HandlePropertiesWindow window = new HandlePropertiesWindow(handleInfo);
                 IntPtr handle = new IntPtr(handleInfo.Handle);
                 ProcessHandle phandle = new ProcessHandle(handleInfo.ProcessId, ProcessAccess.DupHandle);
-                Win32Handle dupHandle; 
+                GenericHandle dupHandle; 
 
                 window.HandlePropertiesCallback += (control, name, typeName) =>
                     {
@@ -368,7 +368,7 @@ namespace ProcessHacker.Components
                                                     case "job":
                                                         {
                                                             dupHandle =
-                                                                new Win32Handle(
+                                                                new GenericHandle(
                                                                     phandle, handle, 
                                                                     (int)JobObjectAccess.Query);
                                                             (new JobWindow(JobObjectHandle.FromHandle(dupHandle))).ShowDialog();
@@ -391,7 +391,7 @@ namespace ProcessHacker.Components
                                                             else
                                                             {
                                                                 dupHandle =
-                                                                    new Win32Handle(
+                                                                    new GenericHandle(
                                                                         phandle, handle,
                                                                         (int)OSVersion.MinProcessQueryInfoAccess);
                                                                 pid = ProcessHandle.FromHandle(dupHandle).
@@ -415,7 +415,7 @@ namespace ProcessHacker.Components
                                 break;
                             case "event":
                                 {
-                                    dupHandle = new Win32Handle(phandle, handle, (int)EventAccess.QueryState);
+                                    dupHandle = new GenericHandle(phandle, handle, (int)EventAccess.QueryState);
                                     var eventProps = new EventProperties(EventHandle.FromHandle(dupHandle));
                                     eventProps.Location = new Point(10, 20);
                                     control.Controls.Add(eventProps);
@@ -423,7 +423,7 @@ namespace ProcessHacker.Components
                                 break;
                             case "mutant":
                                 {
-                                    dupHandle = new Win32Handle(phandle, handle, (int)MutantAccess.QueryState);
+                                    dupHandle = new GenericHandle(phandle, handle, (int)MutantAccess.QueryState);
                                     var mutantProps = new MutantProperties(MutantHandle.FromHandle(dupHandle));
                                     mutantProps.Location = new Point(10, 20);
                                     control.Controls.Add(mutantProps);
@@ -431,7 +431,7 @@ namespace ProcessHacker.Components
                                 break;
                             case "section":
                                 {
-                                    dupHandle = new Win32Handle(phandle, handle, (int)SectionAccess.Query);
+                                    dupHandle = new GenericHandle(phandle, handle, (int)SectionAccess.Query);
                                     var sectionProps = new SectionProperties(SectionHandle.FromHandle(dupHandle));
                                     sectionProps.Location = new Point(10, 20);
                                     control.Controls.Add(sectionProps);
@@ -439,10 +439,18 @@ namespace ProcessHacker.Components
                                 break;
                             case "semaphore":
                                 {
-                                    dupHandle = new Win32Handle(phandle, handle, (int)SemaphoreAccess.QueryState);
+                                    dupHandle = new GenericHandle(phandle, handle, (int)SemaphoreAccess.QueryState);
                                     var semaphoreProps = new SemaphoreProperties(SemaphoreHandle.FromHandle(dupHandle));
                                     semaphoreProps.Location = new Point(10, 20);
                                     control.Controls.Add(semaphoreProps);
+                                }
+                                break;
+                            case "timer":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)TimerAccess.QueryState);
+                                    var timerProps = new TimerProperties(TimerHandle.FromHandle(dupHandle));
+                                    timerProps.Location = new Point(10, 20);
+                                    control.Controls.Add(timerProps);
                                 }
                                 break;
                         }

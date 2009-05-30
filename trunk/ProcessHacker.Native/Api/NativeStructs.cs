@@ -335,6 +335,11 @@ namespace ProcessHacker.Native.Api
         public UInt32 LowPart;
         [FieldOffset(4)]
         public UInt32 HighPart;
+
+        public static implicit operator long(LargeInteger li)
+        {
+            return li.QuadPart;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

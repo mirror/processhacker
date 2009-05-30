@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class SectionHandle : Win32Handle<SectionAccess>
+    public class SectionHandle : NativeHandle<SectionAccess>
     {
         public static SectionHandle Create(
             SectionAccess access,

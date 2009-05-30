@@ -47,6 +47,7 @@ namespace ProcessHacker.Native.Api
         public const int SidRecommendedSubAuthorities = 1;
         public const int SidRevision = 1;
         public const int SizeOf80387Registers = 80;
+        public const int TimeMsTo100Ns = 10000;
 
         public static readonly IntPtr PebLdrOffset = Marshal.OffsetOf(typeof(Peb), "Ldr");
         public static readonly IntPtr PebProcessParametersOffset = Marshal.OffsetOf(typeof(Peb), "ProcessParameters");

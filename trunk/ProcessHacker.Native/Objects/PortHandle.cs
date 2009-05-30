@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class PortHandle : Win32Handle<PortAccess>
+    public class PortHandle : NativeHandle<PortAccess>
     {
         public static PortHandle Create(
             string name,

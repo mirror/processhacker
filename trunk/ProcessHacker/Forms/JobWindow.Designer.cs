@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _jobProps.Dispose();
+
             base.Dispose(disposing);
         }
 

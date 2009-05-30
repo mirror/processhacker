@@ -49,7 +49,7 @@ namespace ProcessHacker.Native.Objects
         {
             this.Handle = Win32.OpenDesktop(name, allowOtherAccountHook ? 1 : 0, false, access);
 
-            if (this.Handle == System.IntPtr.Zero)
+            if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
         }
 
@@ -65,6 +65,12 @@ namespace ProcessHacker.Native.Objects
         public void SetCurrent()
         {
             if (!Win32.SetThreadDesktop(this))
+                Win32.ThrowLastError();
+        }
+
+        public void Switch()
+        {
+            if (!Win32.SwitchDesktop(this))
                 Win32.ThrowLastError();
         }
     }

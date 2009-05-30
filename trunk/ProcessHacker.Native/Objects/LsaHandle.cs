@@ -28,7 +28,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle managed by the Local Security Authority.
     /// </summary>
-    public class LsaHandle<TAccess> : Win32Handle<TAccess>
+    public class LsaHandle<TAccess> : NativeHandle<TAccess>
         where TAccess : struct
     {
         public LsaHandle(IntPtr handle, bool owned)

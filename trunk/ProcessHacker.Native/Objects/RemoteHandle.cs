@@ -60,7 +60,7 @@ namespace ProcessHacker.Native.Objects
         /// </remarks>
         public int GetHandle(int desiredAccess)
         {
-            return new Win32Handle(_phandle, _handle, desiredAccess);
+            return new GenericHandle(_phandle, _handle, desiredAccess);
         }
     }
 }

@@ -49,14 +49,19 @@
     <Compile Include="Api\NativeStructs.cs" />
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Threading\CurrentThread.cs" />
+    <Compile Include="Threading\Event.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="ImpersonationContext.cs" />
+    <Compile Include="Threading\EventPair.cs" />
+    <Compile Include="Threading\KeyedEvent.cs" />
     <Compile Include="KProcessHacker.cs" />
     <Compile Include="IntPtrExtensions.cs" />
     <Compile Include="Memory\LocalMemoryAlloc.cs" />
     <Compile Include="Memory\PebMemoryAlloc.cs" />
     <Compile Include="Memory\SectionView.cs" />
+    <Compile Include="Threading\Mutant.cs" />
     <Compile Include="NativeTypeFactory.cs" />
     <Compile Include="Objects\DebugObjectHandle.cs" />
     <Compile Include="Objects\DesktopHandle.cs" />
@@ -98,7 +103,7 @@
     <Compile Include="Objects\ThreadHandle.cs" />
     <Compile Include="Objects\TokenHandle.cs" />
     <Compile Include="Objects\TokenWithLinkedToken.cs" />
-    <Compile Include="Objects\Win32Handle.cs" />
+    <Compile Include="Objects\NativeHandle.cs" />
     <Compile Include="Memory\HeapMemoryAlloc.cs" />
     <Compile Include="Memory\LsaMemoryAlloc.cs" />
     <Compile Include="Memory\MemoryAlloc.cs" />
@@ -125,12 +130,15 @@
     <Compile Include="Security\ThreadAccess.cs" />
     <Compile Include="Security\TokenAccess.cs" />
     <Compile Include="Security\WindowStationAccess.cs" />
+    <Compile Include="Threading\Semaphore.cs" />
+    <Compile Include="Threading\Timer.cs" />
     <Compile Include="Ui\HandlePropertiesWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Ui\HandlePropertiesWindow.Designer.cs">
       <DependentUpon>HandlePropertiesWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="NativeObject.cs" />
     <Compile Include="Windows.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="OSVersion.cs" />

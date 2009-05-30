@@ -524,7 +524,7 @@ namespace ProcessHacker.Native
             NtStatus status = NtStatus.Success;
             IntPtr handle = new IntPtr(this.Handle);
             IntPtr objectHandleI;
-            Win32Handle objectHandle = null;
+            GenericHandle objectHandle = null;
             int retLength;
             int baseAddress;
 
@@ -534,7 +534,7 @@ namespace ProcessHacker.Native
                     process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
                     Win32.ThrowLastError();
 
-                objectHandle = new Win32Handle(objectHandleI);
+                objectHandle = new GenericHandle(objectHandleI);
             }
 
             try
@@ -581,7 +581,7 @@ namespace ProcessHacker.Native
             IntPtr handle = new IntPtr(this.Handle);
             IntPtr objectHandleI;
             int retLength = 0;
-            Win32Handle objectHandle = null;
+            GenericHandle objectHandle = null;
 
             if (this.Handle == 0 || this.Handle == -1 || this.Handle == -2)
                 throw new WindowsException(6);
@@ -595,7 +595,7 @@ namespace ProcessHacker.Native
                     process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
                     Win32.ThrowLastError();
 
-                objectHandle = new Win32Handle(objectHandleI);
+                objectHandle = new GenericHandle(objectHandleI);
             }
 
             ObjectInformation info = new ObjectInformation();
@@ -754,7 +754,7 @@ namespace ProcessHacker.Native
                             else
                             {
                                 using (var processHandle =
-                                    new Win32Handle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
+                                    new NativeHandle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
                                 {
                                     if ((processId = Win32.GetProcessId(processHandle)) == 0)
                                         Win32.ThrowLastError();
@@ -786,7 +786,7 @@ namespace ProcessHacker.Native
                             else
                             {
                                 using (var threadHandle =
-                                    new Win32Handle<ThreadAccess>(process, handle, OSVersion.MinThreadQueryInfoAccess))
+                                    new NativeHandle<ThreadAccess>(process, handle, OSVersion.MinThreadQueryInfoAccess))
                                 {
                                     var basicInfo = ThreadHandle.FromHandle(threadHandle).GetBasicInformation();
 
@@ -810,7 +810,7 @@ namespace ProcessHacker.Native
                     case "Token":
                         {
                             using (var tokenHandle = 
-                                new Win32Handle<TokenAccess>(process, handle, TokenAccess.Query))
+                                new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
                             {
                                 info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
                             }

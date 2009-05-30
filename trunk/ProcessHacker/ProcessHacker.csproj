@@ -184,6 +184,9 @@
       <DependentUpon>ProcessTree.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\TimerProperties.resx">
+      <DependentUpon>TimerProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\TokenGroupsList.resx">
       <DependentUpon>TokenGroupsList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -374,6 +377,12 @@
     </Compile>
     <Compile Include="Components\SemaphoreProperties.Designer.cs">
       <DependentUpon>SemaphoreProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\TimerProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\TimerProperties.Designer.cs">
+      <DependentUpon>TimerProperties.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\JobWindow.cs">
       <SubType>Form</SubType>

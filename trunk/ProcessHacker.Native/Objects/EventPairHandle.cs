@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents an event pair, an object consisting of two events, high and low.
     /// </summary>
-    public class EventPairHandle : Win32Handle<EventPairAccess>
+    public class EventPairHandle : NativeHandle<EventPairAccess>
     {
         /// <summary>
         /// Creates an unnamed event pair.
@@ -123,12 +123,14 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Sets the high event and waits for the low event.
         /// </summary>
-        public void SetHighWaitLow()
+        public NtStatus SetHighWaitLow()
         {
             NtStatus status;
 
             if ((status = Win32.NtSetHighWaitLowEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
 
         /// <summary>
@@ -145,34 +147,40 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Sets the low event and waits for the high event.
         /// </summary>
-        public void SetLowWaitHigh()
+        public NtStatus SetLowWaitHigh()
         {
             NtStatus status;
 
             if ((status = Win32.NtSetLowWaitHighEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
 
         /// <summary>
         /// Waits for the high event.
         /// </summary>
-        public void WaitHigh()
+        public NtStatus WaitHigh()
         {
             NtStatus status;
 
             if ((status = Win32.NtWaitHighEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
 
         /// <summary>
         /// Waits for the low event.
         /// </summary>
-        public void WaitLow()
+        public NtStatus WaitLow()
         {
             NtStatus status;
 
             if ((status = Win32.NtWaitLowEventPair(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+
+            return status;
         }
     }
 }

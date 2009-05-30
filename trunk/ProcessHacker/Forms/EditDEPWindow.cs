@@ -104,7 +104,7 @@ namespace ProcessHacker
                     var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags),
                         Program.MinThreadQueryRights | (ThreadAccess)StandardRights.Synchronize);
 
-                    thread.Wait(1000);
+                    thread.Wait(1000 * Win32.TimeMsTo100Ns);
 
                     int exitCode = thread.GetExitCode();
 
