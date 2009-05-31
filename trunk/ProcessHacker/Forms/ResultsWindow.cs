@@ -23,9 +23,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -70,17 +70,7 @@ namespace ProcessHacker
 
             _so = new SearchOptions(_pid, SearchType.String);
 
-            listResults.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A)
-                        for (int i = 0; i < listResults.VirtualListSize; i++)
-                            if (!listResults.SelectedIndices.Contains(i))
-                                listResults.SelectedIndices.Add(i);
-
-                    if (e.Control && e.KeyCode == Keys.C)
-                        GenericViewMenu.ListViewCopy(listResults, -1, listResults_RetrieveVirtualItem);
-                };
+            listResults.AddShortcuts();
         }
 
         private void ResultsWindow_Load(object sender, EventArgs e)
@@ -159,7 +149,7 @@ namespace ProcessHacker
                 location.X + (size.Width - sw.Width) / 2,
                 location.Y + (size.Height - sw.Height) / 2);
 
-            Rectangle newRect = Misc.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
+            Rectangle newRect = Utils.FitRectangle(new Rectangle(sw.Location, sw.Size), Screen.GetWorkingArea(sw));
 
             sw.Location = newRect.Location;
             sw.Size = newRect.Size;

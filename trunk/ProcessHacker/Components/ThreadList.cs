@@ -23,13 +23,14 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using System.Text;
 
 namespace ProcessHacker.Components
 {
@@ -119,7 +120,7 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        processThread = Misc.GetThreadById(Process.GetProcessById(_pid), tid);
+                        processThread = Utils.GetThreadById(Process.GetProcessById(_pid), tid);
                     }
                     catch
                     { }
@@ -153,9 +154,9 @@ namespace ProcessHacker.Components
                             labelState.Text = processThread.ThreadState.ToString();
                         }
 
-                        labelKernelTime.Text = Misc.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
-                        labelUserTime.Text = Misc.GetNiceTimeSpan(processThread.UserProcessorTime);
-                        labelTotalTime.Text = Misc.GetNiceTimeSpan(processThread.TotalProcessorTime);
+                        labelKernelTime.Text = Utils.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
+                        labelUserTime.Text = Utils.GetNiceTimeSpan(processThread.UserProcessorTime);
+                        labelTotalTime.Text = Utils.GetNiceTimeSpan(processThread.TotalProcessorTime);
                     }
 
                     labelPriority.Text = thread.Priority.ToString();
@@ -563,7 +564,7 @@ namespace ProcessHacker.Components
                     return;
             }
 
-            if (Misc.IsDangerousPid(_pid))
+            if (PhUtils.IsDangerousPid(_pid))
             {
                 if (MessageBox.Show(
                   "Inspecting a system process' threads may lead to instability. Are you sure you want to continue?",
@@ -660,7 +661,7 @@ namespace ProcessHacker.Components
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
+            if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -717,7 +718,7 @@ namespace ProcessHacker.Components
 
         private void resumeThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && Misc.IsDangerousPid(_pid))
+            if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
             {
                 DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
                     " sure you want to resume the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
@@ -1144,7 +1145,7 @@ namespace ProcessHacker.Components
 
         private void selectAllThreadMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listThreads.Items);
+            Utils.SelectAll(listThreads.Items);
         }
     }
 }

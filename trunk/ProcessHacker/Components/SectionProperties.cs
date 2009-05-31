@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Components
@@ -26,7 +21,7 @@ namespace ProcessHacker.Components
             var basicInfo = _sectionHandle.GetBasicInformation();
 
             labelAttributes.Text = basicInfo.SectionAttributes.ToString();
-            labelSize.Text = Misc.GetNiceSizeName(basicInfo.SectionSize);
+            labelSize.Text = Utils.GetNiceSizeName(basicInfo.SectionSize);
         }
     }
 }

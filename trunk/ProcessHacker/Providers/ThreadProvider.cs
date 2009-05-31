@@ -23,12 +23,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Symbols;
+using ProcessHacker.Native.Symbols;
 
 namespace ProcessHacker
 {
@@ -50,7 +50,7 @@ namespace ProcessHacker
         public string Priority;
         public uint StartAddressI;
         public string StartAddress;
-        public Symbols.SymbolResolveLevel StartAddressLevel;
+        public SymbolResolveLevel StartAddressLevel;
         public KWaitReason WaitReason;
         public bool IsGuiThread;
         public bool JustResolved;

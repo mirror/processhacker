@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Be.Windows.Forms;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.Components
 {

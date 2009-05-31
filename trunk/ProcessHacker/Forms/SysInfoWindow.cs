@@ -25,6 +25,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native.Api;
 
@@ -44,7 +45,7 @@ namespace ProcessHacker
             this.AddEscapeToClose();
 
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
-            this.Location = Misc.FitRectangle(new Rectangle(
+            this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.SysInfoWindowLocation, this.Size), this).Location;
         }
 
@@ -72,14 +73,14 @@ namespace ProcessHacker
             plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
             plotterIO.GetToolTip = i =>
                 Program.ProcessProvider.MostIoHistory[i] + "\n" +
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                "R+O: " + Utils.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Utils.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
             plotterMemory.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.Commit];
             plotterMemory.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.PhysicalMemory];
             plotterMemory.GetToolTip = i =>
-                "Commit: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Phys. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                "Commit: " + Utils.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Phys. Memory: " + Utils.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
             // create a plotter per CPU
@@ -161,12 +162,12 @@ namespace ProcessHacker
                 "%, U: " + (plotterCPU.Data2[0] * 100).ToString("F2") + "%)";
 
             // update the I/O graph text
-            plotterIO.Text = "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[0]) +
-                ", W: " + Misc.GetNiceSizeName(plotterIO.LongData2[0]);
+            plotterIO.Text = "R+O: " + Utils.GetNiceSizeName(plotterIO.LongData1[0]) +
+                ", W: " + Utils.GetNiceSizeName(plotterIO.LongData2[0]);
 
             // update the memory graph text
-            plotterMemory.Text = "Commit: " + Misc.GetNiceSizeName(plotterMemory.LongData1[0]) +
-                ", Phys. Mem: " + Misc.GetNiceSizeName(plotterMemory.LongData2[0]);
+            plotterMemory.Text = "Commit: " + Utils.GetNiceSizeName(plotterMemory.LongData1[0]) +
+                ", Phys. Mem: " + Utils.GetNiceSizeName(plotterMemory.LongData2[0]);
 
             plotterCPU.MoveGrid();
             plotterCPU.Draw();
@@ -193,24 +194,24 @@ namespace ProcessHacker
             labelTotalsThreads.Text = ((ulong)info.ThreadCount).ToString("N0");
             labelTotalsHandles.Text = ((ulong)info.HandlesCount).ToString("N0");
 
-            labelCCC.Text = Misc.GetNiceSizeName((ulong)perfInfo.CommittedPages * _pageSize);
-            labelCCP.Text = Misc.GetNiceSizeName((ulong)perfInfo.PeakCommitment * _pageSize);
-            labelCCL.Text = Misc.GetNiceSizeName((ulong)perfInfo.CommitLimit * _pageSize);
+            labelCCC.Text = Utils.GetNiceSizeName((ulong)perfInfo.CommittedPages * _pageSize);
+            labelCCP.Text = Utils.GetNiceSizeName((ulong)perfInfo.PeakCommitment * _pageSize);
+            labelCCL.Text = Utils.GetNiceSizeName((ulong)perfInfo.CommitLimit * _pageSize);
 
-            labelPMC.Text = Misc.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
-            labelPSC.Text = Misc.GetNiceSizeName((ulong)info.SystemCache * _pageSize);
-            labelPMT.Text = Misc.GetNiceSizeName((ulong)_pages * _pageSize);
+            labelPMC.Text = Utils.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
+            labelPSC.Text = Utils.GetNiceSizeName((ulong)info.SystemCache * _pageSize);
+            labelPMT.Text = Utils.GetNiceSizeName((ulong)_pages * _pageSize);
 
-            labelCacheCurrent.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
-            labelCachePeak.Text = Misc.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);
-            labelCacheMinimum.Text = Misc.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMinimum * _pageSize);
-            labelCacheMaximum.Text = Misc.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMaximum * _pageSize);
+            labelCacheCurrent.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
+            labelCachePeak.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);
+            labelCacheMinimum.Text = Utils.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMinimum * _pageSize);
+            labelCacheMaximum.Text = Utils.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMaximum * _pageSize);
 
-            labelKPPPU.Text = Misc.GetNiceSizeName((ulong)perfInfo.PagedPoolPages * _pageSize);
-            labelKPPVU.Text = Misc.GetNiceSizeName((ulong)perfInfo.PagedPoolUsage * _pageSize);
+            labelKPPPU.Text = Utils.GetNiceSizeName((ulong)perfInfo.PagedPoolPages * _pageSize);
+            labelKPPVU.Text = Utils.GetNiceSizeName((ulong)perfInfo.PagedPoolUsage * _pageSize);
             labelKPPA.Text = ((ulong)perfInfo.PagedPoolAllocs).ToString("N0");
             labelKPPF.Text = ((ulong)perfInfo.PagedPoolFrees).ToString("N0");
-            labelKPNPU.Text = Misc.GetNiceSizeName((ulong)perfInfo.NonPagedPoolUsage * _pageSize);
+            labelKPNPU.Text = Utils.GetNiceSizeName((ulong)perfInfo.NonPagedPoolUsage * _pageSize);
             labelKPNPA.Text = ((ulong)perfInfo.NonPagedPoolAllocs).ToString("N0");
             labelKPNPF.Text = ((ulong)perfInfo.NonPagedPoolFrees).ToString("N0");
 
@@ -222,11 +223,11 @@ namespace ProcessHacker
             labelPFCache.Text = ((ulong)cacheInfo.SystemCacheWsFaults).ToString("N0");
 
             labelIOR.Text = ((ulong)perfInfo.IoReadOperationCount).ToString("N0");
-            labelIORB.Text = Misc.GetNiceSizeName(perfInfo.IoReadTransferCount);
+            labelIORB.Text = Utils.GetNiceSizeName(perfInfo.IoReadTransferCount);
             labelIOW.Text = ((ulong)perfInfo.IoWriteOperationCount).ToString("N0");
-            labelIOWB.Text = Misc.GetNiceSizeName(perfInfo.IoWriteTransferCount);
+            labelIOWB.Text = Utils.GetNiceSizeName(perfInfo.IoWriteTransferCount);
             labelIOO.Text = ((ulong)perfInfo.IoOtherOperationCount).ToString("N0");
-            labelIOOB.Text = Misc.GetNiceSizeName(perfInfo.IoOtherTransferCount);
+            labelIOOB.Text = Utils.GetNiceSizeName(perfInfo.IoOtherTransferCount);
 
             labelCPUContextSwitches.Text = ((ulong)perfInfo.ContextSwitches).ToString("N0");
             labelCPUInterrupts.Text = ((ulong)Program.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");

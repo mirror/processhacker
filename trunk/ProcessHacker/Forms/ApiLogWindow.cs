@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Forms
@@ -79,22 +80,22 @@ namespace ProcessHacker.Forms
                     continue;
                 }
 
-                int length = Misc.BytesToInt(_namedPipe.Read(4), Misc.Endianness.Little);
+                int length = Utils.BytesToInt(_namedPipe.Read(4), Utils.Endianness.Little);
                 byte[] data = new byte[length - 4];
 
                 _namedPipe.Read(data);
 
-                PNGNet.ByteStreamReader bsr = new PNGNet.ByteStreamReader(data);
+                ByteStreamReader bsr = new ByteStreamReader(data);
                 BinaryReader br = new BinaryReader(bsr);
 
                 int pid = br.ReadInt32();
-                string function = Misc.ReadUnicodeString(bsr);
+                string function = Utils.ReadUnicodeString(bsr);
                 bsr.Seek(System.Runtime.InteropServices.Marshal.SizeOf(typeof(HOOK)), SeekOrigin.Current);
                 var dictionary = new Dictionary<string, KeyValuePair<CM_TYPE, object>>();
 
                 while (bsr.Position < bsr.Length)
                 {
-                    string key = Misc.ReadUnicodeString(bsr);
+                    string key = Utils.ReadUnicodeString(bsr);
                     CM_TYPE type = (CM_TYPE)br.ReadUInt32();
                     int valueLength = br.ReadInt32();
                     object value = null;
@@ -120,7 +121,7 @@ namespace ProcessHacker.Forms
                             value = br.ReadBytes(valueLength);
                             break;
                         case CM_TYPE.CmString:
-                            value = Misc.ReadUnicodeString(bsr, valueLength);
+                            value = Utils.ReadUnicodeString(bsr, valueLength);
                             break;
                         case CM_TYPE.CmVoid:
                         default:

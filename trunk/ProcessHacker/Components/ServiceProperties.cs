@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Windows.Forms;
+using ProcessHacker.Common;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -222,7 +224,7 @@ namespace ProcessHacker.Components
                     ServiceItem item = _provider.Dictionary[listServices.SelectedItems[0].Name];
 
                     _oldConfig = item.Config;
-                    _oldConfig.BinaryPathName = Misc.GetRealPath(_oldConfig.BinaryPathName);
+                    _oldConfig.BinaryPathName = FileUtils.FixPath(_oldConfig.BinaryPathName);
 
                     buttonStart.Enabled = true;
                     buttonStop.Enabled = true;
@@ -250,7 +252,7 @@ namespace ProcessHacker.Components
 
                     comboStartType.SelectedItem = item.Config.StartType.ToString();
                     comboErrorControl.SelectedItem = item.Config.ErrorControl.ToString();
-                    textServiceBinaryPath.Text = Misc.GetRealPath(item.Config.BinaryPathName);
+                    textServiceBinaryPath.Text = FileUtils.FixPath(item.Config.BinaryPathName);
                     textUserAccount.Text = item.Config.ServiceStartName;
                     textLoadOrderGroup.Text = item.Config.LoadOrderGroup;
 

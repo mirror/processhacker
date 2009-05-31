@@ -22,6 +22,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker

@@ -27,6 +27,7 @@ using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -40,6 +41,8 @@ namespace ProcessHacker.Native
         public delegate string GetProcessNameCallback(int pid);
 
         public static GetProcessNameCallback GetProcessName;
+
+        public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
 
         /// <summary>
         /// A cache for type names; QuerySystemInformation with ALL_TYPES_INFORMATION fails for some 
@@ -70,7 +73,8 @@ namespace ProcessHacker.Native
                 if (!enumCallback(
                     new KernelModule((uint)imageBases[i], 
                         name.ToString(), 
-                        FileUtils.FixPath(fileName.ToString()))))
+                        FileUtils.FixPath(fileName.ToString())
+                        )))
                     break;
             }
         }
@@ -183,32 +187,93 @@ namespace ProcessHacker.Native
             }
         }
 
+        /// <summary>
+        /// Gets the base address of the currently running kernel.
+        /// </summary>
+        /// <returns>The kernel's base address.</returns>
+        public static uint GetKernelBase()
+        {
+            uint kernelBase = 0;
+
+            Windows.EnumKernelModules((module) =>
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(FileUtils.FixPath(module.FileName));
+                bool kernel = false;
+                string realName;
+
+                realName = fi.FullName;
+
+                foreach (string k in KernelNames)
+                {
+                    if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        kernel = true;
+
+                        break;
+                    }
+                }
+
+                if (kernel)
+                {
+                    kernelBase = module.BaseAddress;
+                    return false;
+                }
+
+                return true;
+            });
+
+            return kernelBase;
+        }
+
+        /// <summary>
+        /// Gets the file name of the currently running kernel.
+        /// </summary>
+        /// <returns>The kernel file name.</returns>
+        public static string GetKernelFileName()
+        {
+            string kernelFileName = null;
+
+            EnumKernelModules((module) =>
+            {
+                System.IO.FileInfo fi = new System.IO.FileInfo(FileUtils.FixPath(module.FileName));
+                bool kernel = false;
+                string realName;
+
+                realName = fi.FullName;
+
+                foreach (string k in KernelNames)
+                {
+                    if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        kernel = true;
+
+                        break;
+                    }
+                }
+
+                if (kernel)
+                {
+                    kernelFileName = realName;
+                    return false;
+                }
+
+                return true;
+            });
+
+            return kernelFileName;
+        }
+
         public static KernelModule[] GetKernelModules()
         {
-            int requiredSize = 0;
-            IntPtr[] imageBases;
+            List<KernelModule> kernelModules = new List<KernelModule>();
 
-            Win32.EnumDeviceDrivers(null, 0, out requiredSize);
-            imageBases = new IntPtr[requiredSize / 4];
-            Win32.EnumDeviceDrivers(imageBases, requiredSize, out requiredSize);
+            EnumKernelModules((kernelModule) =>
+                {
+                    kernelModules.Add(kernelModule);
+                    return true;
+                });
 
-            KernelModule[] kernelModules = new KernelModule[imageBases.Length];
-
-            for (int i = 0; i < imageBases.Length; i++)
-            {
-                if (imageBases[i] == IntPtr.Zero)
-                    continue;
-
-                StringBuilder name = new StringBuilder(0x400);
-                StringBuilder fileName = new StringBuilder(0x400);
-
-                Win32.GetDeviceDriverBaseName(imageBases[i], name, name.Capacity * 2);
-                Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
-
-                kernelModules[i] = new KernelModule((uint)imageBases[i], name.ToString(), FileUtils.FixPath(fileName.ToString()));
-            }
-
-            return kernelModules;
+            return kernelModules.ToArray();
         }
 
         public static Dictionary<int, List<NetworkConnection>> GetNetworkConnections()

@@ -21,8 +21,8 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;

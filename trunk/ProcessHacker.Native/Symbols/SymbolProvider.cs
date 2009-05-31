@@ -24,15 +24,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
-using System.Windows.Forms;
-using ProcessHacker.Components;
-using ProcessHacker.Native;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
-using System.Text;
 
-namespace ProcessHacker.Symbols
+namespace ProcessHacker.Native.Symbols
 {
     public class SymbolProvider : IDisposable
     {
@@ -83,6 +81,49 @@ namespace ProcessHacker.Symbols
             }
         }
 
+        ~SymbolProvider()
+        {
+            this.Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    Monitor.Enter(_disposeLock);
+                    Monitor.Enter(_callLock);
+                }
+
+                if (!_disposed)
+                {
+                    if (!Win32.SymCleanup(_handle))
+                        Win32.ThrowLastError();
+
+                    // If we didn't use a process handle, we got it from the ID generator
+                    if (_processHandle == null)
+                        _idGen.Push(_handle.ToInt32());
+
+                    _disposed = true;
+                }
+            }
+            finally
+            {
+                if (disposing)
+                {
+                    Monitor.Exit(_callLock);
+                    Monitor.Exit(_disposeLock);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public IntPtr Handle
         {
             get { return _handle; }
@@ -124,91 +165,6 @@ namespace ProcessHacker.Symbols
                     Monitor.Exit(_callLock);
                     return false;
                 }
-            }
-        }
-
-        public static void ShowWarning(IWin32Window window, bool force)
-        {
-            if (Properties.Settings.Default.DbgHelpWarningShown && !force)
-                return;
-
-            try
-            {
-                var modules = ProcessHandle.GetCurrent().GetModules();
-
-                foreach (var module in modules)
-                {
-                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
-                    {
-                        FileInfo fi = new FileInfo(module.FileName);
-
-                        if (!File.Exists(fi.DirectoryName + "\\symsrv.dll"))
-                        {
-                            if (!force)
-                                Properties.Settings.Default.DbgHelpWarningShown = true;
-
-                            if (OSVersion.HasTaskDialogs)
-                            {
-                                TaskDialog td = new TaskDialog();
-                                bool verificationChecked;
-
-                                td.CommonButtons = TaskDialogCommonButtons.Ok;
-                                td.WindowTitle = "Process Hacker";
-                                td.MainIcon = TaskDialogIcon.Warning;
-                                td.MainInstruction = "Microsoft Symbol Server not supported";
-                                td.Content = "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " + 
-                                    "or could not be loaded. " +
-                                    "To ensure you have the latest version of dbghelp.dll, download " +
-                                    "<a href=\"dbghelp\">Debugging " + 
-                                    "Tools for Windows</a> and configure Process Hacker to " +
-                                    "use its version of dbghelp.dll. If you have the latest version of dbghelp.dll, " +
-                                    "ensure that symsrv.dll resides in the same directory as dbghelp.dll.";
-                                td.EnableHyperlinks = true;
-                                td.Callback = (taskDialog, args, callbackData) =>
-                                    {
-                                        if (args.Notification == TaskDialogNotification.HyperlinkClicked)
-                                        {
-                                            try
-                                            {
-                                                System.Diagnostics.Process.Start(
-                                                    "http://www.microsoft.com/whdc/devtools/debugging/default.mspx");
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                MessageBox.Show("Could not open the hyperlink: " + ex.ToString(),
-                                                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                            }
-
-                                            return true;
-                                        }
-
-                                        return false;
-                                    };
-                                td.VerificationText = force ? null : "Do not display this warning again";
-                                td.VerificationFlagChecked = true;
-
-                                td.Show(window, out verificationChecked);
-
-                                if (!force)
-                                    Properties.Settings.Default.DbgHelpWarningShown = verificationChecked;
-                            }
-                            else
-                            {
-                                MessageBox.Show(window, "The Microsoft Symbol Server is not supported by your version of dbghelp.dll " +
-                                    "or could not be loaded. To ensure you have the latest version of dbghelp.dll, download " +
-                                    "Debugging Tools for Windows and configure Process Hacker to use its version of dbghelp.dll. " +
-                                    "If you have the latest version of dbghelp.dll, ensure that symsrv.dll resides in the same " +
-                                    "directory as dbghelp.dll.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
             }
         }
 
@@ -366,23 +322,16 @@ namespace ProcessHacker.Symbols
 
                 Marshal.StructureToPtr(info, data, false);
 
-                try
+                if (this.PreloadModules)
                 {
-                    if (this.PreloadModules)
-                    {
-                        ulong b;
+                    ulong b;
 
-                        this.GetModuleFromAddress(address, out b);
+                    this.GetModuleFromAddress(address, out b);
 
-                        lock (_callLock)
-                            Win32.SymFromAddr(_handle, b, out displacement, data);
+                    lock (_callLock)
+                        Win32.SymFromAddr(_handle, b, out displacement, data);
 
-                        Marshal.StructureToPtr(info, data, false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
+                    Marshal.StructureToPtr(info, data, false);
                 }
 
                 lock (_callLock)
@@ -426,10 +375,8 @@ namespace ProcessHacker.Symbols
                     fi = new FileInfo(modFileName);
                     fileName = fi.FullName;
                 }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
+                catch
+                { }
 
                 if (info.NameLen == 0)
                 {
@@ -459,53 +406,6 @@ namespace ProcessHacker.Symbols
                 else
                     return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
             }
-        }
-
-        ~SymbolProvider()
-        {
-            this.Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            try
-            {
-                Logging.Log(Logging.Importance.Information, "SymbolProvider: disposing (" + disposing.ToString() + ")");
-
-                if (disposing)
-                {
-                    Monitor.Enter(_disposeLock);
-                    Monitor.Enter(_callLock);
-                }
-
-                if (!_disposed)
-                {
-                    if (!Win32.SymCleanup(_handle))
-                        Win32.ThrowLastError();
-
-                    // If we didn't use a process handle, we got it from the ID generator
-                    if (_processHandle == null)
-                        _idGen.Push(_handle.ToInt32());
- 
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                {
-                    Monitor.Exit(_callLock);
-                    Monitor.Exit(_disposeLock);
-                }
-            }
-
-            Logging.Log(Logging.Importance.Information, "SymbolProvider: finished disposing (" + disposing.ToString() + ")");
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

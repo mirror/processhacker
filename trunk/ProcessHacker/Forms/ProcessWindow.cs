@@ -25,12 +25,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Symbols;
+using ProcessHacker.Native.Symbols;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
 
@@ -134,12 +135,12 @@ namespace ProcessHacker
             }
 
             Properties.Settings.Default.ProcessWindowLocation = this.Location = 
-                Misc.FitRectangle(new Rectangle(location, this.Size), this).Location;
+                Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
 
             // update the Window menu
             Program.UpdateWindow(this);
 
-            SymbolProvider.ShowWarning(this, false);
+            SymbolProviderExtensions.ShowWarning(this, false);
         }
 
         protected override void WndProc(ref Message m)
@@ -268,14 +269,14 @@ namespace ProcessHacker
             plotterMemory.LongData1 = _processItem.LongHistoryManager[ProcessStats.PrivateMemory];
             plotterMemory.LongData2 = _processItem.LongHistoryManager[ProcessStats.WorkingSet];
             plotterMemory.GetToolTip = i =>
-                "Pvt. Memory: " + Misc.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
-                "Working Set: " + Misc.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
+                "Pvt. Memory: " + Utils.GetNiceSizeName(plotterMemory.LongData1[i]) + "\n" +
+                "Working Set: " + Utils.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
             plotterIO.LongData1 = _processItem.LongHistoryManager[ProcessStats.IoReadOther];
             plotterIO.LongData2 = _processItem.LongHistoryManager[ProcessStats.IoWrite];
             plotterIO.GetToolTip = i =>
-                "R+O: " + Misc.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
-                "W: " + Misc.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
+                "R+O: " + Utils.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
+                "W: " + Utils.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
             this.ApplyFont(Properties.Settings.Default.Font);
@@ -384,7 +385,7 @@ namespace ProcessHacker
                 string fileName;
 
                 if (_pid == 4)
-                    fileName = Misc.GetKernelFileName();
+                    fileName = Windows.GetKernelFileName();
                 else
                     fileName = _processItem.FileName;
 
@@ -472,7 +473,7 @@ namespace ProcessHacker
             {
                 DateTime startTime = DateTime.FromFileTime(_processItem.Process.CreateTime);
 
-                textStartTime.Text = Misc.GetNiceRelativeDateTime(startTime) +
+                textStartTime.Text = Utils.GetNiceRelativeDateTime(startTime) +
                     " (" + startTime.ToString() + ")";
             }
             catch (Exception ex)
@@ -646,37 +647,11 @@ namespace ProcessHacker
 
         private void InitializeShortcuts()
         {
-            listThreads.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listThreads.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listThreads.List, -1);
-                };
-            listModules.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listModules.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listModules.List, -1);
-                };
-            listMemory.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listMemory.List);
-                    if (e.Control && e.KeyCode == Keys.C) 
-                        GenericViewMenu.ListViewCopy(listMemory.List, -1, listMemory.listMemory_RetrieveVirtualItem);
-                };
-            listHandles.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listHandles.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listHandles.List, -1);
-                };
-            listEnvironment.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listEnvironment.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listEnvironment, -1);
-                };
+            listThreads.List.AddShortcuts();
+            listModules.List.AddShortcuts();
+            listMemory.List.AddShortcuts();
+            listHandles.List.AddShortcuts();
+            listEnvironment.AddShortcuts();
         }
 
         private void UpdateEnvironmentVariables()
@@ -870,10 +845,10 @@ namespace ProcessHacker
                 "% (K: " + (procKernel * 100).ToString("F2") +
                 "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
-            plotterMemory.Text = "Pvt: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes) + 
-                ", WS: " + Misc.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
+            plotterMemory.Text = "Pvt: " + Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes) + 
+                ", WS: " + Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
 
-            plotterIO.Text = "R+O: " + Misc.GetNiceSizeName(ioRO) + ", W: " + Misc.GetNiceSizeName(ioW);
+            plotterIO.Text = "R+O: " + Utils.GetNiceSizeName(ioRO) + ", W: " + Utils.GetNiceSizeName(ioW);
 
             plotterCPUUsage.MoveGrid();
             plotterCPUUsage.Draw();
@@ -1035,7 +1010,7 @@ namespace ProcessHacker
 
                 if (_pid == 4)
                 {
-                    path = Misc.GetKernelFileName();
+                    path = Windows.GetKernelFileName();
                 }
                 else
                 {

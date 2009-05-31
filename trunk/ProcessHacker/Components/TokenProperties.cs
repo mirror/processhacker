@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -196,12 +197,7 @@ namespace ProcessHacker.Components
                 tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.TokenWindowTab];
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.PrivilegeListColumns, listPrivileges);
-            listPrivileges.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listPrivileges.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listPrivileges, -1);
-                };
+            listPrivileges.AddShortcuts();
         }
 
         public IWithToken Object
@@ -343,7 +339,7 @@ namespace ProcessHacker.Components
 
         private void selectAllMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listPrivileges.Items);
+            Utils.SelectAll(listPrivileges.Items);
         }
 
         private void buttonLinkedToken_Click(object sender, EventArgs e)

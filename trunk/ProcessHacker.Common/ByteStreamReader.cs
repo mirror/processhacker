@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace PNGNet
+namespace ProcessHacker.Common
 {
     public class ByteStreamReader : Stream
     {

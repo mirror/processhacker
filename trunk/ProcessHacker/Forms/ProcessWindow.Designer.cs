@@ -1,4 +1,5 @@
-﻿namespace ProcessHacker
+﻿using ProcessHacker.Common;
+namespace ProcessHacker
 {
     partial class ProcessWindow
     {

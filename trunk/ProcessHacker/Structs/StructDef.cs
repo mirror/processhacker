@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 
 namespace ProcessHacker.Structs
@@ -136,8 +137,8 @@ namespace ProcessHacker.Structs
             switch (field.Type)
             {
                 case FieldType.Bool32:
-                    value.Value = Misc.BytesToInt(IOProvider.ReadBytes(offset, 4),
-                        Misc.Endianness.Little) != 0;
+                    value.Value = Utils.BytesToInt(IOProvider.ReadBytes(offset, 4),
+                        Utils.Endianness.Little) != 0;
                     readSize = 4;
                     break;
                 case FieldType.Bool8:
@@ -154,27 +155,27 @@ namespace ProcessHacker.Structs
                     break;
                 case FieldType.Double:
                     {
-                        long data = Misc.BytesToLong(
-                            IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+                        long data = Utils.BytesToLong(
+                            IOProvider.ReadBytes(offset, 8), Utils.Endianness.Little);
 
                         value.Value = *(double*)&data;
                         readSize = 8;
                     }
                     break;
                 case FieldType.Int16:
-                    value.Value = (short)Misc.BytesToUShort(
-                        IOProvider.ReadBytes(offset, 2), Misc.Endianness.Little);
+                    value.Value = (short)Utils.BytesToUShort(
+                        IOProvider.ReadBytes(offset, 2), Utils.Endianness.Little);
                     readSize = 2;
                     break;
                 case FieldType.PVoid:
                 case FieldType.Int32:
-                    value.Value = Misc.BytesToInt(
-                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+                    value.Value = Utils.BytesToInt(
+                        IOProvider.ReadBytes(offset, 4), Utils.Endianness.Little);
                     readSize = 4;
                     break;
                 case FieldType.Int64:
-                    value.Value = Misc.BytesToLong(
-                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+                    value.Value = Utils.BytesToLong(
+                        IOProvider.ReadBytes(offset, 8), Utils.Endianness.Little);
                     readSize = 8;
                     break;
                 case FieldType.Int8:
@@ -183,8 +184,8 @@ namespace ProcessHacker.Structs
                     break;
                 case FieldType.Single:
                     {
-                        int data = Misc.BytesToInt(
-                            IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+                        int data = Utils.BytesToInt(
+                            IOProvider.ReadBytes(offset, 4), Utils.Endianness.Little);
 
                         value.Value = *(float*)&data;
                         readSize = 4;
@@ -233,7 +234,7 @@ namespace ProcessHacker.Structs
                             {
                                 byte[] b = IOProvider.ReadBytes(offset.Increment(i), 2);
 
-                                if (Misc.IsEmpty(b))
+                                if (Utils.IsEmpty(b))
                                     break;
 
                                 str.Append(UnicodeEncoding.Unicode.GetString(b));
@@ -267,18 +268,18 @@ namespace ProcessHacker.Structs
 
                     break;
                 case FieldType.UInt16:
-                    value.Value = Misc.BytesToUShort(
-                        IOProvider.ReadBytes(offset, 2), Misc.Endianness.Little);
+                    value.Value = Utils.BytesToUShort(
+                        IOProvider.ReadBytes(offset, 2), Utils.Endianness.Little);
                     readSize = 2;
                     break;
                 case FieldType.UInt32:
-                    value.Value = Misc.BytesToUInt(
-                        IOProvider.ReadBytes(offset, 4), Misc.Endianness.Little);
+                    value.Value = Utils.BytesToUInt(
+                        IOProvider.ReadBytes(offset, 4), Utils.Endianness.Little);
                     readSize = 4;
                     break;
                 case FieldType.UInt64:
-                    value.Value = (ulong)Misc.BytesToLong(
-                        IOProvider.ReadBytes(offset, 8), Misc.Endianness.Little);
+                    value.Value = (ulong)Utils.BytesToLong(
+                        IOProvider.ReadBytes(offset, 8), Utils.Endianness.Little);
                     readSize = 8;
                     break;
                 case FieldType.UInt8:
@@ -307,7 +308,7 @@ namespace ProcessHacker.Structs
                 // resolve pointer
                 if (field.IsPointer)
                 {
-                    int pointingTo = Misc.BytesToInt(IOProvider.ReadBytes(Offset.Increment(localOffset), 4), Misc.Endianness.Little);
+                    int pointingTo = Utils.BytesToInt(IOProvider.ReadBytes(Offset.Increment(localOffset), 4), Utils.Endianness.Little);
 
                     localOffset += 4;
 

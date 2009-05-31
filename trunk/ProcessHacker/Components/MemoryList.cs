@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -354,7 +355,7 @@ namespace ProcessHacker.Components
             }
 
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.Address.ToString("x8")));
-            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Misc.GetNiceSizeName(item.Size)));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, Utils.GetNiceSizeName(item.Size)));
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, GetProtectStr(item.Protection)));
             litem.Tag = item;
 
@@ -505,7 +506,7 @@ namespace ProcessHacker.Components
 
         private void selectAllMemoryMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listMemory);
+            Utils.SelectAll(listMemory);
         }
 
         private void freeMenuItem_Click(object sender, EventArgs e)

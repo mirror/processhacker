@@ -20,7 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace ProcessHacker.Symbols
+namespace ProcessHacker.Native.Symbols
 {
     /// <summary>
     /// Specifies the detail with which the address's name was resolved.

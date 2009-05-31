@@ -24,12 +24,13 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
+using Microsoft.Win32;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using Microsoft.Win32;
 
 namespace ProcessHacker.Components
 {
@@ -160,14 +161,14 @@ namespace ProcessHacker.Components
                     {
                         if (_pid == 4)
                         {
-                            _mainModule = Misc.GetRealPath(Misc.GetKernelFileName());
+                            _mainModule = FileUtils.FixPath(Windows.GetKernelFileName());
                         }
                         else
                         {
                             using (var phandle =
                                 new ProcessHandle(_pid, 
                                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                                _mainModule = Misc.GetRealPath(phandle.GetMainModule().FileName);
+                                _mainModule = FileUtils.FixPath(phandle.GetMainModule().FileName);
                         }
 
                         _mainModule = _mainModule.ToLower();
@@ -241,7 +242,7 @@ namespace ProcessHacker.Components
                     litem.Name = item.BaseAddress.ToString();
                     litem.Text = item.Name;
                     litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Misc.GetNiceSizeName(item.Size) : ""));
+                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Utils.GetNiceSizeName(item.Size) : ""));
                     litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
                     litem.ToolTipText = item.FileName;
                     litem.Tag = item;
@@ -405,7 +406,7 @@ namespace ProcessHacker.Components
 
         private void selectAllModuleMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listModules.Items);
+            Utils.SelectAll(listModules.Items);
         }
 
         private void unloadMenuItem_Click(object sender, EventArgs e)
@@ -422,7 +423,7 @@ namespace ProcessHacker.Components
                     string fileName = ((ModuleItem)listModules.SelectedItems[0].Tag).FileName;
                     RegistryKey servicesKey =
                         Registry.LocalMachine.OpenSubKey("SYSTEM\\CurrentControlSet\\Services", true);
-                    string serviceName = Misc.MakeRandomString(8);
+                    string serviceName = Utils.MakeRandomString(8);
                     RegistryKey serviceKey = servicesKey.CreateSubKey(serviceName);
 
                     serviceKey.SetValue("ErrorControl", 1, RegistryValueKind.DWord);

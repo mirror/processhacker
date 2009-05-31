@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     public class WeakReference<T>
         where T : class

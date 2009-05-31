@@ -22,12 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.PE;
-using System.IO;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -87,72 +84,37 @@ namespace ProcessHacker
             listCOFFHeader.SetDoubleBuffered(true);
             listCOFFHeader.SetTheme("explorer");
             listCOFFHeader.ContextMenu = listCOFFHeader.GetCopyMenu();
-            listCOFFHeader.KeyDown +=
-                (sender, e) =>
-                {
-                 if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listCOFFHeader.Items);
-                 if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listCOFFHeader, -1);
-                };
+            listCOFFHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFHColumns, listCOFFHeader);
 
             listCOFFOptionalHeader.SetDoubleBuffered(true);
             listCOFFOptionalHeader.SetTheme("explorer");
             listCOFFOptionalHeader.ContextMenu = listCOFFOptionalHeader.GetCopyMenu();
-            listCOFFOptionalHeader.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listCOFFOptionalHeader.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listCOFFOptionalHeader, -1);
-                };
+            listCOFFOptionalHeader.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PECOFFOHColumns, listCOFFOptionalHeader);
 
             listImageData.SetDoubleBuffered(true);
             listImageData.SetTheme("explorer");
             listImageData.ContextMenu = listImageData.GetCopyMenu();
-            listImageData.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listImageData.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listImageData, -1);
-                };
+            listImageData.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImageDataColumns, listImageData);
 
             listSections.SetDoubleBuffered(true);
             listSections.SetTheme("explorer");
             listSections.ContextMenu = listSections.GetCopyMenu();
-            listSections.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listSections.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listSections, -1);
-                };
+            listSections.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PESectionsColumns, listSections);
 
             listExports.SetDoubleBuffered(true);
             listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
-            listExports.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A)
-                        for (int i = 0; i < listExports.VirtualListSize; i++)
-                            if (!listExports.SelectedIndices.Contains(i))
-                                listExports.SelectedIndices.Add(i);
-
-                    if (e.Control && e.KeyCode == Keys.C)
-                        GenericViewMenu.ListViewCopy(listExports, -1, listExports_RetrieveVirtualItem);
-                };
+            listExports.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
             listImports.SetDoubleBuffered(true);
             listImports.SetTheme("explorer");
             listImports.ContextMenu = listImports.GetCopyMenu();
-            listImports.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listImports.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listImports, -1);
-                };
+            listImports.AddShortcuts();
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEImportsColumns, listImports);
         }
 
@@ -190,7 +152,7 @@ namespace ProcessHacker
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Sections", 
                 _peFile.COFFHeader.NumberOfSections.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Time/Date Stamp", 
-                Misc.DateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
+                Utils.DateTimeFromUnixTime(_peFile.COFFHeader.TimeDateStamp).ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Pointer to Symbol Table", 
                 "0x" + _peFile.COFFHeader.PointerToSymbolTable.ToString("x8") }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Number of Symbols", 
@@ -198,7 +160,7 @@ namespace ProcessHacker
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Size of Optional Header", 
                 _peFile.COFFHeader.SizeOfOptionalHeader.ToString() }));
             listCOFFHeader.Items.Add(new ListViewItem(new string[] { "Characteristics", 
-                Misc.FlagsToString(typeof(ImageCharacteristics), (long)_peFile.COFFHeader.Characteristics) }));
+                Utils.FlagsToString(typeof(ImageCharacteristics), (long)_peFile.COFFHeader.Characteristics) }));
 
             #endregion
 
@@ -250,7 +212,7 @@ namespace ProcessHacker
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Subsystem",
                 _peFile.COFFOptionalHeader.Subsystem.ToString() }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "DLL Characteristics",
-                Misc.FlagsToString(typeof(DllCharacteristics), (long)_peFile.COFFOptionalHeader.DllCharacteristics) }));
+                Utils.FlagsToString(typeof(DllCharacteristics), (long)_peFile.COFFOptionalHeader.DllCharacteristics) }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Reserve",
                 "0x" + _peFile.COFFOptionalHeader.SizeOfStackReserve.ToString("x") }));
             listCOFFOptionalHeader.Items.Add(new ListViewItem(new string[] { "Size of Stack Commit",
@@ -300,7 +262,7 @@ namespace ProcessHacker
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.VirtualSize.ToString("x")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "0x" + sh.PointerToRawData.ToString("x8")));
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, 
-                    Misc.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
+                    Utils.FlagsToString(typeof(SectionFlags), (long)sh.Characteristics)));
 
                 listSections.Items.Add(item);
             }

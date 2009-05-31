@@ -22,11 +22,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -41,16 +40,7 @@ namespace ProcessHacker
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
-            listLog.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A)
-                        for (int i = 0; i < listLog.VirtualListSize; i++)
-                            if (!listLog.SelectedIndices.Contains(i))
-                                listLog.SelectedIndices.Add(i);
-
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listLog, -1, listLog_RetrieveVirtualItem);
-                };
+            listLog.AddShortcuts();
 
             this.UpdateLog();
 
@@ -60,7 +50,7 @@ namespace ProcessHacker
             Program.HackerWindow.LogUpdated += new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
 
             this.Size = Properties.Settings.Default.LogWindowSize;
-            this.Location = Misc.FitRectangle(new Rectangle(
+            this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.LogWindowLocation, this.Size), this).Location;
         }
 

@@ -22,6 +22,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -49,12 +50,7 @@ namespace ProcessHacker.Components
             listGroups.SetDoubleBuffered(true);
             listGroups.ContextMenu = listGroups.GetCopyMenu();
             ColumnSettings.LoadSettings(Properties.Settings.Default.GroupListColumns, listGroups);
-            listGroups.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listGroups.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listGroups, -1);
-                };
+            listGroups.AddShortcuts();
         }
 
         public void SaveSettings()

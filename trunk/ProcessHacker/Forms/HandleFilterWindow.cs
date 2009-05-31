@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.FormHelper;
 using ProcessHacker.Native.Api;
@@ -59,14 +60,9 @@ namespace ProcessHacker
         {
             ColumnSettings.LoadSettings(Properties.Settings.Default.HandleFilterWindowListViewColumns, listHandles);
             this.Size = Properties.Settings.Default.HandleFilterWindowSize;
-            this.Location = Misc.FitRectangle(new System.Drawing.Rectangle(
+            this.Location = Utils.FitRectangle(new System.Drawing.Rectangle(
                 Properties.Settings.Default.HandleFilterWindowLocation, this.Size), this).Location;
-            listHandles.KeyDown +=
-                (sender_, e_) =>
-                {
-                    if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listHandles.Items);
-                    if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listHandles, -1);
-                };
+            listHandles.AddShortcuts();
         }
 
         private void HandleFilterWindow_FormClosing(object sender, FormClosingEventArgs e)

@@ -21,33 +21,20 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using Aga.Controls.Tree;
-using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
-    public static class Misc
+    public static class Utils
     {
         #region Constants
 
         public static string[] SizeUnitNames = { "B", "kB", "MB", "GB", "TB", "PB", "EB" };
-
-        public static string[] DangerousNames = 
-        {
-            "csrss.exe", "dwm.exe", "logonui.exe", "lsass.exe", "lsm.exe", "services.exe",
-            "smss.exe", "wininit.exe", "winlogon.exe"
-        };
-
-        public static string[] KernelNames = { "ntoskrnl.exe", "ntkrnlpa.exe", "ntkrnlmp.exe", "ntkrpamp.exe" };
 
         public static string[] PrivilegeNames =
         {
@@ -281,82 +268,6 @@ namespace ProcessHacker
         }
 
         /// <summary>
-        /// Gets the base address of the currently running kernel.
-        /// </summary>
-        /// <returns>The kernel's base address.</returns>
-        public static uint GetKernelBase()
-        {
-            uint kernelBase = 0;
-
-            Windows.EnumKernelModules((module) =>
-                {
-                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(module.FileName));
-                    bool kernel = false;
-                    string realName;
-
-                    realName = fi.FullName;
-
-                    foreach (string k in Misc.KernelNames)
-                    {
-                        if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            kernel = true;
-
-                            break;
-                        }
-                    }
-
-                    if (kernel)
-                    {
-                        kernelBase = module.BaseAddress;
-                        return false;
-                    }
-
-                    return true;
-                });
-
-            return kernelBase;
-        }
-
-        /// <summary>
-        /// Gets the file name of the currently running kernel.
-        /// </summary>
-        /// <returns>The kernel file name.</returns>
-        public static string GetKernelFileName()
-        {
-            string kernelFileName = null;
-
-            Windows.EnumKernelModules((module) =>
-                {
-                    System.IO.FileInfo fi = new System.IO.FileInfo(Misc.GetRealPath(module.FileName));
-                    bool kernel = false;
-                    string realName;
-
-                    realName = fi.FullName;
-
-                    foreach (string k in Misc.KernelNames)
-                    {
-                        if (realName.Equals(Environment.SystemDirectory + "\\" + k, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            kernel = true;
-
-                            break;
-                        }
-                    }
-
-                    if (kernel)
-                    {
-                        kernelFileName = realName;
-                        return false;
-                    }
-
-                    return true;
-                });
-
-            return kernelFileName;
-        }
-
-        /// <summary>
         /// Formats a <see cref="DateTime"/> object into a string representation using the format "dd/MM/yy hh:mm:ss".
         /// </summary>
         /// <param name="time">The <see cref="DateTime"/> object to format.</param>
@@ -498,21 +409,6 @@ namespace ProcessHacker
             else
                 return "Idle";
         }
-
-        /// <summary>
-        /// Parses a path string and returns the actual path name, removing \SystemRoot and \??\.
-        /// </summary>
-        /// <param name="path">The path to parse.</param>
-        /// <returns></returns>
-        public static string GetRealPath(string path)
-        {
-            if (path.ToLower().StartsWith("\\systemroot"))
-                return (new System.IO.FileInfo(Environment.SystemDirectory + "\\.." + path.Substring(11))).FullName;
-            else if (path.StartsWith("\\??\\"))
-                return path.Substring(4);
-            else
-                return path;
-        }
         
         /// <summary>
         /// Returns a <see cref="ProcessThread"/> object of the specified thread ID.
@@ -527,32 +423,6 @@ namespace ProcessHacker
                     return t;
 
             return null;
-        }
-
-        public static bool IsDangerousPid(int pid)
-        {
-            if (pid == 4)
-                return true;
-
-            try
-            {
-                using (var phandle = new ProcessHandle(pid, Program.MinProcessQueryRights))
-                {
-                    foreach (string s in Misc.DangerousNames)
-                    {
-                        if ((Environment.SystemDirectory + "\\" + s).Equals(
-                            Misc.GetRealPath(FileUtils.DeviceFileNameToDos(phandle.GetNativeImageFileName())),
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch
-            { }
-
-            return false;
         }
 
         /// <summary>
@@ -739,27 +609,17 @@ namespace ProcessHacker
         /// Selects all of the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        public static void SelectAll(ListView.ListViewItemCollection items)
+        public static void SelectAll(this ListView.ListViewItemCollection items)
         {
             foreach (ListViewItem item in items)
                 item.Selected = true;
         }
 
-        public static void SelectAll(ListView items)
+        public static void SelectAll(this ListView items)
         {
             for (int i = 0; i < items.VirtualListSize; i++)
                 if (!items.SelectedIndices.Contains(i))
                     items.SelectedIndices.Add(i);
-        }
-
-        /// <summary>
-        /// Selects all of the specified nodes.
-        /// </summary>
-        /// <param name="items">The nodes.</param>
-        public static void SelectAll(IEnumerable<TreeNodeAdv> nodes)
-        {
-            foreach (TreeNodeAdv node in nodes)
-                node.IsSelected = true;
         }
 
         /// <summary>
@@ -783,31 +643,6 @@ namespace ProcessHacker
         public static void SetDoubleBuffered(this Control c, bool value)
         {
             SetDoubleBuffered(c, c.GetType(), value);
-        }
-
-        /// <summary>
-        /// Controls whether the UAC shield icon is displayed on the specified button.
-        /// </summary>
-        /// <param name="button">The button to modify.</param>
-        /// <param name="show">Whether to show the UAC shield icon.</param>
-        private static void SetShieldIconInternal(Button button, bool show)
-        {
-            Win32.SendMessage(button.Handle, 
-                WindowMessage.BcmSetShield, 0, show ? 1 : 0);
-        }
-
-        /// <summary>
-        /// Controls whether the UAC shield icon is displayed on the button.
-        /// </summary>
-        /// <param name="visible">Whether the shield icon is visible.</param>
-        public static void SetShieldIcon(this Button button, bool visible)
-        {
-            SetShieldIconInternal(button, visible);
-        }
-
-        public static void SetTheme(this Control control, string theme)
-        {
-            Win32.SetWindowTheme(control.Handle, theme, null);
         }
 
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)

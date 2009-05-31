@@ -349,8 +349,6 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
-    <Compile Include="Common\EnumComparer.cs" />
-    <Compile Include="Common\WorkQueue.cs" />
     <Compile Include="Components\EventPairProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -411,6 +409,7 @@
     <Compile Include="Forms\ScratchpadWindow.Designer.cs">
       <DependentUpon>ScratchpadWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuUsageIcon.cs" />
@@ -421,8 +420,6 @@
     <Compile Include="Program\Logging.cs" />
     <Compile Include="Program\ThemingScope.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
-    <Compile Include="Common\ByteStreamReader.cs" />
-    <Compile Include="Common\CircularBuffer.cs" />
     <Compile Include="Components\ColorModifier.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -683,12 +680,9 @@
     <Compile Include="Forms\VirtualProtectWindow.Designer.cs">
       <DependentUpon>VirtualProtectWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="UI\WindowFromHandle.cs" />
     <Compile Include="UI\HighlightedListViewItem.cs" />
-    <Compile Include="Common\HistoryManager.cs" />
     <Compile Include="UI\ColumnSettings.cs" />
-    <Compile Include="Common\DeltaManager.cs" />
     <Compile Include="Program\NProcessHacker.cs" />
     <Compile Include="Providers\Internal\IProvider.cs" />
     <Compile Include="Providers\Internal\SharedThreadProvider.cs" />
@@ -708,9 +702,8 @@
     <Compile Include="SharpDevelop\Wrappers\ResourceManager.cs" />
     <Compile Include="SharpDevelop\Wrappers\Util.cs" />
     <Compile Include="UI\Actions\ProcessActions.cs" />
-    <Compile Include="Symbols\Symbols.cs" />
+    <Compile Include="Symbols\SymbolProviderExtensions.cs" />
     <Compile Include="UI\Icons\PlotterIcon.cs" />
-    <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="PE\PEException.cs" />
     <Compile Include="PE\ImageRelocationType.cs" />
     <Compile Include="PE\RelocData.cs" />
@@ -766,9 +759,7 @@
     <Compile Include="Forms\ThreadWindow.Designer.cs">
       <DependentUpon>ThreadWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common\BaseConverter.cs" />
-    <Compile Include="Common\IdGenerator.cs" />
-    <Compile Include="Common\Misc.cs" />
+    <Compile Include="Common\PhUtils.cs" />
     <Compile Include="Providers\Internal\Provider.cs" />
     <Compile Include="Program\Save.cs" />
     <Compile Include="Searchers\StructSearcher.cs" />
@@ -804,7 +795,6 @@
     <Compile Include="Structs\StructField.cs" />
     <Compile Include="Structs\StructDef.cs" />
     <Compile Include="Structs\StructParser.cs" />
-    <Compile Include="Common\WeakReference.cs" />
     <None Include="app.manifest" />
     <None Include="Resources\control_stop_blue.png" />
     <None Include="Resources\control_play_blue.png" />
@@ -872,6 +862,10 @@
     <None Include="Resources\tick.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ProcessHacker.Common\ProcessHacker.Common.csproj">
+      <Project>{8E10F5E8-D4FA-4980-BB23-2EDD134AC15E}</Project>
+      <Name>ProcessHacker.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ProcessHacker.Native\ProcessHacker.Native.csproj">
       <Project>{8A448157-E1A7-4DDF-954E-287F1117832B}</Project>
       <Name>ProcessHacker.Native</Name>

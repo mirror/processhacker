@@ -20,10 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.PE
 {
@@ -81,7 +80,7 @@ namespace ProcessHacker.PE
 
             byte[] peSig = br.ReadBytes(4);
 
-            if (!Misc.BytesEqual(peSig, PEFile.PESignature))
+            if (!Utils.BytesEqual(peSig, PEFile.PESignature))
                 throw new PEException("Invalid PE signature.");
 
             // read COFF header

@@ -24,8 +24,8 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
 
@@ -52,7 +52,7 @@ namespace ProcessHacker
             ColumnSettings.LoadSettings(Properties.Settings.Default.HiddenProcessesColumns, listProcesses);
 
             this.Size = Properties.Settings.Default.HiddenProcessesWindowSize;
-            this.Location = Misc.FitRectangle(new Rectangle(
+            this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.HiddenProcessesWindowLocation, this.Size), this).Location;
         }
 
@@ -208,7 +208,7 @@ namespace ProcessHacker
         private void HiddenProcessesWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.A)
-                Misc.SelectAll(listProcesses.Items);
+                Utils.SelectAll(listProcesses.Items);
         }
 
         private void buttonSave_Click(object sender, EventArgs e)

@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     /// <summary>
     /// Provides a facility for generating unique IDs.

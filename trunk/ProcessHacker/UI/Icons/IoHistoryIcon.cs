@@ -20,9 +20,7 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -52,9 +50,9 @@ namespace ProcessHacker
 
             this.Redraw();
 
-            this.Text = "R: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) +
-                "\nW: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoWrite]) +
-                "\nO: " + Misc.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoOther]);
+            this.Text = "R: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) +
+                "\nW: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoWrite]) +
+                "\nO: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoOther]);
 
             if (this.Provider.Dictionary.ContainsKey(this.Provider.PIDWithMostIoActivity))
             {

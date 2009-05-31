@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -189,7 +190,7 @@ namespace ProcessHacker
                 }
                 else
                 {
-                    string serviceName = Misc.MakeRandomString(8);
+                    string serviceName = Utils.MakeRandomString(8);
 
                     using (var manager = new ServiceManagerHandle(ScManagerAccess.CreateService))
                     {

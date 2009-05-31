@@ -198,6 +198,27 @@ namespace ProcessHacker.Native.Api
         DeleteTcb
     }
 
+    public enum MinidumpType : uint
+    {
+        Normal = 0x00000000,
+        WithDataSegs = 0x00000001,
+        WithFullMemory = 0x00000002,
+        WithHandleData = 0x00000004,
+        FilterMemory = 0x00000008,
+        ScanMemory = 0x00000010,
+        WithUnloadedModules = 0x00000020,
+        WithIndirectlyReferencedMemory = 0x00000040,
+        FilterModulePaths = 0x00000080,
+        WithProcessThreadData = 0x00000100,
+        WithPrivateReadWriteMemory = 0x00000200,
+        WithoutOptionalData = 0x00000400,
+        WithFullMemoryInfo = 0x00000800,
+        WithThreadInfo = 0x00001000,
+        WithCodeSegs = 0x00002000,
+        WithoutAuxiliaryState = 0x00004000,
+        WithFullAuxiliaryState = 0x00008000 
+    }
+
     public enum PeekMessageFlags : int
     {
         NoRemove = 0,

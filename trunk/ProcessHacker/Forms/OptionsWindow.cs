@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -226,7 +227,7 @@ namespace ProcessHacker
             textStep.Value = Properties.Settings.Default.PlotterStep;
             textSearchEngine.Text = Properties.Settings.Default.SearchEngine;
             comboSizeUnits.SelectedItem =
-                Misc.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
+                Utils.SizeUnitNames[Properties.Settings.Default.UnitSpecifier];
             checkWarnDangerous.Checked = Properties.Settings.Default.WarnDangerous;
             checkShowProcessDomains.Checked = Properties.Settings.Default.ShowAccountDomains;
             checkHideWhenMinimized.Checked = Properties.Settings.Default.HideWhenMinimized;
@@ -337,7 +338,7 @@ namespace ProcessHacker
             Properties.Settings.Default.HideWhenClosed = checkHideWhenClosed.Checked;
             Properties.Settings.Default.AllowOnlyOneInstance = checkAllowOnlyOneInstance.Checked;
             Properties.Settings.Default.UnitSpecifier =
-                Array.IndexOf(Misc.SizeUnitNames, comboSizeUnits.SelectedItem);
+                Array.IndexOf(Utils.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
             Properties.Settings.Default.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
@@ -410,7 +411,7 @@ namespace ProcessHacker
         private void ApplySettings()
         {
             Program.ImposterNames = new System.Collections.Specialized.StringCollection();
-            Misc.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
+            Utils.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
 
             foreach (string s in Properties.Settings.Default.ImposterNames.Split(','))
                 Program.ImposterNames.Add(s.Trim());

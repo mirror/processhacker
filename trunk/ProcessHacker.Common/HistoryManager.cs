@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     public static class HistoryManager
     {

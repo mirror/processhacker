@@ -23,7 +23,7 @@
 using System;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     /// <summary>
     /// Contains methods to parse numbers from string representations using different bases.

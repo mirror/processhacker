@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
-using ProcessHacker.Components;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -601,7 +601,7 @@ namespace ProcessHacker
 
         private void selectAllNetworkMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listNetwork.List.Items);
+            Utils.SelectAll(listNetwork.List.Items);
         }
 
         #endregion
@@ -1387,7 +1387,7 @@ namespace ProcessHacker
 
         private void selectAllProcessMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(treeProcesses.Tree.AllNodes);
+            treeProcesses.Tree.AllNodes.SelectAll();
             treeProcesses.Tree.Invalidate();
         } 
 
@@ -1784,7 +1784,7 @@ namespace ProcessHacker
 
         private void selectAllServiceMenuItem_Click(object sender, EventArgs e)
         {
-            Misc.SelectAll(listServices.Items);
+            Utils.SelectAll(listServices.Items);
         }
 
         #endregion
@@ -2033,7 +2033,7 @@ namespace ProcessHacker
         {
             this.TopMost = Properties.Settings.Default.AlwaysOnTop;
             this.Size = Properties.Settings.Default.WindowSize;
-            this.Location = Misc.FitRectangle(new Rectangle(
+            this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.WindowLocation, this.Size), this).Location;
 
             if (Properties.Settings.Default.WindowState != FormWindowState.Minimized)
@@ -2044,7 +2044,7 @@ namespace ProcessHacker
 
         private void LoadOtherSettings()
         {
-            Misc.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
+            Utils.UnitSpecifier = Properties.Settings.Default.UnitSpecifier;
 
             PromptBox.LastValue = Properties.Settings.Default.PromptBoxText;
             toolbarMenuItem.Checked = toolStrip.Visible = Properties.Settings.Default.ToolbarVisible;
@@ -2497,24 +2497,14 @@ namespace ProcessHacker
                 {
                     if (e.Control && e.KeyCode == Keys.A)
                     {
-                        Misc.SelectAll(treeProcesses.TreeNodes);
+                        treeProcesses.TreeNodes.SelectAll();
                         treeProcesses.Tree.Invalidate();
                     }
 
                     if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.TreeViewAdvCopy(treeProcesses.Tree, -1);
                 };
-            listServices.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listServices.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listServices.List, -1);
-                };
-            listNetwork.List.KeyDown +=
-                (sender, e) =>
-                {
-                    if (e.Control && e.KeyCode == Keys.A) Misc.SelectAll(listNetwork.List.Items);
-                    if (e.Control && e.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listNetwork.List, -1);
-                };
+            listServices.List.AddShortcuts();
+            listNetwork.List.AddShortcuts();
         }
 
         private void LoadApplyCommandLineArgs()

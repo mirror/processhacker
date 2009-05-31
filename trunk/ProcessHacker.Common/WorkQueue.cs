@@ -24,10 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     public delegate void Action();
-    public delegate void Action<T>(T a1);
+    //public delegate void Action<T>(T a1);
     public delegate void Action<T, U>(T a1, U a2);
     public delegate void Action<T, U, V>(T a1, U a2, V a3);
     public delegate void Action<T, U, V, W>(T a1, U a2, V a3, W a4);
@@ -165,7 +165,6 @@ namespace ProcessHacker
                 catch (Exception ex)
                 {
                     _exception = ex;
-                    Logging.Log(ex);
                 }
 
                 _completed = true;

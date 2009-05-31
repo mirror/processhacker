@@ -20,10 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.PE
 {
@@ -68,7 +67,7 @@ namespace ProcessHacker.PE
             {
                 byte[] data = br.ReadBytes(20);
 
-                if (Misc.IsEmpty(data))
+                if (Utils.IsEmpty(data))
                     break;
 
                 br.BaseStream.Seek(-20, SeekOrigin.Current);
@@ -124,7 +123,7 @@ namespace ProcessHacker.PE
                 {
                     br.BaseStream.Seek(peFile.RvaToVa(entry.NameRVA), SeekOrigin.Begin);
 
-                    entry.Name = Misc.ReadString(br.BaseStream);
+                    entry.Name = Utils.ReadString(br.BaseStream);
                 }
 
                 for (int i = 0; i < this.ImportLookupTable.Count; i++)
@@ -139,7 +138,7 @@ namespace ProcessHacker.PE
 
                             entry.NameEntry = new ImportNameEntry();
                             entry.NameEntry.Hint = br.ReadUInt16();
-                            entry.NameEntry.Name = Misc.ReadString(br.BaseStream);
+                            entry.NameEntry.Name = Utils.ReadString(br.BaseStream);
                         }
                     }
                 }

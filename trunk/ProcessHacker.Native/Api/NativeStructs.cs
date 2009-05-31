@@ -1515,12 +1515,28 @@ namespace ProcessHacker.Native.Api
 
         public string Read()
         {
-            return Utils.ReadUnicodeString(this);
+            if (this.Length == 0)
+                return "";
+
+            return Marshal.PtrToStringUni(this.Buffer, this.Length / 2);
         }
 
         public string Read(ProcessHandle processHandle)
         {
-            return Utils.ReadUnicodeString(processHandle, this);
+            if (this.Length == 0)
+                return "";
+
+            byte[] strData = processHandle.ReadMemory(this.Buffer, this.Length);
+            GCHandle strDataHandle = GCHandle.Alloc(strData, GCHandleType.Pinned);
+
+            try
+            {
+                return Marshal.PtrToStringUni(strDataHandle.AddrOfPinnedObject(), this.Length / 2);
+            }
+            finally
+            {
+                strDataHandle.Free();
+            }
         }
 
         public bool StartsWith(UnicodeString unicodeString, bool caseInsensitive)

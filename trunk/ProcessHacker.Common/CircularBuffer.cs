@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     /// <summary>
     /// Provides methods for manipulating a circular buffer. A circular buffer 

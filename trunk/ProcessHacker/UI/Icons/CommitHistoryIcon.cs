@@ -21,6 +21,7 @@
  */
 
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
@@ -45,7 +46,7 @@ namespace ProcessHacker
             this.Update(this.Provider.Performance.CommittedPages, 0);
             this.Redraw();
 
-            this.Text = "Commit: " + Misc.GetNiceSizeName(
+            this.Text = "Commit: " + Utils.GetNiceSizeName(
                 (long)this.Provider.Performance.CommittedPages * this.Provider.System.PageSize);
         }
     }

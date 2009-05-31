@@ -837,9 +837,7 @@ namespace ProcessHacker.Native.Objects
                     data, retLen, out retLen)) >= NtStatus.Error)
                     Win32.ThrowLastError(status);
 
-                UnicodeString str = data.ReadStruct<UnicodeString>();
-
-                return Utils.ReadUnicodeString(str);
+                return data.ReadStruct<UnicodeString>().Read();
             }
         }
 
@@ -1301,6 +1299,26 @@ namespace ProcessHacker.Native.Objects
                 if (!Win32.TerminateProcess(this, ExitCode))
                     Win32.ThrowLastError();
             }
+        }
+
+        public void WriteDump(string fileName, MinidumpType type)
+        {
+            using (var fhandle = new FileHandle(fileName, FileAccess.GenericWrite))
+                this.WriteDump(fhandle, type);
+        }
+
+        public void WriteDump(FileHandle fileHandle, MinidumpType type)
+        {
+            if (!Win32.MiniDumpWriteDump(
+                this,
+                this.GetProcessId(),
+                fileHandle,
+                type,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                IntPtr.Zero
+                ))
+                Win32.ThrowLastError();
         }
 
         /// <summary>

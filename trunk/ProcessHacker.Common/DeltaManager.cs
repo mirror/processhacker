@@ -28,10 +28,9 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using Aga.Controls.Tree;
 using System.Collections.Generic;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     /// <summary>
     /// Defines subtraction for a numberic type.

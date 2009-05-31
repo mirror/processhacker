@@ -23,11 +23,11 @@
 using System;
 using System.Reflection;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Symbols;
+using ProcessHacker.Native.Symbols;
 using ProcessHacker.UI;
 
 namespace ProcessHacker
@@ -177,12 +177,7 @@ namespace ProcessHacker
         private void ThreadWindow_Load(object sender, EventArgs e)
         {
             listViewCallStack.SetTheme("explorer");
-            listViewCallStack.KeyDown +=
-                (sender_, e_) =>
-                {
-                    if (e_.Control && e_.KeyCode == Keys.A) Misc.SelectAll(listViewCallStack.Items);
-                    if (e_.Control && e_.KeyCode == Keys.C) GenericViewMenu.ListViewCopy(listViewCallStack, -1);
-                };
+            listViewCallStack.AddShortcuts();
 
             this.Size = Properties.Settings.Default.ThreadWindowSize;
             ColumnSettings.LoadSettings(Properties.Settings.Default.CallStackColumns, listViewCallStack);

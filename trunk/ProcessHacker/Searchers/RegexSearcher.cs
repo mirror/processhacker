@@ -21,9 +21,9 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -130,7 +130,7 @@ namespace ProcessHacker
                     {
                         Results.Add(new string[] { String.Format("0x{0:x8}", info.BaseAddress.ToInt32()),
                                 String.Format("0x{0:x8}", m.Index), m.Length.ToString(),
-                                Misc.MakePrintable(m.Value) });
+                                Utils.MakePrintable(m.Value) });
 
                         count++;
                     }

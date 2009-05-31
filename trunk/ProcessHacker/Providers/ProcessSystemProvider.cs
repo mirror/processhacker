@@ -26,11 +26,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using System.Threading;
 
 namespace ProcessHacker
 {
@@ -546,7 +546,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    fileName = Misc.GetKernelFileName();
+                    fileName = Windows.GetKernelFileName();
                 }
                 catch
                 { }
@@ -818,7 +818,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.CreateTime = Misc.DateTimeFromFileTime(processInfo.CreateTime);
+                        item.CreateTime = Utils.DateTimeFromFileTime(processInfo.CreateTime);
                     }
                     catch
                     { }
@@ -1115,9 +1115,9 @@ namespace ProcessHacker
             try
             {
                 _mostUsageHistory.Update(true, newdictionary[this.PIDWithMostIoActivity].Name + ": " +
-                    "R+O: " + Misc.GetNiceSizeName(
+                    "R+O: " + Utils.GetNiceSizeName(
                     newdictionary[this.PIDWithMostIoActivity].LongHistoryManager[ProcessStats.IoReadOther][0]) +
-                    ", W: " + Misc.GetNiceSizeName(
+                    ", W: " + Utils.GetNiceSizeName(
                     newdictionary[this.PIDWithMostIoActivity].LongHistoryManager[ProcessStats.IoWrite][0]));
             }
             catch

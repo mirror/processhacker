@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection.Emit;
 
-namespace ProcessHacker
+namespace ProcessHacker.Common
 {
     public sealed class EnumComparer<TEnum> : IEqualityComparer<TEnum>
         where TEnum : struct, IComparable, IConvertible, IFormattable

@@ -20,10 +20,9 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.PE
 {
@@ -89,7 +88,7 @@ namespace ProcessHacker.PE
                     if (entry.Type == ExportEntry.ExportType.Forwarder)
                     {
                         br.BaseStream.Seek(peFile.RvaToVa(entry.ExportRVA), SeekOrigin.Begin);
-                        entry.ForwardedString = Misc.ReadString(br.BaseStream);
+                        entry.ForwardedString = Utils.ReadString(br.BaseStream);
                     }
                 }
             }
@@ -116,7 +115,7 @@ namespace ProcessHacker.PE
                 for (int i = 0; i < this.ExportNamePointerTable.Count; i++)
                 {
                     br.BaseStream.Seek(peFile.RvaToVa(this.ExportNamePointerTable[i]), SeekOrigin.Begin);
-                    this.ExportNameTable.Add(Misc.ReadString(br.BaseStream));
+                    this.ExportNameTable.Add(Utils.ReadString(br.BaseStream));
                 }
             }
         }

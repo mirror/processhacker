@@ -1401,6 +1401,18 @@ namespace ProcessHacker.Native.Api
             [In] ulong Data
             );
 
+        [DllImport("dbghelp.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool MiniDumpWriteDump(
+            [In] IntPtr ProcessHandle,
+            [In] int ProcessId,
+            [In] IntPtr FileHandle,
+            [In] MinidumpType DumpType,
+            [In] IntPtr ExceptionParam,
+            [In] IntPtr UserStreamParam,
+            [In] IntPtr CallbackParam
+            );
+
         #endregion
 
         #region TCP

@@ -23,6 +23,7 @@
 using System;
 using System.Diagnostics;
 using Aga.Controls.Tree;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 
@@ -44,7 +45,7 @@ namespace ProcessHacker
                 ProcessNode pNode = _tree.FindNode(node);
 
                 string cmdText = (pNode.ProcessItem.CmdLine != null ?
-                        (Misc.MakeEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
+                        (Utils.MakeEllipsis(pNode.ProcessItem.CmdLine.Replace("\0", ""), 100) + "\n") : "");
 
                 string fileText = "";
 
@@ -54,7 +55,7 @@ namespace ProcessHacker
 
                     if (pNode.Pid == 4)
                     {
-                        filename = Misc.GetRealPath(Misc.GetKernelFileName());
+                        filename = FileUtils.FixPath(Windows.GetKernelFileName());
                     }
                     else
                     {

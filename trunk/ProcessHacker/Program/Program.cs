@@ -34,6 +34,7 @@ using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using System.Text;
 using System.Runtime.InteropServices;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -490,7 +491,7 @@ namespace ProcessHacker
 
                 if (pArgs.ContainsKey("-rect"))
                 {
-                    Rectangle rect = Misc.RectangleFromString(pArgs["-rect"]);
+                    Rectangle rect = Utils.RectangleFromString(pArgs["-rect"]);
 
                     options.Location = new Point(rect.X + 20, rect.Y + 20);
                     options.StartPosition = FormStartPosition.Manual;

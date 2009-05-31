@@ -21,11 +21,12 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Text;
+using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
-using System.Text;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.UI
 {
@@ -74,11 +75,11 @@ namespace ProcessHacker.UI
 
             if (lv.SelectedIndices.Count == 0)
             {
-                Misc.DisableAllMenuItems(citem);
+                Utils.DisableAllMenuItems(citem);
             }
             else
             {
-                Misc.EnableAllMenuItems(citem);
+                Utils.EnableAllMenuItems(citem);
             }
         }
 

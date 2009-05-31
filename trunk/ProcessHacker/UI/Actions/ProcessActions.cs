@@ -21,12 +21,13 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using System.Collections.Generic;
 
 namespace ProcessHacker.UI.Actions
 {
@@ -46,7 +47,7 @@ namespace ProcessHacker.UI.Actions
 
             foreach (int pid in pids)
             {
-                if (Misc.IsDangerousPid(pid))
+                if (PhUtils.IsDangerousPid(pid))
                 {
                     dangerous = true;
                     break;
@@ -108,7 +109,7 @@ namespace ProcessHacker.UI.Actions
                     {
                         bool dangerousPid, criticalPid;
 
-                        dangerousPid = Misc.IsDangerousPid(pids[i]);
+                        dangerousPid = PhUtils.IsDangerousPid(pids[i]);
 
                         try
                         {

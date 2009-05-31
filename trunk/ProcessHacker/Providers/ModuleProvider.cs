@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -131,7 +130,7 @@ namespace ProcessHacker
                     item.RunId = this.RunCount;
                     item.BaseAddress = b;
                     item.Name = name.ToString();
-                    item.FileName = Misc.GetRealPath(filename.ToString());
+                    item.FileName = FileUtils.FixPath(filename.ToString());
 
                     try
                     {
@@ -219,7 +218,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        item.FileName = Misc.GetRealPath(m.FileName);
+                        item.FileName = FileUtils.FixPath(m.FileName);
                     }
                     catch
                     { }

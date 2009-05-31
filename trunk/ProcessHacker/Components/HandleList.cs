@@ -21,16 +21,16 @@
  */
 
 using System;
+using System.Drawing;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using ProcessHacker.UI;
-using System.Drawing;
 using ProcessHacker.Native.Ui;
+using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
 {
@@ -394,8 +394,7 @@ namespace ProcessHacker.Components
                                                                     new GenericHandle(
                                                                         phandle, handle,
                                                                         (int)OSVersion.MinProcessQueryInfoAccess);
-                                                                pid = ProcessHandle.FromHandle(dupHandle).
-                                                                    GetBasicInformation().UniqueProcessId;
+                                                                pid = ProcessHandle.FromHandle(dupHandle).GetProcessId();
                                                             }
 
                                                             Program.GetProcessWindow(Program.ProcessProvider.Dictionary[pid],
