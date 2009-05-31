@@ -421,6 +421,14 @@ namespace ProcessHacker.Components
                                     control.Controls.Add(eventProps);
                                 }
                                 break;
+                            case "eventpair":
+                                {
+                                    dupHandle = new GenericHandle(phandle, handle, (int)EventPairAccess.All);
+                                    var eventPairProps = new EventPairProperties(EventPairHandle.FromHandle(dupHandle));
+                                    eventPairProps.Location = new Point(10, 20);
+                                    control.Controls.Add(eventPairProps);
+                                }
+                                break;
                             case "mutant":
                                 {
                                     dupHandle = new GenericHandle(phandle, handle, (int)MutantAccess.QueryState);

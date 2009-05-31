@@ -8,6 +8,7 @@ Process Hacker
      Analyze > Wait to see what a thread is hanging on
    * More detailed handle properties
    * Event objects can now be modified - set, clear, pulse, reset
+   * Event pair objects can now be modified - set high, set low
    * Semaphore objects can now be modified - acquire, release
  * FIXED:
    * #2795871 - "Hidden Processes window resizing problem"

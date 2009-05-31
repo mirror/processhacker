@@ -74,6 +74,11 @@ namespace ProcessHacker.Native.Objects
             return new EventPairHandle(handle, true);
         }
 
+        public static EventPairHandle FromHandle(IntPtr handle)
+        {
+            return new EventPairHandle(handle, false);
+        }
+
         private EventPairHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }

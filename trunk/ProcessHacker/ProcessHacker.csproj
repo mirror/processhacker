@@ -125,6 +125,9 @@
       <DependentUpon>ColorModifier.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\EventPairProperties.resx">
+      <DependentUpon>EventPairProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\EventProperties.resx">
       <DependentUpon>EventProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -348,6 +351,12 @@
     <None Include="Asm\AsmDefinitions.cs" />
     <Compile Include="Common\EnumComparer.cs" />
     <Compile Include="Common\WorkQueue.cs" />
+    <Compile Include="Components\EventPairProperties.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\EventPairProperties.Designer.cs">
+      <DependentUpon>EventPairProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\EventProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>

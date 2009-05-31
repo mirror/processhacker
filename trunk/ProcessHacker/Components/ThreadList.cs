@@ -861,6 +861,8 @@ namespace ProcessHacker.Components
 
                 using (var thandle = new ThreadHandle(tid, ThreadAccess.GetContext | ThreadAccess.SuspendResume))
                 {
+                    IntPtr[] lastParams = new IntPtr[4];
+
                     thandle.WalkStack(phandle, (stackFrame) =>
                         {
                             uint address = stackFrame.PcAddress.ToUInt32();
@@ -974,6 +976,10 @@ namespace ProcessHacker.Components
 
                                 IntPtr handle = stackFrame.Params[0];
 
+                                // Use the KiFastSystemCallRet args if the handle we have is wrong.
+                                if (handle.ToInt32() % 2 != 0)
+                                    handle = lastParams[1];
+
                                 sb.AppendLine("Thread " + tid.ToString() + " is waiting (" + name + ") for an event pair:");
 
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
@@ -1072,6 +1078,8 @@ namespace ProcessHacker.Components
 
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
+
+                            lastParams = stackFrame.Params;
 
                             return !found;
                         });
