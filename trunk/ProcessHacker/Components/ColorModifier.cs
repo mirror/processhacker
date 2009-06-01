@@ -45,6 +45,7 @@ namespace ProcessHacker.Components
             ColorDialog cd = new ColorDialog();
 
             cd.Color = panelColor.BackColor;
+            cd.FullOpen = true;
 
             if (cd.ShowDialog() == DialogResult.OK)
             {

@@ -181,6 +181,7 @@ namespace ProcessHacker
             ColorDialog cd = new ColorDialog();
 
             cd.Color = listHighlightingColors.SelectedItems[0].BackColor;
+            cd.FullOpen = true;
 
             if (cd.ShowDialog() == DialogResult.OK)
                 listHighlightingColors.SelectedItems[0].BackColor = cd.Color;

@@ -50,6 +50,7 @@
             this.label23 = new System.Windows.Forms.Label();
             this.textIconMenuProcesses = new System.Windows.Forms.NumericUpDown();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.checkEnableExperimentalFeatures = new System.Windows.Forms.CheckBox();
             this.checkHidePhConnections = new System.Windows.Forms.CheckBox();
             this.textMaxSamples = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
@@ -96,7 +97,7 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.checkEnableExperimentalFeatures = new System.Windows.Forms.CheckBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -402,6 +403,17 @@
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
             // 
+            // checkEnableExperimentalFeatures
+            // 
+            this.checkEnableExperimentalFeatures.AutoSize = true;
+            this.checkEnableExperimentalFeatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkEnableExperimentalFeatures.Location = new System.Drawing.Point(6, 30);
+            this.checkEnableExperimentalFeatures.Name = "checkEnableExperimentalFeatures";
+            this.checkEnableExperimentalFeatures.Size = new System.Drawing.Size(168, 18);
+            this.checkEnableExperimentalFeatures.TabIndex = 22;
+            this.checkEnableExperimentalFeatures.Text = "Enable experimental features";
+            this.checkEnableExperimentalFeatures.UseVisualStyleBackColor = true;
+            // 
             // checkHidePhConnections
             // 
             this.checkHidePhConnections.AutoSize = true;
@@ -515,6 +527,7 @@
             // 
             // tabHighlighting
             // 
+            this.tabHighlighting.Controls.Add(this.label11);
             this.tabHighlighting.Controls.Add(this.buttonDisableAll);
             this.tabHighlighting.Controls.Add(this.buttonEnableAll);
             this.tabHighlighting.Controls.Add(this.label5);
@@ -947,16 +960,14 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
-            // checkEnableExperimentalFeatures
+            // label11
             // 
-            this.checkEnableExperimentalFeatures.AutoSize = true;
-            this.checkEnableExperimentalFeatures.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkEnableExperimentalFeatures.Location = new System.Drawing.Point(6, 30);
-            this.checkEnableExperimentalFeatures.Name = "checkEnableExperimentalFeatures";
-            this.checkEnableExperimentalFeatures.Size = new System.Drawing.Size(168, 18);
-            this.checkEnableExperimentalFeatures.TabIndex = 22;
-            this.checkEnableExperimentalFeatures.Text = "Enable experimental features";
-            this.checkEnableExperimentalFeatures.UseVisualStyleBackColor = true;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 295);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(165, 13);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "Double-click an item to change it.";
             // 
             // OptionsWindow
             // 
@@ -1068,5 +1079,6 @@
         private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.CheckBox checkHidePhConnections;
         private System.Windows.Forms.CheckBox checkEnableExperimentalFeatures;
+        private System.Windows.Forms.Label label11;
     }
 }
