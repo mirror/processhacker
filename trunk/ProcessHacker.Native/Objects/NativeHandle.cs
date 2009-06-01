@@ -461,6 +461,22 @@ namespace ProcessHacker.Native.Objects
         /// </param>
         public virtual NtStatus Wait(bool alertable)
         {
+            /* Note that in order to wait for an infinite amount of time 
+             * NULL should be passed as the timeout parameter to 
+             * KeWaitForSingleObject/MultipleObjects. However, 
+             * long.MinValue = -9223372036854775808 
+             * = 9223372036854775808 100ns (relative)
+             * = 922337203685477580.8 microseconds
+             * = 922337203685477.5808 ms
+             * = 922337203685.4775808 s
+             * = 15372286728.091293013333333333333 minutes
+             * = 256204778.80152155022222222222222 hours
+             * = 10675199.116730064592592592592593 days
+             * = 7306.7755761328299743960250462646 4 years (including one leap year)
+             * = 29227.102304531319897584100185058 years (average)
+             * = 29.227102304531319897584100185058 millennia
+             * That's long enough, I think...
+             */
             return this.Wait(alertable, long.MinValue, false);
         }
 
