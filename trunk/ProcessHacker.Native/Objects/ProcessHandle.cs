@@ -55,6 +55,13 @@ namespace ProcessHacker.Native.Objects
         /// <returns>Return true to continue enumerating; return false to stop.</returns>
         public delegate bool EnumModulesDelegate(ProcessModule module);
 
+        /// <summary>
+        /// Creates a process.
+        /// </summary>
+        /// <param name="access">The desired access to the new process.</param>
+        /// <param name="fileName">The path to an executable image file.</param>
+        /// <param name="inheritHandles">Specify true to inherit handles, otherwise false.</param>
+        /// <returns>A handle to the new process.</returns>
         public static ProcessHandle Create(ProcessAccess access, string fileName, bool inheritHandles)
         {
             using (var fhandle = new FileHandle(
@@ -74,6 +81,14 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Creates a process.
+        /// </summary>
+        /// <param name="access">The desired access to the new process.</param>
+        /// <param name="parentProcess">The process to inherit the address space and handles from.</param>
+        /// <param name="inheritHandles">Specify true to inherit handles, otherwise false.</param>
+        /// <param name="sectionHandle">A section of an executable image.</param>
+        /// <returns>A handle to the new process.</returns>
         public static ProcessHandle Create(
             ProcessAccess access,
             ProcessHandle parentProcess,
@@ -83,6 +98,18 @@ namespace ProcessHacker.Native.Objects
             return Create(access, null, 0, null, parentProcess, inheritHandles, sectionHandle, null);
         }
 
+        /// <summary>
+        /// Creates a process.
+        /// </summary>
+        /// <param name="access">The desired access to the new process.</param>
+        /// <param name="name">The name of the process.</param>
+        /// <param name="objectFlags">The flags to use when creating the object.</param>
+        /// <param name="rootDirectory">A handle to the directory in which to place the object.</param>
+        /// <param name="parentProcess">The process to inherit the address space and handles from.</param>
+        /// <param name="inheritHandles">Specify true to inherit handles, otherwise false.</param>
+        /// <param name="sectionHandle">A section of an executable image.</param>
+        /// <param name="debugPort">A debug object to attach the process to.</param>
+        /// <returns>A handle to the new process.</returns>
         public static ProcessHandle Create(
             ProcessAccess access,
             string name,
@@ -140,6 +167,10 @@ namespace ProcessHacker.Native.Objects
             return new ProcessHandle(new IntPtr(-1), false);
         }
 
+        /// <summary>
+        /// Gets the ID of the current process.
+        /// </summary>
+        /// <returns>The ID of the current process.</returns>
         public static int GetCurrentId()
         {
             return Win32.GetCurrentProcessId();
@@ -150,7 +181,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Creates a new process handle.
+        /// Opens a process.
         /// </summary>
         /// <param name="pid">The ID of the process to open.</param>
         /// <param name="access">The desired access to the process.</param>
@@ -184,13 +215,23 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Creates a new process handle.
+        /// Opens a process.
         /// </summary>
         /// <param name="pid">The ID of the process to open.</param>
         public ProcessHandle(int pid)
             : this(pid, ProcessAccess.All)
         { }
 
+        /// <summary>
+        /// Opens a process.
+        /// </summary>
+        /// <param name="name">The name of the process.</param>
+        /// <param name="objectFlags">The flags to use when opening the object.</param>
+        /// <param name="rootDirectory">
+        /// A handle to the directory in which the object is located.
+        /// </param>
+        /// <param name="clientId">A Client ID structure describing the process.</param>
+        /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(
             string name, 
             ObjectFlags objectFlags, 
@@ -206,8 +247,9 @@ namespace ProcessHacker.Native.Objects
             try
             {
                 // NtOpenProcess fails when both a client ID and a name is specified.
-                if (clientId.ProcessId == 0 && clientId.ThreadId == 0)
+                if (name != null)
                 {
+                    // Name specified, don't specify a CID.
                     if ((status = Win32.NtOpenProcess(
                         out handle,
                         access,
@@ -218,6 +260,7 @@ namespace ProcessHacker.Native.Objects
                 }
                 else
                 {
+                    // No name, specify a CID.
                     if ((status = Win32.NtOpenProcess(
                         out handle,
                         access,
@@ -235,10 +278,20 @@ namespace ProcessHacker.Native.Objects
             this.Handle = handle;
         }
 
+        /// <summary>
+        /// Opens a process.
+        /// </summary>
+        /// <param name="name">The name of the process.</param>
+        /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(string name, ProcessAccess access)
             : this(name, 0, null, new ClientId(), access)
         { }
 
+        /// <summary>
+        /// Opens a process.
+        /// </summary>
+        /// <param name="clientId">A Client ID structure describing the process.</param>
+        /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(ClientId clientId, ProcessAccess access)
             : this(null, 0, null, clientId, access)
         { }
@@ -372,6 +425,10 @@ namespace ProcessHacker.Native.Objects
             this.EnumModulesNative(enumModulesCallback);
         }
 
+        /// <summary>
+        /// Enumerates the modules loaded by the process using PSAPI.
+        /// </summary>
+        /// <param name="enumModulesCallback">The callback for the enumeration.</param>
         private void EnumModulesApi(EnumModulesDelegate enumModulesCallback)
         {
             IntPtr[] moduleHandles;
@@ -404,6 +461,10 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Enumerates the modules loaded by the process by reading the NT loader data.
+        /// </summary>
+        /// <param name="enumModulesCallback">The callback for the enumeration.</param>
         private unsafe void EnumModulesNative(EnumModulesDelegate enumModulesCallback)
         {
             byte* buffer = stackalloc byte[IntPtr.Size];
@@ -487,6 +548,35 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the processor affinity for the process.
+        /// </summary>
+        /// <returns>The processor affinity for the process.</returns>
+        public long GetAffinityMask()
+        {
+            long systemMask;
+
+            return this.GetAffinityMask(out systemMask);
+        }
+
+        /// <summary>
+        /// Gets the processor affinity for the process.
+        /// </summary>
+        /// <param name="systemMask">Receives the processor affinity mask for the system.</param>
+        /// <returns>The processor affinity for the process.</returns>
+        public long GetAffinityMask(out long systemMask)
+        {
+            IntPtr processMaskTemp;
+            IntPtr systemMaskTemp;
+
+            if (!Win32.GetProcessAffinityMask(this, out processMaskTemp, out systemMaskTemp))
+                Win32.ThrowLastError();
+
+            systemMask = systemMaskTemp.ToInt64();
+
+            return processMaskTemp.ToInt64();
+        }
+
+        /// <summary>
         /// Gets the base priority of the process.
         /// </summary>
         public int GetBasePriority()
@@ -534,7 +624,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the creation time of the process.
         /// </summary>
-        public FileTime GetCreateTime()
+        public long GetCreateTime()
         {
             return this.GetTimes()[0];
         }
@@ -688,10 +778,19 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the process' exit status.
+        /// </summary>
+        /// <returns>A NTSTATUS value.</returns>
+        public NtStatus GetExitStatus()
+        {
+            return this.GetBasicInformation().ExitStatus;
+        }
+
+        /// <summary>
         /// Gets the exit time of the process.
         /// </summary>
         /// <returns></returns>
-        public FileTime GetExitTime()
+        public long GetExitTime()
         {
             return this.GetTimes()[1];
         }
@@ -731,6 +830,11 @@ namespace ProcessHacker.Native.Objects
             return FileUtils.FixPath(sb.ToString(0, len));
         }
 
+        /// <summary>
+        /// Gets information about the process in an Int32.
+        /// </summary>
+        /// <param name="infoClass">The class of information to retrieve.</param>
+        /// <returns>An int.</returns>
         private int GetInformationInt32(ProcessInformationClass infoClass)
         {
             NtStatus status;
@@ -780,6 +884,11 @@ namespace ProcessHacker.Native.Objects
             return mainModule;
         }
 
+        /// <summary>
+        /// Gets the name of a file which the process has mapped.
+        /// </summary>
+        /// <param name="address">The address of the mapped section.</param>
+        /// <returns>A filename.</returns>
         public string GetMappedFileName(IntPtr address)
         {
             StringBuilder sb = new StringBuilder(0x400);
@@ -982,7 +1091,11 @@ namespace ProcessHacker.Native.Objects
             return this.GetInformationInt32(ProcessInformationClass.ProcessSessionInformation);
         }
 
-        public FileTime[] GetTimes()
+        /// <summary>
+        /// Gets an array of FileTimes for the process.
+        /// </summary>
+        /// <returns>An array of times: creation time, exit time, kernel time, user time.</returns>
+        private FileTime[] GetTimes()
         {
             FileTime[] times = new FileTime[4];
 
@@ -1130,7 +1243,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="offset">The offset at which to begin reading.</param>
         /// <param name="length">The length, in bytes, to read.</param>
-        /// <returns>An array of bytes</returns>
+        /// <returns>An array of bytes.</returns>
         public byte[] ReadMemory(IntPtr offset, int length)
         {
             byte[] buffer = new byte[length];
@@ -1140,12 +1253,26 @@ namespace ProcessHacker.Native.Objects
             return buffer;
         }
 
+        /// <summary>
+        /// Reads data from the process' virtual memory.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="length">The length to read.</param>
+        /// <returns>The number of bytes read.</returns>
         public unsafe int ReadMemory(IntPtr offset, byte[] buffer, int length)
         {
             fixed (byte* bufferPtr = buffer)
                 return this.ReadMemory(offset, bufferPtr, length);
         }
 
+        /// <summary>
+        /// Reads data from the process' virtual memory.
+        /// </summary>
+        /// <param name="offset">The offset at which to begin reading.</param>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="length">The length to read.</param>
+        /// <returns>The number of bytes read.</returns>
         public unsafe int ReadMemory(IntPtr offset, void* buffer, int length)
         {
             int readLen;
@@ -1193,11 +1320,31 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Sets the processor affinity for the process.
+        /// </summary>
+        /// <param name="processMask">The processor affinity mask.</param>
+        public void SetAffinityMask(long processMask)
+        {
+            if (!Win32.SetProcessAffinityMask(this, new IntPtr(processMask)))
+                Win32.ThrowLastError();
+        }
+
+        /// <summary>
+        /// Sets whether the system will crash upon the process being terminated. 
+        /// This function requires SeTcbPrivilege.
+        /// </summary>
+        /// <param name="critical">Whether the system will crash upon the process being terminated.</param>
         public void SetCritical(bool critical)
         {
             this.SetInformationInt32(ProcessInformationClass.ProcessBreakOnTermination, critical ? 1 : 0);
         }
 
+        /// <summary>
+        /// Sets information about the process in an Int32.
+        /// </summary>
+        /// <param name="infoClass">The class of information to set.</param>
+        /// <param name="value">The value to set.</param>
         private void SetInformationInt32(ProcessInformationClass infoClass, int value)
         {
             NtStatus status;
@@ -1207,6 +1354,11 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError(status);
         }
 
+        /// <summary>
+        /// Sets the reference count of a module.
+        /// </summary>
+        /// <param name="baseAddress">The base address of the module.</param>
+        /// <param name="count">The new reference count.</param>
         public unsafe void SetModuleReferenceCount(IntPtr baseAddress, ushort count)
         {
             byte* buffer = stackalloc byte[IntPtr.Size];
@@ -1301,12 +1453,22 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Writes a minidump of the process to the specified file.
+        /// </summary>
+        /// <param name="fileName">The destination file.</param>
+        /// <param name="type">The type of minidump to write.</param>
         public void WriteDump(string fileName, MinidumpType type)
         {
             using (var fhandle = new FileHandle(fileName, FileAccess.GenericWrite))
                 this.WriteDump(fhandle, type);
         }
 
+        /// <summary>
+        /// Writes a minidump of the process to the specified file.
+        /// </summary>
+        /// <param name="fileHandle">A handle to the destination file.</param>
+        /// <param name="type">The type of minidump to write.</param>
         public void WriteDump(FileHandle fileHandle, MinidumpType type)
         {
             if (!Win32.MiniDumpWriteDump(

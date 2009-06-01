@@ -624,16 +624,16 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetProcessAffinityMask(
-            [In] IntPtr ProcessHandle, 
-            [In] uint ProcessAffinityMask
+            [In] IntPtr ProcessHandle,
+            [In] IntPtr ProcessAffinityMask
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetProcessAffinityMask(
             [In] IntPtr ProcessHandle, 
-            [Out] out uint ProcessAffinityMask,
-            [Out] out uint SystemAffinityMask
+            [Out] out IntPtr ProcessAffinityMask,
+            [Out] out IntPtr SystemAffinityMask
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]

@@ -32,22 +32,21 @@ namespace ProcessHacker
     {
         private int _pid;
 
-        public ProcessAffinity(int PID)
+        public ProcessAffinity(int pid)
         {
             InitializeComponent();
             this.AddEscapeToClose();
 
-            _pid = PID;
+            _pid = pid;
 
             try
             {
-                using (ProcessHandle phandle = new ProcessHandle(PID, ProcessAccess.QueryInformation))
+                using (ProcessHandle phandle = new ProcessHandle(pid, ProcessAccess.QueryInformation))
                 {
-                    uint systemMask = 0;
-                    uint processMask = 0;
+                    long systemMask;
+                    long processMask;
 
-                    if (!Win32.GetProcessAffinityMask(phandle, out processMask, out systemMask))
-                        Win32.ThrowLastError();
+                    processMask = phandle.GetAffinityMask(out systemMask);
 
                     for (int i = 0; (systemMask & (1 << i)) != 0; i++)
                     {
@@ -59,6 +58,7 @@ namespace ProcessHacker
 
                         c.FlatStyle = FlatStyle.System;
                         c.Checked = (processMask & (1 << i)) != 0;
+                        c.Margin = new Padding(3, 3, 3, 0);
 
                         flowPanel.Controls.Add(c);
                     }
@@ -73,29 +73,26 @@ namespace ProcessHacker
             }
         }
 
-        private void buttonClose_Click(object sender, EventArgs e)
+        private void buttonCancel_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            uint newMask = 0;
+            long newMask = 0;
 
             for (int i = 0; i < flowPanel.Controls.Count; i++)
             {
                 CheckBox c = (CheckBox)flowPanel.Controls["cpu" + i.ToString()];
 
-                newMask |= ((uint)(c.Checked ? 1 : 0) << i);
+                newMask |= ((long)(c.Checked ? 1 : 0) << i);
             }
 
             try
             {
                 using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.SetInformation))
-                {
-                    if (!Win32.SetProcessAffinityMask(phandle, newMask))
-                        Win32.ThrowLastError();
-                }
+                    phandle.SetAffinityMask(newMask);
 
                 this.Close();
             }

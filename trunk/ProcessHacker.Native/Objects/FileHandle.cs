@@ -31,6 +31,11 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class FileHandle : NativeHandle<FileAccess>
     {
+        public static FileHandle FromFileStream(System.IO.FileStream fileStream)
+        {
+            return FromHandle(fileStream.SafeFileHandle.DangerousGetHandle());
+        }
+
         public static FileHandle FromHandle(IntPtr handle)
         {
             return new FileHandle(handle, false);

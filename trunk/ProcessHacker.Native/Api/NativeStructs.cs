@@ -666,7 +666,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ProcessBasicInformation
     {
-        public int ExitStatus;
+        public NtStatus ExitStatus;
         public IntPtr PebBaseAddress;
         public int AffinityMask;
         public int BasePriority;

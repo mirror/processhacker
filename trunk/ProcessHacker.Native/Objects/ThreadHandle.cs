@@ -142,7 +142,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Creates a new thread handle.
+        /// Opens a thread.
         /// </summary>
         /// <param name="tid">The ID of the thread to open.</param>
         public ThreadHandle(int tid)
@@ -150,7 +150,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Creates a new thread handle.
+        /// Opens a thread.
         /// </summary>
         /// <param name="tid">The ID of the thread to open.</param>
         /// <param name="access">The desired access to the thread.</param>
