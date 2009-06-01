@@ -34,6 +34,13 @@ namespace ProcessHacker.Forms
             public char Hooked;
             public unsafe fixed byte ReplacedBytes[16];
             public int ReplacedLength;
+
+            public HOOK(IntPtr address)
+            {
+                this.Address = address;
+                this.Hooked = '\0';
+                this.ReplacedLength = 0;
+            }
         }
 
         private List<string[]> _items = new List<string[]>();

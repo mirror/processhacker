@@ -24,17 +24,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
-using System.Text;
-using System.Runtime.InteropServices;
-using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -62,19 +61,19 @@ namespace ProcessHacker
 
         public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
 
-        public const bool MemoryEditorsThreaded = true;
+        public static bool MemoryEditorsThreaded = true;
         public static Dictionary<string, MemoryEditor> MemoryEditors = new Dictionary<string, MemoryEditor>();
         public static Dictionary<string, Thread> MemoryEditorsThreads = new Dictionary<string, Thread>();
 
-        public const bool ResultsWindowsThreaded = true;
+        public static bool ResultsWindowsThreaded = true;
         public static Dictionary<string, ResultsWindow> ResultsWindows = new Dictionary<string, ResultsWindow>();
         public static Dictionary<string, Thread> ResultsThreads = new Dictionary<string, Thread>();
 
-        public const bool PEWindowsThreaded = false;
+        public static bool PEWindowsThreaded = false;
         public static Dictionary<string, PEWindow> PEWindows = new Dictionary<string, PEWindow>();
         public static Dictionary<string, Thread> PEThreads = new Dictionary<string, Thread>();
 
-        public const bool PWindowsThreaded = false;
+        public static bool PWindowsThreaded = false;
         public static Dictionary<int, ProcessWindow> PWindows = new Dictionary<int, ProcessWindow>();
         public static Dictionary<int, Thread> PThreads = new Dictionary<int, Thread>();
 
@@ -875,77 +874,9 @@ namespace ProcessHacker
         {
             Logging.Log(Logging.Importance.Critical, ex.ToString());
 
-            if (false)
-            {
-                TaskDialog td = new TaskDialog();
+            ErrorDialog ed = new ErrorDialog(ex);
 
-                td.WindowTitle = "Process Hacker";
-                td.MainInstruction = "Process Hacker has encountered a problem";
-                td.Content = "An unhandled exception has occurred in Process Hacker.";
-
-                td.Buttons = new TaskDialogButton[]
-                {
-                    new TaskDialogButton((int)DialogResult.Yes, "Continue\nIgnore the error and continue. This may cause Process Hacker to crash."),
-                    new TaskDialogButton((int)DialogResult.No, "Close\nClose Process Hacker.")
-                };
-                td.UseCommandLinks = true;
-
-                try
-                {
-                    if (Program.HackerWindow != null)
-                    {
-                        td.CustomMainIcon = ProcessHacker.Properties.Resources.Process;
-                    }
-                }
-                catch
-                { }
-
-                td.ExpandedInformation = "Please report this problem to " +
-                    "<a href=\"report\">http://sourceforge.net/projects/processhacker</a>\r\n\r\n" + ex.ToString();
-                td.EnableHyperlinks = true;
-                td.ExpandFooterArea = true;
-                td.CollapsedControlText = "Show problem details";
-                td.ExpandedControlText = "Hide problem details";
-                td.Callback = (taskDialog, args, callbackData) =>
-                    {
-                        if (args.Notification == TaskDialogNotification.HyperlinkClicked)
-                        {
-                            if (args.Hyperlink == "report")
-                            {
-                                try
-                                {
-                                    System.Diagnostics.Process.Start("http://sourceforge.net/tracker2/?group_id=242527");
-                                }
-                                catch
-                                { }
-                            }
-
-                            return true;
-                        }
-
-                        return false;
-                    };
-
-                DialogResult result = (DialogResult)td.Show();
-
-                if (result == DialogResult.No)
-                {
-                    try
-                    {
-                        Properties.Settings.Default.Save();
-                    }
-                    catch
-                    { }
-
-                    Win32.ExitProcess(0); 
-                }
-            }
-            else
-            {
-                ErrorDialog ed = new ErrorDialog(ex);
-
-                ed.ShowDialog();
-            }
+            ed.ShowDialog();
         }
 
         /// <summary>
@@ -1181,6 +1112,20 @@ namespace ProcessHacker
             }
 
             return pw;
+        }
+
+        /// <summary>
+        /// Does nothing.
+        /// </summary>
+        [System.Diagnostics.Conditional("NOT_DEFINED")]
+        public static void Void()
+        {
+            // Do nothing
+            int a = 0;
+            int b = a * (a + 0);
+
+            for (a = 0; a < b; a++)
+                a += a * (a + b);
         }
 
         public static void FocusWindow(Form f)

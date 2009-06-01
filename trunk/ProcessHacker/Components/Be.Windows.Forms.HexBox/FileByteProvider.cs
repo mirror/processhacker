@@ -1,3 +1,5 @@
+#pragma warning disable 0067
+
 using System;
 using System.IO;
 using System.Collections;
@@ -163,10 +165,11 @@ namespace Be.Windows.Forms
 		}
 
 		#region IByteProvider Members
+
 		/// <summary>
 		/// Never used.
 		/// </summary>
-		public event EventHandler LengthChanged;
+        public event EventHandler LengthChanged;
 
 		/// <summary>
 		/// Reads a byte from the file.

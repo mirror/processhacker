@@ -20,6 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma warning disable 0067
+
 using System;
 using System.Collections.Generic;
 using Aga.Controls.Tree;

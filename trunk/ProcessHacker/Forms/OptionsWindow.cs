@@ -116,7 +116,7 @@ namespace ProcessHacker
                     else if (c is ColorModifier)
                         (c as ColorModifier).ColorChanged += (sender, e) => this.EnableApplyButton();
                     else if (c is Button || c is Label)
-                        ; // Nothing
+                        Program.Void(); // Nothing
                     else
                         c.Click += (sender, e) => this.EnableApplyButton();
                 }
