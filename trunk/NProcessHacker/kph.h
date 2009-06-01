@@ -105,6 +105,16 @@ typedef NTSTATUS (NTAPI *_NtDeviceIoControlFile)(
     ULONG OutputBufferLength
     );
 
+typedef NTSTATUS (NTAPI *_NtTerminateProcess)(
+	HANDLE ProcessHandle,
+	NTSTATUS ExitStatus
+	);
+
+typedef NTSTATUS (NTAPI *_NtTerminateThread)(
+	HANDLE ThreadHandle,
+	NTSTATUS ExitStatus
+	);
+
 NTSTATUS KphInit();
 
 NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle);

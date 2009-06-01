@@ -33,13 +33,20 @@ NTSTATUS KphpDeviceIoControl(
     );
 
 _NtDeviceIoControlFile NtDeviceIoControlFile = NULL;
+_NtTerminateProcess NtTerminateProcess = NULL;
+_NtTerminateThread NtTerminateThread = NULL;
 
 NTSTATUS KphInit()
 {
-    NtDeviceIoControlFile = (_NtDeviceIoControlFile)
-        PhGetProcAddress(L"ntdll.dll", "NtDeviceIoControlFile");
-    if (!NtDeviceIoControlFile)
+    if (!(NtDeviceIoControlFile = (_NtDeviceIoControlFile)
+        PhGetProcAddress(L"ntdll.dll", "NtDeviceIoControlFile")))
         return STATUS_PROCEDURE_NOT_FOUND;
+	if (!(NtTerminateProcess = (_NtTerminateProcess)
+		PhGetProcAddress(L"ntdll.dll", "NtTerminateProcess")))
+		return STATUS_PROCEDURE_NOT_FOUND;
+	if (!(NtTerminateThread = (_NtTerminateThread)
+		PhGetProcAddress(L"ntdll.dll", "NtTerminateThread")))
+		return STATUS_PROCEDURE_NOT_FOUND;
 
     return STATUS_SUCCESS;
 }
@@ -354,6 +361,7 @@ NTSTATUS KphTerminateProcess(
     NTSTATUS ExitStatus
     )
 {
+	NTSTATUS status = STATUS_SUCCESS;
     struct
     {
         HANDLE ProcessHandle;
@@ -363,7 +371,7 @@ NTSTATUS KphTerminateProcess(
     args.ProcessHandle = ProcessHandle;
     args.ExitStatus = ExitStatus;
 
-    return KphpDeviceIoControl(
+    status = KphpDeviceIoControl(
         KphHandle,
         KPH_TERMINATEPROCESS,
         &args,
@@ -372,6 +380,13 @@ NTSTATUS KphTerminateProcess(
         0,
         NULL
         );
+
+	/* Check if we were trying to terminate the current 
+	 * process and do it now. */
+	if (status == STATUS_CANT_TERMINATE_SELF)
+		status = NtTerminateProcess(GetCurrentProcess(), ExitStatus);
+
+	return status;
 }
 
 NTSTATUS KphSuspendProcess(
@@ -585,6 +600,7 @@ NTSTATUS KphTerminateThread(
     NTSTATUS ExitStatus
     )
 {
+    NTSTATUS status = STATUS_SUCCESS;
     struct
     {
         HANDLE ThreadHandle;
@@ -594,7 +610,7 @@ NTSTATUS KphTerminateThread(
     args.ThreadHandle = ThreadHandle;
     args.ExitStatus = ExitStatus;
 
-    return KphpDeviceIoControl(
+    status = KphpDeviceIoControl(
         KphHandle,
         KPH_TERMINATETHREAD,
         &args,
@@ -603,6 +619,11 @@ NTSTATUS KphTerminateThread(
         0,
         NULL
         );
+
+	if (status == STATUS_CANT_TERMINATE_SELF)
+		status = NtTerminateThread(GetCurrentThread(), ExitStatus);
+
+	return status;
 }
 
 NTSTATUS KphSetHandleGrantedAccess(
