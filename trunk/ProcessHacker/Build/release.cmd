@@ -27,17 +27,19 @@ REN "ProcessHacker.exe" "ProcessHacker_in.exe"^
  && REN "Assistant.exe" "Assistant_in.exe"
 ECHO.
 
-SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll" "ProcessHacker.Native.dll"
 :: Merge DLLs with "Assistant.exe"
-%ILMergePath% /t:winexe /out:"Assistant.exe" "Assistant_in.exe" %RequiredDLLs%^
- && ECHO:DLLs merged successfully with Assistant.exe!
+SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
+ "ProcessHacker.Native.dll"
+
+%ILMergePath% /t:winexe /out:"Assistant.exe" "Assistant_in.exe"^
+ %RequiredDLLs% && ECHO:DLLs merged successfully with Assistant.exe!
 
 :: Merge "Aga.Controls.dll" with "ProcessHacker.exe" using ILMerge
-%ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe" %RequiredDLLs%^
- && ECHO:DLLs merged successfully with ProcessHacker.exe!
+%ILMergePath% /t:winexe /out:"ProcessHacker.exe" "ProcessHacker_in.exe"^
+ %RequiredDLLs% && ECHO:DLLs merged successfully with ProcessHacker.exe!
 
-DEL/f/a "ProcessHacker_in.exe" "Assistant_in.exe"^
- %RequiredDLLs% >NUL 2>&1
+DEL/f/a "ProcessHacker_in.exe" "Assistant_in.exe" %RequiredDLLs%^
+ "ProcessHacker.Common.xml" "ProcessHacker.Native.xml" >NUL 2>&1
 
 :: Set the path of Inno Setup and compile installer
 SET "U_=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
