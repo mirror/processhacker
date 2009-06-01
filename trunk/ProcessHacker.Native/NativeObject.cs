@@ -37,7 +37,7 @@ namespace ProcessHacker.Native
 
         public static void WaitAll(NativeObject[] objects, int timeout)
         {
-            NativeHandle.WaitAll(ObjectsToISync(objects), timeout * Win32.TimeMsTo100Ns);
+            NativeHandle.WaitAll(ObjectsToISync(objects), false, timeout * Win32.TimeMsTo100Ns, true);
         }
 
         public static void WaitAll(NativeObject[] objects, DateTime timeout)
@@ -52,7 +52,7 @@ namespace ProcessHacker.Native
 
         public static void WaitAny(NativeObject[] objects, int timeout)
         {
-            NativeHandle.WaitAny(ObjectsToISync(objects), timeout * Win32.TimeMsTo100Ns);
+            NativeHandle.WaitAny(ObjectsToISync(objects), false, timeout * Win32.TimeMsTo100Ns, true);
         }
 
         public static void WaitAny(NativeObject[] objects, DateTime timeout)

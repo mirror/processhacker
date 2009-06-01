@@ -34,7 +34,7 @@ namespace ProcessHacker.Native.Objects
     {
         public static NtStatus WaitAll(ISynchronizable[] objects)
         {
-            return WaitAll(objects, long.MinValue);
+            return WaitAll(objects, false, long.MinValue, false);
         }
 
         public static NtStatus WaitAll(ISynchronizable[] objects, long timeout)
@@ -54,7 +54,7 @@ namespace ProcessHacker.Native.Objects
 
         public static NtStatus WaitAny(ISynchronizable[] objects)
         {
-            return WaitAny(objects, long.MinValue);
+            return WaitAny(objects, false, long.MinValue, false);
         }
 
         public static NtStatus WaitAny(ISynchronizable[] objects, long timeout)
