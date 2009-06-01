@@ -340,7 +340,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                Process.Start("explorer.exe", "/select," + listModules.SelectedItems[0].ToolTipText);
+                Utils.ShowFileInExplorer(listModules.SelectedItems[0].ToolTipText);
             }
             catch (Exception ex)
             {

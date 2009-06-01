@@ -22,6 +22,7 @@
 
 using System;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native;
 
 namespace ProcessHacker.Components
@@ -74,7 +75,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                System.Diagnostics.Process.Start("explorer.exe", "/select," + textFileName.Text);
+                Utils.ShowFileInExplorer(textFileName.Text);
             }
             catch (Exception ex)
             {

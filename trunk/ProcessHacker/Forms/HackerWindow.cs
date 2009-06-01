@@ -1208,7 +1208,7 @@ namespace ProcessHacker
                                 else if (args.Notification == TaskDialogNotification.HyperlinkClicked)
                                 {
                                     if (args.Hyperlink == "file")
-                                        Process.Start("explorer.exe", "/select," + sfd.FileName);
+                                        Utils.ShowFileInExplorer(sfd.FileName);
 
                                     return true;
                                 }

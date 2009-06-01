@@ -646,6 +646,11 @@ namespace ProcessHacker.Common
             SetDoubleBuffered(c, c.GetType(), value);
         }
 
+        public static void ShowFileInExplorer(string fileName)
+        {
+            Process.Start("explorer.exe", "/select," + fileName);
+        }
+
         public static int WindowsToNativeBasePriority(System.Diagnostics.ProcessPriorityClass priority)
         {
             switch (priority)
