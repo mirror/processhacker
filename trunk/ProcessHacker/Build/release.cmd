@@ -27,9 +27,9 @@ REN "ProcessHacker.exe" "ProcessHacker_in.exe"^
  && REN "Assistant.exe" "Assistant_in.exe"
 ECHO.
 
-:: Merge DLLs with "Assistant.exe"
 SET RequiredDLLs="Aga.Controls.dll" "ProcessHacker.Common.dll"^
  "ProcessHacker.Native.dll"
+:: Merge DLLs with "Assistant.exe"
 
 %ILMergePath% /t:winexe /out:"Assistant.exe" "Assistant_in.exe"^
  %RequiredDLLs% && ECHO:DLLs merged successfully with Assistant.exe!
