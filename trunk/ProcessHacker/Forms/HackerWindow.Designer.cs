@@ -163,6 +163,7 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
+            this.createDumpFileProcessMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -189,6 +190,7 @@
             this.virtualizationProcessMenuItem,
             this.menuItem5,
             this.affinityProcessMenuItem,
+            this.createDumpFileProcessMenuItem,
             this.injectDllProcessMenuItem,
             this.protectionProcessMenuItem,
             this.setTokenProcessMenuItem,
@@ -262,32 +264,32 @@
             // 
             // injectDllProcessMenuItem
             // 
-            this.injectDllProcessMenuItem.Index = 9;
+            this.injectDllProcessMenuItem.Index = 10;
             this.injectDllProcessMenuItem.Text = "Inject DLL...";
             this.injectDllProcessMenuItem.Click += new System.EventHandler(this.injectDllProcessMenuItem_Click);
             // 
             // protectionProcessMenuItem
             // 
-            this.protectionProcessMenuItem.Index = 10;
+            this.protectionProcessMenuItem.Index = 11;
             this.protectionProcessMenuItem.Text = "Protection...";
             this.protectionProcessMenuItem.Click += new System.EventHandler(this.protectionProcessMenuItem_Click);
             // 
             // setTokenProcessMenuItem
             // 
-            this.setTokenProcessMenuItem.Index = 11;
+            this.setTokenProcessMenuItem.Index = 12;
             this.setTokenProcessMenuItem.Text = "Set Token...";
             this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
             // 
             // terminatorProcessMenuItem
             // 
-            this.terminatorProcessMenuItem.Index = 12;
+            this.terminatorProcessMenuItem.Index = 13;
             this.terminatorProcessMenuItem.Text = "Terminator...";
             this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
             this.vistaMenu.SetImage(this.priorityMenuItem, global::ProcessHacker.Properties.Resources.control_equalizer_blue);
-            this.priorityMenuItem.Index = 13;
+            this.priorityMenuItem.Index = 14;
             this.priorityMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.realTimeMenuItem,
             this.highMenuItem,
@@ -341,7 +343,7 @@
             // 
             // runAsProcessMenuItem
             // 
-            this.runAsProcessMenuItem.Index = 14;
+            this.runAsProcessMenuItem.Index = 15;
             this.runAsProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.launchAsUserProcessMenuItem,
             this.launchAsThisUserProcessMenuItem});
@@ -363,37 +365,37 @@
             // 
             this.propertiesProcessMenuItem.DefaultItem = true;
             this.vistaMenu.SetImage(this.propertiesProcessMenuItem, global::ProcessHacker.Properties.Resources.application_form_magnify);
-            this.propertiesProcessMenuItem.Index = 15;
+            this.propertiesProcessMenuItem.Index = 16;
             this.propertiesProcessMenuItem.Text = "&Properties...";
             this.propertiesProcessMenuItem.Click += new System.EventHandler(this.propertiesProcessMenuItem_Click);
             // 
             // menuItem7
             // 
-            this.menuItem7.Index = 16;
+            this.menuItem7.Index = 17;
             this.menuItem7.Text = "-";
             // 
             // searchProcessMenuItem
             // 
-            this.searchProcessMenuItem.Index = 17;
+            this.searchProcessMenuItem.Index = 18;
             this.searchProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlM;
             this.searchProcessMenuItem.Text = "&Search Online...";
             this.searchProcessMenuItem.Click += new System.EventHandler(this.searchProcessMenuItem_Click);
             // 
             // reanalyzeProcessMenuItem
             // 
-            this.reanalyzeProcessMenuItem.Index = 18;
+            this.reanalyzeProcessMenuItem.Index = 19;
             this.reanalyzeProcessMenuItem.Text = "Re-analyze";
             this.reanalyzeProcessMenuItem.Click += new System.EventHandler(this.reanalyzeProcessMenuItem_Click);
             // 
             // copyProcessMenuItem
             // 
             this.vistaMenu.SetImage(this.copyProcessMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyProcessMenuItem.Index = 19;
+            this.copyProcessMenuItem.Index = 20;
             this.copyProcessMenuItem.Text = "&Copy";
             // 
             // selectAllProcessMenuItem
             // 
-            this.selectAllProcessMenuItem.Index = 20;
+            this.selectAllProcessMenuItem.Index = 21;
             this.selectAllProcessMenuItem.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
             this.selectAllProcessMenuItem.Text = "Select &All";
             this.selectAllProcessMenuItem.Click += new System.EventHandler(this.selectAllProcessMenuItem_Click);
@@ -1181,6 +1183,12 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
+            // createDumpFileProcessMenuItem
+            // 
+            this.createDumpFileProcessMenuItem.Index = 9;
+            this.createDumpFileProcessMenuItem.Text = "Create Dump File...";
+            this.createDumpFileProcessMenuItem.Click += new System.EventHandler(this.createDumpFileProcessMenuItem_Click);
+            // 
             // HackerWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1352,6 +1360,7 @@
         private System.Windows.Forms.MenuItem physMemHistoryMenuItem;
         private System.Windows.Forms.MenuItem closeNetworkMenuItem;
         private System.Windows.Forms.MenuItem protectionProcessMenuItem;
+        private System.Windows.Forms.MenuItem createDumpFileProcessMenuItem;
     }
 }
 

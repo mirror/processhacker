@@ -1457,6 +1457,22 @@ namespace ProcessHacker.Native.Objects
         /// Writes a minidump of the process to the specified file.
         /// </summary>
         /// <param name="fileName">The destination file.</param>
+        public void WriteDump(string fileName)
+        {
+            // taskmgr uses these flags
+            this.WriteDump(fileName,
+                MinidumpType.WithFullMemory |
+                MinidumpType.WithHandleData |
+                MinidumpType.WithUnloadedModules |
+                MinidumpType.WithFullMemoryInfo |
+                MinidumpType.WithThreadInfo
+                );
+        }
+
+        /// <summary>
+        /// Writes a minidump of the process to the specified file.
+        /// </summary>
+        /// <param name="fileName">The destination file.</param>
         /// <param name="type">The type of minidump to write.</param>
         public void WriteDump(string fileName, MinidumpType type)
         {

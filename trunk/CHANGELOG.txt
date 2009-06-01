@@ -6,6 +6,7 @@ Process Hacker
    * Notification icon process list is now sorted
    * Thread wait analysis - right-click a thread and choose 
      Analyze > Wait to see what a thread is hanging on
+   * Added ability to create dump files for processes
    * More detailed handle properties
    * Event objects can now be modified - set, clear, pulse, reset
    * Event pair objects can now be modified - set high, set low

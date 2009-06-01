@@ -53,7 +53,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode)
-            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.OpenExisting)
+            : this(fileName, desiredAccess, shareMode, FileCreationDisposition.CreateAlways)
         { }
 
         public FileHandle(string fileName, FileAccess desiredAccess, FileShareMode shareMode,

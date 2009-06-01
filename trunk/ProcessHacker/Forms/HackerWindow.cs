@@ -36,6 +36,7 @@ using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
+using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
@@ -1143,6 +1144,95 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 Logging.Log(ex);
+            }
+        }
+
+        private void createDumpFileProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.Filter = "Dump Files (*.dmp)|*.dmp|All Files (*.*)|*.*";
+            sfd.FileName = 
+                processP.Dictionary[processSelectedPID].Name +
+                "_" +
+                DateTime.Now.ToString("yyMMdd") + 
+                ".dmp";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                try
+                {
+                    ThreadStart dumpProcess = () =>
+                        {
+                            using (var phandle = new ProcessHandle(processSelectedPID,
+                                ProcessAccess.DupHandle | ProcessAccess.QueryInformation |
+                                ProcessAccess.SuspendResume | ProcessAccess.VmRead))
+                                phandle.WriteDump(sfd.FileName);
+                        };
+
+                    if (OSVersion.HasTaskDialogs)
+                    {
+                        // Use a task dialog to display a fancy progress bar.
+                        TaskDialog td = new TaskDialog();
+                        Thread t = new Thread(dumpProcess);
+
+                        td.AllowDialogCancellation = false;
+                        td.Buttons = new TaskDialogButton[] { new TaskDialogButton((int)DialogResult.OK, "Close") };
+                        td.WindowTitle = "Process Hacker";
+                        td.MainInstruction = "Creating the dump file...";
+                        td.ShowMarqueeProgressBar = true;
+                        td.EnableHyperlinks = true;
+                        td.CallbackTimer = true;
+                        td.Callback = (taskDialog, args, userData) =>
+                            {
+                                if (args.Notification == TaskDialogNotification.Created)
+                                {
+                                    taskDialog.SetMarqueeProgressBar(true);
+                                    taskDialog.SetProgressBarState(ProgressBarState.Normal);
+                                    taskDialog.SetProgressBarMarquee(true, 100);
+                                    taskDialog.EnableButton((int)DialogResult.OK, true);
+                                }
+                                else if (args.Notification == TaskDialogNotification.Timer)
+                                {
+                                    if (!t.IsAlive)
+                                    {
+                                        taskDialog.EnableButton((int)DialogResult.OK, false);
+                                        taskDialog.SetContent(
+                                            "The dump file has been saved at: <a href=\"file\">" + sfd.FileName + "</a>.");
+                                        taskDialog.SetProgressBarMarquee(false, 0);
+                                        taskDialog.SetMarqueeProgressBar(false);
+                                    }
+                                }
+                                else if (args.Notification == TaskDialogNotification.HyperlinkClicked)
+                                {
+                                    if (args.Hyperlink == "file")
+                                        Process.Start("explorer.exe", "/select," + sfd.FileName);
+
+                                    return true;
+                                }
+
+                                return false;
+                            };
+
+                        t.Start();
+                        td.Show(this);
+                    }
+                    else
+                    {
+                        // No task dialogs, do the thing on the GUI thread.
+                        dumpProcess();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
             }
         }
 
