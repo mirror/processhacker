@@ -35,9 +35,9 @@ namespace ProcessHacker.Native.Objects
         /// Connects to the Windows service manager.
         /// </summary>
         /// <param name="access">The desired access to the service manager.</param>
-        public ServiceManagerHandle(ScManagerAccess desiredAccess)
+        public ServiceManagerHandle(ScManagerAccess access)
         {
-            this.Handle = Win32.OpenSCManager(null, null, desiredAccess);
+            this.Handle = Win32.OpenSCManager(null, null, access);
 
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();

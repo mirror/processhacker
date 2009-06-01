@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -41,6 +39,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="access">The desired access to the timer.</param>
         /// <param name="name">A name for the timer in the object manager namespace.</param>
+        /// <param name="objectFlags">The flags to use when creating the object.</param>
         /// <param name="rootDirectory">The directory in which to place the timer. This can be null.</param>
         /// <param name="type">
         /// The type of timer; synchronization timers will be reset once waiting threads are released.

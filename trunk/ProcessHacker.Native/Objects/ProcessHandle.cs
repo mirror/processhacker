@@ -44,7 +44,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// The callback for enumerating process memory regions.
         /// </summary>
-        /// <param name="mbi">The basic information for the memory region.</param>
+        /// <param name="info">The basic information for the memory region.</param>
         /// <returns>Return true to continue enumerating; return false to stop.</returns>
         public delegate bool EnumMemoryDelegate(MemoryBasicInformation info);
 
@@ -124,7 +124,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a process handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
-        /// <param name="Handle">The handle value.</param>
+        /// <param name="handle">The handle value.</param>
         /// <returns>The process handle.</returns>
         public static ProcessHandle FromHandle(IntPtr handle)
         {
@@ -152,7 +152,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new process handle.
         /// </summary>
-        /// <param name="PID">The ID of the process to open.</param>
+        /// <param name="pid">The ID of the process to open.</param>
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(int pid, ProcessAccess access)
         {
@@ -186,7 +186,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new process handle.
         /// </summary>
-        /// <param name="PID">The ID of the process to open.</param>
+        /// <param name="pid">The ID of the process to open.</param>
         public ProcessHandle(int pid)
             : this(pid, ProcessAccess.All)
         { }

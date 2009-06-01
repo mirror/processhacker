@@ -42,7 +42,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a token handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
-        /// <param name="Handle">The handle value.</param>
+        /// <param name="handle">The handle value.</param>
         /// <returns>The token handle.</returns>
         public static TokenHandle FromHandle(IntPtr handle)
         {
@@ -200,7 +200,6 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the token's groups.
         /// </summary>
-        /// <param name="IncludeDomains">Specifies whether to include the account's domains.</param>
         /// <returns>A TokenGroupsData struct.</returns>
         public TokenGroupsData GetGroups()
         {

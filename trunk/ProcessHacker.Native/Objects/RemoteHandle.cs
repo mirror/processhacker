@@ -51,16 +51,16 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Duplicates the handle owned by the process.
         /// </summary>
-        /// <param name="rights">The desired access to the handle's object.</param>
+        /// <param name="access">The desired access to the handle's object.</param>
         /// <returns>A local copy of the handle.</returns>
         /// <remarks>
         /// We can't use a template for this because of C#'s rules for template 
         /// restrictions. Specifically, we can only specify that the type must have a
         /// constructor with 0 arguments, but no more.
         /// </remarks>
-        public int GetHandle(int desiredAccess)
+        public int GetHandle(int access)
         {
-            return new GenericHandle(_phandle, _handle, desiredAccess);
+            return new GenericHandle(_phandle, _handle, access);
         }
     }
 }

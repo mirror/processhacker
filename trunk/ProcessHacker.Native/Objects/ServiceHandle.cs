@@ -36,7 +36,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a service handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
-        /// <param name="Handle">The handle value.</param>
+        /// <param name="handle">The handle value.</param>
         /// <returns>The service handle.</returns>
         public static ServiceHandle FromHandle(IntPtr handle)
         {
@@ -50,7 +50,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new service handle.
         /// </summary>
-        /// <param name="ServiceName">The name of the service to open.</param>
+        /// <param name="serviceName">The name of the service to open.</param>
         public ServiceHandle(string serviceName)
             : this(serviceName, ServiceAccess.All)
         { }
@@ -58,7 +58,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new service handle.
         /// </summary>
-        /// <param name="ServiceName">The name of the service to open.</param>
+        /// <param name="serviceName">The name of the service to open.</param>
         /// <param name="access">The desired access to the service.</param>
         public ServiceHandle(string serviceName, ServiceAccess access)
         {

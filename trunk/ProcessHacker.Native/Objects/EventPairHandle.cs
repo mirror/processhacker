@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -50,7 +48,8 @@ namespace ProcessHacker.Native.Objects
         /// <param name="name">
         /// The name of the event pair. If rootDirectory is null, you must specify a fully 
         /// qualified name. Example: \BaseNamedObjects\MyEventPair.
-        /// </param>              
+        /// </param>     
+        /// <param name="objectFlags">The flags to use when creating the object.</param>
         /// <param name="rootDirectory">
         /// The directory in which to place the event pair. This can be null.
         /// </param>
@@ -89,6 +88,7 @@ namespace ProcessHacker.Native.Objects
         /// <param name="name">
         /// The name of the event pair. If rootDirectory is null, 
         /// you must specify a fully qualified name.</param>
+        /// <param name="objectFlags">The flags to use when opening the object.</param>
         /// <param name="rootDirectory">The directory object in which the event pair can be found.</param>
         /// <param name="access">The desired access to the event pair.</param>
         public EventPairHandle(string name, ObjectFlags objectFlags, DirectoryHandle rootDirectory, EventPairAccess access)

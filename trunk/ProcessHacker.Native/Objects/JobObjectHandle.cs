@@ -70,7 +70,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a service handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
-        /// <param name="Handle">The handle value.</param>
+        /// <param name="handle">The handle value.</param>
         /// <returns>The job handle.</returns>
         public static JobObjectHandle FromHandle(IntPtr handle)
         {

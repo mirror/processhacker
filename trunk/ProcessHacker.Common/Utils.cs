@@ -639,6 +639,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// Enables or disables double buffering for a control.
         /// </summary>
+        /// <param name="c">The control to set the property on.</param>
         /// <param name="value">The new value.</param>
         public static void SetDoubleBuffered(this Control c, bool value)
         {

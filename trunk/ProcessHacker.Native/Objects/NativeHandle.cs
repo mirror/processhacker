@@ -554,7 +554,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a new handle by duplicating an existing handle.
         /// </summary>
         /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
+        /// <param name="access">The desired access to the object.</param>
         public NativeHandle(IntPtr handle, TAccess access)
         {
             IntPtr newHandle;
@@ -569,7 +569,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="processHandle">A handle to a process. It must have the PROCESS_DUP_HANDLE permission.</param>
         /// <param name="handle">The existing handle.</param>
-        /// <param name="desiredAccess">The desired access to the object.</param>
+        /// <param name="access">The desired access to the object.</param>
         public NativeHandle(ProcessHandle processHandle, IntPtr handle, TAccess access)
         {
             IntPtr newHandle;
@@ -582,7 +582,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Duplicates the handle.
         /// </summary>
-        /// <param name="desiredAccess">The desired access to the object.</param>
+        /// <param name="access">The desired access to the object.</param>
         /// <returns>A handle.</returns>
         public NativeHandle<TAccess> Duplicate(TAccess access)
         {

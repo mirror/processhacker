@@ -21,6 +21,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma warning disable 1573
+
 using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Security;

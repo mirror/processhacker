@@ -21,9 +21,10 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma warning disable 0618
+
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -651,8 +652,6 @@ namespace ProcessHacker.Native
                 if (objectHandle != null)
                     objectHandle.Dispose();
             }
-
-            return new ObjectBasicInformation();
         }
 
         public ObjectInformation GetHandleInfo()

@@ -64,7 +64,7 @@ namespace ProcessHacker.Common
         /// Converts a string to a number using the specified base.
         /// </summary>
         /// <remarks>
-        /// This function does not parse prefixes; to do so, use <see cref="ToNumberParse"/>.
+        /// This function does not parse prefixes; to do so, use <see cref="ToNumberParse(string)"/>
         /// </remarks>
         /// <param name="number">The string to convert</param>
         /// <param name="b">The base to use</param>

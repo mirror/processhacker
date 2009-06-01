@@ -77,7 +77,7 @@ namespace ProcessHacker.Native.Objects
         /// Creates a thread handle using an existing handle. 
         /// The handle will not be closed automatically.
         /// </summary>
-        /// <param name="Handle">The handle value.</param>
+        /// <param name="handle">The handle value.</param>
         /// <returns>The thread handle.</returns>
         public static ThreadHandle FromHandle(IntPtr handle)
         {
@@ -144,7 +144,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new thread handle.
         /// </summary>
-        /// <param name="TID">The ID of the thread to open.</param>
+        /// <param name="tid">The ID of the thread to open.</param>
         public ThreadHandle(int tid)
             : this(tid, ThreadAccess.All)
         { }
@@ -152,7 +152,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Creates a new thread handle.
         /// </summary>
-        /// <param name="TID">The ID of the thread to open.</param>
+        /// <param name="tid">The ID of the thread to open.</param>
         /// <param name="access">The desired access to the thread.</param>
         public ThreadHandle(int tid, ThreadAccess access)
         {
