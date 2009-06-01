@@ -1199,6 +1199,7 @@ namespace ProcessHacker
                                     if (!t.IsAlive)
                                     {
                                         taskDialog.EnableButton((int)DialogResult.OK, false);
+                                        taskDialog.SetMainInstruction("The dump file has been created.");
                                         taskDialog.SetContent(
                                             "The dump file has been saved at: <a href=\"file\">" + sfd.FileName + "</a>.");
                                         taskDialog.SetProgressBarMarquee(false, 0);
