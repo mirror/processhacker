@@ -1,16 +1,20 @@
-;ISTool v5.2.1/Inno Setup v5.2.4 dev, Script by XhmikosR
+; ISTool v5.3.0/Inno Setup v5.3.2-beta, Script by XhmikosR
 ;
-;Requirements:
-;*Inno Setup QuickStart Pack:
+; Requirements:
+; *Inno Setup QuickStart Pack:
 ;   http://www.jrsoftware.org/isdl.php#qsp
 
 #define installer_build_number "33"
-#define app_version	GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
+#define app_version GetFileVersion("..\..\bin\Release\ProcessHacker.exe")
 #define installer_build_date GetDateTimeString('dd/mm/yyyy', '.', '')
 #define app_updates_url "http://processhacker.sourceforge.net/"
 #define app_support_url "http://sourceforge.net/tracker/?group_id=242527"
 #define app_contact "http://sourceforge.net/tracker/?group_id=242527"
 #define app_publisher_url "http://processhacker.sourceforge.net/"
+
+; Include the installer's custom messages
+#include "Custom_Messages.iss"
+
 
 ; From now on you'll probably won't have to change anything, so be carefull
 [Setup]
@@ -59,18 +63,19 @@ ShowLanguageDialog=Auto
 LanguageDetectionMethod=uilanguage
 AppMutex=Global\ProcessHackerMutex
 
-;Specify the architectures that Process Hacker can run on
+; Specify the architectures that Process Hacker can run on
 ArchitecturesAllowed=x86
 
+
 [Languages]
+; Installer's languages
 Name: en; MessagesFile: compiler:Default.isl
 Name: gr; MessagesFile: Languages\Greek.isl
+
 
 [Messages]
 BeveledLabel=Process Hacker v{#= app_version} by wj32                                                    Setup v{#= app_version}.{#= installer_build_number} built on {#= installer_build_date}
 
-; Include the installer's custom messages
-#include "Custom_Messages.iss"
 
 [Files]
 Source: ..\..\bin\Release\Assistant.exe; DestDir: {app}; Flags: ignoreversion
@@ -84,6 +89,7 @@ Source: ..\..\bin\Release\ProcessHacker.exe; DestDir: {app}; Flags: ignoreversio
 Source: ..\..\bin\Release\README.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\bin\Release\structs.txt; DestDir: {app}; Flags: ignoreversion
 Source: Icons\uninstall.ico; DestDir: {app}; Flags: ignoreversion
+
 
 [Tasks]
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}
@@ -103,6 +109,7 @@ Name: restoretaskmgr; Description: {cm:tsk_restoretaskmgr}; GroupDescription: {c
 Name: createKPHservice; Description: {cm:tsk_createKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND KPHServiceCheck(); Flags: unchecked dontinheritcheck
 Name: deleteKPHservice; Description: {cm:tsk_deleteKPHservice}; GroupDescription: {cm:tsk_other}; Check: scExeExistsCheck() AND NOT KPHServiceCheck(); Flags: unchecked dontinheritcheck
 
+
 [Icons]
 Name: {group}\Process Hacker; Filename: {app}\ProcessHacker.exe; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {group}\{cm:sm_help}\{cm:sm_changelog}; Filename: {app}\CHANGELOG.txt; Comment: {cm:sm_com_changelog}; WorkingDir: {app}
@@ -115,8 +122,9 @@ Name: {commondesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: 
 Name: {userdesktop}\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: desktopicon\user; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Process Hacker; Filename: {app}\ProcessHacker.exe; Tasks: quicklaunchicon; Comment: Process Hacker {#= app_version}; WorkingDir: {app}; IconFilename: {app}\ProcessHacker.exe; IconIndex: 0
 
+
 [InstallDelete]
-;Remove files from the install folder which are not needed anymore
+; Remove files from the install folder which are not needed anymore
 Type: files; Name: {app}\ProcessHacker.exe.config
 Type: files; Name: {app}\HACKING.txt
 Type: files; Name: {app}\psvince.dll
@@ -125,7 +133,7 @@ Type: files; Name: {app}\Homepage.url
 Type: files; Name: {userdesktop}\Process Hacker.lnk
 Type: files; Name: {commondesktop}\Process Hacker.lnk
 
-;Remove other languages' shortcuts in Start Menu
+; Remove other languages' shortcuts in Start Menu
 Type: files; Name: {group}\Process Hacker's Readme file.lnk
 Type: files; Name: {group}\Process Hacker on the Web.url
 Type: files; Name: {group}\Uninstall Process Hacker.lnk
@@ -148,6 +156,7 @@ Type: dirifempty; Name: {group}\Βοήθεια και Υποστήριξη
 
 Type: filesandordirs; Name: {localappdata}\wj32; Tasks: resetsettings
 
+
 [Registry]
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; Flags: uninsdeletekeyifempty dontcreatekey
 Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: string; ValueName: Process Hacker; ValueData: """{app}\ProcessHacker.exe"""; Tasks: startuptask; Flags: uninsdeletevalue
@@ -155,6 +164,7 @@ Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueType: st
 Root: HKCU; SubKey: Software\Microsoft\Windows\CurrentVersion\Run; ValueName: Process Hacker; Tasks: removestartuptask; Flags: deletevalue uninsdeletevalue
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueType: string; ValueName: Debugger; ValueData: """{app}\ProcessHacker.exe"""; Tasks: setdefaulttaskmgr; Flags: uninsdeletevalue
 Root: HKLM; Subkey: SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe; ValueName: Debugger; Tasks: restoretaskmgr resetsettings; Flags: deletevalue uninsdeletevalue
+
 
 [Run]
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: scExeExistsCheck() AND KProcessHackerStateCheck(); StatusMsg: {cm:msg_stopkprocesshacker}; Flags: runhidden runascurrentuser
@@ -167,12 +177,15 @@ Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Tasks: deleteKPHservi
 Filename: {app}\ProcessHacker.exe; Description: {cm:LaunchProgram,Process Hacker}; Flags: nowait postinstall skipifsilent runascurrentuser
 Filename: {#= app_updates_url}; Description: {cm:run_visitwebsite}; Flags: nowait postinstall skipifsilent shellexec runascurrentuser unchecked
 
+
 [UninstallDelete]
 Type: files; Name: {app}\Homepage.url
+
 
 [UninstallRun]
 Filename: {sys}\sc.exe; Parameters: stop KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
 Filename: {sys}\sc.exe; Parameters: delete KProcessHacker; Check: KProcessHackerStateCheck(); Flags: runhidden skipifdoesntexist
+
 
 [Code]
 // Create a mutex for the installer
@@ -180,14 +193,13 @@ const installer_mutex_name = 'process_hacker_setup_mutex';
 
 
 // Function to check if app is already installed
-function IsInstalled( AppID: String ): Boolean;
+function IsInstalled(AppID: String): Boolean;
 var
-	sPrevPath: String;
+  sPrevPath: String;
 begin
-	sPrevPath := '';
-	if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath) then
-		RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath);
-
+  sPrevPath := '';
+  if not RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath) then
+  RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\'+AppID+'_is1', 'Inno Setup: App Path', sPrevpath);
   Result := sPrevPath<>'';
 end;
 
@@ -195,97 +207,98 @@ end;
 // If this is an update then we use the same directories again
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
-	Result := False;
-	if (PageID = wpSelectDir) or (PageID = wpSelectProgramGroup) then begin
-		Result := IsInstalled('Process_Hacker');
-	end;
+  Result := False;
+  if (PageID = wpSelectDir) or (PageID = wpSelectProgramGroup) then begin
+  Result := IsInstalled('Process_Hacker');
+  end;
 end;
 
 
 // Check if Process Hacker is configured to run on startup in order to control startup choice within the installer
 function StartupRegCheck(): Boolean;
 begin
-	Result := True;
-	if RegValueExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Process Hacker') then
-	Result := False;
+  Result := True;
+  if RegValueExists(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Process Hacker') then
+  Result := False;
 end;
 
 
 // Check if Process Hacker's settings exist
 function SettingsExistCheck(): Boolean;
 begin
-	Result := False;
-	if DirExists(ExpandConstant('{localappdata}\wj32\')) then
-	Result := True;
+  Result := False;
+  if DirExists(ExpandConstant('{localappdata}\wj32\')) then
+  Result := True;
 end;
 
 
 // Check if Process Hacker is set as the default Task Manager for Windows
 function PHDefaultCheck(): Boolean;
 var
-	svalue: String;
+  svalue: String;
 begin
-	Result := True;
-	if RegQueryStringValue(HKLM,
-	  'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe', 'Debugger', svalue) then begin
-		if svalue = (ExpandConstant('"{app}\ProcessHacker.exe"')) then
-		Result := False;
-	end;
+  Result := True;
+  if RegQueryStringValue(HKLM,
+  'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe', 'Debugger', svalue) then begin
+    if svalue = (ExpandConstant('"{app}\ProcessHacker.exe"')) then
+    Result := False;
+  end;
 end;
 
 
 // Check if KProcessHacker is started
 function KProcessHackerStateCheck(): Boolean;
 begin
-	Result := False;
-	if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
-	Result := True;
+  Result := False;
+  if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker') then
+  Result := True;
 end;
 
 
 // Check if KProcessHacker is installed as a service
 function KPHServiceCheck(): Boolean;
 var
-	dvalue: DWORD;
+  dvalue: DWORD;
 begin
-	Result := True;
-	if RegQueryDWordValue(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker', 'Start', dvalue) then begin
-		if dvalue = 2 then
-		Result := False;
-	end;
+  Result := True;
+  if RegQueryDWordValue(HKLM, 'SYSTEM\CurrentControlSet\Services\KProcessHacker', 'Start', dvalue) then begin
+    if dvalue = 2 then
+    Result := False;
+  end;
 end;
 
 
 // Check if sc.exe exists
 function scExeExistsCheck(): Boolean;
 begin
-	Result := False;
-	if FileExists(ExpandConstant('{sys}\sc.exe')) then
-	Result := True;
+  Result := False;
+  if FileExists(ExpandConstant('{sys}\sc.exe')) then
+  Result := True;
 end;
 
 
 Procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
-	// When uninstalling ask user to delete Process Hacker's and settings based on whether this file exists only
-	if CurUninstallStep = usUninstall then begin
-		if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
-		or fileExists(ExpandConstant('{userdocs}\Process Hacker.txt')) or fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
-		or fileExists(ExpandConstant('{userdocs}\Process Hacker.csv')) or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
-		or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt')) or fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
-			if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
-				DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
-				DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
-				DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
-				DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
-				DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
-				DeleteFile(ExpandConstant('{app}\CSR Processes.txt'));
-				DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
-				DeleteFile(ExpandConstant('{userdocs}\CSR Processes.txt'));
-				DeleteFile(ExpandConstant('{app}\scratchpad.txt'));
-			end;
-		end;
-	end;
+  // When uninstalling ask user to delete Process Hacker's logs and settings
+  // based on whether these files exist only
+  if CurUninstallStep = usUninstall then begin
+  if DirExists(ExpandConstant('{localappdata}\wj32\')) or fileExists(ExpandConstant('{app}\Process Hacker Log.txt'))
+  or fileExists(ExpandConstant('{userdocs}\Process Hacker.txt')) or fileExists(ExpandConstant('{userdocs}\Process Hacker.log'))
+  or fileExists(ExpandConstant('{userdocs}\Process Hacker.csv')) or fileExists(ExpandConstant('{userdocs}\Process Hacker Log.txt'))
+  or fileExists(ExpandConstant('{userdocs}\CSR Processes.txt')) or fileExists(ExpandConstant('{app}\scratchpad.txt'))then begin
+    if MsgBox(ExpandConstant('{cm:msg_DeleteLogSettings}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then begin
+      DelTree(ExpandConstant('{localappdata}\wj32\'), True, True, True);
+      DeleteFile(ExpandConstant('{app}\Process Hacker.txt'));
+      DeleteFile(ExpandConstant('{app}\Process Hacker.log'));
+      DeleteFile(ExpandConstant('{app}\Process Hacker.csv'));
+      DeleteFile(ExpandConstant('{app}\Process Hacker Log.txt'));
+      DeleteFile(ExpandConstant('{app}\CSR Processes.txt'));
+      DeleteFile(ExpandConstant('{userdocs}\Process Hacker Log.txt'));
+      DeleteFile(ExpandConstant('{userdocs}\CSR Processes.txt'));
+      DeleteFile(ExpandConstant('{app}\scratchpad.txt'));
+      end;
+    end;
+  end;
 end;
 
 
@@ -297,43 +310,43 @@ var
   NetFrameWorkInstalled : Boolean;
   Result1 : Boolean;
 begin
-	// Create a mutex for the installer and if it's already running then expose a message and stop installation
-	if CheckForMutexes(installer_mutex_name) then begin
-		if not WizardSilent() then
-			MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningInstall}'), mbError, MB_OK);
-			Result := False;
-	end
-	else begin
-		CreateMutex(installer_mutex_name);
+  // Create a mutex for the installer and if it's already running then expose a message and stop installation
+  if CheckForMutexes(installer_mutex_name) then begin
+  if not WizardSilent() then
+    MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningInstall}'), mbError, MB_OK);
+    Result := False;
+  end
+  else begin
+  CreateMutex(installer_mutex_name);
 
-	NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
-		if NetFrameWorkInstalled then begin
-			Result := True;
-			end
-			else begin
-				Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
-				if Result1 = False then begin
-				Result := False;
-			end
-			else begin
-				Result := False;
-			ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
-			'','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
-			end;
-		end;
-	end;
+  NetFrameWorkInstalled := RegKeyExists(HKLM,'SOFTWARE\Microsoft\.NETFramework\policy\v2.0');
+  if NetFrameWorkInstalled then begin
+    Result := True;
+    end
+    else begin
+      Result1 := MsgBox(ExpandConstant('{cm:msg_asknetdown}'), mbCriticalError, MB_YESNO or MB_DEFBUTTON1) = IDYES;
+    if Result1 = False then begin
+      Result := False;
+      end
+      else begin
+      Result := False;
+      ShellExec('open', 'http://download.microsoft.com/download/5/6/7/567758a3-759e-473e-bf8f-52154438565a/dotnetfx.exe',
+      '','',SW_SHOWNORMAL,ewNoWait,ErrorCode);
+      end;
+    end;
+  end;
 end;
 
 
 function InitializeUninstall(): Boolean;
 begin
-	Result := True;
-	if CheckForMutexes(installer_mutex_name) then begin
-		if not WizardSilent() then
-			MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
-		Result := False;
-		end
-		else begin
-		CreateMutex(installer_mutex_name);
-	end;
+  Result := True;
+  if CheckForMutexes(installer_mutex_name) then begin
+    if not WizardSilent() then
+      MsgBox(ExpandConstant('{cm:msg_SetupIsRunningWarningUninstall}'), mbError, MB_OK);
+      Result := False;
+    end
+    else begin
+    CreateMutex(installer_mutex_name);
+  end;
 end;
