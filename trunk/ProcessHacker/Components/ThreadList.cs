@@ -844,11 +844,10 @@ namespace ProcessHacker.Components
 
         private unsafe void analyzeWaitMenuItem_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
-            int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
-
             try
             {
+                StringBuilder sb = new StringBuilder();
+                int tid = int.Parse(listThreads.SelectedItems[0].SubItems[0].Text);
                 ProcessHandle phandle = null;
 
                 if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
