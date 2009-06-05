@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   interfacing code to kernel-mode driver
+ *   KProcessHacker interfacing code
  * 
  * Copyright (C) 2009 wj32
  * 
@@ -98,8 +98,24 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Creates a connection to KProcessHacker.
         /// </summary>
-        /// <param name="deviceName">The device to connect to.</param>
+        public KProcessHacker()
+            : this("KProcessHacker")
+        { }
+
+        /// <summary>
+        /// Creates a connection to KProcessHacker.
+        /// </summary>
+        /// <param name="deviceName">The name of the KProcessHacker service and device.</param>
         public KProcessHacker(string deviceName)
+            : this(deviceName, Application.StartupPath + "\\kprocesshacker.sys")
+        { }
+
+        /// <summary>
+        /// Creates a connection to KProcessHacker.
+        /// </summary>
+        /// <param name="deviceName">The name of the KProcessHacker service and device.</param>
+        /// <param name="fileName">The file name of the KProcessHacker driver.</param>
+        public KProcessHacker(string deviceName, string fileName)
         {
             _deviceName = deviceName;
 
@@ -124,8 +140,12 @@ namespace ProcessHacker.Native
                 ServiceManagerHandle scm =
                     new ServiceManagerHandle(ScManagerAccess.CreateService);
 
-                _service = scm.CreateService(deviceName, deviceName, ServiceType.KernelDriver,
-                    Application.StartupPath + "\\kprocesshacker.sys");
+                _service = scm.CreateService(
+                    deviceName,
+                    deviceName,
+                    ServiceType.KernelDriver,
+                    fileName
+                    );
                 _service.Start();
             }
             catch
