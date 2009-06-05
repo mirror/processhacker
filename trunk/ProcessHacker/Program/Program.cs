@@ -918,14 +918,11 @@ namespace ProcessHacker
                 {
                     ed = new MemoryEditor(PID, address, length);
 
-                    action(ed);
-
-                    try
+                    if (!ed.IsDisposed)
                     {
+                        action(ed);
                         Application.Run(ed);
                     }
-                    catch
-                    { }
 
                     Program.MemoryEditorsThreads.Remove(id);
                 }));
@@ -938,8 +935,11 @@ namespace ProcessHacker
             else
             {
                 ed = new MemoryEditor(PID, address, length);
-                action(ed);
-                ed.Show();
+                if (!ed.IsDisposed)
+                {
+                    action(ed);
+                    ed.Show();
+                }
             }
 
             return ed;
@@ -970,14 +970,11 @@ namespace ProcessHacker
 
                     id = rw.Id;
 
-                    action(rw);
-
-                    try
+                    if (!rw.IsDisposed)
                     {
+                        action(rw);
                         Application.Run(rw);
                     }
-                    catch
-                    { }
 
                     Program.ResultsThreads.Remove(id);
                 }));
@@ -991,8 +988,11 @@ namespace ProcessHacker
             else
             {
                 rw = new ResultsWindow(PID);
-                action(rw);
-                rw.Show();
+                if (!rw.IsDisposed)
+                {
+                    action(rw);
+                    rw.Show();
+                }
             }
 
             return rw;
@@ -1029,14 +1029,11 @@ namespace ProcessHacker
                 {
                     pw = new PEWindow(path);
 
-                    action(pw);
-
-                    try
+                    if (!pw.IsDisposed)
                     {
+                        action(pw);
                         Application.Run(pw);
                     }
-                    catch
-                    { }
 
                     Program.PEThreads.Remove(path);
                 }));
@@ -1049,8 +1046,11 @@ namespace ProcessHacker
             else
             {
                 pw = new PEWindow(path);
-                action(pw);
-                pw.Show();
+                if (!pw.IsDisposed)
+                {
+                    action(pw);
+                    pw.Show();
+                }
             }
 
             return pw;
@@ -1087,14 +1087,11 @@ namespace ProcessHacker
                 {
                     pw = new ProcessWindow(process);
 
-                    action(pw);
-
-                    try
+                    if (!pw.IsDisposed)
                     {
+                        action(pw);
                         Application.Run(pw);
                     }
-                    catch
-                    { }
 
                     Program.PThreads.Remove(process.Pid);
                 }));
@@ -1107,8 +1104,11 @@ namespace ProcessHacker
             else
             {
                 pw = new ProcessWindow(process);
-                action(pw);
-                pw.Show();
+                if (!pw.IsDisposed)
+                {
+                    action(pw);
+                    pw.Show();
+                }
             }
 
             return pw;

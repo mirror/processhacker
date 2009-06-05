@@ -13,6 +13,7 @@ Process Hacker
    * Semaphore objects can now be modified - acquire, release
  * FIXED:
    * #2795871 - "Hidden Processes window resizing problem"
+   * #2800710 - "System.ObjectDisposedException"
    * Windows 7 RC BSOD (Windows 7 Beta is no longer supported) at
      startup; support is STILL EXPERIMENTAL
    * Memory search addresses being in decimal
