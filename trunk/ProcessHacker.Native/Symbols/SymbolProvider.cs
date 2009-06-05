@@ -223,7 +223,7 @@ namespace ProcessHacker.Native.Symbols
             this.GetLineFromAddress(address, out fileName, out lineNumber);
 
             if (fileName != null)
-                return fileName + ": " + lineNumber.ToString();
+                return fileName + ": line " + lineNumber.ToString();
             else
                 return null;
         }
