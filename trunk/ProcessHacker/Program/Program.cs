@@ -782,6 +782,7 @@ namespace ProcessHacker
             info.AppendLine("CLR Version: " + Environment.Version.ToString());
             info.AppendLine("OS Version: " + Environment.OSVersion.VersionString);
             info.AppendLine("Elevation: " + ElevationType.ToString());
+            info.AppendLine("Working set: " + Utils.GetNiceSizeName(Environment.WorkingSet));
 
             if (KProcessHacker.Instance == null)
                 info.AppendLine("KProcessHacker: not running");
