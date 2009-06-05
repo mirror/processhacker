@@ -142,6 +142,7 @@
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Threading\Timer.cs" />
+    <Compile Include="Threading\WaiterThread.cs" />
     <Compile Include="Ui\HandlePropertiesWindow.cs">
       <SubType>Form</SubType>
     </Compile>

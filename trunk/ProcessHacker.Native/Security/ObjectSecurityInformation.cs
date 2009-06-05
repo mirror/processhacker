@@ -74,6 +74,7 @@ namespace ProcessHacker.Native.Security
         private void ClearPool()
         {
             _pool.ForEach((alloc) => alloc.Dispose());
+            _pool.Clear();
         }
 
         #region ISecurityInformation Members
