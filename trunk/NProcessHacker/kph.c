@@ -41,12 +41,12 @@ NTSTATUS KphInit()
     if (!(NtDeviceIoControlFile = (_NtDeviceIoControlFile)
         PhGetProcAddress(L"ntdll.dll", "NtDeviceIoControlFile")))
         return STATUS_PROCEDURE_NOT_FOUND;
-	if (!(NtTerminateProcess = (_NtTerminateProcess)
-		PhGetProcAddress(L"ntdll.dll", "NtTerminateProcess")))
-		return STATUS_PROCEDURE_NOT_FOUND;
-	if (!(NtTerminateThread = (_NtTerminateThread)
-		PhGetProcAddress(L"ntdll.dll", "NtTerminateThread")))
-		return STATUS_PROCEDURE_NOT_FOUND;
+    if (!(NtTerminateProcess = (_NtTerminateProcess)
+        PhGetProcAddress(L"ntdll.dll", "NtTerminateProcess")))
+        return STATUS_PROCEDURE_NOT_FOUND;
+    if (!(NtTerminateThread = (_NtTerminateThread)
+        PhGetProcAddress(L"ntdll.dll", "NtTerminateThread")))
+        return STATUS_PROCEDURE_NOT_FOUND;
 
     return STATUS_SUCCESS;
 }
@@ -60,7 +60,7 @@ NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle)
         FILE_GENERIC_READ | FILE_GENERIC_WRITE,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         NULL,
-        OPEN_ALWAYS,
+        OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         NULL
         );
@@ -361,7 +361,7 @@ NTSTATUS KphTerminateProcess(
     NTSTATUS ExitStatus
     )
 {
-	NTSTATUS status = STATUS_SUCCESS;
+    NTSTATUS status = STATUS_SUCCESS;
     struct
     {
         HANDLE ProcessHandle;
@@ -381,12 +381,12 @@ NTSTATUS KphTerminateProcess(
         NULL
         );
 
-	/* Check if we were trying to terminate the current 
-	 * process and do it now. */
-	if (status == STATUS_CANT_TERMINATE_SELF)
-		status = NtTerminateProcess(GetCurrentProcess(), ExitStatus);
+    /* Check if we were trying to terminate the current 
+     * process and do it now. */
+    if (status == STATUS_CANT_TERMINATE_SELF)
+        status = NtTerminateProcess(GetCurrentProcess(), ExitStatus);
 
-	return status;
+    return status;
 }
 
 NTSTATUS KphSuspendProcess(
@@ -620,10 +620,10 @@ NTSTATUS KphTerminateThread(
         NULL
         );
 
-	if (status == STATUS_CANT_TERMINATE_SELF)
-		status = NtTerminateThread(GetCurrentThread(), ExitStatus);
+    if (status == STATUS_CANT_TERMINATE_SELF)
+        status = NtTerminateThread(GetCurrentThread(), ExitStatus);
 
-	return status;
+    return status;
 }
 
 NTSTATUS KphSetHandleGrantedAccess(

@@ -99,20 +99,15 @@ NTSTATUS KphProtectInit()
     /* Hook various functions. */
     /* Hooking ObOpenObjectByPointer allows us to intercept process/thread 
      * handle creation. */
-    ObOpenObjectByPointerHook.Function = ObOpenObjectByPointer;
-    ObOpenObjectByPointerHook.Target = KphNewObOpenObjectByPointer;
+    KphInitializeHook(&ObOpenObjectByPointerHook, ObOpenObjectByPointer, KphNewObOpenObjectByPointer);
     if (!NT_SUCCESS(status = KphHook(&ObOpenObjectByPointerHook)))
         return status;
     /* Hooking the open procedure calls for processes and threads allows 
      * us to intercept handle duplication/inheritance. */
-    ProcessOpenHook.ObjectType = *PsProcessType;
-    ProcessOpenHook.Target51 = KphNewOpenProcedure51;
-    ProcessOpenHook.Target60 = KphNewOpenProcedure60;
+    KphInitializeObOpenHook(&ProcessOpenHook, *PsProcessType, KphNewOpenProcedure51, KphNewOpenProcedure60);
     if (!NT_SUCCESS(status = KphObOpenHook(&ProcessOpenHook)))
         return status;
-    ThreadOpenHook.ObjectType = *PsThreadType;
-    ThreadOpenHook.Target51 = KphNewOpenProcedure51;
-    ThreadOpenHook.Target60 = KphNewOpenProcedure60;
+    KphInitializeObOpenHook(&ThreadOpenHook, *PsThreadType, KphNewOpenProcedure51, KphNewOpenProcedure60);
     if (!NT_SUCCESS(status = KphObOpenHook(&ThreadOpenHook)))
         return status;
     

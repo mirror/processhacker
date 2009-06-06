@@ -52,6 +52,21 @@ NTSTATUS KphHookInit()
     return STATUS_SUCCESS;
 }
 
+/* KphInitializeHook
+ * 
+ * Initializes a hook structure.
+ */
+VOID KphInitializeHook(
+    PKPH_HOOK Hook,
+    PVOID Function,
+    PVOID Target
+    )
+{
+    memset(Hook, 0, sizeof(KPH_HOOK));
+    Hook->Function = Function;
+    Hook->Target = Target;
+}
+
 /* KphHook
  * 
  * Hooks a kernel-mode function.
@@ -202,6 +217,19 @@ NTSTATUS NTAPI KphObOpenCall(
     {
         return STATUS_NOT_SUPPORTED;
     }
+}
+
+VOID KphInitializeObOpenHook(
+    PKPH_OB_OPEN_HOOK ObOpenHook,
+    POBJECT_TYPE ObjectType,
+    PVOID Target51,
+    PVOID Target60
+    )
+{
+    memset(ObOpenHook, 0, sizeof(KPH_OB_OPEN_HOOK));
+    ObOpenHook->ObjectType = ObjectType;
+    ObOpenHook->Target51 = Target51;
+    ObOpenHook->Target60 = Target60;
 }
 
 /* KphObOpenHook

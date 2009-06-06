@@ -66,6 +66,12 @@ typedef struct _KPH_OB_OPEN_HOOK
 
 NTSTATUS KphHookInit();
 
+VOID KphInitializeHook(
+    PKPH_HOOK Hook,
+    PVOID Function,
+    PVOID Target
+    );
+
 NTSTATUS KphHook(
     PKPH_HOOK Hook
     );
@@ -82,6 +88,13 @@ NTSTATUS NTAPI KphObOpenCall(
     PVOID Object,
     ACCESS_MASK GrantedAccess,
     ULONG HandleCount
+    );
+
+VOID KphInitializeObOpenHook(
+    PKPH_OB_OPEN_HOOK ObOpenHook,
+    POBJECT_TYPE ObjectType,
+    PVOID Target51,
+    PVOID Target60
     );
 
 NTSTATUS KphObOpenHook(

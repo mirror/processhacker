@@ -24,14 +24,13 @@
 #define _KPH_H
 
 #include "nph.h"
+#include "nativedefs.h"
 
 #define KPH_DEVICE_TYPE (0x9999)
 #define KPH_DEVICE_NAME (L"\\\\.\\KProcessHacker")
 
-#define KPHF_MMCOPYVIRTUALMEMORY 0x1
-#define KPHF_EXPGETPROCESSINFORMATION 0x2
-#define KPHF_PSTERMINATEPROCESS 0x4
-#define KPHF_PSPTERMINATETHREADBPYPOINTER 0x8
+#define KPHF_PSTERMINATEPROCESS 0x1
+#define KPHF_PSPTERMINATETHREADBPYPOINTER 0x2
 
 #define METHOD_BUFFERED 0
 #define METHOD_IN_DIRECT 1
@@ -81,39 +80,6 @@
 #define KPH_PROTECTADD KPH_CTL_CODE(29)
 #define KPH_PROTECTREMOVE KPH_CTL_CODE(30)
 #define KPH_PROTECTQUERY KPH_CTL_CODE(31)
-
-typedef struct _IO_STATUS_BLOCK
-{
-    union
-    {
-        NTSTATUS Status;
-        PVOID Pointer;
-    };
-    ULONG_PTR Information;
-} IO_STATUS_BLOCK, *PIO_STATUS_BLOCK;
-
-typedef NTSTATUS (NTAPI *_NtDeviceIoControlFile)(      
-    HANDLE FileHandle,
-    HANDLE Event,
-    PVOID ApcRoutine,
-    PVOID ApcContext,
-    PIO_STATUS_BLOCK IoStatusBlock,
-    ULONG IoControlCode,
-    PVOID InputBuffer,
-    ULONG InputBufferLength,
-    PVOID OutputBuffer,
-    ULONG OutputBufferLength
-    );
-
-typedef NTSTATUS (NTAPI *_NtTerminateProcess)(
-	HANDLE ProcessHandle,
-	NTSTATUS ExitStatus
-	);
-
-typedef NTSTATUS (NTAPI *_NtTerminateThread)(
-	HANDLE ThreadHandle,
-	NTSTATUS ExitStatus
-	);
 
 NTSTATUS KphInit();
 

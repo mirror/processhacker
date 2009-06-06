@@ -332,6 +332,127 @@ namespace ProcessHacker.Native.Api
         public int Flags; // Unused
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyBasicInformation
+    {
+        public LargeInteger LastWriteTime;
+        public int TitleIndex;
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyCachedInformation
+    {
+        public LargeInteger LastWriteTime;
+        public int TitleIndex;
+        public int SubKeys;
+        public int MaxNameLen;
+        public int Values;
+        public int MaxValueNameLen;
+        public int MaxValueDataLen;
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyFlagsInformation
+    {
+        public int UserFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyFullInformation
+    {
+        public LargeInteger LastWriteTime;
+        public int TitleIndex;
+        public int ClassOffset;
+        public int ClassLength;
+        public int SubKeys;
+        public int MaxNameLen;
+        public int MaxClassLen;
+        public int Values;
+        public int MaxValueNameLen;
+        public int MaxValueDataLen;
+        public char Class;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyNameInformation
+    {
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyNodeInformation
+    {
+        public LargeInteger LastWriteTime;
+        public int TitleIndex;
+        public int ClassOffset;
+        public int ClassLength;
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyUserFlagsInformation
+    {
+        public int UserFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyValueBasicInformation
+    {
+        public int TitleIndex;
+        public int Type;
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyValueEntry
+    {
+        public IntPtr ValueName; // pointer to UNICODE_STRING
+        public int DataLength;
+        public int DataOffset;
+        public int Type;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyValueFullInformation
+    {
+        public int TitleIndex;
+        public int Type;
+        public int DataOffset;
+        public int DataLength;
+        public int NameLength;
+        public char Name;
+        // Variable length string follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyValuePartialInformation
+    {
+        public int TitleIndex;
+        public int Type;
+        public int DataLength;
+        public byte Data;
+        // Variable length data follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyWriteTimeInformation
+    {
+        public LargeInteger LastWriteTime;
+    }
+
     [StructLayout(LayoutKind.Explicit, Size = 8)]
     public struct LargeInteger
     {
@@ -697,6 +818,34 @@ namespace ProcessHacker.Native.Api
         public int Length;
         public IntPtr ViewSize;
         public IntPtr ViewBase;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlDebugInformation
+    {
+        public IntPtr SectionHandleClient;
+        public IntPtr ViewBaseClient;
+        public IntPtr ViewBaseTarget;
+        public IntPtr ViewBaseDelta;
+        public IntPtr EventPairClient;
+        public IntPtr EventPairTarget;
+        public IntPtr TargetProcessId;
+        public IntPtr TargetThreadHandle;
+        public int Flags;
+        public IntPtr OffsetFree;
+        public IntPtr CommitSize;
+        public IntPtr ViewSize;
+        public IntPtr Modules;
+        public IntPtr BackTraces;
+        public IntPtr Heaps;
+        public IntPtr Locks;
+        public IntPtr SpecificHeap;
+        public IntPtr TargetProcessHandle;
+#if _X64
+        public unsafe fixed long Reserved[6];
+#else
+        public unsafe fixed int Reserved[6];
+#endif
     }
 
     [StructLayout(LayoutKind.Sequential)]

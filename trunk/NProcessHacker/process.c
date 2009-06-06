@@ -37,7 +37,7 @@ NPHAPI NTSTATUS PhpQueryProcessWs(
     case WsShareableCount:
         if (WsInformationLength < 4)
             return STATUS_BUFFER_TOO_SMALL;
-		goto WsCounters;
+        goto WsCounters;
     case WsAllCounts:
         if (WsInformationLength < sizeof(WS_ALL_COUNTS))
             return STATUS_BUFFER_TOO_SMALL;
@@ -73,44 +73,44 @@ WsCounters:
                 count++;
 
                 if (block.ShareCount > 1)
-					sharedCount++;
-				if (block.ShareCount == 0)
-					privateCount++;
-				if (block.Shared)
-					shareableCount++;
+                    sharedCount++;
+                if (block.ShareCount == 0)
+                    privateCount++;
+                if (block.Shared)
+                    shareableCount++;
             }
 
-			PhFree(wsInfo);
+            PhFree(wsInfo);
 
-			switch (WsInformationClass)
-			{
-		    case WsCount:
-				*(PULONG)WsInformation = count;
-				break;
-			case WsPrivateCount:
-				*(PULONG)WsInformation = privateCount;
-				break;
-			case WsSharedCount:
-				*(PULONG)WsInformation = sharedCount;
-				break;
-			case WsShareableCount:
-				*(PULONG)WsInformation = shareableCount;
-				break;
-			case WsAllCounts:
-				{
-					PWS_ALL_COUNTS allCounts = (PWS_ALL_COUNTS)WsInformation;
+            switch (WsInformationClass)
+            {
+            case WsCount:
+                *(PULONG)WsInformation = count;
+                break;
+            case WsPrivateCount:
+                *(PULONG)WsInformation = privateCount;
+                break;
+            case WsSharedCount:
+                *(PULONG)WsInformation = sharedCount;
+                break;
+            case WsShareableCount:
+                *(PULONG)WsInformation = shareableCount;
+                break;
+            case WsAllCounts:
+                {
+                    PWS_ALL_COUNTS allCounts = (PWS_ALL_COUNTS)WsInformation;
 
-					allCounts->Count = count;
-					allCounts->PrivateCount = privateCount;
-					allCounts->SharedCount = sharedCount;
-					allCounts->ShareableCount = shareableCount;
-					break;
-				}
-			}
+                    allCounts->Count = count;
+                    allCounts->PrivateCount = privateCount;
+                    allCounts->SharedCount = sharedCount;
+                    allCounts->ShareableCount = shareableCount;
+                    break;
+                }
+            }
 
-			return STATUS_SUCCESS;
+            return STATUS_SUCCESS;
         }
-		break;
+        break;
     default: 
         return STATUS_INVALID_PARAMETER;
     }

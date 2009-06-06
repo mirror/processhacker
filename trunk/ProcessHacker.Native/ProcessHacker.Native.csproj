@@ -59,6 +59,7 @@
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
     <Compile Include="Security\IoCompletionAccess.cs" />
+    <Compile Include="Security\KeyAccess.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Threading\CurrentThread.cs" />

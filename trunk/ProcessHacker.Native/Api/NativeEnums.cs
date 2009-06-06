@@ -90,6 +90,57 @@ namespace ProcessHacker.Native.Api
         SynchronizationEvent
     }
 
+    public enum FileCreationDisposition : uint
+    {
+        CreateNew = 1,
+        CreateAlways = 2,
+        OpenExisting = 3,
+        OpenAlways = 4,
+        TruncateExisting
+    }
+
+    [Flags]
+    public enum FileObjectFlags : int
+    {
+        FileOpen = 0x00000001,
+        SynchronousIo = 0x00000002,
+        AlertableIo = 0x00000004,
+        NoIntermediateBuffering = 0x00000008,
+        WriteThrough = 0x00000010,
+        SequentialOnly = 0x00000020,
+        CacheSupported = 0x00000040,
+        NamedPipe = 0x00000080,
+        StreamFile = 0x00000100,
+        MailSlot = 0x00000200,
+        GenerateAuditOnClose = 0x00000400,
+        QueueIrpToThread = GenerateAuditOnClose,
+        DirectDeviceOpen = 0x00000800,
+        FileModified = 0x00001000,
+        FileSizeChanged = 0x00002000,
+        CleanupComplete = 0x00004000,
+        TemporaryFile = 0x00008000,
+        DeleteOnClose = 0x00010000,
+        OpenedCaseSensitivity = 0x00020000,
+        HandleCreated = 0x00040000,
+        FileFastIoRead = 0x00080000,
+        RandomAccess = 0x00100000,
+        FileOpenCancelled = 0x00200000,
+        VolumeOpen = 0x00400000,
+        RemoteOrigin = 0x01000000,
+        SkipCompletionPort = 0x02000000,
+        SkipSetEvent = 0x04000000,
+        SkipSetFastIo = 0x08000000
+    }
+
+    [Flags]
+    public enum FileShareMode : uint
+    {
+        Exclusive = 0,
+        Read = 1,
+        Write = 2,
+        Delete = 4
+    }
+
     [Flags]
     public enum HandleFlags : byte
     {
@@ -154,6 +205,31 @@ namespace ProcessHacker.Native.Api
         BreakawayOk = 0x800,
         SilentBreakawayOk = 0x1000,
         KillOnJobClose = 0x2000,
+    }
+
+    [Flags]
+    public enum KeyCreationDisposition : int
+    {
+        CreatedNewKey,
+        OpenedExistingKey
+    }
+
+    public enum KeyInformationClass : int
+    {
+        KeyBasicInformation,
+        KeyNodeInformation,
+        KeyFullInformation,
+        KeyNameInformation,
+        KeyCachedInformation,
+        KeyFlagsInformation,
+        MaxKeyInfoClass
+    }
+
+    public enum KeySetInformationClass : int
+    {
+        KeyWriteTimeInformation,
+        KeyUserFlagsInformation,
+        MaxKeySetInfoClass
     }
 
     public enum KProfileSource : int
@@ -359,6 +435,51 @@ namespace ProcessHacker.Native.Api
         ProcessAffinityUpdateMode,
         ProcessMemoryAllocationMode,
         MaxProcessInfoClass
+    }
+
+    [Flags]
+    public enum RegHiveFormat : int
+    {
+        Standard = 0x1,
+        Latest = 0x2,
+        NoCompression = 0x4
+    }
+
+    [Flags]
+    public enum RegNotifyFilter : int
+    {
+        Name = 0x1,
+        Attributes = 0x2,
+        LastSet = 0x4,
+        Security = 0x8,
+        Legal = Name | Attributes | LastSet | Security
+    }
+
+    [Flags]
+    public enum RegOption : int
+    {
+        Reserved = 0x0,
+        NonVolatile = 0x0,
+        Volatile = 0x1,
+        CreateLink = 0x2,
+        BackupRestore = 0x4,
+        OpenLink = 0x8,
+        Legal = Reserved | NonVolatile | Volatile | CreateLink | BackupRestore | OpenLink
+    }
+
+    [Flags]
+    public enum RegRestoreFlags : int
+    {
+        WholeHiveVolatile = 0x1,
+        RefreshHive = 0x2,
+        NoLazyFlush = 0x4,
+        ForceRestore = 0x8
+    }
+
+    [Flags]
+    public enum RegUnloadFlags : int
+    {
+        ForceUnload = 0x1
     }
 
     [Flags]

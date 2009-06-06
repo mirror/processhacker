@@ -40,6 +40,8 @@ namespace ProcessHacker.Native.Api
 #endif
         public const int MaximumSupportedExtension = 512;
         public const int MaximumWaitObjects = 64;
+        public const int MaxKeyNameLength = 512;
+        public const int MaxKeyValueNameLength = 32767;
         public const int SecurityDescriptorMinLength = 20;
         public const int SecurityDescriptorRevision = 1;
         public static readonly int SecurityMaxSidSize =

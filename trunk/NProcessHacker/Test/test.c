@@ -5,12 +5,13 @@
 #include <windows.h>  
 #include <stdio.h>
 #include "../kph.h"
+#include "../kphhook.h"
 
 int wmain(int argc, WCHAR *argv[])
 {
-    NTSTATUS status;
     ULONG pid;
-    HANDLE kphHandle, processHandle;
+    HANDLE processHandle;
+    CHAR memory[0x1000];
 
     if (argc < 2)
     {
@@ -20,32 +21,9 @@ int wmain(int argc, WCHAR *argv[])
 
     pid = _wtoi(argv[1]);
 
-    status = KphConnect(&kphHandle);
-
-    if (!NT_SUCCESS(status))
-    {
-        printf("Could not connect to KProcessHacker (0x%08x).\n", status);
-        return status;
-    }
-
-    status = KphOpenProcess(kphHandle, &processHandle, pid, PROCESS_TERMINATE);
-
-    if (!NT_SUCCESS(status))
-    {
-        printf("Could not open process with PID %d (0x%08x).\n", pid, status);
-        return status;
-    }
-
-    status = KphTerminateProcess(kphHandle, processHandle, 0);
-
-    if (!NT_SUCCESS(status))
-    {
-        printf("Could not terminate process (0x%08x).\n", status);
-        return status;
-    }
-
-    CloseHandle(processHandle);
-    KphDisconnect(kphHandle);
+    KphHookInit();
+    processHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+    ReadProcessMemory(processHandle, 0x10000, memory, 0x1000, NULL);
 
     return 0;
 }
