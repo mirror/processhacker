@@ -109,7 +109,7 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
-        /// Opens the job associated with the specified process.
+        /// Opens the job object associated with the specified process.
         /// </summary>
         /// <param name="processHandle">The process.</param>
         /// <param name="access">The desired access to the job object.</param>
@@ -124,11 +124,13 @@ namespace ProcessHacker.Native.Objects
                 // Use KPH to set the handle's granted access.
                 this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenProcessJob(processHandle,
                     (JobObjectAccess)StandardRights.Synchronize));
-                KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
+                if (this.Handle != IntPtr.Zero)
+                    KProcessHacker.Instance.KphSetHandleGrantedAccess(this.Handle, (int)access);
             }
 
+            // If we don't have a handle assume the process isn't in a job.
             if (this.Handle == IntPtr.Zero)
-                Win32.ThrowLastError();
+                Win32.ThrowLastError(NtStatus.ProcessNotInJob);
         }
 
         private T QueryStruct<T>(JobObjectInformationClass informationClass)

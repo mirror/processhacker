@@ -197,7 +197,11 @@ namespace ProcessHacker
                 try
                 {
                     using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
-                        phandle.GetJob(JobObjectAccess.Query);
+                    {
+                        // Check if the process is in a job.
+                        if (phandle.GetJobObject(JobObjectAccess.Query) == null)
+                            tabControl.TabPages.Remove(tabJob);
+                    }
                 }
                 catch
                 {
@@ -567,11 +571,14 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
                 {
-                    var jhandle = phandle.GetJob(JobObjectAccess.Query);
+                    var jhandle = phandle.GetJobObject(JobObjectAccess.Query);
 
-                    _jobProps = new JobProperties(jhandle);
-                    _jobProps.Dock = DockStyle.Fill;
-                    tabJob.Controls.Add(_jobProps);
+                    if (jhandle != null)
+                    {
+                        _jobProps = new JobProperties(jhandle);
+                        _jobProps.Dock = DockStyle.Fill;
+                        tabJob.Controls.Add(_jobProps);
+                    }
                 }
             }
             catch
@@ -898,7 +905,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 

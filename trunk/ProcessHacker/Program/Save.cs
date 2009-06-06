@@ -20,13 +20,13 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -69,7 +69,7 @@ namespace ProcessHacker
                 }
                 catch (IOException ex)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowMessage(ex);
                 }
             }
         }

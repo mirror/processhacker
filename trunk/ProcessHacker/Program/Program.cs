@@ -413,7 +413,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowMessage(ex);
                 }
 
                 return true;
@@ -469,7 +469,7 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowMessage(ex);
                 }
 
                 return true;

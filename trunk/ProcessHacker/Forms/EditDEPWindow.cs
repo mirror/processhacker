@@ -22,10 +22,10 @@
 
 using System;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using System.Runtime.InteropServices;
 
 namespace ProcessHacker
 {
@@ -118,7 +118,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 

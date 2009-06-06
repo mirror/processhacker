@@ -1030,7 +1030,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         /* KphOpenProcessJob
          * 
          * Opens the job object that the process is assigned to. If the process is 
-         * not assigned to any job object, the call will fail with STATUS_NO_SUCH_FILE.
+         * not assigned to any job object, the call will fail with STATUS_PROCESS_NOT_IN_JOB.
          */
         case KPH_OPENPROCESSJOB:
         {

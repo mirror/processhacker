@@ -773,6 +773,15 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtQueryInformationProcess(
             [In] IntPtr ProcessHandle,
             [In] ProcessInformationClass ProcessInformationClass,
+            [Out] out IntPtr ProcessInformation,
+            [In] int ProcessInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
             [Out] out PooledUsageAndLimits ProcessInformation,
             [In] int ProcessInformationLength,
             [Out] [Optional] out int ReturnLength

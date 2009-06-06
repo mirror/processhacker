@@ -22,7 +22,7 @@
 
 using System;
 using System.Windows.Forms;
-using ProcessHacker.Native.Api;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -66,7 +66,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
 
                 this.Close();
                 return;
@@ -98,7 +98,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
     }

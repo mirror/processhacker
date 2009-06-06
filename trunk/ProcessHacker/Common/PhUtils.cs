@@ -130,5 +130,10 @@ namespace ProcessHacker.Common
         {
             Win32.SetWindowTheme(control.Handle, theme, null);
         }
+
+        public static void ShowMessage(Exception ex)
+        {
+            MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

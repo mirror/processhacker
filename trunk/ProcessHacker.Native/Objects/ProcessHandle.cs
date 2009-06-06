@@ -643,6 +643,28 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Opens the debug object associated with the process.
+        /// </summary>
+        /// <returns>A debug object handle.</returns>
+        public DebugObjectHandle GetDebugObject()
+        {
+            IntPtr handle;
+
+            handle = this.GetDebugObjectHandle();
+
+            // Check if we got a handle. If we didn't the process is not being debugged.
+            if (handle == IntPtr.Zero)
+                return null;
+
+            return new DebugObjectHandle(handle, true);
+        }
+
+        internal IntPtr GetDebugObjectHandle()
+        {
+            return this.GetInformationIntPtr(ProcessInformationClass.ProcessDebugObjectHandle);
+        }
+
+        /// <summary>
         /// Gets the process' DEP policy.
         /// </summary>
         /// <returns>A DEPStatus enum.</returns>
@@ -849,6 +871,24 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets information about the process in an IntPtr.
+        /// </summary>
+        /// <param name="infoClass">The class of information to retrieve.</param>
+        /// <returns>An IntPtr.</returns>
+        private IntPtr GetInformationIntPtr(ProcessInformationClass infoClass)
+        {
+            NtStatus status;
+            IntPtr value;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationProcess(
+                this, infoClass, out value, IntPtr.Size, out retLength)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return value;
+        }   
+
+        /// <summary>
         /// Gets the process' I/O priority, ranging from 0-7.
         /// </summary>
         /// <returns></returns>
@@ -858,12 +898,22 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Opens the job associated with the process.
+        /// Opens the job object associated with the process.
         /// </summary>
-        /// <returns>A job handle.</returns>
-        public JobObjectHandle GetJob(JobObjectAccess access)
+        /// <returns>A job object handle.</returns>
+        public JobObjectHandle GetJobObject(JobObjectAccess access)
         {
-            return new JobObjectHandle(this, access);
+            try
+            {
+                return new JobObjectHandle(this, access);
+            }
+            catch (WindowsException ex)
+            {
+                if (ex.Status == NtStatus.ProcessNotInJob)
+                    return null;
+                else
+                    throw ex;
+            }
         }
 
         /// <summary>
@@ -1544,7 +1594,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A handle to the process' token.</returns>
         public TokenHandle GetToken()
         {
-            return GetToken(TokenAccess.All);
+            return this.GetToken(TokenAccess.All);
         }
 
         /// <summary>

@@ -30,13 +30,13 @@ using System.Threading;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
+using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 using ProcessHacker.UI.Actions;
-using ProcessHacker.Components;
 
 namespace ProcessHacker
 {
@@ -267,7 +267,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }    
 
@@ -1107,7 +1107,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 
@@ -1228,58 +1228,11 @@ namespace ProcessHacker
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowMessage(ex);
                 }
                 finally
                 {
                     this.Cursor = Cursors.Default;
-                }
-            }
-        }
-
-        private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    using (var phandle = new ProcessHandle(processSelectedPID,
-                        ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
-                    {
-                        phandle.InjectDll(ofd.FileName, 5000);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
-        private void protectionProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            (new ProtectProcessWindow(processSelectedPID)).ShowDialog();
-        }
-
-        private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
-        {
-            ProcessPickerWindow picker = new ProcessPickerWindow();
-
-            picker.Label = "Select the source of the token:";
-
-            if (picker.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPID);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1326,6 +1279,76 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 Logging.Log(ex);
+            }
+        }
+
+        #endregion
+
+        #region Miscellaneous
+
+        private void detachFromDebuggerProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var phandle = new ProcessHandle(processSelectedPID, ProcessAccess.QueryInformation | ProcessAccess.SuspendResume))
+                {
+                    using (var dhandle = phandle.GetDebugObject())
+                        phandle.RemoveDebug(dhandle);
+                }
+            }
+            catch (WindowsException ex)
+            {
+                if (ex.Status == NtStatus.PortNotSet)
+                    MessageBox.Show("The process is not being debugged.", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else
+                    PhUtils.ShowMessage(ex);
+            }
+        }
+
+        private void injectDllProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "DLL Files (*.dll)|*.dll|All Files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    using (var phandle = new ProcessHandle(processSelectedPID,
+                        ProcessAccess.CreateThread | ProcessAccess.VmOperation | ProcessAccess.VmWrite))
+                    {
+                        phandle.InjectDll(ofd.FileName, 5000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowMessage(ex);
+                }
+            }
+        }
+
+        private void protectionProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            (new ProtectProcessWindow(processSelectedPID)).ShowDialog();
+        }
+
+        private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessPickerWindow picker = new ProcessPickerWindow();
+
+            picker.Label = "Select the source of the token:";
+
+            if (picker.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    KProcessHacker.Instance.SetProcessToken(picker.SelectedPid, processSelectedPID);
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowMessage(ex);
+                }
             }
         }
 
@@ -1460,7 +1483,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 

@@ -21,13 +21,9 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using Aga.Controls.Tree;
+using ProcessHacker.Common;
 using ProcessHacker.Structs;
 using ProcessHacker.UI;
 
@@ -71,7 +67,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
                 this.Error = true;
             }
         }

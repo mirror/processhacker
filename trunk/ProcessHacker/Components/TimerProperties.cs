@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;        
-using ProcessHacker.Native.Api;
+using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -50,7 +45,7 @@ namespace ProcessHacker.Components
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 

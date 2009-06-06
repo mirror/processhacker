@@ -910,16 +910,21 @@ namespace ProcessHacker
                                 {
                                     try
                                     {
-                                        using (var jhandle = queryLimitedHandle.GetJob(JobObjectAccess.Query))
+                                        var jhandle = queryLimitedHandle.GetJobObject(JobObjectAccess.Query);
+
+                                        if (jhandle != null)
                                         {
-                                            var limits = jhandle.GetBasicLimitInformation();
-
-                                            item.IsInJob = true;
-                                            item.JobName = jhandle.GetObjectName();
-
-                                            if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
+                                            using (jhandle)
                                             {
-                                                item.IsInSignificantJob = true;
+                                                var limits = jhandle.GetBasicLimitInformation();
+
+                                                item.IsInJob = true;
+                                                item.JobName = jhandle.GetObjectName();
+
+                                                if (limits.LimitFlags != JobObjectLimitFlags.SilentBreakawayOk)
+                                                {
+                                                    item.IsInSignificantJob = true;
+                                                }
                                             }
                                         }
                                     }

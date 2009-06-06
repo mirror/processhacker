@@ -64,9 +64,23 @@ namespace ProcessHacker.Native.Objects
             return new DebugObjectHandle(handle, true);
         }
 
-        private DebugObjectHandle(IntPtr handle, bool owned)
+        public DebugObjectHandle FromHandle(IntPtr handle)
+        {
+            return new DebugObjectHandle(handle, false);
+        }
+
+        internal DebugObjectHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
+
+        public DebugObjectHandle(ProcessHandle processHandle)
+        {
+            this.Handle = processHandle.GetDebugObjectHandle();
+
+            // Check if we got a handle. If we didn't the process is not being debugged.
+            if (this.Handle == IntPtr.Zero)
+                throw new WindowsException(NtStatus.DebuggerInactive);
+        }
 
         public void Continue(ClientId cid, NtStatus continueStatus)
         {

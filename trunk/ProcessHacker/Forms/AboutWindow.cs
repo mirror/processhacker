@@ -21,10 +21,8 @@
  */
 
 using System;
-using System.Diagnostics;
-using System.Text;
 using System.Windows.Forms;
-using ProcessHacker.Native;
+using ProcessHacker.Common;
 
 namespace ProcessHacker
 {
@@ -57,7 +55,7 @@ namespace ProcessHacker
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PhUtils.ShowMessage(ex);
             }
         }
 

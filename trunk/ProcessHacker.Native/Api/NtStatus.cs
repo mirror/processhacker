@@ -127,5 +127,7 @@ namespace ProcessHacker.Native.Api
         InvalidParameter10 = 0xc00000f8,
         InvalidParameter11 = 0xc00000f9,
         InvalidParameter12 = 0xc00000fa,
+        PortNotSet = 0xc0000353,
+        DebuggerInactive = 0xc0000354
     }
 }

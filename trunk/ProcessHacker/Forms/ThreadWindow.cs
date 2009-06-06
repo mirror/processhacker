@@ -336,7 +336,7 @@ namespace ProcessHacker
             catch (Exception ex)
             {
                 if (!ex.Message.StartsWith("Cannot access a disposed object"))
-                    MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    PhUtils.ShowMessage(ex);
             }
         }
     }

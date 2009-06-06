@@ -236,7 +236,7 @@ NTSTATUS KphOpenProcess(
         return status;
     }
     
-    /* let's hope our client isn't a virus... */
+    /* Let's hope our client isn't a virus... */
     if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
         accessState.PreviouslyGrantedAccess |= ProcessAllAccess;
     else
@@ -308,7 +308,7 @@ NTSTATUS KphOpenProcess(
  * 
  * Opens the specified process' job object. If the process has 
  * not been assigned to a job object, the function returns 
- * STATUS_NO_SUCH_FILE.
+ * STATUS_PROCESS_NOT_IN_JOB.
  */
 NTSTATUS KphOpenProcessJob(
     HANDLE ProcessHandle,
@@ -351,6 +351,7 @@ NTSTATUS KphOpenProcessJob(
         return status;
     }
     
+    /* If we have PsGetProcessJob, use it. Otherwise, read the EPROCESS structure. */
     if (PsGetProcessJob)
     {
         jobObject = PsGetProcessJob(processObject);
@@ -364,8 +365,10 @@ NTSTATUS KphOpenProcessJob(
     
     if (jobObject == NULL)
     {
+        /* No such job. Output a NULL handle and exit. */
         SeDeleteAccessState(&accessState);
-        return STATUS_NO_SUCH_FILE;
+        *JobHandle = NULL;
+        return STATUS_PROCESS_NOT_IN_JOB;
     }
     
     ObReferenceObject(jobObject);
