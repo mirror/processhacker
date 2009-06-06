@@ -194,6 +194,22 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateIoCompletion(
+            [Out] out IntPtr IoCompletionHandle,
+            [In] IoCompletionAccess DesiredAccess,
+            [In] [Optional] ref ObjectAttributes ObjectAttributes,
+            [In] [Optional] int Count
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtCreateIoCompletion(
+            [Out] out IntPtr IoCompletionHandle,
+            [In] IoCompletionAccess DesiredAccess,
+            [In] [Optional] IntPtr ObjectAttributes,
+            [In] [Optional] int Count
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateJobObject(
             [Out] out IntPtr JobHandle,
             [In] JobObjectAccess DesiredAccess,
@@ -595,6 +611,13 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenIoCompletion(
+            [Out] out IntPtr IoCompletionHandle,
+            [In] IoCompletionAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtOpenJobObject(
             [Out] out IntPtr JobHandle,
             [In] JobObjectAccess DesiredAccess,
@@ -866,6 +889,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryIoCompletion(
+            [In] IntPtr IoCompletionHandle,
+            [In] IoCompletionInformationClass IoCompletionInformationClass,
+            [Out] out IoCompletionBasicInformation IoCompletionInformation,
+            [In] int IoCompletionInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtQueryMutant(
             [In] IntPtr MutantHandle,
             [In] MutantInformationClass MutantInformationClass,
@@ -1043,6 +1075,15 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtRemoveIoCompletion(
+            [In] IntPtr IoCompletionHandle,
+            [Out] out IntPtr KeyContext,
+            [Out] out IntPtr ApcContext,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] [Optional] ref long Timeout
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtRemoveProcessDebug(
             [In] IntPtr ProcessHandle,
             [In] IntPtr DebugObjectHandle
@@ -1195,6 +1236,15 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtSetIntervalProfile(
             [In] int Interval,
             [In] KProfileSource Source
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetIoCompletion(
+            [In] IntPtr IoCompletionHandle,
+            [In] IntPtr KeyContext,
+            [In] [Optional] IntPtr ApcContext,
+            [In] NtStatus IoStatus,
+            [In] IntPtr IoStatusInformation
             );
 
         [DllImport("ntdll.dll")]

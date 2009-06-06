@@ -105,6 +105,11 @@ namespace ProcessHacker.Native.Api
         Invalid = -1
     }
 
+    public enum IoCompletionInformationClass : int
+    {
+        IoCompletionBasicInformation
+    }
+
     [Flags]
     public enum JobObjectBasicUiRestrictions : uint
     {

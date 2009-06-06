@@ -57,6 +57,8 @@
     <Compile Include="Cryptography.cs" />
     <Compile Include="Memory\MemoryAllocStream.cs" />
     <Compile Include="Memory\Section.cs" />
+    <Compile Include="Objects\IoCompletionHandle.cs" />
+    <Compile Include="Security\IoCompletionAccess.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Threading\CurrentThread.cs" />

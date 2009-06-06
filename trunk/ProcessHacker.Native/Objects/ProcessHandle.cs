@@ -375,8 +375,8 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Debugs the process with the specified debug object. This requires the
-        /// PROCESS_SUSPEND_RESUME permission.
+        /// Debugs the process with the specified debug object. This requires 
+        /// PROCESS_SUSPEND_RESUME access.
         /// </summary>
         /// <param name="debugObjectHandle">A handle to a debug object.</param>
         public void Debug(DebugObjectHandle debugObjectHandle)
@@ -1341,7 +1341,8 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Stops debugging the process attached to the specified debug object.
+        /// Stops debugging the process attached to the specified debug object. This requires 
+        /// PROCESS_SUSPEND_RESUME access.
         /// </summary>
         /// <param name="debugObjectHandle">The debug object which was used to debug the process.</param>
         public void RemoveDebug(DebugObjectHandle debugObjectHandle)

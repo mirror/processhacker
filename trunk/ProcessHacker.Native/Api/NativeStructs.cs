@@ -236,6 +236,12 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct IoCompletionBasicInformation
+    {
+        public int Depth;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct IoCounters
     {
         public ulong ReadOperationCount;
