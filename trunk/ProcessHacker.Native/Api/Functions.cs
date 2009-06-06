@@ -1466,29 +1466,10 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSQuerySessionInformation(
-            [In] IntPtr ServerHandle,
-            [In] int SessionID,
-            [In] WtsInformationClass InfoClass,
-            [Out] out IntPtr Buffer,
-            [Out] out int BytesReturned
-            );
-
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSQuerySessionInformation(
-            [In] IntPtr ServerHandle,
-            [In] int SessionID,
-            [In] WtsInformationClass InfoClass,
-            [Out] out string Buffer,
-            [Out] out int BytesReturned
-            );
-
-        [DllImport("wtsapi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSLogoffSession(
-            [In] IntPtr ServerHandle,
-            [In] int SessionID,
+        public static extern bool WTSConnectSession(
+            [In] int LogonId,
+            [In] int TargetLogonId,
+            [In] string Password,
             [In] bool Wait
             );
 
@@ -1496,16 +1477,18 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool WTSDisconnectSession(
             [In] IntPtr ServerHandle,
-            [In] int SessionID,
+            [In] int SessionId,
             [In] bool Wait
             );
 
-        [DllImport("wtsapi32.dll", SetLastError = true)]
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSTerminateProcess(
+        public static extern bool WTSEnumerateProcesses(
             [In] IntPtr ServerHandle,
-            [In] int ProcessID,
-            [In] int ExitCode
+            [In] int Reserved,
+            [In] int Version,
+            [Out] out IntPtr ProcessInfo,
+            [Out] out int Count
             );
 
         [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
@@ -1518,16 +1501,6 @@ namespace ProcessHacker.Native.Api
             [Out] out int Count
             );
 
-        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSEnumerateProcesses(
-            [In] IntPtr ServerHandle,
-            [In] int Reserved,
-            [In] int Version, 
-            [Out] out IntPtr ProcessInfo,
-            [Out] out int Count
-            );
-
         [DllImport("wtsapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool WTSFreeMemory(
@@ -1535,8 +1508,43 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("wtsapi32.dll", SetLastError = true)]
+        public static extern int WTSGetActiveConsoleSessionId();
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WTSFreeMemory([In] string Memory);
+        public static extern bool WTSLogoffSession(
+            [In] IntPtr ServerHandle,
+            [In] int SessionId,
+            [In] bool Wait
+            );
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSQuerySessionInformation(
+            [In] IntPtr ServerHandle,
+            [In] int SessionId,
+            [In] WtsInformationClass InfoClass,
+            [Out] out IntPtr Buffer,
+            [Out] out int BytesReturned
+            );
+
+        [DllImport("wtsapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSQuerySessionInformation(
+            [In] IntPtr ServerHandle,
+            [In] int SessionId,
+            [In] WtsInformationClass InfoClass,
+            [Out] out string Buffer,
+            [Out] out int BytesReturned
+            );
+
+        [DllImport("wtsapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool WTSTerminateProcess(
+            [In] IntPtr ServerHandle,
+            [In] int ProcessId,
+            [In] int ExitCode
+            );
 
         #endregion
 

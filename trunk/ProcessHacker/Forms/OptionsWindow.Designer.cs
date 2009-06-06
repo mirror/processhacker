@@ -60,6 +60,7 @@
             this.checkHideHandlesWithNoName = new System.Windows.Forms.CheckBox();
             this.checkVerifySignatures = new System.Windows.Forms.CheckBox();
             this.tabHighlighting = new System.Windows.Forms.TabPage();
+            this.label11 = new System.Windows.Forms.Label();
             this.buttonDisableAll = new System.Windows.Forms.Button();
             this.buttonEnableAll = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -97,7 +98,6 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -184,8 +184,8 @@
             this.checkWarnDangerous.Size = new System.Drawing.Size(228, 18);
             this.checkWarnDangerous.TabIndex = 4;
             this.checkWarnDangerous.Text = "Warn about potentially dangerous actions";
-            this.toolTipProvider.SetToolTip(this.checkWarnDangerous, "Warns about any attempts to suspend a system process or inspect a system process\'" +
-                    " thread.");
+            this.toolTipProvider.SetToolTip(this.checkWarnDangerous, "Warns about any attempts to terminate a process, suspend a system process, and si" +
+                    "milar actions.");
             this.checkWarnDangerous.UseVisualStyleBackColor = true;
             // 
             // label2
@@ -545,6 +545,15 @@
             this.tabHighlighting.TabIndex = 1;
             this.tabHighlighting.Text = "Highlighting";
             this.tabHighlighting.UseVisualStyleBackColor = true;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 295);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(165, 13);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "Double-click an item to change it.";
             // 
             // buttonDisableAll
             // 
@@ -959,15 +968,6 @@
             this.buttonApply.Text = "&Apply";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 295);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(165, 13);
-            this.label11.TabIndex = 13;
-            this.label11.Text = "Double-click an item to change it.";
             // 
             // OptionsWindow
             // 

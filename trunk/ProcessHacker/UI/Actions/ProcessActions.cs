@@ -36,6 +36,9 @@ namespace ProcessHacker.UI.Actions
         private static bool Prompt(IWin32Window window, int[] pids, string[] names, 
             string action, string content, bool promptOnlyIfDangerous)
         {
+            if (!Properties.Settings.Default.WarnDangerous)
+                return true;
+
             string name = "the selected process(es)";
 
             if (pids.Length == 1)
