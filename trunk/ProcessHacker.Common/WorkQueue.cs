@@ -565,7 +565,7 @@ namespace ProcessHacker.Common
                     }
                 }
 
-                // Check for work
+                // Check for work.
                 if (_workQueue.Count > 0)
                 {
                     WorkItem workItem = null;
