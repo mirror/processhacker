@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
@@ -38,6 +39,7 @@ namespace ProcessHacker.Components
     {
         private ModuleProvider _provider;
         private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private HighlightingContext _highlightingContext;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -228,30 +230,43 @@ namespace ProcessHacker.Components
 
         private void provider_Updated()
         {
+            lock (_needsAdd)
+            {
+                if (_needsAdd.Count > 0)
+                {
+                    this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        lock (_needsAdd)
+                        {
+                            listModules.Items.AddRange(_needsAdd.ToArray());
+                            _needsAdd.Clear();
+                        }
+                    }));
+                }
+            }
+
             _highlightingContext.Tick();
             _runCount++;
         }
 
         private void provider_DictionaryAdded(ModuleItem item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                        item.RunId > 0 && _runCount > 0);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                item.RunId > 0 && _runCount > 0);
 
-                    litem.Name = item.BaseAddress.ToString();
-                    litem.Text = item.Name;
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Utils.GetNiceSizeName(item.Size) : ""));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
-                    litem.ToolTipText = item.FileName;
-                    litem.Tag = item;
+            litem.Name = item.BaseAddress.ToString();
+            litem.Text = item.Name;
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, "0x" + item.BaseAddress.ToString("x8")));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, _pid != 4 ? Utils.GetNiceSizeName(item.Size) : ""));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
+            litem.ToolTipText = item.FileName;
+            litem.Tag = item;
 
-                    if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
-                        litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
+            if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
+                litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);
 
-                    listModules.Items.Add(litem);
-                }));
+            lock (_needsAdd)
+                _needsAdd.Add(litem);
         }
 
         private void provider_DictionaryRemoved(ModuleItem item)

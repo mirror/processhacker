@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
@@ -38,6 +39,7 @@ namespace ProcessHacker.Components
     {
         private ThreadProvider _provider;
         private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private HighlightingContext _highlightingContext;
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
@@ -314,6 +316,21 @@ namespace ProcessHacker.Components
 
         private void provider_Updated()
         {
+            lock (_needsAdd)
+            {
+                if (_needsAdd.Count > 0)
+                {
+                    this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        lock (_needsAdd)
+                        {
+                            listThreads.Items.AddRange(_needsAdd.ToArray());
+                            _needsAdd.Clear();
+                        }
+                    }));
+                }
+            }
+
             _highlightingContext.Tick();
 
             if (_needsSort)
@@ -343,21 +360,19 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ThreadItem item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
-                {
-                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                        item.RunId > 0 && _runCount > 0);
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                item.RunId > 0 && _runCount > 0);
 
-                    litem.Name = item.Tid.ToString();
-                    litem.Text = item.Tid.ToString();
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
-                    litem.Tag = item;
-                    litem.NormalColor = GetThreadColor(item);
+            litem.Name = item.Tid.ToString();
+            litem.Text = item.Tid.ToString();
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.StartAddress));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Priority));
+            litem.Tag = item;
+            litem.NormalColor = GetThreadColor(item);
 
-                    listThreads.Items.Add(litem);
-                }));
+            lock (_needsAdd)
+                _needsAdd.Add(litem);
         }
 
         private void provider_DictionaryModified(ThreadItem oldItem, ThreadItem newItem)

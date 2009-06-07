@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -34,6 +35,7 @@ namespace ProcessHacker.Components
         private ServiceProvider _provider;
         private int _runCount = 0;
         private HighlightingContext _highlightingContext;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private bool _needsSort = false;
         public new event KeyEventHandler KeyDown;
         public new event MouseEventHandler MouseDown;
@@ -189,6 +191,21 @@ namespace ProcessHacker.Components
 
         private void provider_Updated()
         {
+            lock (_needsAdd)
+            {
+                if (_needsAdd.Count > 0)
+                {
+                    this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        lock (_needsAdd)
+                        {
+                            listServices.Items.AddRange(_needsAdd.ToArray());
+                            _needsAdd.Clear();
+                        }
+                    }));
+                }
+            }
+
             _highlightingContext.Tick();
 
             if (_needsSort)
@@ -208,12 +225,6 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(ServiceItem item)
         {
-            if (this.InvokeRequired)
-            {
-                this.BeginInvoke(new ServiceProvider.ProviderDictionaryAdded(provider_DictionaryAdded), item);
-                return;
-            }
-
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
                 item.RunId > 0 && _runCount > 0);
 
@@ -241,14 +252,8 @@ namespace ProcessHacker.Components
             else
                 litem.ImageKey = "Driver";
 
-            try
-            {
-                listServices.Items.Add(litem);
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+            lock (_needsAdd)
+                _needsAdd.Add(litem);
         }
 
         private void provider_DictionaryModified(ServiceItem oldItem, ServiceItem newItem)
@@ -285,14 +290,7 @@ namespace ProcessHacker.Components
             }
 
             lock (listServices)
-            {
-                int index = listServices.Items[item.Status.ServiceName].Index;
-                bool selected = listServices.Items[item.Status.ServiceName].Selected;
-                int selectedCount = listServices.SelectedItems.Count;
-                ListViewItem litem = listServices.Items[item.Status.ServiceName];
-
-                litem.Remove();
-            }
+                listServices.Items[item.Status.ServiceName].Remove();
         }
     }
 }

@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
@@ -34,6 +35,7 @@ namespace ProcessHacker.Components
         private object _imageListLock = new object();
         private NetworkProvider _provider;
         private int _runCount = 0;
+        private List<ListViewItem> _needsAdd = new List<ListViewItem>();
         private HighlightingContext _highlightingContext;
         private bool _needsSort = false;
         private bool _needsImageKeyReset = false;
@@ -224,6 +226,21 @@ namespace ProcessHacker.Components
 
         private void provider_Updated()
         {
+            lock (_needsAdd)
+            {
+                if (_needsAdd.Count > 0)
+                {
+                    this.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        lock (_needsAdd)
+                        {
+                            listNetwork.Items.AddRange(_needsAdd.ToArray());
+                            _needsAdd.Clear();
+                        }
+                    }));
+                }
+            }
+
             _highlightingContext.Tick();
 
             if (_needsSort)
@@ -294,64 +311,62 @@ namespace ProcessHacker.Components
 
         private void provider_DictionaryAdded(NetworkConnection item)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
+                (int)item.Tag > 0 && _runCount > 0);
+
+            litem.Name = item.Id;
+            litem.Tag = item.Pid;
+
+            if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+            {
+                lock (_imageListLock)
                 {
-                    HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
-                        (int)item.Tag > 0 && _runCount > 0);
+                    if (imageList.Images.ContainsKey(item.Pid.ToString()))
+                        imageList.Images.RemoveByKey(item.Pid.ToString());
 
-                    litem.Name = item.Id;
-                    litem.Tag = item.Pid;
+                    var icon = Program.ProcessProvider.Dictionary[item.Pid].Icon;
 
-                    if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+                    if (icon != null)
                     {
-                        lock (_imageListLock)
-                        {
-                            if (imageList.Images.ContainsKey(item.Pid.ToString()))
-                                imageList.Images.RemoveByKey(item.Pid.ToString());
-
-                            var icon = Program.ProcessProvider.Dictionary[item.Pid].Icon;
-
-                            if (icon != null)
-                            {
-                                imageList.Images.Add(item.Pid.ToString(), icon);
-                                litem.ImageKey = item.Pid.ToString();
-                            }
-                            else
-                            {
-                                litem.ImageKey = "generic_process";
-                            }
-                        }
-                    }
-
-                    if (item.Pid == 0)
-                    {
-                        litem.Text = "Waiting Connections";
-                    }
-                    else if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
-                    {
-                        litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name;
+                        imageList.Images.Add(item.Pid.ToString(), icon);
+                        litem.ImageKey = item.Pid.ToString();
                     }
                     else
                     {
-                        litem.Text = "(" + item.Pid.ToString() + ")";
+                        litem.ImageKey = "generic_process";
                     }
+                }
+            }
 
-                    if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
-                        litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Local.ToString()));
-                    else
-                        litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            if (item.Pid == 0)
+            {
+                litem.Text = "Waiting Connections";
+            }
+            else if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
+            {
+                litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name;
+            }
+            else
+            {
+                litem.Text = "(" + item.Pid.ToString() + ")";
+            }
 
-                    if (item.Remote != null && item.Remote.ToString() != "0.0.0.0:0")
-                        litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Remote.ToString()));
-                    else
-                        litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
+            if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Local.ToString()));
+            else
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
 
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Protocol.ToString().ToUpper()));
-                    litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.State != 0 ? item.State.ToString() : ""));
+            if (item.Remote != null && item.Remote.ToString() != "0.0.0.0:0")
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Remote.ToString()));
+            else
+                litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, ""));
 
-                    listNetwork.Items.Add(litem);
-                    this.ResetImageKeys();
-                }));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.Protocol.ToString().ToUpper()));
+            litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.State != 0 ? item.State.ToString() : ""));
+
+            lock (_needsAdd)
+                _needsAdd.Add(litem);
+            _needsImageKeyReset = true;
         }
 
         private void provider_DictionaryModified(NetworkConnection oldItem, NetworkConnection newItem)
