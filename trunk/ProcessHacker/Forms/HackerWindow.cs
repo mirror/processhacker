@@ -880,7 +880,8 @@ namespace ProcessHacker
 
                 try
                 {
-                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf)
+                    if (treeProcesses.SelectedTreeNodes[0].IsLeaf && 
+                        (treeProcesses.Tree.Model as ProcessTreeModel).GetSortColumn() == "")
                         terminateProcessTreeMenuItem.Visible = false;
                     else
                         terminateProcessTreeMenuItem.Visible = true;
@@ -1977,6 +1978,10 @@ namespace ProcessHacker
             if (e.KeyData == Keys.Delete)
             {
                 terminateMenuItem_Click(null, null);
+            }
+            else if (e.KeyData == (Keys.Shift | Keys.Delete))
+            {
+                terminateProcessTreeMenuItem_Click(null, null);
             }
             else if (e.KeyData == Keys.Enter)
             {
