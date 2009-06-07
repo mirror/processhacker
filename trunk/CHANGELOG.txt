@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * Full support for Windows Vista SP2
    * Users/sessions list
+   * Window process finder
    * Thread wait analysis - right-click a thread and choose 
      Analyze > Wait to see what a thread is hanging on
    * Added ability to create dump files for processes

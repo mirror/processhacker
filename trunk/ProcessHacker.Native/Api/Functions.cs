@@ -200,6 +200,59 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region GDI
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(
+            [In] IntPtr Object
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr GetStockObject(
+            [In] GdiStockObject Object
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern bool Rectangle(
+            [In] IntPtr hDC,
+            [In] int LeftRect,   
+            [In] int TopRect,
+            [In] int RightRect,
+            [In] int BottomRect
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr SelectObject(
+            [In] IntPtr hDC,
+            [In] IntPtr hGdiObject
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreatePen(
+            [In] GdiPenStyle PenStyle,
+            [In] int Width,
+            [In] IntPtr Color
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern bool RestoreDC(
+            [In] IntPtr hDC,
+            [In] int SavedDC
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern int SaveDC(
+            [In] IntPtr hDC
+            );
+
+        [DllImport("gdi32.dll")]
+        public static extern GdiBlendMode SetROP2(
+            [In] IntPtr hDC,
+            [In] GdiBlendMode DrawMode
+            );
+
+        #endregion
+
         #region Jobs
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -1902,9 +1955,62 @@ namespace ProcessHacker.Native.Api
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool MoveWindow(
+            [In] IntPtr hWnd,
+            [In] int X,
+            [In] int Y,
+            [In] int Width,
+            [In] int Height,
+            [In] bool Repaint
+            );
+
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(
+            [In] int Index
+            );
+
+        [DllImport("user32.dll")]
+        public static extern bool InvalidateRect(
+            [In] IntPtr hWnd,
+            [In] IntPtr Rect,
+            [In] bool Erase
+            );
+
+        [DllImport("user32.dll")]
+        public static extern bool InvalidateRect(
+            [In] IntPtr hWnd,
+            [In] ref Rect Rect,
+            [In] bool Erase
+            );
+
+        [DllImport("user32.dll")]
+        public static extern bool RedrawWindow(
+            [In] IntPtr hWnd,
+            [In] IntPtr UpdateRect,
+            [In] IntPtr UpdateRgn,
+            [In] RedrawWindowFlags Flags
+            );
+
+        [DllImport("user32.dll")]
+        public static extern int ReleaseDC(
+            [In] IntPtr hWnd,
+            [In] IntPtr hDC
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowDC(
+            [In] IntPtr hWnd
+            );
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(
+            [In] Point location
+            );
+
+        [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetCursorPos(
-            [Out]out Point location
+            [Out] out Point location
             );
 
         [DllImport("user32.dll")]
@@ -1916,7 +2022,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(
-            [In] IntPtr windowHandle, 
+            [In] IntPtr hWnd, 
             [In] WindowMessage msg,
             [In] int w,
             [In] int l
@@ -1924,7 +2030,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessageTimeout(
-            [In] IntPtr windowHandle,
+            [In] IntPtr hWnd,
             [In] WindowMessage msg,
             [In] int w,
             [In] int l,
@@ -1935,7 +2041,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern bool PostMessage(
-            [In] IntPtr windowHandle,
+            [In] IntPtr hWnd,
             [In] WindowMessage msg,
             [In] int w,
             [In] int l
@@ -1987,9 +2093,9 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumThreadWindows(
-            [In] int threadId,
+            [In] int ThreadId,
             [In] [MarshalAs(UnmanagedType.FunctionPtr)] EnumThreadWndProc callback,
-            [In] int param
+            [In] int Param
             );
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -2077,15 +2183,15 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetClientRect(
-            [In] IntPtr hWnd, 
-            [Out] out Rectangle rect
+            [In] IntPtr hWnd,
+            [Out] out Rect rect
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(
-            [In] IntPtr hWnd, 
-            [Out] out Rectangle rect
+            [In] IntPtr hWnd,
+            [Out] out Rect rect
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -2104,7 +2210,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ScreenToClient(
             [In] IntPtr hWnd, 
-            ref Point rect
+            ref Point point
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -2131,10 +2237,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern short GetAsyncKeyState([In] uint key);
+        public static extern short GetAsyncKeyState(
+            [In] uint Key
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        public static extern IntPtr SetCapture([In] IntPtr handle);
+        public static extern IntPtr SetCapture(
+            [In] IntPtr handle
+            );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -2174,7 +2284,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AdjustWindowRect(
-            ref Rectangle rect, 
+            ref Rect rect, 
             [In] WindowStyles style,
             [In] [MarshalAs(UnmanagedType.Bool)]bool menu
             );

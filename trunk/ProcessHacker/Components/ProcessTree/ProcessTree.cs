@@ -412,10 +412,10 @@ namespace ProcessHacker
             get { return _treeModel.Nodes; }
         }
 
-        public TreeNodeAdv FindTreeNode(int PID)
+        public TreeNodeAdv FindTreeNode(int pid)
         {
-            if (_treeModel.Nodes.ContainsKey(PID))
-                return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[PID]));
+            if (_treeModel.Nodes.ContainsKey(pid))
+                return treeProcesses.FindNode(_treeModel.GetPath(_treeModel.Nodes[pid]));
             else
                 return null;
         }

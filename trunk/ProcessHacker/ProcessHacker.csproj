@@ -391,6 +391,9 @@
     <Compile Include="Components\SemaphoreProperties.Designer.cs">
       <DependentUpon>SemaphoreProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\TargetWindowButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Components\TimerProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -856,6 +859,7 @@
     <Content Include="base.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\mouse.png" />
     <Content Include="SharpDevelop\LICENSE.txt" />
     <Content Include="ProcessHacker.ico" />
     <None Include="Resources\bricks.png" />

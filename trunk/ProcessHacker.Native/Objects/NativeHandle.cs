@@ -21,10 +21,9 @@
  */
 
 using System;
-using System.Threading;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using ProcessHacker.Common;
 
 namespace ProcessHacker.Native.Objects
 {

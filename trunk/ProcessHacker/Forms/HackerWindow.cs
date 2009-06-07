@@ -538,22 +538,7 @@ namespace ProcessHacker
             if (listNetwork.SelectedItems.Count != 1)
                 return;
 
-            DeselectAll(treeProcesses.Tree);
-
-            try
-            {
-                TreeNodeAdv node = treeProcesses.FindTreeNode((int)listNetwork.SelectedItems[0].Tag);
-
-                node.EnsureVisible();
-                node.IsSelected = true;
-                treeProcesses.Tree.FullUpdate();
-
-                tabControl.SelectedTab = tabProcesses;
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+            this.SelectProcess((int)listNetwork.SelectedItems[0].Tag);
         }
 
         private void closeNetworkMenuItem_Click(object sender, EventArgs e)
@@ -1826,23 +1811,9 @@ namespace ProcessHacker
 
         private void goToProcessServiceMenuItem_Click(object sender, EventArgs e)
         {
-            DeselectAll(treeProcesses.Tree);
-
-            try
-            {
-                TreeNodeAdv node = treeProcesses.FindTreeNode(serviceP.Dictionary[
-                    listServices.SelectedItems[0].Name].Status.ServiceStatusProcess.ProcessID);
-
-                node.EnsureVisible();
-                node.IsSelected = true;
-                treeProcesses.Tree.FullUpdate();
-
-                tabControl.SelectedTab = tabProcesses;
-            }
-            catch (Exception ex)
-            {
-                Logging.Log(ex);
-            }
+            this.SelectProcess(
+                serviceP.Dictionary[listServices.SelectedItems[0].Name].
+                Status.ServiceStatusProcess.ProcessID);
         }
 
         private void startServiceMenuItem_Click(object sender, EventArgs e)
@@ -2270,6 +2241,26 @@ namespace ProcessHacker
         {
             foreach (TreeNodeAdv node in tree.AllNodes)
                 node.IsSelected = true;
+        }
+
+        private void SelectProcess(int pid)
+        {
+            DeselectAll(treeProcesses.Tree);
+
+            try
+            {
+                TreeNodeAdv node = treeProcesses.FindTreeNode(pid);
+
+                node.EnsureVisible();
+                node.IsSelected = true;
+                treeProcesses.Tree.FullUpdate();
+
+                tabControl.SelectedTab = tabProcesses;
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
         }
 
         private void UpdateSessions()
@@ -2869,6 +2860,11 @@ namespace ProcessHacker
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
+
+                toolStrip.Items.Add(new ToolStripSeparator());
+                var targetButton = new TargetWindowButton();
+                targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
+                toolStrip.Items.Add(targetButton);
 
                 try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
                 catch (Exception ex) { Logging.Log(ex); }    

@@ -23,12 +23,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.ComponentModel;
 
 namespace ProcessHacker.Native.Api
 {
@@ -112,6 +107,63 @@ namespace ProcessHacker.Native.Api
         Shutdown = 0x1,
         Force = 0x4,
         ForceIfHung = 0x10
+    }
+
+    public enum GdiBlendMode : int
+    {
+        Black = 1,
+        NotMergePen,
+        MaskNotPen,
+        NotCopyPen,
+        MaskPenNot,
+        Not,
+        XorPen,
+        NotMaskPen,
+        MaskPen,
+        NotXorPen,
+        Nop,
+        MergeNotPen,
+        CopyPen,
+        MergePenNot,
+        MergePen,
+        White,
+        Last
+    }
+
+    public enum GdiPenStyle : int
+    {
+        Solid = 0,
+        Dash,
+        Dot,
+        DashDot,
+        DashDotDot,
+        Null,
+        InsideFrame,
+        UserStyle,
+        Alternate
+    }
+
+    public enum GdiStockObject : int
+    {
+        WhiteBrush = 0,
+        LightGrayBrush,
+        GrayBrush,
+        DarkGrayBrush,
+        BlackBrush,
+        NullBrush,
+        WhitePen,
+        BlackPen,
+        NullPen,
+        OemFixedFont,
+        AnsiFixedFont,
+        AnsiVarFont,
+        SystemFont,
+        DeviceDefaultFont,
+        DefaultPalette,
+        SystemFixedFont,
+        DefaultGuiFont,
+        DcBrush,
+        DcPen
     }
 
     [Flags]
@@ -248,6 +300,27 @@ namespace ProcessHacker.Native.Api
         public string ServerName;
         public string PolicyPath;
         public int ProfileHandle;
+    }
+
+    [Flags]
+    public enum RedrawWindowFlags
+    {
+        Invalidate = 0x0001,
+        InternalPaint = 0x0002,
+        Erase = 0x0004,
+
+        Validate = 0x0008,
+        NoInternalPaint = 0x0010,
+        NoErase = 0x0020,
+
+        NoChildren = 0x0040,
+        AllChildren = 0x0080,
+
+        UpdateNow = 0x0100,
+        EraseNow = 0x0200,
+
+        Frame = 0x0400,
+        NoFrame = 0x0800
     }
 
     [Flags]
