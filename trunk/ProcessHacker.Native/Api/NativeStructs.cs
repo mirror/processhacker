@@ -500,7 +500,7 @@ namespace ProcessHacker.Native.Api
         public int LowPart;
         public int HighPart;
 
-        public Luid Allocate()
+        public static Luid Allocate()
         {
             NtStatus status;
             Luid luid;
@@ -974,7 +974,7 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct Sid
+    public struct SidStruct
     {
         public byte Revision;
         public byte SubAuthorityCount;
@@ -1702,6 +1702,11 @@ namespace ProcessHacker.Native.Api
         public bool StartsWith(UnicodeString unicodeString)
         {
             return this.StartsWith(unicodeString, false);
+        }
+
+        public override string ToString()
+        {
+            return this.Read();
         }
     }
 

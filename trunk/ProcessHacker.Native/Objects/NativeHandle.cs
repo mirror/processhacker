@@ -24,13 +24,14 @@ using System;
 using System.Threading;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
-    public class NativeHandle : IDisposable, ISecurable, ISynchronizable
+    public class NativeHandle : DisposableObject, IEquatable<NativeHandle>, ISecurable, ISynchronizable
     {
         public static NtStatus WaitAll(ISynchronizable[] objects)
         {
@@ -103,9 +104,6 @@ namespace ProcessHacker.Native.Objects
             return handle.Handle;
         }
 
-        private object _disposeLock = new object();
-        private bool _owned = true;
-        private bool _disposed = false;
         private IntPtr _handle;
 
         /// <summary>
@@ -131,43 +129,14 @@ namespace ProcessHacker.Native.Objects
         /// <param name="handle">The handle value.</param>
         /// <param name="owned">Specifies whether the handle will be closed automatically.</param>
         public NativeHandle(IntPtr handle, bool owned)
+            : base(owned)
         {
             _handle = handle;
-            _owned = owned;
         }
 
-        ~NativeHandle()
+        protected sealed override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
-        }
-
-        /// <summary>
-        /// Closes the handle.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing)
-                    Monitor.Enter(_disposeLock);
-
-                if (!_disposed && _owned)
-                {
-                    this.Close();
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                    Monitor.Exit(_disposeLock);
-            }
+            this.Close();
         }
 
         /// <summary>
@@ -181,22 +150,6 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Gets whether this handle is closed.
-        /// </summary>
-        public bool Disposed
-        {
-            get { return _disposed; }
-        }
-
-        /// <summary>
-        /// Gets whether the handle will be automatically closed.
-        /// </summary>
-        public bool Owned
-        {
-            get { return _owned; }
-        }
-
-        /// <summary>
         /// Gets the handle value.
         /// </summary>
         public IntPtr Handle
@@ -206,10 +159,32 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Determines if the specified object is equal to the current handle.
+        /// </summary>
+        /// <param name="obj">The object to compare.</param>
+        /// <returns>Whether the two objects are equal.</returns>
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as NativeHandle);
+        }
+
+        /// <summary>
+        /// Determines if the specified handle is equal to the current handle.
+        /// </summary>
+        /// <param name="obj">The handle to compare.</param>
+        /// <returns>Whether the two handles are equal.</returns>
+        public bool Equals(NativeHandle obj)
+        {
+            if (obj == null)
+                return false;
+            return obj.Handle == this.Handle;
+        }
+
+        /// <summary>
         /// Gets certain information about the handle.
         /// </summary>
         /// <returns>A HANDLE_FLAGS value.</returns>
-        public Win32HandleFlags GetHandleFlags()
+        public virtual Win32HandleFlags GetHandleFlags()
         {
             Win32HandleFlags flags;
 
@@ -220,10 +195,19 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets a unique hash code for the handle.
+        /// </summary>
+        /// <returns>A hash code.</returns>
+        public override int GetHashCode()
+        {
+            return _handle.ToInt32();
+        }
+
+        /// <summary>
         /// Gets the handle's name.
         /// </summary>
         /// <returns>A string.</returns>
-        public string GetObjectName()
+        public virtual string GetObjectName()
         {
             NtStatus status;
             int retLength;
@@ -256,7 +240,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the handle's type name.
         /// </summary>
         /// <returns>A string.</returns>
-        public string GetObjectTypeName()
+        public virtual string GetObjectTypeName()
         {
             NtStatus status;
             int retLength;
@@ -304,13 +288,13 @@ namespace ProcessHacker.Native.Objects
                 )) != 0)
                 Win32.ThrowLastError(result);
 
-            return new SecurityDescriptor(LocalMemoryAlloc.FromPointer(securityDescriptor));
+            return new SecurityDescriptor(new LocalMemoryAlloc(securityDescriptor));
         }
 
         /// <summary>
         /// Makes the object referenced by the handle permanent.
         /// </summary>
-        public void MakeObjectPermanent()
+        public virtual void MakeObjectPermanent()
         {
             NtStatus status;
 
@@ -322,7 +306,7 @@ namespace ProcessHacker.Native.Objects
         /// Makes the object referenced by the handle temporary. The object 
         /// will be deleted once the last handle to it is closed.
         /// </summary>
-        public void MakeObjectTemporary()
+        public virtual void MakeObjectTemporary()
         {
             NtStatus status;
 
@@ -335,7 +319,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         /// <param name="mask">Specifies which flags to set.</param>
         /// <param name="flags">The values of the flags to set.</param>
-        public void SetHandleFlags(Win32HandleFlags mask, Win32HandleFlags flags)
+        public virtual void SetHandleFlags(Win32HandleFlags mask, Win32HandleFlags flags)
         {
             if (!Win32.SetHandleInformation(this, mask, flags))
                 Win32.ThrowLastError();
@@ -446,6 +430,25 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Closes the current handle and assigns a new handle to the NativeHandle instance.
+        /// </summary>
+        /// <param name="newHandle">The new handle value.</param>
+        protected void SwapHandle(IntPtr newHandle)
+        {
+            this.Close();
+            _handle = newHandle;
+        }
+
+        /// <summary>
+        /// Gets a string that represents the handle.
+        /// </summary>
+        /// <returns>A string.</returns>
+        public override string ToString()
+        {
+            return this.GetType().Name + ": " + _handle.ToString("x");
+        }
+
+        /// <summary>
         /// Waits for the object to be signaled.
         /// </summary>
         public virtual NtStatus Wait()
@@ -533,7 +536,7 @@ namespace ProcessHacker.Native.Objects
 
             return status;
         }
-    }
+}
 
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
@@ -593,6 +596,19 @@ namespace ProcessHacker.Native.Objects
             Win32.DuplicateObject(processHandle, handle, ProcessHandle.GetCurrent(), out newHandle,
                 (int)Convert.ChangeType(access, typeof(int)), 0, 0);
             this.Handle = newHandle;
+        }
+
+        /// <summary>
+        /// Attempts to duplicate the handle with different access rights.
+        /// </summary>
+        /// <param name="access">The new access rights.</param>
+        public void ChangeAccess(TAccess access)
+        {
+            IntPtr newHandle;
+
+            Win32.DuplicateObject(ProcessHandle.GetCurrent(), this, ProcessHandle.GetCurrent(), out newHandle,
+                (int)Convert.ChangeType(access, typeof(int)), 0, 0);
+            this.SwapHandle(newHandle);
         }
 
         /// <summary>

@@ -24,8 +24,7 @@ namespace ProcessHacker.Native.Security
 
         public SecurityDescriptor(IntPtr sd)
         {
-            _sd = MemoryAlloc.FromPointer(sd);
-            _sd.Owned = false;
+            _sd = new MemoryAlloc(sd, true);
         }
 
         ~SecurityDescriptor()

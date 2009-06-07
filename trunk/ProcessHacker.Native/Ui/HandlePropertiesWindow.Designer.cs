@@ -18,9 +18,6 @@
                 components.Dispose();
             }
 
-            foreach (System.Windows.Forms.Control c in groupObjectInfo.Controls)
-                c.Dispose();
-
             base.Dispose(disposing);
         }
 

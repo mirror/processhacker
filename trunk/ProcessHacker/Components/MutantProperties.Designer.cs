@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _mutantHandle.Dereference(disposing);
+
             base.Dispose(disposing);
         }
 

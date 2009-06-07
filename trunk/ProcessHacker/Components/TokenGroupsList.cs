@@ -26,24 +26,24 @@ using ProcessHacker.Common;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 
 namespace ProcessHacker.Components
 {
     public partial class TokenGroupsList : UserControl
     {
-        public TokenGroupsList(TokenHandle.TokenGroupsData groups)
+        public TokenGroupsList(Sid[] groups)
         {
             InitializeComponent();
 
-            for (int i = 0; i < groups.Groups.GroupCount; i++)
+            for (int i = 0; i < groups.Length; i++)
             {
                 ListViewItem item = listGroups.Items.Add(new ListViewItem());
 
-                item.Text = Windows.GetAccountName(groups.Groups.Groups[i].Sid, Properties.Settings.Default.ShowAccountDomains);
-                item.BackColor = GetAttributeColor(groups.Groups.Groups[i].Attributes);
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
-                    GetAttributeString(groups.Groups.Groups[i].Attributes)));
+                item.Text = groups[i].GetFullName(Properties.Settings.Default.ShowAccountDomains);
+                item.BackColor = GetAttributeColor(groups[i].Attributes);
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(groups[i].Attributes)));
             }
 
             listGroups.ListViewItemSorter = new SortedListViewComparer(listGroups);

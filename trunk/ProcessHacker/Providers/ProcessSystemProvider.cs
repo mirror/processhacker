@@ -864,7 +864,7 @@ namespace ProcessHacker
                                 {
                                     using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
-                                        try { item.Username = thandle.GetUser().GetName(true); }
+                                        try { item.Username = thandle.GetUser().GetFullName(true); }
                                         catch { }
                                         try { item.ElevationType = thandle.GetElevationType(); }
                                         catch { }
@@ -875,12 +875,11 @@ namespace ProcessHacker
                                         {
                                             var groups = thandle.GetGroups();
 
-                                            for (int i = 0; i < groups.Groups.GroupCount; i++)
+                                            for (int i = 0; i < groups.Length; i++)
                                             {
-                                                if ((groups.Groups.Groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
+                                                if ((groups[i].Attributes & SidAttributes.IntegrityEnabled) != 0)
                                                 {
-                                                    item.Integrity = Windows.GetAccountName(
-                                                        groups.Groups.Groups[i].Sid, false).Replace(" Mandatory Level", "");
+                                                    item.Integrity = groups[i].GetFullName(false).Replace(" Mandatory Level", "");
 
                                                     if (item.Integrity == "Untrusted")
                                                         item.IntegrityLevel = 0;
@@ -895,9 +894,9 @@ namespace ProcessHacker
                                                     else if (item.Integrity == "Installer")
                                                         item.IntegrityLevel = 5;
                                                 }
-                                            }
 
-                                            groups.Data.Dispose();
+                                                groups[i].Dispose();
+                                            }
                                         }
                                         catch
                                         { }
@@ -995,7 +994,7 @@ namespace ProcessHacker
 
                         try
                         {
-                            item.Username = Windows.GetAccountName(tsProcesses[pid], true);
+                            item.Username = Sid.FromPointer(tsProcesses[pid]).GetFullName(true);
                         }
                         catch
                         { }

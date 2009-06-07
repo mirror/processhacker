@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _semaphoreHandle.Dereference(disposing);
+
             base.Dispose(disposing);
         }
 

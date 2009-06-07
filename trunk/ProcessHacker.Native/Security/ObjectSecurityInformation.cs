@@ -99,7 +99,7 @@ namespace ProcessHacker.Native.Security
             {
                 var sd = ProcessHandle.GetCurrent().GetSecurity();
 
-                sd.Memory.Owned = false;
+                sd.Memory.Reference(); // prevent the memory from being freed
                 SecurityDescriptor = sd;
             }
             catch (WindowsException ex)

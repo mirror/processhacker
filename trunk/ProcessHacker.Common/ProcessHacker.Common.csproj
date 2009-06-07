@@ -40,8 +40,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseConverter.cs" />
@@ -52,6 +54,9 @@
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="HistoryManager.cs" />
     <Compile Include="IdGenerator.cs" />
+    <Compile Include="DisposableObject.cs" />
+    <Compile Include="IReferenceCountedObject.cs" />
+    <Compile Include="Logging.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeakReference.cs" />

@@ -32,12 +32,6 @@ namespace ProcessHacker.Native.Objects
     /// </summary>
     public class TokenHandle : NativeHandle<TokenAccess>, IEquatable<TokenHandle>
     {
-        public struct TokenGroupsData
-        {
-            public TokenGroups Groups;
-            public MemoryAlloc Data;
-        }
-
         /// <summary>
         /// Creates a token handle using an existing handle. 
         /// The handle will not be closed automatically.
@@ -201,42 +195,40 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's groups.
         /// </summary>
         /// <returns>A TokenGroupsData struct.</returns>
-        public TokenGroupsData GetGroups()
+        public Sid[] GetGroups()
+        {
+            return this.GetGroupsInternal(TokenInformationClass.TokenGroups);
+        }
+
+        private Sid[] GetGroupsInternal(TokenInformationClass infoClass)
         {
             int retLen = 0;
 
-            Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, IntPtr.Zero, 0, out retLen);
+            Win32.GetTokenInformation(this, infoClass, IntPtr.Zero, 0, out retLen);
 
             MemoryAlloc data = new MemoryAlloc(retLen);
 
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenGroups, data,
+            if (!Win32.GetTokenInformation(this, infoClass, data,
                 data.Size, out retLen))
                 Win32.ThrowLastError();
 
-            return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
-        }
+            uint count = data.ReadUInt32(0);
+            Sid[] sids = new Sid[count];
 
-        private TokenGroups GetGroupsInternal(MemoryAlloc data)
-        {
-            uint number = data.ReadUInt32(0);
-            TokenGroups groups = new TokenGroups();
-
-            groups.GroupCount = number;
-            groups.Groups = new SidAndAttributes[number];
-
-            for (int i = 0; i < number; i++)
+            for (int i = 0; i < count; i++)
             {
-                groups.Groups[i] = data.ReadStruct<SidAndAttributes>(4, i);
+                var saa = data.ReadStruct<SidAndAttributes>(4, i);
+                sids[i] = new Sid(saa.Sid, saa.Attributes);
             }
 
-            return groups;
+            return sids;
         }
 
         /// <summary>
         /// Gets the token's owner.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public WindowsSid GetOwner()
+        public Sid GetOwner()
         {
             int retLen;
 
@@ -248,7 +240,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(data.ReadIntPtr(0));
+                return new Sid(data.ReadIntPtr(0));
             }
         }
 
@@ -256,7 +248,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's primary group.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public WindowsSid GetPrimaryGroup()
+        public Sid GetPrimaryGroup()
         {
             int retLen;
 
@@ -268,7 +260,7 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                return new WindowsSid(data.ReadIntPtr(0));
+                return new Sid(data.ReadIntPtr(0));
             }
         }
 
@@ -307,19 +299,9 @@ namespace ProcessHacker.Native.Objects
         /// Gets the restricted token's restricting SIDs.
         /// </summary>
         /// <returns>A TokenGroupsData struct.</returns>
-        public TokenGroupsData GetRestrictingGroups()
+        public Sid[] GetRestrictingGroups()
         {
-            int retLen = 0;
-
-            Win32.GetTokenInformation(this, TokenInformationClass.TokenRestrictedSids, IntPtr.Zero, 0, out retLen);
-
-            MemoryAlloc data = new MemoryAlloc(retLen);
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenRestrictedSids, data,
-                data.Size, out retLen))
-                Win32.ThrowLastError();
-
-            return new TokenGroupsData() { Groups = GetGroupsInternal(data), Data = data };
+            return this.GetGroupsInternal(TokenInformationClass.TokenRestrictedSids);
         }
 
         /// <summary>
@@ -358,7 +340,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's user.
         /// </summary>
         /// <returns>A WindowsSID instance.</returns>
-        public WindowsSid GetUser()
+        public Sid GetUser()
         {
             int retLen;
 
@@ -372,7 +354,7 @@ namespace ProcessHacker.Native.Objects
 
                 TokenUser user = data.ReadStruct<TokenUser>();
 
-                return new WindowsSid(user.User.Sid);
+                return new Sid(user.User.Sid, user.User.Attributes);
             }
         }
 

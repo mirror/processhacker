@@ -31,18 +31,23 @@ namespace ProcessHacker.Native
     /// </summary>
     public class WtsMemoryAlloc : MemoryAlloc
     {
+        public WtsMemoryAlloc(IntPtr memory)
+            : this(memory, true)
+        { }
+
         /// <summary>
         /// Creates a memory allocation from an existing Terminal Server managed allocation. 
         /// </summary>
         /// <param name="memory">A pointer to the allocated memory.</param>
-        /// <returns>A new memory allocation object.</returns>
-        public static new WtsMemoryAlloc FromPointer(IntPtr memory)
-        {
-            return new WtsMemoryAlloc() { Memory = memory };
-        }
-
-        private WtsMemoryAlloc()
+        /// <param name="owned">Whether the memory allocation should be freed automatically.</param>
+        public WtsMemoryAlloc(IntPtr memory, bool owned)
+            : base(memory, owned)
         { }
+
+        protected override void Free()
+        {
+            Win32.WTSFreeMemory(this);
+        }
 
         public override void Resize(int newSize)
         {
@@ -55,11 +60,6 @@ namespace ProcessHacker.Native
             {
                 throw new NotSupportedException();
             }
-        }
-
-        protected override void Free()
-        {
-            Win32.WTSFreeMemory(this);
         }
     }
 }

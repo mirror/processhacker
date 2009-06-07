@@ -10,6 +10,14 @@ namespace ProcessHacker.Native
     /// </summary>
     public class LocalMemoryAlloc : MemoryAlloc
     {
+        public LocalMemoryAlloc(IntPtr memory)
+            : this(memory, true)
+        { }
+
+        public LocalMemoryAlloc(IntPtr memory, bool owned)
+            : base(memory, owned)
+        { }
+
         public LocalMemoryAlloc(int size)
             : this(size, AllocFlags.LPtr)
         { }

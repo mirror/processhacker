@@ -417,7 +417,6 @@
     <Compile Include="UI\Icons\IoHistoryIcon.cs" />
     <Compile Include="UI\Icons\CpuHistoryIcon.cs" />
     <Compile Include="UI\Icons\ProviderIcon.cs" />
-    <Compile Include="Program\Logging.cs" />
     <Compile Include="Program\ThemingScope.cs" />
     <Compile Include="UI\Actions\ServiceActions.cs" />
     <Compile Include="Components\ColorModifier.cs">

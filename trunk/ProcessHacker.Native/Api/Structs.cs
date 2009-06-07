@@ -629,6 +629,14 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct WtsClientAddress
+    {
+        public int AddressFamily;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] Address;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct WtsClientDisplay
     {
         public int HorizontalResolution;
@@ -650,6 +658,6 @@ namespace ProcessHacker.Native.Api
     {
         public int SessionID;
         public string WinStationName;
-        WtsConnectStateClass State;
+        public WtsConnectStateClass State;
     }
 }

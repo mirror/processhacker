@@ -31,18 +31,23 @@ namespace ProcessHacker.Native
     /// </summary>
     public class LsaMemoryAlloc : MemoryAlloc
     {
+        public LsaMemoryAlloc(IntPtr memory)
+            : this(memory, true)
+        { }
+
         /// <summary>
         /// Creates a memory allocation from an existing LSA managed allocation. 
         /// </summary>
         /// <param name="memory">A pointer to the allocated memory.</param>
-        /// <returns>A new memory allocation object.</returns>
-        public static new LsaMemoryAlloc FromPointer(IntPtr memory)
-        {
-            return new LsaMemoryAlloc() { Memory = memory };
-        }
-
-        private LsaMemoryAlloc()
+        /// <param name="owned">Whether the memory allocation should be freed automatically.</param>
+        public LsaMemoryAlloc(IntPtr memory, bool owned)
+            : base(memory, owned)
         { }
+
+        protected override void Free()
+        {
+            Win32.LsaFreeMemory(this);
+        }
 
         public override void Resize(int newSize)
         {
@@ -55,11 +60,6 @@ namespace ProcessHacker.Native
             {
                 throw new NotSupportedException();
             }
-        }
-
-        protected override void Free()
-        {
-            Win32.LsaFreeMemory(this);
         }
     }
 }

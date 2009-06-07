@@ -58,23 +58,9 @@ namespace ProcessHacker
                 using (var policy =
                     new LsaPolicyHandle(PolicyAccess.LookupNames | PolicyAccess.ViewLocalInformation))
                 {
-                    IntPtr sids;
-                    int length;
-
-                    if (Win32.LsaEnumerateAccountsWithUserRight(policy, IntPtr.Zero, out sids, out length) == 0)
-                    {
-                        using (LsaMemoryAlloc memory = LsaMemoryAlloc.FromPointer(sids))
-                        {
-                            for (int i = 0; i < length; i++)
-                            {
-                                IntPtr sid = memory.ReadIntPtr(0, i);
-                                SidNameUse type = Windows.GetAccountType(sid);
-
-                                if (type == SidNameUse.User)
-                                    users.Add(Windows.GetAccountName(sid, true));
-                            }
-                        }
-                    }
+                    foreach (var sid in policy.GetAccounts())
+                        if (sid.NameUse == SidNameUse.User)
+                            users.Add(sid.GetFullName(true));
                 }
             }
             catch
@@ -258,33 +244,21 @@ namespace ProcessHacker
         {
             ContextMenu menu = new ContextMenu();
 
-            foreach (var session in Win32.TSEnumSessions())
+            foreach (var session in TerminalServerHandle.GetCurrent().GetSessions())
             {
                 MenuItem item = new MenuItem();
-                string user = null;
-                string domain = null;
-                int retLen;
 
-                Win32.WTSQuerySessionInformation(IntPtr.Zero, session.SessionID, WtsInformationClass.UserName, out user, out retLen);
-                Win32.WTSQuerySessionInformation(IntPtr.Zero, session.SessionID, WtsInformationClass.DomainName, out domain, out retLen);
+                string userName = session.DomainName + "\\" + session.UserName;
+                string displayName = session.SessionId.ToString();
 
-                string username = domain + "\\" + user;
-                string displayName = "";
-
-                displayName = session.SessionID.ToString();
-
-                if (session.WinStationName != "")
-                    displayName += ": " + session.WinStationName +
-                    (username != "\\" ? (" (" + username + ")") : "");
-                else if (username != "\\")
-                    displayName += ": " + username;
+                if (!string.IsNullOrEmpty(session.Name))
+                    displayName += ": " + session.Name + (userName != "\\" ? (" (" + userName + ")") : "");
+                else if (userName != "\\")
+                    displayName += ": " + userName;
 
                 item.Text = displayName;
-                item.Tag = session.SessionID;
+                item.Tag = session.SessionId;
                 item.Click += new EventHandler(item_Click);
-
-                Win32.WTSFreeMemory(user);
-                Win32.WTSFreeMemory(domain);
 
                 menu.MenuItems.Add(item);
             }

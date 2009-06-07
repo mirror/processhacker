@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _jobObject.Dereference(disposing);
+
             base.Dispose(disposing);
         }
 

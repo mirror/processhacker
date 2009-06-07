@@ -701,9 +701,15 @@ namespace ProcessHacker.Native.Api
         ImeKeyDown = 0x290,
         ImeKeyUp = 0x291,
 
+        NcMouseHover = 0x2a0,
         MouseHover = 0x2a1,
         NcMouseLeave = 0x2a2,
         MouseLeave = 0x2a3,
+
+        WtsSessionChange = 0x2b1,
+
+        TabletFirst = 0x2c0,
+        TabletLast = 0x2df,
 
         Cut = 0x300,
         Copy = 0x301,
@@ -843,5 +849,33 @@ namespace ProcessHacker.Native.Api
         OutgoingBytes,
         IncomingFrames,
         OutgoingFrames
+    }
+
+    public enum WtsNotificationFlags : int
+    {
+        ThisSession = 0x0,
+        AllSessions = 0x1
+    }
+
+    public enum WtsSessionChangeEvent : int
+    {
+        ConsoleConnect = 1,
+        ConsoleDisconnect,
+        RemoteConnect,
+        RemoteDisconnect,
+        SessionLogon,
+        SessionLogoff,
+        SessionLock,
+        SessionUnlock,
+        RemoteControl
+    }
+
+    public enum WtsShutdownFlags : int
+    {
+        Logoff = 0x1,
+        Shutdown = 0x2,
+        Reboot = 0x4,
+        Poweroff = 0x8,
+        FastReboot = 0x10
     }
 }

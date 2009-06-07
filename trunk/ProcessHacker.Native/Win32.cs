@@ -253,63 +253,6 @@ namespace ProcessHacker.Native.Api
 
         #region Terminal Server
 
-        public static WtsSessionInfo[] TSEnumSessions()
-        {
-            IntPtr sessions;
-            int count;
-            WtsSessionInfo[] returnSessions;
-
-            WTSEnumerateSessions(IntPtr.Zero, 0, 1, out sessions, out count);
-            returnSessions = new WtsSessionInfo[count];
-
-            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(sessions);
-
-            for (int i = 0; i < count; i++)
-            {
-                returnSessions[i] = data.ReadStruct<WtsSessionInfo>(i);
-            }
-
-            data.Dispose();
-
-            return returnSessions;
-        }
- 
-        /// <remarks>
-        /// Before we had the WtsMemoryAlloc class, these enumerator 
-        /// functions queried LSA about each process' username, 
-        /// regardless of whether they were going to be used.
-        /// If they didn't do that, the memory allocated for the 
-        /// data would be freed and we would end up with invalid 
-        /// SID pointers. This structure keeps a WtsMemoryAlloc 
-        /// instance alive so that it isn't freed until told to 
-        /// do so. This then means that the enumerator functions 
-        /// don't need to query LSA so often.
-        /// </remarks>
-        public struct WtsEnumProcessesData
-        {
-            public WtsProcessInfo[] Processes;
-            public WtsMemoryAlloc Memory;
-        }
-
-        public static WtsEnumProcessesData TSEnumProcesses()
-        {
-            IntPtr processes;
-            int count;
-            WtsProcessInfo[] returnProcesses;
-
-            WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out processes, out count);
-            returnProcesses = new WtsProcessInfo[count];
-
-            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
-
-            for (int i = 0; i < count; i++)
-            {
-                returnProcesses[i] = data.ReadStruct<WtsProcessInfo>(i);
-            }
-
-            return new WtsEnumProcessesData() { Processes = returnProcesses, Memory = data };
-        }
-
         public struct WtsEnumProcessesFastData
         {
             public int[] PIDs;
@@ -329,7 +272,7 @@ namespace ProcessHacker.Native.Api
             pids = new int[count];
             sids = new IntPtr[count];
 
-            WtsMemoryAlloc data = WtsMemoryAlloc.FromPointer(processes);
+            WtsMemoryAlloc data = new WtsMemoryAlloc(processes);
             WtsProcessInfo* dataP = (WtsProcessInfo*)data.Memory.ToPointer();
 
             for (int i = 0; i < count; i++)

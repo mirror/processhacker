@@ -56,10 +56,10 @@ namespace ProcessHacker.Components
                 {
                     try
                     {
-                        textUser.Text = thandle.GetUser().GetName(true);
-                        textUserSID.Text = thandle.GetUser().GetStringSID();
-                        textOwner.Text = thandle.GetOwner().GetName(true);
-                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetName(true);
+                        textUser.Text = thandle.GetUser().GetFullName(true);
+                        textUserSID.Text = thandle.GetUser().StringSid;
+                        textOwner.Text = thandle.GetOwner().GetFullName(true);
+                        textPrimaryGroup.Text = thandle.GetPrimaryGroup().GetFullName(true);
                     }
                     catch (Exception ex)
                     {
@@ -139,8 +139,12 @@ namespace ProcessHacker.Components
 
                     try
                     {
-                        TokenHandle.TokenGroupsData groups = thandle.GetGroups();
+                        var groups = thandle.GetGroups();
+
                         _groups = new TokenGroupsList(groups);
+
+                        foreach (var group in groups)
+                            group.Dispose();
 
                         _groups.Dock = DockStyle.Fill;
                         tabGroups.Controls.Add(_groups);

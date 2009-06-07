@@ -32,7 +32,7 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Symbols
 {
-    public class SymbolProvider : IDisposable
+    public class SymbolProvider : DisposableObject
     {
         private static object _callLock = new object();
         private static IdGenerator _idGen = new IdGenerator();
@@ -52,7 +52,6 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        private bool _disposed = false;
         private object _disposeLock = new object();
         private ProcessHandle _processHandle;
         private IntPtr _handle;
@@ -81,32 +80,22 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        ~SymbolProvider()
+        protected override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
-        }
+            if (disposing)
+            {
+                Monitor.Enter(_disposeLock);
+                Monitor.Enter(_callLock);
+            }
 
-        private void Dispose(bool disposing)
-        {
             try
             {
-                if (disposing)
-                {
-                    Monitor.Enter(_disposeLock);
-                    Monitor.Enter(_callLock);
-                }
+                if (!Win32.SymCleanup(_handle))
+                    Win32.ThrowLastError();
 
-                if (!_disposed)
-                {
-                    if (!Win32.SymCleanup(_handle))
-                        Win32.ThrowLastError();
-
-                    // If we didn't use a process handle, we got it from the ID generator
-                    if (_processHandle == null)
-                        _idGen.Push(_handle.ToInt32());
-
-                    _disposed = true;
-                }
+                // If we didn't use a process handle, we got it from the ID generator
+                if (_processHandle == null)
+                    _idGen.Push(_handle.ToInt32());
             }
             finally
             {
@@ -116,12 +105,6 @@ namespace ProcessHacker.Native.Symbols
                     Monitor.Exit(_disposeLock);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public IntPtr Handle

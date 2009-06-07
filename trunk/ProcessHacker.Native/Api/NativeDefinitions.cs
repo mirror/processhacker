@@ -45,7 +45,7 @@ namespace ProcessHacker.Native.Api
         public const int SecurityDescriptorMinLength = 20;
         public const int SecurityDescriptorRevision = 1;
         public static readonly int SecurityMaxSidSize =
-            Marshal.SizeOf(typeof(Sid)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
+            Marshal.SizeOf(typeof(SidStruct)) - sizeof(int) + (SidMaxSubAuthorities * sizeof(int));
         public const int SidMaxSubAuthorities = 15;
         public const int SidRecommendedSubAuthorities = 1;
         public const int SidRevision = 1;

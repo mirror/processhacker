@@ -46,5 +46,28 @@ namespace ProcessHacker.Native.Objects
 
             this.Handle = handle;
         }
+
+        public Sid[] GetAccounts()
+        {
+            NtStatus status;
+            IntPtr data;
+            int length;
+
+            if ((status = Win32.LsaEnumerateAccountsWithUserRight(
+                this, IntPtr.Zero, out data, out length)) != NtStatus.Success)
+                Win32.ThrowLastError(status);
+
+            Sid[] sids = new Sid[length];
+
+            using (var memory = new LsaMemoryAlloc(data))
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    sids[i] = new Sid(memory.ReadIntPtr(0, i));
+                }
+            }
+
+            return sids;
+        }
     }
 }

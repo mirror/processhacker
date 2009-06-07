@@ -9,13 +9,14 @@ namespace ProcessHacker.Components
     public partial class TimerProperties : UserControl
     {
         private TimerHandle _timerHandle;
-        private NativeHandle<TimerAccess> _dupHandle;
 
         public TimerProperties(TimerHandle timerHandle)
         {
             InitializeComponent();
 
             _timerHandle = timerHandle;
+            _timerHandle.Reference();
+
             this.UpdateInfo();
         }
 
@@ -39,8 +40,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                _dupHandle = _timerHandle.Duplicate(TimerAccess.QueryState | TimerAccess.ModifyState);
-                _timerHandle = TimerHandle.FromHandle(_dupHandle);
+                _timerHandle.ChangeAccess(TimerAccess.QueryState | TimerAccess.ModifyState);
                 _timerHandle.Cancel();
             }
             catch (Exception ex)

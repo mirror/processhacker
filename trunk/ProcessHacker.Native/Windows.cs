@@ -80,66 +80,6 @@ namespace ProcessHacker.Native
             }
         }
 
-        public static string GetAccountName(IntPtr sid, bool includeDomain)
-        {
-            StringBuilder name = new StringBuilder(255);
-            StringBuilder domain = new StringBuilder(255);
-            int namelen = 255;
-            int domainlen = 255;
-            SidNameUse use = SidNameUse.User;
-
-            try
-            {
-                if (!Win32.LookupAccountSid(null, sid, name, ref namelen, domain, ref domainlen, out use))
-                {
-                    // if the name is longer than 255 characters, increase the capacity.
-                    name.EnsureCapacity(namelen);
-                    domain.EnsureCapacity(domainlen);
-
-                    if (!Win32.LookupAccountSid(null, sid, name, ref namelen, domain, ref domainlen, out use))
-                        Win32.ThrowLastError();
-                }
-            }
-            catch
-            {
-                // if we didn't find a name, then return the string SID version.
-                return (new System.Security.Principal.SecurityIdentifier(sid)).ToString();
-            }
-
-            if (includeDomain)
-            {
-                return ((domain.ToString() != "") ? domain.ToString() + "\\" : "") + name.ToString();
-            }
-            else
-            {
-                return name.ToString();
-            }
-        }
-
-        public static SidNameUse GetAccountType(IntPtr SID)
-        {
-            StringBuilder name = new StringBuilder(255);
-            StringBuilder domain = new StringBuilder(255);
-            int namelen = 255;
-            int domainlen = 255;
-            SidNameUse use = SidNameUse.User;
-
-            // we don't actually need to get the account name
-            if (!Win32.LookupAccountSid(null, SID, name, ref namelen, domain, ref domainlen, out use))
-            {
-                name.EnsureCapacity(namelen);
-                domain.EnsureCapacity(domainlen);
-
-                if (!Win32.LookupAccountSid(null, SID, name, ref namelen, domain, ref domainlen, out use))
-                {
-                    if (name.ToString() == "" && domain.ToString() == "")
-                        throw new Exception("Could not lookup account SID: " + Win32.GetLastErrorMessage());
-                }
-            }
-
-            return use;
-        }
-
         /// <summary>
         /// Enumerates the handles opened by every running process.
         /// </summary>
@@ -899,7 +839,10 @@ namespace ProcessHacker.Native
                             using (var tokenHandle = 
                                 new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
                             {
-                                info.BestName = TokenHandle.FromHandle(tokenHandle).GetUser().GetName(true);
+                                var sid = TokenHandle.FromHandle(tokenHandle).GetUser();
+
+                                using (sid)
+                                    info.BestName = sid.GetFullName(true);
                             }
                         }
 

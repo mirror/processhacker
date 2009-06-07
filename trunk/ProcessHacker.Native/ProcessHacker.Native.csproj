@@ -58,8 +58,10 @@
     <Compile Include="Memory\MemoryAllocStream.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
+    <Compile Include="Objects\TerminalServerHandle.cs" />
     <Compile Include="Security\IoCompletionAccess.cs" />
     <Compile Include="Security\KeyAccess.cs" />
+    <Compile Include="Security\Sid.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Threading\CurrentThread.cs" />
@@ -157,7 +159,6 @@
     <Compile Include="OSVersion.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="WindowsException.cs" />
-    <Compile Include="WindowsSid.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

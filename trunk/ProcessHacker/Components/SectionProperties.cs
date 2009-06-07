@@ -13,6 +13,8 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _sectionHandle = sectionHandle;
+            _sectionHandle.Reference();
+
             this.UpdateInfo();
         }
 

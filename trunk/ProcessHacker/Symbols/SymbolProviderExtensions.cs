@@ -21,15 +21,10 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 using ProcessHacker.Components;
-using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Symbols

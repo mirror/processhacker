@@ -33,7 +33,7 @@ using System.Collections.Generic;
 namespace ProcessHacker.Common
 {
     /// <summary>
-    /// Defines subtraction for a numberic type.
+    /// Defines subtraction for a numeric type.
     /// </summary>
     /// <typeparam name="T">The numeric type.</typeparam>
     public interface ISubtractor<T>

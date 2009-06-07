@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _timerHandle.Dereference(disposing);
+
             base.Dispose(disposing);
         }
 

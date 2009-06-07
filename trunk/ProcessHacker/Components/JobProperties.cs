@@ -39,6 +39,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _jobObject = jobObject;
+            _jobObject.Reference();
             timerUpdate.Interval = Properties.Settings.Default.RefreshInterval;
             this.UpdateStatistics();
 

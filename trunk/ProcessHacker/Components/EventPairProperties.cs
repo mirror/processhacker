@@ -14,6 +14,7 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _eventPairHandle = eventPairHandle;
+            _eventPairHandle.Reference();
         }
 
         private void buttonSetHigh_Click(object sender, EventArgs e)

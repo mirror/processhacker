@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Components
@@ -18,6 +12,8 @@ namespace ProcessHacker.Components
             InitializeComponent();
 
             _mutantHandle = mutantHandle;
+            _mutantHandle.Reference();
+
             this.UpdateInfo();
         }
 

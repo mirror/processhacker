@@ -10,13 +10,14 @@ namespace ProcessHacker.Components
     public partial class SemaphoreProperties : UserControl
     {
         private SemaphoreHandle _semaphoreHandle;
-        private NativeHandle<SemaphoreAccess> _dupHandle;
 
         public SemaphoreProperties(SemaphoreHandle semaphoreHandle)
         {
             InitializeComponent();
 
             _semaphoreHandle = semaphoreHandle;
+            _semaphoreHandle.Reference();
+
             this.UpdateInfo();
         }
 
@@ -32,8 +33,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                _dupHandle = _semaphoreHandle.Duplicate((SemaphoreAccess)StandardRights.Synchronize);
-                _semaphoreHandle = SemaphoreHandle.FromHandle(_dupHandle);
+                _semaphoreHandle.ChangeAccess((SemaphoreAccess)StandardRights.Synchronize);
                 if (_semaphoreHandle.Wait(0) != NtStatus.Success)
                     throw new Exception("Could not acquire the semaphore.");
                 this.UpdateInfo();
@@ -48,8 +48,7 @@ namespace ProcessHacker.Components
         {
             try
             {
-                _dupHandle = _semaphoreHandle.Duplicate(SemaphoreAccess.QueryState | SemaphoreAccess.ModifyState);
-                _semaphoreHandle = SemaphoreHandle.FromHandle(_dupHandle);
+                _semaphoreHandle.ChangeAccess(SemaphoreAccess.QueryState | SemaphoreAccess.ModifyState);
                 _semaphoreHandle.Release();
                 this.UpdateInfo();
             }

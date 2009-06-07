@@ -2650,7 +2650,7 @@ namespace ProcessHacker
             try
             {
                 this.Text +=
-                    " [" + ProcessHandle.GetCurrent().GetToken(TokenAccess.Query).GetUser().GetName(true) +
+                    " [" + ProcessHandle.GetCurrent().GetToken(TokenAccess.Query).GetUser().GetFullName(true) +
                     (KProcessHacker.Instance != null ? "+" : "") + "]";
             }
             catch
@@ -2699,6 +2699,8 @@ namespace ProcessHacker
             vistaMenu.PerformPendingSetImageCalls();
             serviceP.RunOnceAsync();
             serviceP.Enabled = true;
+
+            Logging.Logged += this.QueueMessage;
 
             dontCalculate = false;
         }

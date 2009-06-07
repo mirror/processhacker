@@ -9,13 +9,13 @@ namespace ProcessHacker.Components
     public partial class EventProperties : UserControl
     {
         private EventHandle _eventHandle;
-        private NativeHandle<EventAccess> _dupHandle;
 
         public EventProperties(EventHandle eventHandle)
         {
             InitializeComponent();
 
             _eventHandle = eventHandle;
+            _eventHandle.Reference();
             this.UpdateInfo();
         }
 
@@ -43,8 +43,7 @@ namespace ProcessHacker.Components
         {
             this.TryExecute(() =>
                 {
-                    _dupHandle = _eventHandle.Duplicate(EventAccess.QueryState | EventAccess.ModifyState);
-                    _eventHandle = EventHandle.FromHandle(_dupHandle);
+                    _eventHandle.ChangeAccess(EventAccess.QueryState | EventAccess.ModifyState);
 
                     action();
                 });

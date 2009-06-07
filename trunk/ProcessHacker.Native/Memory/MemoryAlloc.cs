@@ -24,18 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.Native
 {
     /// <summary>
     /// Represents an unmanaged memory allocation.
     /// </summary>
-    public class MemoryAlloc : IDisposable
+    public class MemoryAlloc : DisposableObject
     {
-        private object _disposeLock = new object();
-        private bool _disposed = false;
-        private bool _owned = true;
         private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
         private IntPtr _memory;
         private int _size;
@@ -66,23 +63,21 @@ namespace ProcessHacker.Native
         }
 
         /// <summary>
-        /// Creates a memory allocation from an existing pointer. The allocation 
-        /// referenced by the pointer will be freed automatically. The Size 
-        /// property will be set to 0.
-        /// </summary>
-        /// <param name="memory">A pointer to an existing memory allocation.</param>
-        /// <returns>A new instance of a memory allocation.</returns>
-        public static MemoryAlloc FromPointer(IntPtr memory)
-        {
-            return new MemoryAlloc(0) { _memory = memory };
-        }
-
-        /// <summary>
         /// Creates a new, invalid memory allocation. 
         /// You must set the pointer using the Memory property.
         /// </summary>
         protected MemoryAlloc()
         { }
+
+        public MemoryAlloc(IntPtr memory)
+            : this(memory, true)
+        { }
+
+        public MemoryAlloc(IntPtr memory, bool owned)
+            : base(owned)
+        {
+            _memory = memory;
+        }
 
         /// <summary>
         /// Creates a new memory allocation with the specified size.
@@ -97,9 +92,34 @@ namespace ProcessHacker.Native
                 GC.AddMemoryPressure(size);
         }
 
-        ~MemoryAlloc()
+        protected sealed override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
+            this.Free();
+        }
+
+        protected virtual void Free()
+        {
+            Marshal.FreeHGlobal(this);
+            if (_size > 0)
+                GC.RemoveMemoryPressure(_size);
+        }
+
+        /// <summary>
+        /// Gets a pointer to the allocated memory.
+        /// </summary>
+        public IntPtr Memory
+        {
+            get { return _memory; }
+            protected set { _memory = value; }
+        }
+
+        /// <summary>
+        /// Gets the size of the allocated memory.
+        /// </summary>
+        public virtual int Size
+        {
+            get { return _size; }
+            protected set { _size = value; }
         }
 
         public MemoryAllocStream GetStream()
@@ -282,69 +302,6 @@ namespace ProcessHacker.Native
 
             for (int i = 0; i < b.Length; i++)
                 Marshal.WriteByte(this.Memory, offset + i, b[i]);
-        }
-
-        /// <summary>
-        /// Gets or sets whether the memory allocation should be freed automatically.
-        /// </summary>
-        public bool Owned
-        {
-            get { return _owned; }
-            set { _owned = value; }
-        }
-
-        /// <summary>
-        /// Gets a pointer to the allocated memory.
-        /// </summary>
-        public IntPtr Memory
-        {
-            get { return _memory; }
-            protected set { _memory = value; }
-        }
-
-        /// <summary>
-        /// Gets the size of the allocated memory.
-        /// </summary>
-        public virtual int Size
-        {
-            get { return _size; }
-            protected set { _size = value; }
-        }
-
-        protected virtual void Free()
-        {
-            Marshal.FreeHGlobal(this);
-            if (_size > 0)
-                GC.RemoveMemoryPressure(_size);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            try
-            {
-                if (disposing)
-                    Monitor.Enter(_disposeLock);
-
-                if (!_disposed && _owned)
-                {
-                    this.Free();
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                    Monitor.Exit(_disposeLock);
-            }
-        }
-
-        /// <summary>
-        /// Frees the allocated memory.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

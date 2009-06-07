@@ -17,6 +17,9 @@
             {
                 components.Dispose();
             }
+
+            _eventHandle.Dereference(disposing);
+
             base.Dispose(disposing);
         }
 
