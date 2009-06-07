@@ -41,10 +41,12 @@
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.affinityProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.createDumpFileProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.miscellaneousProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.detachFromDebuggerProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.injectDllProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.protectionProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.setTokenProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.terminatorProcessMenuItem = new System.Windows.Forms.MenuItem();
             this.priorityMenuItem = new System.Windows.Forms.MenuItem();
             this.realTimeMenuItem = new System.Windows.Forms.MenuItem();
             this.highMenuItem = new System.Windows.Forms.MenuItem();
@@ -164,8 +166,7 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.miscellaneousProcessMenuItem = new System.Windows.Forms.MenuItem();
-            this.detachFromDebuggerProcessMenuItem = new System.Windows.Forms.MenuItem();
+            this.usersMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -268,6 +269,28 @@
             this.createDumpFileProcessMenuItem.Text = "Create Dump File...";
             this.createDumpFileProcessMenuItem.Click += new System.EventHandler(this.createDumpFileProcessMenuItem_Click);
             // 
+            // terminatorProcessMenuItem
+            // 
+            this.terminatorProcessMenuItem.Index = 10;
+            this.terminatorProcessMenuItem.Text = "Terminator...";
+            this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
+            // 
+            // miscellaneousProcessMenuItem
+            // 
+            this.miscellaneousProcessMenuItem.Index = 11;
+            this.miscellaneousProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.detachFromDebuggerProcessMenuItem,
+            this.injectDllProcessMenuItem,
+            this.protectionProcessMenuItem,
+            this.setTokenProcessMenuItem});
+            this.miscellaneousProcessMenuItem.Text = "Miscellaneous";
+            // 
+            // detachFromDebuggerProcessMenuItem
+            // 
+            this.detachFromDebuggerProcessMenuItem.Index = 0;
+            this.detachFromDebuggerProcessMenuItem.Text = "Detach from Debugger";
+            this.detachFromDebuggerProcessMenuItem.Click += new System.EventHandler(this.detachFromDebuggerProcessMenuItem_Click);
+            // 
             // injectDllProcessMenuItem
             // 
             this.injectDllProcessMenuItem.Index = 1;
@@ -285,12 +308,6 @@
             this.setTokenProcessMenuItem.Index = 3;
             this.setTokenProcessMenuItem.Text = "Set Token...";
             this.setTokenProcessMenuItem.Click += new System.EventHandler(this.setTokenProcessMenuItem_Click);
-            // 
-            // terminatorProcessMenuItem
-            // 
-            this.terminatorProcessMenuItem.Index = 10;
-            this.terminatorProcessMenuItem.Text = "Terminator...";
-            this.terminatorProcessMenuItem.Click += new System.EventHandler(this.terminatorProcessMenuItem_Click);
             // 
             // priorityMenuItem
             // 
@@ -454,6 +471,7 @@
             this.hackerMenuItem,
             this.viewMenuItem,
             this.toolsMenuItem,
+            this.usersMenuItem,
             this.windowMenuItem,
             this.helpMenu});
             // 
@@ -690,12 +708,12 @@
             // 
             // windowMenuItem
             // 
-            this.windowMenuItem.Index = 3;
+            this.windowMenuItem.Index = 4;
             this.windowMenuItem.Text = "&Window";
             // 
             // helpMenu
             // 
-            this.helpMenu.Index = 4;
+            this.helpMenu.Index = 5;
             this.helpMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.freeMemoryMenuItem,
             this.menuItem1,
@@ -1189,21 +1207,10 @@
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
             // 
-            // miscellaneousProcessMenuItem
+            // usersMenuItem
             // 
-            this.miscellaneousProcessMenuItem.Index = 11;
-            this.miscellaneousProcessMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.detachFromDebuggerProcessMenuItem,
-            this.injectDllProcessMenuItem,
-            this.protectionProcessMenuItem,
-            this.setTokenProcessMenuItem});
-            this.miscellaneousProcessMenuItem.Text = "Miscellaneous";
-            // 
-            // detachFromDebuggerProcessMenuItem
-            // 
-            this.detachFromDebuggerProcessMenuItem.Index = 0;
-            this.detachFromDebuggerProcessMenuItem.Text = "Detach from Debugger";
-            this.detachFromDebuggerProcessMenuItem.Click += new System.EventHandler(this.detachFromDebuggerProcessMenuItem_Click);
+            this.usersMenuItem.Index = 3;
+            this.usersMenuItem.Text = "&Users";
             // 
             // HackerWindow
             // 
@@ -1379,6 +1386,7 @@
         private System.Windows.Forms.MenuItem createDumpFileProcessMenuItem;
         private System.Windows.Forms.MenuItem miscellaneousProcessMenuItem;
         private System.Windows.Forms.MenuItem detachFromDebuggerProcessMenuItem;
+        private System.Windows.Forms.MenuItem usersMenuItem;
     }
 }
 

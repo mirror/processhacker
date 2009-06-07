@@ -241,6 +241,9 @@
     <EmbeddedResource Include="Forms\LogWindow.resx">
       <DependentUpon>LogWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MessageBoxWindow.resx">
+      <DependentUpon>MessageBoxWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MiniSysInfo.resx">
       <DependentUpon>MiniSysInfo.cs</DependentUpon>
     </EmbeddedResource>
@@ -256,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScratchpadWindow.resx">
       <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SessionInformationWindow.resx">
+      <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\StructWindow.resx">
       <DependentUpon>StructWindow.cs</DependentUpon>
@@ -397,6 +403,12 @@
     <Compile Include="Forms\JobWindow.Designer.cs">
       <DependentUpon>JobWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MessageBoxWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MessageBoxWindow.Designer.cs">
+      <DependentUpon>MessageBoxWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProtectProcessWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -408,6 +420,12 @@
     </Compile>
     <Compile Include="Forms\ScratchpadWindow.Designer.cs">
       <DependentUpon>ScratchpadWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SessionInformationWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SessionInformationWindow.Designer.cs">
+      <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />

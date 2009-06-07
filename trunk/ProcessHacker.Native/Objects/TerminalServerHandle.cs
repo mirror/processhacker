@@ -81,6 +81,11 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        public TerminalServerSession GetSession(int sessionId)
+        {
+            return new TerminalServerSession(this, sessionId);
+        }
+
         public TerminalServerSession[] GetSessions()
         {
             IntPtr dataPtr;
@@ -159,7 +164,7 @@ namespace ProcessHacker.Native.Objects
         private System.Net.IPAddress _clientAddress;
         private WtsClientDisplay? _clientDisplay;
 
-        public TerminalServerSession(TerminalServerHandle serverHandle, int sessionId)
+        internal TerminalServerSession(TerminalServerHandle serverHandle, int sessionId)
         {
             _serverHandle = serverHandle;
             _sessionId = sessionId;
@@ -296,10 +301,18 @@ namespace ProcessHacker.Native.Objects
                         _serverHandle, _sessionId, WtsInformationClass.ClientAddress, out dataPtr, out length))
                         Win32.ThrowLastError();
 
-                    unsafe
+                    if (dataPtr != IntPtr.Zero)
                     {
-                        using (var data = new WtsMemoryAlloc(dataPtr))
-                            _clientAddress = new System.Net.IPAddress(data.ReadStruct<WtsClientAddress>().Address);
+                        unsafe
+                        {
+                            using (var data = new WtsMemoryAlloc(dataPtr))
+                            {
+                                var address = data.ReadStruct<WtsClientAddress>();
+
+                                if (address.AddressFamily != 0)
+                                    _clientAddress = new System.Net.IPAddress(data.ReadBytes(6, 4));
+                            }
+                        }
                     }
                 }
 
@@ -320,8 +333,11 @@ namespace ProcessHacker.Native.Objects
                         _serverHandle, _sessionId, WtsInformationClass.ClientDisplay, out dataPtr, out length))
                         Win32.ThrowLastError();
 
-                    using (var data = new WtsMemoryAlloc(dataPtr))
-                        _clientDisplay = data.ReadStruct<WtsClientDisplay>();
+                    if (dataPtr != IntPtr.Zero)
+                    {
+                        using (var data = new WtsMemoryAlloc(dataPtr))
+                            _clientDisplay = data.ReadStruct<WtsClientDisplay>();
+                    }
                 }
 
                 return _clientDisplay.Value;

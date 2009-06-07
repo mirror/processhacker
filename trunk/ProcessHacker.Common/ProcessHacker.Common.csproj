@@ -52,10 +52,12 @@
     <Compile Include="DeltaManager.cs" />
     <Compile Include="EnumComparer.cs" />
     <Compile Include="ExtensionAttribute.cs" />
+    <Compile Include="FreeList.cs" />
     <Compile Include="HistoryManager.cs" />
     <Compile Include="IdGenerator.cs" />
     <Compile Include="DisposableObject.cs" />
     <Compile Include="IReferenceCountedObject.cs" />
+    <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

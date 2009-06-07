@@ -97,7 +97,7 @@ namespace ProcessHacker.Common
         protected virtual void DisposeObject(bool disposing) { }
 
         /// <summary>
-        /// Gets whether this handle is closed.
+        /// Gets whether the object is freed.
         /// </summary>
         public bool Disposed
         {
@@ -105,13 +105,16 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Gets whether the handle will be automatically closed.
+        /// Gets whether the object can be freed.
         /// </summary>
         public bool Owned
         {
             get { return _owned; }
         }
 
+        /// <summary>
+        /// Gets the current reference count of the object.
+        /// </summary>
         public int ReferenceCount
         {
             get { return _refCount; }

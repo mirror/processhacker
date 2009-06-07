@@ -2210,6 +2210,12 @@ namespace ProcessHacker
 
         public void QueueMessage(string message, Icon icon)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new MethodInvoker(() => this.QueueMessage(message, icon)));
+                return;
+            }
+
             var value = new KeyValuePair<DateTime, string>(DateTime.Now, message);
 
             _log.Add(value);
@@ -2259,6 +2265,92 @@ namespace ProcessHacker
         {
             foreach (TreeNodeAdv node in tree.AllNodes)
                 node.IsSelected = true;
+        }
+
+        private void UpdateSessions()
+        {
+            var currentServer = TerminalServerHandle.GetCurrent();
+
+            usersMenuItem.MenuItems.Clear();
+
+            foreach (var session in currentServer.GetSessions())
+            {
+                string displayName = session.DomainName + "\\" + session.UserName;
+
+                if (displayName == "\\")
+                    continue;
+
+                MenuItem userMenuItem = new MenuItem();
+
+                userMenuItem.Text = session.SessionId + ": " + displayName;
+
+                MenuItem currentMenuItem;
+
+                currentMenuItem = new MenuItem() { Text = "Disconnect", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
+                    {
+                        int sessionId = (int)((MenuItem)sender).Tag;
+
+                        try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Disconnect(); }
+                        catch (Exception ex) { PhUtils.ShowMessage(ex); }
+                    };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Logoff", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
+                {
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
+                    try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Logoff(); }
+                    catch (Exception ex) { PhUtils.ShowMessage(ex); }
+                };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Send Message...", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
+                {
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
+                    try
+                    {
+                        var mbw = new MessageBoxWindow();
+
+                        mbw.MessageBoxTitle = "Message from " + Program.CurrentUsername;
+
+                        if (mbw.ShowDialog() == DialogResult.OK)
+                            TerminalServerHandle.GetCurrent().GetSession(sessionId).SendMessage(
+                                mbw.MessageBoxTitle,
+                                mbw.MessageBoxText,
+                                MessageBoxButtons.OK,
+                                mbw.MessageBoxIcon,
+                                0,
+                                0,
+                                mbw.MessageBoxTimeout,
+                                false
+                                );
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowMessage(ex);
+                    }
+                };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+                currentMenuItem = new MenuItem() { Text = "Properties...", Tag = session.SessionId };
+                currentMenuItem.Click += (sender, e) =>
+                {
+                    int sessionId = (int)((MenuItem)sender).Tag;
+
+                    try
+                    {
+                        (new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId))).ShowDialog();
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowMessage(ex);
+                    }
+                };
+                userMenuItem.MenuItems.Add(currentMenuItem);
+
+                usersMenuItem.MenuItems.Add(userMenuItem);
+            }
         }
 
         private void UpdateStatusInfo()
@@ -2385,6 +2477,18 @@ namespace ProcessHacker
                     {
                         if (treeProcesses != null && treeProcesses.Tree != null)
                             treeProcesses.Tree.Invalidate();
+                    }
+                    break;
+
+                case (int)WindowMessage.WtsSessionChange:
+                    {
+                        WtsSessionChangeEvent changeEvent = (WtsSessionChangeEvent)m.WParam.ToInt32();
+
+                        if (
+                            changeEvent == WtsSessionChangeEvent.SessionLogon ||
+                            changeEvent == WtsSessionChangeEvent.SessionLogoff
+                            )
+                            this.UpdateSessions();
                     }
                     break;
             }
@@ -2678,6 +2782,7 @@ namespace ProcessHacker
             // Force the handle to be created
             { var handle = this.Handle; }
 
+            Logging.Logged += this.QueueMessage;
             this.LoadWindowSettings();
             this.LoadOtherSettings();
             this.LoadControls();
@@ -2699,8 +2804,6 @@ namespace ProcessHacker
             vistaMenu.PerformPendingSetImageCalls();
             serviceP.RunOnceAsync();
             serviceP.Enabled = true;
-
-            Logging.Logged += this.QueueMessage;
 
             dontCalculate = false;
         }
@@ -2752,6 +2855,16 @@ namespace ProcessHacker
                 this.LoadFixMenuItems();
                 this.LoadUac();
                 this.LoadAddShortcuts();
+
+                try
+                {
+                    TerminalServerHandle.GetCurrent().RegisterNotifications(this, true);
+                    this.UpdateSessions();
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
             }
         }
     }
