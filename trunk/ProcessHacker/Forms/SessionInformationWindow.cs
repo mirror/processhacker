@@ -19,7 +19,8 @@ namespace ProcessHacker
                 labelClientName.Text = session.ClientName;
             if (session.ClientAddress != null)
                 labelClientAddress.Text = session.ClientAddress.ToString();
-            if (session.ClientDisplay.ColorDepth != 2) // HACK
+            if (session.ClientDisplay.ColorDepth != 0 && 
+                session.ClientDisplay.ColorDepth != 2) // HACK
                 labelClientDisplayResolution.Text =
                     session.ClientDisplay.HorizontalResolution + "x" +
                     session.ClientDisplay.VerticalResolution + "@" +

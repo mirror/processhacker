@@ -2488,7 +2488,16 @@ namespace ProcessHacker
                             changeEvent == WtsSessionChangeEvent.SessionLogon ||
                             changeEvent == WtsSessionChangeEvent.SessionLogoff
                             )
-                            this.UpdateSessions();
+                        {
+                            try
+                            {
+                                this.UpdateSessions();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
+                        }
                     }
                     break;
             }
