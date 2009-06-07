@@ -2856,15 +2856,10 @@ namespace ProcessHacker
                 this.LoadUac();
                 this.LoadAddShortcuts();
 
-                try
-                {
-                    TerminalServerHandle.GetCurrent().RegisterNotifications(this, true);
-                    this.UpdateSessions();
-                }
-                catch (Exception ex)
-                {
-                    Logging.Log(ex);
-                }
+                try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
+                catch (Exception ex) { Logging.Log(ex); }    
+                try { this.UpdateSessions(); }
+                catch (Exception ex) { Logging.Log(ex); }
             }
         }
     }

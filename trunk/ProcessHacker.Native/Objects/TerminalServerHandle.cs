@@ -36,6 +36,21 @@ namespace ProcessHacker.Native.Objects
             return new TerminalServerHandle(IntPtr.Zero, false);
         }
 
+        public static void RegisterNotificationsCurrent(IWin32Window window, bool allSessions)
+        {
+            if (!Win32.WTSRegisterSessionNotification(
+                window.Handle,
+                allSessions ? WtsNotificationFlags.AllSessions : WtsNotificationFlags.ThisSession
+                ))
+                Win32.ThrowLastError();
+        }
+
+        public static void UnregisterNotificationsCurrent(IWin32Window window)
+        {
+            if (!Win32.WTSUnRegisterSessionNotification(window.Handle))
+                Win32.ThrowLastError();
+        }
+
         protected TerminalServerHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
