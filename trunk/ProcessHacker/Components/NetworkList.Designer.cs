@@ -88,7 +88,7 @@
             // columnState
             // 
             this.columnState.Text = "State";
-            this.columnState.Width = 95;
+            this.columnState.Width = 80;
             // 
             // imageList
             // 

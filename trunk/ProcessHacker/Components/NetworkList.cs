@@ -348,7 +348,7 @@ namespace ProcessHacker.Components
             }
             else
             {
-                litem.Text = "(" + item.Pid.ToString() + ")";
+                litem.Text = "Unknown Process (" + item.Pid.ToString() + ")";
             }
 
             if (item.Local != null && item.Local.ToString() != "0.0.0.0:0")
