@@ -52,7 +52,6 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        private object _disposeLock = new object();
         private ProcessHandle _processHandle;
         private IntPtr _handle;
         private List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
@@ -72,6 +71,7 @@ namespace ProcessHacker.Native.Symbols
         {
             _processHandle = processHandle;
             _handle = processHandle;
+            _processHandle.Reference();
 
             lock (_callLock)
             {
@@ -83,27 +83,24 @@ namespace ProcessHacker.Native.Symbols
         protected override void DisposeObject(bool disposing)
         {
             if (disposing)
-            {
-                Monitor.Enter(_disposeLock);
                 Monitor.Enter(_callLock);
-            }
 
             try
             {
                 if (!Win32.SymCleanup(_handle))
                     Win32.ThrowLastError();
 
-                // If we didn't use a process handle, we got it from the ID generator
+                // If we didn't use a process handle, we got it from the ID generator.
                 if (_processHandle == null)
                     _idGen.Push(_handle.ToInt32());
+                // Otherwise, dereference the process handle.
+                else
+                    _processHandle.Dereference(disposing);
             }
             finally
             {
                 if (disposing)
-                {
                     Monitor.Exit(_callLock);
-                    Monitor.Exit(_disposeLock);
-                }
             }
         }
 

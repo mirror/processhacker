@@ -1,12 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Common
 {
     public class WeakReference<T>
         where T : class
     {
+        public static implicit operator T(WeakReference<T> reference)
+        {
+            return reference.Target;
+        }
+
         private WeakReference _weakReference;
 
         public WeakReference(T obj)

@@ -2,8 +2,12 @@
 
 namespace ProcessHacker
 {
+    public delegate bool DialogButtonClickedDelegate();
+
     public partial class MessageBoxWindow : Form
     {
+        public event DialogButtonClickedDelegate OkButtonClicked;
+
         public MessageBoxWindow()
         {
             InitializeComponent();
@@ -60,8 +64,14 @@ namespace ProcessHacker
 
         private void buttonOK_Click(object sender, System.EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            if (OkButtonClicked != null)
+            {
+                if (OkButtonClicked())
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+            }
         }
 
         private void buttonCancel_Click(object sender, System.EventArgs e)

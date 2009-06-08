@@ -575,9 +575,12 @@ namespace ProcessHacker
 
                     if (jhandle != null)
                     {
-                        _jobProps = new JobProperties(jhandle);
-                        _jobProps.Dock = DockStyle.Fill;
-                        tabJob.Controls.Add(_jobProps);
+                        using (jhandle)
+                        {
+                            _jobProps = new JobProperties(jhandle);
+                            _jobProps.Dock = DockStyle.Fill;
+                            tabJob.Controls.Add(_jobProps);
+                        }
                     }
                 }
             }
@@ -624,7 +627,7 @@ namespace ProcessHacker
             _moduleP.Interval = Properties.Settings.Default.RefreshInterval;
             _moduleP.Updated += new ModuleProvider.ProviderUpdateOnce(_moduleP_Updated);
             listModules.Provider = _moduleP;
-            _moduleP.RunOnceAsync();
+            //_moduleP.RunOnceAsync();
 
             listMemory.BeginUpdate();
             _memoryP = new MemoryProvider(_pid);

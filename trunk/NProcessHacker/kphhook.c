@@ -100,8 +100,8 @@ DECLARE_NEW_FUNC(NtGetContextThread, NTGETCONTEXTTHREAD_ARGS)
 
 DECLARE_NEW_FUNC(NtOpenProcess, NTOPENPROCESS_ARGS)
 {
-    /* Use KPH if we only have a CID, no name. */
-    if (!ObjectAttributes->ObjectName)
+    /* Use KPH if we only have a PID, no name or TID. */
+    if (!ObjectAttributes->ObjectName && ClientId->UniqueThread == 0)
         return KphOpenProcess(KphHandle, ProcessHandle, ClientId->UniqueProcess, DesiredAccess);
 
     return OldNtOpenProcess(ProcessHandle, DesiredAccess, ObjectAttributes, ClientId);
@@ -143,7 +143,7 @@ DECLARE_NEW_FUNC(NtTerminateProcess, NTTERMINATEPROCESS_ARGS)
      * avoid infinite recursion with KphTerminateProcess.
      */
     if (ProcessHandle == NULL || ProcessHandle == GetCurrentProcess())
-        return NtTerminateProcess(ProcessHandle, ExitStatus);
+        return OldNtTerminateProcess(ProcessHandle, ExitStatus);
 
     return KphTerminateProcess(KphHandle, ProcessHandle, ExitStatus);
 }
@@ -151,7 +151,7 @@ DECLARE_NEW_FUNC(NtTerminateProcess, NTTERMINATEPROCESS_ARGS)
 DECLARE_NEW_FUNC(NtTerminateThread, NTTERMINATETHREAD_ARGS)
 {
     if (ThreadHandle == NULL || ThreadHandle == GetCurrentThread())
-        return NtTerminateThread(ThreadHandle, ExitStatus);
+        return OldNtTerminateThread(ThreadHandle, ExitStatus);
 
     return KphTerminateThread(KphHandle, ThreadHandle, ExitStatus);
 }

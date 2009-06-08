@@ -2288,7 +2288,7 @@ namespace ProcessHacker
                         int sessionId = (int)((MenuItem)sender).Tag;
 
                         try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Disconnect(); }
-                        catch (Exception ex) { PhUtils.ShowMessage(ex); }
+                        catch (Exception ex) { PhUtils.ShowMessage("Error disconnecting the session", ex); }
                     };
                 userMenuItem.MenuItems.Add(currentMenuItem);
                 currentMenuItem = new MenuItem() { Text = "Logoff", Tag = session.SessionId };
@@ -2297,7 +2297,7 @@ namespace ProcessHacker
                     int sessionId = (int)((MenuItem)sender).Tag;
 
                     try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Logoff(); }
-                    catch (Exception ex) { PhUtils.ShowMessage(ex); }
+                    catch (Exception ex) { PhUtils.ShowMessage("Error logging off the session", ex); }
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
                 currentMenuItem = new MenuItem() { Text = "Send Message...", Tag = session.SessionId };
@@ -2310,18 +2310,29 @@ namespace ProcessHacker
                         var mbw = new MessageBoxWindow();
 
                         mbw.MessageBoxTitle = "Message from " + Program.CurrentUsername;
-
-                        if (mbw.ShowDialog() == DialogResult.OK)
-                            TerminalServerHandle.GetCurrent().GetSession(sessionId).SendMessage(
-                                mbw.MessageBoxTitle,
-                                mbw.MessageBoxText,
-                                MessageBoxButtons.OK,
-                                mbw.MessageBoxIcon,
-                                0,
-                                0,
-                                mbw.MessageBoxTimeout,
-                                false
-                                );
+                        mbw.OkButtonClicked += () =>
+                            {
+                                try
+                                {
+                                    TerminalServerHandle.GetCurrent().GetSession(sessionId).SendMessage(
+                                        mbw.MessageBoxTitle,
+                                        mbw.MessageBoxText,
+                                        MessageBoxButtons.OK,
+                                        mbw.MessageBoxIcon,
+                                        0,
+                                        0,
+                                        mbw.MessageBoxTimeout,
+                                        false
+                                        );
+                                    return true;
+                                }
+                                catch (Exception ex)
+                                {
+                                    PhUtils.ShowMessage("Error sending message", ex);
+                                    return false;
+                                }
+                            };
+                        mbw.ShowDialog();
                     }
                     catch (Exception ex)
                     {

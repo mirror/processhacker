@@ -39,7 +39,7 @@ namespace ProcessHacker.Native.Security
             return sid.Memory;
         }
 
-        private MemoryAlloc _sid;
+        private MemoryAlloc _memory;
         private bool _hasAttributes;
         private SidAttributes _attributes;
 
@@ -51,7 +51,7 @@ namespace ProcessHacker.Native.Security
         private Sid(IntPtr sid, bool owned)
             : base(owned)
         {
-            _sid = new MemoryAlloc(sid, false);
+            _memory = new MemoryAlloc(sid, false);
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace ProcessHacker.Native.Security
         {
             NtStatus status;
 
-            _sid = new MemoryAlloc(Win32.RtlLengthSid(sid));
+            _memory = new MemoryAlloc(Win32.RtlLengthSid(sid));
 
-            if ((status = Win32.RtlCopySid(_sid.Size, _sid, sid)) >= NtStatus.Error)
+            if ((status = Win32.RtlCopySid(_memory.Size, _memory, sid)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
             _hasAttributes = hasAttributes;
@@ -86,7 +86,7 @@ namespace ProcessHacker.Native.Security
 
         protected override void DisposeObject(bool disposing)
         {
-            _sid.Dispose(disposing);
+            _memory.Dispose(disposing);
         }
 
         public SidAttributes Attributes
@@ -122,7 +122,7 @@ namespace ProcessHacker.Native.Security
 
         public IntPtr Memory
         {
-            get { return _sid; }
+            get { return _memory; }
         }
 
         public SidNameUse NameUse

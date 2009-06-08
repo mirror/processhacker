@@ -135,5 +135,10 @@ namespace ProcessHacker.Common
         {
             MessageBox.Show(ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        public static void ShowMessage(string operation, Exception ex)
+        {
+            MessageBox.Show(operation + ": " + ex.Message, "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 }

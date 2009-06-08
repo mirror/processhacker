@@ -21,16 +21,132 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace ProcessHacker.Common
 {
     /// <summary>
     /// Provides methods for managing a disposable object or resource.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Each disposable object starts with a reference count of one 
+    /// when it is created. The object is not owned by the creator; 
+    /// rather, it is owned by the GC (garbage collector). If the user 
+    /// does not dispose the object, the finalizer will be called by 
+    /// the GC, the reference count will be decremented and the object 
+    /// will be freed. If the user chooses to call Dispose, the reference 
+    /// count will be decremented and the object will be freed. The 
+    /// object is no longer owned by the GC and the finalizer will be 
+    /// suppressed. Any further calls to Dispose will have no effect.
+    /// </para>
+    /// <para>
+    /// If the user chooses to use reference counting, the object 
+    /// functions normally with the GC. If the object's reference count 
+    /// is incremented after it is created and becomes 2, it will be 
+    /// decremented when it is finalized or disposed. Only after the 
+    /// object is dereferenced will the reference count become 0 and 
+    /// the object will be freed.
+    /// </para>
+    /// </remarks>
     public abstract class DisposableObject : IDisposable, IReferenceCountedObject
     {
+        private static int _createdCount = 0;
+        private static int _freedCount = 0;
+        private static int _disposedCount = 0;
+        private static int _finalizedCount = 0;
+        private static int _referencedCount = 0;
+        private static int _dereferencedCount = 0;
+#if DEBUG
+        private static List<WeakReference<DisposableObject>> _liveList = 
+            new List<WeakReference<DisposableObject>>();
+#endif
+
+        /// <summary>
+        /// Gets the number of disposable objects that have been created.
+        /// </summary>
+        public static int CreatedCount { get { return _createdCount; } }
+        /// <summary>
+        /// Gets the number of disposable objects that have been freed.
+        /// </summary>
+        public static int FreedCount { get { return _freedCount; } }
+        /// <summary>
+        /// Gets the number of disposable objects that have been Disposed with managed = true.
+        /// </summary>
+        public static int DisposedCount { get { return _disposedCount; } }
+        /// <summary>
+        /// Gets the number of disposable objects that have been Disposed with managed = false.
+        /// </summary>
+        public static int FinalizedCount { get { return _finalizedCount; } }
+        /// <summary>
+        /// Gets the number of times disposable objects have been referenced.
+        /// </summary>
+        public static int ReferencedCount { get { return _referencedCount; } }
+        /// <summary>
+        /// Gets the number of times disposable objects have been dereferenced.
+        /// </summary>
+        public static int DereferencedCount { get { return _dereferencedCount - _disposedCount - _finalizedCount; } }
+
+#if DEBUG
+        /// <summary>
+        /// Gets a list of disposable objects that are currently alive.
+        /// </summary>
+        public static DisposableObject[] LiveObjects
+        {
+            get
+            {
+                lock (_liveList)
+                {
+                    DisposableObject[] objects = new DisposableObject[_liveList.Count];
+
+                    for (int i = 0; i < _liveList.Count; i++)
+                        objects[i] = _liveList[i];
+
+                    return objects;
+                }
+            }
+        }
+
+        private static void AddLiveObject(DisposableObject obj)
+        {
+            lock (_liveList)
+            {
+                // Remove dead objects.
+                _liveList.RemoveAll((reference) => !reference.Alive);
+                // Add the object.
+                _liveList.Add(new WeakReference<DisposableObject>(obj));
+            }
+        }
+#endif
+
+#if DEBUG
+        /// <summary>
+        /// A stack trace collected when the object is created.
+        /// </summary>
+        private string _creationStackTrace;
+#endif
+        /// <summary>
+        /// Whether the object is owned (rather, whether this class should 
+        /// take care of anything).
+        /// </summary>
         private bool _owned = true;
+        /// <summary>
+        /// Whether the object is owned by the garbage collector (to ensure 
+        /// calling Dispose more than once has no effect).
+        /// </summary>
+        private volatile bool _ownedByGc = true;
+        /// <summary>
+        /// The reference count of the object.
+        /// </summary>
         private int _refCount = 1;
+        /// <summary>
+        /// Synchronization for all reference-related methods.
+        /// </summary>
+        private object _refLock = new object();
+        /// <summary>
+        /// Whether the object has been freed.
+        /// </summary>
         private bool _disposed = false;
 
         /// <summary>
@@ -51,6 +167,12 @@ namespace ProcessHacker.Common
             // Don't need to finalize the object if it doesn't need to be disposed.
             if (!_owned)
                 GC.SuppressFinalize(this);
+
+            Interlocked.Increment(ref _createdCount);
+#if DEBUG
+            _creationStackTrace = Environment.StackTrace;
+            AddLiveObject(this);
+#endif
         }
 
         /// <summary>
@@ -62,7 +184,7 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Decrements the reference count of the object.
+        /// Ensures that the GC does not own the object.
         /// </summary>
         public void Dispose()
         {
@@ -71,21 +193,33 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Decrements the reference count of the object.
+        /// Ensures that the GC does not own the object.
         /// </summary>
-        /// <param name="disposing">Whether to dispose managed resources.</param>
-        public void Dispose(bool disposing)
+        /// <param name="managed">Whether to dispose managed resources.</param>
+        public void Dispose(bool managed)
         {
-            _refCount--;
+            if (managed)
+                Monitor.Enter(_refLock);
 
-            if (_refCount < 0)
-                _refCount = 0;
-
-            if (!_disposed && _refCount == 0 && _owned)
+            try
             {
-                this.DisposeObject(disposing);
+                // Ensure that calling Dispose more than once will 
+                // have no effect.
+                if (_ownedByGc)
+                {
+                    this.Dereference(managed);
+                    _ownedByGc = false;
 
-                _disposed = true;
+                    if (managed)
+                        Interlocked.Increment(ref _disposedCount);
+                    else
+                        Interlocked.Increment(ref _finalizedCount);
+                }
+            }
+            finally
+            {
+                if (managed)
+                    Monitor.Exit(_refLock);
             }
         }
 
@@ -97,7 +231,7 @@ namespace ProcessHacker.Common
         protected virtual void DisposeObject(bool disposing) { }
 
         /// <summary>
-        /// Gets whether the object is freed.
+        /// Gets whether the object has been freed.
         /// </summary>
         public bool Disposed
         {
@@ -105,7 +239,7 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Gets whether the object can be freed.
+        /// Gets whether the object will be freed.
         /// </summary>
         public bool Owned
         {
@@ -113,17 +247,39 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Gets whether the object is owned by the garbage collector.
+        /// </summary>
+        public bool OwnedByGc
+        {
+            get { return _ownedByGc; }
+        }
+
+        /// <summary>
         /// Gets the current reference count of the object.
         /// </summary>
+        /// <remarks>
+        /// This information is for debugging purposes ONLY. DO NOT 
+        /// base memory management logic upon this value.
+        /// </remarks>
         public int ReferenceCount
         {
-            get { return _refCount; }
+            get { return Thread.VolatileRead(ref _refCount); }
         }
 
         /// <summary>
         /// Decrements the reference count of the object.
         /// </summary>
         /// <returns>The old reference count.</returns>
+        /// <remarks>
+        /// <para>
+        /// DO NOT call Dereference if you have not called Reference. 
+        /// Call Dispose instead.
+        /// </para>
+        /// <para>
+        /// If you are calling Dereference from a finalizer, call 
+        /// Dereference(false).
+        /// </para>
+        /// </remarks>
         public int Dereference()
         {
             return this.Dereference(true);
@@ -133,33 +289,71 @@ namespace ProcessHacker.Common
         /// Decrements the reference count of the object.
         /// </summary>
         /// <param name="managed">Whether to dispose managed resources.</param>
-        /// <returns>The old reference count.</returns>
+        /// <returns>The new reference count.</returns>
+        /// <remarks>
+        /// <para>If you are calling this method from a finalizer, set 
+        /// <paramref name="managed" /> to false.</para>
+        /// </remarks>
         public int Dereference(bool managed)
         {
-            if (!_owned)
-                return 0;
+            if (managed)
+                Monitor.Enter(_refLock);
 
-            if (_refCount == 0)
-                throw new InvalidOperationException("Reference count cannot be negative.");
+            Interlocked.Increment(ref _dereferencedCount);
 
-            this.Dispose(managed);
-            return _refCount;
+            try
+            {
+                if (!_owned)
+                    return 0;
+
+                // Decrement the reference count.
+                int newRefCount = Interlocked.Decrement(ref _refCount);
+
+                if (newRefCount < 0)
+                    throw new InvalidOperationException("Reference count cannot be negative.");
+
+                // Free the object if the reference count is 0.
+                if (newRefCount == 0 && !_disposed)
+                {
+                    this.DisposeObject(managed);
+                    _disposed = true;
+                    Interlocked.Increment(ref _freedCount);
+                }
+
+                return newRefCount;
+            }
+            finally
+            {
+                if (managed)
+                    Monitor.Exit(_refLock);
+            }
         }
 
         /// <summary>
         /// Increments the reference count of the object.
         /// </summary>
-        /// <returns>The old reference count.</returns>
+        /// <returns>The new reference count.</returns>
+        /// <remarks>
+        /// <para>
+        /// You must call Dereference once (when you are finished with the 
+        /// object) to match each call to Reference. Do not call Dispose.
+        /// </para>
+        /// <para>You must not call this method from a finalizer.</para>
+        /// </remarks>
         public int Reference()
         {
-            if (!_owned)
-                return 0;
+            Interlocked.Increment(ref _referencedCount);
 
-            int oldRefCount = _refCount;
+            // It is safe to lock because it will not be 
+            // called from a finalizer, and that's the only 
+            // time when the lock may be null.
+            lock (_refLock)
+            {
+                if (!_owned)
+                    return 0;
 
-            _refCount++;
-
-            return oldRefCount;
+                return Interlocked.Increment(ref _refCount);
+            }
         }
     }
 }

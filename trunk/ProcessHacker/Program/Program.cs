@@ -790,6 +790,15 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
+            info.AppendLine("DISPOSABLE OBJECTS");
+            info.AppendLine("Created: " + DisposableObject.CreatedCount.ToString());
+            info.AppendLine("Freed: " + DisposableObject.FreedCount.ToString());
+            info.AppendLine("Disposed: " + DisposableObject.DisposedCount.ToString());
+            info.AppendLine("Finalized: " + DisposableObject.FinalizedCount.ToString());
+            info.AppendLine("Referenced: " + DisposableObject.ReferencedCount.ToString());
+            info.AppendLine("Dereferenced: " + DisposableObject.DereferencedCount.ToString());
+
+            info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");
             info.AppendLine("Worker thread maximum: " + WorkQueue.GlobalWorkQueue.MaxWorkerThreads.ToString());
             info.AppendLine("Worker thread minimum: " + WorkQueue.GlobalWorkQueue.MinWorkerThreads.ToString());
