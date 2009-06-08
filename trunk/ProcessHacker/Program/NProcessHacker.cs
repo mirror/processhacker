@@ -21,7 +21,9 @@
  */
 
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using ProcessHacker.Native;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
@@ -45,11 +47,14 @@ namespace ProcessHacker
             public int ShareableCount;
         }
 
-        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern VerifyResult PhvVerifyFile(string FileName);
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void KphHookDeinit();
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void KphHookInit();
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        public static extern int PhpQueryProcessWs(
+        public static extern NtStatus PhpQueryProcessWs(
             int ProcessHandle,
             WS_INFORMATION_CLASS WsInformationClass,
             out int WsInformation,
@@ -58,12 +63,15 @@ namespace ProcessHacker
             );
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
-        public static extern int PhpQueryProcessWs(
+        public static extern NtStatus PhpQueryProcessWs(
             int ProcessHandle,
             WS_INFORMATION_CLASS WsInformationClass,
             out WS_ALL_COUNTS WsInformation,
             int WsInformationLength,
             out int ReturnLength
             );
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        public static extern VerifyResult PhvVerifyFile(string FileName);
     }
 }

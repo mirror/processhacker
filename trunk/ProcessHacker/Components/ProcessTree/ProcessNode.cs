@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Aga.Controls.Tree;
 using ProcessHacker.Common;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
@@ -191,6 +192,7 @@ namespace ProcessHacker
 
         private int GetWorkingSetNumber(NProcessHacker.WS_INFORMATION_CLASS WsInformationClass)
         {
+            NtStatus status;
             int wsInfo;
             int retLen;
 
@@ -199,8 +201,8 @@ namespace ProcessHacker
                 using (var phandle = new ProcessHandle(_pitem.Pid, 
                     ProcessAccess.QueryInformation | ProcessAccess.VmRead))
                 {
-                    if ((retLen = NProcessHacker.PhpQueryProcessWs(phandle, WsInformationClass, out wsInfo,
-                        4, out retLen)) == 0)
+                    if ((status = NProcessHacker.PhpQueryProcessWs(phandle, WsInformationClass, out wsInfo,
+                        4, out retLen)) < NtStatus.Error)
                         return wsInfo * Program.ProcessProvider.System.PageSize;
                 }
             }
