@@ -1524,7 +1524,10 @@ namespace ProcessHacker
 
                             foreach (var process in treeProcesses.Model.Roots)
                             {
-                                if (string.Equals(process.Name, "explorer.exe", StringComparison.InvariantCultureIgnoreCase))
+                                if (
+                                    string.Equals(process.Name, "explorer.exe", 
+                                    StringComparison.InvariantCultureIgnoreCase) && 
+                                    process.ProcessItem.Username == Program.CurrentUsername)
                                 {
                                     i += 10;
 
