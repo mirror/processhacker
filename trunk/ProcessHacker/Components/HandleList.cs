@@ -226,6 +226,7 @@ namespace ProcessHacker.Components
                         {
                             listHandles.Items.AddRange(_needsAdd.ToArray());
                             _needsAdd.Clear();
+                            _needsAdd.TrimExcess();
                         }
                     }));
                 }

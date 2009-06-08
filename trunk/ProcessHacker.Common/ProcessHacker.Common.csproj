@@ -49,6 +49,7 @@
     <Compile Include="BaseConverter.cs" />
     <Compile Include="ByteStreamReader.cs" />
     <Compile Include="CircularBuffer.cs" />
+    <Compile Include="DelayedReleasePool.cs" />
     <Compile Include="DeltaManager.cs" />
     <Compile Include="EnumComparer.cs" />
     <Compile Include="ExtensionAttribute.cs" />

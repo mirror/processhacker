@@ -201,6 +201,7 @@ namespace ProcessHacker.Components
                         {
                             listServices.Items.AddRange(_needsAdd.ToArray());
                             _needsAdd.Clear();
+                            _needsAdd.TrimExcess();
                         }
                     }));
                 }

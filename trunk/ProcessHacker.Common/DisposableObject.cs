@@ -216,6 +216,14 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Queues the object for disposal in the current delayed release pool.
+        /// </summary>
+        public void DisposeDelayed()
+        {
+            DelayedReleasePool.CurrentPool.AddDispose(this);
+        }
+
+        /// <summary>
         /// Disposes the resources of the object. This method must not be 
         /// called directly; instead, override this method in a derived class.
         /// </summary>
@@ -352,6 +360,14 @@ namespace ProcessHacker.Common
 
                 Thread.EndCriticalRegion();
             }
+        }
+
+        /// <summary>
+        /// Queues the object for dereferencing in the current delayed release pool.
+        /// </summary>
+        public void DereferenceDelayed()
+        {
+            DelayedReleasePool.CurrentPool.AddDereference(this);
         }
 
         private void EnableFinalizer()
