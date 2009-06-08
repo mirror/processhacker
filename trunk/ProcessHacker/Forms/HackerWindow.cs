@@ -2287,8 +2287,7 @@ namespace ProcessHacker
                     {
                         int sessionId = (int)((MenuItem)sender).Tag;
 
-                        try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Disconnect(); }
-                        catch (Exception ex) { PhUtils.ShowMessage("Error disconnecting the session", ex); }
+                        SessionActions.Disconnect(this, sessionId, false);
                     };
                 userMenuItem.MenuItems.Add(currentMenuItem);
                 currentMenuItem = new MenuItem() { Text = "Logoff", Tag = session.SessionId };
@@ -2296,8 +2295,7 @@ namespace ProcessHacker
                 {
                     int sessionId = (int)((MenuItem)sender).Tag;
 
-                    try { TerminalServerHandle.GetCurrent().GetSession(sessionId).Logoff(); }
-                    catch (Exception ex) { PhUtils.ShowMessage("Error logging off the session", ex); }
+                    SessionActions.Logoff(this, sessionId, true);
                 };
                 userMenuItem.MenuItems.Add(currentMenuItem);
                 currentMenuItem = new MenuItem() { Text = "Send Message...", Tag = session.SessionId };

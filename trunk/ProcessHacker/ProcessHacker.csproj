@@ -430,6 +430,7 @@
     <Compile Include="Forms\SessionInformationWindow.Designer.cs">
       <DependentUpon>SessionInformationWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Actions\SessionActions.cs" />
     <Compile Include="UI\GenericViewMenu.cs" />
     <Compile Include="UI\Icons\CommitHistoryIcon.cs" />
     <Compile Include="UI\Icons\PhysMemHistoryIcon.cs" />

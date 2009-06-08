@@ -282,6 +282,28 @@ namespace ProcessHacker
                         }
                         break;
 
+                    case "session":
+                        {
+                            int sessionId = int.Parse(obj);
+
+                            switch (action)
+                            {
+                                case "disconnect":
+                                    {
+                                        SessionActions.Disconnect(window, sessionId, false);
+                                    }
+                                    break;
+                                case "logoff":
+                                    {
+                                        SessionActions.Logoff(window, sessionId, false);
+                                    }
+                                    break;
+                                default:
+                                    throw new Exception("Unknown action '" + action + "'");
+                            }
+                        }
+                        break;
+
                     default:
                         throw new Exception("Unknown object type '" + type + "'");
                 }

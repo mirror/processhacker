@@ -187,6 +187,9 @@ namespace ProcessHacker.UI.Actions
                 }
                 catch (WindowsException ex)
                 {
+                    if (ex.ErrorCode != 5)
+                        return true;
+
                     TaskDialog td = new TaskDialog();
 
                     td.WindowTitle = "Process Hacker";
