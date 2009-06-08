@@ -22,6 +22,8 @@
  */
 #endregion
 
+#pragma warning disable 0675
+
 using System;
 using System.Collections;
 using System.Drawing;

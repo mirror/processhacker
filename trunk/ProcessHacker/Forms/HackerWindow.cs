@@ -1520,8 +1520,6 @@ namespace ProcessHacker
                         // HACK HACK HACK HACK
                         try
                         {
-                            int i = 0;
-
                             foreach (var process in treeProcesses.Model.Roots)
                             {
                                 if (
@@ -1529,17 +1527,10 @@ namespace ProcessHacker
                                     StringComparison.InvariantCultureIgnoreCase) && 
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
-                                    i += 10;
-
-                                    if (i >= treeProcesses.Model.Roots.Length)
-                                        i = treeProcesses.Model.Roots.Length - 1;
-
-                                    treeProcesses.FindTreeNode(treeProcesses.Model.Roots[i]).EnsureVisible();
+                                    treeProcesses.FindTreeNode(process).EnsureVisible();
 
                                     break;
                                 }
-
-                                i++;
                             }
                         }
                         catch

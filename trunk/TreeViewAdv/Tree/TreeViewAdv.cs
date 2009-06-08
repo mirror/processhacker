@@ -372,8 +372,15 @@ namespace Aga.Controls.Tree
 					row = _rowLayout.GetFirstRow(node.Row);
 			}
 
-			if (row >= _vScrollBar.Minimum && row <= _vScrollBar.Maximum)
-				_vScrollBar.Value = row;
+            // Ugh, who wants the node at the BOTTOM of the screen? Put it in the MIDDLE!
+            row += (this.Height / this.RowHeight) / 2;
+            // wj32: Do the best we can, so don't bail out if the value is out of range.
+            if (row < _vScrollBar.Minimum)
+                row = _vScrollBar.Minimum;
+            if (row > _vScrollBar.Maximum)
+                row = _vScrollBar.Maximum;
+
+            _vScrollBar.Value = row;
 		}
 
 		public void ClearSelection()
