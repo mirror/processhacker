@@ -2253,6 +2253,7 @@ namespace ProcessHacker
 
                 node.EnsureVisible();
                 node.IsSelected = true;
+                treeProcesses.Tree.FullUpdate();
                 treeProcesses.Tree.Invalidate();
 
                 tabControl.SelectedTab = tabProcesses;
