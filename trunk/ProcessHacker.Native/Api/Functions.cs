@@ -1955,6 +1955,11 @@ namespace ProcessHacker.Native.Api
         #region Windows
 
         [DllImport("user32.dll")]
+        public static extern bool UpdateWindow(
+            [In] IntPtr hWnd
+            );
+
+        [DllImport("user32.dll")]
         public static extern bool MoveWindow(
             [In] IntPtr hWnd,
             [In] int X,

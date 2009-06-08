@@ -57,10 +57,6 @@ namespace ProcessHacker.Common
         private static int _finalizedCount = 0;
         private static int _referencedCount = 0;
         private static int _dereferencedCount = 0;
-#if DEBUG
-        private static List<WeakReference<DisposableObject>> _liveList = 
-            new List<WeakReference<DisposableObject>>();
-#endif
 
         /// <summary>
         /// Gets the number of disposable objects that have been created.
@@ -86,38 +82,6 @@ namespace ProcessHacker.Common
         /// Gets the number of times disposable objects have been dereferenced.
         /// </summary>
         public static int DereferencedCount { get { return _dereferencedCount - _disposedCount - _finalizedCount; } }
-
-#if DEBUG
-        /// <summary>
-        /// Gets a list of disposable objects that are currently alive.
-        /// </summary>
-        public static DisposableObject[] LiveObjects
-        {
-            get
-            {
-                lock (_liveList)
-                {
-                    DisposableObject[] objects = new DisposableObject[_liveList.Count];
-
-                    for (int i = 0; i < _liveList.Count; i++)
-                        objects[i] = _liveList[i];
-
-                    return objects;
-                }
-            }
-        }
-
-        private static void AddLiveObject(DisposableObject obj)
-        {
-            lock (_liveList)
-            {
-                // Remove dead objects.
-                _liveList.RemoveAll((reference) => !reference.Alive);
-                // Add the object.
-                _liveList.Add(new WeakReference<DisposableObject>(obj));
-            }
-        }
-#endif
 
 #if DEBUG
         /// <summary>
@@ -184,7 +148,6 @@ namespace ProcessHacker.Common
             Interlocked.Increment(ref _createdCount);
 #if DEBUG
             _creationStackTrace = Environment.StackTrace;
-            AddLiveObject(this);
 #endif
         }
 

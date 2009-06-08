@@ -95,16 +95,25 @@ namespace ProcessHacker.Components
 
         private void RedrawWindow(IntPtr hWnd)
         {
-            Win32.RedrawWindow(
+            this.RedrawWindow(hWnd, true);
+        }
+
+        private void RedrawWindow(IntPtr hWnd, bool workaround)
+        {
+            if (!Win32.RedrawWindow(
                hWnd,
                IntPtr.Zero,
                IntPtr.Zero,
                RedrawWindowFlags.Invalidate | // redraws the window
                RedrawWindowFlags.Erase | // for those toolbar backgrounds and empty forms
-               RedrawWindowFlags.UpdateNow | 
+               RedrawWindowFlags.UpdateNow |
                RedrawWindowFlags.AllChildren |
                RedrawWindowFlags.Frame // important, even more so without desktop composition
-               );
+               ) && workaround)
+            {
+                // Since the rectangle is just an inversion we can redo it.
+                DrawWindowRectangle(hWnd);
+            }
         }
 
         protected override void OnParentChanged(ToolStrip oldParent, ToolStrip newParent)
@@ -169,7 +178,7 @@ namespace ProcessHacker.Components
             if (_currentHWnd != IntPtr.Zero)
             {
                 // Redraw the window we found.
-                this.RedrawWindow(_currentHWnd);
+                this.RedrawWindow(_currentHWnd, false);
 
                 int pid, tid;
 
