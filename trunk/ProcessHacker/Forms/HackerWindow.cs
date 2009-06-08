@@ -1511,6 +1511,38 @@ namespace ProcessHacker
                 {
                     treeProcesses.Tree.EndCompleteUpdate();
                     treeProcesses.Tree.EndUpdate();
+
+                    if (Properties.Settings.Default.ScrollDownProcessTree)
+                    {
+                        // HACK HACK HACK HACK
+                        // HACK HACK HACK HACK
+                        // HACK HACK HACK HACK
+                        // HACK HACK HACK HACK
+                        try
+                        {
+                            int i = 0;
+
+                            foreach (var process in treeProcesses.Model.Roots)
+                            {
+                                if (string.Equals(process.Name, "explorer.exe", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    i += 10;
+
+                                    if (i >= treeProcesses.Model.Roots.Length)
+                                        i = treeProcesses.Model.Roots.Length - 1;
+
+                                    treeProcesses.FindTreeNode(treeProcesses.Model.Roots[i]).EnsureVisible();
+
+                                    break;
+                                }
+
+                                i++;
+                            }
+                        }
+                        catch
+                        { }
+                    }
+
                     treeProcesses.Invalidate();
                     processP.RunOnceAsync();
                     this.Cursor = Cursors.Default;

@@ -38,6 +38,7 @@
             this.textSearchEngine = new System.Windows.Forms.TextBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.checkScrollDownProcessTree = new System.Windows.Forms.CheckBox();
             this.checkAllowOnlyOneInstance = new System.Windows.Forms.CheckBox();
             this.buttonFont = new System.Windows.Forms.Button();
             this.textImposterNames = new System.Windows.Forms.TextBox();
@@ -166,7 +167,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 261);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 285);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -226,6 +227,7 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
             this.tabGeneral.Controls.Add(this.buttonFont);
             this.tabGeneral.Controls.Add(this.textImposterNames);
@@ -249,6 +251,18 @@
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // checkScrollDownProcessTree
+            // 
+            this.checkScrollDownProcessTree.AutoSize = true;
+            this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(6, 261);
+            this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
+            this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
+            this.checkScrollDownProcessTree.TabIndex = 17;
+            this.checkScrollDownProcessTree.Text = "Scroll down the process tree at startup";
+            this.toolTipProvider.SetToolTip(this.checkScrollDownProcessTree, "Scrolls down to the first process belonging to the current user on startup.");
+            this.checkScrollDownProcessTree.UseVisualStyleBackColor = true;
             // 
             // checkAllowOnlyOneInstance
             // 
@@ -1080,5 +1094,6 @@
         private System.Windows.Forms.CheckBox checkHidePhConnections;
         private System.Windows.Forms.CheckBox checkEnableExperimentalFeatures;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox checkScrollDownProcessTree;
     }
 }

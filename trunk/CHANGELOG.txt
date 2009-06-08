@@ -9,6 +9,7 @@ Process Hacker
      Analyze > Wait to see what a thread is hanging on
    * Added ability to create dump files for processes
    * Added ability to detach processes from debuggers
+   * Added "scroll down process tree on startup" option
    * Notification icon process list is now sorted
    * Lists are dramatically faster (especially the handle list)
    * Detailed handle properties

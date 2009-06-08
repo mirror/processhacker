@@ -365,5 +365,8 @@
     <Setting Name="InformationBoxSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">565, 377</Value>
     </Setting>
+    <Setting Name="ScrollDownProcessTree" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -193,6 +193,11 @@ namespace ProcessHacker
             get { return _processes; }
         }
 
+        public ProcessNode[] Roots
+        {
+            get { return _roots.ToArray(); }
+        }
+
         public string GetSortColumn()
         {
             foreach (TreeColumn column in _tree.Tree.Columns)

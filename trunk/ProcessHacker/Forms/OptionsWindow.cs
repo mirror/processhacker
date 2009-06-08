@@ -239,6 +239,7 @@ namespace ProcessHacker
             checkEnableKPH.Checked = Properties.Settings.Default.EnableKPH;
             checkEnableExperimentalFeatures.Checked = Properties.Settings.Default.EnableExperimentalFeatures;
             checkStartHidden.Checked = Properties.Settings.Default.StartHidden;
+            checkScrollDownProcessTree.Checked = Properties.Settings.Default.ScrollDownProcessTree;
             checkHidePhConnections.Checked = Properties.Settings.Default.HideProcessHackerNetworkConnections;
 
             textImposterNames.Text = Properties.Settings.Default.ImposterNames;
@@ -342,6 +343,7 @@ namespace ProcessHacker
                 Array.IndexOf(Utils.SizeUnitNames, comboSizeUnits.SelectedItem);
             Properties.Settings.Default.VerifySignatures = checkVerifySignatures.Checked;
             Properties.Settings.Default.HideHandlesWithNoName = checkHideHandlesWithNoName.Checked;
+            Properties.Settings.Default.ScrollDownProcessTree = checkScrollDownProcessTree.Checked;
             Properties.Settings.Default.StartHidden = checkStartHidden.Checked;
             Properties.Settings.Default.EnableKPH = checkEnableKPH.Checked;
             Properties.Settings.Default.EnableExperimentalFeatures = checkEnableExperimentalFeatures.Checked;
