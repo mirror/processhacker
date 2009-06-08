@@ -322,7 +322,7 @@ namespace ProcessHacker.Common
             if (managed)
                 Monitor.Enter(_refLock);
 
-            Interlocked.Increment(ref _dereferencedCount);
+            Interlocked.Add(ref _dereferencedCount, count);
 
             try
             {
