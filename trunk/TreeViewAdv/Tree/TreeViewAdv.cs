@@ -361,19 +361,23 @@ namespace Aga.Controls.Tree
 				CreateRowMap();
 
 			int row = -1;
- 
-			if (node.Row < FirstVisibleRow)
-				row = node.Row;
-			else
-			{
-				int pageStart = _rowLayout.GetRowBounds(FirstVisibleRow).Top;
-				int rowBottom = _rowLayout.GetRowBounds(node.Row).Bottom;
-				if (rowBottom > pageStart + DisplayRectangle.Height - ColumnHeaderHeight)
-					row = _rowLayout.GetFirstRow(node.Row);
-			}
 
-            // Ugh, who wants the node at the BOTTOM of the screen? Put it in the MIDDLE!
-            row += (this.Height / this.RowHeight) / 2;
+            if (node.Row < FirstVisibleRow)
+            {
+                row = node.Row;
+                // Ugh, who wants the node at the TOP of the screen? Put it in the MIDDLE!
+                row -= (this.Height / this.RowHeight) / 2;
+            }
+            else
+            {
+                int pageStart = _rowLayout.GetRowBounds(FirstVisibleRow).Top;
+                int rowBottom = _rowLayout.GetRowBounds(node.Row).Bottom;
+                if (rowBottom > pageStart + DisplayRectangle.Height - ColumnHeaderHeight)
+                    row = _rowLayout.GetFirstRow(node.Row);
+
+                // Ugh, who wants the node at the BOTTOM of the screen? Put it in the MIDDLE!
+                row += (this.Height / this.RowHeight) / 2;
+            }
             // wj32: Do the best we can, so don't bail out if the value is out of range.
             if (row < _vScrollBar.Minimum)
                 row = _vScrollBar.Minimum;
