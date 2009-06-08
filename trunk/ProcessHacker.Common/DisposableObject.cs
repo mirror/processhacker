@@ -322,12 +322,12 @@ namespace ProcessHacker.Common
             if (managed)
                 Monitor.Enter(_refLock);
 
-            Interlocked.Add(ref _dereferencedCount, count);
-
             try
             {
                 if (!_owned)
                     return 0;
+
+                Interlocked.Add(ref _dereferencedCount, count);
 
                 // Decrease the reference count.
                 int newRefCount = Interlocked.Add(ref _refCount, -count);
