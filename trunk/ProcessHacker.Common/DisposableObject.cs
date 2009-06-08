@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace ProcessHacker.Common
@@ -137,17 +136,31 @@ namespace ProcessHacker.Common
         /// </summary>
         private volatile bool _ownedByGc = true;
         /// <summary>
-        /// The reference count of the object.
-        /// </summary>
-        private int _refCount = 1;
-        /// <summary>
         /// Synchronization for all reference-related methods.
         /// </summary>
         private object _refLock = new object();
         /// <summary>
+        /// The reference count of the object.
+        /// </summary>
+        private int _refCount = 1;
+        /// <summary>
+        /// The weak reference count of the object. This is subtracted 
+        /// from the actual reference count when the object is no longer 
+        /// reachable.
+        /// </summary>
+        private int _weakRefCount = 0;
+        /// <summary>
+        /// Whether the finalizer will run.
+        /// </summary>
+        private volatile bool _finalizerRegistered = true;
+        /// <summary>
+        /// Synchronization for finalizer-related methods.
+        /// </summary>
+        private object _finalizerRegisterLock = new object();
+        /// <summary>
         /// Whether the object has been freed.
         /// </summary>
-        private bool _disposed = false;
+        private volatile bool _disposed = false;
 
         /// <summary>
         /// Initializes a disposable object.
@@ -176,11 +189,16 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
-        /// Frees the resources associated with the object.
+        /// Ensures that the GC does not own the object and destroys
+        /// all weak references.
         /// </summary>
         ~DisposableObject()
         {
+            // Get rid of GC ownership if still present.
             this.Dispose(false);
+            // Zero the weak reference count.
+            this.Dereference(_weakRefCount, false);
+            _weakRefCount = 0;
         }
 
         /// <summary>
@@ -189,7 +207,6 @@ namespace ProcessHacker.Common
         public void Dispose()
         {
             this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -198,18 +215,28 @@ namespace ProcessHacker.Common
         /// <param name="managed">Whether to dispose managed resources.</param>
         public void Dispose(bool managed)
         {
+            Thread.BeginCriticalRegion();
+
             if (managed)
                 Monitor.Enter(_refLock);
 
             try
             {
-                // Ensure that calling Dispose more than once will 
-                // have no effect.
+                // Only proceed if the object is owned by the GC.
                 if (_ownedByGc)
                 {
+                    // Decrement the reference count.
                     this.Dereference(managed);
                     _ownedByGc = false;
 
+                    // Disable the finalizer if we don't need it.
+                    if (Thread.VolatileRead(ref _weakRefCount) == 0)
+                    {
+                        if (managed)
+                            this.DisableFinalizer();
+                    }
+
+                    // Stats...
                     if (managed)
                         Interlocked.Increment(ref _disposedCount);
                     else
@@ -220,6 +247,8 @@ namespace ProcessHacker.Common
             {
                 if (managed)
                     Monitor.Exit(_refLock);
+
+                Thread.EndCriticalRegion();
             }
         }
 
@@ -267,6 +296,30 @@ namespace ProcessHacker.Common
         }
 
         /// <summary>
+        /// Gets the current weak reference count of the object.
+        /// </summary>
+        /// <remarks>
+        /// This information is for debugging purposes ONLY. DO NOT 
+        /// base memory management logic upon this value.
+        /// </remarks>
+        public int WeakReferenceCount
+        {
+            get { return Thread.VolatileRead(ref _weakRefCount); }
+        }
+
+        private void DisableFinalizer()
+        {
+            lock (_finalizerRegisterLock)
+            {
+                if (_finalizerRegistered)
+                {
+                    GC.SuppressFinalize(this);
+                    _finalizerRegistered = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Decrements the reference count of the object.
         /// </summary>
         /// <returns>The old reference count.</returns>
@@ -296,6 +349,13 @@ namespace ProcessHacker.Common
         /// </remarks>
         public int Dereference(bool managed)
         {
+            return this.Dereference(1, managed);
+        }
+
+        private int Dereference(int count, bool managed)
+        {
+            Thread.BeginCriticalRegion();
+
             if (managed)
                 Monitor.Enter(_refLock);
 
@@ -306,8 +366,8 @@ namespace ProcessHacker.Common
                 if (!_owned)
                     return 0;
 
-                // Decrement the reference count.
-                int newRefCount = Interlocked.Decrement(ref _refCount);
+                // Decrease the reference count.
+                int newRefCount = Interlocked.Add(ref _refCount, -count);
 
                 if (newRefCount < 0)
                     throw new InvalidOperationException("Reference count cannot be negative.");
@@ -326,6 +386,20 @@ namespace ProcessHacker.Common
             {
                 if (managed)
                     Monitor.Exit(_refLock);
+
+                Thread.EndCriticalRegion();
+            }
+        }
+
+        private void EnableFinalizer()
+        {
+            lock (_finalizerRegisterLock)
+            {
+                if (!_finalizerRegistered)
+                {
+                    GC.ReRegisterForFinalize(this);
+                    _finalizerRegistered = true;
+                }
             }
         }
 
@@ -338,21 +412,43 @@ namespace ProcessHacker.Common
         /// You must call Dereference once (when you are finished with the 
         /// object) to match each call to Reference. Do not call Dispose.
         /// </para>
-        /// <para>You must not call this method from a finalizer.</para>
         /// </remarks>
         public int Reference()
         {
+            if (!_owned)
+                return 0;
+
             Interlocked.Increment(ref _referencedCount);
 
-            // It is safe to lock because it will not be 
-            // called from a finalizer, and that's the only 
-            // time when the lock may be null.
-            lock (_refLock)
-            {
-                if (!_owned)
-                    return 0;
+            return Interlocked.Increment(ref _refCount);
+        }
 
+        /// <summary>
+        /// Increments the reference count of the object and ensures the 
+        /// reference count will decremented when the object is no 
+        /// longer reachable.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// You must not call Dereference to decrement the reference count 
+        /// as it will be decremented automatically.
+        /// </remarks>
+        public int ReferenceWeak()
+        {
+            if (!_owned)
+                return 0;
+
+            Thread.BeginCriticalRegion();
+
+            try
+            {
+                Interlocked.Increment(ref _weakRefCount);
+                this.EnableFinalizer();
                 return Interlocked.Increment(ref _refCount);
+            }
+            finally
+            {
+                Thread.EndCriticalRegion();
             }
         }
     }

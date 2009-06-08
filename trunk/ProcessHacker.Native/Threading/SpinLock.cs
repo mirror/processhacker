@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace ProcessHacker.Native.Threading
@@ -70,6 +68,8 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public void Acquire()
         {
+            Thread.BeginCriticalRegion();
+
             Interlocked.Increment(ref _acquireCount);
 
             if (_spin)
@@ -82,6 +82,8 @@ namespace ProcessHacker.Native.Threading
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
                     CurrentThread.Yield();
             }
+
+            Thread.EndCriticalRegion();
         }
 
         /// <summary>
@@ -98,8 +100,10 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         public void Release()
         {
+            Thread.BeginCriticalRegion();
             Interlocked.Exchange(ref _value, 0);
             Interlocked.Decrement(ref _acquireCount);
+            Thread.EndCriticalRegion();
         }
     }
 }
