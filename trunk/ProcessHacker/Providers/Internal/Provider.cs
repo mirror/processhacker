@@ -383,9 +383,16 @@ namespace ProcessHacker
         /// running, this function returns immediately. You may specify a timeout for the wait.
         /// </summary>
         /// <param name="timeout">The time in milliseconds to wait for the update process to finish.</param>
-        public void Wait(int timeout)
+        /// <returns>Whether the update process was finished before the timeout.</returns>
+        public bool Wait(int timeout)
         {
-            Monitor.Wait(_busyLock, timeout);
+            if (Monitor.TryEnter(_busyLock, timeout))
+            {
+                Monitor.Exit(_busyLock);
+                return true;
+            }
+
+            return false;
         }
 
         private void CallEvent(Delegate e, params object[] args)

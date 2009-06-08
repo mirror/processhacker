@@ -15,6 +15,6 @@ namespace ProcessHacker
         void InterlockedExecute(Delegate action, params object[] args);
         void InterlockedExecute(Delegate action, int timeout, params object[] args);
         void Wait();
-        void Wait(int timeout);
+        bool Wait(int timeout);
     }
 }

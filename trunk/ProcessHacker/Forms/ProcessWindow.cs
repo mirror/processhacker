@@ -40,6 +40,8 @@ namespace ProcessHacker
     public partial class ProcessWindow : Form
     {
         private bool _isFirstPaint = true;
+        private ProcessHacker.Native.Threading.Event _loadFinishedEvent = 
+            new ProcessHacker.Native.Threading.Event();
         private ProcessItem _processItem;
         private int _pid;
         private Process _process;
@@ -302,6 +304,8 @@ namespace ProcessHacker
             tabControl_SelectedIndexChanged(null, null);
 
             this.ResumeLayout();
+
+            _loadFinishedEvent.Set();
         }
 
         private void ProcessWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -320,6 +324,8 @@ namespace ProcessHacker
             }
 
             this.Visible = false;
+
+            _loadFinishedEvent.Dispose();
 
             if (_pid >= 0)
             {
@@ -873,6 +879,41 @@ namespace ProcessHacker
             if (fileCurrentDirectory.Text != _realCurrentDirectory)
                 fileCurrentDirectory.Text = _realCurrentDirectory;
         }
+
+        // Start: HACK HACK HACK HACK
+        private int _selectTid;
+
+        public void SelectThread(int tid)
+        {
+            _selectTid = tid;
+
+            WorkQueue.GlobalQueueWorkItemTag(new MethodInvoker(() =>
+                {
+                    _loadFinishedEvent.Wait();
+                    _threadP.Updated += SelectThread_threadP_Updated;
+                    _threadP.RunOnce();
+                }), "select-thread");
+        }
+
+        void SelectThread_threadP_Updated()
+        {
+            _threadP.Updated -= SelectThread_threadP_Updated;
+
+            if (this.IsHandleCreated)
+            {
+                this.BeginInvoke(new MethodInvoker(() =>
+                {
+                    tabControl.SelectedTab = tabThreads;
+                    var litem = listThreads.Items[_selectTid.ToString()];
+
+                    Program.HackerWindow.DeselectAll(listThreads.List);
+                    litem.Selected = true;
+                    litem.EnsureVisible();
+                }));
+            }
+        }
+
+        // End: HACK HACK HACK HACK
 
         #region Buttons
 

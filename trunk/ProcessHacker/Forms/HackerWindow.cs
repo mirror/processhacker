@@ -2875,6 +2875,20 @@ namespace ProcessHacker
                 targetButton.TargetWindowFound += (pid, tid) => this.SelectProcess(pid);
                 toolStrip.Items.Add(targetButton);
 
+                var targetThreadButton = new TargetWindowButton();
+                targetThreadButton.TargetWindowFound += (pid, tid) =>
+                    {
+                        Program.GetProcessWindow(processP.Dictionary[pid], (f) =>
+                            {
+                                Program.FocusWindow(f);
+                                f.SelectThread(tid);
+                            });
+                    };
+                targetThreadButton.Image = Properties.Resources.application_go;
+                targetThreadButton.Text = "Find window and select thread";
+                targetThreadButton.ToolTipText = "Find window and select thread";
+                toolStrip.Items.Add(targetThreadButton);
+
                 try { TerminalServerHandle.RegisterNotificationsCurrent(this, true); }
                 catch (Exception ex) { Logging.Log(ex); }    
                 try { this.UpdateSessions(); }
