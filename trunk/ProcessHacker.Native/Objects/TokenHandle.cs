@@ -268,7 +268,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's privileges.
         /// </summary>
         /// <returns>A TOKEN_PRIVILEGES structure.</returns>
-        public TokenPrivileges GetPrivileges()
+        public TokenPrivilege[] GetPrivileges()
         {
             int retLen;
 
@@ -280,15 +280,13 @@ namespace ProcessHacker.Native.Objects
                     data.Size, out retLen))
                     Win32.ThrowLastError();
 
-                uint number = data.ReadUInt32(0);
-                TokenPrivileges privileges = new TokenPrivileges();
+                uint count = data.ReadUInt32(0);
+                TokenPrivilege[] privileges = new TokenPrivilege[count];
 
-                privileges.PrivilegeCount = number;
-                privileges.Privileges = new LuidAndAttributes[number];
-
-                for (int i = 0; i < number; i++)
+                for (int i = 0; i < count; i++)
                 {
-                    privileges.Privileges[i] = data.ReadStruct<LuidAndAttributes>(4, i);
+                    var laa = data.ReadStruct<LuidAndAttributes>(4, i);
+                    privileges[i] = new TokenPrivilege(this, laa.Luid, laa.Attributes);
                 }
 
                 return privileges;
@@ -326,14 +324,30 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A TOKEN_SOURCE struct.</returns>
         public TokenSource GetSource()
         {
-            TokenSource source = new TokenSource();
+            TokenSource source;
             int retLen;
 
             if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSource,
-                 ref source, Marshal.SizeOf(source), out retLen))
+                 out source, Marshal.SizeOf(typeof(TokenSource)), out retLen))
                 Win32.ThrowLastError();
 
             return source;
+        }
+
+        /// <summary>
+        /// Gets statistics about the token.
+        /// </summary>
+        /// <returns>A TOKEN_STATISTICS structure.</returns>
+        public TokenStatistics GetStatistics()
+        {
+            TokenStatistics statistics;
+            int retLen;
+
+            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenStatistics,
+                out statistics, Marshal.SizeOf(typeof(TokenStatistics)), out retLen))
+                Win32.ThrowLastError();
+
+            return statistics;
         }
 
         /// <summary>
@@ -413,20 +427,25 @@ namespace ProcessHacker.Native.Objects
         /// <param name="attributes">The new attributes of the privilege.</param>
         public void SetPrivilege(string privilegeName, SePrivilegeAttributes attributes)
         {
+            Luid privilegeLuid;
+
+            if (!Win32.LookupPrivilegeValue(null, privilegeName, out privilegeLuid))
+                throw new Exception("Invalid privilege name '" + privilegeName + "'.");
+
+            this.SetPrivilege(privilegeLuid, attributes);
+        }
+
+        public void SetPrivilege(Luid privilegeLuid, SePrivilegeAttributes attributes)
+        {
             TokenPrivileges tkp = new TokenPrivileges();
 
             tkp.Privileges = new LuidAndAttributes[1];
 
-            if (!Win32.LookupPrivilegeValue(null, privilegeName, out tkp.Privileges[0].Luid))
-                throw new Exception("Invalid privilege name '" + privilegeName + "'.");
-
             tkp.PrivilegeCount = 1;
             tkp.Privileges[0].Attributes = attributes;
+            tkp.Privileges[0].Luid = privilegeLuid;
 
-            int test = 0;
-            IntPtr a = IntPtr.Zero;
-
-            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, test);
+            Win32.AdjustTokenPrivileges(this, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
 
             if (Marshal.GetLastWin32Error() != 0)
                 Win32.ThrowLastError();

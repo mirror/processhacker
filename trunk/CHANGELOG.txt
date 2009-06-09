@@ -16,6 +16,8 @@ Process Hacker
    * Event objects can now be modified - set, clear, pulse, reset
    * Event pair objects can now be modified - set high, set low
    * Semaphore objects can now be modified - acquire, release
+   * Statistics for token objects
+   * Token object names now include their session LUIDs
    * Added Shift+Del for Terminate Process Tree
  * FIXED:
    * #2795871 - "Hidden Processes window resizing problem"

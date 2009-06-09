@@ -279,31 +279,6 @@ namespace ProcessHacker.Native
             return retDict;
         }
 
-        public static string GetPrivilegeDisplayName(string PrivilegeName)
-        {
-            StringBuilder sb = null;
-            int size = 0;
-            int languageId = 0;
-
-            Win32.LookupPrivilegeDisplayName(null, PrivilegeName, sb, ref size, out languageId);
-            sb = new StringBuilder(size);
-            Win32.LookupPrivilegeDisplayName(null, PrivilegeName, sb, ref size, out languageId);
-
-            return sb.ToString();
-        }
-
-        public static string GetPrivilegeName(Luid Luid)
-        {
-            StringBuilder sb = null;
-            int size = 0;
-
-            Win32.LookupPrivilegeName(null, ref Luid, sb, ref size);
-            sb = new StringBuilder(size);
-            Win32.LookupPrivilegeName(null, ref Luid, sb, ref size);
-
-            return sb.ToString();
-        }
-
         public static Dictionary<int, SystemProcess> GetProcesses()
         {
             return GetProcesses(false);
@@ -836,13 +811,15 @@ namespace ProcessHacker.Native
 
                     case "Token":
                         {
-                            using (var tokenHandle = 
+                            using (var tokenHandleDup = 
                                 new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
                             {
-                                var sid = TokenHandle.FromHandle(tokenHandle).GetUser();
+                                var tokenHandle = TokenHandle.FromHandle(tokenHandleDup);
+                                var sid = tokenHandle.GetUser();
 
                                 using (sid)
-                                    info.BestName = sid.GetFullName(true);
+                                    info.BestName = sid.GetFullName(true) + ": 0x" + 
+                                        tokenHandle.GetStatistics().AuthenticationId.ToString();
                             }
                         }
 

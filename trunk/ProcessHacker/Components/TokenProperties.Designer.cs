@@ -34,7 +34,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tabControl = new System.Windows.Forms.TabControl();
-            this.tabToken = new System.Windows.Forms.TabPage();
+            this.tabGeneral = new System.Windows.Forms.TabPage();
             this.groupSource = new System.Windows.Forms.GroupBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -56,6 +56,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.labelElevated = new System.Windows.Forms.Label();
             this.textUserSID = new System.Windows.Forms.TextBox();
+            this.tabAdvanced = new System.Windows.Forms.TabPage();
+            this.textMemoryAvailable = new System.Windows.Forms.TextBox();
+            this.textMemoryUsed = new System.Windows.Forms.TextBox();
+            this.textAuthenticationId = new System.Windows.Forms.TextBox();
+            this.textTokenId = new System.Windows.Forms.TextBox();
+            this.textImpersonationLevel = new System.Windows.Forms.TextBox();
+            this.textTokenType = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.tabPrivileges = new System.Windows.Forms.TabPage();
             this.listPrivileges = new System.Windows.Forms.ListView();
@@ -70,17 +80,22 @@
             this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.selectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
-            this.tabToken.SuspendLayout();
+            this.tabGeneral.SuspendLayout();
             this.groupSource.SuspendLayout();
             this.groupToken.SuspendLayout();
+            this.tabAdvanced.SuspendLayout();
             this.tabPrivileges.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl
             // 
-            this.tabControl.Controls.Add(this.tabToken);
+            this.tabControl.Controls.Add(this.tabGeneral);
+            this.tabControl.Controls.Add(this.tabAdvanced);
             this.tabControl.Controls.Add(this.tabGroups);
             this.tabControl.Controls.Add(this.tabPrivileges);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -90,18 +105,18 @@
             this.tabControl.Size = new System.Drawing.Size(575, 433);
             this.tabControl.TabIndex = 3;
             // 
-            // tabToken
+            // tabGeneral
             // 
-            this.tabToken.AutoScroll = true;
-            this.tabToken.Controls.Add(this.groupSource);
-            this.tabToken.Controls.Add(this.groupToken);
-            this.tabToken.Location = new System.Drawing.Point(4, 22);
-            this.tabToken.Name = "tabToken";
-            this.tabToken.Padding = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.tabToken.Size = new System.Drawing.Size(567, 407);
-            this.tabToken.TabIndex = 2;
-            this.tabToken.Text = "Token";
-            this.tabToken.UseVisualStyleBackColor = true;
+            this.tabGeneral.AutoScroll = true;
+            this.tabGeneral.Controls.Add(this.groupSource);
+            this.tabGeneral.Controls.Add(this.groupToken);
+            this.tabGeneral.Location = new System.Drawing.Point(4, 22);
+            this.tabGeneral.Name = "tabGeneral";
+            this.tabGeneral.Padding = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.tabGeneral.Size = new System.Drawing.Size(567, 407);
+            this.tabGeneral.TabIndex = 2;
+            this.tabGeneral.Text = "General";
+            this.tabGeneral.UseVisualStyleBackColor = true;
             // 
             // groupSource
             // 
@@ -320,6 +335,103 @@
             this.textUserSID.Size = new System.Drawing.Size(461, 20);
             this.textUserSID.TabIndex = 6;
             // 
+            // tabAdvanced
+            // 
+            this.tabAdvanced.Controls.Add(this.textMemoryAvailable);
+            this.tabAdvanced.Controls.Add(this.textMemoryUsed);
+            this.tabAdvanced.Controls.Add(this.textAuthenticationId);
+            this.tabAdvanced.Controls.Add(this.textTokenId);
+            this.tabAdvanced.Controls.Add(this.textImpersonationLevel);
+            this.tabAdvanced.Controls.Add(this.textTokenType);
+            this.tabAdvanced.Controls.Add(this.label13);
+            this.tabAdvanced.Controls.Add(this.label12);
+            this.tabAdvanced.Controls.Add(this.label11);
+            this.tabAdvanced.Controls.Add(this.label10);
+            this.tabAdvanced.Controls.Add(this.label5);
+            this.tabAdvanced.Controls.Add(this.label4);
+            this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
+            this.tabAdvanced.Name = "tabAdvanced";
+            this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAdvanced.Size = new System.Drawing.Size(567, 407);
+            this.tabAdvanced.TabIndex = 3;
+            this.tabAdvanced.Text = "Advanced";
+            this.tabAdvanced.UseVisualStyleBackColor = true;
+            // 
+            // textMemoryAvailable
+            // 
+            this.textMemoryAvailable.Location = new System.Drawing.Point(118, 136);
+            this.textMemoryAvailable.Name = "textMemoryAvailable";
+            this.textMemoryAvailable.ReadOnly = true;
+            this.textMemoryAvailable.Size = new System.Drawing.Size(191, 20);
+            this.textMemoryAvailable.TabIndex = 1;
+            // 
+            // textMemoryUsed
+            // 
+            this.textMemoryUsed.Location = new System.Drawing.Point(118, 110);
+            this.textMemoryUsed.Name = "textMemoryUsed";
+            this.textMemoryUsed.ReadOnly = true;
+            this.textMemoryUsed.Size = new System.Drawing.Size(191, 20);
+            this.textMemoryUsed.TabIndex = 1;
+            // 
+            // textAuthenticationId
+            // 
+            this.textAuthenticationId.Location = new System.Drawing.Point(118, 84);
+            this.textAuthenticationId.Name = "textAuthenticationId";
+            this.textAuthenticationId.ReadOnly = true;
+            this.textAuthenticationId.Size = new System.Drawing.Size(191, 20);
+            this.textAuthenticationId.TabIndex = 1;
+            // 
+            // textTokenId
+            // 
+            this.textTokenId.Location = new System.Drawing.Point(118, 58);
+            this.textTokenId.Name = "textTokenId";
+            this.textTokenId.ReadOnly = true;
+            this.textTokenId.Size = new System.Drawing.Size(191, 20);
+            this.textTokenId.TabIndex = 1;
+            // 
+            // textImpersonationLevel
+            // 
+            this.textImpersonationLevel.Location = new System.Drawing.Point(118, 32);
+            this.textImpersonationLevel.Name = "textImpersonationLevel";
+            this.textImpersonationLevel.ReadOnly = true;
+            this.textImpersonationLevel.Size = new System.Drawing.Size(191, 20);
+            this.textImpersonationLevel.TabIndex = 1;
+            // 
+            // textTokenType
+            // 
+            this.textTokenType.Location = new System.Drawing.Point(118, 6);
+            this.textTokenType.Name = "textTokenType";
+            this.textTokenType.ReadOnly = true;
+            this.textTokenType.Size = new System.Drawing.Size(191, 20);
+            this.textTokenType.TabIndex = 1;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 61);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(69, 13);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "Token LUID:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 35);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(105, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Impersonation Level:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 9);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Type:";
+            // 
             // tabGroups
             // 
             this.tabGroups.Location = new System.Drawing.Point(4, 22);
@@ -426,6 +538,34 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 87);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(106, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Authentication LUID:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 113);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(75, 13);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Memory Used:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 139);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(93, 13);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Memory Available:";
             // 
             // TokenProperties
             // 
@@ -435,11 +575,13 @@
             this.Name = "TokenProperties";
             this.Size = new System.Drawing.Size(575, 433);
             this.tabControl.ResumeLayout(false);
-            this.tabToken.ResumeLayout(false);
+            this.tabGeneral.ResumeLayout(false);
             this.groupSource.ResumeLayout(false);
             this.groupSource.PerformLayout();
             this.groupToken.ResumeLayout(false);
             this.groupToken.PerformLayout();
+            this.tabAdvanced.ResumeLayout(false);
+            this.tabAdvanced.PerformLayout();
             this.tabPrivileges.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);
@@ -449,7 +591,7 @@
         #endregion
 
         private System.Windows.Forms.TabControl tabControl;
-        private System.Windows.Forms.TabPage tabToken;
+        private System.Windows.Forms.TabPage tabGeneral;
         private System.Windows.Forms.TextBox textSessionID;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -485,5 +627,18 @@
         private System.Windows.Forms.TextBox textPrimaryGroup;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textOwner;
+        private System.Windows.Forms.TabPage tabAdvanced;
+        private System.Windows.Forms.TextBox textTokenId;
+        private System.Windows.Forms.TextBox textImpersonationLevel;
+        private System.Windows.Forms.TextBox textTokenType;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textMemoryAvailable;
+        private System.Windows.Forms.TextBox textMemoryUsed;
+        private System.Windows.Forms.TextBox textAuthenticationId;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
     }
 }

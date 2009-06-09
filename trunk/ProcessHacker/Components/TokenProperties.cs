@@ -54,6 +54,7 @@ namespace ProcessHacker.Components
             {
                 using (TokenHandle thandle = _object.GetToken(TokenAccess.Query))
                 {
+                    // "General"
                     try
                     {
                         textUser.Text = thandle.GetUser().GetFullName(true);
@@ -137,6 +138,23 @@ namespace ProcessHacker.Components
                         textSourceName.Text = "(" + ex.Message + ")";
                     }
 
+                    // "Advanced"
+                    try
+                    {
+                        var statistics = thandle.GetStatistics();
+
+                        textTokenType.Text = statistics.TokenType.ToString();
+                        textImpersonationLevel.Text = statistics.ImpersonationLevel.ToString();
+                        textTokenId.Text = "0x" + statistics.TokenId.ToString();
+                        textAuthenticationId.Text = "0x" + statistics.AuthenticationId.ToString();
+                        textMemoryUsed.Text = Utils.GetNiceSizeName(statistics.DynamicCharged);
+                        textMemoryAvailable.Text = Utils.GetNiceSizeName(statistics.DynamicAvailable);
+                    }
+                    catch (Exception ex)
+                    {
+                        textTokenType.Text = "(" + ex.Message + ")";
+                    }
+
                     try
                     {
                         var groups = thandle.GetGroups();
@@ -158,15 +176,15 @@ namespace ProcessHacker.Components
                     {
                         var privileges = thandle.GetPrivileges();
 
-                        for (int i = 0; i < privileges.PrivilegeCount; i++)
+                        for (int i = 0; i < privileges.Length; i++)
                         {
-                            string name = Windows.GetPrivilegeName(privileges.Privileges[i].Luid);
-                            ListViewItem item = listPrivileges.Items.Add(name.ToLower(), name, 0);
+                            var privilege = privileges[i];
 
-                            item.BackColor = GetAttributeColor(privileges.Privileges[i].Attributes);
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item,
-                                GetAttributeString(privileges.Privileges[i].Attributes)));
-                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, Windows.GetPrivilegeDisplayName(name)));
+                            ListViewItem item = listPrivileges.Items.Add(privilege.Name.ToLower(), privilege.Name, 0);
+
+                            item.BackColor = GetAttributeColor(privilege.Attributes);
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, GetAttributeString(privilege.Attributes)));
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, privilege.DisplayName));
                         }
                     }
                     catch (Exception ex)

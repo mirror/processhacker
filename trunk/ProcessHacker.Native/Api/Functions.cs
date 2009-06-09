@@ -997,7 +997,17 @@ namespace ProcessHacker.Native.Api
         public static extern bool GetTokenInformation(
             [In] IntPtr TokenHandle,
             [In] TokenInformationClass TokenInformationClass,
-            [Optional] ref TokenSource TokenInformation,
+            [Optional] out TokenSource TokenInformation,
+            [In] int TokenInformationLength,
+            [Out] out int ReturnLength
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetTokenInformation(
+            [In] IntPtr TokenHandle,
+            [In] TokenInformationClass TokenInformationClass,
+            [Optional] out TokenStatistics TokenInformation,
             [In] int TokenInformationLength,
             [Out] out int ReturnLength
             );
@@ -1061,7 +1071,7 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] ref TokenPrivileges NewState,
             [In] int BufferLength,
             [Out] [Optional] IntPtr PreviousState, 
-            [Out] [Optional] int ReturnLength
+            [Out] [Optional] IntPtr ReturnLength
             );
 
         [DllImport("advapi32.dll", SetLastError = true)]

@@ -62,6 +62,7 @@
     <Compile Include="Security\IoCompletionAccess.cs" />
     <Compile Include="Security\KeyAccess.cs" />
     <Compile Include="Security\Sid.cs" />
+    <Compile Include="Security\TokenPrivilege.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Threading\CurrentThread.cs" />

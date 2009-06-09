@@ -494,10 +494,14 @@ namespace ProcessHacker.Native.Api
         public IntPtr Blink;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Explicit, Pack = 4)]
     public struct Luid
     {
+        [FieldOffset(0)]
+        private long QuadPart;
+        [FieldOffset(0)]
         public int LowPart;
+        [FieldOffset(4)]
         public int HighPart;
 
         public static Luid Allocate()
@@ -509,6 +513,11 @@ namespace ProcessHacker.Native.Api
                 Win32.ThrowLastError(status);
 
             return luid;
+        }
+
+        public override string ToString()
+        {
+            return this.QuadPart.ToString("x");
         }
     }
 
@@ -1568,6 +1577,21 @@ namespace ProcessHacker.Native.Api
         public string SourceName;
 
         public Luid SourceIdentifier;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TokenStatistics
+    {
+        public Luid TokenId;
+        public Luid AuthenticationId;
+        public long ExpirationTime;
+        public TokenType TokenType;
+        public SecurityImpersonationLevel ImpersonationLevel;
+        public int DynamicCharged;
+        public int DynamicAvailable;
+        public int GroupCount;
+        public int PrivilegeCount;
+        public Luid ModifiedId;
     }
 
     [StructLayout(LayoutKind.Sequential)]
