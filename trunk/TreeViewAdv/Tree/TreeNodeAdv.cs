@@ -373,6 +373,19 @@ namespace Aga.Controls.Tree
             _tree.ScrollTo(this);
         }
 
+        public void EnsureVisible2()
+        {
+            TreeNodeAdv parent = this.Parent;
+
+            while (parent != _tree.Root)
+            {
+                parent.Expand();
+                parent = parent.Parent;
+            }
+
+            _tree.ScrollTo2(this);
+        }
+
 		public void Expand()
 		{
 			if (!_isExpanded)

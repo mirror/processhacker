@@ -1527,7 +1527,7 @@ namespace ProcessHacker
                                     StringComparison.InvariantCultureIgnoreCase) && 
                                     process.ProcessItem.Username == Program.CurrentUsername)
                                 {
-                                    treeProcesses.FindTreeNode(process).EnsureVisible();
+                                    treeProcesses.FindTreeNode(process).EnsureVisible2();
 
                                     break;
                                 }
