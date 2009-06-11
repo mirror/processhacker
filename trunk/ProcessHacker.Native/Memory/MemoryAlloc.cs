@@ -33,7 +33,8 @@ namespace ProcessHacker.Native
     /// </summary>
     public class MemoryAlloc : DisposableObject
     {
-        private Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
+        private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
+
         private IntPtr _memory;
         private int _size;
 
@@ -125,6 +126,14 @@ namespace ProcessHacker.Native
         public MemoryAllocStream GetStream()
         {
             return new MemoryAllocStream(this);
+        }
+
+        private int GetStructSizeCached(Type structType)
+        {
+            if (!_sizeCache.ContainsKey(structType))
+                _sizeCache.Add(structType, Marshal.SizeOf(structType));
+
+            return _sizeCache[structType];
         }
 
         public byte[] ReadBytes(int length)
@@ -235,11 +244,8 @@ namespace ProcessHacker.Native
         /// <returns>The new struct.</returns>
         public T ReadStruct<T>(int offset, int index)
         {
-            if (!_sizeCache.ContainsKey(typeof(T)))
-                _sizeCache.Add(typeof(T), Marshal.SizeOf(typeof(T)));
-
             return (T)Marshal.PtrToStructure(
-                new IntPtr(_memory.ToInt32() + offset + _sizeCache[typeof(T)] * index), typeof(T));
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), typeof(T));
         }
 
         /// <summary>
@@ -286,9 +292,20 @@ namespace ProcessHacker.Native
             Marshal.WriteIntPtr(this, offset, i);
         }
 
-        public void WriteStruct<T>(int offset, T s)
+        public void WriteStruct<T>(T s)
         {
-            Marshal.StructureToPtr(s, _memory.Increment(offset), false);
+            this.WriteStruct<T>(0, s);
+        }
+
+        public void WriteStruct<T>(int index, T s)
+        {
+            this.WriteStruct<T>(0, index, s);
+        }
+
+        public void WriteStruct<T>(int offset, int index, T s)
+        {
+            Marshal.StructureToPtr(s, 
+                _memory.Increment(offset + this.GetStructSizeCached(typeof(T)) * index), false);
         }
 
         /// <summary>

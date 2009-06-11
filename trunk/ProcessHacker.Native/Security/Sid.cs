@@ -237,6 +237,15 @@ namespace ProcessHacker.Native.Security
             return Win32.RtlEqualPrefixSid(this, obj);
         }
 
+        public SidAndAttributes ToSidAndAttributes()
+        {
+            return new SidAndAttributes()
+            {
+                Attributes = _attributes,
+                Sid = this
+            };
+        }
+
         public override string ToString()
         {
             return this.StringSid;

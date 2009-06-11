@@ -800,6 +800,15 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct PrivilegeSetStruct
+    {
+        public int Count;
+        public PrivilegeSetFlags Flags;
+        [MarshalAs(UnmanagedType.ByValArray)]
+        public LuidAndAttributes[] Privileges;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ProcessBasicInformation
     {
         public NtStatus ExitStatus;
@@ -1555,7 +1564,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenGroups
     {
-        public uint GroupCount;
+        public int GroupCount;
 
         [MarshalAs(UnmanagedType.ByValArray)]
         public SidAndAttributes[] Groups;
@@ -1564,7 +1573,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenPrivileges
     {
-        public uint PrivilegeCount;
+        public int PrivilegeCount;
 
         [MarshalAs(UnmanagedType.ByValArray)]
         public LuidAndAttributes[] Privileges;

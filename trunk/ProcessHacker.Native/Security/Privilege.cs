@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Security
     /// <summary>
     /// Represents a Windows security privilege.
     /// </summary>
-    public class TokenPrivilege : DisposableObject
+    public class Privilege : DisposableObject
     {
         private TokenHandle _tokenHandle;
         private Luid _luid;
@@ -39,31 +39,39 @@ namespace ProcessHacker.Native.Security
         private string _name;
         private string _displayName;
 
-        public TokenPrivilege(string name)
+        public Privilege(string name)
             : this(null, name)
         { }
 
-        public TokenPrivilege(TokenHandle tokenHandle, string name)
+        public Privilege(TokenHandle tokenHandle, string name)
             : this(tokenHandle, name, 0)
         { }
 
-        public TokenPrivilege(TokenHandle tokenHandle, string name, SePrivilegeAttributes attributes)
+        public Privilege(TokenHandle tokenHandle, string name, SePrivilegeAttributes attributes)
             : this(tokenHandle, name, null, attributes)
         { }
 
-        public TokenPrivilege(Luid luid)
+        public Privilege(Luid luid)
             : this(null, luid)
         { }
 
-        public TokenPrivilege(TokenHandle tokenHandle, Luid luid)
+        public Privilege(LuidAndAttributes laa)
+            : this(null, laa.Luid, laa.Attributes)
+        { }
+
+        public Privilege(TokenHandle tokenHandle, Luid luid)
             : this(tokenHandle, luid, 0)
         { }
 
-        public TokenPrivilege(TokenHandle tokenHandle, Luid luid, SePrivilegeAttributes attributes)
+        public Privilege(Luid luid, SePrivilegeAttributes attributes)
+            : this(null, luid, attributes)
+        { }
+
+        public Privilege(TokenHandle tokenHandle, Luid luid, SePrivilegeAttributes attributes)
             : this(tokenHandle, null, luid, attributes)
         { }
 
-        private TokenPrivilege(TokenHandle tokenHandle, string name, Luid? luid, SePrivilegeAttributes attributes)
+        private Privilege(TokenHandle tokenHandle, string name, Luid? luid, SePrivilegeAttributes attributes)
             : base(tokenHandle != null)
         {
             _tokenHandle = tokenHandle;
@@ -106,6 +114,10 @@ namespace ProcessHacker.Native.Security
                 return (_attributes & SePrivilegeAttributes.Disabled)
                     != SePrivilegeAttributes.Disabled;
             }
+            set
+            {
+                _attributes = SePrivilegeAttributes.Disabled;
+            }
         }
 
         public string DisplayName
@@ -140,6 +152,10 @@ namespace ProcessHacker.Native.Security
                 return ((_attributes & SePrivilegeAttributes.Enabled) 
                     == SePrivilegeAttributes.Enabled) || this.EnabledByDefault && !this.Disabled;
             }
+            set
+            {
+                _attributes = SePrivilegeAttributes.Enabled;
+            }
         }
 
         public bool EnabledByDefault
@@ -148,6 +164,10 @@ namespace ProcessHacker.Native.Security
             {
                 return ((_attributes & SePrivilegeAttributes.EnabledByDefault) ==
                     SePrivilegeAttributes.EnabledByDefault) && !this.Disabled;
+            }
+            set
+            {
+                _attributes = SePrivilegeAttributes.EnabledByDefault;
             }
         }
 
@@ -187,6 +207,10 @@ namespace ProcessHacker.Native.Security
                 return (_attributes & SePrivilegeAttributes.Removed) ==
                     SePrivilegeAttributes.Removed;
             }
+            set
+            {
+                _attributes = SePrivilegeAttributes.Removed;
+            }
         }
 
         public bool UsedForAccess
@@ -195,6 +219,13 @@ namespace ProcessHacker.Native.Security
             {
                 return (_attributes & SePrivilegeAttributes.UsedForAccess)
                     == SePrivilegeAttributes.UsedForAccess;
+            }
+            set
+            {
+                if (value)
+                    _attributes |= SePrivilegeAttributes.UsedForAccess;
+                else
+                    _attributes &= ~SePrivilegeAttributes.UsedForAccess;
             }
         }
 
@@ -241,6 +272,15 @@ namespace ProcessHacker.Native.Security
         {
             _attributes = attributes;
             _tokenHandle.SetPrivilege(_luid, _attributes);
+        }
+
+        public LuidAndAttributes ToLuidAndAttributes()
+        {
+            return new LuidAndAttributes()
+            {
+                Attributes = _attributes,
+                Luid = _luid
+            };
         }
     }
 }

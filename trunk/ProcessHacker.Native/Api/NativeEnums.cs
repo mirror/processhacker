@@ -385,6 +385,13 @@ namespace ProcessHacker.Native.Api
         ObjectSessionInformation = 5
     }
 
+    [Flags]
+    public enum PrivilegeSetFlags : int
+    {
+        AnyNecessary = 0,
+        AllNecessary = 0x1
+    }
+
     public enum ProcessInformationClass : int
     {
         ProcessBasicInformation, // 0

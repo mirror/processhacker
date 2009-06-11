@@ -138,6 +138,30 @@ namespace ProcessHacker.Native.Objects
             this.Handle = h;
         }
 
+        public void AdjustGroups(Sid[] groups)
+        {
+            TokenGroups tokenGroups = new TokenGroups();
+
+            tokenGroups.GroupCount = groups.Length;
+            tokenGroups.Groups = new SidAndAttributes[groups.Length];
+
+            for (int i = 0; i < groups.Length; i++)
+                tokenGroups.Groups[i] = groups[i].ToSidAndAttributes();
+
+            if (!Win32.AdjustTokenGroups(this, false, ref tokenGroups, 0, IntPtr.Zero, IntPtr.Zero))
+                Win32.ThrowLastError();
+        }
+
+        public void AdjustPrivileges(PrivilegeSet privileges)
+        {
+            var tokenPrivileges = privileges.ToTokenPrivileges();
+
+            Win32.AdjustTokenPrivileges(this, false, ref tokenPrivileges, 0, IntPtr.Zero, IntPtr.Zero);
+
+            if (Marshal.GetLastWin32Error() != 0)
+                Win32.ThrowLastError();
+        }
+
         /// <summary>
         /// Duplicates the token.
         /// </summary>
@@ -268,7 +292,7 @@ namespace ProcessHacker.Native.Objects
         /// Gets the token's privileges.
         /// </summary>
         /// <returns>A TOKEN_PRIVILEGES structure.</returns>
-        public TokenPrivilege[] GetPrivileges()
+        public Privilege[] GetPrivileges()
         {
             int retLen;
 
@@ -281,12 +305,12 @@ namespace ProcessHacker.Native.Objects
                     Win32.ThrowLastError();
 
                 uint count = data.ReadUInt32(0);
-                TokenPrivilege[] privileges = new TokenPrivilege[count];
+                Privilege[] privileges = new Privilege[count];
 
                 for (int i = 0; i < count; i++)
                 {
                     var laa = data.ReadStruct<LuidAndAttributes>(4, i);
-                    privileges[i] = new TokenPrivilege(this, laa.Luid, laa.Attributes);
+                    privileges[i] = new Privilege(this, laa.Luid, laa.Attributes);
                 }
 
                 return privileges;

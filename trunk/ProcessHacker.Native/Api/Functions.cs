@@ -1065,6 +1065,17 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AdjustTokenGroups(
+            [In] IntPtr TokenHandle,
+            [In] [MarshalAs(UnmanagedType.Bool)] bool ResetToDefault,
+            [In] [Optional] ref TokenGroups NewState,
+            [In] int BufferLength,
+            [Out] [Optional] IntPtr PreviousState,
+            [Out] [Optional] IntPtr ReturnLength
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AdjustTokenPrivileges(
             [In] IntPtr TokenHandle,
             [In] [MarshalAs(UnmanagedType.Bool)] bool DisableAllPrivileges,
