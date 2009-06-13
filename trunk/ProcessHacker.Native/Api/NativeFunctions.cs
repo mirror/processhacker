@@ -295,10 +295,32 @@ namespace ProcessHacker.Native.Api
             [In] [Optional] IntPtr ExceptionPort
             );
 
+        /// <summary>
+        /// Creates a profile object.
+        /// </summary>
+        /// <param name="ProfileHandle">A handle to the profile object.</param>
+        /// <param name="ProcessHandle">
+        /// A handle to the process to profile. If NULL, all address spaces are profiled.
+        /// </param>
+        /// <param name="ProfileBase">
+        /// The first address at which to collect profiling information.
+        /// </param>
+        /// <param name="ProfileSize">
+        /// The size of the range to profile. ProfileBase &lt;= address &lt; 
+        /// ProfileBase + ProfileSize will generate a hit.
+        /// </param>
+        /// <param name="BucketSize">
+        /// A log2 value of each address bucket. Acceptable values are from 2 to 30.
+        /// </param>
+        /// <param name="Buffer">An array of int hit counters.</param>
+        /// <param name="BufferSize">The size of the buffer, in bytes.</param>
+        /// <param name="ProfileSource">The profiling source.</param>
+        /// <param name="Affinity">The processors to profile.</param>
+        /// <returns>A NTSTATUS value.</returns>
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtCreateProfile(
             [Out] out IntPtr ProfileHandle,
-            [In] IntPtr ProcessHandle,
+            [In] [Optional] IntPtr ProcessHandle,
             [In] IntPtr ProfileBase,
             [In] IntPtr ProfileSize,
             [In] int BucketSize,

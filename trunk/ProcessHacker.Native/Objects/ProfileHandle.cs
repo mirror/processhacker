@@ -21,8 +21,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -30,6 +29,90 @@ namespace ProcessHacker.Native.Objects
 {
     public class ProfileHandle : NativeHandle<ProfileAccess>
     {
-        // TODO: Implement basics
+        public static ProfileHandle Create(
+            ProcessHandle processHandle,
+            IntPtr rangeBase,
+            int rangeSize,
+            int bucketSize,
+            KProfileSource profileSource,
+            IntPtr affinity
+            )
+        {
+            NtStatus status;
+            IntPtr handle;
+
+            if (bucketSize < 2 || bucketSize > 30)
+                throw new ArgumentException("Bucket size must be between 2 and 30, inclusive.");
+
+            int realBucketSize = 2 << bucketSize;
+            MemoryAlloc buffer = new MemoryAlloc(((rangeSize - 1) / realBucketSize + 1) * sizeof(int)); // divide, round up
+
+            if ((status = Win32.NtCreateProfile(
+                out handle,
+                processHandle,
+                rangeBase,
+                new IntPtr(rangeSize),
+                bucketSize,
+                buffer,
+                buffer.Size,
+                profileSource,
+                affinity
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return new ProfileHandle(handle, true, rangeBase, rangeSize, realBucketSize, buffer);
+        }
+
+        private IntPtr _rangeBase;
+        private int _rangeSize;
+        private int _bucketSize; // not logarithmic
+        private MemoryAlloc _buffer;
+
+        private ProfileHandle(
+            IntPtr handle,
+            bool owned,
+            IntPtr rangeBase,
+            int rangeSize,
+            int bucketSize,
+            MemoryAlloc buffer
+            )
+        {
+            _rangeBase = rangeBase;
+            _rangeSize = rangeSize;
+            _bucketSize = bucketSize;
+            _buffer = buffer;
+        }
+
+        protected override void Close()
+        {
+            _buffer.Dispose();
+
+            base.Close();
+        }
+
+        public int[] Collect()
+        {
+            int[] counters = new int[_buffer.Size / sizeof(int)];
+
+            Marshal.Copy(_buffer, counters, 0, counters.Length);
+
+            return counters;
+        }
+
+        public void Start()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtStartProfile(this)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        public void Stop()
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtStopProfile(this)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
     }
 }
