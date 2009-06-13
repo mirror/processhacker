@@ -63,6 +63,7 @@
     <Compile Include="Objects\IReferenceCountedObject.cs" />
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="Ui\SortedListComparer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeakReference.cs" />

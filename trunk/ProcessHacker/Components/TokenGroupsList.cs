@@ -23,9 +23,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.Native;
+using ProcessHacker.Common.Ui;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
 

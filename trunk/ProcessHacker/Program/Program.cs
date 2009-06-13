@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Components;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
@@ -790,7 +791,7 @@ namespace ProcessHacker
                 info.AppendLine("KProcessHacker: " + KProcessHacker.Instance.Features.ToString());
 
             info.AppendLine();
-            info.AppendLine("DISPOSABLE OBJECTS");
+            info.AppendLine("OBJECTS");
             info.AppendLine("Created: " + BaseObject.CreatedCount.ToString());
             info.AppendLine("Freed: " + BaseObject.FreedCount.ToString());
             info.AppendLine("Disposed: " + BaseObject.DisposedCount.ToString());

@@ -516,7 +516,7 @@ namespace ProcessHacker.Native.Api
     public struct Luid
     {
         [FieldOffset(0)]
-        private long QuadPart;
+        public long QuadPart;
         [FieldOffset(0)]
         public uint LowPart;
         [FieldOffset(4)]

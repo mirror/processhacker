@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Objects
         public static ProfileHandle Create(
             ProcessHandle processHandle,
             IntPtr rangeBase,
-            int rangeSize,
+            uint rangeSize,
             int bucketSize,
             KProfileSource profileSource,
             IntPtr affinity
@@ -44,38 +44,61 @@ namespace ProcessHacker.Native.Objects
             if (bucketSize < 2 || bucketSize > 30)
                 throw new ArgumentException("Bucket size must be between 2 and 30, inclusive.");
 
-            int realBucketSize = 2 << bucketSize;
-            MemoryAlloc buffer = new MemoryAlloc(((rangeSize - 1) / realBucketSize + 1) * sizeof(int)); // divide, round up
+            unchecked
+            {
+                uint realBucketSize = (uint)(2 << (bucketSize - 1));
+                MemoryAlloc buffer = new MemoryAlloc((int)((rangeSize - 1) / realBucketSize + 1) * sizeof(int)); // divide, round up
 
-            if ((status = Win32.NtCreateProfile(
-                out handle,
-                processHandle,
-                rangeBase,
-                new IntPtr(rangeSize),
-                bucketSize,
-                buffer,
-                buffer.Size,
-                profileSource,
-                affinity
-                )) >= NtStatus.Error)
+                if ((status = Win32.NtCreateProfile(
+                    out handle,
+                    processHandle != null ? processHandle : IntPtr.Zero,
+                    rangeBase,
+                    new IntPtr(rangeSize),
+                    bucketSize,
+                    buffer,
+                    buffer.Size,
+                    profileSource,
+                    affinity
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                return new ProfileHandle(handle, true, rangeBase, rangeSize, realBucketSize, buffer);
+            }
+        }
+
+        public static int GetInterval(KProfileSource profileSource)
+        {
+            NtStatus status;
+            int interval;
+
+            if ((status = Win32.NtQueryIntervalProfile(profileSource, out interval)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new ProfileHandle(handle, true, rangeBase, rangeSize, realBucketSize, buffer);
+            return interval;
+        }
+
+        public static void SetInterval(KProfileSource profileSource, int interval)
+        {
+            NtStatus status;
+
+            if ((status = Win32.NtSetIntervalProfile(interval, profileSource)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         private IntPtr _rangeBase;
-        private int _rangeSize;
-        private int _bucketSize; // not logarithmic
+        private uint _rangeSize;
+        private uint _bucketSize; // not logarithmic
         private MemoryAlloc _buffer;
 
         private ProfileHandle(
             IntPtr handle,
             bool owned,
             IntPtr rangeBase,
-            int rangeSize,
-            int bucketSize,
+            uint rangeSize,
+            uint bucketSize,
             MemoryAlloc buffer
             )
+            : base(handle, owned)
         {
             _rangeBase = rangeBase;
             _rangeSize = rangeSize;

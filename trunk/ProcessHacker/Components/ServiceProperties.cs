@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;

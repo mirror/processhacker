@@ -30,18 +30,23 @@ namespace ProcessHacker.Native
     {
         public static int CompareTo(this IntPtr ptr, IntPtr ptr2)
         {
-            if (ptr.ToInt64() > ptr2.ToInt64())
+            if (ptr.ToUInt64() > ptr2.ToUInt64())
                 return 1;
-            if (ptr.ToInt64() < ptr2.ToInt64())
+            if (ptr.ToUInt64() < ptr2.ToUInt64())
                 return -1;
             return 0;
         }
 
         public static int CompareTo(this IntPtr ptr, int ptr2)
         {
-            if (ptr.ToInt64() > ptr2)
+            return ptr.CompareTo((uint)ptr2);
+        }
+
+        public static int CompareTo(this IntPtr ptr, uint ptr2)
+        {
+            if (ptr.ToUInt64() > ptr2)
                 return 1;
-            if (ptr.ToInt64() < ptr2)
+            if (ptr.ToUInt64() < ptr2)
                 return -1;
             return 0;
         }

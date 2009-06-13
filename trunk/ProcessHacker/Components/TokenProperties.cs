@@ -29,6 +29,7 @@ using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 using ProcessHacker.UI;
+using ProcessHacker.Common.Ui;
 
 namespace ProcessHacker.Components
 {
@@ -128,7 +129,7 @@ namespace ProcessHacker.Components
 
                             textSourceName.Text = source.SourceName.TrimEnd('\0', '\r', '\n', ' ');
 
-                            long luid = (source.SourceIdentifier.HighPart << 32) | source.SourceIdentifier.LowPart;
+                            long luid = source.SourceIdentifier.QuadPart;
 
                             textSourceLUID.Text = "0x" + luid.ToString("x");
                         }

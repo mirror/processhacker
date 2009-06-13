@@ -72,7 +72,8 @@ namespace ProcessHacker.Native
                 Win32.GetDeviceDriverFileName(imageBases[i], fileName, name.Capacity * 2);
 
                 if (!enumCallback(
-                    new KernelModule((uint)imageBases[i], 
+                    new KernelModule(
+                        imageBases[i], 
                         name.ToString(), 
                         FileUtils.FixPath(fileName.ToString())
                         )))
@@ -132,9 +133,9 @@ namespace ProcessHacker.Native
         /// Gets the base address of the currently running kernel.
         /// </summary>
         /// <returns>The kernel's base address.</returns>
-        public static uint GetKernelBase()
+        public static IntPtr GetKernelBase()
         {
-            uint kernelBase = 0;
+            IntPtr kernelBase = IntPtr.Zero;
 
             Windows.EnumKernelModules((module) =>
             {
@@ -486,14 +487,14 @@ namespace ProcessHacker.Native
 
     public class KernelModule
     {
-        public KernelModule(uint baseAddress, string baseName, string fileName)
+        public KernelModule(IntPtr baseAddress, string baseName, string fileName)
         {
             this.BaseAddress = baseAddress;
             this.BaseName = baseName;
             this.FileName = fileName;
         }
 
-        public uint BaseAddress { get; private set; }
+        public IntPtr BaseAddress { get; private set; }
         public string BaseName { get; private set; }
         public string FileName { get; private set; }
     }

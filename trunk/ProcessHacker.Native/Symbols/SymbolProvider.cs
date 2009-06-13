@@ -149,6 +149,11 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
+        public void LoadModule(string fileName, IntPtr baseAddress)
+        {
+            this.LoadModule(fileName, baseAddress.ToUInt64());
+        }
+
         public void LoadModule(string fileName, ulong baseAddress)
         {
             this.LoadModule(fileName, baseAddress, 0);
@@ -232,6 +237,16 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
+        public string GetModuleFromAddress(IntPtr address, out IntPtr baseAddress)
+        {
+            ulong baseAddressULong;
+            string fileName = this.GetModuleFromAddress(address.ToUInt64(), out baseAddressULong);
+
+            baseAddress = new IntPtr((long)baseAddressULong);
+
+            return fileName;
+        }
+
         public string GetModuleFromAddress(ulong address, out ulong baseAddress)
         {
             lock (_modules)
@@ -284,8 +299,26 @@ namespace ProcessHacker.Native.Symbols
 
         public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName)
         {
-            const int maxNameLen = 0x100;
+            string symbolName;
             ulong displacement;
+
+            return this.GetSymbolFromAddress(address, out level, out flags, out fileName, out symbolName, out displacement);
+        }
+
+        public string GetSymbolFromAddress(ulong address, out string fileName, out ulong displacement)
+        {
+            SymbolResolveLevel level;
+            SymbolFlags flags;
+            string symbolName;
+
+            this.GetSymbolFromAddress(address, out level, out flags, out fileName, out symbolName, out displacement);
+
+            return symbolName;
+        }
+
+        public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName, out string symbolName, out ulong displacement)
+        {
+            const int maxNameLen = 0x100;
 
             if (address == 0)
             {
@@ -343,6 +376,8 @@ namespace ProcessHacker.Native.Symbols
                     level = SymbolResolveLevel.Address;
                     flags = 0;
                     fileName = null;
+                    symbolName = null;
+                    displacement = 0;
 
                     return "0x" + address.ToString("x8");
                 }
@@ -363,6 +398,8 @@ namespace ProcessHacker.Native.Symbols
                 {
                     level = SymbolResolveLevel.Module;
                     flags = 0;
+                    symbolName = null;
+                    displacement = 0;
 
                     if (fi != null)
                     {
@@ -381,6 +418,8 @@ namespace ProcessHacker.Native.Symbols
 
                 level = SymbolResolveLevel.Function;
                 flags = info.Flags;
+                symbolName = name;
+                displacement = displacement;
 
                 if (displacement == 0)
                     return fi.Name + "!" + name;

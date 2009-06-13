@@ -808,7 +808,6 @@
     <Compile Include="Forms\InformationBox.Designer.cs">
       <DependentUpon>InformationBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\SortedListComparer.cs" />
     <Compile Include="Structs\ProcessMemoryIO.cs" />
     <Compile Include="Structs\FieldValue.cs" />
     <Compile Include="Structs\FieldType.cs" />
