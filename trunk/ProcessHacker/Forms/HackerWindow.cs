@@ -1317,7 +1317,10 @@ namespace ProcessHacker
 
         private void protectionProcessMenuItem_Click(object sender, EventArgs e)
         {
-            (new ProtectProcessWindow(processSelectedPID)).ShowDialog();
+            var protectProcessWindow = new ProtectProcessWindow(processSelectedPID);
+
+            protectProcessWindow.TopMost = this.TopMost;
+            protectProcessWindow.ShowDialog();
         }
 
         private void setTokenProcessMenuItem_Click(object sender, EventArgs e)
@@ -1325,6 +1328,7 @@ namespace ProcessHacker
             ProcessPickerWindow picker = new ProcessPickerWindow();
 
             picker.Label = "Select the source of the token:";
+            picker.TopMost = this.TopMost;
 
             if (picker.ShowDialog() == DialogResult.OK)
             {
@@ -2358,6 +2362,7 @@ namespace ProcessHacker
                                     return false;
                                 }
                             };
+                        mbw.TopMost = this.TopMost;
                         mbw.ShowDialog();
                     }
                     catch (Exception ex)
@@ -2373,7 +2378,11 @@ namespace ProcessHacker
 
                     try
                     {
-                        (new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId))).ShowDialog();
+                        var sessionInformationWindow =
+                            new SessionInformationWindow(TerminalServerHandle.GetCurrent().GetSession(sessionId));
+
+                        sessionInformationWindow.TopMost = this.TopMost;
+                        sessionInformationWindow.ShowDialog();
                     }
                     catch (Exception ex)
                     {

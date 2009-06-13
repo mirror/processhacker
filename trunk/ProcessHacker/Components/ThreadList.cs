@@ -935,7 +935,9 @@ namespace ProcessHacker.Components
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwreadfile") ||
-                                name.StartsWith("ntdll.dll!ntreadfile")
+                                name.StartsWith("ntdll.dll!ntreadfile") ||
+                                name.StartsWith("ntdll.dll!zwwritefile") ||
+                                name.StartsWith("ntdll.dll!ntwritefile")
                                 )
                             {
                                 found = true;
