@@ -32,17 +32,23 @@ namespace ProcessHacker.Native.Threading
     {
         public struct SpinLockContext : IDisposable
         {
+            private bool _disposed;
             private SpinLock _spinLock;
 
             internal SpinLockContext(SpinLock spinLock)
             {
                 _spinLock = spinLock;
                 _spinLock.Acquire();
+                _disposed = false;
             }
 
             public void Dispose()
             {
-                _spinLock.Release();
+                if (!_disposed)
+                {
+                    _spinLock.Release();
+                    _disposed = true;
+                }
             }
         }
 

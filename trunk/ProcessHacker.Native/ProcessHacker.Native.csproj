@@ -146,6 +146,7 @@
     <Compile Include="Security\ThreadAccess.cs" />
     <Compile Include="Security\TokenAccess.cs" />
     <Compile Include="Security\WindowStationAccess.cs" />
+    <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\Semaphore.cs" />
     <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Threading\Timer.cs" />
