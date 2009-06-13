@@ -24,14 +24,14 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 
 namespace ProcessHacker.Native
 {
     /// <summary>
     /// Represents an unmanaged memory allocation.
     /// </summary>
-    public class MemoryAlloc : DisposableObject
+    public class MemoryAlloc : BaseObject
     {
         private static Dictionary<Type, int> _sizeCache = new Dictionary<Type, int>();
 

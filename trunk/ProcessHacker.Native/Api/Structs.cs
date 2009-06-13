@@ -76,7 +76,7 @@ namespace ProcessHacker.Native.Api
     public struct FileTime
     {
         public uint LowDateTime;
-        public uint HighDateTime;
+        public int HighDateTime;
 
         public static implicit operator long(FileTime fileTime)
         {

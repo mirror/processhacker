@@ -23,7 +23,7 @@
 using System;
 using System.Threading;
 
-namespace ProcessHacker.Common
+namespace ProcessHacker.Common.Objects
 {
     /// <summary>
     /// Provides methods for managing a disposable object or resource.
@@ -49,7 +49,7 @@ namespace ProcessHacker.Common
     /// the object will be freed.
     /// </para>
     /// </remarks>
-    public abstract class DisposableObject : IDisposable, IReferenceCountedObject
+    public abstract class BaseObject : IDisposable, IReferenceCountedObject
     {
         private static int _createdCount = 0;
         private static int _freedCount = 0;
@@ -129,7 +129,7 @@ namespace ProcessHacker.Common
         /// <summary>
         /// Initializes a disposable object.
         /// </summary>
-        public DisposableObject()
+        public BaseObject()
             : this(true)
         { }
 
@@ -137,7 +137,7 @@ namespace ProcessHacker.Common
         /// Initializes a disposable object.
         /// </summary>
         /// <param name="owned">Whether the resource is owned.</param>
-        public DisposableObject(bool owned)
+        public BaseObject(bool owned)
         {
             _owned = owned;
 
@@ -155,7 +155,7 @@ namespace ProcessHacker.Common
         /// Ensures that the GC does not own the object and destroys
         /// all weak references.
         /// </summary>
-        ~DisposableObject()
+        ~BaseObject()
         {
             // Get rid of GC ownership if still present.
             this.Dispose(false);

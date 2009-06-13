@@ -843,6 +843,30 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CreateWellKnownSid(
+            [In] WellKnownSidType WellKnownSidType,
+            [In] [Optional] IntPtr DomainSid,
+            [In] IntPtr Sid,
+            ref int SidSize
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EqualDomainSid(
+            [In] IntPtr Sid1,
+            [In] IntPtr Sid2,
+            [Out] [MarshalAs(UnmanagedType.Bool)] out bool Equal
+            );
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ConvertStringSidToSid(
+            [In] string StringSid,
+            [Out] out IntPtr Sid
+            );
+
         [DllImport("aclui.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EditSecurity(
@@ -1017,10 +1041,10 @@ namespace ProcessHacker.Native.Api
         public static extern bool LookupAccountName(
             [In] [Optional] string SystemName,
             [In] string AccountName,
-            [Out] [Optional] IntPtr SID,
-            ref int SIDSize,
-            [Out] StringBuilder ReferencedDomainName,
-            ref int ReferencedDomainNameSize,
+            [In] [Optional] IntPtr Sid,
+            ref int SidSize,
+            [In] IntPtr ReferencedDomainName,
+            [In] IntPtr ReferencedDomainNameSize,
             [Out] out SidNameUse Use
             );
 
@@ -1028,7 +1052,7 @@ namespace ProcessHacker.Native.Api
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool LookupAccountSid(
             [In] [Optional] string SystemName,
-            [In] IntPtr SID,
+            [In] IntPtr Sid,
             [Out] [Optional] StringBuilder Name, 
             ref int NameSize,
             [Out] [Optional] StringBuilder ReferencedDomainName, 

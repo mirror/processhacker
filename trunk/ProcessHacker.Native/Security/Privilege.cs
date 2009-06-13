@@ -22,7 +22,7 @@
 
 using System;
 using System.Text;
-using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Security
     /// <summary>
     /// Represents a Windows security privilege.
     /// </summary>
-    public class Privilege : DisposableObject
+    public class Privilege : BaseObject
     {
         private TokenHandle _tokenHandle;
         private Luid _luid;

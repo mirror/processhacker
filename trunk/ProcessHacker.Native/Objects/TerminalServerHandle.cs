@@ -23,7 +23,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -158,7 +158,7 @@ namespace ProcessHacker.Native.Objects
         }
     }
 
-    public class TerminalServerSession : DisposableObject
+    public class TerminalServerSession : BaseObject
     {
         public static int GetActiveConsoleId()
         {

@@ -1429,6 +1429,50 @@ namespace ProcessHacker.Native.Api
 
         #region Run-Time Library
 
+        #region Handle Tables
+
+        [DllImport("ntdll.dll")]
+        public static extern IntPtr RtlAllocateHandle(
+            [In] ref RtlHandleTable HandleTable,
+            [Out] [Optional] out int HandleIndex
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDestroyHandleTable(
+            ref RtlHandleTable HandleTable
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlFreeHandle(
+            [In] ref RtlHandleTable HandleTable,
+            [In] IntPtr Handle
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlInitializeHandleTable(
+            [In] int MaximumNumberOfHandles,
+            [In] int SizeOfHandleTableEntry,
+            [Out] out RtlHandleTable HandleTable
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlIsValidHandle(
+            [In] ref RtlHandleTable HandleTable,
+            [In] IntPtr Handle
+            );
+
+        [DllImport("ntdll.dll")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool RtlIsValidIndexHandle(
+            [In] ref RtlHandleTable HandleTable,
+            [In] int HandleIndex,
+            [Out] out IntPtr Handle
+            );
+
+        #endregion
+
         #region Processes and Threads
 
         [DllImport("ntdll.dll")]

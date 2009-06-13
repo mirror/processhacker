@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace ProcessHacker.Common
+namespace ProcessHacker.Common.Objects
 {
     /// <summary>
     /// Indicates that an operation was performed out-of-order.
@@ -39,7 +39,7 @@ namespace ProcessHacker.Common
     /// <summary>
     /// Represents a pool of objects to be disposed or dereferenced at some point.
     /// </summary>
-    public class DelayedReleasePool : DisposableObject
+    public class DelayedReleasePool : BaseObject
     {
         /// <summary>
         /// Describes how an object should be disposed.
@@ -57,9 +57,9 @@ namespace ProcessHacker.Common
         private struct DelayedReleaseObject
         {
             private DelayedReleaseFlags _flags;
-            private DisposableObject _object;
+            private BaseObject _object;
 
-            public DelayedReleaseObject(DelayedReleaseFlags flags, DisposableObject obj)
+            public DelayedReleaseObject(DelayedReleaseFlags flags, BaseObject obj)
             {
                 _flags = flags;
                 _object = obj;
@@ -70,7 +70,7 @@ namespace ProcessHacker.Common
                 get { return _flags; }
             }
 
-            public DisposableObject Object
+            public BaseObject Object
             {
                 get { return _object; }
             }
@@ -167,7 +167,7 @@ namespace ProcessHacker.Common
         /// Adds the specified object for dereferencing.
         /// </summary>
         /// <param name="obj">The object to dereference.</param>
-        public void AddDereference(DisposableObject obj)
+        public void AddDereference(BaseObject obj)
         {
             _objects.Add(new DelayedReleaseObject(DelayedReleaseFlags.Dereference, obj));
         }
@@ -176,7 +176,7 @@ namespace ProcessHacker.Common
         /// Adds the specified object for disposal.
         /// </summary>
         /// <param name="obj">The object to dispose.</param>
-        public void AddDispose(DisposableObject obj)
+        public void AddDispose(BaseObject obj)
         {
             _objects.Add(new DelayedReleaseObject(DelayedReleaseFlags.Dispose, obj));
         }

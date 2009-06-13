@@ -57,7 +57,7 @@ namespace ProcessHacker
         /// <summary>
         /// The Results Window ID Generator
         /// </summary>
-        public static IdGenerator ResultsIds = new IdGenerator();
+        public static IdGenerator ResultsIds = new IdGenerator() { Sort = true };
 
         public static Dictionary<string, Structs.StructDef> Structs = new Dictionary<string, ProcessHacker.Structs.StructDef>();
 
@@ -791,12 +791,12 @@ namespace ProcessHacker
 
             info.AppendLine();
             info.AppendLine("DISPOSABLE OBJECTS");
-            info.AppendLine("Created: " + DisposableObject.CreatedCount.ToString());
-            info.AppendLine("Freed: " + DisposableObject.FreedCount.ToString());
-            info.AppendLine("Disposed: " + DisposableObject.DisposedCount.ToString());
-            info.AppendLine("Finalized: " + DisposableObject.FinalizedCount.ToString());
-            info.AppendLine("Referenced: " + DisposableObject.ReferencedCount.ToString());
-            info.AppendLine("Dereferenced: " + DisposableObject.DereferencedCount.ToString());
+            info.AppendLine("Created: " + BaseObject.CreatedCount.ToString());
+            info.AppendLine("Freed: " + BaseObject.FreedCount.ToString());
+            info.AppendLine("Disposed: " + BaseObject.DisposedCount.ToString());
+            info.AppendLine("Finalized: " + BaseObject.FinalizedCount.ToString());
+            info.AppendLine("Referenced: " + BaseObject.ReferencedCount.ToString());
+            info.AppendLine("Dereferenced: " + BaseObject.DereferencedCount.ToString());
 
             info.AppendLine();
             info.AppendLine("PROCESS HACKER THREAD POOL");

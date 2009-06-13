@@ -27,6 +27,7 @@
     </DocumentationFile>
     <NoWarn>
     </NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\ProcessHacker.Common.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,15 +51,16 @@
     <Compile Include="BaseConverter.cs" />
     <Compile Include="ByteStreamReader.cs" />
     <Compile Include="CircularBuffer.cs" />
-    <Compile Include="DelayedReleasePool.cs" />
+    <Compile Include="Objects\DelayedReleasePool.cs" />
     <Compile Include="DeltaManager.cs" />
     <Compile Include="EnumComparer.cs" />
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="FreeList.cs" />
+    <Compile Include="Objects\HandleTable.cs" />
     <Compile Include="HistoryManager.cs" />
     <Compile Include="IdGenerator.cs" />
-    <Compile Include="DisposableObject.cs" />
-    <Compile Include="IReferenceCountedObject.cs" />
+    <Compile Include="Objects\BaseObject.cs" />
+    <Compile Include="Objects\IReferenceCountedObject.cs" />
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Utils.cs" />

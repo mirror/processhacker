@@ -172,6 +172,16 @@ namespace ProcessHacker.Common
             return ByteSwap(v);
         }
 
+        public unsafe static byte[] Create(byte* ptr, int length)
+        {
+            byte[] array = new byte[length];
+
+            for (int i = 0; i < length; i++)
+                array[i] = ptr[i];
+
+            return array;
+        }
+
         /// <summary>
         /// Clears and cleans up resources held by the menu items.
         /// </summary>
@@ -217,6 +227,15 @@ namespace ProcessHacker.Common
             DisableAllMenuItems(menu);
         }
 
+        public static T[] Duplicate<T>(this T[] array)
+        {
+            T[] newArray = new T[array.Length];
+
+            array.CopyTo(newArray, 0);
+
+            return newArray;
+        }
+
         /// <summary>
         /// Enables the menu items contained in the specified menu. 
         /// </summary>
@@ -233,6 +252,25 @@ namespace ProcessHacker.Common
         public static void EnableAll(this Menu menu)
         {
             EnableAllMenuItems(menu);
+        }
+
+        public static bool Equals<T>(T[] array, T[] other)
+        {
+            return Equals(array, other, 0);
+        }
+
+        public static bool Equals<T>(T[] array, T[] other, int startIndex)
+        {
+            return Equals(array, other, startIndex, array.Length);
+        }
+
+        public static bool Equals<T>(T[] array, T[] other, int startIndex, int length)
+        {
+            for (int i = startIndex; i < startIndex + length; i++)
+                if (!array[i].Equals(other[i]))
+                    return false;
+
+            return true;
         }
 
         /// <summary>
@@ -465,7 +503,7 @@ namespace ProcessHacker.Common
         /// </summary>
         /// <param name="c">The character to convert.</param>
         /// <returns></returns>
-        public static char MakePrintableChar(char c)
+        public static char MakePrintable(char c)
         {
             if (c >= ' ' && c <= '~')
                 return c;
@@ -483,7 +521,7 @@ namespace ProcessHacker.Common
             StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < s.Length; i++)
-                sb.Append(MakePrintableChar(s[i]));
+                sb.Append(MakePrintable(s[i]));
 
             return sb.ToString();
         }

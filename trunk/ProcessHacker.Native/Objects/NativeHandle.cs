@@ -21,7 +21,7 @@
  */
 
 using System;
-using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
 
@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
-    public class NativeHandle : DisposableObject, IEquatable<NativeHandle>, ISecurable, ISynchronizable
+    public class NativeHandle : BaseObject, IEquatable<NativeHandle>, ISecurable, ISynchronizable
     {
         public static NtStatus WaitAll(ISynchronizable[] objects)
         {

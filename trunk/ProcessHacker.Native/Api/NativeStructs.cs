@@ -221,6 +221,24 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct GenericMapping<T>
+        where T : struct
+    {
+        public GenericMapping(T read, T write, T execute, T all)
+        {
+            this.GenericRead = read;
+            this.GenericWrite = write;
+            this.GenericExecute = execute;
+            this.GenericAll = all;
+        }
+
+        public T GenericRead;
+        public T GenericWrite;
+        public T GenericExecute;
+        public T GenericAll;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct InitialTeb
     {
         public struct OldInitialTebStruct
@@ -457,11 +475,11 @@ namespace ProcessHacker.Native.Api
     public struct LargeInteger
     {
         [FieldOffset(0)]
-        public Int64 QuadPart;
+        public long QuadPart;
         [FieldOffset(0)]
-        public UInt32 LowPart;
+        public uint LowPart;
         [FieldOffset(4)]
-        public UInt32 HighPart;
+        public int HighPart;
 
         public static implicit operator long(LargeInteger li)
         {
@@ -500,7 +518,7 @@ namespace ProcessHacker.Native.Api
         [FieldOffset(0)]
         private long QuadPart;
         [FieldOffset(0)]
-        public int LowPart;
+        public uint LowPart;
         [FieldOffset(4)]
         public int HighPart;
 
@@ -864,6 +882,19 @@ namespace ProcessHacker.Native.Api
 #else
         public unsafe fixed int Reserved[6];
 #endif
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlHandleTable
+    {
+        public int MaximumNumberOfHandles;
+        public int SizeOfHandleTableEntry;
+        public int Reserved1;
+        public int Reserved2;
+        public IntPtr FreeHandles;
+        public IntPtr CommittedHandles;
+        public IntPtr UnCommittedHandles;
+        public IntPtr MaxReservedHandles;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -27,12 +27,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Symbols
 {
-    public class SymbolProvider : DisposableObject
+    public class SymbolProvider : BaseObject
     {
         private static object _callLock = new object();
         private static IdGenerator _idGen = new IdGenerator();

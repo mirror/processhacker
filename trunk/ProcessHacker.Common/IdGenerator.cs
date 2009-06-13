@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Common
 {
@@ -31,24 +30,44 @@ namespace ProcessHacker.Common
     /// </summary>
     public class IdGenerator
     {
-        List<int> _ids = new List<int>();
-        int _id;
+        private int _step = 1;
+        private bool _sort = false;
+        private List<int> _ids = new List<int>();
+        private int _id;
 
         /// <summary>
-        /// Creates a new instance of the class with a starting ID of 0.
+        /// Creates a new ID generator.
         /// </summary>
         public IdGenerator()
-        {
-            _id = 0;
-        }
+            : this(0)
+        { }
 
         /// <summary>
-        /// Creates a new instance of the class with the specified starting ID.
+        /// Creates a new ID generator.
         /// </summary>
         /// <param name="start">The starting ID.</param>
         public IdGenerator(int start)
+            : this(start, 1)
+        { }
+
+        /// <summary>
+        /// Creates a new ID generator.
+        /// </summary>
+        /// <param name="start">The starting ID.</param>
+        /// <param name="step">The number each ID will be divisible by.</param>
+        public IdGenerator(int start, int step)
         {
+            if (step == 0)
+                throw new ArgumentException("step cannot be zero.");
+
             _id = start;
+            _step = step;
+        }
+
+        public bool Sort
+        {
+            get { return _sort; }
+            set { _sort = value; }
         }
 
         /// <summary>
@@ -57,16 +76,26 @@ namespace ProcessHacker.Common
         /// <returns></returns>
         public int Pop()
         {
-            if (_ids.Count > 0)
+            int id;
+
+            lock (_ids)
             {
-                int id = _ids[0];
+                if (_ids.Count > 0)
+                {
+                    id = _ids[0];
 
-                _ids.Remove(_ids[0]);
+                    _ids.Remove(_ids[0]);
 
-                return id;
+                    return id;
+                }
+                else
+                {
+                    id = _id;
+                    _id += _step;
+                }
             }
 
-            return _id++;
+            return id;
         }
 
         /// <summary>
@@ -75,8 +104,13 @@ namespace ProcessHacker.Common
         /// <param name="id"></param>
         public void Push(int id)
         {
-            _ids.Add(id);
-            _ids.Sort();
+            lock (_ids)
+            {
+                _ids.Add(id);
+
+                if (_sort)
+                    _ids.Sort();
+            }
         }
     }
 }

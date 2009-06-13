@@ -1,4 +1,4 @@
-﻿namespace ProcessHacker.Common
+﻿namespace ProcessHacker.Common.Objects
 {
     public interface IReferenceCountedObject
     {
