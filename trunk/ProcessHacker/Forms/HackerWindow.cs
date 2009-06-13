@@ -1230,6 +1230,7 @@ namespace ProcessHacker
             w.Text = "Terminator - " + processP.Dictionary[processSelectedPID].Name + 
                 " (PID " + processSelectedPID.ToString() + ")";
 
+            w.TopMost = this.TopMost;
             w.ShowDialog();
         }
 
