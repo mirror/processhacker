@@ -396,7 +396,7 @@ namespace ProcessHacker
                 string fileName;
 
                 if (_pid == 4)
-                    fileName = Windows.GetKernelFileName();
+                    fileName = Windows.KernelFileName;
                 else
                     fileName = _processItem.FileName;
 
@@ -1062,7 +1062,7 @@ namespace ProcessHacker
 
                 if (_pid == 4)
                 {
-                    path = Windows.GetKernelFileName();
+                    path = Windows.KernelFileName;
                 }
                 else
                 {

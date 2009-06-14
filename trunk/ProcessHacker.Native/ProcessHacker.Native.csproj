@@ -56,6 +56,8 @@
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="Memory\MemoryAllocStream.cs" />
+    <Compile Include="Memory\PhysicalPages.cs" />
+    <Compile Include="Memory\PhysicalPagesMapping.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />

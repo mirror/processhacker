@@ -546,7 +546,7 @@ namespace ProcessHacker
             {
                 try
                 {
-                    fileName = Windows.GetKernelFileName();
+                    fileName = Windows.KernelFileName;
                 }
                 catch
                 { }

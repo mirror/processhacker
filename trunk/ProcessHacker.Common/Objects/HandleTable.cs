@@ -13,13 +13,10 @@ namespace ProcessHacker.Common.Objects
 
         protected override void DisposeObject(bool disposing)
         {
-            if (disposing)
+            lock (_handles)
             {
-                lock (_handles)
-                {
-                    foreach (var obj in _handles.Values)
-                        obj.Dereference();
-                }
+                foreach (var obj in _handles.Values)
+                    obj.Dereference(disposing);
             }
         }
 

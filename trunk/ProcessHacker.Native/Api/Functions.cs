@@ -366,6 +366,27 @@ namespace ProcessHacker.Native.Api
         #region Memory
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool AllocateUserPhysicalPages(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr NumberOfPages,
+            IntPtr[] UserPfnArray
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool FreeUserPhysicalPages(
+            [In] IntPtr ProcessHandle,
+            ref IntPtr NumberOfPages,
+            IntPtr[] UserPfnArray
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool MapUserPhysicalPages(
+            [In] IntPtr Address,
+            IntPtr NumberOfPages,
+            IntPtr[] UserPfnArray
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr LocalAlloc(
             [In] AllocFlags Flags, 
             [In] int Bytes

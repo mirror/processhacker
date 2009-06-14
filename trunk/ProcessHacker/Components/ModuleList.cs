@@ -164,7 +164,7 @@ namespace ProcessHacker.Components
                     {
                         if (_pid == 4)
                         {
-                            _mainModule = FileUtils.FixPath(Windows.GetKernelFileName());
+                            _mainModule = FileUtils.FixPath(Windows.KernelFileName);
                         }
                         else
                         {

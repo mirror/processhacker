@@ -35,7 +35,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
-    public class Windows
+    public static class Windows
     {
         public delegate bool EnumKernelModulesDelegate(KernelModule kernelModule);
 
@@ -50,6 +50,55 @@ namespace ProcessHacker.Native
         /// reason. The dictionary relates object type numbers to their names.
         /// </summary>
         internal static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
+
+        private static int _numberOfProcessors = 0;
+        private static int _pageSize = 0;
+        private static IntPtr _kernelBase = IntPtr.Zero;
+        private static string _kernelFileName = null;
+
+        public static int NumberOfProcessors
+        {
+            get
+            {
+                if (_numberOfProcessors == 0)
+                    _numberOfProcessors = GetBasicInformation().NumberOfProcessors;
+
+                return _numberOfProcessors;
+            }
+        }
+
+        public static int PageSize
+        {
+            get
+            {
+                if (_pageSize == 0)
+                    _pageSize = GetBasicInformation().PageSize;
+
+                return _pageSize;
+            }
+        }
+
+        public static IntPtr KernelBase
+        {
+            get
+            {
+                if (_kernelBase == IntPtr.Zero)
+                    _kernelBase = GetKernelBase();
+
+                return _kernelBase;
+            }
+        }
+
+        public static string KernelFileName
+        {
+            get
+            {
+                if (_kernelFileName == null)
+                    _kernelFileName = GetKernelFileName();
+
+                return _kernelFileName;
+            }
+        }
 
         public static void EnumKernelModules(EnumKernelModulesDelegate enumCallback)
         {
@@ -79,6 +128,23 @@ namespace ProcessHacker.Native
                         )))
                     break;
             }
+        }
+
+        public static SystemBasicInformation GetBasicInformation()
+        {
+            NtStatus status;
+            SystemBasicInformation sbi;
+            int retLength;
+
+            if ((status = Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemBasicInformation,
+                out sbi,
+                Marshal.SizeOf(typeof(SystemBasicInformation)),
+                out retLength
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return sbi;
         }
 
         /// <summary>
@@ -133,7 +199,7 @@ namespace ProcessHacker.Native
         /// Gets the base address of the currently running kernel.
         /// </summary>
         /// <returns>The kernel's base address.</returns>
-        public static IntPtr GetKernelBase()
+        private static IntPtr GetKernelBase()
         {
             IntPtr kernelBase = IntPtr.Zero;
 
@@ -171,7 +237,7 @@ namespace ProcessHacker.Native
         /// Gets the file name of the currently running kernel.
         /// </summary>
         /// <returns>The kernel file name.</returns>
-        public static string GetKernelFileName()
+        private static string GetKernelFileName()
         {
             string kernelFileName = null;
 
