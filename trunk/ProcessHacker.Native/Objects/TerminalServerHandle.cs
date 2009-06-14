@@ -31,11 +31,20 @@ namespace ProcessHacker.Native.Objects
 {
     public class TerminalServerHandle : NativeHandle
     {
+        /// <summary>
+        /// Gets a handle to the local terminal server.
+        /// </summary>
+        /// <returns>A terminal server handle.</returns>
         public static TerminalServerHandle GetCurrent()
         {
             return new TerminalServerHandle(IntPtr.Zero, false);
         }
 
+        /// <summary>
+        /// Registers the specified window to receieve terminal server notifications.
+        /// </summary>
+        /// <param name="window">The window to receieve the notifications.</param>
+        /// <param name="allSessions">Whether notifications should be created for all sessions.</param>
         public static void RegisterNotificationsCurrent(IWin32Window window, bool allSessions)
         {
             if (!Win32.WTSRegisterSessionNotification(
@@ -45,19 +54,30 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Unregisters terminal server notifications for the specified window.
+        /// </summary>
+        /// <param name="window">The window to stop receiving notifications.</param>
         public static void UnregisterNotificationsCurrent(IWin32Window window)
         {
             if (!Win32.WTSUnRegisterSessionNotification(window.Handle))
                 Win32.ThrowLastError();
         }
 
-        protected TerminalServerHandle(IntPtr handle, bool owned)
+        private string _systemName;
+
+        private TerminalServerHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
 
+        /// <summary>
+        /// Opens a terminal server.
+        /// </summary>
+        /// <param name="serverName">The NetBIOS name of the server.</param>
         public TerminalServerHandle(string serverName)
         {
             this.Handle = Win32.WTSOpenServer(serverName);
+            _systemName = serverName;
 
             if (this.Handle == IntPtr.Zero)
                 Win32.ThrowLastError();
@@ -68,6 +88,19 @@ namespace ProcessHacker.Native.Objects
             Win32.WTSCloseServer(this);
         }
 
+        /// <summary>
+        /// Gets the name of the terminal server.
+        /// This value can be null when the server is local.
+        /// </summary>
+        public string SystemName
+        {
+            get { return _systemName; }
+        }
+
+        /// <summary>
+        /// Gets the processes running on the terminal server.
+        /// </summary>
+        /// <returns>An array of processes.</returns>
         public TerminalServerProcess[] GetProcesses()
         {
             IntPtr dataPtr;
@@ -88,7 +121,7 @@ namespace ProcessHacker.Native.Objects
                         process.ProcessId,
                         process.SessionId,
                         Marshal.PtrToStringUni(process.ProcessName),
-                        new Sid(process.Sid)
+                        process.Sid != IntPtr.Zero ? new Sid(process.Sid, _systemName) : null
                         );
                 }
 
@@ -96,11 +129,20 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Gets information about a session on the terminal server.
+        /// </summary>
+        /// <param name="sessionId">The ID of the session.</param>
+        /// <returns>Information about the session.</returns>
         public TerminalServerSession GetSession(int sessionId)
         {
             return new TerminalServerSession(this, sessionId);
         }
 
+        /// <summary>
+        /// Gets the sessions on the terminal server.
+        /// </summary>
+        /// <returns>An array of sessions.</returns>
         public TerminalServerSession[] GetSessions()
         {
             IntPtr dataPtr;
@@ -129,6 +171,11 @@ namespace ProcessHacker.Native.Objects
             }
         }
 
+        /// <summary>
+        /// Registers the specified window to receieve terminal server notifications.
+        /// </summary>
+        /// <param name="window">The window to receieve the notifications.</param>
+        /// <param name="allSessions">Whether notifications should be created for all sessions.</param>
         public void RegisterNotifications(IWin32Window window, bool allSessions)
         {
             if (!Win32.WTSRegisterSessionNotificationEx(
@@ -139,18 +186,31 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Causes the terminal server to shutdown.
+        /// </summary>
+        /// <param name="flag">The action to take.</param>
         public void Shutdown(WtsShutdownFlags flag)
         {
             if (!Win32.WTSShutdownSystem(this, flag))
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Terminates the specified process on the terminal server.
+        /// </summary>
+        /// <param name="pid">The ID of the process to terminate.</param>
+        /// <param name="exitCode">The exit code.</param>
         public void TerminateProcess(int pid, int exitCode)
         {
             if (!Win32.WTSTerminateProcess(this, pid, exitCode))
                 Win32.ThrowLastError();
         }
 
+        /// <summary>
+        /// Unregisters terminal server notifications for the specified window.
+        /// </summary>
+        /// <param name="window">The window to stop receiving notifications.</param>
         public void UnregisterNotifications(IWin32Window window)
         {
             if (!Win32.WTSUnRegisterSessionNotificationEx(this, window.Handle))

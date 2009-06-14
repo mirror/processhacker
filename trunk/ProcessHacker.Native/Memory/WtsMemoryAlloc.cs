@@ -21,7 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native

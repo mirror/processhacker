@@ -132,6 +132,7 @@ namespace ProcessHacker.Native.Security
         }
 
         private MemoryAlloc _memory;
+        private string _systemName;
         private bool _hasAttributes;
         private SidAttributes _attributes;
 
@@ -151,6 +152,15 @@ namespace ProcessHacker.Native.Security
         /// </summary>
         /// <param name="stringSid">The SID string.</param>
         public Sid(string stringSid)
+            : this(stringSid, null)
+        { }
+
+        /// <summary>
+        /// Creates a SID from a string representation.
+        /// </summary>
+        /// <param name="stringSid">The SID string.</param>
+        /// <param name="systemName">The name of the system on which the SID is located.</param>
+        public Sid(string stringSid, string systemName)
         {
             IntPtr sidMemory;
 
@@ -166,7 +176,16 @@ namespace ProcessHacker.Native.Security
         /// </summary>
         /// <param name="sid">A pointer to an existing SID.</param>
         public Sid(IntPtr sid)
-            : this(sid, false, 0)
+            : this(sid, null)
+        { }
+
+        /// <summary>
+        /// Copies the specified SID.
+        /// </summary>
+        /// <param name="sid">A pointer to an existing SID.</param>
+        /// <param name="systemName">The name of the system on which the SID is located.</param>
+        public Sid(IntPtr sid, string systemName)
+            : this(sid, false, 0, systemName)
         { }
 
         /// <summary>
@@ -183,10 +202,20 @@ namespace ProcessHacker.Native.Security
         /// <param name="sid">A pointer to an existing SID.</param>
         /// <param name="attributes">The attributes associated with the SID.</param>
         public Sid(IntPtr sid, SidAttributes attributes)
-            : this(sid, true, attributes)
+            : this(sid, attributes, null)
         { }
 
-        private Sid(IntPtr sid, bool hasAttributes, SidAttributes attributes)
+        /// <summary>
+        /// Copies the specified SID.
+        /// </summary>
+        /// <param name="sid">A pointer to an existing SID.</param>
+        /// <param name="attributes">The attributes associated with the SID.</param>
+        /// <param name="systemName">The name of the system on which the SID is located.</param>
+        public Sid(IntPtr sid, SidAttributes attributes, string systemName)
+            : this(sid, true, attributes, systemName)
+        { }
+
+        private Sid(IntPtr sid, bool hasAttributes, SidAttributes attributes, string systemName)
         {
             NtStatus status;
 
@@ -197,6 +226,7 @@ namespace ProcessHacker.Native.Security
 
             _hasAttributes = hasAttributes;
             _attributes = attributes;
+            _systemName = systemName;
         }
 
         protected override void DisposeObject(bool disposing)
@@ -292,6 +322,11 @@ namespace ProcessHacker.Native.Security
             }
         }
 
+        public string SystemName
+        {
+            get { return _systemName; }
+        }
+
         public bool DomainEquals(Sid obj)
         {
             bool equal;
@@ -331,13 +366,13 @@ namespace ProcessHacker.Native.Security
             int nameLen = 256;
             int domainLen = 256;
 
-            if (!Win32.LookupAccountSid(null, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
+            if (!Win32.LookupAccountSid(_systemName, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
             {
                 // if the name is longer than 256 characters, increase the capacity.
                 nameSb.EnsureCapacity(nameLen);
                 domainSb.EnsureCapacity(domainLen);
 
-                if (!Win32.LookupAccountSid(null, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
+                if (!Win32.LookupAccountSid(_systemName, this, nameSb, ref nameLen, domainSb, ref domainLen, out nameUse))
                     Win32.ThrowLastError();
             }
 
