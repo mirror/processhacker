@@ -507,6 +507,13 @@ namespace ProcessHacker.Native.Api
 
         #region Misc.
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetProcessShutdownParameters(
+            [In] int Level,
+            [In] int Flags
+            );
+
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ExitWindowsEx(

@@ -2930,6 +2930,9 @@ namespace ProcessHacker
                 catch (Exception ex) { Logging.Log(ex); }    
                 try { this.UpdateSessions(); }
                 catch (Exception ex) { Logging.Log(ex); }
+
+                try { Win32.SetProcessShutdownParameters(0x100, 0); }
+                catch { }
             }
         }
     }

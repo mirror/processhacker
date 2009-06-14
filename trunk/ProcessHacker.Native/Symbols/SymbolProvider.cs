@@ -72,13 +72,14 @@ namespace ProcessHacker.Native.Symbols
         {
             _processHandle = processHandle;
             _handle = processHandle;
-            _processHandle.Reference();
 
             lock (_callLock)
             {
                 if (!Win32.SymInitialize(_handle, null, false))
                     Win32.ThrowLastError();
             }
+
+            _processHandle.Reference();
         }
 
         protected override void DisposeObject(bool disposing)
