@@ -406,6 +406,7 @@ namespace ProcessHacker.Native.Api
         Max = 11
     }
 
+    [Flags]
     public enum SiAccessFlags : int
     {
         Specific = 0x00010000,
@@ -421,6 +422,7 @@ namespace ProcessHacker.Native.Api
         InitDialog = WindowMessage.User + 1
     }
 
+    [Flags]
     public enum SiObjectInfoFlags : int
     {
         EditPerms = 0x00000000,
@@ -553,6 +555,7 @@ namespace ProcessHacker.Native.Api
         UndName = 0x00000002
     }
 
+    [Flags]
     public enum SymbolServerOption
     {
         Callback = 0x01,
