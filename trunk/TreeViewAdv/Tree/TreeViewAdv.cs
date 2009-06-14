@@ -1,4 +1,5 @@
 /*
+ * Modified by fliser.
  * Modified by wj32.
  */
 
@@ -360,7 +361,7 @@ namespace Aga.Controls.Tree
 			if (node.Row < 0)
 				CreateRowMap();
 
-			int row = -1;
+            int row = FirstVisibleRow;
 
             if (node.Row < FirstVisibleRow)
             {

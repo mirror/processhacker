@@ -388,7 +388,14 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr LocalAlloc(
-            [In] AllocFlags Flags, 
+            [In] AllocFlags Flags,
+            [In] int Bytes
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr LocalReAlloc(
+            [In] IntPtr Mem,
+            [In] AllocFlags Flags,
             [In] int Bytes
             );
 
@@ -419,8 +426,16 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr HeapAlloc(
-            [In] IntPtr Heap, 
-            [In] int Flags, 
+            [In] IntPtr Heap,
+            [In] int Flags,
+            [In] int Bytes
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr HeapReAlloc(
+            [In] IntPtr Heap,
+            [In] int Flags,
+            [In] IntPtr Mem,
             [In] int Bytes
             );
 

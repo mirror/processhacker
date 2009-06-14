@@ -23,17 +23,25 @@ namespace Aga.Controls.Tree
 				switch (args.KeyCode)
 				{
 					case Keys.Right:
-						if (!Tree.CurrentNode.IsExpanded)
-							Tree.CurrentNode.IsExpanded = true;
-						else if (Tree.CurrentNode.Nodes.Count > 0)
-							Tree.SelectedNode = Tree.CurrentNode.Nodes[0];
+                        if (!Tree.CurrentNode.IsExpanded)
+                        {
+                            Tree.CurrentNode.IsExpanded = true;
+                            // by fliser
+                            Tree.FullUpdate();
+                        }
+                        else if (Tree.CurrentNode.Nodes.Count > 0)
+                            Tree.SelectedNode = Tree.CurrentNode.Nodes[0];
 						args.Handled = true;
 						break;
 					case Keys.Left:
-						if (Tree.CurrentNode.IsExpanded)
-							Tree.CurrentNode.IsExpanded = false;
-						else if (Tree.CurrentNode.Parent != Tree.Root)
-							Tree.SelectedNode = Tree.CurrentNode.Parent;
+                        if (Tree.CurrentNode.IsExpanded)
+                        {
+                            Tree.CurrentNode.IsExpanded = false;
+                            // by fliser
+                            Tree.FullUpdate();
+                        }
+                        else if (Tree.CurrentNode.Parent != Tree.Root)
+                            Tree.SelectedNode = Tree.CurrentNode.Parent;
 						args.Handled = true;
 						break;
 					case Keys.Down:
@@ -64,17 +72,23 @@ namespace Aga.Controls.Tree
 						break;
 					case Keys.Subtract:
 						Tree.CurrentNode.Collapse();
-						args.Handled = true;
+                        // by fliser
+                        Tree.FullUpdate();
+                        args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
 					case Keys.Add:
 						Tree.CurrentNode.Expand();
-						args.Handled = true;
+                        // by fliser
+                        Tree.FullUpdate();
+                        args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
 					case Keys.Multiply:
 						Tree.CurrentNode.ExpandAll();
-						args.Handled = true;
+                        // by fliser
+                        Tree.FullUpdate();
+                        args.Handled = true;
 						args.SuppressKeyPress = true;
 						break;
 				}

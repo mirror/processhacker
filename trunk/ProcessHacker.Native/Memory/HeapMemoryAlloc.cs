@@ -49,7 +49,15 @@ namespace ProcessHacker.Native
 
         public override void Resize(int newSize)
         {
-            throw new NotImplementedException();
+            IntPtr newMemory = IntPtr.Zero;
+
+            newMemory = Win32.HeapReAlloc(Win32.GetProcessHeap(), 0, this.Memory, newSize);
+
+            if (newMemory == IntPtr.Zero)
+                throw new OutOfMemoryException();
+
+            this.Memory = newMemory;
+            base.Size = newSize;
         }
     }
 }

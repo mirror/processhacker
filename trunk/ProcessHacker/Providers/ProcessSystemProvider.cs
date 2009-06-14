@@ -767,7 +767,8 @@ namespace ProcessHacker
                     ProcessItem item = new ProcessItem();
                     ProcessHandle queryLimitedHandle = null;
 
-                    if (pid >= 0)
+                    //MSDN: If the specified process is the System Process (0x00000000), the function (OpenProcess) fails and the last error code is ERROR_INVALID_PARAMETER
+                    if (pid > 0)
                     {
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
                         catch (Exception ex) { Logging.Log(ex); }
