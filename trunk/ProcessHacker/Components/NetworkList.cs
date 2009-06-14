@@ -28,6 +28,7 @@ using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.UI;
+using System.Drawing;
 
 namespace ProcessHacker.Components
 {
@@ -318,6 +319,8 @@ namespace ProcessHacker.Components
             litem.Name = item.Id;
             litem.Tag = item.Pid;
 
+            Icon icon = null;
+
             if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
             {
                 lock (_imageListLock)
@@ -325,18 +328,18 @@ namespace ProcessHacker.Components
                     if (imageList.Images.ContainsKey(item.Pid.ToString()))
                         imageList.Images.RemoveByKey(item.Pid.ToString());
 
-                    var icon = Program.ProcessProvider.Dictionary[item.Pid].Icon;
-
-                    if (icon != null)
-                    {
-                        imageList.Images.Add(item.Pid.ToString(), icon);
-                        litem.ImageKey = item.Pid.ToString();
-                    }
-                    else
-                    {
-                        litem.ImageKey = "generic_process";
-                    }
+                    icon = Program.ProcessProvider.Dictionary[item.Pid].Icon;
                 }
+            }
+
+            if (icon != null)
+            {
+                imageList.Images.Add(item.Pid.ToString(), icon);
+                litem.ImageKey = item.Pid.ToString();
+            }
+            else
+            {
+                litem.ImageKey = "generic_process";
             }
 
             if (item.Pid == 0)
