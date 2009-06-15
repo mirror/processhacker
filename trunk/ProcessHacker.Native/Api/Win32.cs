@@ -26,26 +26,37 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using ProcessHacker.Common.Threading;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
+    public delegate bool EnumWindowsProc(IntPtr hWnd, uint param);
+    public delegate bool EnumChildProc(IntPtr hWnd, uint param);
+    public delegate bool EnumThreadWndProc(IntPtr hWnd, uint param);
+    public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
+
+    public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
+    public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, byte* Buffer,
+        int Size, out int BytesRead);
+    public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
+    public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);
+
     /// <summary>
     /// Provides interfacing to the Win32 and Native APIs.
     /// </summary>
-    public partial class Win32
+    public static partial class Win32
     {
-        public delegate bool EnumWindowsProc(IntPtr hWnd, uint param);
-        public delegate bool EnumChildProc(IntPtr hWnd, uint param);
-        public delegate bool EnumThreadWndProc(IntPtr hWnd, uint param);
-        public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
+        private static FastMutex _dbgHelpLock = new FastMutex();
 
-        public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
-        public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, byte* Buffer,
-            int Size, out int BytesRead);
-        public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
-        public delegate ulong GetModuleBaseProc64(IntPtr ProcessHandle, ulong Address);
+        /// <summary>
+        /// A mutex which controls access to the dbghelp.dll functions.
+        /// </summary>
+        public static FastMutex DbgHelpLock
+        {
+            get { return _dbgHelpLock; }
+        }
 
         #region Consts
 
@@ -221,7 +232,7 @@ namespace ProcessHacker.Native.Api
 
         public static MibTcpStats GetTcpStats()
         {
-            MibTcpStats tcpStats = new MibTcpStats();
+            MibTcpStats tcpStats;
             GetTcpStatistics(out tcpStats);
             return tcpStats;
         }
@@ -290,7 +301,7 @@ namespace ProcessHacker.Native.Api
 
         public static MibUdpStats GetUdpStats()
         {
-            MibUdpStats udpStats = new MibUdpStats();
+            MibUdpStats udpStats;
             GetUdpStatistics(out udpStats);
             return udpStats;
         }

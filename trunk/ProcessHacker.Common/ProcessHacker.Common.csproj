@@ -51,6 +51,7 @@
     <Compile Include="BaseConverter.cs" />
     <Compile Include="ByteStreamReader.cs" />
     <Compile Include="CircularBuffer.cs" />
+    <Compile Include="Threading\FastMutex.cs" />
     <Compile Include="Objects\DelayedReleasePool.cs" />
     <Compile Include="DeltaManager.cs" />
     <Compile Include="EnumComparer.cs" />
@@ -63,6 +64,8 @@
     <Compile Include="Objects\IReferenceCountedObject.cs" />
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="Threading\RundownProtection.cs" />
+    <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Ui\SortedListComparer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

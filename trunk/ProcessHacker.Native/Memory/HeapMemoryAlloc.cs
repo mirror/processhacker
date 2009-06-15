@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
@@ -49,9 +47,9 @@ namespace ProcessHacker.Native
 
         public override void Resize(int newSize)
         {
-            IntPtr newMemory = IntPtr.Zero;
+            IntPtr newMemory;
 
-            newMemory = Win32.HeapReAlloc(Win32.GetProcessHeap(), 0, this.Memory, newSize);
+            newMemory = Win32.HeapReAlloc(Win32.GetProcessHeap(), 0, this, newSize);
 
             if (newMemory == IntPtr.Zero)
                 throw new OutOfMemoryException();

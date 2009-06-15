@@ -36,7 +36,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
-    public partial class Win32
+    public static partial class Win32
     {
         #region Cryptography
 
@@ -394,7 +394,7 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr LocalReAlloc(
-            [In] IntPtr Mem,
+            [In] IntPtr Memory,
             [In] AllocFlags Flags,
             [In] int Bytes
             );
@@ -435,7 +435,7 @@ namespace ProcessHacker.Native.Api
         public static extern IntPtr HeapReAlloc(
             [In] IntPtr Heap,
             [In] int Flags,
-            [In] IntPtr Mem,
+            [In] IntPtr Memory,
             [In] int Bytes
             );
 

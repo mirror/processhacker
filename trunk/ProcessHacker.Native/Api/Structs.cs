@@ -584,7 +584,7 @@ namespace ProcessHacker.Native.Api
     {
         public int Styles;
         [MarshalAs(UnmanagedType.FunctionPtr)]
-        public Win32.WndProcDelegate WindowsProc;
+        public WndProcDelegate WindowsProc;
         private int ExtraClassData;
         private int ExtraWindowData;
         public IntPtr InstanceHandle;

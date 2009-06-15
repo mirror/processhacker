@@ -618,12 +618,12 @@ namespace ProcessHacker.Native.Objects
         {
             // We need to duplicate the handle to get QueryInformation access.
             using (var dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
+            using (var phandle = new ProcessHandle(
+                ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
+                ProcessAccess.QueryInformation | ProcessAccess.VmRead
+                ))
             {
-                using (var phandle = new ProcessHandle(
-                    ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
-                    ProcessAccess.QueryInformation | ProcessAccess.VmRead
-                    ))
-                    this.WalkStack(phandle, walkStackCallback);
+                this.WalkStack(phandle, walkStackCallback);
             }
         }
 
@@ -651,11 +651,11 @@ namespace ProcessHacker.Native.Objects
             }
 
             // Use KPH for reading memory if we can.
-            Win32.ReadProcessMemoryProc64 readMemoryProc = null;
+            ReadProcessMemoryProc64 readMemoryProc = null;
 
             if (KProcessHacker.Instance != null)
             {
-                readMemoryProc = new Win32.ReadProcessMemoryProc64(
+                readMemoryProc = new ReadProcessMemoryProc64(
                     delegate(IntPtr processHandle, ulong baseAddress, byte* buffer, int size, out int bytesRead)
                     {
                         return KProcessHacker.Instance.KphReadVirtualMemorySafe(
@@ -680,18 +680,21 @@ namespace ProcessHacker.Native.Objects
 
                 while (true)
                 {
-                    if (!Win32.StackWalk64(
-                        MachineType.I386,
-                        parentProcess,
-                        this,
-                        ref stackFrame,
-                        ref context,
-                        readMemoryProc,
-                        Win32.SymFunctionTableAccess64,
-                        Win32.SymGetModuleBase64,
-                        IntPtr.Zero
-                        ))
-                        break;
+                    using (Win32.DbgHelpLock.AcquireContext())
+                    {
+                        if (!Win32.StackWalk64(
+                            MachineType.I386,
+                            parentProcess,
+                            this,
+                            ref stackFrame,
+                            ref context,
+                            readMemoryProc,
+                            Win32.SymFunctionTableAccess64,
+                            Win32.SymGetModuleBase64,
+                            IntPtr.Zero
+                            ))
+                            break;
+                    }
 
                     // If we got an invalid eip, break.
                     if (stackFrame.AddrPC.Offset == 0)

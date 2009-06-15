@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace ProcessHacker.Native.Threading
+namespace ProcessHacker.Common.Threading
 {
     /// <summary>
     /// Provides methods for managing object/resource destruction.

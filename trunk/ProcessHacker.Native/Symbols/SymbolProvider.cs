@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Objects;
 using ProcessHacker.Native.Api;
@@ -35,20 +34,19 @@ namespace ProcessHacker.Native.Symbols
 {
     public class SymbolProvider : BaseObject
     {
-        private static object _callLock = new object();
         private static IdGenerator _idGen = new IdGenerator();
 
         public static SymbolOptions Options
         {
             get
             {
-                lock (_callLock)
+                using (Win32.DbgHelpLock.AcquireContext())
                     return Win32.SymGetOptions();
             }
 
             set
             {
-                lock (_callLock)
+                using (Win32.DbgHelpLock.AcquireContext())
                     Win32.SymSetOptions(value);
             }
         }
@@ -61,7 +59,7 @@ namespace ProcessHacker.Native.Symbols
         {
             _handle = new IntPtr(_idGen.Pop());
 
-            lock (_callLock)
+            using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymInitialize(_handle, null, false))
                     Win32.ThrowLastError();
@@ -73,7 +71,7 @@ namespace ProcessHacker.Native.Symbols
             _processHandle = processHandle;
             _handle = processHandle;
 
-            lock (_callLock)
+            using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymInitialize(_handle, null, false))
                     Win32.ThrowLastError();
@@ -85,7 +83,7 @@ namespace ProcessHacker.Native.Symbols
         protected override void DisposeObject(bool disposing)
         {
             if (disposing)
-                Monitor.Enter(_callLock);
+                Win32.DbgHelpLock.Acquire();
 
             try
             {
@@ -102,7 +100,7 @@ namespace ProcessHacker.Native.Symbols
             finally
             {
                 if (disposing)
-                    Monitor.Exit(_callLock);
+                    Win32.DbgHelpLock.Release();
             }
         }
 
@@ -115,19 +113,20 @@ namespace ProcessHacker.Native.Symbols
         {
             get
             {
-
                 StringBuilder data = new StringBuilder(0x1000);
-                lock (_callLock)
+
+                using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (!Win32.SymGetSearchPath(_handle, data, data.Capacity))
                         return "";
                 }
+
                 return data.ToString();
             }
 
             set
             {
-                lock (_callLock)
+                using (Win32.DbgHelpLock.AcquireContext())
                     Win32.SymSetSearchPath(_handle, value);
             }
         }
@@ -138,13 +137,13 @@ namespace ProcessHacker.Native.Symbols
         {
             get
             {
-                if (!Monitor.TryEnter(_callLock))
+                if (!Win32.DbgHelpLock.TryAcquire())
                 {
                     return true;
                 }
                 else
                 {
-                    Monitor.Exit(_callLock);
+                    Win32.DbgHelpLock.Release();
                     return false;
                 }
             }
@@ -167,7 +166,7 @@ namespace ProcessHacker.Native.Symbols
 
         public void LoadModule(string fileName, ulong baseAddress, int size)
         {
-            lock (_callLock)
+            using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
                     Win32.ThrowLastError();
@@ -192,7 +191,7 @@ namespace ProcessHacker.Native.Symbols
 
         public void UnloadModule(ulong baseAddress)
         {
-            lock (_callLock)
+            using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymUnloadModule64(_handle, baseAddress))
                     Win32.ThrowLastError();
@@ -227,7 +226,7 @@ namespace ProcessHacker.Native.Symbols
             ImagehlpLine64 line;
             int displacement;
 
-            lock (_callLock)
+            using (Win32.DbgHelpLock.AcquireContext())
             {
                 if (!Win32.SymGetLineFromAddr64(_handle, address, out displacement, out line))
                     Win32.ThrowLastError();
@@ -343,13 +342,13 @@ namespace ProcessHacker.Native.Symbols
 
                     this.GetModuleFromAddress(address, out b);
 
-                    lock (_callLock)
+                    using (Win32.DbgHelpLock.AcquireContext())
                         Win32.SymFromAddr(_handle, b, out displacement, data);
 
                     Marshal.StructureToPtr(info, data, false);
                 }
 
-                lock (_callLock)
+                using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (Win32.SymFromAddr(_handle, address, out displacement, data))
                     {
@@ -378,7 +377,6 @@ namespace ProcessHacker.Native.Symbols
                     flags = 0;
                     fileName = null;
                     symbolName = null;
-                    displacement = 0;
 
                     return "0x" + address.ToString("x8");
                 }
@@ -400,7 +398,6 @@ namespace ProcessHacker.Native.Symbols
                     level = SymbolResolveLevel.Module;
                     flags = 0;
                     symbolName = null;
-                    displacement = 0;
 
                     if (fi != null)
                     {
@@ -420,7 +417,6 @@ namespace ProcessHacker.Native.Symbols
                 level = SymbolResolveLevel.Function;
                 flags = info.Flags;
                 symbolName = name;
-                displacement = displacement;
 
                 if (displacement == 0)
                     return fi.Name + "!" + name;

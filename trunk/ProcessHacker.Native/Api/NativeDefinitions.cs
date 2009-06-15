@@ -29,7 +29,7 @@ namespace ProcessHacker.Native.Api
 {
     public delegate void TimerApcRoutine(IntPtr context, int lowValue, int highValue);
 
-    public partial class Win32
+    public static partial class Win32
     {
         public const int ExceptionMaximumParameters = 15;
         public const int FlsMaximumAvailable = 128;

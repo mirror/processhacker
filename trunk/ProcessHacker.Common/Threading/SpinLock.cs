@@ -23,7 +23,7 @@
 using System;
 using System.Threading;
 
-namespace ProcessHacker.Native.Threading
+namespace ProcessHacker.Common.Threading
 {
     /// <summary>
     /// Represents a spinlock, a high-performance mutual exclusion lock.
@@ -86,7 +86,7 @@ namespace ProcessHacker.Native.Threading
             else
             {
                 while (Interlocked.CompareExchange(ref _value, 1, 0) == 1)
-                    CurrentThread.Yield();
+                    Thread.Sleep(0);
             }
 
             Thread.EndCriticalRegion();

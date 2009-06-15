@@ -148,9 +148,7 @@
     <Compile Include="Security\ThreadAccess.cs" />
     <Compile Include="Security\TokenAccess.cs" />
     <Compile Include="Security\WindowStationAccess.cs" />
-    <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\Semaphore.cs" />
-    <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Threading\Timer.cs" />
     <Compile Include="Threading\Waiter.cs" />
     <Compile Include="Ui\HandlePropertiesWindow.cs">
@@ -162,7 +160,7 @@
     <Compile Include="NativeObject.cs" />
     <Compile Include="Windows.cs" />
     <Compile Include="OSVersion.cs" />
-    <Compile Include="Win32.cs" />
+    <Compile Include="Api\Win32.cs" />
     <Compile Include="WindowsException.cs" />
   </ItemGroup>
   <ItemGroup>

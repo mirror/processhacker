@@ -767,7 +767,7 @@ namespace ProcessHacker
                     ProcessItem item = new ProcessItem();
                     ProcessHandle queryLimitedHandle = null;
 
-                    //MSDN: If the specified process is the System Process (0x00000000), the function (OpenProcess) fails and the last error code is ERROR_INVALID_PARAMETER
+                    // Can't open System Idle Process or the fake processes (DPCs/Interrupts)
                     if (pid > 0)
                     {
                         try { queryLimitedHandle = new ProcessHandle(pid, Program.MinProcessQueryRights); }
@@ -872,6 +872,7 @@ namespace ProcessHacker
                                         try { item.IsElevated = thandle.IsElevated(); }
                                         catch { }
 
+                                        // Try to get the integrity level. Messy.
                                         try
                                         {
                                             var groups = thandle.GetGroups();

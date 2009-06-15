@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
@@ -39,9 +37,9 @@ namespace ProcessHacker.Native
 
         public override void Resize(int newSize)
         {
-            IntPtr newMemory = IntPtr.Zero;
+            IntPtr newMemory;
 
-            newMemory = Win32.LocalReAlloc(this.Memory, AllocFlags.LMemFixed, newSize);
+            newMemory = Win32.LocalReAlloc(this, AllocFlags.LMemFixed, newSize);
 
             if (newMemory == IntPtr.Zero)
                 throw new OutOfMemoryException();
