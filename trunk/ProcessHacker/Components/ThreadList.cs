@@ -1054,6 +1054,15 @@ namespace ProcessHacker.Components
                                 IntPtr handleAddress = stackFrame.Params[1];
                                 WaitType waitType = (WaitType)stackFrame.Params[2].ToInt32();
                                 bool alertable = stackFrame.Params[3].ToInt32() != 0;
+
+                                // use the KiFastSystemCallRet args if we have the wrong args
+                                if (handleCount > 64)
+                                {
+                                    handleCount = lastParams[1].ToInt32();
+                                    handleAddress = lastParams[2];
+                                    waitType = (WaitType)lastParams[3].ToInt32();
+                                }
+
                                 IntPtr* handles = stackalloc IntPtr[handleCount];
 
                                 phandle.ReadMemory(handleAddress, handles, handleCount * IntPtr.Size);
