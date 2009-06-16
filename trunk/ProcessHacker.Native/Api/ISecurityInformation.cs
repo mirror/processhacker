@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Api
 {
-    [ComImport, Guid("965FC360-16FF-11d0-91CB-00AA00BBB723"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("965fc360-16ff-11d0-91cb-00aa00bbb723"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface ISecurityInformation
     {
         int GetObjectInformation(
