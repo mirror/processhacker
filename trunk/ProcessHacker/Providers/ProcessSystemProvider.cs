@@ -74,6 +74,7 @@ namespace ProcessHacker
         public int ParentPid;
 
         public VerifyResult VerifyResult;
+        public string VerifySignerName;
         public int ImportFunctions;
         public int ImportModules;
 
@@ -105,6 +106,7 @@ namespace ProcessHacker
             public bool IsDotNet;
             public bool IsPacked;
             public VerifyResult VerifyResult;
+            public string VerifySignerName;
             public int ImportFunctions;
             public int ImportModules;
         }
@@ -462,6 +464,9 @@ namespace ProcessHacker
                             else
                                 _fileResults[uniName] = fpResult.VerifyResult;
                         }
+
+                        //if (fpResult.VerifyResult != VerifyResult.NoSignature)
+                        //    fpResult.VerifySignerName = Cryptography.GetFileSubjectValue(fileName, "CN");
                     }
                 }
             }
@@ -584,6 +589,7 @@ namespace ProcessHacker
             {
                 item.IsPacked = (item.IsDotNet || result.IsDotNet) ? false : result.IsPacked;
                 item.VerifyResult = result.VerifyResult;
+                item.VerifySignerName = result.VerifySignerName;
                 item.ImportFunctions = result.ImportFunctions;
                 item.ImportModules = result.ImportModules;
             }

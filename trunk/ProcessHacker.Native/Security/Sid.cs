@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   SID object
+ *   security identifier
  *
  * Copyright (C) 2009 wj32
  * 
@@ -29,22 +29,10 @@ using ProcessHacker.Native.Api;
 namespace ProcessHacker.Native.Security
 {
     /// <summary>
-    /// Represents a Windows Security Identifier (SID).
+    /// Represents a Windows security identifier (SID).
     /// </summary>
     public class Sid : BaseObject, IEquatable<Sid>
     {
-        public enum WellKnownSidIdentifierAuthority
-        {
-            None = 0,
-            Null,
-            World,
-            Local,
-            Creator,
-            NonUnique,
-            NtAuthority,
-            ResourceManager
-        }
-
         private static readonly byte[] _nullSidAuthority = { 0, 0, 0, 0, 0, 0 };
         private static readonly byte[] _worldSidAuthority = { 0, 0, 0, 0, 0, 1 };
         private static readonly byte[] _localSidAuthority = { 0, 0, 0, 0, 0, 2 };
@@ -265,6 +253,11 @@ namespace ProcessHacker.Native.Security
             get { return _hasAttributes; }
         }
 
+        public int Length
+        {
+            get { return Win32.RtlLengthSid(this); }
+        }
+
         public IntPtr Memory
         {
             get { return _memory; }
@@ -305,11 +298,6 @@ namespace ProcessHacker.Native.Security
                     return subAuthorities;
                 }
             }
-        }
-
-        public int Size
-        {
-            get { return Win32.RtlLengthSid(this); }
         }
 
         public string StringSid
@@ -427,5 +415,17 @@ namespace ProcessHacker.Native.Security
         {
             return this.StringSid;
         }
+    }
+
+    public enum WellKnownSidIdentifierAuthority
+    {
+        None = 0,
+        Null,
+        World,
+        Local,
+        Creator,
+        NonUnique,
+        NtAuthority,
+        ResourceManager
     }
 }

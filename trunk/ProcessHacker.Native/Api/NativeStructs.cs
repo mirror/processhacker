@@ -512,16 +512,62 @@ namespace ProcessHacker.Native.Api
         public IntPtr Blink;
     }
 
+    /// <summary>
+    /// Represents a locally unique identifier (LUID), a value which 
+    /// is unique on the currently running system.
+    /// </summary>
     [StructLayout(LayoutKind.Explicit, Pack = 4)]
     public struct Luid
     {
+        public static readonly Luid System = new Luid(0x3e7, 0);
+        public static readonly Luid AnonymousLogon = new Luid(0x3e6, 0);
+        public static readonly Luid LocalService = new Luid(0x3e5, 0);
+        public static readonly Luid NetworkService = new Luid(0x3e4, 0);
+
+        /// <summary>
+        /// Creates a LUID from a single 64-bit value.
+        /// </summary>
+        /// <param name="quadPart">The value.</param>
+        public Luid(long quadPart)
+        {
+            this.LowPart = 0;
+            this.HighPart = 0;
+            this.QuadPart = quadPart;
+        }
+
+        /// <summary>
+        /// Creates a LUID from two 32-bit values.
+        /// </summary>
+        /// <param name="lowPart">The low 32 bits of the LUID.</param>
+        /// <param name="highPart">The high 32 bits of the LUID.</param>
+        public Luid(uint lowPart, int highPart)
+        {
+            this.QuadPart = 0;
+            this.LowPart = lowPart;
+            this.HighPart = highPart;
+        }
+
+        /// <summary>
+        /// The 64-bit value of the LUID.
+        /// </summary>
         [FieldOffset(0)]
         public long QuadPart;
+        /// <summary>
+        /// The low 32 bits of the LUID.
+        /// </summary>
         [FieldOffset(0)]
         public uint LowPart;
+        /// <summary>
+        /// The high 32 bits of the LUID.
+        /// </summary>
         [FieldOffset(4)]
         public int HighPart;
 
+        /// <summary>
+        /// Allocates a locally unique identifier (LUID) from 
+        /// the kernel.
+        /// </summary>
+        /// <returns>A new LUID.</returns>
         public static Luid Allocate()
         {
             NtStatus status;

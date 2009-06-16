@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -126,7 +124,7 @@ namespace ProcessHacker.Native.Threading
         /// Starts the timer.
         /// </summary>
         /// <param name="dueTime">The due time, in milliseconds.</param>
-        /// <param name="period">The interval to use for periodic signaling.</param>
+        /// <param name="period">The interval to use for periodic signaling, in milliseconds.</param>
         public void Set(int dueTime, int period)
         {
             this.Set(null, dueTime, period);
@@ -137,7 +135,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         /// <param name="callback">A function to be called when the timer is signaled.</param>
         /// <param name="dueTime">The due time, in milliseconds.</param>
-        /// <param name="period">The interval to use for periodic signaling.</param>
+        /// <param name="period">The interval to use for periodic signaling, in milliseconds.</param>
         public void Set(TimerCallback callback, int dueTime, int period)
         {
             this.Set(callback, dueTime, period, IntPtr.Zero);
@@ -148,7 +146,7 @@ namespace ProcessHacker.Native.Threading
         /// </summary>
         /// <param name="callback">A function to be called when the timer is signaled.</param>
         /// <param name="dueTime">The due time, in milliseconds.</param>
-        /// <param name="period"></param>
+        /// <param name="period">The interval to use for periodic signaling, in milliseconds.</param>
         /// <param name="context">A value to pass to the callback function.</param>
         public void Set(TimerCallback callback, int dueTime, int period, IntPtr context)
         {

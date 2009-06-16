@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Common.Objects;
 
 namespace ProcessHacker.Native.Security
 {
-    public class SecurityDescriptor : IDisposable
+    public class SecurityDescriptor : BaseObject
     {
         private object _disposeLock = new object();
         private bool _disposed = false;
@@ -27,35 +28,9 @@ namespace ProcessHacker.Native.Security
             _sd = new MemoryAlloc(sd, true);
         }
 
-        ~SecurityDescriptor()
+        protected override void DisposeObject(bool disposing)
         {
-            this.Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-                Monitor.Enter(_disposeLock);
-
-            try
-            {
-                if (!_disposed)
-                {
-                    _sd.Dispose();
-                    _disposed = true;
-                }
-            }
-            finally
-            {
-                if (disposing)
-                    Monitor.Exit(_disposeLock);
-            }
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            _sd.Dispose(disposing);
         }
 
         public MemoryAlloc Memory
@@ -72,22 +47,36 @@ namespace ProcessHacker.Native.Security
             return dacl;
         }
 
-        public IntPtr GetGroup(out bool defaulted)
+        public Sid GetGroup()
+        {
+            bool defaulted;
+
+            return this.GetGroup(out defaulted);
+        }
+
+        public Sid GetGroup(out bool defaulted)
         {
             IntPtr group;
 
             Win32.GetSecurityDescriptorGroup(this, out group, out defaulted);
 
-            return group;
+            return Sid.FromPointer(group);
         }
 
-        public IntPtr GetOwner(out bool defaulted)
+        public Sid GetOwner()
+        {
+            bool defaulted;
+
+            return this.GetOwner(out defaulted);
+        }
+
+        public Sid GetOwner(out bool defaulted)
         {
             IntPtr owner;
 
             Win32.GetSecurityDescriptorOwner(this, out owner, out defaulted);
 
-            return owner;
+            return Sid.FromPointer(owner);
         }
 
         public IntPtr GetSacl(out bool present, out bool defaulted)

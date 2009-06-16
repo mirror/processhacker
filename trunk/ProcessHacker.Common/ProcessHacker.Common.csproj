@@ -66,6 +66,7 @@
     <Compile Include="Logging.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\SpinLock.cs" />
+    <Compile Include="Tokenizer.cs" />
     <Compile Include="Ui\SortedListComparer.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

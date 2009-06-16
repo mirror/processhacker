@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   token privilege
+ *   privilege
  * 
  * Copyright (C) 2009 wj32
  * 

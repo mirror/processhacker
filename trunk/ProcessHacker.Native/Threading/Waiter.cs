@@ -22,11 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;   
-using ProcessHacker.Native.Security;
+using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Threading
 {

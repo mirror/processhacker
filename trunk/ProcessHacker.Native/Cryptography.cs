@@ -21,12 +21,14 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
-using System;
 
 namespace ProcessHacker.Native
 {
@@ -59,6 +61,43 @@ namespace ProcessHacker.Native
         public static readonly System.Guid WintrustActionTrustProviderTest = 
             new Guid("{573e31f8-ddba-11d0-8ccb-00c04fc295ee}");
 
+        public static string GetFileSubjectValue(string fileName, string keyName)
+        {
+            X509Certificate cert = X509Certificate.CreateFromSignedFile(fileName);
+            Tokenizer t = new Tokenizer(cert.Subject);
+
+            // Use the "tokenizer" to get the Common Name (CN).
+            while (true)
+            {
+                t.EatWhitespace();
+                string key = t.EatId();
+
+                if (string.IsNullOrEmpty(key))
+                    return null;
+
+                t.EatWhitespace();
+                string equals = t.EatSymbol();
+
+                if (equals != "=")
+                    return null;
+
+                t.EatWhitespace();
+                string value = t.EatQuotedString();
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    // The value probably isn't quoted.
+                    value = t.EatUntil(',');
+                }
+
+                if (string.IsNullOrEmpty(value))
+                    return null;
+
+                if (key == keyName)
+                    return value;
+            }
+        }
+
         public static VerifyResult StatusToVerifyResult(uint status)
         {
             if (status == 0)
@@ -77,17 +116,17 @@ namespace ProcessHacker.Native
                 return VerifyResult.SecuritySettings;
         }
 
-        public static VerifyResult VerifyFile(string filePath)
+        public static VerifyResult VerifyFile(string fileName)
         {
             VerifyResult result = VerifyResult.NoSignature;
 
-            using (MemoryAlloc strMem = new MemoryAlloc(filePath.Length * 2 + 2))
+            using (MemoryAlloc strMem = new MemoryAlloc(fileName.Length * 2 + 2))
             {
                 WintrustFileInfo fileInfo = new WintrustFileInfo();
 
-                strMem.WriteUnicodeString(0, filePath);
-                strMem.WriteByte(filePath.Length * 2, 0);
-                strMem.WriteByte(filePath.Length * 2 + 1, 0);
+                strMem.WriteUnicodeString(0, fileName);
+                strMem.WriteByte(fileName.Length * 2, 0);
+                strMem.WriteByte(fileName.Length * 2 + 1, 0);
 
                 fileInfo.Size = Marshal.SizeOf(fileInfo);
                 fileInfo.FilePath = strMem;
@@ -116,7 +155,7 @@ namespace ProcessHacker.Native
 
             if (result == VerifyResult.NoSignature)
             {
-                FileHandle sourceFile = new FileHandle(filePath, FileAccess.GenericRead, FileShareMode.Read,
+                FileHandle sourceFile = new FileHandle(fileName, FileAccess.GenericRead, FileShareMode.Read,
                     FileCreationDisposition.OpenExisting);
                 byte[] hash = new byte[256];
                 int hashLength = 256;
@@ -160,7 +199,7 @@ namespace ProcessHacker.Native
 
                 wci.Size = Marshal.SizeOf(wci);
                 wci.CatalogFilePath = ci.CatalogFile;
-                wci.MemberFilePath = filePath;
+                wci.MemberFilePath = fileName;
                 wci.MemberTag = memberTag.ToString();
 
                 WintrustData trustData = new WintrustData();
