@@ -79,7 +79,8 @@ namespace ProcessHacker.Native
             KphAssignImpersonationToken,
             ProtectAdd,
             ProtectRemove,
-            ProtectQuery
+            ProtectQuery,
+            KphUnsafeReadVirtualMemory
         }
 
         [Flags]
@@ -462,6 +463,26 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0x10) = (int)&br;
 
             bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphReadVirtualMemory), 
+                inData, 0x14, null, 0, out returnLength, IntPtr.Zero);
+
+            bytesRead = br;
+
+            return r;
+        }
+
+        public bool KphReadVirtualMemoryUnsafe(ProcessHandle processHandle, int baseAddress, void* buffer, int length, out int bytesRead)
+        {
+            byte* inData = stackalloc byte[0x14];
+            int returnLength;
+            int br;
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 0x4) = baseAddress;
+            *(int*)(inData + 0x8) = (int)buffer;
+            *(int*)(inData + 0xc) = length;
+            *(int*)(inData + 0x10) = (int)&br;
+
+            bool r = Win32.DeviceIoControl(_fileHandle, (int)CtlCode(Control.KphUnsafeReadVirtualMemory),
                 inData, 0x14, null, 0, out returnLength, IntPtr.Zero);
 
             bytesRead = br;

@@ -331,72 +331,77 @@ NTSTATUS GetObjectName(PFILE_OBJECT FileObject, PVOID Buffer, ULONG BufferLength
 
 PCHAR GetIoControlName(ULONG ControlCode)
 {
-    if (ControlCode == KPH_READ)
-        return "Read";
-    else if (ControlCode == KPH_WRITE)
-        return "Write";
-    else if (ControlCode == KPH_GETFILEOBJECTNAME)
-        return "Get File Object Name";
-    else if (ControlCode == KPH_OPENPROCESS)
-        return "KphOpenProcess";
-    else if (ControlCode == KPH_OPENTHREAD)
-        return "KphOpenThread";
-    else if (ControlCode == KPH_OPENPROCESSTOKEN)
-        return "KphOpenProcessTokenEx";
-    else if (ControlCode == KPH_GETPROCESSPROTECTED)
-        return "Get Process Protected";
-    else if (ControlCode == KPH_SETPROCESSPROTECTED)
-        return "Set Process Protected";
-    else if (ControlCode == KPH_TERMINATEPROCESS)
-        return "KphTerminateProcess";
-    else if (ControlCode == KPH_SUSPENDPROCESS)
-        return "KphSuspendProcess";
-    else if (ControlCode == KPH_RESUMEPROCESS)
-        return "KphResumeProcess";
-    else if (ControlCode == KPH_READVIRTUALMEMORY)
-        return "KphReadVirtualMemory";
-    else if (ControlCode == KPH_WRITEVIRTUALMEMORY)
-        return "KphWriteVirtualMemory";
-    else if (ControlCode == KPH_SETPROCESSTOKEN)
-        return "Set Process Token";
-    else if (ControlCode == KPH_GETTHREADSTARTADDRESS)
-        return "Get Thread Start Address";
-    else if (ControlCode == KPH_SETHANDLEATTRIBUTES)
-        return "Set Handle Attributes";
-    else if (ControlCode == KPH_GETHANDLEOBJECTNAME)
-        return "Get Handle Object Name";
-    else if (ControlCode == KPH_OPENPROCESSJOB)
-        return "KphOpenProcessJob";
-    else if (ControlCode == KPH_GETCONTEXTTHREAD)
-        return "KphGetContextThread";
-    else if (ControlCode == KPH_SETCONTEXTTHREAD)
-        return "KphSetContextThread";
-    else if (ControlCode == KPH_GETTHREADWIN32THREAD)
-        return "KphGetThreadWin32Thread";
-    else if (ControlCode == KPH_DUPLICATEOBJECT)
-        return "KphDuplicateObject";
-    else if (ControlCode == KPH_ZWQUERYOBJECT)
-        return "ZwQueryObject";
-    else if (ControlCode == KPH_GETPROCESSID)
-        return "KphGetProcessId";
-    else if (ControlCode == KPH_GETTHREADID)
-        return "KphGetThreadId";
-    else if (ControlCode == KPH_TERMINATETHREAD)
-        return "KphTerminateThread";
-    else if (ControlCode == KPH_GETFEATURES)
-        return "Get Features";
-    else if (ControlCode == KPH_SETHANDLEGRANTEDACCESS)
-        return "KphSetHandleGrantedAccess";
-    else if (ControlCode == KPH_ASSIGNIMPERSONATIONTOKEN)
-        return "KphAssignImpersonationToken";
-    else if (ControlCode == KPH_PROTECTADD)
-        return "Add Process Protection";
-    else if (ControlCode == KPH_PROTECTREMOVE)
-        return "Remove Process Protection";
-    else if (ControlCode == KPH_PROTECTQUERY)
-        return "Query Process Protection";
-    else
-        return "Unknown";
+    switch (ControlCode)
+    {
+        case KPH_READ:
+            return "Read";
+        case KPH_WRITE:
+            return "Write";
+        case KPH_GETFILEOBJECTNAME:
+            return "Get File Object Name";
+        case KPH_OPENPROCESS:
+            return "KphOpenProcess";
+        case KPH_OPENTHREAD:
+            return "KphOpenThread";
+        case KPH_OPENPROCESSTOKEN:
+            return "KphOpenProcessTokenEx";
+        case KPH_GETPROCESSPROTECTED:
+            return "Get Process Protected";
+        case KPH_SETPROCESSPROTECTED:
+            return "Set Process Protected";
+        case KPH_TERMINATEPROCESS:
+            return "KphTerminateProcess";
+        case KPH_SUSPENDPROCESS:
+            return "KphSuspendProcess";
+        case KPH_RESUMEPROCESS:
+            return "KphResumeProcess";
+        case KPH_READVIRTUALMEMORY:
+            return "KphReadVirtualMemory";
+        case KPH_WRITEVIRTUALMEMORY:
+            return "KphWriteVirtualMemory";
+        case KPH_SETPROCESSTOKEN:
+            return "Set Process Token";
+        case KPH_GETTHREADSTARTADDRESS:
+            return "Get Thread Start Address";
+        case KPH_SETHANDLEATTRIBUTES:
+            return "Set Handle Attributes";
+        case KPH_GETHANDLEOBJECTNAME:
+            return "Get Handle Object Name";
+        case KPH_OPENPROCESSJOB:
+            return "KphOpenProcessJob";
+        case KPH_GETCONTEXTTHREAD:
+            return "KphGetContextThread";
+        case KPH_SETCONTEXTTHREAD:
+            return "KphSetContextThread";
+        case KPH_GETTHREADWIN32THREAD:
+            return "KphGetThreadWin32Thread";
+        case KPH_DUPLICATEOBJECT:
+            return "KphDuplicateObject";
+        case KPH_ZWQUERYOBJECT:
+            return "ZwQueryObject";
+        case KPH_GETPROCESSID:
+            return "KphGetProcessId";
+        case KPH_GETTHREADID:
+            return "KphGetThreadId";
+        case KPH_TERMINATETHREAD:
+            return "KphTerminateThread";
+        case KPH_GETFEATURES:
+            return "Get Features";
+        case KPH_SETHANDLEGRANTEDACCESS:
+            return "KphSetHandleGrantedAccess";
+        case KPH_ASSIGNIMPERSONATIONTOKEN:
+            return "KphAssignImpersonationToken";
+        case KPH_PROTECTADD:
+            return "Add Process Protection";
+        case KPH_PROTECTREMOVE:
+            return "Remove Process Protection";
+        case KPH_PROTECTQUERY:
+            return "Query Process Protection";
+        case KPH_UNSAFEREADVIRTUALMEMORY:
+            return "KphUnsafeReadVirtualMemory";
+        default:
+            return "Unknown";
+    }
 }
 
 NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
@@ -1522,6 +1527,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             
             __try
             {
+                ProbeForWrite(args->AllowKernelMode, sizeof(LOGICAL), 1);
                 ProbeForWrite(args->ProcessAllowMask, sizeof(ACCESS_MASK), 1);
                 ProbeForWrite(args->ThreadAllowMask, sizeof(ACCESS_MASK), 1);
             }
@@ -1560,6 +1566,38 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
             {
                 status = GetExceptionCode();
             }
+        }
+        break;
+        
+        /* KphUnsafeReadVirtualMemory
+         * 
+         * Reads process memory or kernel memory.
+         */
+        case KPH_UNSAFEREADVIRTUALMEMORY:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                PVOID BaseAddress;
+                PVOID Buffer;
+                ULONG BufferLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphUnsafeReadVirtualMemory(
+                args->ProcessHandle,
+                args->BaseAddress,
+                args->Buffer,
+                args->BufferLength,
+                args->ReturnLength,
+                UserMode
+                );
         }
         break;
         

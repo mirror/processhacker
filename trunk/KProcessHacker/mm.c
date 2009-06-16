@@ -45,8 +45,8 @@ NTSTATUS KphReadVirtualMemory(
     {
         if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
             (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
-            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
+            (((ULONG_PTR)BaseAddress + BufferLength) > (ULONG_PTR)MmHighestUserAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) > (ULONG_PTR)MmHighestUserAddress))
         {
             return STATUS_ACCESS_VIOLATION;
         }
@@ -98,8 +98,123 @@ NTSTATUS KphReadVirtualMemory(
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            status = STATUS_ACCESS_VIOLATION;
+            status = GetExceptionCode();
         }
+    }
+    
+    return status;
+}
+
+NTSTATUS KphUnsafeReadVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    ULONG returnLength = 0;
+    
+    /* Initial probing. */
+    if (AccessMode != KernelMode)
+    {
+        if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
+            (((ULONG_PTR)Buffer + BufferLength) > (ULONG_PTR)MmHighestUserAddress))
+        {
+            return STATUS_ACCESS_VIOLATION;
+        }
+        
+        __try
+        {
+            ProbeForWrite(Buffer, BufferLength, 1);
+            
+            if (ReturnLength)
+                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    /* Select the appropriate copy method. */
+    if (((ULONG_PTR)BaseAddress + BufferLength) > (ULONG_PTR)MmHighestUserAddress)
+    {
+        /* Kernel memory unsafe copy. */
+        ULONG i;
+        PMDL mdl;
+        PVOID mappedAddress = NULL;
+        BOOLEAN locked = FALSE;
+        
+        /* Allocate a MDL. */
+        mdl = IoAllocateMdl(BaseAddress, BufferLength, FALSE, FALSE, NULL);
+        
+        __try
+        {
+            /* Check the address range. */
+            /* HACK HACK HACK HACK HACK HACK */
+            for (i = 0; i < BufferLength; i++)
+            {
+                if (!MmIsAddressValid((PVOID)((ULONG_PTR)BaseAddress + i)))
+                    ExRaiseStatus(STATUS_ACCESS_VIOLATION);
+            }
+            
+            /* Probe, lock and map the pages. */
+            MmProbeAndLockPages(mdl, KernelMode, IoReadAccess);
+            locked = TRUE;
+            mappedAddress = MmMapLockedPagesSpecifyCache(
+                mdl,
+                KernelMode,
+                MmNonCached,
+                NULL,
+                FALSE,
+                HighPagePriority
+                );
+            /* Copy the data. */
+            memcpy(Buffer, mappedAddress, BufferLength);
+            returnLength = BufferLength;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            status = GetExceptionCode();
+        }
+        
+        /* Unmap the pages if necessary. */
+        if (mappedAddress)
+            MmUnmapLockedPages(mappedAddress, mdl);
+        /* Unlock the pages if necessary. */
+        if (locked)
+            MmUnlockPages(mdl);
+        
+        /* Free the allocated MDL. */
+        IoFreeMdl(mdl);
+        
+        if (ReturnLength)
+        {
+            __try
+            {
+                *ReturnLength = returnLength;
+            }
+            __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                status = GetExceptionCode();
+            }
+        }
+    }
+    else
+    {
+        /* User memory safe copy. */
+        status = KphReadVirtualMemory(
+            ProcessHandle,
+            BaseAddress,
+            Buffer,
+            BufferLength,
+            ReturnLength,
+            AccessMode
+            );
     }
     
     return status;
@@ -127,8 +242,8 @@ NTSTATUS KphWriteVirtualMemory(
     {
         if ((((ULONG_PTR)BaseAddress + BufferLength) < (ULONG_PTR)BaseAddress) || 
             (((ULONG_PTR)Buffer + BufferLength) < (ULONG_PTR)Buffer) || 
-            (((ULONG_PTR)BaseAddress + BufferLength) > MmUserProbeAddress) || 
-            (((ULONG_PTR)Buffer + BufferLength) > MmUserProbeAddress))
+            (((ULONG_PTR)BaseAddress + BufferLength) > (ULONG_PTR)MmHighestUserAddress) || 
+            (((ULONG_PTR)Buffer + BufferLength) > (ULONG_PTR)MmHighestUserAddress))
         {
             return STATUS_ACCESS_VIOLATION;
         }
@@ -180,7 +295,7 @@ NTSTATUS KphWriteVirtualMemory(
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            status = STATUS_ACCESS_VIOLATION;
+            status = GetExceptionCode();
         }
     }
     

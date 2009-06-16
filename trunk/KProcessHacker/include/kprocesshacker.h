@@ -73,6 +73,7 @@
 #define KPH_PROTECTADD KPH_CTL_CODE(29)
 #define KPH_PROTECTREMOVE KPH_CTL_CODE(30)
 #define KPH_PROTECTQUERY KPH_CTL_CODE(31)
+#define KPH_UNSAFEREADVIRTUALMEMORY KPH_CTL_CODE(32)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))

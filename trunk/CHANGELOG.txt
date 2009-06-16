@@ -29,6 +29,8 @@ Process Hacker
      process-related prompts
    * Terminator window would be hidden if the main window was top-most
    * Using the keyboard (Up/Down/Left/Right) in the process list was fixed
+   * Potential BSOD with KphReadVirtualMemory and KphWriteVirtualMemory 
+     due to incorrect address probing
 
 1.3.8.0
  * NEW/IMPROVED:

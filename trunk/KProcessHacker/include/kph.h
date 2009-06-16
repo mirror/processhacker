@@ -218,6 +218,15 @@ NTSTATUS KphTerminateThread(
     NTSTATUS ExitStatus
     );
 
+NTSTATUS KphUnsafeReadVirtualMemory(
+    HANDLE ProcessHandle,
+    PVOID BaseAddress,
+    PVOID Buffer,
+    ULONG BufferLength,
+    PULONG ReturnLength,
+    KPROCESSOR_MODE AccessMode
+    );
+
 NTSTATUS KphWriteVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
