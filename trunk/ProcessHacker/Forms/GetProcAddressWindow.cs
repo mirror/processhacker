@@ -2,7 +2,7 @@
  * Process Hacker - 
  *   get-procedure-address tool
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -59,7 +59,7 @@ namespace ProcessHacker
 
             if (ordinal != 0)
             {
-                address = Win32.GetProcAddress(module, new IntPtr(ordinal));
+                address = Win32.GetProcAddress(module, (ushort)ordinal);
             }
             else
             {
@@ -68,7 +68,7 @@ namespace ProcessHacker
 
             if (address != IntPtr.Zero)
             {
-                textProcAddress.Text = String.Format("0x{0:x8}", address);
+                textProcAddress.Text = "0x" + address.ToString("x");
                 textProcAddress.SelectAll();
                 textProcAddress.Focus();
             }
@@ -77,7 +77,7 @@ namespace ProcessHacker
                 textProcAddress.Text = Win32.GetLastErrorMessage();
             }
 
-            // don't unload libraries we had before
+            // don't unload libraries we didn't load
             if (module != IntPtr.Zero)
                 Win32.FreeLibrary(module);
         }

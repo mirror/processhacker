@@ -358,7 +358,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern IntPtr GetProcAddress(
             [In] IntPtr Module, 
-            [In] IntPtr ProcOrdinal
+            [In] ushort ProcOrdinal
             );
 
         #endregion
