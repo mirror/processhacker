@@ -7,7 +7,7 @@ namespace ProcessHacker.Common.Threading
     /// Provides methods for synchronizing access to a shared resource.
     /// </summary>
     /// <remarks>Just a wrapper around Monitor (minus the event methods 
-    /// like Pulse and Wait.</remarks>
+    /// like Pulse and Wait).</remarks>
     public sealed class FastMutex
     {
         /// <summary>
