@@ -104,10 +104,28 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
+        public bool Busy
+        {
+            get
+            {
+                if (!Win32.DbgHelpLock.TryAcquire())
+                {
+                    return true;
+                }
+                else
+                {
+                    Win32.DbgHelpLock.Release();
+                    return false;
+                }
+            }
+        }
+
         public IntPtr Handle
         {
             get { return _handle; }
         }
+
+        public bool PreloadModules { get; set; }
 
         public string SearchPath
         {
@@ -129,76 +147,6 @@ namespace ProcessHacker.Native.Symbols
                 using (Win32.DbgHelpLock.AcquireContext())
                     Win32.SymSetSearchPath(_handle, value);
             }
-        }
-
-        public bool PreloadModules { get; set; }
-
-        public bool Busy
-        {
-            get
-            {
-                if (!Win32.DbgHelpLock.TryAcquire())
-                {
-                    return true;
-                }
-                else
-                {
-                    Win32.DbgHelpLock.Release();
-                    return false;
-                }
-            }
-        }
-
-        public void LoadModule(string fileName, IntPtr baseAddress)
-        {
-            this.LoadModule(fileName, baseAddress.ToUInt64());
-        }
-
-        public void LoadModule(string fileName, ulong baseAddress)
-        {
-            this.LoadModule(fileName, baseAddress, 0);
-        }
-
-        public void LoadModule(string fileName, IntPtr baseAddress, int size)
-        {
-            this.LoadModule(fileName, baseAddress.ToUInt64(), size);
-        }
-
-        public void LoadModule(string fileName, ulong baseAddress, int size)
-        {
-            using (Win32.DbgHelpLock.AcquireContext())
-            {
-                if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
-                    Win32.ThrowLastError();
-            }
-
-            lock (_modules)
-            {
-                _modules.Add(new KeyValuePair<ulong, string>(baseAddress, fileName));
-                _modules.Sort((kvp1, kvp2) => kvp2.Key.CompareTo(kvp1.Key));
-            }
-        }
-
-        public void UnloadModule(string fileName)
-        {
-            KeyValuePair<ulong, string> pair;
-
-            lock (_modules)
-                pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
-
-            this.UnloadModule(pair.Key);
-        }
-
-        public void UnloadModule(ulong baseAddress)
-        {
-            using (Win32.DbgHelpLock.AcquireContext())
-            {
-                if (!Win32.SymUnloadModule64(_handle, baseAddress))
-                    Win32.ThrowLastError();
-            }
-
-            lock (_modules)
-                _modules.RemoveAll(kvp => kvp.Key == baseAddress);
         }
 
         public string GetLineFromAddress(ulong address)
@@ -320,6 +268,7 @@ namespace ProcessHacker.Native.Symbols
         {
             const int maxNameLen = 0x100;
 
+            // Assume failure.
             if (address == 0)
             {
                 level = SymbolResolveLevel.Invalid;
@@ -336,6 +285,8 @@ namespace ProcessHacker.Native.Symbols
 
                 Marshal.StructureToPtr(info, data, false);
 
+                // Hack for drivers, since we don't get their module sizes. 
+                // Preloading modules will fix this.
                 if (this.PreloadModules)
                 {
                     ulong b;
@@ -348,6 +299,7 @@ namespace ProcessHacker.Native.Symbols
                     Marshal.StructureToPtr(info, data, false);
                 }
 
+                // Get the symbol name.
                 using (Win32.DbgHelpLock.AcquireContext())
                 {
                     if (Win32.SymFromAddr(_handle, address, out displacement, data))
@@ -359,6 +311,7 @@ namespace ProcessHacker.Native.Symbols
                 string modFileName;
                 ulong modBase;
 
+                // Get the module name.
                 if (info.ModBase == 0)
                 {
                     modFileName = this.GetModuleFromAddress(address, out modBase);
@@ -371,6 +324,7 @@ namespace ProcessHacker.Native.Symbols
                         modFileName = _modules.Find(kvp => kvp.Key == info.ModBase).Value;
                 }
 
+                // If we don't have a module name, return an address.
                 if (modFileName == null)
                 {
                     level = SymbolResolveLevel.Address;
@@ -393,6 +347,8 @@ namespace ProcessHacker.Native.Symbols
                 catch
                 { }
 
+                // If we have a module name but not a symbol name, 
+                // return a module plus an offset: module+offset.
                 if (info.NameLen == 0)
                 {
                     level = SymbolResolveLevel.Module;
@@ -411,6 +367,7 @@ namespace ProcessHacker.Native.Symbols
                     }
                 }
 
+                // If we have everything, return the full symbol name: module!symbol+offset.
                 string name = Marshal.PtrToStringAnsi(
                     new IntPtr(data + Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32()), info.NameLen);
 
@@ -423,6 +380,58 @@ namespace ProcessHacker.Native.Symbols
                 else
                     return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
             }
+        }
+
+        public void LoadModule(string fileName, IntPtr baseAddress)
+        {
+            this.LoadModule(fileName, baseAddress.ToUInt64());
+        }
+
+        public void LoadModule(string fileName, ulong baseAddress)
+        {
+            this.LoadModule(fileName, baseAddress, 0);
+        }
+
+        public void LoadModule(string fileName, IntPtr baseAddress, int size)
+        {
+            this.LoadModule(fileName, baseAddress.ToUInt64(), size);
+        }
+
+        public void LoadModule(string fileName, ulong baseAddress, int size)
+        {
+            using (Win32.DbgHelpLock.AcquireContext())
+            {
+                if (Win32.SymLoadModule64(_handle, IntPtr.Zero, fileName, null, baseAddress, size) == 0)
+                    Win32.ThrowLastError();
+            }
+
+            lock (_modules)
+            {
+                _modules.Add(new KeyValuePair<ulong, string>(baseAddress, fileName));
+                _modules.Sort((kvp1, kvp2) => kvp2.Key.CompareTo(kvp1.Key));
+            }
+        }
+
+        public void UnloadModule(string fileName)
+        {
+            KeyValuePair<ulong, string> pair;
+
+            lock (_modules)
+                pair = _modules.Find(kvp => string.Compare(kvp.Value, fileName, true) == 0);
+
+            this.UnloadModule(pair.Key);
+        }
+
+        public void UnloadModule(ulong baseAddress)
+        {
+            using (Win32.DbgHelpLock.AcquireContext())
+            {
+                if (!Win32.SymUnloadModule64(_handle, baseAddress))
+                    Win32.ThrowLastError();
+            }
+
+            lock (_modules)
+                _modules.RemoveAll(kvp => kvp.Key == baseAddress);
         }
     }
 }
