@@ -140,36 +140,17 @@ namespace ProcessHacker
                             using (var phandle =
                                 new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
-                                foreach (var module in phandle.GetModules())
-                                {
-                                    try
-                                    {
-                                        _symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logging.Log(ex);
-                                    }
-                                }
+                                _symbols.LoadProcessModules(phandle);
+
+                                // If the process is CSRSS we should load kernel modules 
+                                // due to the presence of kernel-mode threads.
+                                if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                    _symbols.LoadKernelModules();
                             }
                         }
                         else
                         {
-                            // hack for drivers, whose sizes never load properly because of dbghelp.dll's dumb guessing
-                            _symbols.PreloadModules = true;
-
-                            // load driver symbols
-                            foreach (var module in Windows.GetKernelModules())
-                            {
-                                try
-                                {
-                                    _symbols.LoadModule(module.FileName, module.BaseAddress);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logging.Log(ex);
-                                }
-                            }
+                            _symbols.LoadKernelModules();
                         }
                     }
                     catch (Exception ex)

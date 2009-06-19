@@ -1,3 +1,7 @@
+/*
+ * modified by wj32.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -207,9 +211,13 @@ namespace Aga.Controls.Tree.NodeControls
 
 		private void CreateBrushes(TreeNodeAdv node, DrawContext context, string text, out Brush backgroundBrush, out Color textColor, out Font font, ref string label)
 		{
-			textColor = SystemColors.ControlText;
+            //textColor = SystemColors.ControlText;
+            // wj32: respect node ForeColor
+            textColor = node.ForeColor;
+
 			backgroundBrush = null;
 			font = context.Font;
+
 			if (context.DrawSelection == DrawSelectionMode.Active)
 			{
 				textColor = SystemColors.HighlightText;
@@ -217,7 +225,9 @@ namespace Aga.Controls.Tree.NodeControls
 			}
 			else if (context.DrawSelection == DrawSelectionMode.Inactive)
 			{
-				textColor = SystemColors.ControlText;
+				//textColor = SystemColors.ControlText;
+                // wj32: respect node ForeColor
+                textColor = node.ForeColor;
                 backgroundBrush = SystemBrushes.InactiveBorder;
 			}
 			else if (context.DrawSelection == DrawSelectionMode.FullRowSelect)

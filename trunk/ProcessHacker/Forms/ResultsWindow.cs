@@ -70,7 +70,7 @@ namespace ProcessHacker
 
             _so = new SearchOptions(_pid, SearchType.String);
 
-            listResults.AddShortcuts();
+            listResults.AddShortcuts(this.listResults_RetrieveVirtualItem);
         }
 
         private void ResultsWindow_Load(object sender, EventArgs e)

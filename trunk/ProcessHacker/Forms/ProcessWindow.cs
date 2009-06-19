@@ -666,7 +666,7 @@ namespace ProcessHacker
         {
             listThreads.List.AddShortcuts();
             listModules.List.AddShortcuts();
-            listMemory.List.AddShortcuts();
+            listMemory.List.AddShortcuts(listMemory.listMemory_RetrieveVirtualItem);
             listHandles.List.AddShortcuts();
             listEnvironment.AddShortcuts();
         }

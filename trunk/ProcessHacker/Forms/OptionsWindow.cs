@@ -160,6 +160,8 @@ namespace ProcessHacker
                 "Processes associated with a job.");
             AddToList("ColorDotNetProcesses", ".NET Processes",
                 ".NET, or managed processes.");
+            AddToList("ColorPosixProcesses", "POSIX Processes",
+                "Processes running under the POSIX subsystem.");
             AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
                 "Executables are sometimes \"packed\" to reduce their size.\n" +
                 "\"Dangerous processes\" includes processes with invalid signatures and unverified " + 

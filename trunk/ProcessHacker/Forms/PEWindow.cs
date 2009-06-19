@@ -108,7 +108,7 @@ namespace ProcessHacker
             listExports.SetDoubleBuffered(true);
             listExports.SetTheme("explorer");
             listExports.ContextMenu = listExports.GetCopyMenu(listExports_RetrieveVirtualItem);
-            listExports.AddShortcuts();
+            listExports.AddShortcuts(this.listExports_RetrieveVirtualItem);
             ColumnSettings.LoadSettings(Properties.Settings.Default.PEExportsColumns, listExports);
 
             listImports.SetDoubleBuffered(true);

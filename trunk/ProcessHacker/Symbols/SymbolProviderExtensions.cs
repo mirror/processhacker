@@ -115,5 +115,39 @@ namespace ProcessHacker.Native.Symbols
                 Logging.Log(ex);
             }
         }
+
+        public static void LoadKernelModules(this SymbolProvider symbols)
+        {
+            // hack for drivers, whose sizes never load properly because of dbghelp.dll's dumb guessing
+            symbols.PreloadModules = true;
+
+            // load driver symbols
+            foreach (var module in Windows.GetKernelModules())
+            {
+                try
+                {
+                    symbols.LoadModule(module.FileName, module.BaseAddress);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
+            }
+        }
+
+        public static void LoadProcessModules(this SymbolProvider symbols, ProcessHandle phandle)
+        {
+            foreach (var module in phandle.GetModules())
+            {
+                try
+                {
+                    symbols.LoadModule(module.FileName, module.BaseAddress, module.Size);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Log(ex);
+                }
+            }
+        }
     }
 }

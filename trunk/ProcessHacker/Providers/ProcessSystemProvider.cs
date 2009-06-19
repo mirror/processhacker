@@ -69,6 +69,7 @@ namespace ProcessHacker
         public bool IsInJob;
         public bool IsInSignificantJob;
         public bool IsPacked;
+        public bool IsPosix;
         public int SessionId;
         public bool HasParent;
         public int ParentPid;
@@ -105,6 +106,7 @@ namespace ProcessHacker
             public string CmdLine;
             public bool IsDotNet;
             public bool IsPacked;
+            public bool IsPosix;
             public VerifyResult VerifyResult;
             public string VerifySignerName;
             public int ImportFunctions;
@@ -295,7 +297,10 @@ namespace ProcessHacker
             {
                 using (var phandle = new ProcessHandle(pid,
                     Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                {
                     fpResult.CmdLine = phandle.GetCommandLine();
+                    fpResult.IsPosix = phandle.IsPosix();
+                }
             }
             catch
             { }
@@ -577,6 +582,7 @@ namespace ProcessHacker
                 item.Icon = result.Icon;
                 item.VersionInfo = result.VersionInfo;
                 item.CmdLine = result.CmdLine;
+                item.IsPosix = result.IsPosix;
             }
             else if (result.Stage == 0x1a)
             {

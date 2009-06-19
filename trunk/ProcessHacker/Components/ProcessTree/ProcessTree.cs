@@ -258,12 +258,15 @@ namespace ProcessHacker
         {
             if (Properties.Settings.Default.UseColorDebuggedProcesses && p.IsBeingDebugged)
                 return Properties.Settings.Default.ColorDebuggedProcesses;
-            else if (Properties.Settings.Default.UseColorElevatedProcesses && 
+            else if (Properties.Settings.Default.UseColorElevatedProcesses &&
                 p.ElevationType == TokenElevationType.Full)
                 return Properties.Settings.Default.ColorElevatedProcesses;
+            else if (Properties.Settings.Default.UseColorPosixProcesses &&
+                p.IsPosix)
+                return Properties.Settings.Default.ColorPosixProcesses;
             else if (Properties.Settings.Default.UseColorJobProcesses && p.IsInSignificantJob)
                 return Properties.Settings.Default.ColorJobProcesses;
-            else if (Properties.Settings.Default.UseColorPackedProcesses && 
+            else if (Properties.Settings.Default.UseColorPackedProcesses &&
                 Properties.Settings.Default.VerifySignatures &&
                 Program.ImposterNames.Contains(p.Name.ToLower()) &&
                 p.VerifyResult != VerifyResult.Trusted &&
@@ -271,7 +274,7 @@ namespace ProcessHacker
                 p.VerifyResult != VerifyResult.Unknown &&
                 p.FileName != null)
                 return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.UseColorPackedProcesses && 
+            else if (Properties.Settings.Default.UseColorPackedProcesses &&
                 Properties.Settings.Default.VerifySignatures &&
                 p.VerifyResult != VerifyResult.Trusted &&
                 p.VerifyResult != VerifyResult.TrustedInstaller &&
@@ -282,7 +285,7 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorDotNetProcesses;
             else if (Properties.Settings.Default.UseColorPackedProcesses && p.IsPacked)
                 return Properties.Settings.Default.ColorPackedProcesses;
-            else if (Properties.Settings.Default.UseColorServiceProcesses && 
+            else if (Properties.Settings.Default.UseColorServiceProcesses &&
                 Program.HackerWindow.ProcessServices.ContainsKey(p.Pid) &&
                 Program.HackerWindow.ProcessServices[p.Pid].Count > 0)
                 return Properties.Settings.Default.ColorServiceProcesses;
@@ -292,6 +295,14 @@ namespace ProcessHacker
                 return Properties.Settings.Default.ColorOwnProcesses;
             else
                 return SystemColors.Window;
+        }
+
+        private Color GetForeColor(Color backColor)
+        {
+            if (backColor.GetBrightness() > 0.4)
+                return Color.Black;
+            else
+                return Color.White;
         }
 
         private void provider_DictionaryAdded(ProcessItem item)
@@ -317,7 +328,8 @@ namespace ProcessHacker
                             }));
                         }
 
-                        node.BackColor = GetProcessColor(item);
+                        node.BackColor = this.GetProcessColor(item);
+                        node.ForeColor = this.GetForeColor(node.BackColor);
                         node.ExpandAll();
                     }
                 }
@@ -334,7 +346,8 @@ namespace ProcessHacker
 
                     if (node != null)
                     {
-                        node.BackColor = GetProcessColor(newItem);
+                        node.BackColor = this.GetProcessColor(newItem);
+                        node.ForeColor = this.GetForeColor(node.BackColor);
                     }
 
                     _treeModel.Nodes[newItem.Pid].ProcessItem = newItem;
@@ -397,6 +410,7 @@ namespace ProcessHacker
                             ProcessItem item = _provider.Dictionary[pNode.Pid];
 
                             node.BackColor = this.GetProcessColor(item);
+                            node.ForeColor = this.GetForeColor(node.BackColor);
                         }
                     }
                     catch (Exception ex)

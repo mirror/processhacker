@@ -1488,5 +1488,29 @@ namespace ProcessHacker.Properties {
                 this["ScrollDownProcessTree"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DarkSlateBlue")]
+        public global::System.Drawing.Color ColorPosixProcesses {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorPosixProcesses"]));
+            }
+            set {
+                this["ColorPosixProcesses"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorPosixProcesses {
+            get {
+                return ((bool)(this["UseColorPosixProcesses"]));
+            }
+            set {
+                this["UseColorPosixProcesses"] = value;
+            }
+        }
     }
 }

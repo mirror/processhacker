@@ -610,7 +610,10 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A string.</returns>
         public string GetCommandLine()
         {
-            return this.GetPebString(PebOffset.CommandLine);
+            if (!this.IsPosix())
+                return this.GetPebString(PebOffset.CommandLine);
+            else
+                return this.GetPosixCommandLine();
         }
 
         /// <summary>
@@ -758,6 +761,9 @@ namespace ProcessHacker.Native.Objects
 
             while (true)
             {
+                if (i >= memory.Length)
+                    break;
+
                 char currentChar =
                     UnicodeEncoding.Unicode.GetChars(memory, i, 2)[0];
 
@@ -913,6 +919,45 @@ namespace ProcessHacker.Native.Objects
                     return null;
                 else
                     throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Gets the type of well-known process.
+        /// </summary>
+        /// <returns>A known process type.</returns>
+        public KnownProcess GetKnownProcessType()
+        {
+            if (this.GetBasicInformation().UniqueProcessId == 4)
+                return KnownProcess.System;
+
+            string fileName = FileUtils.DeviceFileNameToDos(this.GetNativeImageFileName());
+
+            if (fileName.ToLower().StartsWith(Environment.SystemDirectory.ToLower()))
+            {
+                string baseName = fileName.Remove(0, Environment.SystemDirectory.Length).TrimStart('\\').ToLower();
+
+                switch (baseName)
+                {
+                    case "smss.exe":
+                        return KnownProcess.SessionManager;
+                    case "csrss.exe":
+                        return KnownProcess.WindowsSubsystem;
+                    case "wininit.exe":
+                        return KnownProcess.WindowsStartup;
+                    case "services.exe":
+                        return KnownProcess.ServiceControlManager;
+                    case "lsass.exe":
+                        return KnownProcess.LocalSecurityAuthority;
+                    case "lsm.exe":
+                        return KnownProcess.LocalSessionManager;
+                    default:
+                        return KnownProcess.None;
+                }
+            }
+            else
+            {
+                return KnownProcess.None;
             }
         }
 
@@ -1111,6 +1156,76 @@ namespace ProcessHacker.Native.Objects
                 this.ReadMemory(stringAddr, stringLength)).TrimEnd('\0');
         }
 
+        public unsafe string GetPosixCommandLine()
+        {
+            byte* buffer = stackalloc byte[IntPtr.Size];
+            IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+
+            this.ReadMemory(pebBaseAddress.Increment(Win32.PebProcessParametersOffset), buffer, IntPtr.Size);
+            IntPtr processParameters = *(IntPtr*)buffer;
+
+            // read address of string
+            this.ReadMemory(processParameters.Increment((int)PebOffset.CommandLine + 0x4), buffer, IntPtr.Size);
+            IntPtr stringAddr = *(IntPtr*)buffer;
+
+            /*
+             * In the POSIX subsystem the command line is actually split up into bits, as in 
+             * argv. In the command line string we don't actually have the command line - 
+             * instead, it is filled with pointers to each command line part. For example:
+             * CommandLine.Buffer = 0x12345678
+             * at 0x12345678 we have:
+             * 0x12346000 0x12347000 0x12348000 0x00000000 0x12349000
+             * ^ at 0x12346000: "cat" (ASCII)
+             *            ^ at 0x12347000: "-o" (ASCII)
+             *                       ^ at 0x12348000: "myfile" (ASCII)
+             *                                  ^ signifies that there are no more pointers
+             *                                             ^ pointer to environment block
+             *                                               - from this we can work out 
+             *                                               how much memory to read
+             */
+            // Get the list of pointers.
+            List<IntPtr> strPointers = new List<IntPtr>();
+            bool zeroReached = false;
+            int i = 0;
+
+            while (true)
+            {
+                this.ReadMemory(stringAddr.Increment(i), buffer, IntPtr.Size);
+                IntPtr value = *(IntPtr*)buffer;
+
+                if (value != IntPtr.Zero)
+                    strPointers.Add(value);
+
+                i += IntPtr.Size;
+
+                if (zeroReached)
+                    break;
+                else if (value == IntPtr.Zero)
+                    zeroReached = true;
+            }
+
+            // Work out the size of the command line and read the data.
+            IntPtr lastPointer = strPointers[strPointers.Count - 1];
+            int partsSize = lastPointer.Decrement(strPointers[0]).ToInt32();
+
+            // FIXME: Lazy; optimize later.
+            StringBuilder commandLine = new StringBuilder();
+
+            for (i = 0; i < strPointers.Count - 1; i++)
+            {
+                byte[] data = this.ReadMemory(strPointers[i], partsSize);
+
+                commandLine.Append(ASCIIEncoding.ASCII.GetString(data, 0, Array.IndexOf<byte>(data, 0)) + " ");
+            }
+
+            string commandLineStr = commandLine.ToString();
+
+            if (commandLineStr.EndsWith(" "))
+                commandLineStr = commandLineStr.Remove(commandLineStr.Length - 1, 1);
+
+            return commandLineStr;
+        }
+
         /// <summary>
         /// Gets the process' priority class.
         /// </summary>
@@ -1267,6 +1382,19 @@ namespace ProcessHacker.Native.Objects
         public bool IsNtVdmProcess()
         {
             return this.GetInformationInt32(ProcessInformationClass.ProcessWx86Information) != 0;
+        }
+
+        /// <summary>
+        /// Gets whether the process is using the POSIX subsystem.
+        /// </summary>
+        public unsafe bool IsPosix()
+        {
+            int subsystem;
+            IntPtr pebBaseAddress = this.GetBasicInformation().PebBaseAddress;
+
+            this.ReadMemory(pebBaseAddress.Increment(0xb4), &subsystem, sizeof(int));
+
+            return subsystem == 7;
         }
 
         /// <summary>
@@ -1670,6 +1798,49 @@ namespace ProcessHacker.Native.Objects
         /// DEP is enabled with DEP-ATL thunk emulation disabled.
         /// </summary>
         AtlThunkEmulationDisabled = 0x4
+    }
+
+    /// <summary>
+    /// A well-known Windows process.
+    /// </summary>
+    public enum KnownProcess
+    {
+        /// <summary>
+        /// The process is not well-known.
+        /// </summary>
+        None,
+        /// <summary>
+        /// System Idle Process.
+        /// </summary>
+        Idle,
+        /// <summary>
+        /// NT Kernel & System.
+        /// </summary>
+        System,
+        /// <summary>
+        /// Windows Session Manager (smss)
+        /// </summary>
+        SessionManager,
+        /// <summary>
+        /// Client Server Runtime Process (csrss)
+        /// </summary>
+        WindowsSubsystem,
+        /// <summary>
+        /// Windows Start-Up Application (wininit)
+        /// </summary>
+        WindowsStartup,
+        /// <summary>
+        /// Services and Controller app (services)
+        /// </summary>
+        ServiceControlManager,
+        /// <summary>
+        /// Local Security Authority Process (lsass)
+        /// </summary>
+        LocalSecurityAuthority,
+        /// <summary>
+        /// Local Session Manager Service (lsm)
+        /// </summary>
+        LocalSessionManager
     }
 
     /// <summary>

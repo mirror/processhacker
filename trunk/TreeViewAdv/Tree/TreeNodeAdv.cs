@@ -128,6 +128,13 @@ namespace Aga.Controls.Tree
             set { _backColor = value; }
         }
 
+        private Color _foreColor = SystemColors.ControlText;
+        public Color ForeColor
+        {
+            get { return _foreColor; }
+            set { _foreColor = value; }
+        }
+
 		private bool _isSelected;
 		public bool IsSelected
 		{
