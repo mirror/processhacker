@@ -116,12 +116,24 @@ namespace ProcessHacker.Native
 
         public static uint ToUInt32(this IntPtr ptr)
         {
-            return (uint)ptr.ToInt32();
+            // Avoid sign-extending the pointer - we want it zero-extended.
+            unsafe
+            {
+                void* voidPtr = ptr.ToPointer();
+
+                return (uint)voidPtr;
+            }
         }
 
         public static ulong ToUInt64(this IntPtr ptr)
         {
-            return (ulong)ptr.ToInt64();
+            // Avoid sign-extending the pointer - we want it zero-extended.
+            unsafe
+            {
+                void* voidPtr = ptr.ToPointer();
+
+                return (ulong)voidPtr;
+            }
         }
     }
 }
