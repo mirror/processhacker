@@ -199,6 +199,8 @@ namespace ProcessHacker
                         otherNotes += "\n    Process is elevated.";
                     if (pNode.ProcessItem.IsDotNet)
                         otherNotes += "\n    Process is managed (.NET).";
+                    if (pNode.ProcessItem.IsPosix)
+                        otherNotes += "\n    Process is POSIX.";
 
                     if (otherNotes != "")
                         otherNotes = "\nNotes:" + otherNotes;
