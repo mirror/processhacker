@@ -399,6 +399,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "Query Process Protection";
         case KPH_UNSAFEREADVIRTUALMEMORY:
             return "KphUnsafeReadVirtualMemory";
+        case KPH_SETEXECUTEOPTIONS:
+            return "Set Execute Options";
         default:
             return "Unknown";
     }
@@ -998,7 +1000,7 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
          * 
          * Gets the name of the specified handle. The handle can be remote; in 
          * that case a valid process handle must be passed. Otherwise, set the 
-         * process handle to -1.
+         * process handle to -1 (NtCurrentProcess()).
          */
         case KPH_GETHANDLEOBJECTNAME:
         {
@@ -1598,6 +1600,40 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 args->ReturnLength,
                 UserMode
                 );
+        }
+        break;
+        
+        /* Set Execute Options
+         * 
+         * Sets NX status for a process.
+         */
+        case KPH_SETEXECUTEOPTIONS:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                ULONG ExecuteOptions;
+            } *args = dataBuffer;
+            KPH_ATTACH_STATE attachState;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphAttachProcessHandle(args->ProcessHandle, &attachState);
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            status = ZwSetInformationProcess(
+                NtCurrentProcess(),
+                ProcessExecuteFlags,
+                &args->ExecuteOptions,
+                sizeof(ULONG)
+                );
+            KphDetachProcess(&attachState);
         }
         break;
         

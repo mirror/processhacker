@@ -80,7 +80,8 @@ namespace ProcessHacker.Native
             ProtectAdd,
             ProtectRemove,
             ProtectQuery,
-            KphUnsafeReadVirtualMemory
+            KphUnsafeReadVirtualMemory,
+            SetExecuteOptions
         }
 
         [Flags]
@@ -644,6 +645,16 @@ namespace ProcessHacker.Native
             _fileHandle.IoControl(CtlCode(Control.Read), (byte*)&address, 4, buffer);
 
             return buffer;
+        }
+
+        public void SetExecuteOptions(ProcessHandle processHandle, MemExecuteOptions executeOptions)
+        {
+            byte* inData = stackalloc byte[8];
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 4) = (int)executeOptions;
+
+            _fileHandle.IoControl(CtlCode(Control.SetExecuteOptions), inData, 8, null, 0);
         }
 
         public void SetHandleAttributes(ProcessHandle processHandle, IntPtr handle, HandleFlags flags)

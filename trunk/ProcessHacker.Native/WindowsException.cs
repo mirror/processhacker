@@ -51,7 +51,7 @@ namespace ProcessHacker.Native
         public WindowsException(NtStatus status)
         {
             _status = status;
-            _errorCode = Win32.RtlNtStatusToDosError(status);
+            _errorCode = status.ToDosError();
             _isNtStatus = true;
         }
 

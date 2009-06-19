@@ -418,6 +418,25 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Opens and returns a handle to the thread's token.
+        /// </summary>
+        /// <returns>A handle to the thread's token.</returns>
+        public TokenHandle GetToken()
+        {
+            return GetToken(TokenAccess.All);
+        }
+
+        /// <summary>
+        /// Opens and returns a handle to the thread's token.
+        /// </summary>
+        /// <param name="access">The desired access to the token.</param>
+        /// <returns>A handle to the thread's token.</returns>
+        public TokenHandle GetToken(TokenAccess access)
+        {
+            return new TokenHandle(this, access);
+        }
+
+        /// <summary>
         /// Gets the thread's Win32 start address.
         /// </summary>
         public int GetWin32StartAddress()
@@ -718,25 +737,6 @@ namespace ProcessHacker.Native.Objects
                     { }
                 }
             }
-        }
-
-        /// <summary>
-        /// Opens and returns a handle to the thread's token.
-        /// </summary>
-        /// <returns>A handle to the thread's token.</returns>
-        public TokenHandle GetToken()
-        {
-            return GetToken(TokenAccess.All);
-        }
-
-        /// <summary>
-        /// Opens and returns a handle to the thread's token.
-        /// </summary>
-        /// <param name="access">The desired access to the token.</param>
-        /// <returns>A handle to the thread's token.</returns>
-        public TokenHandle GetToken(TokenAccess access)
-        {
-            return new TokenHandle(this, access);
         }
     }
 

@@ -23,6 +23,7 @@
 using System;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
@@ -61,6 +62,9 @@ namespace ProcessHacker
                     }
 
                     comboStatus.SelectedItem = str;
+
+                    if (KProcessHacker.Instance != null)
+                        checkPermanent.Visible = true;
                 }
             }
             catch
@@ -68,6 +72,47 @@ namespace ProcessHacker
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
+        {
+            if (KProcessHacker.Instance != null)
+                this.SetDepStatusKph();
+            else
+                this.SetDepStatusNoKph();
+        }
+
+        private void SetDepStatusKph()
+        {
+            DepStatus depStatus = DepStatus.Enabled;
+
+            if (comboStatus.SelectedItem.ToString() == "Disabled")
+                depStatus = 0;
+            else if (comboStatus.SelectedItem.ToString() == "Enabled")
+                depStatus = DepStatus.Enabled;
+            else if (comboStatus.SelectedItem.ToString() == "Enabled, DEP-ATL thunk emulation disabled")
+                depStatus = DepStatus.Enabled | DepStatus.AtlThunkEmulationDisabled;
+            else
+            {
+                MessageBox.Show("Invalid value!", "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (checkPermanent.Checked)
+                depStatus |= DepStatus.Permanent;
+
+            try
+            {
+                using (var phandle = new ProcessHandle(_pid, Program.MinProcessQueryRights))
+                    phandle.SetDepStatus(depStatus);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                PhUtils.ShowMessage(ex);
+            }
+        }
+
+        private void SetDepStatusNoKph()
         {
             if (comboStatus.SelectedItem.ToString().StartsWith("Enabled"))
                 if (
@@ -97,8 +142,8 @@ namespace ProcessHacker
                 if (setProcessDepPolicy == IntPtr.Zero)
                     throw new Exception("This feature is not supported on your version of Windows.");
 
-                using (ProcessHandle phandle = new ProcessHandle(_pid, 
-                    Program.MinProcessQueryRights | ProcessAccess.VmOperation | 
+                using (ProcessHandle phandle = new ProcessHandle(_pid,
+                    Program.MinProcessQueryRights | ProcessAccess.VmOperation |
                     ProcessAccess.VmRead | ProcessAccess.CreateThread))
                 {
                     var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags),
@@ -115,6 +160,7 @@ namespace ProcessHacker
                 }
 
                 this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {

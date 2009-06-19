@@ -765,7 +765,11 @@ namespace ProcessHacker
                 buttonEditDEP.Enabled = false;
             }
 
-            if (_processItem.SessionId != Program.CurrentSessionId)
+            // Can't set DEP status on processes in other sessions without KPH.
+            if (
+                KProcessHacker.Instance == null && 
+                _processItem.SessionId != Program.CurrentSessionId
+                )
                 buttonEditDEP.Enabled = false;
         }
 

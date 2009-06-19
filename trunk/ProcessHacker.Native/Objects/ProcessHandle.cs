@@ -667,7 +667,7 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the process' DEP policy.
         /// </summary>
-        /// <returns>A DEPStatus enum.</returns>
+        /// <returns>A DepStatus enum.</returns>
         public DepStatus GetDepStatus()
         {
             NtStatus status;
@@ -681,20 +681,20 @@ namespace ProcessHacker.Native.Objects
             DepStatus depStatus = 0;
 
             // Check if execution of data pages is enabled.
-            if ((options & MemExecuteOptions.ExecuteEnable) != 0)
+            if ((options & MemExecuteOptions.ExecuteEnable) == MemExecuteOptions.ExecuteEnable)
                 return 0;
 
             // Check if execution of data pages is disabled.
-            if ((options & MemExecuteOptions.ExecuteDisable) != 0)
+            if ((options & MemExecuteOptions.ExecuteDisable) == MemExecuteOptions.ExecuteDisable)
                 depStatus = DepStatus.Enabled;
             // ExecuteDisable and ExecuteEnable are both disabled in OptOut mode.
             else if ((options & MemExecuteOptions.ExecuteDisable) == 0 &&
                 (options & MemExecuteOptions.ExecuteEnable) == 0)
                 depStatus = DepStatus.Enabled;
 
-            if ((options & MemExecuteOptions.DisableThunkEmulation) != 0)
+            if ((options & MemExecuteOptions.DisableThunkEmulation) == MemExecuteOptions.DisableThunkEmulation)
                 depStatus |= DepStatus.AtlThunkEmulationDisabled;
-            if ((options & MemExecuteOptions.Permanent) != 0)
+            if ((options & MemExecuteOptions.Permanent) == MemExecuteOptions.Permanent)
                 depStatus |= DepStatus.Permanent;
 
             return depStatus;
@@ -1156,6 +1156,27 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Opens and returns a handle to the process' token. This requires 
+        /// PROCESS_QUERY_LIMITED_INFORMATION access.
+        /// </summary>
+        /// <returns>A handle to the process' token.</returns>
+        public TokenHandle GetToken()
+        {
+            return this.GetToken(TokenAccess.All);
+        }
+
+        /// <summary>
+        /// Opens and returns a handle to the process' token. This requires 
+        /// PROCESS_QUERY_LIMITED_INFORMATION access.
+        /// </summary>
+        /// <param name="access">The desired access to the token.</param>
+        /// <returns>A handle to the process' token.</returns>
+        public TokenHandle GetToken(TokenAccess access)
+        {
+            return new TokenHandle(this, access);
+        }
+
+        /// <summary>
         /// Forces the process to load the specified library.
         /// </summary>
         /// <param name="path">The path to the library.</param>
@@ -1392,6 +1413,27 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Sets the process' DEP policy.
+        /// </summary>
+        /// <param name="depStatus">The DEP options.</param>
+        public void SetDepStatus(DepStatus depStatus)
+        {
+            MemExecuteOptions executeOptions = 0;
+
+            if ((depStatus & DepStatus.Enabled) == DepStatus.Enabled)
+                executeOptions |= MemExecuteOptions.ExecuteDisable;
+            else
+                executeOptions |= MemExecuteOptions.ExecuteEnable;
+
+            if ((depStatus & DepStatus.AtlThunkEmulationDisabled) == DepStatus.AtlThunkEmulationDisabled)
+                executeOptions |= MemExecuteOptions.DisableThunkEmulation;
+            if ((depStatus & DepStatus.Permanent) == DepStatus.Permanent)
+                executeOptions |= MemExecuteOptions.Permanent;
+
+            KProcessHacker.Instance.SetExecuteOptions(this, executeOptions);
+        }
+
+        /// <summary>
         /// Sets information about the process in an Int32.
         /// </summary>
         /// <param name="infoClass">The class of information to set.</param>
@@ -1586,27 +1628,6 @@ namespace ProcessHacker.Native.Objects
             }
 
             return writtenLen;
-        }
-
-        /// <summary>
-        /// Opens and returns a handle to the process' token. This requires the 
-        /// PROCESS_QUERY_LIMITED_INFORMATION permission.
-        /// </summary>
-        /// <returns>A handle to the process' token.</returns>
-        public TokenHandle GetToken()
-        {
-            return this.GetToken(TokenAccess.All);
-        }
-
-        /// <summary>
-        /// Opens and returns a handle to the process' token. This requires the 
-        /// PROCESS_QUERY_LIMITED_INFORMATION permission.
-        /// </summary>
-        /// <param name="access">The desired access to the token.</param>
-        /// <returns>A handle to the process' token.</returns>
-        public TokenHandle GetToken(TokenAccess access)
-        {
-            return new TokenHandle(this, access);
         }
     }
 

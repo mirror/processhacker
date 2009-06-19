@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace ProcessHacker.Native.Api
 {
+    /// <summary>
+    /// A NT status value.
+    /// </summary>
     public enum NtStatus : uint
     {
         // Success
@@ -128,6 +128,57 @@ namespace ProcessHacker.Native.Api
         InvalidParameter11 = 0xc00000f9,
         InvalidParameter12 = 0xc00000fa,
         PortNotSet = 0xc0000353,
-        DebuggerInactive = 0xc0000354
+        DebuggerInactive = 0xc0000354,
+
+        MaximumNtStatus = 0xffffffff
+    }
+
+    public static class NtStatusExtensions
+    {
+        /// <summary>
+        /// Gets whether the NT status value indicates an error.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        public static bool IsError(this NtStatus status)
+        {
+            return status >= NtStatus.Error && status <= NtStatus.MaximumNtStatus; 
+        }
+
+        /// <summary>
+        /// Gets whether the NT status value indicates information.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        public static bool IsInformational(this NtStatus status)
+        {
+            return status >= NtStatus.Informational && status < NtStatus.Warning;
+        }
+
+        /// <summary>
+        /// Gets whether the NT status value indicates success.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        public static bool IsSuccess(this NtStatus status)
+        {
+            return status >= NtStatus.Success && status < NtStatus.Informational;
+        }
+
+        /// <summary>
+        /// Gets whether the NT status value indicates a warning.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        public static bool IsWarning(this NtStatus status)
+        {
+            return status >= NtStatus.Warning && status < NtStatus.Error;
+        }
+
+        /// <summary>
+        /// Converts the NT status value to a DOS/Windows error code.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        /// <returns>A DOS/Windows error code.</returns>
+        public static int ToDosError(this NtStatus status)
+        {
+            return Win32.RtlNtStatusToDosError(status);
+        }
     }
 }
