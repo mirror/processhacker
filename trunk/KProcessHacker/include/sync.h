@@ -25,6 +25,8 @@
 
 #include "kprocesshacker.h"
 
+#define TAG_SYNC_DPC ('DShP')
+
 typedef struct _KPH_PROCESSOR_LOCK
 {
     /* Synchronizes access to the processor lock. */

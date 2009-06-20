@@ -142,9 +142,12 @@ namespace ProcessHacker
                             {
                                 _symbols.LoadProcessModules(phandle);
 
+                                // If we have KPH load kernel modules so we can get the kernel-mode stack.
+                                if (KProcessHacker.Instance != null)
+                                    _symbols.LoadKernelModules();
                                 // If the process is CSRSS we should load kernel modules 
                                 // due to the presence of kernel-mode threads.
-                                if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                else if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
                                     _symbols.LoadKernelModules();
                             }
                         }

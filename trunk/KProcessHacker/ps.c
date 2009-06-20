@@ -24,6 +24,14 @@
 #include "include/ke.h"
 #include "include/ps.h"
 
+VOID KphpCaptureStackBackTraceThreadSpecialApc(
+    PKAPC Apc,
+    PKNORMAL_ROUTINE *NormalRoutine,
+    PVOID *NormalContext,
+    PVOID *SystemArgument1,
+    PVOID *SystemArgument2
+    );
+
 /* KphAcquireProcessRundownProtection
  * 
  * Prevents the process from terminating.
@@ -63,6 +71,219 @@ NTSTATUS KphAssignImpersonationToken(
     ObDereferenceObject(threadObject);
     
     return status;
+}
+
+/* KphCaptureStackBackTraceThread
+ * 
+ * Captures a kernel-mode stack backtrace for the specified thread.
+ */
+NTSTATUS KphCaptureStackBackTraceThread(
+    __in HANDLE ThreadHandle,
+    __in ULONG FramesToSkip,
+    __in ULONG FramesToCapture,
+    __out_ecount(FramesToCapture) PVOID *BackTrace,
+    __out_opt PULONG CapturedFrames,
+    __out_opt PULONG BackTraceHash,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    /* Reference the thread. */
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        THREAD_QUERY_INFORMATION,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Get the stack trace. */
+    status = KphpCaptureStackBackTraceThread(
+        threadObject,
+        FramesToSkip,
+        FramesToCapture,
+        BackTrace,
+        CapturedFrames,
+        BackTraceHash,
+        AccessMode
+        );
+    /* Dereference the thread. */
+    ObDereferenceObject(threadObject);
+    
+    return status;
+}
+
+/* KphpCaptureStackBackTraceThread
+ * 
+ * Captures a kernel-mode stack backtrace for the specified thread.
+ * 
+ * IRQL: <= APC_LEVEL
+ */
+NTSTATUS KphpCaptureStackBackTraceThread(
+    __in PETHREAD Thread,
+    __in ULONG FramesToSkip,
+    __in ULONG FramesToCapture,
+    __out_ecount(FramesToCapture) PVOID *BackTrace,
+    __out_opt PULONG CapturedFrames,
+    __out_opt PULONG BackTraceHash,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PVOID dummy = NULL;
+    CAPTURE_BACKTRACE_THREAD_CONTEXT context;
+    ULONG backTraceSize;
+    PVOID *backTrace;
+    
+    backTraceSize = FramesToCapture * sizeof(PVOID);
+    
+    /* Probe user input. */
+    if (AccessMode != KernelMode)
+    {
+        __try
+        {
+            ProbeForWrite(BackTrace, backTraceSize, 1);
+            
+            if (CapturedFrames)
+                ProbeForWrite(CapturedFrames, sizeof(ULONG), 1);
+            if (BackTraceHash)
+                ProbeForWrite(BackTraceHash, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    /* Allocate storage for the stack trace. */
+    backTrace = (PVOID *)ExAllocatePoolWithTag(NonPagedPool, backTraceSize, TAG_CAPTURE_STACK_BACKTRACE);
+    
+    if (!backTrace)
+        return STATUS_INSUFFICIENT_RESOURCES;
+    
+    /* Initialize the context structure. */
+    context.FramesToSkip = FramesToSkip;
+    context.FramesToCapture = FramesToCapture;
+    context.BackTrace = backTrace;
+    
+    /* Check if we're trying to get a stack trace of the current thread. */
+    if (Thread == PsGetCurrentThread())
+    {
+        PCAPTURE_BACKTRACE_THREAD_CONTEXT contextPtr = &context;
+        KIRQL oldIrql;
+        
+        context.Local = TRUE;
+        /* Raise the IRQL to APC_LEVEL to prevent thread termination. */
+        KeRaiseIrql(APC_LEVEL, &oldIrql);
+        /* Call the APC routine directly. */
+        KphpCaptureStackBackTraceThreadSpecialApc(
+            &context.Apc,
+            NULL,
+            NULL,
+            &contextPtr,
+            &dummy
+            );
+        /* Lower the IRQL back. */
+        KeLowerIrql(oldIrql);
+    }
+    else
+    {
+        context.Local = FALSE;
+        /* Initialize the stack trace completed event. */
+        KeInitializeEvent(&context.CompletedEvent, NotificationEvent, FALSE);
+        /* Initialize the APC. */
+        KeInitializeApc(
+            &context.Apc,
+            (PKTHREAD)Thread,
+            OriginalApcEnvironment,
+            KphpCaptureStackBackTraceThreadSpecialApc,
+            NULL,
+            NULL,
+            KernelMode,
+            NULL
+            );
+        /* Queue the APC. */
+        if (KeInsertQueueApc(&context.Apc, &context, NULL, 2))
+        {
+            /* Wait for the APC to complete. */
+            status = KeWaitForSingleObject(
+                &context.CompletedEvent,
+                Executive,
+                KernelMode,
+                FALSE,
+                NULL
+                );
+            
+            /* Don't overwrite an existing error. */
+            if (NT_SUCCESS(status))
+                status = context.Status;
+        }
+        else
+        {
+            status = STATUS_UNSUCCESSFUL;
+        }
+    }
+    
+    if (NT_SUCCESS(status))
+    {
+        ASSERT(context.CapturedFrames <= FramesToCapture);
+        
+        /* Write the information. */
+        __try
+        {
+            memcpy(BackTrace, backTrace, context.CapturedFrames * sizeof(PVOID));
+            
+            if (CapturedFrames)
+                *CapturedFrames = context.CapturedFrames;
+            if (BackTraceHash)
+                *BackTraceHash = context.BackTraceHash;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            status = GetExceptionCode();
+        }
+    }
+    
+    /* Free the allocated stack trace storage. */
+    ExFreePoolWithTag(backTrace, TAG_CAPTURE_STACK_BACKTRACE);
+    
+    return status;
+}
+
+/* KphpCaptureStackBackTraceThreadSpecialApc
+ * 
+ * The special APC routine which captures a thread stack trace.
+ */
+VOID KphpCaptureStackBackTraceThreadSpecialApc(
+    PKAPC Apc,
+    PKNORMAL_ROUTINE *NormalRoutine,
+    PVOID *NormalContext,
+    PVOID *SystemArgument1,
+    PVOID *SystemArgument2
+    )
+{
+    PCAPTURE_BACKTRACE_THREAD_CONTEXT context = 
+        (PCAPTURE_BACKTRACE_THREAD_CONTEXT)*SystemArgument1;
+    
+    /* Capture a stack trace. */
+    context->CapturedFrames = RtlCaptureStackBackTrace(
+        context->FramesToSkip,
+        context->FramesToCapture,
+        context->BackTrace,
+        &context->BackTraceHash
+        );
+    
+    if (!context->Local)
+    {
+        /* Signal the completed event. */
+        KeSetEvent(&context->CompletedEvent, 0, FALSE);
+    }
 }
 
 /* KphGetContextThread
@@ -168,7 +389,7 @@ NTSTATUS KphGetThreadWin32Thread(
         }
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
-            return STATUS_ACCESS_VIOLATION;
+            return GetExceptionCode();
         }
     }
     
@@ -193,7 +414,7 @@ NTSTATUS KphGetThreadWin32Thread(
     }
     __except (EXCEPTION_EXECUTE_HANDLER)
     {
-        return STATUS_ACCESS_VIOLATION;
+        return GetExceptionCode();
     }
     
     return status;

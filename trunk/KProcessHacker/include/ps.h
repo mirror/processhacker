@@ -29,6 +29,8 @@
 #include "ob.h"
 #include "se.h"
 
+#define TAG_CAPTURE_STACK_BACKTRACE ('tShP')
+
 #define PROCESS_TERMINATE (0x0001)
 #define PROCESS_CREATE_THREAD (0x0002)
 #define PROCESS_SET_SESSIONID (0x0004)
@@ -68,6 +70,19 @@
 #define JOB_OBJECT_ALL_ACCESS (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1f)
 
 extern POBJECT_TYPE *PsJobType;
+
+typedef struct _CAPTURE_BACKTRACE_THREAD_CONTEXT
+{
+    BOOLEAN Local;
+    KAPC Apc;
+    KEVENT CompletedEvent;
+    NTSTATUS Status;
+    ULONG FramesToSkip;
+    ULONG FramesToCapture;
+    PVOID *BackTrace;
+    ULONG CapturedFrames;
+    ULONG BackTraceHash;
+} CAPTURE_BACKTRACE_THREAD_CONTEXT, *PCAPTURE_BACKTRACE_THREAD_CONTEXT;
 
 /* FUNCTION DEFS */
 

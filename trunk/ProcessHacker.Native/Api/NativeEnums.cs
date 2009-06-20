@@ -780,7 +780,7 @@ namespace ProcessHacker.Native.Api
         TokenSource,
         TokenType,
         TokenImpersonationLevel,
-        TokenStatistics,
+        TokenStatistics, // 10
         TokenRestrictedSids,
         TokenSessionId,
         TokenGroupsAndPrivileges,
@@ -790,7 +790,7 @@ namespace ProcessHacker.Native.Api
         TokenOrigin,
         TokenElevationType,
         TokenLinkedToken,
-        TokenElevation,
+        TokenElevation, // 20
         TokenHasRestrictions,
         TokenAccessInformation,
         TokenVirtualizationAllowed,

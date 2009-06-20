@@ -30,8 +30,8 @@
 enum _KAPC_ENVIRONMENT;
 
 NTKERNELAPI VOID KeInitializeApc(
-    PRKAPC Apc,
-    PRKTHREAD Thread,
+    PKAPC Apc,
+    PKTHREAD Thread,
     enum _KAPC_ENVIRONMENT Environment,
     PKKERNEL_ROUTINE KernelRoutine,
     PKRUNDOWN_ROUTINE RundownRoutine,

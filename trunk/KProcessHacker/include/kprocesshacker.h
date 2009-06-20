@@ -30,7 +30,9 @@
 /* KPH Configuration */
 //#define KPH_REQUIRE_DEBUG_PRIVILEGE
 
-#define KPH_TAG 'KPHT'
+#define TAG_KPH ('gThP')
+#define TAG_CLIENT_ENTRY ('lChP')
+
 /* I like 0x9999. */
 #define KPH_DEVICE_TYPE (0x9999)
 #define KPH_DEVICE_NAME (L"\\Device\\KProcessHacker")
@@ -77,6 +79,7 @@
 #define KPH_SETEXECUTEOPTIONS KPH_CTL_CODE(33)
 #define KPH_QUERYPROCESSHANDLES KPH_CTL_CODE(34)
 #define KPH_OPENTHREADPROCESS KPH_CTL_CODE(35)
+#define KPH_CAPTURESTACKBACKTRACETHREAD KPH_CTL_CODE(36)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))

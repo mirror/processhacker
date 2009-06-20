@@ -25,6 +25,8 @@
 
 #include "hook.h"
 
+#define TAG_PROTECTION_ENTRY ('rPhP')
+
 #define OBOPENOBJECTBYPOINTER_ARGS \
     PVOID Object, \
     ULONG HandleAttributes, \

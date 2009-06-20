@@ -83,7 +83,8 @@ namespace ProcessHacker.Native
             KphUnsafeReadVirtualMemory,
             SetExecuteOptions,
             KphQueryProcessHandles,
-            KphOpenThreadProcess
+            KphOpenThreadProcess,
+            KphCaptureStackBackTraceThread
         }
 
         [Flags]
@@ -287,6 +288,34 @@ namespace ProcessHacker.Native
             *(int*)(inData + 4) = tokenHandle;
 
             _fileHandle.IoControl(CtlCode(Control.KphAssignImpersonationToken), inData, 8, null, 0);
+        }
+
+        public unsafe int KphCaptureStackBackTraceThread(
+            ThreadHandle threadHandle,
+            int framesToSkip,
+            int framesToCapture,
+            IntPtr[] backTrace,
+            out int backTraceHash
+            )
+        {
+            byte* inData = stackalloc byte[6 * sizeof(int)];
+            int capturedFramesLocal;
+            int backTraceHashLocal;
+
+            fixed (IntPtr* backTracePtr = backTrace)
+            {
+                *(int*)inData = threadHandle;
+                *(int*)(inData + 0x4) = framesToSkip;
+                *(int*)(inData + 0x8) = framesToCapture;
+                *(int*)(inData + 0xc) = (int)backTracePtr;
+                *(int*)(inData + 0x10) = (int)&capturedFramesLocal;
+                *(int*)(inData + 0x14) = (int)&backTraceHashLocal;
+
+                _fileHandle.IoControl(CtlCode(Control.KphCaptureStackBackTraceThread), inData, 6 * sizeof(int), null, 0);
+                backTraceHash = backTraceHashLocal;
+
+                return capturedFramesLocal;
+            }
         }
 
         public void KphDuplicateObject(

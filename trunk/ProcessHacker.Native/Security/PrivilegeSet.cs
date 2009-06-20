@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ProcessHacker.Common;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security
@@ -56,6 +55,7 @@ namespace ProcessHacker.Native.Security
         public PrivilegeSetFlags Flags
         {
             get { return _flags; }
+            set { _flags = value; }
         }
 
         public MemoryAlloc ToMemory()

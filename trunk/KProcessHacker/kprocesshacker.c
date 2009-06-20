@@ -80,7 +80,7 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
         NULL,
         0,
         sizeof(KPH_CLIENT_ENTRY),
-        KPH_TAG,
+        TAG_CLIENT_ENTRY,
         0
         );
     
@@ -405,6 +405,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "KphQueryProcessHandles";
         case KPH_OPENTHREADPROCESS:
             return "KphOpenThreadProcess";
+        case KPH_CAPTURESTACKBACKTRACETHREAD:
+            return "KphCaptureStackBackTraceThread";
         default:
             return "Unknown";
     }
@@ -1704,6 +1706,40 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 goto IoControlEnd;
             
             retLength = sizeof(*ret);
+        }
+        break;
+        
+        /* KphCaptureStackBackTraceThread
+         * 
+         * Captures a kernel stack trace for the specified thread.
+         */
+        case KPH_CAPTURESTACKBACKTRACETHREAD:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                ULONG FramesToSkip;
+                ULONG FramesToCapture;
+                PVOID *BackTrace;
+                PULONG CapturedFrames;
+                PULONG BackTraceHash;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphCaptureStackBackTraceThread(
+                args->ThreadHandle,
+                args->FramesToSkip,
+                args->FramesToCapture,
+                args->BackTrace,
+                args->CapturedFrames,
+                args->BackTraceHash,
+                UserMode
+                );
         }
         break;
         

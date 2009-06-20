@@ -23,22 +23,6 @@
 #include "include/hook.h"
 #include "include/sync.h"
 
-typedef struct _MAPPED_MDL
-{
-    PMDL Mdl;
-    PVOID Address;
-} MAPPED_MDL, *PMAPPED_MDL;
-
-NTSTATUS KphpCreateMappedMdl(
-    __in PVOID Address,
-    __in ULONG Length,
-    __out PMAPPED_MDL MappedMdl
-    );
-
-VOID KphpFreeMappedMdl(
-    __in PMAPPED_MDL MappedMdl
-    );
-
 static KPH_PROCESSOR_LOCK HookProcessorLock;
 
 /* KphHookInit

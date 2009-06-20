@@ -84,7 +84,7 @@ namespace ProcessHacker
                 fileName = FileUtils.DeviceFileNameToDos(fileName);
 
             if (pid == 0)
-                pid = phandle.GetBasicInformation().UniqueProcessId;
+                pid = phandle.GetBasicInformation().UniqueProcessId.ToInt32();
 
             var item = listProcesses.Items.Add(new ListViewItem(new string[]
                     {

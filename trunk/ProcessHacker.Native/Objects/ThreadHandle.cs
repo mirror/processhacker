@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System.Collections.Generic;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -252,6 +253,75 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Captures a kernel-mode stack trace for the thread.
+        /// </summary>
+        /// <returns>An array of function addresses.</returns>
+        public IntPtr[] CaptureKernelStack()
+        {
+            return this.CaptureKernelStack(0);
+        }
+
+        /// <summary>
+        /// Captures a kernel-mode stack trace for the thread.
+        /// </summary>
+        /// <param name="skipCount">The number of frames to skip.</param>
+        /// <returns>An array of function addresses.</returns>
+        public IntPtr[] CaptureKernelStack(int skipCount)
+        {
+            IntPtr[] stack = new IntPtr[0x100]; // 256 frames should be enough
+            int hash;
+
+            // Capture a kernel-mode stack trace.
+            int captured = KProcessHacker.Instance.KphCaptureStackBackTraceThread(
+                this,
+                skipCount,
+                stack.Length,
+                stack,
+                out hash
+                );
+
+            // Create a new array with only the frames we captured.
+            IntPtr[] newStack = new IntPtr[captured];
+
+            Array.Copy(stack, 0, newStack, 0, captured);
+
+            return newStack;
+        }
+
+        /// <summary>
+        /// Captures a user-mode stack trace for the thread.
+        /// </summary>
+        /// <returns>An array of stack frames.</returns>
+        public ThreadStackFrame[] CaptureUserStack()
+        {
+            return this.CaptureUserStack(0);
+        }
+
+        /// <summary>
+        /// Captures a user-mode stack trace for the thread.
+        /// </summary>
+        /// <param name="skipCount">The number of frames to skip.</param>
+        /// <returns>An array of stack frames.</returns>
+        public ThreadStackFrame[] CaptureUserStack(int skipCount)
+        {
+            List<ThreadStackFrame> frames = new List<ThreadStackFrame>();
+
+            // Walk the stack.
+            this.WalkStack((frame) => { frames.Add(frame); return true; });
+
+            // If we want to skip frames than we have, just return an empty array.
+            if (frames.Count <= skipCount)
+                return new ThreadStackFrame[0];
+
+            // Otherwise, create a new array with the frames, minus what we skipped.
+            ThreadStackFrame[] newFrames = new ThreadStackFrame[frames.Count - skipCount];
+
+            Array.Copy(frames.ToArray(), skipCount, newFrames, 0, newFrames.Length);
+
+            return newFrames;
+        }
+
+        /// <summary>
         /// Gets the thread's base priority.
         /// </summary>
         public int GetBasePriority()
@@ -424,6 +494,24 @@ namespace ProcessHacker.Native.Objects
         public ProcessHandle GetProcess(ProcessAccess access)
         {
             return new ProcessHandle(this, access);
+        }
+
+        /// <summary>
+        /// Gets the thread's parent process' unique identifier.
+        /// </summary>
+        /// <returns>A process ID.</returns>
+        public int GetProcessId()
+        {
+            return this.GetBasicInformation().ClientId.ProcessId;
+        }
+
+        /// <summary>
+        /// Gets the thread's unique identifier.
+        /// </summary>
+        /// <returns>A thread ID.</returns>
+        public int GetThreadId()
+        {
+            return this.GetBasicInformation().ClientId.ThreadId;
         }
 
         /// <summary>
@@ -644,14 +732,23 @@ namespace ProcessHacker.Native.Objects
         /// <param name="walkStackCallback">A callback to execute.</param>
         public void WalkStack(WalkStackDelegate walkStackCallback)
         {
-            // We need to duplicate the handle to get QueryInformation access.
-            using (var dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
-            using (var phandle = new ProcessHandle(
-                ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
-                ProcessAccess.QueryInformation | ProcessAccess.VmRead
-                ))
+            if (KProcessHacker.Instance != null)
             {
-                this.WalkStack(phandle, walkStackCallback);
+                // Use KPH to open the parent process.
+                using (var phandle = this.GetProcess(ProcessAccess.QueryInformation | ProcessAccess.VmRead))
+                    this.WalkStack(phandle, walkStackCallback);
+            }
+            else
+            {
+                // We need to duplicate the handle to get QueryInformation access.
+                using (var dupThreadHandle = this.Duplicate(OSVersion.MinThreadQueryInfoAccess))
+                using (var phandle = new ProcessHandle(
+                    ThreadHandle.FromHandle(dupThreadHandle).GetBasicInformation().ClientId.ProcessId,
+                    ProcessAccess.QueryInformation | ProcessAccess.VmRead
+                    ))
+                {
+                    this.WalkStack(phandle, walkStackCallback);
+                }
             }
         }
 

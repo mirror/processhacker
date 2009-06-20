@@ -56,6 +56,12 @@ typedef struct _KPH_ATTACH_STATE
     KAPC_STATE ApcState;
 } KPH_ATTACH_STATE, *PKPH_ATTACH_STATE;
 
+typedef struct _MAPPED_MDL
+{
+    PMDL Mdl;
+    PVOID Address;
+} MAPPED_MDL, *PMAPPED_MDL;
+
 /* Support routines */
 
 NTSTATUS KphNtInit();
@@ -103,6 +109,16 @@ BOOLEAN KphAcquireProcessRundownProtection(
 NTSTATUS KphAssignImpersonationToken(
     __in HANDLE ThreadHandle,
     __in HANDLE TokenHandle
+    );
+
+NTSTATUS KphCaptureStackBackTraceThread(
+    __in HANDLE ThreadHandle,
+    __in ULONG FramesToSkip,
+    __in ULONG FramesToCapture,
+    __out_ecount(FramesToCapture) PVOID *BackTrace,
+    __out_opt PULONG CapturedFrames,
+    __out_opt PULONG BackTraceHash,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphDuplicateObject(
@@ -287,6 +303,28 @@ NTSTATUS MmCopyVirtualMemory(
     __in ULONG BufferLength,
     __in KPROCESSOR_MODE AccessMode,
     __out PULONG ReturnLength
+    );
+
+/* KProcessHacker private */
+
+NTSTATUS KphpCaptureStackBackTraceThread(
+    __in PETHREAD Thread,
+    __in ULONG FramesToSkip,
+    __in ULONG FramesToCapture,
+    __out_ecount(FramesToCapture) PVOID *BackTrace,
+    __out_opt PULONG CapturedFrames,
+    __out_opt PULONG BackTraceHash,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphpCreateMappedMdl(
+    __in PVOID Address,
+    __in ULONG Length,
+    __out PMAPPED_MDL MappedMdl
+    );
+
+VOID KphpFreeMappedMdl(
+    __in PMAPPED_MDL MappedMdl
     );
 
 /* OB */

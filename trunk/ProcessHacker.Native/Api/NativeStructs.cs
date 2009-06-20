@@ -24,6 +24,7 @@
 using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Objects;
+using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Api
 {
@@ -273,6 +274,28 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Explicit)]
     public struct IoStatusBlock
     {
+        public IoStatusBlock(NtStatus status)
+            : this(status, IntPtr.Zero)
+        { }
+
+        public IoStatusBlock(NtStatus status, IntPtr information)
+        {
+            this.Pointer = IntPtr.Zero;
+            this.Status = status;
+            this.Information = information;
+        }
+
+        public IoStatusBlock(IntPtr pointer)
+            : this(pointer, IntPtr.Zero)
+        { }
+
+        public IoStatusBlock(IntPtr pointer, IntPtr information)
+        {
+            this.Status = NtStatus.Success;
+            this.Pointer = pointer;
+            this.Information = information;
+        }
+
         [FieldOffset(0)]
         public NtStatus Status;
         [FieldOffset(0)]
@@ -877,10 +900,10 @@ namespace ProcessHacker.Native.Api
     {
         public NtStatus ExitStatus;
         public IntPtr PebBaseAddress;
-        public int AffinityMask;
+        public IntPtr AffinityMask;
         public int BasePriority;
-        public int UniqueProcessId;
-        public int InheritedFromUniqueProcessId;
+        public IntPtr UniqueProcessId;
+        public IntPtr InheritedFromUniqueProcessId;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1083,6 +1106,11 @@ namespace ProcessHacker.Native.Api
     {
         public IntPtr Sid; // ptr to a SID object
         public SidAttributes Attributes;
+
+        public Sid ToSid()
+        {
+            return new Sid(this);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1136,19 +1164,36 @@ namespace ProcessHacker.Native.Api
     public struct SystemExtendedThreadInformation
     {
         public SystemThreadInformation ThreadInfo;
-        public int StackBase; // 16
-        public int StackLimit;
-        public int Win32StartAddress;
-        public int TebAddress; // Vista+
-        public int Unused1;
-        public int Unused2;
-        public int Unused3;
+        public IntPtr StackBase; // 16
+        public IntPtr StackLimit;
+        public IntPtr Win32StartAddress;
+        public IntPtr TebAddress; // Vista+
+        public IntPtr Unused1;
+        public IntPtr Unused2;
+        public IntPtr Unused3;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct SystemLoadAndCallImage
     {
         public UnicodeString ModuleName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemObjectInformation
+    {
+        public int NextEntryOffset;
+        public IntPtr Object;
+        public IntPtr CreatorUniqueProcess;
+        public ushort CreatorBackTraceIndex;
+        public ushort Flags;
+        public int PointerCount;
+        public int HandleCount;
+        public uint PagedPoolCharge;
+        public uint NonPagedPoolCharge;
+        public IntPtr ExclusiveProcessId;
+        public IntPtr SecurityDescriptor;
+        public ObjectNameInformation NameInfo;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1163,6 +1208,16 @@ namespace ProcessHacker.Native.Api
         public GenericMapping GenericMapping;
         public int ValidAccessMask;
         public PoolType PoolType;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SystemPagefileInformation
+    {
+        public int NextEntryOffset;
+        public int TotalSize;
+        public int TotalInUse;
+        public int PeakUsage;
+        public UnicodeString PageFileName;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1575,11 +1630,11 @@ namespace ProcessHacker.Native.Api
         public long KernelTime;
         public UnicodeString ImageName;
         public int BasePriority;
-        public int ProcessId;
-        public int InheritedFromProcessId;
+        public int ProcessId; // should be IntPtr
+        public int InheritedFromProcessId; // should be IntPtr
         public int HandleCount;
         public int SessionId;
-        public int PageDirectoryBase;
+        public IntPtr PageDirectoryBase;
         public VmCountersEx VirtualMemoryCounters;
         public IoCounters IoCounters;
     }
@@ -1622,12 +1677,12 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct ThreadBasicInformation
     {
-        public uint ExitStatus;
+        public NtStatus ExitStatus;
         public IntPtr TebBaseAddress;
         public ClientId ClientId;
-        public uint AffinityMask;
-        public uint Priority;
-        public uint BasePriority;
+        public IntPtr AffinityMask;
+        public int Priority;
+        public int BasePriority;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1641,6 +1696,15 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenGroups
     {
+        public TokenGroups(Sid[] sids)
+        {
+            this.GroupCount = sids.Length;
+            this.Groups = new SidAndAttributes[sids.Length];
+
+            for (int i = 0; i < sids.Length; i++)
+                this.Groups[i] = sids[i].ToSidAndAttributes();
+        }
+
         public int GroupCount;
 
         [MarshalAs(UnmanagedType.ByValArray)]
@@ -1648,8 +1712,35 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TokenOwner
+    {
+        public TokenOwner(Sid owner)
+        {
+            this.Owner = owner;
+        }
+
+        public IntPtr Owner;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TokenPrimaryGroup
+    {
+        public TokenPrimaryGroup(Sid primaryGroup)
+        {
+            this.PrimaryGroup = primaryGroup;
+        }
+
+        public IntPtr PrimaryGroup;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct TokenPrivileges
     {
+        public TokenPrivileges(PrivilegeSet privileges)
+        {
+            this = privileges.ToTokenPrivileges();
+        }
+
         public int PrivilegeCount;
 
         [MarshalAs(UnmanagedType.ByValArray)]
@@ -1659,6 +1750,15 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct TokenSource
     {
+        public TokenSource(string sourceName, Luid sourceIdentifier)
+        {
+            if (sourceName.Length > 8)
+                throw new ArgumentException("Source name must be equal to or less than 8 characters long.");
+
+            this.SourceName = sourceName;
+            this.SourceIdentifier = sourceIdentifier;
+        }
+
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
         public string SourceName;
 
@@ -1683,6 +1783,11 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct TokenUser
     {
+        public TokenUser(Sid user)
+        {
+            this.User = user.ToSidAndAttributes();
+        }
+
         public SidAndAttributes User;
     }
 
@@ -1823,6 +1928,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCounters
     {
+        // These all should be IntPtrs...
         public int PeakVirtualSize;
         public int VirtualSize;
         public int PageFaultCount;
@@ -1839,6 +1945,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct VmCountersEx
     {
+        // These all should be IntPtrs...
         public int PeakVirtualSize;
         public int VirtualSize;
         public int PageFaultCount;

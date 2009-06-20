@@ -317,7 +317,7 @@ namespace ProcessHacker.UI.Actions
                 if (process.Value.Process.ProcessId < 4)
                     continue;
 
-                if (process.Value.Process.InheritedFromProcessId == pid)
+                if (process.Value.Process.InheritedFromProcessId.Equals(pid))
                     if (!TerminateTree(window, processes, process.Value.Process.ProcessId))
                         good = false;
             }

@@ -176,6 +176,33 @@ namespace ProcessHacker.Native.Objects
             return Win32.GetCurrentProcessId();
         }
 
+        /// <summary>
+        /// Opens processes with the specified name.
+        /// </summary>
+        /// <param name="processName">The names of the processes to open.</param>
+        /// <param name="access">The desired access to the processes.</param>
+        /// <returns>An array of process handles.</returns>
+        public static ProcessHandle[] OpenByName(string processName, ProcessAccess access)
+        {
+            var processes = Windows.GetProcesses();
+            List<ProcessHandle> processHandles = new List<ProcessHandle>();
+
+            foreach (var process in processes.Values)
+            {
+                if (string.Equals(process.Name, processName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    try
+                    {
+                        processHandles.Add(new ProcessHandle(process.Process.ProcessId, access));
+                    }
+                    catch
+                    { }
+                }
+            }
+
+            return processHandles.ToArray();
+        }
+
         private ProcessHandle(IntPtr handle, bool owned)
             : base(handle, owned)
         { }
@@ -985,7 +1012,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A known process type.</returns>
         public KnownProcess GetKnownProcessType()
         {
-            if (this.GetBasicInformation().UniqueProcessId == 4)
+            if (this.GetBasicInformation().UniqueProcessId.Equals(4))
                 return KnownProcess.System;
 
             string fileName = FileUtils.DeviceFileNameToDos(this.GetNativeImageFileName());
@@ -1163,7 +1190,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The process ID.</returns>
         public int GetParentPid()
         {
-            return this.GetBasicInformation().InheritedFromUniqueProcessId;
+            return this.GetBasicInformation().InheritedFromUniqueProcessId.ToInt32();
         }
 
         /// <summary>
@@ -1307,7 +1334,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         public int GetProcessId()
         {
-            return this.GetBasicInformation().UniqueProcessId;
+            return this.GetBasicInformation().UniqueProcessId.ToInt32();
         }
 
         /// <summary>

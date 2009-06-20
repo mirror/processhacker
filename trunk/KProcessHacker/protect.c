@@ -89,7 +89,7 @@ NTSTATUS KphProtectInit()
         NULL,
         0,
         sizeof(KPH_PROCESS_ENTRY),
-        KPH_TAG,
+        TAG_PROTECTION_ENTRY,
         0
         );
     

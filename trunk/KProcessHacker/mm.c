@@ -523,7 +523,7 @@ NTSTATUS MiDoPoolCopy(
            we fail. */
         while (TRUE)
         {
-            buffer = ExAllocatePoolWithTag(NonPagedPool, allocSize, TAG_MM);
+            buffer = ExAllocatePoolWithTag(NonPagedPool, allocSize, TAG_POOL_COPY);
             
             /* Stop trying if we got a buffer. */
             if (buffer)
@@ -594,7 +594,7 @@ NTSTATUS MiDoPoolCopy(
             
             /* Free the allocated buffer if needed. */
             if (buffer != stackBuffer)
-                ExFreePool(buffer);
+                ExFreePoolWithTag(buffer, TAG_POOL_COPY);
             
             /* If we were probing an address, return the error code. */
             if (probing)
@@ -620,7 +620,7 @@ NTSTATUS MiDoPoolCopy(
     
     /* Free the buffer if it wasn't stack-allocated. */
     if (buffer != stackBuffer)
-        ExFreePool(buffer);
+        ExFreePoolWithTag(buffer, TAG_POOL_COPY);
     
     *ReturnLength = BufferLength;
     

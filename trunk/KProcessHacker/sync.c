@@ -97,7 +97,7 @@ BOOLEAN KphAcquireProcessorLock(
     ProcessorLock->Dpcs = ExAllocatePoolWithTag(
         NonPagedPool,
         sizeof(KDPC) * numberProcessors,
-        KPH_TAG
+        TAG_SYNC_DPC
         );
     
     if (!ProcessorLock->Dpcs)
@@ -207,7 +207,7 @@ VOID KphReleaseProcessorLock(
     /* Free the DPCs if necessary. */
     if (ProcessorLock->Dpcs != NULL)
     {
-        ExFreePoolWithTag(ProcessorLock->Dpcs, KPH_TAG);
+        ExFreePoolWithTag(ProcessorLock->Dpcs, TAG_SYNC_DPC);
         ProcessorLock->Dpcs = NULL;
     }
     

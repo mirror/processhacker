@@ -229,10 +229,38 @@ namespace ProcessHacker
         {
             try
             {
+                // Clear the existing frames.
                 listViewCallStack.BeginUpdate();
                 listViewCallStack.Items.Clear();
 
-                _thandle.WalkStack(_phandle, this.WalkStackCallback);
+                bool suspended;
+
+                try
+                {
+                    _thandle.Suspend();
+                    suspended = true;
+                }
+                catch
+                {
+                    suspended = false;
+                }
+
+                try
+                {
+                    // Process the kernel-mode stack (if KPH is present).
+                    if (KProcessHacker.Instance != null)
+                    {
+                        this.WalkKernelStack();
+                    }
+
+                    // Process the user-mode stack.
+                    _thandle.WalkStack(_phandle, this.WalkStackCallback);
+                }
+                finally
+                {
+                    if (suspended)
+                        _thandle.Resume();
+                }
             }
             catch (Exception ex)
             {
@@ -244,9 +272,42 @@ namespace ProcessHacker
             }
         }
 
+        private void WalkKernelStack()
+        {
+            try
+            {
+                IntPtr[] frames = _thandle.CaptureKernelStack(1); // skip the KPH frame
+
+                foreach (IntPtr frame in frames)
+                {
+                    ulong address = frame.ToUInt64();
+
+                    try
+                    {
+                        ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
+                            new string[]
+                                {
+                                    "0x" + address.ToString("x8"),
+                                    _symbols.GetSymbolFromAddress(address)
+                                }));
+
+                        newItem.Tag = address;
+                    }
+                    catch (Exception ex2)
+                    {
+                        Logging.Log(ex2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.Log(ex);
+            }
+        }
+
         private bool WalkStackCallback(ThreadStackFrame stackFrame)
         {
-            uint address = stackFrame.PcAddress.ToUInt32();
+            ulong address = stackFrame.PcAddress.ToUInt64();
 
             try
             {
@@ -311,7 +372,7 @@ namespace ProcessHacker
             {
                 string fileName;
 
-                _symbols.GetSymbolFromAddress((uint)listViewCallStack.SelectedItems[0].Tag, out fileName);
+                _symbols.GetSymbolFromAddress((ulong)listViewCallStack.SelectedItems[0].Tag, out fileName);
                 fileModule.Text = fileName;
                 fileModule.Enabled = true;
             }

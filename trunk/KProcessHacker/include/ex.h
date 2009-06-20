@@ -45,7 +45,7 @@ typedef NTSTATUS (NTAPI *_ExpGetProcessInformation)(
     PVOID Buffer,
     ULONG BufferLength,
     PULONG ReturnLength,
-    ULONG SessionId, /* Set to 0 to include all processes */
+    PULONG SessionId, /* NULL to include all processes */
     BOOLEAN ExtendedInformation
     );
 

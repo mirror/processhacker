@@ -76,6 +76,31 @@ namespace ProcessHacker.Native
             return (T)Marshal.PtrToStructure(offsetPtr, typeof(T));
         }
 
+        public static bool Equals(this IntPtr ptr, IntPtr ptr2)
+        {
+            return ptr == ptr2;
+        }
+
+        public static bool Equals(this IntPtr ptr, int value)
+        {
+            return ptr.ToInt32() == value;
+        }
+
+        public static bool Equals(this IntPtr ptr, uint value)
+        {
+            return ptr.ToUInt32() == value;
+        }
+
+        public static bool Equals(this IntPtr ptr, long value)
+        {
+            return ptr.ToInt64() == value;
+        }
+
+        public static bool Equals(this IntPtr ptr, ulong value)
+        {
+            return ptr.ToUInt64() == value;
+        }
+
         public static IntPtr Increment(this IntPtr ptr, int value)
         {
             unchecked
