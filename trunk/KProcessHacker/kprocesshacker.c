@@ -401,6 +401,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "KphUnsafeReadVirtualMemory";
         case KPH_SETEXECUTEOPTIONS:
             return "Set Execute Options";
+        case KPH_QUERYPROCESSHANDLES:
+            return "KphQueryProcessHandles";
         default:
             return "Unknown";
     }
@@ -1634,6 +1636,72 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
                 sizeof(ULONG)
                 );
             KphDetachProcess(&attachState);
+        }
+        break;
+        
+        /* KphQueryProcessHandles
+         * 
+         * Gets the handles in a process handle table.
+         */
+        case KPH_QUERYPROCESSHANDLES:
+        {
+            struct
+            {
+                HANDLE ProcessHandle;
+                PVOID Buffer;
+                ULONG BufferLength;
+                PULONG ReturnLength;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphQueryProcessHandles(
+                args->ProcessHandle,
+                (PPROCESS_HANDLE_INFORMATION)args->Buffer,
+                args->BufferLength,
+                args->ReturnLength,
+                UserMode
+                );
+        }
+        break;
+        
+        /* KphOpenThreadProcess
+         * 
+         * Opens the process associated with the specified thread.
+         */
+        case KPH_OPENTHREADPROCESS:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                ACCESS_MASK DesiredAccess;
+            } *args = dataBuffer;
+            struct
+            {
+                HANDLE ProcessHandle;
+            } *ret = dataBuffer;
+            
+            if (inLength < sizeof(*args) || outLength < sizeof(*ret))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphOpenThreadProcess(
+                args->ThreadHandle,
+                args->DesiredAccess,
+                &ret->ProcessHandle,
+                KernelMode
+                );
+            
+            if (!NT_SUCCESS(status))
+                goto IoControlEnd;
+            
+            retLength = sizeof(*ret);
         }
         break;
         

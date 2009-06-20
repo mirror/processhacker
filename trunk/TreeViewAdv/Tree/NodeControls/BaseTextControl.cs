@@ -225,9 +225,7 @@ namespace Aga.Controls.Tree.NodeControls
 			}
 			else if (context.DrawSelection == DrawSelectionMode.Inactive)
 			{
-				//textColor = SystemColors.ControlText;
-                // wj32: respect node ForeColor
-                textColor = node.ForeColor;
+				textColor = SystemColors.ControlText;
                 backgroundBrush = SystemBrushes.InactiveBorder;
 			}
 			else if (context.DrawSelection == DrawSelectionMode.FullRowSelect)

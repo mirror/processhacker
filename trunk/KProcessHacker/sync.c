@@ -24,14 +24,14 @@
 #include "include/debug.h"
 
 ULONG KphpCountBits(
-    ULONG_PTR Number
+    __in ULONG_PTR Number
     );
 
 VOID KphpProcessorLockDpc(
-    PKDPC Dpc,
-    PVOID DeferredContext,
-    PVOID SystemArgument1,
-    PVOID SystemArgument2
+    __in PKDPC Dpc,
+    __in PVOID DeferredContext,
+    __in PVOID SystemArgument1,
+    __in PVOID SystemArgument2
     );
 
 /* KphAcquireProcessorLock
@@ -65,7 +65,7 @@ VOID KphpProcessorLockDpc(
  * IRQL: <= APC_LEVEL
  */
 BOOLEAN KphAcquireProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __inout PKPH_PROCESSOR_LOCK ProcessorLock
     )
 {
     ULONG i;
@@ -148,7 +148,7 @@ BOOLEAN KphAcquireProcessorLock(
  * IRQL: Any
  */
 VOID KphInitializeProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __out PKPH_PROCESSOR_LOCK ProcessorLock
     )
 {
     ExInitializeFastMutex(&ProcessorLock->Mutex);
@@ -181,7 +181,7 @@ VOID KphInitializeProcessorLock(
  * IRQL: DISPATCH_LEVEL
  */
 VOID KphReleaseProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __inout PKPH_PROCESSOR_LOCK ProcessorLock
     )
 {
     if (!ProcessorLock->Acquired)
@@ -225,7 +225,7 @@ VOID KphReleaseProcessorLock(
  * Counts the number of bits set in an integer.
  */
 ULONG KphpCountBits(
-    ULONG_PTR Number
+    __in ULONG_PTR Number
     )
 {
     ULONG count = 0;
@@ -247,10 +247,10 @@ ULONG KphpCountBits(
  * IRQL: DISPATCH_LEVEL
  */
 VOID KphpProcessorLockDpc(
-    PKDPC Dpc,
-    PVOID DeferredContext,
-    PVOID SystemArgument1,
-    PVOID SystemArgument2
+    __in PKDPC Dpc,
+    __in PVOID DeferredContext,
+    __in PVOID SystemArgument1,
+    __in PVOID SystemArgument2
     )
 {
     PKPH_PROCESSOR_LOCK processorLock = (PKPH_PROCESSOR_LOCK)SystemArgument1;

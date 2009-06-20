@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using ProcessHacker.Common;
 
 namespace ProcessHacker.UI
 {
@@ -167,11 +168,13 @@ namespace ProcessHacker.UI
             if (HighlightingContext.StateHighlighting && highlight)
             {
                 this.BackColor = HighlightingContext.Colors[ListViewItemState.New];
+                this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = ListViewItemState.New;
 
                 _context.Enqueue(delegate
                     {
                         this.BackColor = _normalColor;
+                        this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                         _state = ListViewItemState.Normal;
                     });
             }
@@ -188,6 +191,7 @@ namespace ProcessHacker.UI
                 _context.EnqueuePre(delegate
                     {
                         this.BackColor = HighlightingContext.Colors[ListViewItemState.Removed];
+                        this.ForeColor = PhUtils.GetForeColor(this.BackColor);
 
                         _context.Enqueue(delegate
                         {
@@ -214,7 +218,10 @@ namespace ProcessHacker.UI
                 _normalColor = value;
 
                 if (_state == ListViewItemState.Normal)
+                {
                     this.BackColor = value;
+                    this.ForeColor = PhUtils.GetForeColor(this.BackColor);
+                }
             }
         }
 
@@ -223,11 +230,13 @@ namespace ProcessHacker.UI
             _context.EnqueuePre(delegate
             {
                 this.BackColor = HighlightingContext.Colors[state];
+                this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                 _state = state;
 
                 _context.Enqueue(delegate
                 {
                     this.BackColor = _normalColor;
+                    this.ForeColor = PhUtils.GetForeColor(this.BackColor);
                     _state = ListViewItemState.Normal;
                 });
             });

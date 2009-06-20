@@ -383,7 +383,7 @@ namespace ProcessHacker.Native
                     }
                 }
 
-                returnProcesses = new Dictionary<int, SystemProcess>();
+                returnProcesses = new Dictionary<int, SystemProcess>(32); // 32 processes on a computer?
 
                 int i = 0;
                 SystemProcess currentProcess = new SystemProcess();
@@ -494,13 +494,13 @@ namespace ProcessHacker.Native
 
                 using (MemoryAlloc data = new MemoryAlloc(requiredSize))
                 {
-                    var dictionary = new Dictionary<string, EnumServiceStatusProcess>();
-
                     if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
                         ServiceQueryState.All, data,
                         data.Size, out requiredSize, out servicesReturned,
                         ref resume, null))
                         Win32.ThrowLastError();
+
+                    var dictionary = new Dictionary<string, EnumServiceStatusProcess>(servicesReturned);
 
                     for (int i = 0; i < servicesReturned; i++)
                     {

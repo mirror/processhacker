@@ -223,6 +223,19 @@ namespace ProcessHacker.Native.Objects
         { }
 
         /// <summary>
+        /// Opens a thread's process.
+        /// </summary>
+        /// <param name="threadHandle">A handle to a thread.</param>
+        /// <param name="access">The desired access to the process.</param>
+        public ProcessHandle(ThreadHandle threadHandle, ProcessAccess access)
+        {
+            if (KProcessHacker.Instance == null)
+                throw new NotSupportedException();
+
+            this.Handle = new IntPtr(KProcessHacker.Instance.KphOpenThreadProcess(threadHandle, access));
+        }
+
+        /// <summary>
         /// Opens a process.
         /// </summary>
         /// <param name="name">The name of the process.</param>
@@ -843,6 +856,50 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Gets the handles owned by the process.
+        /// </summary>
+        /// <returns>An array of handle information structures.</returns>
+        public ProcessHandleInformation[] GetHandles()
+        {
+            int returnLength = 0;
+            int attempts = 0;
+
+            using (var data = new MemoryAlloc(0x1000))
+            {
+                while (true)
+                {
+                    try
+                    {
+                        KProcessHacker.Instance.KphQueryProcessHandles(this, data, data.Size, out returnLength);
+                    }
+                    catch (WindowsException ex)
+                    {
+                        if (attempts > 3)
+                            throw ex;
+
+                        if (
+                            ex.Status == NtStatus.BufferTooSmall &&
+                            returnLength > data.Size
+                            )
+                            data.Resize(returnLength);
+
+                        attempts++;
+
+                        continue;
+                    }
+
+                    int handleCount = data.ReadInt32(0);
+                    ProcessHandleInformation[] handles = new ProcessHandleInformation[handleCount];
+
+                    for (int i = 0; i < handleCount; i++)
+                        handles[i] = data.ReadStruct<ProcessHandleInformation>(4, i);
+
+                    return handles;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the file name of the process' image. This requires the
         /// PROCESS_QUERY_LIMITED_INFORMATION permission.
         /// </summary>
@@ -1156,6 +1213,11 @@ namespace ProcessHacker.Native.Objects
                 this.ReadMemory(stringAddr, stringLength)).TrimEnd('\0');
         }
 
+        /// <summary>
+        /// Gets the command line used to start the process. This 
+        /// function is only valid for POSIX processes.
+        /// </summary>
+        /// <returns>A command line string.</returns>
         public unsafe string GetPosixCommandLine()
         {
             byte* buffer = stackalloc byte[IntPtr.Size];
@@ -1814,7 +1876,7 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         Idle,
         /// <summary>
-        /// NT Kernel & System.
+        /// NT Kernel &amp; System.
         /// </summary>
         System,
         /// <summary>

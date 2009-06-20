@@ -80,8 +80,8 @@ NTSTATUS KphNtInit()
  * Attaches to a process represented by the specified EPROCESS.
  */
 VOID KphAttachProcess(
-    PEPROCESS Process,
-    PKPH_ATTACH_STATE AttachState
+    __in PEPROCESS Process,
+    __out PKPH_ATTACH_STATE AttachState
     )
 {
     AttachState->Attached = FALSE;
@@ -99,8 +99,8 @@ VOID KphAttachProcess(
  * Attaches to a process represented by the specified handle.
  */
 NTSTATUS KphAttachProcessHandle(
-    HANDLE ProcessHandle,
-    PKPH_ATTACH_STATE AttachState
+    __in HANDLE ProcessHandle,
+    __out PKPH_ATTACH_STATE AttachState
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -131,8 +131,8 @@ NTSTATUS KphAttachProcessHandle(
  * Attaches to a process represented by the specified process ID.
  */
 NTSTATUS KphAttachProcessId(
-    HANDLE ProcessId,
-    PKPH_ATTACH_STATE AttachState
+    __in HANDLE ProcessId,
+    __out PKPH_ATTACH_STATE AttachState
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -156,7 +156,7 @@ NTSTATUS KphAttachProcessId(
  * Detaches from the currently attached process.
  */
 VOID KphDetachProcess(
-    PKPH_ATTACH_STATE AttachState
+    __in PKPH_ATTACH_STATE AttachState
     )
 {
     if (AttachState->Attached)
@@ -168,9 +168,9 @@ VOID KphDetachProcess(
  * Opens the process with the specified PID.
  */
 NTSTATUS OpenProcess(
-    PHANDLE ProcessHandle,
-    ULONG DesiredAccess,
-    HANDLE ProcessId
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in HANDLE ProcessId
     )
 {
     OBJECT_ATTRIBUTES objAttr = { 0 };
@@ -189,8 +189,8 @@ NTSTATUS OpenProcess(
  * primary token of source process.
  */
 NTSTATUS SetProcessToken(
-    HANDLE sourcePid,
-    HANDLE targetPid
+    __in HANDLE sourcePid,
+    __in HANDLE targetPid
     )
 {
     NTSTATUS status;

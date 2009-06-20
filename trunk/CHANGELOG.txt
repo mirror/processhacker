@@ -4,6 +4,7 @@ Process Hacker
  * NEW/IMPROVED:
    * POSIX process support, including command lines and 
      highlighting
+   * Hidden processes scanner can now detect FUTo
    * Ability to set DEP status of processes in other sessions
    * Automatic tree text coloring, allowing for dark highlighting 
      colors

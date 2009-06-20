@@ -49,49 +49,49 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(OBOPENOBJECTBYPOINTER_ARGS);
 NTSTATUS NTAPI KphOldObOpenObjectByPointer(OBOPENOBJECTBYPOINTER_ARGS);
 
 NTSTATUS NTAPI KphNewOpenProcedure51(
-    OB_OPEN_REASON OpenReason,
-    PEPROCESS Process,
-    PVOID Object,
-    ACCESS_MASK GrantedAccess,
-    ULONG HandleCount
+    __in OB_OPEN_REASON OpenReason,
+    __in PEPROCESS Process,
+    __in PVOID Object,
+    __in ACCESS_MASK GrantedAccess,
+    __in ULONG HandleCount
     );
 
 NTSTATUS NTAPI KphNewOpenProcedure60(
-    OB_OPEN_REASON OpenReason,
-    KPROCESSOR_MODE AccessMode,
-    PEPROCESS Process,
-    PVOID Object,
-    ACCESS_MASK GrantedAccess,
-    ULONG HandleCount
+    __in OB_OPEN_REASON OpenReason,
+    __in KPROCESSOR_MODE AccessMode,
+    __in PEPROCESS Process,
+    __in PVOID Object,
+    __in ACCESS_MASK GrantedAccess,
+    __in ULONG HandleCount
     );
 
 NTSTATUS KphProtectInit();
 NTSTATUS KphProtectDeinit();
 
 PKPH_PROCESS_ENTRY KphProtectAddEntry(
-    PEPROCESS Process,
-    HANDLE Tag,
-    LOGICAL AllowKernelMode,
-    ACCESS_MASK ProcessAllowMask,
-    ACCESS_MASK ThreadAllowMask
+    __in PEPROCESS Process,
+    __in HANDLE Tag,
+    __in LOGICAL AllowKernelMode,
+    __in ACCESS_MASK ProcessAllowMask,
+    __in ACCESS_MASK ThreadAllowMask
     );
 
 BOOLEAN KphProtectCopyEntry(
-    PEPROCESS Process,
-    PKPH_PROCESS_ENTRY ProcessEntry
+    __in PEPROCESS Process,
+    __out PKPH_PROCESS_ENTRY ProcessEntry
     );
 
 PKPH_PROCESS_ENTRY KphProtectFindEntry(
-    PEPROCESS Process,
-    HANDLE Tag
+    __in PEPROCESS Process,
+    __in HANDLE Tag
     );
 
 BOOLEAN KphProtectRemoveByProcess(
-    PEPROCESS Process
+    __in PEPROCESS Process
     );
 
 ULONG KphProtectRemoveByTag(
-    HANDLE Tag
+    __in HANDLE Tag
     );
 
 #endif

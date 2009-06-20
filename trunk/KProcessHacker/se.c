@@ -28,11 +28,11 @@
  * Opens the primary token of the specified process.
  */
 NTSTATUS KphOpenProcessTokenEx(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG ObjectAttributes,
-    PHANDLE TokenHandle,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG ObjectAttributes,
+    __out PHANDLE TokenHandle,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;

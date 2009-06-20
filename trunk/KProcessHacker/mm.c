@@ -28,12 +28,12 @@
  * Reads virtual memory from the specified process.
  */
 NTSTATUS KphReadVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -106,12 +106,12 @@ NTSTATUS KphReadVirtualMemory(
 }
 
 NTSTATUS KphUnsafeReadVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -225,12 +225,12 @@ NTSTATUS KphUnsafeReadVirtualMemory(
  * Writes virtual memory to the specified process.
  */
 NTSTATUS KphWriteVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -308,13 +308,13 @@ NTSTATUS KphWriteVirtualMemory(
  * using a memory mapping.
  */
 NTSTATUS MiDoMappedCopy(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     )
 {
     PFN_NUMBER mdlBuffer[(sizeof(MDL) / sizeof(PFN_NUMBER)) + MI_MAPPED_COPY_PAGES + 1];
@@ -471,13 +471,13 @@ NTSTATUS MiDoMappedCopy(
  * using either a pool allocation or a stack buffer.
  */
 NTSTATUS MiDoPoolCopy(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     )
 {
     /* The size of the pool-allocated buffer. */
@@ -628,9 +628,9 @@ NTSTATUS MiDoPoolCopy(
 }
 
 ULONG MiGetExceptionInfo(
-    PEXCEPTION_POINTERS ExceptionInfo,
-    PBOOLEAN HaveBadAddress,
-    PULONG_PTR BadAddress
+    __in PEXCEPTION_POINTERS ExceptionInfo,
+    __out PBOOLEAN HaveBadAddress,
+    __out PULONG_PTR BadAddress
     )
 {
     PEXCEPTION_RECORD exceptionRecord;
@@ -654,13 +654,13 @@ ULONG MiGetExceptionInfo(
 }
 
 NTSTATUS MmCopyVirtualMemory(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     )
 {
     NTSTATUS status = STATUS_SUCCESS;

@@ -34,6 +34,15 @@
 #define OBJ_AUDIT_OBJECT_CLOSE 0x00000004L
 #define OBJ_HANDLE_ATTRIBUTES (OBJ_PROTECT_CLOSE | OBJ_INHERIT | OBJ_AUDIT_OBJECT_CLOSE)
 
+#define ObpDecodeGrantedAccess(Access) \
+    ((Access) & ~ObpAccessProtectCloseBit)
+#define ObpDecodeObject(Object) \
+    ((PVOID)((ULONG_PTR)(Object) & ~OBJ_HANDLE_ATTRIBUTES))
+#define ObpGetHandleAttributes(HandleTableEntry) \
+    (((HandleTableEntry)->GrantedAccess & ObpAccessProtectCloseBit) ? \
+    (((HandleTableEntry)->Value & OBJ_HANDLE_ATTRIBUTES) | OBJ_PROTECT_CLOSE) : \
+    ((HandleTableEntry)->Value & (OBJ_INHERIT | OBJ_AUDIT_OBJECT_CLOSE)))
+
 /* FUNCTION DEFS */
 
 struct _OBJECT_HANDLE_FLAG_INFORMATION;
@@ -94,11 +103,33 @@ typedef enum _OB_OPEN_REASON
 
 /* STRUCTS */
 
+typedef struct _OBP_QUERY_PROCESS_HANDLES_DATA
+{
+    PVOID Buffer;
+    ULONG BufferLength;
+    ULONG CurrentIndex;
+    NTSTATUS Status;
+} OBP_QUERY_PROCESS_HANDLES_DATA, *POBP_QUERY_PROCESS_HANDLES_DATA;
+
 typedef struct _OBP_SET_HANDLE_GRANTED_ACCESS_DATA
 {
     HANDLE Handle;
     ACCESS_MASK GrantedAccess;
 } OBP_SET_HANDLE_GRANTED_ACCESS_DATA, *POBP_SET_HANDLE_GRANTED_ACCESS_DATA;
+
+typedef struct _PROCESS_HANDLE
+{
+    HANDLE Handle;
+    PVOID Object;
+    ACCESS_MASK GrantedAccess;
+    ULONG HandleAttributes;
+} PROCESS_HANDLE, *PPROCESS_HANDLE;
+
+typedef struct _PROCESS_HANDLE_INFORMATION
+{
+    ULONG HandleCount;
+    PROCESS_HANDLE Handles[1];
+} PROCESS_HANDLE_INFORMATION, *PPROCESS_HANDLE_INFORMATION;
 
 typedef struct _OBJECT_HANDLE_FLAG_INFORMATION
 {

@@ -38,6 +38,7 @@
             this.buttonTerminate = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
             this.labelCount = new System.Windows.Forms.Label();
+            this.comboMethod = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // listProcesses
@@ -50,10 +51,10 @@
             this.columnPID});
             this.listProcesses.FullRowSelect = true;
             this.listProcesses.HideSelection = false;
-            this.listProcesses.Location = new System.Drawing.Point(12, 55);
+            this.listProcesses.Location = new System.Drawing.Point(12, 44);
             this.listProcesses.Name = "listProcesses";
             this.listProcesses.ShowItemToolTips = true;
-            this.listProcesses.Size = new System.Drawing.Size(487, 282);
+            this.listProcesses.Size = new System.Drawing.Size(487, 296);
             this.listProcesses.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.listProcesses.TabIndex = 0;
             this.listProcesses.UseCompatibleStateImageBehavior = false;
@@ -73,7 +74,7 @@
             // 
             this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonClose.Location = new System.Drawing.Point(424, 358);
+            this.buttonClose.Location = new System.Drawing.Point(424, 361);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(75, 23);
             this.buttonClose.TabIndex = 1;
@@ -85,7 +86,7 @@
             // 
             this.buttonScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonScan.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonScan.Location = new System.Drawing.Point(343, 358);
+            this.buttonScan.Location = new System.Drawing.Point(343, 361);
             this.buttonScan.Name = "buttonScan";
             this.buttonScan.Size = new System.Drawing.Size(75, 23);
             this.buttonScan.TabIndex = 1;
@@ -100,16 +101,17 @@
             this.label2.AutoEllipsis = true;
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(487, 43);
+            this.label2.Size = new System.Drawing.Size(487, 32);
             this.label2.TabIndex = 3;
-            this.label2.Text = resources.GetString("label2.Text");
+            this.label2.Text = "Processes highlighted red are hidden while those highlighted gray have terminated" +
+                " but are still being referenced by other processes.";
             // 
             // buttonTerminate
             // 
             this.buttonTerminate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonTerminate.Enabled = false;
             this.buttonTerminate.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonTerminate.Location = new System.Drawing.Point(181, 358);
+            this.buttonTerminate.Location = new System.Drawing.Point(181, 361);
             this.buttonTerminate.Name = "buttonTerminate";
             this.buttonTerminate.Size = new System.Drawing.Size(75, 23);
             this.buttonTerminate.TabIndex = 4;
@@ -121,7 +123,7 @@
             // 
             this.buttonSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonSave.Location = new System.Drawing.Point(262, 358);
+            this.buttonSave.Location = new System.Drawing.Point(262, 361);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(75, 23);
             this.buttonSave.TabIndex = 5;
@@ -133,18 +135,33 @@
             // 
             this.labelCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelCount.Location = new System.Drawing.Point(12, 340);
+            this.labelCount.Location = new System.Drawing.Point(12, 343);
             this.labelCount.Name = "labelCount";
             this.labelCount.Size = new System.Drawing.Size(487, 15);
             this.labelCount.TabIndex = 6;
             this.labelCount.Text = "Count";
             this.labelCount.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // comboMethod
+            // 
+            this.comboMethod.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboMethod.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.comboMethod.FormattingEnabled = true;
+            this.comboMethod.Items.AddRange(new object[] {
+            "Brute Force",
+            "CSR Handles"});
+            this.comboMethod.Location = new System.Drawing.Point(12, 363);
+            this.comboMethod.Name = "comboMethod";
+            this.comboMethod.Size = new System.Drawing.Size(121, 21);
+            this.comboMethod.TabIndex = 7;
+            // 
             // HiddenProcessesWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(511, 393);
+            this.ClientSize = new System.Drawing.Size(511, 396);
+            this.Controls.Add(this.comboMethod);
             this.Controls.Add(this.labelCount);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonTerminate);
@@ -174,5 +191,6 @@
         private System.Windows.Forms.Button buttonTerminate;
         private System.Windows.Forms.Button buttonSave;
         private System.Windows.Forms.Label labelCount;
+        private System.Windows.Forms.ComboBox comboMethod;
     }
 }

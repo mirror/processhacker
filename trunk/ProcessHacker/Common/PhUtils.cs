@@ -28,6 +28,7 @@ using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.UI;
+using System.Drawing;
 
 namespace ProcessHacker.Common
 {
@@ -94,6 +95,14 @@ namespace ProcessHacker.Common
             { }
 
             return false;
+        }
+
+        public static Color GetForeColor(Color backColor)
+        {
+            if (backColor.GetBrightness() > 0.4)
+                return Color.Black;
+            else
+                return Color.White;
         }
 
         /// <summary>

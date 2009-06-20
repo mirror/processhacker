@@ -418,6 +418,15 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Opens the thread's process.
+        /// </summary>
+        /// <returns>A process handle.</returns>
+        public ProcessHandle GetProcess(ProcessAccess access)
+        {
+            return new ProcessHandle(this, access);
+        }
+
+        /// <summary>
         /// Opens and returns a handle to the thread's token.
         /// </summary>
         /// <returns>A handle to the thread's token.</returns>

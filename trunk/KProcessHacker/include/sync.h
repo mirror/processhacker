@@ -42,15 +42,15 @@ typedef struct _KPH_PROCESSOR_LOCK
 } KPH_PROCESSOR_LOCK, *PKPH_PROCESSOR_LOCK;
 
 BOOLEAN KphAcquireProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __inout PKPH_PROCESSOR_LOCK ProcessorLock
     );
 
 VOID KphInitializeProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __out PKPH_PROCESSOR_LOCK ProcessorLock
     );
 
 VOID KphReleaseProcessorLock(
-    PKPH_PROCESSOR_LOCK ProcessorLock
+    __inout PKPH_PROCESSOR_LOCK ProcessorLock
     );
 
 #endif

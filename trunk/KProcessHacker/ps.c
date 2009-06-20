@@ -29,7 +29,7 @@
  * Prevents the process from terminating.
  */
 BOOLEAN KphAcquireProcessRundownProtection(
-    PEPROCESS Process
+    __in PEPROCESS Process
     )
 {
     return ExAcquireRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
@@ -40,8 +40,8 @@ BOOLEAN KphAcquireProcessRundownProtection(
  * Assigns an impersonation token to the specified thread.
  */
 NTSTATUS KphAssignImpersonationToken(
-    HANDLE ThreadHandle,
-    HANDLE TokenHandle
+    __in HANDLE ThreadHandle,
+    __in HANDLE TokenHandle
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -70,9 +70,9 @@ NTSTATUS KphAssignImpersonationToken(
  * Gets the context of the specified thread.
  */
 NTSTATUS KphGetContextThread(
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __inout PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -101,7 +101,7 @@ NTSTATUS KphGetContextThread(
  * Gets the ID of the process referenced by the specified handle.
  */
 HANDLE KphGetProcessId(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     )
 {
     PEPROCESS processObject;
@@ -123,8 +123,8 @@ HANDLE KphGetProcessId(
  * and optionally the ID of the thread's process.
  */
 HANDLE KphGetThreadId(
-    HANDLE ThreadHandle,
-    PHANDLE ProcessId
+    __in HANDLE ThreadHandle,
+    __out_opt PHANDLE ProcessId
     )
 {
     PETHREAD threadObject;
@@ -151,9 +151,9 @@ HANDLE KphGetThreadId(
  * Gets a pointer to the WIN32THREAD structure of the specified thread.
  */
 NTSTATUS KphGetThreadWin32Thread(
-    HANDLE ThreadHandle,
-    PVOID *Win32Thread,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __out PVOID *Win32Thread,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -204,11 +204,11 @@ NTSTATUS KphGetThreadWin32Thread(
  * Opens a process.
  */
 NTSTATUS KphOpenProcess(
-    PHANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId,
-    KPROCESSOR_MODE AccessMode
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in PCLIENT_ID ClientId,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
@@ -311,10 +311,10 @@ NTSTATUS KphOpenProcess(
  * STATUS_PROCESS_NOT_IN_JOB.
  */
 NTSTATUS KphOpenProcessJob(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    PHANDLE JobHandle,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __out PHANDLE JobHandle,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -395,11 +395,11 @@ NTSTATUS KphOpenProcessJob(
  * Opens a thread.
  */
 NTSTATUS KphOpenThread(
-    PHANDLE ThreadHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId,
-    KPROCESSOR_MODE AccessMode
+    __out PHANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in PCLIENT_ID ClientId,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     BOOLEAN hasObjectName = ObjectAttributes->ObjectName != NULL;
@@ -489,12 +489,88 @@ NTSTATUS KphOpenThread(
     return status;
 }
 
+/* KphOpenThreadProcess
+ * 
+ * Opens a thread's process.
+ */
+NTSTATUS KphOpenThreadProcess(
+    __in HANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __out PHANDLE ProcessHandle,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    PEPROCESS processObject;
+    HANDLE processHandle;
+    ACCESS_STATE accessState;
+    CHAR auxData[AUX_ACCESS_DATA_SIZE];
+    
+    status = SeCreateAccessState(
+        &accessState,
+        (PAUX_ACCESS_DATA)auxData,
+        DesiredAccess,
+        (PGENERIC_MAPPING)KVOFF(*PsProcessType, OffOtiGenericMapping)
+        );
+    
+    if (!NT_SUCCESS(status))
+    {
+        return status;
+    }
+    
+    if (accessState.RemainingDesiredAccess & MAXIMUM_ALLOWED)
+        accessState.PreviouslyGrantedAccess |= ProcessAllAccess;
+    else
+        accessState.PreviouslyGrantedAccess |= accessState.RemainingDesiredAccess;
+    
+    accessState.RemainingDesiredAccess = 0;
+    
+    status = ObReferenceObjectByHandle(ThreadHandle, 0, *PsThreadType, KernelMode, &threadObject, 0);
+    
+    if (!NT_SUCCESS(status))
+    {
+        SeDeleteAccessState(&accessState);
+        return status;
+    }
+    
+    /* Get the process object. */
+    processObject = IoThreadToProcess(threadObject);
+    ObDereferenceObject(threadObject);
+    
+    if (processObject == NULL)
+    {
+        /* Thread does not have a process (?). */
+        SeDeleteAccessState(&accessState);
+        *ProcessHandle = NULL;
+        return STATUS_UNSUCCESSFUL;
+    }
+    
+    ObReferenceObject(processObject);
+    status = ObOpenObjectByPointer(
+        processObject,
+        0,
+        &accessState,
+        0,
+        *PsProcessType,
+        AccessMode,
+        &processHandle
+        );
+    SeDeleteAccessState(&accessState);
+    ObDereferenceObject(processObject);
+    
+    if (NT_SUCCESS(status))
+        *ProcessHandle = processHandle;
+    
+    return status;
+}
+
 /* KphReleaseProcessRundownProtection
  * 
  * Allows the process to terminate.
  */
 VOID KphReleaseProcessRundownProtection(
-    PEPROCESS Process
+    __in PEPROCESS Process
     )
 {
     ExReleaseRundownProtection((PEX_RUNDOWN_REF)KVOFF(Process, OffEpRundownProtect));
@@ -505,7 +581,7 @@ VOID KphReleaseProcessRundownProtection(
  * Resumes the specified process.
  */
 NTSTATUS KphResumeProcess(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -536,9 +612,9 @@ NTSTATUS KphResumeProcess(
  * Sets the context of the specified thread.
  */
 NTSTATUS KphSetContextThread(
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __in PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -566,7 +642,7 @@ NTSTATUS KphSetContextThread(
  * Suspends the specified process.
  */
 NTSTATUS KphSuspendProcess(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -597,8 +673,8 @@ NTSTATUS KphSuspendProcess(
  * Terminates the specified process.
  */
 NTSTATUS KphTerminateProcess(
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE ProcessHandle,
+    __in NTSTATUS ExitStatus
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -658,8 +734,8 @@ NTSTATUS KphTerminateProcess(
  * Terminates the specified thread.
  */
 NTSTATUS KphTerminateThread(
-    HANDLE ThreadHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -700,8 +776,8 @@ NTSTATUS KphTerminateThread(
  * with STATUS_NOT_SUPPORTED.
  */
 NTSTATUS PsTerminateProcess(
-    PEPROCESS Process,
-    NTSTATUS ExitStatus
+    __in PEPROCESS Process,
+    __in NTSTATUS ExitStatus
     )
 {
     PVOID psTerminateProcess = __PsTerminateProcess;
@@ -749,8 +825,8 @@ NTSTATUS PsTerminateProcess(
  * could not be located, the call will fail with STATUS_NOT_SUPPORTED.
  */
 NTSTATUS PspTerminateThreadByPointer(
-    PETHREAD Thread,
-    NTSTATUS ExitStatus
+    __in PETHREAD Thread,
+    __in NTSTATUS ExitStatus
     )
 {
     PVOID pspTerminateThreadByPointer = __PspTerminateThreadByPointer;

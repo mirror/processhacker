@@ -112,7 +112,12 @@ namespace Aga.Controls.Tree
         public NodeState State
         {
             get { return _state; }
-            set { _state = value; }
+            set
+            {
+                _state = value;
+                if (_automaticForeColor)
+                    _autoForeColor = GetForeColor(this.BackColor);
+            }
         }
 
         private Color _backColor = SystemColors.Window;
@@ -125,14 +130,46 @@ namespace Aga.Controls.Tree
                 else
                     return _backColor;
             }
-            set { _backColor = value; }
+            set
+            {
+                _backColor = value;
+                if (_automaticForeColor)
+                    _autoForeColor = GetForeColor(this.BackColor);
+            }
         }
 
+        private Color _autoForeColor = Color.Black;
         private Color _foreColor = SystemColors.ControlText;
         public Color ForeColor
         {
-            get { return _foreColor; }
+            get
+            {
+                if (_automaticForeColor)
+                    return _autoForeColor;
+                else
+                    return _foreColor;
+            }
             set { _foreColor = value; }
+        }
+
+        private bool _automaticForeColor = true;
+        public bool AutomaticForeColor
+        {
+            get { return _automaticForeColor; }
+            set
+            {
+                _automaticForeColor = value;
+                if (_automaticForeColor)
+                    _autoForeColor = GetForeColor(this.BackColor);
+            }
+        }
+
+        public static Color GetForeColor(Color color)
+        {
+            if (color.GetBrightness() > 0.4)
+                return Color.Black;
+            else
+                return Color.White;
         }
 
 		private bool _isSelected;

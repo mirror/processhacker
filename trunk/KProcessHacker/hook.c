@@ -30,13 +30,13 @@ typedef struct _MAPPED_MDL
 } MAPPED_MDL, *PMAPPED_MDL;
 
 NTSTATUS KphpCreateMappedMdl(
-    PVOID Address,
-    ULONG Length,
-    PMAPPED_MDL MappedMdl
+    __in PVOID Address,
+    __in ULONG Length,
+    __out PMAPPED_MDL MappedMdl
     );
 
 VOID KphpFreeMappedMdl(
-    PMAPPED_MDL MappedMdl
+    __in PMAPPED_MDL MappedMdl
     );
 
 static KPH_PROCESSOR_LOCK HookProcessorLock;
@@ -57,9 +57,9 @@ NTSTATUS KphHookInit()
  * Initializes a hook structure.
  */
 VOID KphInitializeHook(
-    PKPH_HOOK Hook,
-    PVOID Function,
-    PVOID Target
+    __out PKPH_HOOK Hook,
+    __in PVOID Function,
+    __in PVOID Target
     )
 {
     memset(Hook, 0, sizeof(KPH_HOOK));
@@ -76,7 +76,7 @@ VOID KphInitializeHook(
  * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphHook(
-    PKPH_HOOK Hook
+    __inout PKPH_HOOK Hook
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -131,7 +131,7 @@ NTSTATUS KphHook(
  * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphUnhook(
-    PKPH_HOOK Hook
+    __inout PKPH_HOOK Hook
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -176,13 +176,13 @@ NTSTATUS KphUnhook(
  * AccessMode: If this argument is unavailable, specify KernelMode.
  */
 NTSTATUS NTAPI KphObOpenCall(
-    PKPH_OB_OPEN_HOOK ObOpenHook,
-    OB_OPEN_REASON OpenReason,
-    KPROCESSOR_MODE AccessMode,
-    PEPROCESS Process,
-    PVOID Object,
-    ACCESS_MASK GrantedAccess,
-    ULONG HandleCount
+    __in PKPH_OB_OPEN_HOOK ObOpenHook,
+    __in OB_OPEN_REASON OpenReason,
+    __in KPROCESSOR_MODE AccessMode,
+    __in PEPROCESS Process,
+    __in PVOID Object,
+    __in ACCESS_MASK GrantedAccess,
+    __in ULONG HandleCount
     )
 {
     /* If there wasn't any original open procedure, exit. */
@@ -220,10 +220,10 @@ NTSTATUS NTAPI KphObOpenCall(
 }
 
 VOID KphInitializeObOpenHook(
-    PKPH_OB_OPEN_HOOK ObOpenHook,
-    POBJECT_TYPE ObjectType,
-    PVOID Target51,
-    PVOID Target60
+    __inout PKPH_OB_OPEN_HOOK ObOpenHook,
+    __in POBJECT_TYPE ObjectType,
+    __in PVOID Target51,
+    __in PVOID Target60
     )
 {
     memset(ObOpenHook, 0, sizeof(KPH_OB_OPEN_HOOK));
@@ -240,7 +240,7 @@ VOID KphInitializeObOpenHook(
  * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphObOpenHook(
-    PKPH_OB_OPEN_HOOK ObOpenHook
+    __inout PKPH_OB_OPEN_HOOK ObOpenHook
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -310,7 +310,7 @@ NTSTATUS KphObOpenHook(
  * IRQL: <= APC_LEVEL
  */
 NTSTATUS KphObOpenUnhook(
-    PKPH_OB_OPEN_HOOK ObOpenHook
+    __inout PKPH_OB_OPEN_HOOK ObOpenHook
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -359,9 +359,9 @@ NTSTATUS KphObOpenUnhook(
  * IRQL: Any
  */
 NTSTATUS KphpCreateMappedMdl(
-    PVOID Address,
-    ULONG Length,
-    PMAPPED_MDL MappedMdl
+    __in PVOID Address,
+    __in ULONG Length,
+    __out PMAPPED_MDL MappedMdl
     )
 {
     PMDL mdl;
@@ -403,7 +403,7 @@ NTSTATUS KphpCreateMappedMdl(
  * IRQL: Any
  */
 VOID KphpFreeMappedMdl(
-    PMAPPED_MDL MappedMdl
+    __in PMAPPED_MDL MappedMdl
     )
 {
     if (MappedMdl->Mdl != NULL)

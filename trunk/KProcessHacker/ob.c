@@ -23,25 +23,34 @@
 #include "include/kph.h"
 #include "include/ob.h"
 
-BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
-    PHANDLE_TABLE_ENTRY HandleTableEntry,
-    HANDLE Handle,
-    POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
+BOOLEAN KphpQueryProcessHandlesEnumCallback(
+    __inout PHANDLE_TABLE_ENTRY HandleTableEntry,
+    __in HANDLE Handle,
+    __in POBP_QUERY_PROCESS_HANDLES_DATA Context
     );
+
+BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
+    __inout PHANDLE_TABLE_ENTRY HandleTableEntry,
+    __in HANDLE Handle,
+    __in POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
+    );
+
+/* This attribute is now stored in the GrantedAccess field. */
+ULONG ObpAccessProtectCloseBit = 0x80000000;
 
 /* KphDuplicateObject
  * 
  * Duplicates a handle from the source process to the target process.
  */
 NTSTATUS KphDuplicateObject(
-    HANDLE SourceProcessHandle,
-    HANDLE SourceHandle,
-    HANDLE TargetProcessHandle,
-    PHANDLE TargetHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG HandleAttributes,
-    ULONG Options,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE SourceProcessHandle,
+    __in HANDLE SourceHandle,
+    __in_opt HANDLE TargetProcessHandle,
+    __out_opt PHANDLE TargetHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG HandleAttributes,
+    __in ULONG Options,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -126,10 +135,10 @@ NTSTATUS KphDuplicateObject(
  * Enumerates the handles in the specified process' handle table.
  */
 BOOLEAN KphEnumProcessHandleTable(
-    PEPROCESS Process,
-    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
-    PVOID Context,
-    PHANDLE Handle
+    __in PEPROCESS Process,
+    __in PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    __inout PVOID Context,
+    __out_opt PHANDLE Handle
     )
 {
     BOOLEAN result = FALSE;
@@ -151,14 +160,106 @@ BOOLEAN KphEnumProcessHandleTable(
     return result;
 }
 
+/* KphQueryProcessHandles
+ * 
+ * Queries a process handle table.
+ */
+NTSTATUS KphQueryProcessHandles(
+    __in HANDLE ProcessHandle,
+    __out_bcount_opt(BufferLength) PPROCESS_HANDLE_INFORMATION Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
+    )
+{
+    NTSTATUS status;
+    BOOLEAN result;
+    PEPROCESS processObject;
+    OBP_QUERY_PROCESS_HANDLES_DATA context;
+    
+    /* Probe buffer contents. */
+    if (AccessMode != KernelMode)
+    {
+        __try
+        {
+            if (Buffer)
+                ProbeForWrite(Buffer, BufferLength, 1);
+            if (ReturnLength)
+                ProbeForWrite(ReturnLength, sizeof(ULONG), 1);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    /* Reference the process object. */
+    status = ObReferenceObjectByHandle(
+        ProcessHandle,
+        PROCESS_QUERY_INFORMATION,
+        *PsProcessType,
+        KernelMode,
+        &processObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    /* Initialize the enumeration context. */
+    context.Buffer = Buffer;
+    context.BufferLength = BufferLength;
+    context.CurrentIndex = 0;
+    context.Status = STATUS_SUCCESS;
+    
+    /* Enumerate the handles. */
+    result = KphEnumProcessHandleTable(
+        processObject,
+        KphpQueryProcessHandlesEnumCallback,
+        &context,
+        NULL
+        );
+    ObDereferenceObject(processObject);
+    
+    /* Write the number of handles. */
+    if (BufferLength >= sizeof(ULONG))
+    {
+        __try
+        {
+            Buffer->HandleCount = context.CurrentIndex;
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    /* Supply the return length if the caller wanted it. */
+    if (ReturnLength)
+    {
+        __try
+        {
+            /* CurrentIndex should contain the number of handles, so we simply multiply it 
+               by the size of PROCESS_HANDLE. */
+            *ReturnLength = sizeof(ULONG) + context.CurrentIndex * sizeof(PROCESS_HANDLE);
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            return GetExceptionCode();
+        }
+    }
+    
+    return context.Status;
+}
+
 /* KphSetHandleGrantedAccess
  * 
  * Sets the granted access of a handle.
  */
 NTSTATUS KphSetHandleGrantedAccess(
-    PEPROCESS Process,
-    HANDLE Handle,
-    ACCESS_MASK GrantedAccess
+    __in PEPROCESS Process,
+    __in HANDLE Handle,
+    __in ACCESS_MASK GrantedAccess
     )
 {
     BOOLEAN result;
@@ -182,7 +283,7 @@ NTSTATUS KphSetHandleGrantedAccess(
  * Allows the process to terminate.
  */
 VOID ObDereferenceProcessHandleTable(
-    PEPROCESS Process
+    __in PEPROCESS Process
     )
 {
     KphReleaseProcessRundownProtection(Process);
@@ -195,14 +296,14 @@ VOID ObDereferenceProcessHandleTable(
  * re-opens an object in another process.
  */
 NTSTATUS ObDuplicateObject(
-    PEPROCESS SourceProcess,
-    PEPROCESS TargetProcess,
-    HANDLE SourceHandle,
-    PHANDLE TargetHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG HandleAttributes,
-    ULONG Options,
-    KPROCESSOR_MODE AccessMode
+    __in PEPROCESS SourceProcess,
+    __in_opt PEPROCESS TargetProcess,
+    __in HANDLE SourceHandle,
+    __out_opt PHANDLE TargetHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG HandleAttributes,
+    __in ULONG Options,
+    __in KPROCESSOR_MODE AccessMode
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -289,7 +390,7 @@ NTSTATUS ObDuplicateObject(
             &accessState,
             DesiredAccess,
             objectType,
-            AccessMode,
+            KernelMode,
             &objectHandle
             );
         SeDeleteAccessState(&accessState);
@@ -315,7 +416,7 @@ OpenObjectEnd:
  * to its handle table.
  */
 PHANDLE_TABLE ObReferenceProcessHandleTable(
-    PEPROCESS Process
+    __in PEPROCESS Process
     )
 {
     PHANDLE_TABLE handleTable = NULL;
@@ -331,15 +432,63 @@ PHANDLE_TABLE ObReferenceProcessHandleTable(
     return handleTable;
 }
 
+/* KphpQueryProcessHandlesEnumCallback
+ * 
+ * The callback for KphEnumProcessHandleTable, used by 
+ * KphQueryProcessHandles.
+ */
+BOOLEAN KphpQueryProcessHandlesEnumCallback(
+    __inout PHANDLE_TABLE_ENTRY HandleTableEntry,
+    __in HANDLE Handle,
+    __in POBP_QUERY_PROCESS_HANDLES_DATA Context
+    )
+{
+    PROCESS_HANDLE handleInfo;
+    PPROCESS_HANDLE_INFORMATION buffer = Context->Buffer;
+    ULONG i = Context->CurrentIndex;
+    
+    handleInfo.Handle = Handle;
+    handleInfo.Object = ObpDecodeObject(HandleTableEntry->Object);
+    handleInfo.GrantedAccess = ObpDecodeGrantedAccess(HandleTableEntry->GrantedAccess);
+    handleInfo.HandleAttributes = ObpGetHandleAttributes(HandleTableEntry);
+    
+    /* Only write if we have not exceeded the buffer length. */
+    if ((sizeof(ULONG) + i * sizeof(PROCESS_HANDLE)) <= Context->BufferLength)
+    {
+        __try
+        {
+            memcpy(&buffer->Handles[i], &handleInfo, sizeof(PROCESS_HANDLE));
+        }
+        __except (EXCEPTION_EXECUTE_HANDLER)
+        {
+            /* Report an error. */
+            if (Context->Status == STATUS_SUCCESS)
+                Context->Status = GetExceptionCode();
+        }
+    }
+    else
+    {
+        /* Report that the buffer is too small. */
+        if (Context->Status == STATUS_SUCCESS)
+            Context->Status = STATUS_BUFFER_TOO_SMALL;
+    }
+    
+    /* Increment the index regardless of whether the information was written; 
+       this will allow KphQueryProcessHandles to report the correct return length. */
+    Context->CurrentIndex++;
+    
+    return FALSE;
+}
+
 /* KphpSetHandleGrantedAccessEnumCallback
  * 
  * The callback for KphEnumProcessHandleTable, used by 
  * KphSetHandleGrantedAccess.
  */
 BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
-    PHANDLE_TABLE_ENTRY HandleTableEntry,
-    HANDLE Handle,
-    POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
+    __inout PHANDLE_TABLE_ENTRY HandleTableEntry,
+    __in HANDLE Handle,
+    __in POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
     )
 {
     if (Handle != Context->Handle)

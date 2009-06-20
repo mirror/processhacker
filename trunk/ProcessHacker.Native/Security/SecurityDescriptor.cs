@@ -10,7 +10,6 @@ namespace ProcessHacker.Native.Security
     public class SecurityDescriptor : BaseObject
     {
         private object _disposeLock = new object();
-        private bool _disposed = false;
         private MemoryAlloc _sd;
 
         public static implicit operator IntPtr(SecurityDescriptor securityDescriptor)

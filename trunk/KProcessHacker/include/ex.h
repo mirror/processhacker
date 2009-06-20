@@ -35,10 +35,10 @@ typedef BOOLEAN (NTAPI *PEX_ENUM_HANDLE_CALLBACK)(
     );
 
 BOOLEAN NTAPI ExEnumHandleTable(
-    struct _HANDLE_TABLE *HandleTable,
-    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
-    PVOID Context,
-    PHANDLE Handle
+    __in struct _HANDLE_TABLE *HandleTable,
+    __in PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    __inout PVOID Context,
+    __out_opt PHANDLE Handle
     );
 
 typedef NTSTATUS (NTAPI *_ExpGetProcessInformation)(

@@ -145,7 +145,8 @@ namespace ProcessHacker.Native.Api
     public enum HandleFlags : byte
     {
         ProtectFromClose = 0x1,
-        Inherit = 0x2
+        Inherit = 0x2,
+        AuditObjectClose = 0x4
     }
 
     [Flags]

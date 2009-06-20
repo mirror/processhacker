@@ -64,247 +64,262 @@ PVOID GetSystemRoutineAddress(
     WCHAR *Name
     );
 
-NTSTATUS OpenProcess(
-    PHANDLE ProcessHandle,
-    ULONG DesiredAccess,
-    HANDLE ProcessId
-    );
-
 VOID KphAttachProcess(
-    PEPROCESS Process,
-    PKPH_ATTACH_STATE AttachState
+    __in PEPROCESS Process,
+    __out PKPH_ATTACH_STATE AttachState
     );
 
 NTSTATUS KphAttachProcessHandle(
-    HANDLE ProcessHandle,
-    PKPH_ATTACH_STATE AttachState
+    __in HANDLE ProcessHandle,
+    __out PKPH_ATTACH_STATE AttachState
     );
 
 NTSTATUS KphAttachProcessId(
-    HANDLE ProcessId,
-    PKPH_ATTACH_STATE AttachState
+    __in HANDLE ProcessId,
+    __out PKPH_ATTACH_STATE AttachState
     );
 
 VOID KphDetachProcess(
-    PKPH_ATTACH_STATE AttachState
+    __in PKPH_ATTACH_STATE AttachState
+    );
+
+NTSTATUS OpenProcess(
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in HANDLE ProcessId
     );
 
 NTSTATUS SetProcessToken(
-    HANDLE sourcePid,
-    HANDLE targetPid
+    __in HANDLE sourcePid,
+    __in HANDLE targetPid
     );
 
 /* KProcessHacker */
 
 BOOLEAN KphAcquireProcessRundownProtection(
-    PEPROCESS Process
+    __in PEPROCESS Process
     );
 
 NTSTATUS KphAssignImpersonationToken(
-    HANDLE ThreadHandle,
-    HANDLE TokenHandle
+    __in HANDLE ThreadHandle,
+    __in HANDLE TokenHandle
     );
 
 NTSTATUS KphDuplicateObject(
-    HANDLE SourceProcessHandle,
-    HANDLE SourceHandle,
-    HANDLE TargetProcessHandle,
-    PHANDLE TargetHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG HandleAttributes,
-    ULONG Options,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE SourceProcessHandle,
+    __in HANDLE SourceHandle,
+    __in_opt HANDLE TargetProcessHandle,
+    __out_opt PHANDLE TargetHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG HandleAttributes,
+    __in ULONG Options,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 BOOLEAN KphEnumProcessHandleTable(
-    PEPROCESS Process,
-    PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
-    PVOID Context,
-    PHANDLE Handle
+    __in PEPROCESS Process,
+    __in PEX_ENUM_HANDLE_CALLBACK EnumHandleProcedure,
+    __inout PVOID Context,
+    __out_opt PHANDLE Handle
     );
 
 NTSTATUS KphGetContextThread(
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __inout PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 HANDLE KphGetProcessId(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     );
 
 HANDLE KphGetThreadId(
-    HANDLE ThreadHandle,
-    PHANDLE ProcessId
+    __in HANDLE ThreadHandle,
+    __out_opt PHANDLE ProcessId
     );
 
 NTSTATUS KphGetThreadWin32Thread(
-    HANDLE ThreadHandle,
-    PVOID *Win32Thread,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __out PVOID *Win32Thread,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphOpenProcess(
-    PHANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId,
-    KPROCESSOR_MODE AccessMode
+    __out PHANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in PCLIENT_ID ClientId,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphOpenProcessJob(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    PHANDLE JobHandle,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __out PHANDLE JobHandle,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphOpenProcessTokenEx(
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG ObjectAttributes,
-    PHANDLE TokenHandle,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG ObjectAttributes,
+    __out PHANDLE TokenHandle,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphOpenThread(
-    PHANDLE ThreadHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    PCLIENT_ID ClientId,
-    KPROCESSOR_MODE AccessMode
+    __out PHANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in PCLIENT_ID ClientId,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphOpenThreadProcess(
+    __in HANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __out PHANDLE ProcessHandle,
+    __in KPROCESSOR_MODE AccessMode
+    );
+
+NTSTATUS KphQueryProcessHandles(
+    __in HANDLE ProcessHandle,
+    __out_bcount_opt(BufferLength) PPROCESS_HANDLE_INFORMATION Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphReadVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 VOID KphReleaseProcessRundownProtection(
-    PEPROCESS Process
+    __in PEPROCESS Process
     );
 
 NTSTATUS KphResumeProcess(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     );
 
 NTSTATUS KphSetContextThread(
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ThreadHandle,
+    __in PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphSetHandleGrantedAccess(
-    PEPROCESS Process,
-    HANDLE Handle,
-    ACCESS_MASK GrantedAccess
+    __in PEPROCESS Process,
+    __in HANDLE Handle,
+    __in ACCESS_MASK GrantedAccess
     );
 
 NTSTATUS KphSuspendProcess(
-    HANDLE ProcessHandle
+    __in HANDLE ProcessHandle
     );
 
 NTSTATUS KphTerminateProcess(
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE ProcessHandle,
+    __in NTSTATUS ExitStatus
     );
 
 NTSTATUS KphTerminateThread(
-    HANDLE ThreadHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
     );
 
 NTSTATUS KphUnsafeReadVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 NTSTATUS KphWriteVirtualMemory(
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength,
-    KPROCESSOR_MODE AccessMode
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 /* MM */
 
 NTSTATUS MiDoMappedCopy(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     );
 
 NTSTATUS MiDoPoolCopy(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     );
 
 ULONG MiGetExceptionInfo(
-    PEXCEPTION_POINTERS ExceptionPointers,
-    PBOOLEAN IsBadAddress,
-    PULONG_PTR BadAddress
+    __in PEXCEPTION_POINTERS ExceptionInfo,
+    __out PBOOLEAN HaveBadAddress,
+    __out PULONG_PTR BadAddress
     );
 
 NTSTATUS MmCopyVirtualMemory(
-    PEPROCESS FromProcess,
-    PVOID FromAddress,
-    PEPROCESS ToProcess,
-    PVOID ToAddress,
-    ULONG BufferLength,
-    KPROCESSOR_MODE AccessMode,
-    PULONG ReturnLength
+    __in PEPROCESS FromProcess,
+    __in PVOID FromAddress,
+    __in PEPROCESS ToProcess,
+    __in PVOID ToAddress,
+    __in ULONG BufferLength,
+    __in KPROCESSOR_MODE AccessMode,
+    __out PULONG ReturnLength
     );
 
 /* OB */
 
 NTSTATUS ObDuplicateObject(
-    PEPROCESS SourceProcess,
-    PEPROCESS TargetProcess,
-    HANDLE SourceHandle,
-    PHANDLE TargetHandle,
-    ACCESS_MASK DesiredAccess,
-    ULONG HandleAttributes,
-    ULONG Options,
-    KPROCESSOR_MODE AccessMode
+    __in PEPROCESS SourceProcess,
+    __in_opt PEPROCESS TargetProcess,
+    __in HANDLE SourceHandle,
+    __out_opt PHANDLE TargetHandle,
+    __in ACCESS_MASK DesiredAccess,
+    __in ULONG HandleAttributes,
+    __in ULONG Options,
+    __in KPROCESSOR_MODE AccessMode
     );
 
 PHANDLE_TABLE ObReferenceProcessHandleTable(
-    PEPROCESS Process
+    __in PEPROCESS Process
     );
 
 VOID ObDereferenceProcessHandleTable(
-    PEPROCESS Process
+    __in PEPROCESS Process
     );
 
 /* PS */
 
 NTSTATUS PsTerminateProcess(
-    PEPROCESS Process,
-    NTSTATUS ExitStatus
+    __in PEPROCESS Process,
+    __in NTSTATUS ExitStatus
     );
 
 NTSTATUS PspTerminateThreadByPointer(
-    PETHREAD Thread,
-    NTSTATUS ExitStatus
+    __in PETHREAD Thread,
+    __in NTSTATUS ExitStatus
     );
 
 #endif

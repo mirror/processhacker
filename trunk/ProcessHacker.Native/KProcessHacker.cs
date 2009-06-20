@@ -81,7 +81,9 @@ namespace ProcessHacker.Native
             ProtectRemove,
             ProtectQuery,
             KphUnsafeReadVirtualMemory,
-            SetExecuteOptions
+            SetExecuteOptions,
+            KphQueryProcessHandles,
+            KphOpenThreadProcess
         }
 
         [Flags]
@@ -437,6 +439,39 @@ namespace ProcessHacker.Native
             return *(int*)outData;
         }
 
+        public int KphOpenThreadProcess(ThreadHandle threadHandle, ProcessAccess desiredAccess)
+        {
+            byte* inData = stackalloc byte[8];
+            byte* outData = stackalloc byte[4];
+
+            *(int*)inData = threadHandle;
+            *(uint*)(inData + 4) = (uint)desiredAccess;
+
+            _fileHandle.IoControl(CtlCode(Control.KphOpenThreadProcess), inData, 8, outData, 4);
+
+            return *(int*)outData;
+        }
+
+        public void KphQueryProcessHandles(ProcessHandle processHandle, IntPtr buffer, int bufferLength, out int returnLength)
+        {
+            byte* inData = stackalloc byte[0x10];
+            int returnLengthLocal;
+
+            *(int*)inData = processHandle;
+            *(int*)(inData + 0x4) = buffer.ToInt32();
+            *(int*)(inData + 0x8) = bufferLength;
+            *(int*)(inData + 0xc) = (int)&returnLengthLocal;
+
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphQueryProcessHandles), inData, 0x10, null, 0);
+            }
+            finally
+            {
+                returnLength = returnLengthLocal;
+            }
+        }
+
         public void KphReadVirtualMemory(ProcessHandle processHandle, int baseAddress, byte[] buffer, int length, out int bytesRead)
         {
             fixed (byte* bufferPointer = buffer)
@@ -586,8 +621,14 @@ namespace ProcessHacker.Native
             *(int*)(inData + 0xc) = length;
             *(int*)(inData + 0x10) = (int)&returnLength;
 
-            _fileHandle.IoControl(CtlCode(Control.KphWriteVirtualMemory), inData, 0x14, null, 0);
-            bytesWritten = returnLength;
+            try
+            {
+                _fileHandle.IoControl(CtlCode(Control.KphWriteVirtualMemory), inData, 0x14, null, 0);
+            }
+            finally
+            {
+                bytesWritten = returnLength;
+            }
         }
 
         public void ProtectAdd(ProcessHandle processHandle, bool allowKernelMode, ProcessAccess ProcessAllowMask, ThreadAccess ThreadAllowMask)
@@ -730,6 +771,22 @@ namespace ProcessHacker.Native
                 Marshal.Copy(outData, 12, buffer, bufferLength);
 
             return status;
+        }
+    }
+
+    public struct ProcessHandleInformation
+    {
+        public IntPtr Handle;
+        public IntPtr Object;
+        public int GrantedAccess;
+        public HandleFlags HandleAttributes; // should be an int
+        private byte Pad1;
+        private short Pad2;
+
+        private void Dummy()
+        {
+            Pad1 = 0;
+            Pad2 = 0;
         }
     }
 }

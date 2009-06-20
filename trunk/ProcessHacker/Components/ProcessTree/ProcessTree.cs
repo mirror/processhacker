@@ -297,14 +297,6 @@ namespace ProcessHacker
                 return SystemColors.Window;
         }
 
-        private Color GetForeColor(Color backColor)
-        {
-            if (backColor.GetBrightness() > 0.4)
-                return Color.Black;
-            else
-                return Color.White;
-        }
-
         private void provider_DictionaryAdded(ProcessItem item)
         {
             this.BeginInvoke(new MethodInvoker(delegate
@@ -329,7 +321,6 @@ namespace ProcessHacker
                         }
 
                         node.BackColor = this.GetProcessColor(item);
-                        node.ForeColor = this.GetForeColor(node.BackColor);
                         node.ExpandAll();
                     }
                 }
@@ -347,7 +338,6 @@ namespace ProcessHacker
                     if (node != null)
                     {
                         node.BackColor = this.GetProcessColor(newItem);
-                        node.ForeColor = this.GetForeColor(node.BackColor);
                     }
 
                     _treeModel.Nodes[newItem.Pid].ProcessItem = newItem;
@@ -410,7 +400,6 @@ namespace ProcessHacker
                             ProcessItem item = _provider.Dictionary[pNode.Pid];
 
                             node.BackColor = this.GetProcessColor(item);
-                            node.ForeColor = this.GetForeColor(node.BackColor);
                         }
                     }
                     catch (Exception ex)

@@ -23,15 +23,15 @@
 #include "include/protect.h"
 
 BOOLEAN KphpIsAccessAllowed(
-    PVOID Object,
-    KPROCESSOR_MODE AccessMode,
-    ACCESS_MASK DesiredAccess
+    __in PVOID Object,
+    __in KPROCESSOR_MODE AccessMode,
+    __in ACCESS_MASK DesiredAccess
     );
 
 BOOLEAN KphpIsCurrentProcessProtected();
 
 VOID KphpProtectRemoveEntry(
-    PKPH_PROCESS_ENTRY Entry
+    __in PKPH_PROCESS_ENTRY Entry
     );
 
 /* ProtectedProcessRundownProtect
@@ -200,11 +200,11 @@ NTSTATUS NTAPI KphNewObOpenObjectByPointer(
  * New process/thread open procedure for NT 5.1.
  */
 NTSTATUS NTAPI KphNewOpenProcedure51(
-    OB_OPEN_REASON OpenReason,
-    PEPROCESS Process,
-    PVOID Object,
-    ACCESS_MASK GrantedAccess,
-    ULONG HandleCount
+    __in OB_OPEN_REASON OpenReason,
+    __in PEPROCESS Process,
+    __in PVOID Object,
+    __in ACCESS_MASK GrantedAccess,
+    __in ULONG HandleCount
     )
 {
     /* Simply call the 6.0 open procedure. */
@@ -225,12 +225,12 @@ NTSTATUS NTAPI KphNewOpenProcedure51(
  * New process/thread open procedure for NT 6.0 and 6.1.
  */
 NTSTATUS NTAPI KphNewOpenProcedure60(
-    OB_OPEN_REASON OpenReason,
-    KPROCESSOR_MODE AccessMode,
-    PEPROCESS Process,
-    PVOID Object,
-    ACCESS_MASK GrantedAccess,
-    ULONG HandleCount
+    __in OB_OPEN_REASON OpenReason,
+    __in KPROCESSOR_MODE AccessMode,
+    __in PEPROCESS Process,
+    __in PVOID Object,
+    __in ACCESS_MASK GrantedAccess,
+    __in ULONG HandleCount
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -294,11 +294,11 @@ NTSTATUS NTAPI KphNewOpenProcedure60(
  * IRQL: <= DISPATCH_LEVEL
  */
 PKPH_PROCESS_ENTRY KphProtectAddEntry(
-    PEPROCESS Process,
-    HANDLE Tag,
-    LOGICAL AllowKernelMode,
-    ACCESS_MASK ProcessAllowMask,
-    ACCESS_MASK ThreadAllowMask
+    __in PEPROCESS Process,
+    __in HANDLE Tag,
+    __in LOGICAL AllowKernelMode,
+    __in ACCESS_MASK ProcessAllowMask,
+    __in ACCESS_MASK ThreadAllowMask
     )
 {
     KIRQL oldIrql;
@@ -337,8 +337,8 @@ PKPH_PROCESS_ENTRY KphProtectAddEntry(
  * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphProtectCopyEntry(
-    PEPROCESS Process,
-    PKPH_PROCESS_ENTRY ProcessEntry
+    __in PEPROCESS Process,
+    __out PKPH_PROCESS_ENTRY ProcessEntry
     )
 {
     KIRQL oldIrql;
@@ -376,8 +376,8 @@ BOOLEAN KphProtectCopyEntry(
  * IRQL: <= DISPATCH_LEVEL
  */
 PKPH_PROCESS_ENTRY KphProtectFindEntry(
-    PEPROCESS Process,
-    HANDLE Tag
+    __in PEPROCESS Process,
+    __in HANDLE Tag
     )
 {
     KIRQL oldIrql;
@@ -417,7 +417,7 @@ PKPH_PROCESS_ENTRY KphProtectFindEntry(
  * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphProtectRemoveByProcess(
-    PEPROCESS Process
+    __in PEPROCESS Process
     )
 {
     PKPH_PROCESS_ENTRY entry = KphProtectFindEntry(Process, NULL);
@@ -439,7 +439,7 @@ BOOLEAN KphProtectRemoveByProcess(
  * IRQL: <= DISPATCH_LEVEL
  */
 ULONG KphProtectRemoveByTag(
-    HANDLE Tag
+    __in HANDLE Tag
     )
 {
     KIRQL oldIrql;
@@ -465,9 +465,9 @@ ULONG KphProtectRemoveByTag(
  * IRQL: <= DISPATCH_LEVEL
  */
 BOOLEAN KphpIsAccessAllowed(
-    PVOID Object,
-    KPROCESSOR_MODE AccessMode,
-    ACCESS_MASK DesiredAccess
+    __in PVOID Object,
+    __in KPROCESSOR_MODE AccessMode,
+    __in ACCESS_MASK DesiredAccess
     )
 {
     POBJECT_TYPE objectType;
@@ -542,7 +542,7 @@ BOOLEAN KphpIsCurrentProcessProtected()
  * IRQL: <= DISPATCH_LEVEL
  */
 VOID KphpProtectRemoveEntry(
-    PKPH_PROCESS_ENTRY Entry
+    __in PKPH_PROCESS_ENTRY Entry
     )
 {
     KIRQL oldIrql;
