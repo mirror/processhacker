@@ -25,6 +25,7 @@ namespace ProcessHacker.Common.Objects
             int handle = _handleGenerator.Pop();
 
             obj.Reference();
+            obj.Dispose(); // GC should not own the object.
 
             lock (_handles)
                 _handles.Add(handle, obj);
