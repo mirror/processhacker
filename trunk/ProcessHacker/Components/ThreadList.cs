@@ -562,30 +562,29 @@ namespace ProcessHacker.Components
             if (listThreads.SelectedItems.Count != 1)
                 return;
 
-            if (_pid == 4)
+            // Can't view system thread stacks if KPH isn't present.
+            if (
+                _pid == 4 && 
+                KProcessHacker.Instance == null
+                )
             {
                 MessageBox.Show(
-                    "Process Hacker does not currently support viewing kernel call stacks.",
-                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "Process Hacker cannot view system thread stacks without KProcessHacker. " + 
+                    "Make sure Process Hacker has administrative privileges and KProcessHacker " + 
+                    "supports your operating system.",
+                    "Process Hacker", MessageBoxButtons.OK, MessageBoxIcon.Error
+                    );
 
                 return;
             }
 
+            // Suspending PH threads is not a good idea :(
             if (_pid == Win32.GetCurrentProcessId())
             {
                 if (MessageBox.Show(
                     "Inspecting Process Hacker's threads may lead to instability. Are you sure you want to continue?",
                     "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
                     == DialogResult.No)
-                    return;
-            }
-
-            if (PhUtils.IsDangerousPid(_pid))
-            {
-                if (MessageBox.Show(
-                  "Inspecting a system process' threads may lead to instability. Are you sure you want to continue?",
-                  "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2)
-                  == DialogResult.No)
                     return;
             }
 
@@ -677,15 +676,15 @@ namespace ProcessHacker.Components
 
         private void suspendThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
-            {
-                DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
-                    " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+            //if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
+            //{
+            //    DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
+            //        " sure you want to suspend the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
+            //        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
-                if (result == DialogResult.No)
-                    return;
-            }
+            //    if (result == DialogResult.No)
+            //        return;
+            //}
 
             if (Program.ElevationType == TokenElevationType.Limited &&
                 KProcessHacker.Instance == null)
@@ -734,15 +733,15 @@ namespace ProcessHacker.Components
 
         private void resumeThreadMenuItem_Click(object sender, EventArgs e)
         {
-            if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
-            {
-                DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
-                    " sure you want to resume the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
+            //if (Properties.Settings.Default.WarnDangerous && PhUtils.IsDangerousPid(_pid))
+            //{
+            //    DialogResult result = MessageBox.Show("The process with PID " + _pid + " is a system process. Are you" +
+            //        " sure you want to resume the selected thread(s)?", "Process Hacker", MessageBoxButtons.YesNo,
+            //        MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2);
 
-                if (result == DialogResult.No)
-                    return;
-            }
+            //    if (result == DialogResult.No)
+            //        return;
+            //}
 
             if (Program.ElevationType == TokenElevationType.Limited &&
                 KProcessHacker.Instance == null)
