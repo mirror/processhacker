@@ -42,4 +42,12 @@ typedef struct _WS_ALL_COUNTS
     ULONG ShareableCount;
 } WS_ALL_COUNTS, *PWS_ALL_COUNTS;
 
+NTSTATUS PhpQueryProcessWs(
+    HANDLE ProcessHandle,
+    WS_INFORMATION_CLASS WsInformationClass,
+    PVOID WsInformation,
+    ULONG WsInformationLength,
+    PULONG ReturnLength
+    );
+
 #endif

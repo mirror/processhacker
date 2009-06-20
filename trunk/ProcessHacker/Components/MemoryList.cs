@@ -367,7 +367,8 @@ namespace ProcessHacker.Components
         {
             lock (listMemory)
             {
-                e.Item = this.MakeListViewItem(this.GetMemoryItem(e.ItemIndex));
+                if (e.ItemIndex < _memoryItems.Count)
+                    e.Item = this.MakeListViewItem(this.GetMemoryItem(e.ItemIndex));
             }
         }
 

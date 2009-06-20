@@ -516,6 +516,8 @@ namespace ProcessHacker
             {
                 try { Unhook(); }
                 catch { }
+                try { NProcessHacker.KphHookInit(); }
+                catch { }
             }
 
             if (pArgs.ContainsKey("-t"))

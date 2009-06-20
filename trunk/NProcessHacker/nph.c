@@ -24,7 +24,7 @@
 #include "kph.h"
 #include "verify.h"
 
-NPHAPI PVOID PhAlloc(SIZE_T Size)
+PVOID PhAlloc(SIZE_T Size)
 {
     PVOID memory;
     
@@ -34,7 +34,7 @@ NPHAPI PVOID PhAlloc(SIZE_T Size)
     return memory;
 }
 
-NPHAPI PVOID PhRealloc(PVOID Memory, SIZE_T Size)
+PVOID PhRealloc(PVOID Memory, SIZE_T Size)
 {
     PVOID memory;
 
@@ -44,7 +44,7 @@ NPHAPI PVOID PhRealloc(PVOID Memory, SIZE_T Size)
     return memory;
 }
 
-NPHAPI VOID PhFree(PVOID Memory)
+VOID PhFree(PVOID Memory)
 {
     free(Memory);
 }

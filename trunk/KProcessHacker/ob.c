@@ -167,7 +167,7 @@ BOOLEAN KphEnumProcessHandleTable(
 NTSTATUS KphQueryProcessHandles(
     __in HANDLE ProcessHandle,
     __out_bcount_opt(BufferLength) PPROCESS_HANDLE_INFORMATION Buffer,
-    __in ULONG BufferLength,
+    __in_opt ULONG BufferLength,
     __out_opt PULONG ReturnLength,
     __in KPROCESSOR_MODE AccessMode
     )
@@ -221,8 +221,11 @@ NTSTATUS KphQueryProcessHandles(
         );
     ObDereferenceObject(processObject);
     
-    /* Write the number of handles. */
-    if (BufferLength >= sizeof(ULONG))
+    /* Write the number of handles (if we have a buffer). */
+    if (
+        Buffer && 
+        BufferLength >= sizeof(ULONG)
+        )
     {
         __try
         {
@@ -452,8 +455,11 @@ BOOLEAN KphpQueryProcessHandlesEnumCallback(
     handleInfo.GrantedAccess = ObpDecodeGrantedAccess(HandleTableEntry->GrantedAccess);
     handleInfo.HandleAttributes = ObpGetHandleAttributes(HandleTableEntry);
     
-    /* Only write if we have not exceeded the buffer length. */
-    if ((sizeof(ULONG) + i * sizeof(PROCESS_HANDLE)) <= Context->BufferLength)
+    /* Only write if we have a buffer and have not exceeded the buffer length. */
+    if (
+        buffer && 
+        (sizeof(ULONG) + i * sizeof(PROCESS_HANDLE)) <= Context->BufferLength
+        )
     {
         __try
         {

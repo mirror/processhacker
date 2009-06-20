@@ -181,7 +181,7 @@ VERIFY_RESULT PhvVerifyFileCat(PWSTR FileName)
     return PhvStatusToVerifyResult(status);
 }
 
-NPHAPI VERIFY_RESULT PhvVerifyFile(PWSTR FileName)
+VERIFY_RESULT PhvVerifyFile(PWSTR FileName)
 {
     VERIFY_RESULT result = VrNoSignature;
     

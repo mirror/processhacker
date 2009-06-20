@@ -21,7 +21,7 @@
 
 #include "process.h"
 
-NPHAPI NTSTATUS PhpQueryProcessWs(
+NTSTATUS PhpQueryProcessWs(
     HANDLE ProcessHandle,
     WS_INFORMATION_CLASS WsInformationClass,
     PVOID WsInformation,

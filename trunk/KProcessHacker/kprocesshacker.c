@@ -403,6 +403,8 @@ PCHAR GetIoControlName(ULONG ControlCode)
             return "Set Execute Options";
         case KPH_QUERYPROCESSHANDLES:
             return "KphQueryProcessHandles";
+        case KPH_OPENTHREADPROCESS:
+            return "KphOpenThreadProcess";
         default:
             return "Unknown";
     }

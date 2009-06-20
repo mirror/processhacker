@@ -51,7 +51,9 @@ NTSTATUS KphInit()
     return STATUS_SUCCESS;
 }
 
-NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle)
+NTSTATUS KphConnect(
+    __out PHANDLE KphHandle
+    )
 {
     HANDLE deviceHandle;
 
@@ -76,7 +78,9 @@ NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle)
     return STATUS_SUCCESS;
 }
 
-NPHAPI NTSTATUS KphDisconnect(HANDLE KphHandle)
+NTSTATUS KphDisconnect(
+    __in HANDLE KphHandle
+    )
 {
     if (CloseHandle(KphHandle))
         return STATUS_SUCCESS;
@@ -116,9 +120,9 @@ NTSTATUS KphpDeviceIoControl(
     return status;
 }
 
-NPHAPI NTSTATUS KphGetFeatures(
-    HANDLE KphHandle,
-    PULONG Features
+NTSTATUS KphGetFeatures(
+    __in HANDLE KphHandle,
+    __out PULONG Features
     )
 {
     NTSTATUS status;
@@ -139,11 +143,11 @@ NPHAPI NTSTATUS KphGetFeatures(
     return status;
 }
 
-NPHAPI NTSTATUS KphRead(
-    HANDLE KphHandle,
-    PVOID Address,
-    PVOID Buffer,
-    ULONG BufferLength
+NTSTATUS KphRead(
+    __in HANDLE KphHandle,
+    __in PVOID Address,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength
     )
 {
     return KphpDeviceIoControl(
@@ -157,11 +161,11 @@ NPHAPI NTSTATUS KphRead(
         );
 }
 
-NPHAPI NTSTATUS KphWrite(
-    HANDLE KphHandle,
-    PVOID Address,
-    PVOID Buffer,
-    ULONG Length
+NTSTATUS KphWrite(
+    __in HANDLE KphHandle,
+    __in PVOID Address,
+    __in_bcount(Length) PVOID Buffer,
+    __in ULONG Length
     )
 {
     NTSTATUS status;
@@ -184,11 +188,11 @@ NPHAPI NTSTATUS KphWrite(
     return status;
 }
 
-NPHAPI NTSTATUS KphOpenProcess(
-    HANDLE KphHandle,
-    PHANDLE ProcessHandle,
-    ULONG_PTR ProcessId,
-    ACCESS_MASK DesiredAccess
+NTSTATUS KphOpenProcess(
+    __in HANDLE KphHandle,
+    __out PHANDLE ProcessHandle,
+    __in HANDLE ProcessId,
+    __in ACCESS_MASK DesiredAccess
     )
 {
     NTSTATUS status;
@@ -203,7 +207,7 @@ NPHAPI NTSTATUS KphOpenProcess(
         HANDLE ProcessHandle;
     } ret;
 
-    args.ProcessId = (HANDLE)ProcessId;
+    args.ProcessId = ProcessId;
     args.DesiredAccess = DesiredAccess;
 
     status = KphpDeviceIoControl(
@@ -221,11 +225,11 @@ NPHAPI NTSTATUS KphOpenProcess(
     return status;
 }
 
-NPHAPI NTSTATUS KphOpenThread(
-    HANDLE KphHandle,
-    PHANDLE ThreadHandle,
-    ULONG_PTR ThreadId,
-    ACCESS_MASK DesiredAccess
+NTSTATUS KphOpenThread(
+    __in HANDLE KphHandle,
+    __out PHANDLE ThreadHandle,
+    __in HANDLE ThreadId,
+    __in ACCESS_MASK DesiredAccess
     )
 {
     NTSTATUS status;
@@ -240,7 +244,7 @@ NPHAPI NTSTATUS KphOpenThread(
         HANDLE ThreadHandle;
     } ret;
 
-    args.ThreadId = (HANDLE)ThreadId;
+    args.ThreadId = ThreadId;
     args.DesiredAccess = DesiredAccess;
 
     status = KphpDeviceIoControl(
@@ -258,11 +262,11 @@ NPHAPI NTSTATUS KphOpenThread(
     return status;
 }
 
-NPHAPI NTSTATUS KphOpenProcessToken(
-    HANDLE KphHandle,
-    PHANDLE TokenHandle,
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess
+NTSTATUS KphOpenProcessToken(
+    __in HANDLE KphHandle,
+    __out PHANDLE TokenHandle,
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess
     )
 {
     NTSTATUS status;
@@ -296,9 +300,9 @@ NPHAPI NTSTATUS KphOpenProcessToken(
 }
 
 NTSTATUS KphGetProcessProtected(
-    HANDLE KphHandle,
-    ULONG_PTR ProcessId,
-    PBOOLEAN IsProtected
+    __in HANDLE KphHandle,
+    __in ULONG_PTR ProcessId,
+    __out PBOOLEAN IsProtected
     )
 {
     NTSTATUS status;
@@ -330,9 +334,9 @@ NTSTATUS KphGetProcessProtected(
 }
 
 NTSTATUS KphSetProcessProtected(
-    HANDLE KphHandle,
-    ULONG_PTR ProcessId,
-    BOOLEAN IsProtected
+    __in HANDLE KphHandle,
+    __in ULONG_PTR ProcessId,
+    __in BOOLEAN IsProtected
     )
 {
     struct
@@ -356,9 +360,9 @@ NTSTATUS KphSetProcessProtected(
 }
 
 NTSTATUS KphTerminateProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in NTSTATUS ExitStatus
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -390,8 +394,8 @@ NTSTATUS KphTerminateProcess(
 }
 
 NTSTATUS KphSuspendProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     )
 {
     struct
@@ -413,8 +417,8 @@ NTSTATUS KphSuspendProcess(
 }
 
 NTSTATUS KphResumeProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     )
 {
     struct
@@ -436,12 +440,12 @@ NTSTATUS KphResumeProcess(
 }
 
 NTSTATUS KphReadVirtualMemory(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
     )
 {
     struct
@@ -471,12 +475,12 @@ NTSTATUS KphReadVirtualMemory(
 }
 
 NTSTATUS KphWriteVirtualMemory(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
     )
 {
     struct
@@ -505,11 +509,11 @@ NTSTATUS KphWriteVirtualMemory(
         );
 }
 
-NPHAPI NTSTATUS KphOpenProcessJob(
-    HANDLE KphHandle,
-    PHANDLE JobHandle,
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess
+NTSTATUS KphOpenProcessJob(
+    __in HANDLE KphHandle,
+    __out PHANDLE JobHandle,
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess
     )
 {
     NTSTATUS status;
@@ -543,9 +547,9 @@ NPHAPI NTSTATUS KphOpenProcessJob(
 }
 
 NTSTATUS KphGetContextThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __inout PCONTEXT ThreadContext
     )
 {
     struct
@@ -569,9 +573,9 @@ NTSTATUS KphGetContextThread(
 }
 
 NTSTATUS KphSetContextThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __in PCONTEXT ThreadContext
     )
 {
     struct
@@ -595,9 +599,9 @@ NTSTATUS KphSetContextThread(
 }
 
 NTSTATUS KphTerminateThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -627,9 +631,9 @@ NTSTATUS KphTerminateThread(
 }
 
 NTSTATUS KphSetHandleGrantedAccess(
-    HANDLE KphHandle,
-    HANDLE Handle,
-    ACCESS_MASK GrantedAccess
+    __in HANDLE KphHandle,
+    __in HANDLE Handle,
+    __in ACCESS_MASK GrantedAccess
     )
 {
     struct
@@ -653,11 +657,11 @@ NTSTATUS KphSetHandleGrantedAccess(
 }
 
 NTSTATUS KphProtectAdd(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    BOOLEAN AllowKernelMode,
-    ACCESS_MASK ProcessAllowMask,
-    ACCESS_MASK ThreadAllowMask
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in BOOLEAN AllowKernelMode,
+    __in ACCESS_MASK ProcessAllowMask,
+    __in ACCESS_MASK ThreadAllowMask
     )
 {
     struct
@@ -685,8 +689,8 @@ NTSTATUS KphProtectAdd(
 }
 
 NTSTATUS KphProtectRemove(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     )
 {
     struct
@@ -708,11 +712,11 @@ NTSTATUS KphProtectRemove(
 }
 
 NTSTATUS KphProtectQuery(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PBOOLEAN AllowKernelMode,
-    PACCESS_MASK ProcessAllowMask,
-    PACCESS_MASK ThreadAllowMask
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __out PBOOLEAN AllowKernelMode,
+    __out PACCESS_MASK ProcessAllowMask,
+    __out PACCESS_MASK ThreadAllowMask
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
@@ -741,6 +745,136 @@ NTSTATUS KphProtectQuery(
         );
 
     *AllowKernelMode = (BOOLEAN)allowKernelMode;
+
+    return status;
+}
+
+NTSTATUS KphUnsafeReadVirtualMemory(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
+    )
+{
+    struct
+    {
+        HANDLE ProcessHandle;
+        PVOID BaseAddress;
+        PVOID Buffer;
+        ULONG BufferLength;
+        PULONG ReturnLength;
+    } args;
+
+    args.ProcessHandle = ProcessHandle;
+    args.BaseAddress = BaseAddress;
+    args.Buffer = Buffer;
+    args.BufferLength = BufferLength;
+    args.ReturnLength = ReturnLength;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_UNSAFEREADVIRTUALMEMORY,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+}
+
+NTSTATUS KphSetExecuteOptions(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in ULONG ExecuteOptions
+    )
+{
+    struct
+    {
+        HANDLE ProcessHandle;
+        ULONG ExecuteOptions;
+    } args;
+
+    args.ProcessHandle = ProcessHandle;
+    args.ExecuteOptions = ExecuteOptions;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_SETEXECUTEOPTIONS,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+}
+
+NTSTATUS KphQueryProcessHandles(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __out_bcount_opt(BufferLength) PVOID Buffer,
+    __in_opt ULONG BufferLength,
+    __out_opt PULONG ReturnLength
+    )
+{
+    struct
+    {
+        HANDLE ProcessHandle;
+        PVOID Buffer;
+        ULONG BufferLength;
+        PULONG ReturnLength;
+    } args;
+
+    args.ProcessHandle = ProcessHandle;
+    args.Buffer = Buffer;
+    args.BufferLength = BufferLength;
+    args.ReturnLength = ReturnLength;
+
+    return KphpDeviceIoControl(
+        KphHandle,
+        KPH_QUERYPROCESSHANDLES,
+        &args,
+        sizeof(args),
+        NULL,
+        0,
+        NULL
+        );
+}
+
+NTSTATUS KphOpenThreadProcess(
+    __in HANDLE KphHandle,
+    __out PHANDLE ProcessHandle,
+    __in HANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess
+    )
+{
+    NTSTATUS status;
+
+    struct
+    {
+        HANDLE ThreadHandle;
+        ACCESS_MASK DesiredAccess;
+    } args;
+    struct
+    {
+        HANDLE ProcessHandle;
+    } ret;
+
+    args.ThreadHandle = ThreadHandle;
+    args.DesiredAccess = DesiredAccess;
+
+    status = KphpDeviceIoControl(
+        KphHandle,
+        KPH_OPENTHREADPROCESS,
+        &args,
+        sizeof(args),
+        &ret,
+        sizeof(ret),
+        NULL
+        );
+
+    *ProcessHandle = ret.ProcessHandle;
 
     return status;
 }

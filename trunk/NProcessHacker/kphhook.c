@@ -112,7 +112,7 @@ DECLARE_NEW_FUNC(NtOpenProcessToken, NTOPENPROCESSTOKEN_ARGS)
     return NtOpenProcessTokenEx(ProcessHandle, DesiredAccess, 0, TokenHandle);
 }
 
-DECLARE_NEW_FUNC(NtOpenProcessTokenEx, NTOPENPROCESSTOKEN_ARGS)
+DECLARE_NEW_FUNC(NtOpenProcessTokenEx, NTOPENPROCESSTOKENEX_ARGS)
 {
     /* HandleAttributes is ignored. */
     return KphOpenProcessToken(KphHandle, TokenHandle, ProcessHandle, DesiredAccess);

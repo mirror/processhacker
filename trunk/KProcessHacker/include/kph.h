@@ -148,7 +148,7 @@ NTSTATUS KphOpenProcess(
     __out PHANDLE ProcessHandle,
     __in ACCESS_MASK DesiredAccess,
     __in POBJECT_ATTRIBUTES ObjectAttributes,
-    __in PCLIENT_ID ClientId,
+    __in_opt PCLIENT_ID ClientId,
     __in KPROCESSOR_MODE AccessMode
     );
 
@@ -171,7 +171,7 @@ NTSTATUS KphOpenThread(
     __out PHANDLE ThreadHandle,
     __in ACCESS_MASK DesiredAccess,
     __in POBJECT_ATTRIBUTES ObjectAttributes,
-    __in PCLIENT_ID ClientId,
+    __in_opt PCLIENT_ID ClientId,
     __in KPROCESSOR_MODE AccessMode
     );
 
@@ -185,7 +185,7 @@ NTSTATUS KphOpenThreadProcess(
 NTSTATUS KphQueryProcessHandles(
     __in HANDLE ProcessHandle,
     __out_bcount_opt(BufferLength) PPROCESS_HANDLE_INFORMATION Buffer,
-    __in ULONG BufferLength,
+    __in_opt ULONG BufferLength,
     __out_opt PULONG ReturnLength,
     __in KPROCESSOR_MODE AccessMode
     );

@@ -45,8 +45,7 @@
 #endif
 
 #define CTL_CODE(DeviceType, Function, Method, Access) ( \
-    ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) \
-)
+    ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method))
 #define KPH_CTL_CODE(x) CTL_CODE(KPH_DEVICE_TYPE, 0x800 + x, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define KPH_READ KPH_CTL_CODE(0)
 #define KPH_WRITE KPH_CTL_CODE(1)
@@ -80,149 +79,208 @@
 #define KPH_PROTECTADD KPH_CTL_CODE(29)
 #define KPH_PROTECTREMOVE KPH_CTL_CODE(30)
 #define KPH_PROTECTQUERY KPH_CTL_CODE(31)
+#define KPH_UNSAFEREADVIRTUALMEMORY KPH_CTL_CODE(32)
+#define KPH_SETEXECUTEOPTIONS KPH_CTL_CODE(33)
+#define KPH_QUERYPROCESSHANDLES KPH_CTL_CODE(34)
+#define KPH_OPENTHREADPROCESS KPH_CTL_CODE(35)
+
+#ifndef MEM_EXECUTE_OPTION_DISABLE
+#define MEM_EXECUTE_OPTION_DISABLE 0x1 
+#define MEM_EXECUTE_OPTION_ENABLE 0x2
+#define MEM_EXECUTE_OPTION_DISABLE_THUNK_EMULATION 0x4
+#define MEM_EXECUTE_OPTION_PERMANENT 0x8
+#endif
+
+typedef struct _PROCESS_HANDLE
+{
+    HANDLE Handle;
+    PVOID Object;
+    ACCESS_MASK GrantedAccess;
+    ULONG HandleAttributes;
+} PROCESS_HANDLE, *PPROCESS_HANDLE;
+
+typedef struct _PROCESS_HANDLE_INFORMATION
+{
+    ULONG HandleCount;
+    PROCESS_HANDLE Handles[1];
+} PROCESS_HANDLE_INFORMATION, *PPROCESS_HANDLE_INFORMATION;
 
 NTSTATUS KphInit();
 
-NPHAPI NTSTATUS KphConnect(PHANDLE KphHandle);
+NPHAPI NTSTATUS KphConnect(
+    __out PHANDLE KphHandle
+    );
 
-NPHAPI NTSTATUS KphDisconnect(HANDLE KphHandle);
+NPHAPI NTSTATUS KphDisconnect(
+    __in HANDLE KphHandle
+    );
 
 NPHAPI NTSTATUS KphGetFeatures(
-    HANDLE KphHandle,
-    PULONG Features
+    __in HANDLE KphHandle,
+    __out PULONG Features
     );
 
 NPHAPI NTSTATUS KphRead(
-    HANDLE KphHandle,
-    PVOID Address,
-    PVOID Buffer,
-    ULONG BufferLength
+    __in HANDLE KphHandle,
+    __in PVOID Address,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength
     );
 
 NPHAPI NTSTATUS KphWrite(
-    HANDLE KphHandle,
-    PVOID Address,
-    PVOID Buffer,
-    ULONG Length
+    __in HANDLE KphHandle,
+    __in PVOID Address,
+    __in_bcount(Length) PVOID Buffer,
+    __in ULONG Length
     );
 
 NPHAPI NTSTATUS KphOpenProcess(
-    HANDLE KphHandle,
-    PHANDLE ProcessHandle,
-    ULONG_PTR ProcessId,
-    ACCESS_MASK DesiredAccess
+    __in HANDLE KphHandle,
+    __out PHANDLE ProcessHandle,
+    __in HANDLE ProcessId,
+    __in ACCESS_MASK DesiredAccess
     );
 
 NPHAPI NTSTATUS KphOpenThread(
-    HANDLE KphHandle,
-    PHANDLE ThreadHandle,
-    ULONG_PTR ThreadId,
-    ACCESS_MASK DesiredAccess
+    __in HANDLE KphHandle,
+    __out PHANDLE ThreadHandle,
+    __in HANDLE ThreadId,
+    __in ACCESS_MASK DesiredAccess
     );
 
 NPHAPI NTSTATUS KphOpenProcessToken(
-    HANDLE KphHandle,
-    PHANDLE TokenHandle,
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess
+    __in HANDLE KphHandle,
+    __out PHANDLE TokenHandle,
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess
     );
 
 NPHAPI NTSTATUS KphGetProcessProtected(
-    HANDLE KphHandle,
-    ULONG_PTR ProcessId,
-    PBOOLEAN IsProtected
+    __in HANDLE KphHandle,
+    __in ULONG_PTR ProcessId,
+    __out PBOOLEAN IsProtected
     );
 
 NPHAPI NTSTATUS KphSetProcessProtected(
-    HANDLE KphHandle,
-    ULONG_PTR ProcessId,
-    BOOLEAN IsProtected
+    __in HANDLE KphHandle,
+    __in ULONG_PTR ProcessId,
+    __in BOOLEAN IsProtected
     );
 
 NPHAPI NTSTATUS KphTerminateProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in NTSTATUS ExitStatus
     );
 
 NPHAPI NTSTATUS KphSuspendProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     );
 
 NPHAPI NTSTATUS KphResumeProcess(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     );
 
 NPHAPI NTSTATUS KphReadVirtualMemory(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __out_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
     );
 
 NPHAPI NTSTATUS KphWriteVirtualMemory(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PVOID BaseAddress,
-    PVOID Buffer,
-    ULONG BufferLength,
-    PULONG ReturnLength
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
     );
 
 NPHAPI NTSTATUS KphOpenProcessJob(
-    HANDLE KphHandle,
-    PHANDLE JobHandle,
-    HANDLE ProcessHandle,
-    ACCESS_MASK DesiredAccess
+    __in HANDLE KphHandle,
+    __out PHANDLE JobHandle,
+    __in HANDLE ProcessHandle,
+    __in ACCESS_MASK DesiredAccess
     );
 
 NPHAPI NTSTATUS KphGetContextThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __inout PCONTEXT ThreadContext
     );
 
 NPHAPI NTSTATUS KphSetContextThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    PCONTEXT ThreadContext
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __in PCONTEXT ThreadContext
     );
 
 NPHAPI NTSTATUS KphTerminateThread(
-    HANDLE KphHandle,
-    HANDLE ThreadHandle,
-    NTSTATUS ExitStatus
+    __in HANDLE KphHandle,
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
     );
 
 NPHAPI NTSTATUS KphSetHandleGrantedAccess(
-    HANDLE KphHandle,
-    HANDLE Handle,
-    ACCESS_MASK GrantedAccess
+    __in HANDLE KphHandle,
+    __in HANDLE Handle,
+    __in ACCESS_MASK GrantedAccess
     );
 
-NTSTATUS KphProtectAdd(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    BOOLEAN AllowKernelMode,
-    ACCESS_MASK ProcessAllowMask,
-    ACCESS_MASK ThreadAllowMask
+NPHAPI NTSTATUS KphProtectAdd(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in BOOLEAN AllowKernelMode,
+    __in ACCESS_MASK ProcessAllowMask,
+    __in ACCESS_MASK ThreadAllowMask
     );
 
-NTSTATUS KphProtectRemove(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle
+NPHAPI NTSTATUS KphProtectRemove(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle
     );
 
-NTSTATUS KphProtectQuery(
-    HANDLE KphHandle,
-    HANDLE ProcessHandle,
-    PBOOLEAN AllowKernelMode,
-    PACCESS_MASK ProcessAllowMask,
-    PACCESS_MASK ThreadAllowMask
+NPHAPI NTSTATUS KphProtectQuery(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __out PBOOLEAN AllowKernelMode,
+    __out PACCESS_MASK ProcessAllowMask,
+    __out PACCESS_MASK ThreadAllowMask
+    );
+
+NPHAPI NTSTATUS KphUnsafeReadVirtualMemory(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in PVOID BaseAddress,
+    __in_bcount(BufferLength) PVOID Buffer,
+    __in ULONG BufferLength,
+    __out_opt PULONG ReturnLength
+    );
+
+NPHAPI NTSTATUS KphSetExecuteOptions(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __in ULONG ExecuteOptions
+    );
+
+NPHAPI NTSTATUS KphQueryProcessHandles(
+    __in HANDLE KphHandle,
+    __in HANDLE ProcessHandle,
+    __out_bcount_opt(BufferLength) PVOID Buffer,
+    __in_opt ULONG BufferLength,
+    __out_opt PULONG ReturnLength
+    );
+
+NPHAPI NTSTATUS KphOpenThreadProcess(
+    __in HANDLE KphHandle,
+    __out PHANDLE ProcessHandle,
+    __in HANDLE ThreadHandle,
+    __in ACCESS_MASK DesiredAccess
     );
 
 #endif
