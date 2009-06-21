@@ -521,7 +521,7 @@ NTSTATUS KphOpenProcess(
     return status;
 }
 
-/* KphOpenProcess
+/* KphOpenProcessJob
  * 
  * Opens the specified process' job object. If the process has 
  * not been assigned to a job object, the function returns 

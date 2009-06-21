@@ -1174,6 +1174,17 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public partial struct SystemHandleInformation
+    {
+        public int ProcessId;
+        public byte ObjectTypeNumber;
+        public HandleFlags Flags;
+        public short Handle;
+        public IntPtr Object;
+        public int GrantedAccess;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct SystemLoadAndCallImage
     {
         public UnicodeString ModuleName;

@@ -214,7 +214,7 @@ namespace ProcessHacker
             if (type == "DLL" || type == "Mapped File")
                 pid = (int)listHandles.SelectedItems[0].Tag;
             else
-                pid = ((ProcessHacker.Native.SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId;
+                pid = ((SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId;
 
             if (Program.ProcessProvider.Dictionary.ContainsKey(pid))
             {
@@ -239,7 +239,7 @@ namespace ProcessHacker
             try
             {
                 HandleList.ShowHandleProperties(
-                    (ProcessHacker.Native.SystemHandleInformation)listHandles.SelectedItems[0].Tag
+                    (SystemHandleInformation)listHandles.SelectedItems[0].Tag
                     );
             }
             catch (Exception ex)

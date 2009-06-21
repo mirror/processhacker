@@ -68,6 +68,7 @@
     <Compile Include="Security\Privilege.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
+    <Compile Include="Api\Extensions.cs" />
     <Compile Include="Threading\CurrentThread.cs" />
     <Compile Include="Threading\Event.cs" />
     <Compile Include="FileUtils.cs" />

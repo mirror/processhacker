@@ -178,7 +178,7 @@ namespace ProcessHacker.Native
                         throw new OutOfMemoryException();
                 }
 
-                if (status < 0)
+                if (status >= NtStatus.Error)
                     Win32.ThrowLastError(status);
 
                 // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
@@ -344,6 +344,58 @@ namespace ProcessHacker.Native
             }
 
             return retDict;
+        }
+
+        public static SystemPagefile[] GetPagefiles()
+        {
+            int retLength;
+            List<SystemPagefile> pagefiles = new List<SystemPagefile>();
+
+            using (MemoryAlloc data = new MemoryAlloc(0x200))
+            {
+                NtStatus status;
+
+                while ((status = Win32.NtQuerySystemInformation(
+                    SystemInformationClass.SystemPageFileInformation,
+                    data,
+                    data.Size,
+                    out retLength)
+                    ) == NtStatus.InfoLengthMismatch)
+                {
+                    data.Resize(data.Size * 2);
+
+                    // Fail if we've resized it to over 16MB - protect from infinite resizing
+                    if (data.Size > 16 * 1024 * 1024)
+                        throw new OutOfMemoryException();
+                }
+
+                if (status >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                pagefiles = new List<SystemPagefile>(2);
+
+                int i = 0;
+                SystemPagefileInformation currentPagefile;
+
+                while (true)
+                {
+                    currentPagefile = data.ReadStruct<SystemPagefileInformation>(i, 0);
+
+                    pagefiles.Add(new SystemPagefile(
+                        currentPagefile.TotalSize,
+                        currentPagefile.TotalInUse,
+                        currentPagefile.PeakUsage,
+                        FileUtils.FixPath(currentPagefile.PageFileName.Read())
+                        ));
+
+                    if (currentPagefile.NextEntryOffset == 0)
+                        break;
+
+                    i += currentPagefile.NextEntryOffset;
+                }
+
+                return pagefiles.ToArray();
+            }
         }
 
         public static Dictionary<int, SystemProcess> GetProcesses()
@@ -551,18 +603,9 @@ namespace ProcessHacker.Native
         }
     }
 
-    public class KernelModule
+    public enum NetworkProtocol
     {
-        public KernelModule(IntPtr baseAddress, string baseName, string fileName)
-        {
-            this.BaseAddress = baseAddress;
-            this.BaseName = baseName;
-            this.FileName = fileName;
-        }
-
-        public IntPtr BaseAddress { get; private set; }
-        public string BaseName { get; private set; }
-        public string FileName { get; private set; }
+        Tcp, Udp
     }
 
     public struct ObjectInformation
@@ -570,364 +613,6 @@ namespace ProcessHacker.Native
         public string OrigName;
         public string BestName;
         public string TypeName;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SystemHandleInformation
-    {
-        public int ProcessId;
-        public byte ObjectTypeNumber;
-        public HandleFlags Flags;
-        public short Handle;
-        public IntPtr Object;
-        public int GrantedAccess;
-
-        public ObjectBasicInformation GetBasicInfo()
-        {
-            using (ProcessHandle process = new ProcessHandle(this.ProcessId, ProcessAccess.DupHandle))
-            {
-                return this.GetBasicInfo(process);
-            }
-        }
-
-        public ObjectBasicInformation GetBasicInfo(ProcessHandle process)
-        {
-            NtStatus status = NtStatus.Success;
-            IntPtr handle = new IntPtr(this.Handle);
-            IntPtr objectHandleI;
-            GenericHandle objectHandle = null;
-            int retLength;
-            int baseAddress;
-
-            if (KProcessHacker.Instance == null)
-            {
-                if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError();
-
-                objectHandle = new GenericHandle(objectHandleI);
-            }
-
-            try
-            {
-                using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(ObjectBasicInformation))))
-                {
-                    if (KProcessHacker.Instance != null)
-                    {
-                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectBasicInformation,
-                            data, data.Size, out retLength, out baseAddress);
-                    }
-                    else
-                    {
-                        status = Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectBasicInformation,
-                            data, data.Size, out retLength);
-                    }
-
-                    if (status >= NtStatus.Error)
-                        Win32.ThrowLastError(status);
-
-                    return data.ReadStruct<ObjectBasicInformation>();
-                }
-            }
-            finally
-            {
-                if (objectHandle != null)
-                    objectHandle.Dispose();
-            }
-        }
-
-        public ObjectInformation GetHandleInfo()
-        {
-            using (ProcessHandle process = new ProcessHandle(this.ProcessId, 
-                KProcessHacker.Instance != null ? OSVersion.MinProcessQueryInfoAccess : ProcessAccess.DupHandle))
-            {
-                return this.GetHandleInfo(process);
-            }
-        }
-
-        public ObjectInformation GetHandleInfo(ProcessHandle process)
-        {
-            IntPtr handle = new IntPtr(this.Handle);
-            IntPtr objectHandleI;
-            int retLength = 0;
-            GenericHandle objectHandle = null;
-
-            if (this.Handle == 0 || this.Handle == -1 || this.Handle == -2)
-                throw new WindowsException(6);
-
-            // Duplicate the handle if we're not using KPH
-            if (KProcessHacker.Instance == null)
-            {
-                NtStatus status;
-
-                if ((status = Win32.NtDuplicateObject(
-                    process, handle, ProcessHandle.GetCurrent(), out objectHandleI, 0, 0, 0)) >= NtStatus.Error)
-                    Win32.ThrowLastError();
-
-                objectHandle = new GenericHandle(objectHandleI);
-            }
-
-            ObjectInformation info = new ObjectInformation();
-
-            // If the cache contains the object type's name, use it. Otherwise, query the type 
-            // for its name.
-            lock (Windows.ObjectTypes)
-            {
-                if (Windows.ObjectTypes.ContainsKey(this.ObjectTypeNumber))
-                {
-                    info.TypeName = Windows.ObjectTypes[this.ObjectTypeNumber];
-                }
-                else
-                {
-                    int baseAddress = 0;
-
-                    if (KProcessHacker.Instance != null)
-                    {
-                        KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
-                            IntPtr.Zero, 0, out retLength, out baseAddress);
-                    }
-                    else
-                    {
-                        Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
-                            IntPtr.Zero, 0, out retLength);
-                    }
-
-                    if (retLength > 0)
-                    {
-                        using (MemoryAlloc otiMem = new MemoryAlloc(retLength))
-                        {
-                            if (KProcessHacker.Instance != null)
-                            {
-                                if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
-                                    throw new Exception("ZwQueryObject failed.");
-                            }
-                            else
-                            {
-                                if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectTypeInformation,
-                                    otiMem, otiMem.Size, out retLength) >= NtStatus.Error)
-                                    throw new Exception("NtQueryObject failed.");
-                            }
-
-                            var oti = otiMem.ReadStruct<ObjectTypeInformation>();
-                            var str = oti.Name;
-
-                            if (KProcessHacker.Instance != null)
-                                str.Buffer = str.Buffer.Increment(-baseAddress + otiMem);
-
-                            info.TypeName = str.Read();
-                            Windows.ObjectTypes.Add(this.ObjectTypeNumber, info.TypeName);
-                        }
-                    }
-                }
-            }
-
-            if (KProcessHacker.Instance != null && info.TypeName == "File")
-            {
-                // use KProcessHacker for files
-                info.OrigName = KProcessHacker.Instance.GetFileObjectName(this);
-            }
-            else if (info.TypeName == "File" && (int)this.GrantedAccess == 0x0012019f)
-            {
-                // KProcessHacker not available, fall back to using hack (i.e. not querying the name at all)
-            }
-            else
-            {
-                int baseAddress = 0;
-
-                if (KProcessHacker.Instance != null)
-                {
-                    KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
-                        IntPtr.Zero, 0, out retLength, out baseAddress);
-                }
-                else
-                {
-                    Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectNameInformation,
-                        IntPtr.Zero, 0, out retLength);
-                }
-
-                if (retLength > 0)
-                {
-                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
-                    {
-                        if (KProcessHacker.Instance != null)
-                        {
-                            if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
-                                throw new Exception("ZwQueryObject failed.");
-                        }
-                        else
-                        {
-                            if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
-                                throw new Exception("NtQueryObject failed.");
-                        }
-
-                        var oni = oniMem.ReadStruct<ObjectNameInformation>();
-                        var str = oni.Name;
-
-                        if (KProcessHacker.Instance != null)
-                            str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
-
-                        info.OrigName = str.Read();
-                    }
-                }
-            }
-
-            // get a better name for the handle
-            try
-            {
-                switch (info.TypeName)
-                {
-                    case "File":
-                        // resolves \Device\Harddisk1 into C:, for example
-                        info.BestName = FileUtils.DeviceFileNameToDos(info.OrigName);
-
-                        break;
-
-                    case "Key":
-                        string hklmString = "\\registry\\machine";
-                        string hkcrString = "\\registry\\machine\\software\\classes";
-                        string hkcuString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
-                        string hkcucrString = "\\registry\\user\\" +
-                            System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-                        string hkuString = "\\registry\\user";
-
-                        if (info.OrigName.ToLower().StartsWith(hkcrString))
-                            info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hklmString))
-                            info.BestName = "HKLM" + info.OrigName.Substring(hklmString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcucrString))
-                            info.BestName = "HKCU\\Software\\Classes" + info.OrigName.Substring(hkcucrString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkcuString))
-                            info.BestName = "HKCU" + info.OrigName.Substring(hkcuString.Length);
-                        else if (info.OrigName.ToLower().StartsWith(hkuString))
-                            info.BestName = "HKU" + info.OrigName.Substring(hkuString.Length);
-                        else
-                            info.BestName = info.OrigName;
-
-                        break;
-
-                    case "Process":
-                        {
-                            int processId;
-
-                            if (KProcessHacker.Instance != null)
-                            {
-                                processId = KProcessHacker.Instance.KphGetProcessId(process, handle);
-
-                                if (processId == 0)
-                                    throw new Exception("Invalid PID");
-                            }
-                            else
-                            {
-                                using (var processHandle =
-                                    new NativeHandle<ProcessAccess>(process, handle, OSVersion.MinProcessQueryInfoAccess))
-                                {
-                                    if ((processId = Win32.GetProcessId(processHandle)) == 0)
-                                        Win32.ThrowLastError();
-                                }
-                            }
-
-                            string processName = Windows.GetProcessName(processId);
-
-                            if (processName != null)
-                                info.BestName = processName + " (" + processId.ToString() + ")";
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + ")";
-                        }
-
-                        break;
-
-                    case "Thread":
-                        {
-                            int processId;
-                            int threadId;
-
-                            if (KProcessHacker.Instance != null)
-                            {
-                                threadId = KProcessHacker.Instance.KphGetThreadId(process, handle, out processId);
-
-                                if (threadId == 0 || processId == 0)
-                                    throw new Exception("Invalid TID or PID");
-                            }
-                            else
-                            {
-                                using (var threadHandle =
-                                    new NativeHandle<ThreadAccess>(process, handle, OSVersion.MinThreadQueryInfoAccess))
-                                {
-                                    var basicInfo = ThreadHandle.FromHandle(threadHandle).GetBasicInformation();
-
-                                    threadId = basicInfo.ClientId.ThreadId;
-                                    processId = basicInfo.ClientId.ProcessId;
-                                }
-                            }
-
-                            string processName = Windows.GetProcessName(processId);
-
-                            if (processName != null)
-                                info.BestName = processName + " (" + processId.ToString() + "): " +
-                                    threadId.ToString();
-                            else
-                                info.BestName = "Non-existent process (" + processId.ToString() + "): " +
-                                    threadId.ToString();
-                        }
-
-                        break;
-
-                    case "Token":
-                        {
-                            using (var tokenHandleDup = 
-                                new NativeHandle<TokenAccess>(process, handle, TokenAccess.Query))
-                            {
-                                var tokenHandle = TokenHandle.FromHandle(tokenHandleDup);
-                                var sid = tokenHandle.GetUser();
-
-                                using (sid)
-                                    info.BestName = sid.GetFullName(true) + ": 0x" + 
-                                        tokenHandle.GetStatistics().AuthenticationId.ToString();
-                            }
-                        }
-
-                        break;
-
-                    default:
-                        if (info.OrigName != null &&
-                            info.OrigName != "")
-                        {
-                            info.BestName = info.OrigName;
-                        }
-                        else
-                        {
-                            info.BestName = null;
-                        }
-
-                        break;
-                }
-            }
-            catch
-            {
-                if (info.OrigName != null && info.OrigName != "")
-                {
-                    info.BestName = info.OrigName;
-                }
-                else
-                {
-                    info.BestName = null;
-                }
-            }
-
-            if (objectHandle != null)
-                objectHandle.Dispose();
-
-            return info;
-        }
-    }
-
-    public enum NetworkProtocol
-    {
-        Tcp, Udp
     }
 
     public struct NetworkConnection
@@ -964,5 +649,35 @@ namespace ProcessHacker.Native
         public string Name;
         public SystemProcessInformation Process;
         public Dictionary<int, SystemThreadInformation> Threads;
+    }
+
+    public class KernelModule
+    {
+        public KernelModule(IntPtr baseAddress, string baseName, string fileName)
+        {
+            this.BaseAddress = baseAddress;
+            this.BaseName = baseName;
+            this.FileName = fileName;
+        }
+
+        public IntPtr BaseAddress { get; private set; }
+        public string BaseName { get; private set; }
+        public string FileName { get; private set; }
+    }
+
+    public class SystemPagefile
+    {
+        public SystemPagefile(int totalSize, int totalInUse, int peakUsage, string fileName)
+        {
+            this.TotalSize = totalSize;
+            this.TotalInUse = TotalInUse;
+            this.PeakUsage = peakUsage;
+            this.FileName = fileName;
+        }
+
+        public int TotalSize { get; private set; }
+        public int TotalInUse { get; private set; }
+        public int PeakUsage { get; private set; }
+        public string FileName { get; private set; }
     }
 }

@@ -22,6 +22,7 @@
 
 using System;
 using System.Windows.Forms;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Ui
 {
