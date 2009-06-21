@@ -2834,6 +2834,7 @@ namespace ProcessHacker
             { var handle = this.Handle; }
 
             Logging.Logged += this.QueueMessage;
+            Settings.Refresh();
             this.LoadWindowSettings();
             this.LoadOtherSettings();
             this.LoadControls();

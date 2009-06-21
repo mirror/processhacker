@@ -388,7 +388,33 @@ namespace ProcessHacker.Common
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        /// <returns></returns>
+        public static string GetNiceSizeName(int size)
+        {
+            return GetNiceSizeName((uint)size);
+        }
+
+        /// <summary>
+        /// Formats a size into a string representation, postfixing it with the correct unit.
+        /// </summary>
+        /// <param name="size">The size to format.</param>
+        public static string GetNiceSizeName(uint size)
+        {
+            int i = 0;
+            double s = (double)size;
+
+            while (s > 1024 && i < SizeUnitNames.Length && i < UnitSpecifier)
+            {
+                s /= 1024;
+                i++;
+            }
+
+            return (s == 0 ? "0" : s.ToString("#,#.##")) + " " + SizeUnitNames[i];
+        }
+
+        /// <summary>
+        /// Formats a size into a string representation, postfixing it with the correct unit.
+        /// </summary>
+        /// <param name="size">The size to format.</param>
         public static string GetNiceSizeName(long size)
         {
             return GetNiceSizeName((ulong)size);
@@ -398,7 +424,6 @@ namespace ProcessHacker.Common
         /// Formats a size into a string representation, postfixing it with the correct unit.
         /// </summary>
         /// <param name="size">The size to format.</param>
-        /// <returns></returns>
         public static string GetNiceSizeName(ulong size)
         {
             int i = 0;

@@ -51,6 +51,13 @@ namespace ProcessHacker.Native
         /// </summary>
         internal static Dictionary<byte, string> ObjectTypes = new Dictionary<byte, string>();
 
+        [ThreadStatic]
+        private static MemoryAlloc _handlesBuffer;
+        [ThreadStatic]
+        private static MemoryAlloc _processesBuffer;
+        [ThreadStatic]
+        private static MemoryAlloc _servicesBuffer;
+
         private static int _numberOfProcessors = 0;
         private static int _pageSize = 0;
         private static IntPtr _kernelBase = IntPtr.Zero;
@@ -157,42 +164,44 @@ namespace ProcessHacker.Native
             int handleCount = 0;
             SystemHandleInformation[] returnHandles;
 
-            using (MemoryAlloc data = new MemoryAlloc(0x1000))
+            if (_handlesBuffer == null)
+                _handlesBuffer = new MemoryAlloc(0x1000);
+
+            MemoryAlloc data = _handlesBuffer;
+
+            NtStatus status;
+
+            // This is needed because NtQuerySystemInformation with SystemHandleInformation doesn't 
+            // actually give a real return length when called with an insufficient buffer. This code 
+            // tries repeatedly to call the function, doubling the buffer size each time it fails.
+            while ((status = Win32.NtQuerySystemInformation(
+                SystemInformationClass.SystemHandleInformation,
+                data, 
+                data.Size, 
+                out retLength)
+                ) == NtStatus.InfoLengthMismatch)
             {
-                NtStatus status;
+                data.Resize(data.Size * 2);
 
-                // This is needed because NtQuerySystemInformation with SystemHandleInformation doesn't 
-                // actually give a real return length when called with an insufficient buffer. This code 
-                // tries repeatedly to call the function, doubling the buffer size each time it fails.
-                while ((status = Win32.NtQuerySystemInformation(
-                    SystemInformationClass.SystemHandleInformation,
-                    data, 
-                    data.Size, 
-                    out retLength)
-                    ) == NtStatus.InfoLengthMismatch)
-                {
-                    data.Resize(data.Size * 2);
-
-                    // Fail if we've resized it to over 16MB - protect from infinite resizing
-                    if (data.Size > 16 * 1024 * 1024)
-                        throw new OutOfMemoryException();
-                }
-
-                if (status >= NtStatus.Error)
-                    Win32.ThrowLastError(status);
-
-                // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
-                // structures.
-                handleCount = data.ReadInt32(0);
-                returnHandles = new SystemHandleInformation[handleCount];
-
-                for (int i = 0; i < handleCount; i++)
-                {
-                    returnHandles[i] = data.ReadStruct<SystemHandleInformation>(4, i);
-                }
-
-                return returnHandles;
+                // Fail if we've resized it to over 16MB - protect from infinite resizing
+                if (data.Size > 16 * 1024 * 1024)
+                    throw new OutOfMemoryException();
             }
+
+            if (status >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            // The structure of the buffer is the handle count plus an array of SYSTEM_HANDLE_INFORMATION 
+            // structures.
+            handleCount = data.ReadInt32(0);
+            returnHandles = new SystemHandleInformation[handleCount];
+
+            for (int i = 0; i < handleCount; i++)
+            {
+                returnHandles[i] = data.ReadStruct<SystemHandleInformation>(4, i);
+            }
+
+            return returnHandles;
         }
 
         /// <summary>
@@ -412,119 +421,127 @@ namespace ProcessHacker.Native
             int retLength;
             Dictionary<int, SystemProcess> returnProcesses;
 
-            using (MemoryAlloc data = new MemoryAlloc(0x4000))
+            if (_processesBuffer == null)
+                _processesBuffer = new MemoryAlloc(0x10000);
+
+            MemoryAlloc data = _processesBuffer;
+
+            NtStatus status;
+            int attempts = 0;
+
+            while (true)
             {
-                NtStatus status;
-                int attempts = 0;
+                attempts++;
 
-                while (true)
+                if ((status = Win32.NtQuerySystemInformation(
+                    SystemInformationClass.SystemProcessInformation,
+                    data,
+                    data.Size,
+                    out retLength
+                    )) >= NtStatus.Error)
                 {
-                    attempts++;
+                    if (attempts > 3)
+                        Win32.ThrowLastError(status);
 
-                    if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
-                        data.Size, out retLength)) >= NtStatus.Error)
-                    {
-                        if (attempts > 3)
-                            Win32.ThrowLastError(status);
-
-                        data.Resize(retLength);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    data.Resize(retLength);
                 }
-
-                returnProcesses = new Dictionary<int, SystemProcess>(32); // 32 processes on a computer?
-
-                int i = 0;
-                SystemProcess currentProcess = new SystemProcess();
-
-                while (true)
+                else
                 {
-                    currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
-                    currentProcess.Name = currentProcess.Process.ImageName.Read();
-
-                    if (getThreads &&
-                        currentProcess.Process.ProcessId != 0)
-                    {
-                        currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
-
-                        for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
-                        {
-                            var thread = data.ReadStruct<SystemThreadInformation>(i +
-                                Marshal.SizeOf(typeof(SystemProcessInformation)), j);
-
-                            currentProcess.Threads.Add(thread.ClientId.ThreadId, thread);
-                        }
-                    }
-
-                    returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);
-
-                    if (currentProcess.Process.NextEntryOffset == 0)
-                        break;
-
-                    i += currentProcess.Process.NextEntryOffset;
+                    break;
                 }
-
-                return returnProcesses;
             }
+
+            returnProcesses = new Dictionary<int, SystemProcess>(32); // 32 processes on a computer?
+
+            int i = 0;
+            SystemProcess currentProcess = new SystemProcess();
+
+            while (true)
+            {
+                currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
+                currentProcess.Name = currentProcess.Process.ImageName.Read();
+
+                if (getThreads &&
+                    currentProcess.Process.ProcessId != 0)
+                {
+                    currentProcess.Threads = new Dictionary<int, SystemThreadInformation>();
+
+                    for (int j = 0; j < currentProcess.Process.NumberOfThreads; j++)
+                    {
+                        var thread = data.ReadStruct<SystemThreadInformation>(i +
+                            Marshal.SizeOf(typeof(SystemProcessInformation)), j);
+
+                        currentProcess.Threads.Add(thread.ClientId.ThreadId, thread);
+                    }
+                }
+
+                returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);
+
+                if (currentProcess.Process.NextEntryOffset == 0)
+                    break;
+
+                i += currentProcess.Process.NextEntryOffset;
+            }
+
+            return returnProcesses;
         }
 
         public static Dictionary<int, SystemThreadInformation> GetProcessThreads(int pid)
         {
             int retLength;
 
-            using (MemoryAlloc data = new MemoryAlloc(0x4000))
+            if (_processesBuffer == null)
+                _processesBuffer = new MemoryAlloc(0x10000);
+
+            MemoryAlloc data = _processesBuffer;
+
+            NtStatus status;
+            int attempts = 0;
+
+            while (true)
             {
-                NtStatus status;
-                int attempts = 0;
+                attempts++;
 
-                while (true)
+                if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
+                    data.Size, out retLength)) >= NtStatus.Error)
                 {
-                    attempts++;
+                    if (attempts > 3)
+                        Win32.ThrowLastError(status);
 
-                    if ((status = Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessInformation, data.Memory,
-                        data.Size, out retLength)) >= NtStatus.Error)
-                    {
-                        if (attempts > 3)
-                            Win32.ThrowLastError(status);
+                    data.Resize(retLength);
+                }
+                else
+                {
+                    break;
+                }
+            }
 
-                        data.Resize(retLength);
-                    }
-                    else
+            int i = 0;
+            SystemProcessInformation process;
+
+            while (true)
+            {
+                process = data.ReadStruct<SystemProcessInformation>(i, 0);
+
+                if (process.ProcessId == pid)
+                {
+                    var threads = new Dictionary<int, SystemThreadInformation>();
+
+                    for (int j = 0; j < process.NumberOfThreads; j++)
                     {
-                        break;
+                        var thread = data.ReadStruct<SystemThreadInformation>(i +
+                            Marshal.SizeOf(typeof(SystemProcessInformation)), j);
+
+                        threads.Add(thread.ClientId.ThreadId, thread);
                     }
+
+                    return threads;
                 }
 
-                int i = 0;
-                SystemProcessInformation process;
+                if (process.NextEntryOffset == 0)
+                    break;
 
-                while (true)
-                {
-                    process = data.ReadStruct<SystemProcessInformation>(i, 0);
-
-                    if (process.ProcessId == pid)
-                    {
-                        var threads = new Dictionary<int, SystemThreadInformation>();
-
-                        for (int j = 0; j < process.NumberOfThreads; j++)
-                        {
-                            var thread = data.ReadStruct<SystemThreadInformation>(i +
-                                Marshal.SizeOf(typeof(SystemProcessInformation)), j);
-
-                            threads.Add(thread.ClientId.ThreadId, thread);
-                        }
-
-                        return threads;
-                    }
-
-                    if (process.NextEntryOffset == 0)
-                        break;
-
-                    i += process.NextEntryOffset;
-                }
+                i += process.NextEntryOffset;
             }
 
             return null;
@@ -539,30 +556,36 @@ namespace ProcessHacker.Native
                 int servicesReturned;
                 int resume = 0;
 
-                // get required size
-                Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
-                    ServiceQueryState.All, IntPtr.Zero, 0, out requiredSize, out servicesReturned,
-                    ref resume, null);
+                if (_servicesBuffer == null)
+                    _servicesBuffer = new MemoryAlloc(0x10000);
 
-                using (MemoryAlloc data = new MemoryAlloc(requiredSize))
+                MemoryAlloc data = _servicesBuffer;
+
+                if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
+                    ServiceQueryState.All, data,
+                    data.Size, out requiredSize, out servicesReturned,
+                    ref resume, null))
                 {
+                    // resize buffer
+                    data.Resize(requiredSize);
+
                     if (!Win32.EnumServicesStatusEx(manager, IntPtr.Zero, ServiceQueryType.Win32 | ServiceQueryType.Driver,
                         ServiceQueryState.All, data,
                         data.Size, out requiredSize, out servicesReturned,
                         ref resume, null))
                         Win32.ThrowLastError();
-
-                    var dictionary = new Dictionary<string, EnumServiceStatusProcess>(servicesReturned);
-
-                    for (int i = 0; i < servicesReturned; i++)
-                    {
-                        var service = data.ReadStruct<EnumServiceStatusProcess>(i);
-
-                        dictionary.Add(service.ServiceName, service);
-                    }
-
-                    return dictionary;
                 }
+
+                var dictionary = new Dictionary<string, EnumServiceStatusProcess>(servicesReturned);
+
+                for (int i = 0; i < servicesReturned; i++)
+                {
+                    var service = data.ReadStruct<EnumServiceStatusProcess>(i);
+
+                    dictionary.Add(service.ServiceName, service);
+                }
+
+                return dictionary;
             }
         }
 

@@ -40,12 +40,14 @@ namespace ProcessHacker
             this.Update(this.Provider.CurrentCpuKernelUsage, this.Provider.CurrentCpuUserUsage);
             this.Redraw();
 
-            this.Text = "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
+            string text = "CPU Usage: " + (this.Provider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
             string mostCpuText = this.Provider.MostCpuHistory[0];
 
-            if (this.Text.Length + mostCpuText.Length + 1 < 64) // 1 char for the LF
-                this.Text += "\n" + mostCpuText;
+            if (text.Length + mostCpuText.Length + 1 < 64) // 1 char for the LF
+                text += "\n" + mostCpuText;
+
+            this.Text = text;
         }
     }
 }

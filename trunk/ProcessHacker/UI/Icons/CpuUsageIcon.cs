@@ -112,14 +112,16 @@ namespace ProcessHacker
 
             string mostCpuProcess = _provider.MostCpuHistory[0];
 
-            this.Text = "CPU Usage: " + ((k + u) * 100).ToString("N2") + "%"
+            string text = "CPU Usage: " + ((k + u) * 100).ToString("N2") + "%"
                 //+ " (" +
                 //"K: " + (k * 100).ToString("G2") +
                 //", U: " + (u * 100).ToString("G2") + ")"
                 ;
 
-            if (this.Text.Length + mostCpuProcess.Length + 1 < 64)
-                this.Text += "\n" + mostCpuProcess;
+            if (text.Length + mostCpuProcess.Length + 1 < 64)
+                text += "\n" + mostCpuProcess;
+
+            this.Text = text;
         }
     }
 }

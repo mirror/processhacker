@@ -50,7 +50,7 @@ namespace ProcessHacker
 
             this.Redraw();
 
-            this.Text = "R: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) +
+            string text = "R: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoRead]) +
                 "\nW: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoWrite]) +
                 "\nO: " + Utils.GetNiceSizeName(this.Provider.LongDeltas[SystemStats.IoOther]);
 
@@ -58,9 +58,11 @@ namespace ProcessHacker
             {
                 string mostIoName = this.Provider.Dictionary[this.Provider.PIDWithMostIoActivity].Name;
 
-                if (this.Text.Length + mostIoName.Length + 1 < 64) // 1 char for the LF
-                    this.Text += "\n" + mostIoName;
+                if (text.Length + mostIoName.Length + 1 < 64) // 1 char for the LF
+                    text += "\n" + mostIoName;
             }
+
+            this.Text = text;
         }
     }
 }

@@ -303,7 +303,7 @@ namespace ProcessHacker
 
         public string Username
         {
-            get { return this.GetBestUsername(_pitem.Username, Properties.Settings.Default.ShowAccountDomains); }
+            get { return this.GetBestUsername(_pitem.Username, Settings.ShowAccountDomains); }
         }
 
         public string SessionId
@@ -488,7 +488,7 @@ namespace ProcessHacker
                 else
                     return (_pitem.LongHistoryManager[ProcessStats.IoReadOther][0] +
                         _pitem.LongHistoryManager[ProcessStats.IoWrite][0]) * 1000 /
-                        Properties.Settings.Default.RefreshInterval;
+                        Settings.RefreshInterval;
             }
         }
 
@@ -511,7 +511,7 @@ namespace ProcessHacker
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoReadOther][0] * 1000 /
-                        Properties.Settings.Default.RefreshInterval;
+                        Settings.RefreshInterval;
             }
         }
 
@@ -534,7 +534,7 @@ namespace ProcessHacker
                     return 0;
                 else
                     return _pitem.LongHistoryManager[ProcessStats.IoWrite][0] * 1000 /
-                        Properties.Settings.Default.RefreshInterval;
+                        Settings.RefreshInterval;
             }
         }
 

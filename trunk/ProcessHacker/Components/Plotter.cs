@@ -194,14 +194,14 @@ namespace ProcessHacker.Components
             }
 
             // draw text
-            if (this.Text != null && this.Text != "")
+            if (!string.IsNullOrEmpty(_text))
             {
                 // draw the background for the text
                 g.FillRectangle(new SolidBrush(_textBoxColor),
                     new Rectangle(_boxPosition, _boxSize));
 
                 // draw the text
-                TextRenderer.DrawText(g, this.Text, this.Font, _textPosition, _textColor);
+                TextRenderer.DrawText(g, _text, this.Font, _textPosition, _textColor);
             }
 
             if (_showToolTip)
@@ -320,15 +320,16 @@ namespace ProcessHacker.Components
             set { _textAlign = value; }
         }
 
+        private string _text;
         public override string Text
         {
             get
             {
-                return base.Text;
+                return _text;
             }
             set
             {
-                base.Text = value;
+                base.Text = _text = value;
 
                 _textSize = TextRenderer.MeasureText(this.Text, this.Font);
                 _boxSize = new Size(
