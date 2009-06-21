@@ -179,7 +179,7 @@ NTSTATUS KphpCaptureStackBackTraceThread(
         KIRQL oldIrql;
         
         context.Local = TRUE;
-        /* Raise the IRQL to APC_LEVEL to prevent thread termination. */
+        /* Raise the IRQL to APC_LEVEL to simulate an APC environment. */
         KeRaiseIrql(APC_LEVEL, &oldIrql);
         /* Call the APC routine directly. */
         KphpCaptureStackBackTraceThreadSpecialApc(
@@ -219,10 +219,6 @@ NTSTATUS KphpCaptureStackBackTraceThread(
                 FALSE,
                 NULL
                 );
-            
-            /* Don't overwrite an existing error. */
-            if (NT_SUCCESS(status))
-                status = context.Status;
         }
         else
         {

@@ -76,7 +76,6 @@ typedef struct _CAPTURE_BACKTRACE_THREAD_CONTEXT
     BOOLEAN Local;
     KAPC Apc;
     KEVENT CompletedEvent;
-    NTSTATUS Status;
     ULONG FramesToSkip;
     ULONG FramesToCapture;
     PVOID *BackTrace;
