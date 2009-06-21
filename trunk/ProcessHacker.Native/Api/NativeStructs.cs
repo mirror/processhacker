@@ -153,28 +153,29 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Sequential)]
     public struct DbgUiWaitStateChange
     {
-        [StructLayout(LayoutKind.Explicit)]
-        public struct StateInfoUnion
-        {
-            [FieldOffset(0)]
-            public DbgKmException Exception;
-            [FieldOffset(0)]
-            public DbgUiCreateThread CreateThread;
-            [FieldOffset(0)]
-            public DbgUiCreateProcess CreateProcess;
-            [FieldOffset(0)]
-            public DbgKmExitThread ExitThread;
-            [FieldOffset(0)]
-            public DbgKmExitProcess ExitProcess;
-            [FieldOffset(0)]
-            public DbgKmLoadDll LoadDll;
-            [FieldOffset(0)]
-            public DbgKmUnloadDll UnloadDll;
-        }
+        // Overlapping objects and non-objects. Must manually marshal.
+        //[StructLayout(LayoutKind.Explicit, Pack = 1)]
+        //public struct StateInfoUnion
+        //{
+        //    [FieldOffset(0)]
+        //    public DbgKmException Exception;
+        //    [FieldOffset(0)]
+        //    public DbgUiCreateThread CreateThread;
+        //    [FieldOffset(0)]
+        //    public DbgUiCreateProcess CreateProcess;
+        //    [FieldOffset(0)]
+        //    public DbgKmExitThread ExitThread;
+        //    [FieldOffset(0)]
+        //    public DbgKmExitProcess ExitProcess;
+        //    [FieldOffset(0)]
+        //    public DbgKmLoadDll LoadDll;
+        //    [FieldOffset(0)]
+        //    public DbgKmUnloadDll UnloadDll;
+        //}
 
         public DbgState NewState;
         public ClientId AppClientId;
-        public StateInfoUnion StateInfo;
+        //public StateInfoUnion StateInfo;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -183,7 +184,7 @@ namespace ProcessHacker.Native.Api
         public EventType EventType;
         public int EventState;
     }
-    
+
     [StructLayout(LayoutKind.Sequential)]
     public struct ExceptionRecord
     {
