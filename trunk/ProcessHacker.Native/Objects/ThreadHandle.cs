@@ -268,7 +268,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>An array of function addresses.</returns>
         public IntPtr[] CaptureKernelStack(int skipCount)
         {
-            IntPtr[] stack = new IntPtr[0x100]; // 256 frames should be enough
+            IntPtr[] stack = new IntPtr[62 - skipCount]; // 62 limit for XP and Server 2003
             int hash;
 
             // Capture a kernel-mode stack trace.
