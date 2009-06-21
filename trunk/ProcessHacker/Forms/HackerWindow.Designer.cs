@@ -103,6 +103,7 @@
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
             this.hiddenProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.verifyFileSignatureMenuItem = new System.Windows.Forms.MenuItem();
+            this.usersMenuItem = new System.Windows.Forms.MenuItem();
             this.windowMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenu = new System.Windows.Forms.MenuItem();
             this.freeMemoryMenuItem = new System.Windows.Forms.MenuItem();
@@ -166,7 +167,6 @@
             this.menuNetwork = new System.Windows.Forms.ContextMenu();
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.selectAllNetworkMenuItem = new System.Windows.Forms.MenuItem();
-            this.usersMenuItem = new System.Windows.Forms.MenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusGeneral)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusCPU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMemory)).BeginInit();
@@ -706,6 +706,11 @@
             this.verifyFileSignatureMenuItem.Text = "&Verify File Signature...";
             this.verifyFileSignatureMenuItem.Click += new System.EventHandler(this.verifyFileSignatureMenuItem_Click);
             // 
+            // usersMenuItem
+            // 
+            this.usersMenuItem.Index = 3;
+            this.usersMenuItem.Text = "&Users";
+            // 
             // windowMenuItem
             // 
             this.windowMenuItem.Index = 4;
@@ -1206,11 +1211,6 @@
             this.selectAllNetworkMenuItem.Index = 4;
             this.selectAllNetworkMenuItem.Text = "Select &All";
             this.selectAllNetworkMenuItem.Click += new System.EventHandler(this.selectAllNetworkMenuItem_Click);
-            // 
-            // usersMenuItem
-            // 
-            this.usersMenuItem.Index = 3;
-            this.usersMenuItem.Text = "&Users";
             // 
             // HackerWindow
             // 

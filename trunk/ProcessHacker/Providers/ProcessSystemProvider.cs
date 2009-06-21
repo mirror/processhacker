@@ -73,6 +73,7 @@ namespace ProcessHacker
         public int SessionId;
         public bool HasParent;
         public int ParentPid;
+        public bool IsHungGui = false;
 
         public VerifyResult VerifyResult;
         public string VerifySignerName;
@@ -169,6 +170,28 @@ namespace ProcessHacker
             new HistoryManager<SystemStats, long>(EnumComparer<SystemStats>.Instance);
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
+
+        private SystemProcess _DPCs = new SystemProcess()
+        {
+            Name = "DPCs",
+            Process = new SystemProcessInformation()
+            {
+                ProcessId = -2,
+                InheritedFromProcessId = 0,
+                SessionId = -1
+            }
+        };
+
+        private SystemProcess _interrupts = new SystemProcess()
+        {
+            Name = "Interrupts",
+            Process = new SystemProcessInformation()
+            {
+                ProcessId = -3,
+                InheritedFromProcessId = 0,
+                SessionId = -1
+            }
+        };
 
         public ProcessSystemProvider()
             : base()
@@ -624,10 +647,44 @@ namespace ProcessHacker
                 this.FileProcessingReceived(result.Stage, result.Pid);
         }
 
+        //test
+        private void UpdateFrozenWindows()
+        {
+            foreach (ProcessItem item in Dictionary.Values)
+            {
+                if (item.IsHungGui)
+                {
+                    item.IsHungGui = false;
+                    item.Name = item.Name.Remove(item.Name.LastIndexOf(" [Not Responding]"));
+                }
+
+            }
+            Win32.EnumWindows((hwnd, param) =>
+            {
+                bool result = Win32.IsHungAppWindow(hwnd);
+                //int lastError = Marshal.GetLastWin32Error();
+
+                if (result == true && Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd))//timeout
+                {
+                    int pid;
+                    Win32.GetWindowThreadProcessId(hwnd, out pid);
+                    try
+                    {
+                        if (Dictionary[pid].IsHungGui == true)
+                            return true;
+                        Dictionary[pid].Name += " [Not Responding]";
+                        Dictionary[pid].IsHungGui = true;
+                    }
+                    catch (Exception) { }
+                }
+                return true;
+            }, 0);
+        }
         private void UpdateOnce()
         {
             this.UpdatePerformance();
             this.UpdateProcessorPerf();
+            this.UpdateFrozenWindows();
 
             if (this.RunCount % 3 == 0)
                 FileUtils.RefreshDriveDevicePrefixes();
@@ -699,38 +756,21 @@ namespace ProcessHacker
                 (long)(this.System.NumberOfPhysicalPages - this.Performance.AvailablePages) * this.System.PageSize);
 
             // set System Idle Process CPU time
-            if (procs.ContainsKey(0))
+            // Fliser: should be faster than Checking, Removing and Adding again
+            try
             {
-                var proc = procs[0];
-
+                SystemProcess proc = procs[0];
                 proc.Process.KernelTime = this.ProcessorPerf.IdleTime;
-                procs.Remove(0);
-                procs.Add(0, proc);
             }
+            catch(Exception){}
 
-            procs.Add(-2, new SystemProcess()
-            {
-                Name = "DPCs",
-                Process = new SystemProcessInformation()
-                {
-                    ProcessId = -2,
-                    InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.DpcTime,
-                    SessionId = -1
-                }
-            });
+            // Fliser: faster than creating everytime a new one
+            _DPCs.Process.KernelTime = this.ProcessorPerf.DpcTime;
+            procs.Add(-2, _DPCs);
 
-            procs.Add(-3, new SystemProcess()
-            {
-                Name = "Interrupts",
-                Process = new SystemProcessInformation()
-                {
-                    ProcessId = -3,
-                    InheritedFromProcessId = 0,
-                    KernelTime = this.ProcessorPerf.InterruptTime,
-                    SessionId = -1
-                }
-            });
+            // Fliser: faster than creating everytime a new one
+            _interrupts.Process.KernelTime = this.ProcessorPerf.InterruptTime;
+            procs.Add(-3, _interrupts);
 
             float mostCPUUsage = 0;
             long mostIOActivity = 0;

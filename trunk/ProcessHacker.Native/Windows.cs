@@ -386,7 +386,7 @@ namespace ProcessHacker.Native
                 int i = 0;
                 SystemPagefileInformation currentPagefile;
 
-                while (true)
+                do
                 {
                     currentPagefile = data.ReadStruct<SystemPagefileInformation>(i, 0);
 
@@ -397,11 +397,8 @@ namespace ProcessHacker.Native
                         FileUtils.FixPath(currentPagefile.PageFileName.Read())
                         ));
 
-                    if (currentPagefile.NextEntryOffset == 0)
-                        break;
-
                     i += currentPagefile.NextEntryOffset;
-                }
+                } while (currentPagefile.NextEntryOffset != 0);
 
                 return pagefiles.ToArray();
             }
@@ -456,7 +453,7 @@ namespace ProcessHacker.Native
             int i = 0;
             SystemProcess currentProcess = new SystemProcess();
 
-            while (true)
+            do
             {
                 currentProcess.Process = data.ReadStruct<SystemProcessInformation>(i, 0);
                 currentProcess.Name = currentProcess.Process.ImageName.Read();
@@ -477,11 +474,8 @@ namespace ProcessHacker.Native
 
                 returnProcesses.Add(currentProcess.Process.ProcessId, currentProcess);
 
-                if (currentProcess.Process.NextEntryOffset == 0)
-                    break;
-
                 i += currentProcess.Process.NextEntryOffset;
-            }
+            } while (currentProcess.Process.NextEntryOffset != 0);
 
             return returnProcesses;
         }
@@ -519,7 +513,7 @@ namespace ProcessHacker.Native
             int i = 0;
             SystemProcessInformation process;
 
-            while (true)
+            do
             {
                 process = data.ReadStruct<SystemProcessInformation>(i, 0);
 
@@ -538,11 +532,9 @@ namespace ProcessHacker.Native
                     return threads;
                 }
 
-                if (process.NextEntryOffset == 0)
-                    break;
-
                 i += process.NextEntryOffset;
-            }
+
+            } while (process.NextEntryOffset != 0);
 
             return null;
         }
