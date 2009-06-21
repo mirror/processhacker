@@ -309,6 +309,10 @@ namespace ProcessHacker
         {
             ulong address = stackFrame.PcAddress.ToUInt64();
 
+            // HACK for XP where the top user-mode frame for system threads is always 0xffffffff
+            if (OSVersion.WindowsVersion == WindowsVersion.XP && address == 0xffffffff)
+                return true;
+
             try
             {
                 ListViewItem newItem = listViewCallStack.Items.Add(new ListViewItem(
