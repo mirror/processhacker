@@ -118,10 +118,32 @@ namespace ProcessHacker
         public event FileProcessingDelegate FileProcessingComplete;
         public event FileProcessingDelegate FileProcessingReceived;
 
-        public SystemBasicInformation System { get; private set; }
-        public SystemPerformanceInformation Performance { get; private set; }
-        public SystemProcessorPerformanceInformation ProcessorPerf { get; private set; }
-        public SystemProcessorPerformanceInformation[] ProcessorPerfArray { get; private set; }
+        private SystemBasicInformation _system;
+        public SystemBasicInformation System
+        {
+            get { return _system; }
+        }
+
+        private SystemPerformanceInformation _performance;
+        public SystemPerformanceInformation Performance
+        {
+            get { return _performance; }
+        }
+
+        private int _processorPerfArraySize;
+        private MemoryAlloc _processorPerfBuffer;
+        private SystemProcessorPerformanceInformation[] _processorPerfArray;
+        public SystemProcessorPerformanceInformation[] ProcessorPerfArray
+        {
+            get { return _processorPerfArray; }
+        }
+
+        private SystemProcessorPerformanceInformation _processorPerf;
+        public SystemProcessorPerformanceInformation ProcessorPerf
+        {
+            get { return _processorPerf; }
+        }
+
         public float CurrentCpuKernelUsage { get; private set; }
         public float CurrentCpuUserUsage { get; private set; }
         public float CurrentCpuUsage { get { return this.CurrentCpuKernelUsage + this.CurrentCpuUserUsage; } }
@@ -159,8 +181,11 @@ namespace ProcessHacker
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemBasicInformation, out basic,
                 Marshal.SizeOf(typeof(SystemBasicInformation)), out retLen);
-            this.System = basic;
-            this.ProcessorPerfArray = new SystemProcessorPerformanceInformation[this.System.NumberOfProcessors];
+            _system = basic;
+            _processorPerfArraySize = Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
+                _system.NumberOfProcessors;
+            _processorPerfBuffer = new MemoryAlloc(_processorPerfArraySize);
+            _processorPerfArray = new SystemProcessorPerformanceInformation[_system.NumberOfProcessors];
 
             this.UpdateProcessorPerf();
 
@@ -209,48 +234,39 @@ namespace ProcessHacker
 
         private void UpdateProcessorPerf()
         {
-            using (MemoryAlloc data =
-                new MemoryAlloc(Marshal.SizeOf(typeof(SystemProcessorPerformanceInformation)) *
-                this.ProcessorPerfArray.Length))
+            int retLen;
+
+            Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorPerformanceInformation,
+                _processorPerfBuffer, _processorPerfArraySize, out retLen);
+
+            _processorPerf = new SystemProcessorPerformanceInformation();
+
+            // Thanks to:
+            // http://www.netperf.org/svn/netperf2/trunk/src/netcpu_ntperf.c
+            // for the critical information:
+            // "KernelTime needs to be fixed-up; it includes both idle & true kernel time".
+            // This is why I love free software.
+            for (int i = 0; i < _processorPerfArray.Length; i++)
             {
-                int retLen;
+                var cpuPerf = _processorPerfBuffer.ReadStruct<SystemProcessorPerformanceInformation>(i);
 
-                Win32.NtQuerySystemInformation(SystemInformationClass.SystemProcessorPerformanceInformation,
-                    data, data.Size, out retLen);
-
-                var newSums = new SystemProcessorPerformanceInformation();
-
-                // Thanks to:
-                // http://www.netperf.org/svn/netperf2/trunk/src/netcpu_ntperf.c
-                // for the critical information:
-                // "KernelTime needs to be fixed-up; it includes both idle & true kernel time".
-                // This is why I love free software.
-                for (int i = 0; i < this.ProcessorPerfArray.Length; i++)
-                {
-                    var cpuPerf = data.ReadStruct<SystemProcessorPerformanceInformation>(i);
-                    
-                    cpuPerf.KernelTime -= cpuPerf.IdleTime + cpuPerf.DpcTime + cpuPerf.InterruptTime;
-                    newSums.DpcTime += cpuPerf.DpcTime;
-                    newSums.IdleTime += cpuPerf.IdleTime;
-                    newSums.InterruptCount += cpuPerf.InterruptCount;
-                    newSums.InterruptTime += cpuPerf.InterruptTime;
-                    newSums.KernelTime += cpuPerf.KernelTime;
-                    newSums.UserTime += cpuPerf.UserTime;
-                    this.ProcessorPerfArray[i] = cpuPerf;
-                }
-
-                this.ProcessorPerf = newSums;
+                cpuPerf.KernelTime -= cpuPerf.IdleTime + cpuPerf.DpcTime + cpuPerf.InterruptTime;
+                _processorPerf.DpcTime += cpuPerf.DpcTime;
+                _processorPerf.IdleTime += cpuPerf.IdleTime;
+                _processorPerf.InterruptCount += cpuPerf.InterruptCount;
+                _processorPerf.InterruptTime += cpuPerf.InterruptTime;
+                _processorPerf.KernelTime += cpuPerf.KernelTime;
+                _processorPerf.UserTime += cpuPerf.UserTime;
+                _processorPerfArray[i] = cpuPerf;
             }
         }
 
         private void UpdatePerformance()
         {
             int retLen;
-            SystemPerformanceInformation performance;
 
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemPerformanceInformation,
-                 out performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
-            this.Performance = performance;
+                 out _performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
         }
 
         private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced)
