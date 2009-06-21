@@ -136,7 +136,6 @@ NTSTATUS KphpCaptureStackBackTraceThread(
     )
 {
     NTSTATUS status = STATUS_SUCCESS;
-    PVOID dummy = NULL;
     CAPTURE_BACKTRACE_THREAD_CONTEXT context;
     ULONG backTraceSize;
     PVOID *backTrace;
@@ -176,6 +175,7 @@ NTSTATUS KphpCaptureStackBackTraceThread(
     if (Thread == PsGetCurrentThread())
     {
         PCAPTURE_BACKTRACE_THREAD_CONTEXT contextPtr = &context;
+        PVOID dummy = NULL;
         KIRQL oldIrql;
         
         context.Local = TRUE;
