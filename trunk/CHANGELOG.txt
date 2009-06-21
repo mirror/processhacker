@@ -14,6 +14,7 @@ Process Hacker
      instead of zero-extending pointers
    * Broken Ctrl+A for memory, results, and PE lists
    * Removed several annoying thread-related warnings
+   * Network connections now display process IDs
 
 1.3.8.5
  * NEW/IMPROVED:

@@ -22,13 +22,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Common.Ui;
 using ProcessHacker.Native;
 using ProcessHacker.UI;
-using System.Drawing;
 
 namespace ProcessHacker.Components
 {
@@ -348,7 +348,7 @@ namespace ProcessHacker.Components
             }
             else if (Program.ProcessProvider.Dictionary.ContainsKey(item.Pid))
             {
-                litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name;
+                litem.Text = Program.ProcessProvider.Dictionary[item.Pid].Name + " (" + item.Pid.ToString() + ")";
             }
             else
             {
