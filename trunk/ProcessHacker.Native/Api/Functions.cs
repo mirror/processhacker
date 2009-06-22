@@ -2419,19 +2419,22 @@ namespace ProcessHacker.Native.Api
             [Out] StringBuilder str, 
             int maxCount
             );
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool IsHungAppWindow(
-            [In] IntPtr hwnd
+            [In] IntPtr hWnd
             );
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool IsWindow(
-            [In] IntPtr hwnd
+            [In] IntPtr hWnd
             );
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern bool IsWindowVisible(
-            [In] IntPtr hwnd
+            [In] IntPtr hWnd
             );
-        //IsWindowVisible
+
         #endregion
     }
 }

@@ -9,7 +9,6 @@ Process Hacker
    * Ability to set DEP status of processes in other sessions
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
-   * Shows "[Not Responding]" at process name if window is hung
  * FIXED:
    * Broken system thread start addresses due to sign-extending 
      instead of zero-extending pointers

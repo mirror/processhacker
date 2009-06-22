@@ -1,7 +1,8 @@
 ﻿/*
  * Process Hacker - 
  *   processes and system performance information provider
- * 
+ *
+ * Copyright (C) 2009 Flavio Erlich 
  * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
@@ -73,7 +74,7 @@ namespace ProcessHacker
         public int SessionId;
         public bool HasParent;
         public int ParentPid;
-        public bool IsHungGui = false;
+        public bool IsHungGui;
 
         public VerifyResult VerifyResult;
         public string VerifySignerName;
@@ -171,7 +172,7 @@ namespace ProcessHacker
         private HistoryManager<string, float> _floatHistory = new HistoryManager<string, float>();
         private HistoryManager<bool, string> _mostUsageHistory = new HistoryManager<bool, string>();
 
-        private SystemProcess _DPCs = new SystemProcess()
+        private SystemProcess _dpcs = new SystemProcess()
         {
             Name = "DPCs",
             Process = new SystemProcessInformation()
@@ -647,7 +648,6 @@ namespace ProcessHacker
                 this.FileProcessingReceived(result.Stage, result.Pid);
         }
 
-        //test
         private void UpdateFrozenWindows()
         {
             foreach (ProcessItem item in Dictionary.Values)
@@ -659,32 +659,35 @@ namespace ProcessHacker
                 }
 
             }
+
             Win32.EnumWindows((hwnd, param) =>
             {
                 bool result = Win32.IsHungAppWindow(hwnd);
-                //int lastError = Marshal.GetLastWin32Error();
 
-                if (result == true && Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd))//timeout
+                if (result && Win32.IsWindow(hwnd) && Win32.IsWindowVisible(hwnd)) //timeout
                 {
                     int pid;
                     Win32.GetWindowThreadProcessId(hwnd, out pid);
-                    try
+                    
+                    if (this.Dictionary.ContainsKey(pid))
                     {
                         if (Dictionary[pid].IsHungGui == true)
                             return true;
+
                         Dictionary[pid].Name += " [Not Responding]";
                         Dictionary[pid].IsHungGui = true;
                     }
-                    catch (Exception) { }
                 }
+
                 return true;
             }, 0);
         }
+
         private void UpdateOnce()
         {
             this.UpdatePerformance();
             this.UpdateProcessorPerf();
-            this.UpdateFrozenWindows();
+            //this.UpdateFrozenWindows();
 
             if (this.RunCount % 3 == 0)
                 FileUtils.RefreshDriveDevicePrefixes();
@@ -694,14 +697,14 @@ namespace ProcessHacker
             Dictionary<int, ProcessItem> newdictionary = new Dictionary<int, ProcessItem>(this.Dictionary);
             Win32.WtsEnumProcessesFastData wtsEnumData = new Win32.WtsEnumProcessesFastData();
 
-            _longDeltas.Update(SystemStats.CpuKernel, this.ProcessorPerf.KernelTime);
+            _longDeltas.Update(SystemStats.CpuKernel, _processorPerf.KernelTime);
             long sysKernelTime = _longDeltas[SystemStats.CpuKernel];
 
-            _longDeltas.Update(SystemStats.CpuUser, this.ProcessorPerf.UserTime);
+            _longDeltas.Update(SystemStats.CpuUser, _processorPerf.UserTime);
             long sysUserTime = _longDeltas[SystemStats.CpuUser];
 
-            _longDeltas.Update(SystemStats.CpuOther, 
-                this.ProcessorPerf.IdleTime + this.ProcessorPerf.DpcTime + this.ProcessorPerf.InterruptTime);
+            _longDeltas.Update(SystemStats.CpuOther,
+                _processorPerf.IdleTime + _processorPerf.DpcTime + _processorPerf.InterruptTime);
             long otherTime = _longDeltas[SystemStats.CpuOther];
 
             if (sysKernelTime + sysUserTime + otherTime == 0)
@@ -710,11 +713,11 @@ namespace ProcessHacker
                 return;
             }
 
-            _longDeltas.Update(SystemStats.IoRead, this.Performance.IoReadTransferCount);
-            _longDeltas.Update(SystemStats.IoWrite, this.Performance.IoWriteTransferCount);
-            _longDeltas.Update(SystemStats.IoOther, this.Performance.IoOtherTransferCount);
+            _longDeltas.Update(SystemStats.IoRead, _performance.IoReadTransferCount);
+            _longDeltas.Update(SystemStats.IoWrite, _performance.IoWriteTransferCount);
+            _longDeltas.Update(SystemStats.IoOther, _performance.IoOtherTransferCount);
 
-            if (this.ProcessorPerf.KernelTime != 0 && this.ProcessorPerf.UserTime != 0)
+            if (_processorPerf.KernelTime != 0 && _processorPerf.UserTime != 0)
             {
                 this.CurrentCpuKernelUsage = (float)sysKernelTime / (sysKernelTime + sysUserTime + otherTime);
                 this.CurrentCpuUserUsage = (float)sysUserTime / (sysKernelTime + sysUserTime + otherTime);
@@ -726,11 +729,11 @@ namespace ProcessHacker
 
             for (int i = 0; i < this.System.NumberOfProcessors; i++)
             {
-                long cpuKernelTime = _cpuDeltas.Update(i.ToString() + " Kernel", this.ProcessorPerfArray[i].KernelTime);
-                long cpuUserTime = _cpuDeltas.Update(i.ToString() + " User", this.ProcessorPerfArray[i].UserTime);
+                long cpuKernelTime = _cpuDeltas.Update(i.ToString() + " Kernel", _processorPerfArray[i].KernelTime);
+                long cpuUserTime = _cpuDeltas.Update(i.ToString() + " User", _processorPerfArray[i].UserTime);
                 long cpuOtherTime = _cpuDeltas.Update(i.ToString() + " Other",
-                    this.ProcessorPerfArray[i].IdleTime + this.ProcessorPerfArray[i].DpcTime +
-                    this.ProcessorPerfArray[i].InterruptTime);
+                    _processorPerfArray[i].IdleTime + _processorPerfArray[i].DpcTime +
+                    _processorPerfArray[i].InterruptTime);
                 _floatHistory.Update(i.ToString() + " Kernel", 
                     (float)cpuKernelTime / (cpuKernelTime + cpuUserTime + cpuOtherTime));
                 _floatHistory.Update(i.ToString() + " User",
@@ -751,25 +754,23 @@ namespace ProcessHacker
             _longHistory.Update(SystemStats.IoOther, _longDeltas[SystemStats.IoOther]);
             _longHistory.Update(SystemStats.IoReadOther, 
                 _longDeltas[SystemStats.IoRead] + _longDeltas[SystemStats.IoOther]);
-            _longHistory.Update(SystemStats.Commit, (long)this.Performance.CommittedPages * this.System.PageSize);
+            _longHistory.Update(SystemStats.Commit, (long)_performance.CommittedPages * _system.PageSize);
             _longHistory.Update(SystemStats.PhysicalMemory,
-                (long)(this.System.NumberOfPhysicalPages - this.Performance.AvailablePages) * this.System.PageSize);
+                (long)(_system.NumberOfPhysicalPages - _performance.AvailablePages) * _system.PageSize);
 
             // set System Idle Process CPU time
-            // Fliser: should be faster than Checking, Removing and Adding again
-            try
+            if (procs.ContainsKey(0))
             {
                 SystemProcess proc = procs[0];
-                proc.Process.KernelTime = this.ProcessorPerf.IdleTime;
+                proc.Process.KernelTime = _processorPerf.IdleTime;
+                procs[0] = proc;
             }
-            catch(Exception){}
 
-            // Fliser: faster than creating everytime a new one
-            _DPCs.Process.KernelTime = this.ProcessorPerf.DpcTime;
-            procs.Add(-2, _DPCs);
+            // add fake processes (DPCs and Interrupts)
+            _dpcs.Process.KernelTime = _processorPerf.DpcTime;
+            procs.Add(-2, _dpcs);
 
-            // Fliser: faster than creating everytime a new one
-            _interrupts.Process.KernelTime = this.ProcessorPerf.InterruptTime;
+            _interrupts.Process.KernelTime = _processorPerf.InterruptTime;
             procs.Add(-3, _interrupts);
 
             float mostCPUUsage = 0;
