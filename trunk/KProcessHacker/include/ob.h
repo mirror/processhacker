@@ -49,26 +49,26 @@ struct _OBJECT_HANDLE_FLAG_INFORMATION;
 typedef struct _OBJECT_TYPE_INITIALIZER OBJECT_TYPE_INITIALIZER, *POBJECT_TYPE_INITIALIZER;
 
 NTSTATUS NTAPI ObCreateObjectType(
-    PUNICODE_STRING TypeName,
-    POBJECT_TYPE_INITIALIZER ObjectTypeInitializer,
-    PSECURITY_DESCRIPTOR SecurityDescriptor,
-    POBJECT_TYPE *ObjectType
+    __in PUNICODE_STRING TypeName,
+    __in POBJECT_TYPE_INITIALIZER ObjectTypeInitializer,
+    __in PSECURITY_DESCRIPTOR SecurityDescriptor,
+    __out_opt POBJECT_TYPE *ObjectType
     );
 
 NTSTATUS NTAPI ObOpenObjectByName(
-    POBJECT_ATTRIBUTES ObjectAttributes,
-    POBJECT_TYPE ObjectType,
-    KPROCESSOR_MODE PreviousMode,
-    PACCESS_STATE AccessState,
-    ACCESS_MASK DesiredAccess,
-    PVOID ParseContext,
-    PHANDLE Handle
+    __in POBJECT_ATTRIBUTES ObjectAttributes,
+    __in POBJECT_TYPE ObjectType,
+    __in KPROCESSOR_MODE PreviousMode,
+    __in_opt PACCESS_STATE AccessState,
+    __in_opt ACCESS_MASK DesiredAccess,
+    __in PVOID ParseContext,
+    __out PHANDLE Handle
     );
 
 NTSTATUS NTAPI ObSetHandleAttributes(
-    HANDLE Handle,
-    struct _OBJECT_HANDLE_FLAG_INFORMATION *HandleFlags,
-    KPROCESSOR_MODE PreviousMode
+    __in HANDLE Handle,
+    __in struct _OBJECT_HANDLE_FLAG_INFORMATION *HandleFlags,
+    __in KPROCESSOR_MODE PreviousMode
     );
 
 /* FUNCTION TYPEDEFS */

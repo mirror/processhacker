@@ -15,5 +15,6 @@ SOURCES= \
     mm.c \
     ob.c \
     ps.c \
+    rtl.c \
     se.c \
     resource.rc

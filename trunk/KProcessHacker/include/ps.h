@@ -86,25 +86,25 @@ typedef struct _CAPTURE_BACKTRACE_THREAD_CONTEXT
 /* FUNCTION DEFS */
 
 NTSTATUS NTAPI PsGetContextThread(
-    PETHREAD Thread,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE PreviousMode
+    __in PETHREAD Thread,
+    __inout PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE PreviousMode
     );
 
 PVOID NTAPI PsGetThreadWin32Thread(
-    PETHREAD Thread
+    __in PETHREAD Thread
     );
 
 NTSTATUS NTAPI PsLookupProcessThreadByCid(
-    PCLIENT_ID ClientId,
-    PEPROCESS *Process,
-    PETHREAD *Thread
+    __in PCLIENT_ID ClientId,
+    __out_opt PEPROCESS *Process,
+    __out PETHREAD *Thread
     );
 
 NTSTATUS NTAPI PsSetContextThread(
-    PETHREAD Thread,
-    PCONTEXT ThreadContext,
-    KPROCESSOR_MODE PreviousMode
+    __in PETHREAD Thread,
+    __in PCONTEXT ThreadContext,
+    __in KPROCESSOR_MODE PreviousMode
     );
 
 /* FUNCTION TYPEDEFS */

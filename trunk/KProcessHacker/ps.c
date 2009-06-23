@@ -268,9 +268,10 @@ VOID KphpCaptureStackBackTraceThreadSpecialApc(
         (PCAPTURE_BACKTRACE_THREAD_CONTEXT)*SystemArgument1;
     
     /* Capture a stack trace. */
-    context->CapturedFrames = RtlCaptureStackBackTrace(
+    context->CapturedFrames = KphCaptureStackBackTrace(
         context->FramesToSkip,
         context->FramesToCapture,
+        0,
         context->BackTrace,
         &context->BackTraceHash
         );
