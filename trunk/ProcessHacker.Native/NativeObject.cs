@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;                  
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
@@ -87,6 +85,32 @@ namespace ProcessHacker.Native
         {
             get { return _handle; }
             protected set { _handle = value; }
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        public WaitStatus SignalAndWait(NativeObject obj)
+        {
+            return (WaitStatus)_handle.SignalAndWait(obj.Handle);
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        /// <param name="timeout">A timeout value, in milliseconds.</param>
+        public WaitStatus SignalAndWait(NativeObject obj, int timeout)
+        {
+            return (WaitStatus)_handle.SignalAndWait(obj.Handle, false, timeout * Win32.TimeMsTo100Ns);
+        }
+
+        /// <summary>
+        /// Signals the object and waits for another.
+        /// </summary>
+        /// <param name="timeout">A time to wait until.</param>
+        public WaitStatus SignalAndWait(NativeObject obj, DateTime timeout)
+        {
+            return (WaitStatus)_handle.SignalAndWait(obj.Handle, false, timeout.ToFileTime(), false);
         }
 
         /// <summary>
