@@ -63,6 +63,12 @@ namespace ProcessHacker.Common.Objects
             }
         }
 
+        public T GetHandleObject<T>(int handle)
+            where T : BaseObject
+        {
+            return this.GetHandleObject(handle) as T;
+        }
+
         public BaseObject ReferenceByHandle(int handle)
         {
             lock (_handles)
@@ -80,6 +86,12 @@ namespace ProcessHacker.Common.Objects
                     return null;
                 }
             }
+        }
+
+        public T ReferenceByHandle<T>(int handle)
+            where T : BaseObject
+        {
+            return this.ReferenceByHandle(handle) as T;
         }
     }
 }
