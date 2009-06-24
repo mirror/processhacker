@@ -416,6 +416,7 @@ namespace ProcessHacker
 
         private void buttonScan_Click(object sender, EventArgs e)
         {
+            buttonTerminate.Enabled = false;
             this.Scan();
         }
 
