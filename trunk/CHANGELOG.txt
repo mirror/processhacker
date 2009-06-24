@@ -9,6 +9,8 @@ Process Hacker
    * Ability to set DEP status of processes in other sessions
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
+   * Terminator test: TP1a (TP1, alternative method)
+   * Terminator test: TT1a (TT1, alternative method)
    * Small performance improvements
  * FIXED:
    * Broken system thread start addresses due to sign-extending 

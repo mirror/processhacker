@@ -50,6 +50,11 @@ namespace ProcessHacker
             this.AddTest("TP2", "Creates a remote thread in the process which terminates the process");
             this.AddTest("TT1", "Terminates the process' threads");
             this.AddTest("TT2", "Modifies the process' threads with contexts which terminate the process");
+            if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+            {
+                this.AddTest("TP1a", "Terminates the process using TerminateProcess (alternative method)");
+                this.AddTest("TT1a", "Terminates the process' threads (alternative method)");
+            }
             this.AddTest("CH1", "Closes the process' handles");
             this.AddTest("TJ1", "Assigns the process to a job object and terminates the job");
             this.AddTest("TD1", "Debugs the process and closes the debug object");
@@ -248,6 +253,32 @@ namespace ProcessHacker
             }
         }
 
+        private void TP1a()
+        {
+            ProcessHandle phandle = ProcessHandle.GetCurrent();
+            bool found = false;
+
+            // Loop through the processes until we find our target process.
+            for (int count = 0; count < 1000; count++)
+            {
+                try
+                {
+                    phandle = phandle.GetNextProcess(Program.MinProcessQueryRights | ProcessAccess.Terminate);
+
+                    if (phandle.GetProcessId() == _pid)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                catch
+                { }
+            }
+
+            if (found)
+                phandle.Terminate();
+        }
+
         private void TP2()
         {
             IntPtr kernel32 = Win32.LoadLibrary("kernel32.dll");
@@ -269,14 +300,32 @@ namespace ProcessHacker
 
         private void TT1()
         {
-            System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
-
-            foreach (System.Diagnostics.ProcessThread t in p.Threads)
+            foreach (var thread in Windows.GetProcessThreads(_pid).Values)
             {
-                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.Terminate))
+                using (ThreadHandle thandle = new ThreadHandle(thread.ClientId.ThreadId, ThreadAccess.Terminate))
                 {
                     // don't use KPH
                     Win32.TerminateThread(thandle, 0);
+                }
+            }
+        }
+
+        private void TT1a()
+        {
+            using (var phandle = new ProcessHandle(_pid, ProcessAccess.QueryInformation))
+            {
+                ThreadHandle thandle = null;
+
+                // Loop through the process' threads and terminate each one.
+                for (int count = 0; count < 1000; count++)
+                {
+                    try
+                    {
+                        thandle = phandle.GetNextThread(thandle, ThreadAccess.Terminate);
+                        thandle.Terminate();
+                    }
+                    catch
+                    { }
                 }
             }
         }
@@ -286,11 +335,10 @@ namespace ProcessHacker
             Context context;
             IntPtr exitProcess = Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "ExitProcess");
 
-            System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
-
-            foreach (System.Diagnostics.ProcessThread t in p.Threads)
+            foreach (var thread in Windows.GetProcessThreads(_pid).Values)
             {
-                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.GetContext | ThreadAccess.SetContext))
+                using (ThreadHandle thandle = new ThreadHandle(thread.ClientId.ThreadId,
+                    ThreadAccess.GetContext | ThreadAccess.SetContext))
                 {
                     try
                     {
@@ -307,11 +355,9 @@ namespace ProcessHacker
 
         private void TT3()
         {
-            System.Diagnostics.Process p = System.Diagnostics.Process.GetProcessById(_pid);
-
-            foreach (System.Diagnostics.ProcessThread t in p.Threads)
+            foreach (var thread in Windows.GetProcessThreads(_pid).Values)
             {
-                using (ThreadHandle thandle = new ThreadHandle(t.Id, ThreadAccess.Terminate))
+                using (ThreadHandle thandle = new ThreadHandle(thread.ClientId.ThreadId, ThreadAccess.Terminate))
                 {
                     thandle.Terminate();
                 }

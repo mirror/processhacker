@@ -1148,7 +1148,10 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new ProcessHandle(handle, true);
+            if (handle != IntPtr.Zero)
+                return new ProcessHandle(handle, true);
+            else
+                return null;
         }
 
         /// <summary>
@@ -1172,7 +1175,10 @@ namespace ProcessHacker.Native.Objects
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
 
-            return new ThreadHandle(handle, true);
+            if (handle != IntPtr.Zero)
+                return new ThreadHandle(handle, true);
+            else
+                return null;
         }
 
         /// <summary>
