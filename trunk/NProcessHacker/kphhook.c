@@ -139,21 +139,39 @@ DECLARE_NEW_FUNC(NtSetContextThread, NTSETCONTEXTTHREAD_ARGS)
 
 DECLARE_NEW_FUNC(NtTerminateProcess, NTTERMINATEPROCESS_ARGS)
 {
+    NTSTATUS status;
+
     /* Call the original NtTerminateProcess if we are terminating self to 
      * avoid infinite recursion with KphTerminateProcess.
      */
     if (ProcessHandle == NULL || ProcessHandle == GetCurrentProcess())
         return OldNtTerminateProcess(ProcessHandle, ExitStatus);
 
-    return KphTerminateProcess(KphHandle, ProcessHandle, ExitStatus);
+    status = KphTerminateProcess(KphHandle, ProcessHandle, ExitStatus);
+
+    /* Fall back to using the original NtTerminateProcess if KPH couldn't 
+     * do it. */
+    if (status == STATUS_NOT_SUPPORTED)
+        status = OldNtTerminateProcess(ProcessHandle, ExitStatus);
+
+    return status;
 }
 
 DECLARE_NEW_FUNC(NtTerminateThread, NTTERMINATETHREAD_ARGS)
 {
+    NTSTATUS status;
+
     if (ThreadHandle == NULL || ThreadHandle == GetCurrentThread())
         return OldNtTerminateThread(ThreadHandle, ExitStatus);
 
-    return KphTerminateThread(KphHandle, ThreadHandle, ExitStatus);
+    status = KphTerminateThread(KphHandle, ThreadHandle, ExitStatus);
+
+    /* Fall back to using the original NtTerminateThread if KPH couldn't 
+     * do it. */
+    if (status == STATUS_NOT_SUPPORTED)
+        status = OldNtTerminateThread(ThreadHandle, ExitStatus);
+
+    return status;
 }
 
 DECLARE_NEW_FUNC(NtWriteVirtualMemory, NTWRITEVIRTUALMEMORY_ARGS)
