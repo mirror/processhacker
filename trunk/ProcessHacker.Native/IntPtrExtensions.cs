@@ -160,5 +160,37 @@ namespace ProcessHacker.Native
                 return (ulong)voidPtr;
             }
         }
+
+        public static IntPtr ToIntPtr(this int value)
+        {
+            return new IntPtr(value);
+        }
+
+        public static IntPtr ToIntPtr(this uint value)
+        {
+            unchecked
+            {
+                return new IntPtr((int)value);
+            }
+        }
+
+        public static IntPtr ToIntPtr(this long value)
+        {
+            unchecked
+            {
+                if (value > 0 && value <= 0xffffffff)
+                    return new IntPtr((int)value);
+            }
+
+            return new IntPtr(value);
+        }
+
+        public static IntPtr ToIntPtr(this ulong value)
+        {
+            unchecked
+            {
+                return ((long)value).ToIntPtr();
+            }
+        }
     }
 }

@@ -190,7 +190,7 @@ namespace ProcessHacker.Native.Symbols
             ulong baseAddressULong;
             string fileName = this.GetModuleFromAddress(address.ToUInt64(), out baseAddressULong);
 
-            baseAddress = new IntPtr((long)baseAddressULong);
+            baseAddress = baseAddressULong.ToIntPtr();
 
             return fileName;
         }
