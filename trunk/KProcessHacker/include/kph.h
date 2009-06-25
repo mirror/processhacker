@@ -144,6 +144,11 @@ NTSTATUS KphCaptureStackBackTraceThread(
     __in KPROCESSOR_MODE AccessMode
     );
 
+NTSTATUS KphDangerousTerminateThread(
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
+    );
+
 NTSTATUS KphDuplicateObject(
     __in HANDLE SourceProcessHandle,
     __in HANDLE SourceHandle,

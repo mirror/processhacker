@@ -1743,6 +1743,28 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
         
+        /* KphDangerousTerminateThread
+         * 
+         * Terminates the specified thread. This operation may cause a bugcheck.
+         */
+        case KPH_DANGEROUSTERMINATETHREAD:
+        {
+            struct
+            {
+                HANDLE ThreadHandle;
+                NTSTATUS ExitStatus;
+            } *args = dataBuffer;
+            
+            if (inLength < sizeof(*args))
+            {
+                status = STATUS_BUFFER_TOO_SMALL;
+                goto IoControlEnd;
+            }
+            
+            status = KphDangerousTerminateThread(args->ThreadHandle, args->ExitStatus);
+        }
+        break;
+        
         default:
         {
             dprintf("Unrecognized IOCTL code 0x%08x\n", controlCode);

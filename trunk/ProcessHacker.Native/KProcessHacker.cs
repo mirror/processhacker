@@ -84,7 +84,8 @@ namespace ProcessHacker.Native
             SetExecuteOptions,
             KphQueryProcessHandles,
             KphOpenThreadProcess,
-            KphCaptureStackBackTraceThread
+            KphCaptureStackBackTraceThread,
+            KphDangerousTerminateThread
         }
 
         [Flags]
@@ -316,6 +317,16 @@ namespace ProcessHacker.Native
 
                 return capturedFramesLocal;
             }
+        }
+
+        public void KphDangerousTerminateThread(ThreadHandle threadHandle, NtStatus exitStatus)
+        {
+            byte* inData = stackalloc byte[8];
+
+            *(int*)inData = threadHandle;
+            *(int*)(inData + 4) = (int)exitStatus;
+
+            _fileHandle.IoControl(CtlCode(Control.KphDangerousTerminateThread), inData, 8, null, 0);
         }
 
         public void KphDuplicateObject(
@@ -591,12 +602,12 @@ namespace ProcessHacker.Native
                 (byte*)&processHandleInt, 4, null, 0);
         }
 
-        public void KphTerminateProcess(ProcessHandle processHandle, int exitStatus)
+        public void KphTerminateProcess(ProcessHandle processHandle, NtStatus exitStatus)
         {
             byte* inData = stackalloc byte[8];
 
             *(int*)inData = processHandle;
-            *(int*)(inData + 4) = exitStatus;
+            *(int*)(inData + 4) = (int)exitStatus;
 
             try
             {
@@ -607,18 +618,18 @@ namespace ProcessHacker.Native
                 // STATUS_CANT_TERMINATE_SELF means we tried to terminate ourself. Kernel-mode can't do it, 
                 // so we do it now.
                 if (ex.Status == NtStatus.CantTerminateSelf)
-                    Win32.TerminateProcess(new IntPtr(-1), exitStatus);
+                    Win32.TerminateProcess(new IntPtr(-1), (int)exitStatus);
                 else
                     throw ex;
             }
         }
 
-        public void KphTerminateThread(ThreadHandle threadHandle, int exitStatus)
+        public void KphTerminateThread(ThreadHandle threadHandle, NtStatus exitStatus)
         {
             byte* inData = stackalloc byte[8];
 
             *(int*)inData = threadHandle;
-            *(int*)(inData + 4) = exitStatus;
+            *(int*)(inData + 4) = (int)exitStatus;
 
             try
             {
@@ -627,7 +638,7 @@ namespace ProcessHacker.Native
             catch (WindowsException ex)
             {
                 if (ex.Status == NtStatus.CantTerminateSelf)
-                    Win32.TerminateThread(new IntPtr(-2), exitStatus);
+                    Win32.TerminateThread(new IntPtr(-2), (int)exitStatus);
                 else
                     throw ex;
             }

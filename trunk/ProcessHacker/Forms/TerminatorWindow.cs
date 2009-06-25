@@ -60,6 +60,8 @@ namespace ProcessHacker
             this.AddTest("TD1", "Debugs the process and closes the debug object");
             this.AddTest("TP3", "Terminates the process in kernel-mode (if possible)");
             this.AddTest("TT3", "Terminates the process' threads in kernel-mode (if possible)");
+            if (KProcessHacker.Instance != null)
+                this.AddTest("TT4", "Terminates the process' threads using a dangerous kernel-mode method");
             this.AddTest("M1", "Writes garbage to the process' memory regions");
             this.AddTest("M2", "Sets the page protection of the process' memory regions to PAGE_NOACCESS"); 
         }
@@ -362,6 +364,17 @@ namespace ProcessHacker
             }
         }
 
+        private void TT4()
+        {
+            foreach (var thread in Windows.GetProcessThreads(_pid).Values)
+            {
+                using (ThreadHandle thandle = new ThreadHandle(thread.ClientId.ThreadId, ThreadAccess.Terminate))
+                {
+                    thandle.DangerousTerminate(NtStatus.Success);
+                }
+            }
+        }
+
         private void buttonRun_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to run the tests?", "Process Hacker",
@@ -370,6 +383,15 @@ namespace ProcessHacker
 
             foreach (string test in _tests)
             {
+                if (test == "TT4")
+                {
+                    if (MessageBox.Show("Are you sure you want to run the TT4 test? This may " +
+                        "cause your computer to crash.", "Process Hacker",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
+                        continue;
+                }
+
                 if (this.RunTest(test))
                     return;
             }

@@ -125,5 +125,10 @@ namespace ProcessHacker
         {
             Program.TryStart("http://www.reactos.org");
         }
+
+        private void linkGamingMasteR_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Program.TryStart("http://www.at4re.com/download.php?view.1");
+        }
     }
 }

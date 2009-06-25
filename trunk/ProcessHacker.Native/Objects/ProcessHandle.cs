@@ -1747,7 +1747,7 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Terminates the process. This requires the PROCESS_TERMINATE permission.
+        /// Terminates the process. This requires PROCESS_TERMINATE access.
         /// </summary>
         public void Terminate()
         {
@@ -1755,19 +1755,18 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Terminates the process, specifying the exit code. This requires the 
-        /// PROCESS_TERMINATE permission.
+        /// Terminates the process. This requires PROCESS_TERMINATE access.
         /// </summary>
-        /// <param name="ExitCode">The exit code.</param>
-        public void Terminate(int ExitCode)
+        /// <param name="exitStatus">The exit status.</param>
+        public void Terminate(NtStatus exitStatus)
         {
             if (KProcessHacker.Instance != null)
             {
-                KProcessHacker.Instance.KphTerminateProcess(this, ExitCode);
+                KProcessHacker.Instance.KphTerminateProcess(this, exitStatus);
             }
             else
             {
-                if (!Win32.TerminateProcess(this, ExitCode))
+                if (!Win32.TerminateProcess(this, (int)exitStatus))
                     Win32.ThrowLastError();
             }
         }

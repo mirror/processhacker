@@ -80,6 +80,7 @@
 #define KPH_QUERYPROCESSHANDLES KPH_CTL_CODE(34)
 #define KPH_OPENTHREADPROCESS KPH_CTL_CODE(35)
 #define KPH_CAPTURESTACKBACKTRACETHREAD KPH_CTL_CODE(36)
+#define KPH_DANGEROUSTERMINATETHREAD KPH_CTL_CODE(37)
 
 #define GET_BIT(integer, bit) (((integer) >> (bit)) & 0x1)
 #define SET_BIT(integer, bit) ((integer) |= 1 << (bit))

@@ -32,6 +32,14 @@ VOID KphpCaptureStackBackTraceThreadSpecialApc(
     PVOID *SystemArgument2
     );
 
+VOID KphpExitSpecialApc(
+    PKAPC Apc,
+    PKNORMAL_ROUTINE *NormalRoutine,
+    PVOID *NormalContext,
+    PVOID *SystemArgument1,
+    PVOID *SystemArgument2
+    );
+
 /* KphAcquireProcessRundownProtection
  * 
  * Prevents the process from terminating.
@@ -281,6 +289,109 @@ VOID KphpCaptureStackBackTraceThreadSpecialApc(
         /* Signal the completed event. */
         KeSetEvent(&context->CompletedEvent, 0, FALSE);
     }
+}
+
+/* KphDangerousTerminateThread
+ * 
+ * Terminates the specified thread by queueing an APC.
+ */
+NTSTATUS KphDangerousTerminateThread(
+    __in HANDLE ThreadHandle,
+    __in NTSTATUS ExitStatus
+    )
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    PETHREAD threadObject;
+    
+    if (!__PspTerminateThreadByPointer)
+        return STATUS_NOT_SUPPORTED;
+    
+    status = ObReferenceObjectByHandle(
+        ThreadHandle,
+        THREAD_TERMINATE,
+        *PsThreadType,
+        KernelMode,
+        &threadObject,
+        NULL
+        );
+    
+    if (!NT_SUCCESS(status))
+        return status;
+    
+    if (threadObject != PsGetCurrentThread())
+    {
+        EXIT_THREAD_CONTEXT context;
+        
+        /* Initialize the context structure. */
+        context.ExitStatus = ExitStatus;
+        /* Initialize the completion event. */
+        KeInitializeEvent(&context.CompletedEvent, NotificationEvent, FALSE);
+        /* Initialize the APC. */
+        KeInitializeApc(
+            &context.Apc,
+            (PKTHREAD)threadObject,
+            OriginalApcEnvironment,
+            KphpExitSpecialApc,
+            NULL,
+            NULL,
+            KernelMode,
+            NULL
+            );
+        
+        /* Queue the APC. */
+        if (KeInsertQueueApc(&context.Apc, &context, NULL, 2))
+        {
+            /* Wait for the APC to initialize. */
+            status = KeWaitForSingleObject(
+                &context.CompletedEvent,
+                Executive,
+                KernelMode,
+                FALSE,
+                NULL
+                );
+        }
+        else
+        {
+            status = STATUS_UNSUCCESSFUL;
+        }
+        
+        ObDereferenceObject(threadObject);
+    }
+    else
+    {
+        /* Can't terminate self. */
+        ObDereferenceObject(threadObject);
+        return STATUS_CANT_TERMINATE_SELF;
+    }
+    
+    return status;
+}
+
+VOID KphpExitSpecialApc(
+    PKAPC Apc,
+    PKNORMAL_ROUTINE *NormalRoutine,
+    PVOID *NormalContext,
+    PVOID *SystemArgument1,
+    PVOID *SystemArgument2
+    )
+{
+    PEXIT_THREAD_CONTEXT context = 
+        (PEXIT_THREAD_CONTEXT)*SystemArgument1;
+    NTSTATUS exitStatus;
+    
+    /* Get the exit status. */
+    exitStatus = context->ExitStatus;
+    /* That's the best we can do. Once we exit the current thread we can't 
+     * signal the event, so just signal it now. */
+    KeSetEvent(&context->CompletedEvent, 0, FALSE);
+    /* Exit the thread by calling PspTerminateThreadByPointer. */
+    PspTerminateThreadByPointer(PsGetCurrentThread(), exitStatus);
+    /* Should never happen. */
+    dfprintf(
+        "WARNING: Thread was not terminated by PspTerminateThreadByPointer: %d, %#x\n",
+        PsGetCurrentThreadId(),
+        PsGetCurrentThread()
+        );
 }
 
 /* KphGetContextThread

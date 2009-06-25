@@ -11,6 +11,7 @@ Process Hacker
      colors
    * Terminator test: TP1a (TP1, alternative method)
    * Terminator test: TT1a (TT1, alternative method)
+   * Terminator test: TT4 (dangerous thread termination)
    * Thread wait analysis now detects NtQueryObject hangs
    * Better file object names without KProcessHacker
    * Small performance improvements

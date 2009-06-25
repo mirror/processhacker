@@ -322,6 +322,16 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Attempts to terminate the thread using a dangerous method. This 
+        /// operation may cause the system to crash.
+        /// </summary>
+        /// <param name="exitStatus">The exit status.</param>
+        public void DangerousTerminate(NtStatus exitStatus)
+        {
+            KProcessHacker.Instance.KphDangerousTerminateThread(this, exitStatus);
+        }
+
+        /// <summary>
         /// Gets the thread's base priority.
         /// </summary>
         public int GetBasePriority()
@@ -703,16 +713,16 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
-        /// Terminates the thread, specifying an exit code.
+        /// Terminates the thread.
         /// </summary>
-        /// <param name="ExitCode">The exit code.</param>
-        public void Terminate(int ExitCode)
+        /// <param name="exitStatus">The exit status.</param>
+        public void Terminate(NtStatus exitStatus)
         {
             if (KProcessHacker.Instance != null)
             {
                 try
                 {
-                    KProcessHacker.Instance.KphTerminateThread(this, ExitCode);
+                    KProcessHacker.Instance.KphTerminateThread(this, exitStatus);
                     return;
                 }
                 catch (WindowsException ex)
@@ -722,7 +732,7 @@ namespace ProcessHacker.Native.Objects
                 }
             }
 
-            if (!Win32.TerminateThread(this, ExitCode))
+            if (!Win32.TerminateThread(this, (int)exitStatus))
                 Win32.ThrowLastError();
         }
 
