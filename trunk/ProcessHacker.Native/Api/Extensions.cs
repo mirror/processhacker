@@ -204,21 +204,36 @@ namespace ProcessHacker.Native.Api
                 }
                 else
                 {
-                    try
+                    bool useHack = false;
+
+                    // Can't use NPH because XP had a bug where a thread hanging 
+                    // on NtQueryObject couldn't be terminated.
+                    if (OSVersion.IsBelowOrEqual(WindowsVersion.XP))
+                        useHack = true;
+
+                    if (!useHack)
                     {
-                        // Use NProcessHacker.
-                        using (MemoryAlloc oniMem = new MemoryAlloc(0x4000))
+                        try
                         {
-                            if (NProcessHacker.PhQueryNameFileObject(
-                                objectHandle, oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
-                                throw new Exception("PhQueryNameFileObject failed.");
+                            // Use NProcessHacker.
+                            using (MemoryAlloc oniMem = new MemoryAlloc(0x4000))
+                            {
+                                if (NProcessHacker.PhQueryNameFileObject(
+                                    objectHandle, oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
+                                    throw new Exception("PhQueryNameFileObject failed.");
 
-                            var oni = oniMem.ReadStruct<ObjectNameInformation>();
+                                var oni = oniMem.ReadStruct<ObjectNameInformation>();
 
-                            info.OrigName = oni.Name.Read();
+                                info.OrigName = oni.Name.Read();
+                            }
+                        }
+                        catch (DllNotFoundException)
+                        {
+                            useHack = true;
                         }
                     }
-                    catch (DllNotFoundException)
+
+                    if (useHack)
                     {
                         // KProcessHacker and NProcessHacker not available. Fall back to using hack
                         // (i.e. not querying the name at all if the access is 0x0012019f)

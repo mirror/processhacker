@@ -418,11 +418,8 @@ namespace ProcessHacker.Components
                 {
                     lock (listThreads)
                     {
-                        int index = listThreads.Items[item.Tid.ToString()].Index;
-                        bool selected = listThreads.Items[item.Tid.ToString()].Selected;
-                        int selectedCount = listThreads.SelectedItems.Count;
-
-                        listThreads.Items[item.Tid.ToString()].Remove();
+                        if (listThreads.Items.ContainsKey(item.Tid.ToString()))
+                            listThreads.Items[item.Tid.ToString()].Remove();
                     }
                 }));
         }
