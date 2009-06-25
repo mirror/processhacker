@@ -596,7 +596,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetNamedPipeHandleState(
-            [In] int NamedPipeHandle, 
+            [In] IntPtr NamedPipeHandle, 
             [Out] [Optional] out PipeState State,
             [Out] [Optional] out int CurInstances,
             [Out] [Optional] out int MaxCollectionCount,

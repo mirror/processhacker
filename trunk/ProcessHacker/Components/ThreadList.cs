@@ -933,6 +933,23 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
+                                name.StartsWith("ntdll.dll!ntqueryobject") ||
+                                name.StartsWith("ntdll.dll!zwqueryobject")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                // Use the KiFastSystemCallRet args if the handle we have is wrong.
+                                if (handle.ToInt32() % 2 != 0 || handle == IntPtr.Zero)
+                                    handle = lastParams[1];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is querying an object (most likely a named pipe):");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
                                 name.StartsWith("ntdll.dll!zwreadfile") ||
                                 name.StartsWith("ntdll.dll!ntreadfile") ||
                                 name.StartsWith("ntdll.dll!zwwritefile") ||
@@ -1025,9 +1042,9 @@ namespace ProcessHacker.Components
                             }
                             else if (
                                 name.StartsWith("ntdll.dll!zwwaitforkeyedevent") ||
-                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent") || 
+                                name.StartsWith("ntdll.dll!ntwaitforkeyedevent") ||
                                 name.StartsWith("ntdll.dll!zwreleasekeyedevent") ||
-                                name.StartsWith("ntdll.dll!ntreleasekeyedevent") 
+                                name.StartsWith("ntdll.dll!ntreleasekeyedevent")
                                 )
                             {
                                 found = true;
@@ -1035,8 +1052,8 @@ namespace ProcessHacker.Components
                                 IntPtr handle = stackFrame.Params[0];
                                 IntPtr key = stackFrame.Params[1];
 
-                                sb.AppendLine("Thread " + tid.ToString() + 
-                                    " is waiting (" + name + ") for a keyed event (key 0x" + 
+                                sb.AppendLine("Thread " + tid.ToString() +
+                                    " is waiting (" + name + ") for a keyed event (key 0x" +
                                     key.ToString("x") + "):");
 
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
