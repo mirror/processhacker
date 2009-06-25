@@ -387,19 +387,21 @@ namespace ProcessHacker.Native.Objects
         /// LoadLibrary.
         /// </param>
         /// <param name="parameter">The parameter to pass to the function.</param>
-        /// <returns>The ID of the new thread.</returns>
-        public int CreateThread(IntPtr startAddress, IntPtr parameter)
+        /// <param name="threadId">The ID of the new thread.</param>
+        /// <returns>A handle to the new thread.</returns>
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, out int threadId)
         {
-            int threadId;
+            IntPtr threadHandle;
 
-            if (!Win32.CreateRemoteThread(this, IntPtr.Zero, 0, startAddress, parameter, 0, out threadId))
+            if ((threadHandle = Win32.CreateRemoteThread(
+                this, IntPtr.Zero, 0, startAddress, parameter, 0, out threadId)) == IntPtr.Zero)
                 Win32.ThrowLastError();
 
-            return threadId;
+            return new ThreadHandle(threadHandle, true);
         }
 
         /// <summary>
-        /// Creates a remote thread in the process, returning a handle to the new thread.
+        /// Creates a remote thread in the process.
         /// </summary>
         /// <param name="startAddress">The address at which to begin execution (e.g. a function). The 
         /// function must be accessible from the remote process; that is, it must be in its 
@@ -407,11 +409,12 @@ namespace ProcessHacker.Native.Objects
         /// LoadLibrary.
         /// </param>
         /// <param name="parameter">The parameter to pass to the function.</param>
-        /// <param name="access">The desired access to the new thread.</param>
         /// <returns>A handle to the new thread.</returns>
-        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter, ThreadAccess access)
+        public ThreadHandle CreateThread(IntPtr startAddress, IntPtr parameter)
         {
-            return new ThreadHandle(this.CreateThread(startAddress, parameter), access);
+            int threadId;
+
+            return this.CreateThread(startAddress, parameter, out threadId);
         }
 
         /// <summary>
@@ -1407,7 +1410,7 @@ namespace ProcessHacker.Native.Objects
             this.WriteMemory(stringPage, UnicodeEncoding.Unicode.GetBytes(path));
 
             this.CreateThread(Win32.GetProcAddress(Win32.GetModuleHandle("kernel32.dll"), "LoadLibraryW"),
-                stringPage, (ThreadAccess)StandardRights.Synchronize).Wait(timeout * Win32.TimeMsTo100Ns);
+                stringPage).Wait(timeout * Win32.TimeMsTo100Ns);
 
             this.FreeMemory(stringPage, path.Length * 2 + 2, false);
         }

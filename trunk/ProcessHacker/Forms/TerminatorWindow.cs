@@ -283,11 +283,9 @@ namespace ProcessHacker
         {
             IntPtr kernel32 = Win32.LoadLibrary("kernel32.dll");
             IntPtr exitProcess = Win32.GetProcAddress(kernel32, "ExitProcess");
-            int threadId;
 
             using (ProcessHandle phandle = new ProcessHandle(_pid, ProcessAccess.CreateThread))
-                if (!Win32.CreateRemoteThread(phandle, IntPtr.Zero, 0, exitProcess, IntPtr.Zero, 0, out threadId))
-                    Win32.ThrowLastError();
+                phandle.CreateThread(exitProcess, IntPtr.Zero).Dispose();
         }
 
         private void TP3()

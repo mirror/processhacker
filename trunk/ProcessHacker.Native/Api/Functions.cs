@@ -1832,8 +1832,7 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool CreateRemoteThread(
+        public static extern IntPtr CreateRemoteThread(
             [In] IntPtr ProcessHandle,
             [In] IntPtr ThreadAttributes,
             [In] int StackSize,

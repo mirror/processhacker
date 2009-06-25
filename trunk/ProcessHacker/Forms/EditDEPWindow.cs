@@ -146,8 +146,7 @@ namespace ProcessHacker
                     Program.MinProcessQueryRights | ProcessAccess.VmOperation |
                     ProcessAccess.VmRead | ProcessAccess.CreateThread))
                 {
-                    var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags),
-                        Program.MinThreadQueryRights | (ThreadAccess)StandardRights.Synchronize);
+                    var thread = phandle.CreateThread(setProcessDepPolicy, new IntPtr((int)flags));
 
                     thread.Wait(1000 * Win32.TimeMsTo100Ns);
 

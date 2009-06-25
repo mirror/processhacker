@@ -488,8 +488,7 @@ namespace ProcessHacker.Components
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
-                        var thread = phandle.CreateThread(freeLibrary, baseAddress, 
-                            Program.MinThreadQueryRights | (ThreadAccess)StandardRights.Synchronize);
+                        var thread = phandle.CreateThread(freeLibrary, baseAddress);
 
                         thread.Wait(1000 * Win32.TimeMsTo100Ns);
 
