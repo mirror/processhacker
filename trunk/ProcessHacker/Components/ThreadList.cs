@@ -621,6 +621,28 @@ namespace ProcessHacker.Components
             if (listThreads.SelectedItems.Count == 0)
                 return;
 
+            // Special case for system threads.
+            if (
+                KProcessHacker.Instance != null &&
+                _pid == 4
+                )
+            {
+                if (MessageBox.Show("Are you sure you want to terminate the selected system thread(s)? " +
+                    "This operation may cause the system to crash.", "Process Hacker",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                    return;
+
+                foreach (ListViewItem item in listThreads.SelectedItems)
+                {
+                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
+                        ThreadAccess.Terminate))
+                        thandle.DangerousTerminate(NtStatus.Success);
+                }
+
+                return;
+            }
+
             if (MessageBox.Show("Are you sure you want to terminate the selected thread(s)?",
                 "Process Hacker", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, 
                 MessageBoxDefaultButton.Button2) == DialogResult.No)
