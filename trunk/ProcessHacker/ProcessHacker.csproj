@@ -705,7 +705,6 @@
     <Compile Include="UI\WindowFromHandle.cs" />
     <Compile Include="UI\HighlightedListViewItem.cs" />
     <Compile Include="UI\ColumnSettings.cs" />
-    <Compile Include="Program\NProcessHacker.cs" />
     <Compile Include="Providers\Internal\IProvider.cs" />
     <Compile Include="Providers\Internal\SharedThreadProvider.cs" />
     <Compile Include="SharpDevelop\NDebugger.cs" />

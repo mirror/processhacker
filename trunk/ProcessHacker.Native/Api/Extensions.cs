@@ -61,6 +61,52 @@ namespace ProcessHacker.Native.Api
             }
         }
 
+        private static string GetObjectNameNt(ProcessHandle process, IntPtr handle, GenericHandle dupHandle)
+        {
+            int retLength;
+            int baseAddress = 0;
+
+            if (KProcessHacker.Instance != null)
+            {
+                KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
+                    IntPtr.Zero, 0, out retLength, out baseAddress);
+            }
+            else
+            {
+                Win32.NtQueryObject(dupHandle, ObjectInformationClass.ObjectNameInformation,
+                    IntPtr.Zero, 0, out retLength);
+            }
+
+            if (retLength > 0)
+            {
+                using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                {
+                    if (KProcessHacker.Instance != null)
+                    {
+                        if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
+                            oniMem, oniMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
+                            throw new Exception("ZwQueryObject failed.");
+                    }
+                    else
+                    {
+                        if (Win32.NtQueryObject(dupHandle, ObjectInformationClass.ObjectNameInformation,
+                            oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
+                            throw new Exception("NtQueryObject failed.");
+                    }
+
+                    var oni = oniMem.ReadStruct<ObjectNameInformation>();
+                    var str = oni.Name;
+
+                    if (KProcessHacker.Instance != null)
+                        str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
+
+                    return str.Read();
+                }
+            }
+
+            throw new Exception("NtQueryObject failed.");
+        }
+
         public static ObjectInformation GetHandleInfo(this SystemHandleInformation thisHandle)
         {
             using (ProcessHandle process = new ProcessHandle(thisHandle.ProcessId,
@@ -147,77 +193,65 @@ namespace ProcessHacker.Native.Api
                 }
             }
 
-            if (KProcessHacker.Instance != null && info.TypeName == "File")
+            // Get the object's name. If the object is a file we must take special 
+            // precautions so that we don't hang.
+            if (info.TypeName == "File")
             {
-                // use KProcessHacker for files
-                info.OrigName = KProcessHacker.Instance.GetFileObjectName(thisHandle);
-            }
-            else if (info.TypeName == "File" && (int)thisHandle.GrantedAccess == 0x0012019f)
-            {
-                // KProcessHacker not available, fall back to using hack (i.e. not querying the name at all)
-            }
-            else
-            {
-                int baseAddress = 0;
-
                 if (KProcessHacker.Instance != null)
                 {
-                    KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
-                        IntPtr.Zero, 0, out retLength, out baseAddress);
+                    // Use KProcessHacker for files to avoid hangs.
+                    info.OrigName = KProcessHacker.Instance.GetFileObjectName(thisHandle);
                 }
                 else
                 {
-                    Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectNameInformation,
-                        IntPtr.Zero, 0, out retLength);
-                }
-
-                if (retLength > 0)
-                {
-                    using (MemoryAlloc oniMem = new MemoryAlloc(retLength))
+                    try
                     {
-                        if (KProcessHacker.Instance != null)
+                        // Use NProcessHacker.
+                        using (MemoryAlloc oniMem = new MemoryAlloc(0x4000))
                         {
-                            if (KProcessHacker.Instance.ZwQueryObject(process, handle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength, out baseAddress) >= NtStatus.Error)
-                                throw new Exception("ZwQueryObject failed.");
+                            if (NProcessHacker.PhQueryNameFileObject(
+                                objectHandle, oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
+                                throw new Exception("PhQueryNameFileObject failed.");
+
+                            var oni = oniMem.ReadStruct<ObjectNameInformation>();
+
+                            info.OrigName = oni.Name.Read();
                         }
-                        else
-                        {
-                            if (Win32.NtQueryObject(objectHandle, ObjectInformationClass.ObjectNameInformation,
-                                oniMem, oniMem.Size, out retLength) >= NtStatus.Error)
-                                throw new Exception("NtQueryObject failed.");
-                        }
-
-                        var oni = oniMem.ReadStruct<ObjectNameInformation>();
-                        var str = oni.Name;
-
-                        if (KProcessHacker.Instance != null)
-                            str.Buffer = str.Buffer.Increment(-baseAddress + oniMem);
-
-                        info.OrigName = str.Read();
+                    }
+                    catch (DllNotFoundException)
+                    {
+                        // KProcessHacker and NProcessHacker not available. Fall back to using hack
+                        // (i.e. not querying the name at all if the access is 0x0012019f)
+                        if ((int)thisHandle.GrantedAccess != 0x0012019f)
+                            info.OrigName = GetObjectNameNt(process, handle, objectHandle);
                     }
                 }
             }
+            else
+            {
+                // Not a file. Query the object normally.
+                info.OrigName = GetObjectNameNt(process, handle, objectHandle);
+            }
 
-            // get a better name for the handle
+            // Get a better name for the handle.
             try
             {
                 switch (info.TypeName)
                 {
                     case "File":
-                        // resolves \Device\Harddisk1 into C:, for example
+                        // Resolves \Device\Harddisk1 into C:, for example.
                         info.BestName = FileUtils.DeviceFileNameToDos(info.OrigName);
 
                         break;
 
                     case "Key":
-                        string hklmString = "\\registry\\machine";
-                        string hkcrString = "\\registry\\machine\\software\\classes";
+                        const string hklmString = "\\registry\\machine";
+                        const string hkcrString = "\\registry\\machine\\software\\classes";
                         string hkcuString = "\\registry\\user\\" +
                             System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower();
                         string hkcucrString = "\\registry\\user\\" +
                             System.Security.Principal.WindowsIdentity.GetCurrent().User.ToString().ToLower() + "_classes";
-                        string hkuString = "\\registry\\user";
+                        const string hkuString = "\\registry\\user";
 
                         if (info.OrigName.ToLower().StartsWith(hkcrString))
                             info.BestName = "HKCR" + info.OrigName.Substring(hkcrString.Length);

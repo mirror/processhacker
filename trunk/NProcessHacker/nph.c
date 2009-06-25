@@ -54,6 +54,11 @@ PVOID PhGetProcAddress(PWSTR LibraryName, PSTR ProcName)
     return GetProcAddress(GetModuleHandle(LibraryName), ProcName);
 }
 
+VOID PhVoid()
+{
+    return;
+}
+
 BOOL WINAPI DllMain(
     HINSTANCE hinstDLL,
     DWORD fdwReason,
@@ -64,6 +69,8 @@ BOOL WINAPI DllMain(
     {
     case DLL_PROCESS_ATTACH:
         if (!NT_SUCCESS(PhvInit()))
+            return FALSE;
+        if (!NT_SUCCESS(PhObjInit()))
             return FALSE;
         if (!NT_SUCCESS(KphInit()))
             return FALSE;

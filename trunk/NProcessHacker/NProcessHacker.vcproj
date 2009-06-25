@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\obj.c"
+				>
+			</File>
+			<File
 				RelativePath=".\process.c"
 				>
 			</File>
@@ -216,6 +220,10 @@
 			</File>
 			<File
 				RelativePath=".\nph.h"
+				>
+			</File>
+			<File
+				RelativePath=".\obj.h"
 				>
 			</File>
 			<File

@@ -63,5 +63,6 @@ NPHAPI PVOID PhAlloc(SIZE_T Size);
 NPHAPI PVOID PhRealloc(PVOID Memory, SIZE_T Size);
 NPHAPI VOID PhFree(PVOID Memory);
 PVOID PhGetProcAddress(PWSTR LibraryName, PSTR ProcName);
+NPHAPI VOID PhVoid();
 
 #endif

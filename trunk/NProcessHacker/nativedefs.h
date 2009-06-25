@@ -3,6 +3,15 @@
 
 #include "nph.h"
 
+typedef enum _OBJECT_INFORMATION_CLASS
+{
+    ObjectBasicInformation,
+    ObjectNameInformation,
+    ObjectTypeInformation,
+    ObjectAllInformation,
+    ObjectDataInformation
+} OBJECT_INFORMATION_CLASS, *POBJECT_INFORMATION_CLASS;
+
 typedef struct _UNICODE_STRING UNICODE_STRING, *PUNICODE_STRING;
 
 typedef struct _CLIENT_ID
@@ -37,6 +46,11 @@ typedef struct _UNICODE_STRING
     USHORT MaximumLength;
     PWSTR Buffer;
 } UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _OBJECT_NAME_INFORMATION
+{
+    UNICODE_STRING Name;
+} OBJECT_NAME_INFORMATION, *POBJECT_NAME_INFORMATION;
 
 #define NTDEVICEIOCONTROLFILE_ARGS \
     HANDLE FileHandle, \
@@ -99,6 +113,17 @@ typedef NTSTATUS (NTAPI *_NtOpenProcessTokenEx)(
 
 typedef NTSTATUS (NTAPI *_NtOpenThread)(
     NTOPENTHREAD_ARGS
+    );
+
+#define NTQUERYOBJECT_ARGS \
+    HANDLE Handle, \
+    OBJECT_INFORMATION_CLASS ObjectInformationClass, \
+    PVOID ObjectInformation, \
+    ULONG Length, \
+    PULONG ReturnLength
+
+typedef NTSTATUS (NTAPI *_NtQueryObject)(
+    NTQUERYOBJECT_ARGS
     );
 
 #define NTREADVIRTUALMEMORY_ARGS \

@@ -12,6 +12,7 @@ Process Hacker
    * Terminator test: TP1a (TP1, alternative method)
    * Terminator test: TT1a (TT1, alternative method)
    * Thread wait analysis now detects NtQueryObject hangs
+   * Better file object names without KProcessHacker
    * Small performance improvements
  * FIXED:
    * Broken system thread start addresses due to sign-extending 

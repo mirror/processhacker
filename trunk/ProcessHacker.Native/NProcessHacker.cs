@@ -24,8 +24,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using System;
 
-namespace ProcessHacker
+namespace ProcessHacker.Native
 {
     public class NProcessHacker
     {
@@ -55,21 +56,32 @@ namespace ProcessHacker
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern NtStatus PhpQueryProcessWs(
-            int ProcessHandle,
-            WS_INFORMATION_CLASS WsInformationClass,
-            out int WsInformation,
-            int WsInformationLength,
-            out int ReturnLength
+            [In] IntPtr ProcessHandle,
+            [In] WS_INFORMATION_CLASS WsInformationClass,
+            [Out] out int WsInformation,
+            [In] int WsInformationLength,
+            [Out] out int ReturnLength
             );
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern NtStatus PhpQueryProcessWs(
-            int ProcessHandle,
-            WS_INFORMATION_CLASS WsInformationClass,
-            out WS_ALL_COUNTS WsInformation,
-            int WsInformationLength,
-            out int ReturnLength
+            [In] IntPtr ProcessHandle,
+            [In] WS_INFORMATION_CLASS WsInformationClass,
+            [Out] out WS_ALL_COUNTS WsInformation,
+            [In] int WsInformationLength,
+            [Out] out int ReturnLength
             );
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern NtStatus PhQueryNameFileObject(
+            [In] IntPtr FileHandle,
+            [In] IntPtr FileObjectNameInformation,
+            [In] int FileObjectNameInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PhVoid();
 
         [DllImport("nprocesshacker.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern VerifyResult PhvVerifyFile(string FileName);
