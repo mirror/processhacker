@@ -71,6 +71,20 @@ typedef struct _MAPPED_MDL
     PVOID Address;
 } MAPPED_MDL, *PMAPPED_MDL;
 
+typedef struct _PROCESS_HANDLE
+{
+    HANDLE Handle;
+    PVOID Object;
+    ACCESS_MASK GrantedAccess;
+    ULONG HandleAttributes;
+} PROCESS_HANDLE, *PPROCESS_HANDLE;
+
+typedef struct _PROCESS_HANDLE_INFORMATION
+{
+    ULONG HandleCount;
+    PROCESS_HANDLE Handles[1];
+} PROCESS_HANDLE_INFORMATION, *PPROCESS_HANDLE_INFORMATION;
+
 /* Support routines */
 
 NTSTATUS KphNtInit();
