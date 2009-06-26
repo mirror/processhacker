@@ -76,9 +76,9 @@ namespace ProcessHacker.Components
             _provider.DictionaryModified += new ServiceProvider.ProviderDictionaryModified(_provider_DictionaryModified);
             _provider.DictionaryRemoved += new ServiceProvider.ProviderDictionaryRemoved(_provider_DictionaryRemoved);
 
-            this.FillComboBox(comboErrorControl, typeof(ServiceErrorControl));
-            this.FillComboBox(comboStartType, typeof(ServiceStartType));
-            this.FillComboBox(comboType, typeof(ProcessHacker.Native.Objects.ServiceType));
+            Utils.Fill(comboErrorControl, typeof(ServiceErrorControl));
+            Utils.Fill(comboStartType, typeof(ServiceStartType));
+            Utils.Fill(comboType, typeof(ProcessHacker.Native.Objects.ServiceType));
             comboType.Items.Add("Win32OwnProcess, InteractiveProcess");
             comboType.Items.Add("Win32ShareProcess, InteractiveProcess");
 
@@ -121,12 +121,6 @@ namespace ProcessHacker.Components
 
             if (this.NeedsClose != null)
                 this.NeedsClose(this, new EventArgs());
-        }
-
-        private void FillComboBox(ComboBox box, Type t)
-        {
-            foreach (string s in Enum.GetNames(t))
-                box.Items.Add(s);
         }
 
         private void _provider_DictionaryRemoved(ServiceItem item)

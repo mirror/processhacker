@@ -442,6 +442,14 @@ namespace ProcessHacker
             Save.SaveToFile();
         }
 
+        private void createServiceMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateServiceWindow createServiceWindow = new CreateServiceWindow();
+
+            createServiceWindow.TopMost = this.TopMost;
+            createServiceWindow.ShowDialog();
+        }
+
         #region View
 
         private void cpuHistoryMenuItem_Click(object sender, EventArgs e)

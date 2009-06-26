@@ -286,6 +286,17 @@ namespace ProcessHacker.Common
             return str;
         }
 
+        /// <summary>
+        /// Fills a combobox with enum value names.
+        /// </summary>
+        /// <param name="box">The combobox to modify.</param>
+        /// <param name="t">The type of the enum.</param>
+        public static void Fill(ComboBox box, Type t)
+        {
+            foreach (string s in Enum.GetNames(t))
+                box.Items.Add(s);
+        }
+
         public static Rectangle FitRectangle(Rectangle rect, Control c)
         {
             return FitRectangle(rect, Screen.GetWorkingArea(c));

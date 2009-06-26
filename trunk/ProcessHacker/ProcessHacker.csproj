@@ -218,6 +218,9 @@
     <EmbeddedResource Include="Forms\ComboBoxPickerWindow.resx">
       <DependentUpon>ComboBoxPickerWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CreateServiceWindow.resx">
+      <DependentUpon>CreateServiceWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\HiddenProcessesWindow.resx">
       <DependentUpon>HiddenProcessesWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -399,6 +402,12 @@
     </Compile>
     <Compile Include="Components\TimerProperties.Designer.cs">
       <DependentUpon>TimerProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CreateServiceWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CreateServiceWindow.Designer.cs">
+      <DependentUpon>CreateServiceWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\JobWindow.cs">
       <SubType>Form</SubType>

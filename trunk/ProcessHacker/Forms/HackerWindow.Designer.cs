@@ -101,6 +101,7 @@
             this.updateProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.updateServicesMenuItem = new System.Windows.Forms.MenuItem();
             this.toolsMenuItem = new System.Windows.Forms.MenuItem();
+            this.createServiceMenuItem = new System.Windows.Forms.MenuItem();
             this.hiddenProcessesMenuItem = new System.Windows.Forms.MenuItem();
             this.verifyFileSignatureMenuItem = new System.Windows.Forms.MenuItem();
             this.usersMenuItem = new System.Windows.Forms.MenuItem();
@@ -690,19 +691,26 @@
             // 
             this.toolsMenuItem.Index = 2;
             this.toolsMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.createServiceMenuItem,
             this.hiddenProcessesMenuItem,
             this.verifyFileSignatureMenuItem});
             this.toolsMenuItem.Text = "&Tools";
             // 
+            // createServiceMenuItem
+            // 
+            this.createServiceMenuItem.Index = 0;
+            this.createServiceMenuItem.Text = "Create &Service...";
+            this.createServiceMenuItem.Click += new System.EventHandler(this.createServiceMenuItem_Click);
+            // 
             // hiddenProcessesMenuItem
             // 
-            this.hiddenProcessesMenuItem.Index = 0;
+            this.hiddenProcessesMenuItem.Index = 1;
             this.hiddenProcessesMenuItem.Text = "&Hidden Processes...";
             this.hiddenProcessesMenuItem.Click += new System.EventHandler(this.hiddenProcessesMenuItem_Click);
             // 
             // verifyFileSignatureMenuItem
             // 
-            this.verifyFileSignatureMenuItem.Index = 1;
+            this.verifyFileSignatureMenuItem.Index = 2;
             this.verifyFileSignatureMenuItem.Text = "&Verify File Signature...";
             this.verifyFileSignatureMenuItem.Click += new System.EventHandler(this.verifyFileSignatureMenuItem_Click);
             // 
@@ -1387,6 +1395,7 @@
         private System.Windows.Forms.MenuItem miscellaneousProcessMenuItem;
         private System.Windows.Forms.MenuItem detachFromDebuggerProcessMenuItem;
         private System.Windows.Forms.MenuItem usersMenuItem;
+        private System.Windows.Forms.MenuItem createServiceMenuItem;
     }
 }
 

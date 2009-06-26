@@ -1221,7 +1221,7 @@ namespace ProcessHacker.Native.Api
             [In] ServiceErrorControl ErrorControl,
             [In] [Optional] string BinaryPathName,
             [In] [Optional] string LoadOrderGroup,
-            [Out] [Optional] IntPtr TagID,
+            [Out] [Optional] IntPtr TagId,
             [In] [Optional] IntPtr Dependencies,
             [In] [Optional] string ServiceStartName,
             [In] [Optional] string Password
