@@ -71,7 +71,7 @@
             this.comboType.Location = new System.Drawing.Point(100, 64);
             this.comboType.Name = "comboType";
             this.comboType.Size = new System.Drawing.Size(156, 21);
-            this.comboType.TabIndex = 1;
+            this.comboType.TabIndex = 3;
             // 
             // label3
             // 
@@ -99,7 +99,7 @@
             this.comboStartType.Location = new System.Drawing.Point(100, 91);
             this.comboStartType.Name = "comboStartType";
             this.comboStartType.Size = new System.Drawing.Size(156, 21);
-            this.comboStartType.TabIndex = 1;
+            this.comboStartType.TabIndex = 4;
             // 
             // label5
             // 
@@ -118,7 +118,7 @@
             this.comboErrorControl.Location = new System.Drawing.Point(100, 118);
             this.comboErrorControl.Name = "comboErrorControl";
             this.comboErrorControl.Size = new System.Drawing.Size(156, 21);
-            this.comboErrorControl.TabIndex = 1;
+            this.comboErrorControl.TabIndex = 5;
             // 
             // label6
             // 
@@ -136,7 +136,7 @@
             this.buttonCancel.Location = new System.Drawing.Point(329, 185);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 6;
+            this.buttonCancel.TabIndex = 9;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
@@ -148,7 +148,7 @@
             this.buttonOK.Location = new System.Drawing.Point(248, 185);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 6;
+            this.buttonOK.TabIndex = 8;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
             this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -160,7 +160,7 @@
             this.textName.Location = new System.Drawing.Point(100, 12);
             this.textName.Name = "textName";
             this.textName.Size = new System.Drawing.Size(304, 20);
-            this.textName.TabIndex = 7;
+            this.textName.TabIndex = 1;
             // 
             // textDisplayName
             // 
@@ -169,7 +169,7 @@
             this.textDisplayName.Location = new System.Drawing.Point(100, 38);
             this.textDisplayName.Name = "textDisplayName";
             this.textDisplayName.Size = new System.Drawing.Size(304, 20);
-            this.textDisplayName.TabIndex = 7;
+            this.textDisplayName.TabIndex = 2;
             // 
             // textBinaryPath
             // 
@@ -178,7 +178,7 @@
             this.textBinaryPath.Location = new System.Drawing.Point(100, 145);
             this.textBinaryPath.Name = "textBinaryPath";
             this.textBinaryPath.Size = new System.Drawing.Size(223, 20);
-            this.textBinaryPath.TabIndex = 7;
+            this.textBinaryPath.TabIndex = 6;
             // 
             // buttonBrowse
             // 
@@ -186,7 +186,7 @@
             this.buttonBrowse.Location = new System.Drawing.Point(329, 143);
             this.buttonBrowse.Name = "buttonBrowse";
             this.buttonBrowse.Size = new System.Drawing.Size(75, 23);
-            this.buttonBrowse.TabIndex = 8;
+            this.buttonBrowse.TabIndex = 7;
             this.buttonBrowse.Text = "Browse...";
             this.buttonBrowse.UseVisualStyleBackColor = true;
             this.buttonBrowse.Click += new System.EventHandler(this.buttonBrowse_Click);
