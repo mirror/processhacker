@@ -40,7 +40,7 @@ namespace ProcessHacker
             listLog.SetDoubleBuffered(true);
             listLog.SetTheme("explorer");
             listLog.ContextMenu = listLog.GetCopyMenu(listLog_RetrieveVirtualItem);
-            listLog.AddShortcuts();
+            listLog.AddShortcuts(listLog_RetrieveVirtualItem);
 
             this.UpdateLog();
 
