@@ -20,6 +20,8 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma warning disable 0618
+
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -30,6 +32,9 @@ namespace ProcessHacker
 {
     public class NetworkProvider : Provider<string, NetworkConnection>
     {
+        private Dictionary<long, string> _resolveCache =
+            new Dictionary<long, string>();
+
         public NetworkProvider()
             : base()
         {
@@ -92,36 +97,63 @@ namespace ProcessHacker
                     NetworkConnection newConnection = connection;
 
                     newConnection.Tag = this.RunCount;
-                    newDict.Add(newConnection.Id, newConnection);
-                    OnDictionaryAdded(newConnection);
 
-                    // resolve the IP addresses
+                    // Resolve the IP addresses.
                     if (newConnection.Local != null)
                     {
                         if (newConnection.Local.Address.ToString() != "0.0.0.0")
                         {
-                            WorkQueue.GlobalQueueWorkItemTag(
-                                new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                "network-resolve",
-                                newConnection.Id,
-                                false,
-                                newConnection.Local.Address
-                                );
+                            // See if IP address is in the cache.
+                            lock (_resolveCache)
+                            {
+                                if (_resolveCache.ContainsKey(newConnection.Local.Address.Address))
+                                {
+                                    // We have the resolved address.
+                                    newConnection.LocalString = _resolveCache[newConnection.Local.Address.Address];
+                                }
+                                else
+                                {
+                                    // Queue for resolve.
+                                    WorkQueue.GlobalQueueWorkItemTag(
+                                        new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                        "network-resolve",
+                                        newConnection.Id,
+                                        false,
+                                        newConnection.Local.Address
+                                        );
+                                }
+                            }
                         }
                     }
+
                     if (newConnection.Remote != null)
                     {
                         if (newConnection.Remote.Address.ToString() != "0.0.0.0")
                         {
-                            WorkQueue.GlobalQueueWorkItemTag(
-                                new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                "network-resolve",
-                                newConnection.Id,
-                                true,
-                                newConnection.Remote.Address
-                                );
+                            lock (_resolveCache)
+                            {
+                                if (_resolveCache.ContainsKey(newConnection.Remote.Address.Address))
+                                {
+                                    // We have the resolved address.
+                                    newConnection.LocalString = _resolveCache[newConnection.Remote.Address.Address];
+                                }
+                                else
+                                {
+                                    WorkQueue.GlobalQueueWorkItemTag(
+                                        new Action<string, bool, IPAddress>(this.ResolveAddresses),
+                                        "network-resolve",
+                                        newConnection.Id,
+                                        true,
+                                        newConnection.Remote.Address
+                                        );
+                                }
+                            }
                         }
                     }
+
+                    // Update the dictionary.
+                    newDict.Add(newConnection.Id, newConnection);
+                    OnDictionaryAdded(newConnection);
                 }
                 else
                 {
@@ -157,6 +189,15 @@ namespace ProcessHacker
                 return;
             }
 
+            // Update the cache.
+            lock (_resolveCache)
+            {
+                // Add the name if not present already.
+                if (!_resolveCache.ContainsKey(address.Address))
+                    _resolveCache.Add(address.Address, entry.HostName);
+            }
+
+            // Update the connection item.
             if (Dictionary.ContainsKey(id))
             {
                 lock (Dictionary)

@@ -14,6 +14,7 @@ Process Hacker
    * Terminator test: TT4 (dangerous thread termination)
    * Thread wait analysis now detects NtQueryObject hangs
    * Better file object names without KProcessHacker
+   * Better IP address resolving
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
    * Small performance improvements

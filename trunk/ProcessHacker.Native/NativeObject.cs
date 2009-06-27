@@ -90,6 +90,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
+        /// <param name="obj">The object to wait for.</param>
         public WaitStatus SignalAndWait(NativeObject obj)
         {
             return (WaitStatus)_handle.SignalAndWait(obj.Handle);
@@ -98,6 +99,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
+        /// <param name="obj">The object to wait for.</param>
         /// <param name="timeout">A timeout value, in milliseconds.</param>
         public WaitStatus SignalAndWait(NativeObject obj, int timeout)
         {
@@ -107,6 +109,7 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Signals the object and waits for another.
         /// </summary>
+        /// <param name="obj">The object to wait for.</param>
         /// <param name="timeout">A time to wait until.</param>
         public WaitStatus SignalAndWait(NativeObject obj, DateTime timeout)
         {
