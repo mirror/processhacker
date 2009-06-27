@@ -182,7 +182,21 @@ namespace ProcessHacker.Common.Objects
             where T : BaseObject
             where TAccess : struct
         {
-            return this.ReferenceByHandle<TAccess>(handle, access, throwOnAccessDenied) as T;
+            BaseObject obj = this.ReferenceByHandle<TAccess>(handle, access, throwOnAccessDenied);
+
+            if (obj == null)
+                return null;
+
+            // Check the type.
+            if (obj is T)
+            {
+                return (T)obj;
+            }
+            else
+            {
+                obj.Dereference();
+                return null;
+            }
         }
     }
 }

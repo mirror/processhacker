@@ -280,7 +280,22 @@ namespace ProcessHacker.Common.Objects
         public T ReferenceByHandle<T>(int handle, out TEntry entry)
             where T : BaseObject
         {
-            return this.ReferenceByHandle(handle, out entry) as T;
+            BaseObject obj = this.ReferenceByHandle(handle, out entry);
+
+            if (obj == null)
+                return null;
+
+            // Check the type.
+            if (obj is T)
+            {
+                return (T)obj;
+            }
+            else
+            {
+                // Wrong type. Dereference and return.
+                obj.Dereference();
+                return null;
+            }
         }
     }
 }
