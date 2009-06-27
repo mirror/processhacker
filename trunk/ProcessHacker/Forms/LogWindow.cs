@@ -52,6 +52,7 @@ namespace ProcessHacker
             this.Size = Properties.Settings.Default.LogWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.LogWindowLocation, this.Size), this).Location;
+            checkAutoscroll.Checked = Properties.Settings.Default.LogWindowAutoScroll;
         }
 
         private void HackerWindow_LogUpdated(KeyValuePair<DateTime, string>? value)
@@ -61,7 +62,16 @@ namespace ProcessHacker
 
         private void UpdateLog()
         {
-            listLog.VirtualListSize = Program.HackerWindow.Log.Count;
+            // HACK. Not my fault though, .NET wants to throw an exception when 
+            // I set VirtualListSize and the window is minimized...
+            try
+            {
+                listLog.VirtualListSize = Program.HackerWindow.Log.Count;
+            }
+            catch
+            {
+                // Do not put Logging.Log(ex) because this will cause a recursive call.
+            }
         }
 
         private void LogWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -71,6 +81,8 @@ namespace ProcessHacker
                 Properties.Settings.Default.LogWindowLocation = this.Location;
                 Properties.Settings.Default.LogWindowSize = this.Size;
             }
+
+            Properties.Settings.Default.LogWindowAutoScroll = checkAutoscroll.Checked;
             
             Program.HackerWindow.LogUpdated -= new HackerWindow.LogUpdatedEventHandler(HackerWindow_LogUpdated);
         }

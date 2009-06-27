@@ -1007,6 +1007,14 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Explicit)]
     public struct PortMessage
     {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PortMessageTail
+        {
+            public ClientId ClientId;
+            public int MessageId;
+            public IntPtr ClientViewSize;
+        }
+
         [FieldOffset(0)]
         public short DataLength;
         [FieldOffset(2)]
@@ -1015,24 +1023,25 @@ namespace ProcessHacker.Native.Api
         public int Length;
 
         [FieldOffset(4)]
-        public short Type;
+        public PortMessageType Type;
         [FieldOffset(6)]
         public short DataInfoOffset;
         [FieldOffset(4)]
         public int ZeroInit;
 
         [FieldOffset(8)]
-        public ClientId ClientId;
-        [FieldOffset(8)]
-        public double DoNotUseThisField;
+        public PortMessageTail Tail;
 
-        [FieldOffset(16)]
-        public int MessageId;
+        //[FieldOffset(8)]
+        //public ClientId ClientId;
 
-        [FieldOffset(20)]
-        public IntPtr ClientViewSize;
-        [FieldOffset(20)]
-        public int CallbackId;
+        //[FieldOffset(16)]
+        //public int MessageId;
+
+        //[FieldOffset(20)]
+        //public IntPtr ClientViewSize;
+        //[FieldOffset(20)]
+        //public int CallbackId;
     }
 
     [StructLayout(LayoutKind.Sequential)]

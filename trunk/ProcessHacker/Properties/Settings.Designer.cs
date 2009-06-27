@@ -1512,5 +1512,17 @@ namespace ProcessHacker.Properties {
                 this["UseColorPosixProcesses"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogWindowAutoScroll {
+            get {
+                return ((bool)(this["LogWindowAutoScroll"]));
+            }
+            set {
+                this["LogWindowAutoScroll"] = value;
+            }
+        }
     }
 }

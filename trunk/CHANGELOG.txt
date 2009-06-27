@@ -2,6 +2,7 @@ Process Hacker
 
 1.3.9.0
  * NEW/IMPROVED:
+   * #2812814 - "Auto-scroll option should be remembered"
    * Kernel-mode stack traces
    * POSIX process support, including command lines and 
      highlighting
@@ -19,6 +20,7 @@ Process Hacker
      colors
    * Small performance improvements
  * FIXED:
+   * #2811733 - "System.NullReferenceException"
    * Broken system thread start addresses due to sign-extending 
      instead of zero-extending pointers
    * Broken Ctrl+A for memory, results, and PE lists

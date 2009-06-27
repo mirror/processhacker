@@ -491,6 +491,20 @@ namespace ProcessHacker.Native.Api
         Message = 1
     }
 
+    public enum PortMessageType : short
+    {
+        Request = 1,
+        Reply = 2,
+        Datagram = 3,
+        LostReply = 4,
+        PortClosed = 5,
+        ClientDied = 6,
+        Exception = 7,
+        DebugEvent = 8,
+        ErrorEvent = 9,
+        ConnectionRequest = 10
+    }
+
     [Flags]
     public enum PrivilegeSetFlags : int
     {
