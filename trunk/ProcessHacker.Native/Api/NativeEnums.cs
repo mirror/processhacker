@@ -90,13 +90,73 @@ namespace ProcessHacker.Native.Api
         SynchronizationEvent
     }
 
-    public enum FileCreationDisposition : uint
+    public enum FileAlignment : int
     {
-        CreateNew = 1,
-        CreateAlways = 2,
-        OpenExisting = 3,
-        OpenAlways = 4,
-        TruncateExisting
+        Byte = 0x0,
+        Word = 0x1,
+        Long = 0x3,
+        Quad = 0x7,
+        Octa = 0xf,
+        ThirtyTwoByte = 0x1f,
+        SixtyFourByte = 0x3f,
+        OneHundredAndTwentyEightByte = 0x7f,
+        TwoHundredAndFiftySixByte = 0xff,
+        FiveHundredAndTwelveByte = 0x1ff
+    }
+
+    public enum FileInformationClass : int
+    {
+        FileDirectoryInformation = 1, // dir
+        FileFullDirectoryInformation, // dir
+        FileBothDirectoryInformation, // dir
+        FileBasicInformation,
+        FileStandardInformation,
+        FileInternalInformation,
+        FileEaInformation,
+        FileAccessInformation,
+        FileNameInformation,
+        FileRenameInformation, // 10
+        FileLinkInformation,
+        FileNamesInformation, // dir
+        FileDispositionInformation,
+        FilePositionInformation,
+        FileFullEaInformation,
+        FileModeInformation,
+        FileAlignmentInformation,
+        FileAllInformation,
+        FileAllocationInformation,
+        FileEndOfFileInformation, // 20
+        FileAlternateNameInformation,
+        FileStreamInformation,
+        FilePipeInformation,
+        FilePipeLocalInformation,
+        FilePipeRemoteInformation,
+        FileMailslotQueryInformation,
+        FileMailslotSetInformation,
+        FileCompressionInformation,
+        FileObjectIdInformation, // dir
+        FileCompletionInformation, // 30
+        FileMoveClusterInformation,
+        FileQuotaInformation,
+        FileReparsePointInformation,
+        FileNetworkOpenInformation,
+        FileAttributeTagInformation,
+        FileTrackingInformation,
+        FileIdBothDirectoryInformation, // dir
+        FileIdFullDirectoryInformation, // dir
+        FileValidDataLengthInformation,
+        FileShortNameInformation, // 40
+        FileMaximumInformation
+    }
+
+    public enum FileIoStatus : int
+    {
+        Superseded = 0,
+        Opened = 1,
+        Created = 2,
+        Overwritten = 3,
+        Exists = 4,
+        DoesNotExist = 5
     }
 
     [Flags]
@@ -132,13 +192,18 @@ namespace ProcessHacker.Native.Api
         SkipSetFastIo = 0x08000000
     }
 
-    [Flags]
-    public enum FileShareMode : uint
+    public enum FsInformationClass : int
     {
-        Exclusive = 0,
-        Read = 1,
-        Write = 2,
-        Delete = 4
+        FileFsVolumeInformation = 1,
+        FileFsLabelInformation,
+        FileFsSizeInformation,
+        FileFsDeviceInformation,
+        FileFsAttributeInformation, 
+        FileFsControlInformation,
+        FileFsFullSizeInformation,
+        FileFsObjectIdInformation,
+        FileFsDriverPathInformation,
+        FileFsMaximumInformation
     }
 
     [Flags]
@@ -385,6 +450,45 @@ namespace ProcessHacker.Native.Api
         ObjectTypesInformation = 3,
         ObjectHandleFlagInformation = 4,
         ObjectSessionInformation = 5
+    }
+
+    public enum PipeEnd : int
+    {
+        Client = 0,
+        Server = 1
+    }
+
+    public enum PipeCompletionMode : int
+    {
+        Queue = 0,
+        Complete = 1
+    }
+
+    public enum PipeConfiguration : int
+    {
+        Inbound = 0,
+        Outbound = 1,
+        FullDuplex = 2
+    }
+
+    public enum PipeReadMode : int
+    {
+        ByteStream = 0,
+        Message = 1
+    }
+
+    public enum PipeState : uint
+    {
+        Disconnected = 1,
+        Listening = 2,
+        Connected = 3,
+        Closing = 4
+    }
+
+    public enum PipeType : int
+    {
+        ByteStream = 0,
+        Message = 1
     }
 
     [Flags]

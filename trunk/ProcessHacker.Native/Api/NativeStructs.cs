@@ -198,6 +198,165 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct FileAccessInformation
+    {
+        public FileAccess AccessFlags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileAlignmentInformation
+    {
+        public FileAlignment AlignmentRequirement;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileAllInformation
+    {
+        public FileBasicInformation BasicInformation;
+        public FileStandardInformation StandardInformation;
+        public FileInternalInformation InternalInformation;
+        public FileEaInformation EaInformation;
+        public FileAccessInformation AccessInformation;
+        public FilePositionInformation PositionInformation;
+        public FileModeInformation ModeInformation;
+        public FileAlignmentInformation AlignmentInformation;
+        public FileNameInformation NameInformation;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileBasicInformation
+    {
+        public long CreationTime;
+        public long LastAccessTime;
+        public long LastWriteTime;
+        public long ChangeTime;
+        public int FileAttributes;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileDirectoryInformation
+    {
+        public int NextEntryOffset;
+        public int FileIndex;
+        public long CreationTime;
+        public long LastAccessTime;
+        public long LastWriteTime;
+        public long ChangeTime;
+        public long EndOfFile;
+        public long AllocationSize;
+        public int FileAttributes;
+        public int FileNameLength;
+        public char FileName;
+        // File name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileEaInformation
+    {
+        public int EaSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileFsAttributeInformation
+    {
+        public int FileSystemAttributes;
+        public int MaximumComponentNameLength;
+        public int FileSystemNameLength;
+        public char FileSystemName;
+        // File system name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileFsLabelInformation
+    {
+        public int VolumeLabelLength;
+        public char VolumeLabel;
+        // Volume label string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileFsVolumeInformation
+    {
+        public long VolumeCreationTime;
+        public int VolumeSerialNumber;
+        public int VolumeLabelLength;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool SupportsObjects;
+        public char VolumeLabel;
+        // Volume label string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileInternalInformation
+    {
+        public long IndexNumber;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileModeInformation
+    {
+        public int Mode;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileNameInformation
+    {
+        public int FileNameLength;
+        public char FileName;
+        // File name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileNamesInformation
+    {
+        public int NextEntryOffset;
+        public int FileIndex;
+        public int FileNameLength;
+        public char FileName;
+        // File name string follows (WCHAR).
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FilePipeInformation
+    {
+        public int ReadMode;
+        public int CompletionMode;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FilePipeLocalInformation
+    {
+        public int NamedPipeType;
+        public int NamedPipeConfiguration;
+        public int MaximumInstances;
+        public int CurrentInstances;
+        public int InboundQuota;
+        public int ReadDataAvailable;
+        public int OutboundQuota;
+        public int WriteQuotaAvailable;
+        public int NamedPipeState;
+        public int NamedPipeEnd;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FilePositionInformation
+    {
+        public long CurrentByteOffset;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FileStandardInformation
+    {
+        public long AllocationSize;
+        public long EndOfFile;
+        public int NumberOfLinks;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool DeletePending;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool Directory;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct FloatingSaveArea
     {
         public int ControlWord;

@@ -36,7 +36,7 @@ namespace ProcessHacker.Native.Objects
             this.Handle = Win32.CreateNamedPipe(name, openMode, pipeMode, maxInstances,
                 outBufferSize, inBufferSize, defaultTimeOut, IntPtr.Zero);
 
-            if (this.Handle == IntPtr.Zero)
+            if (this.Handle.ToInt32() == -1)
                 Win32.ThrowLastError();
         }
 
@@ -51,39 +51,5 @@ namespace ProcessHacker.Native.Objects
             if (!Win32.DisconnectNamedPipe(this))
                 Win32.ThrowLastError();
         }
-    }
-
-    [Flags]
-    public enum PipeAccessMode : uint
-    {
-        Inbound = 0x1,
-        Outbound = 0x2,
-        Duplex = 0x3,
-        FirstPipeInstance = 0x80000,
-        WriteThrough = 0x80000000,
-        Overlapped = 0x40000000,
-        WriteDac = 0x40000,
-        WriteOwner = 0x80000,
-        AccessSystemSecurity = 0x01000000
-    }
-
-    [Flags]
-    public enum PipeMode : uint
-    {
-        TypeByte = 0x0,
-        TypeMessage = 0x4,
-        ReadModeByte = 0x0,
-        ReadModeMessage = 0x2,
-        Wait = 0x0,
-        NoWait = 0x1,
-        AcceptRemoteClients = 0x0,
-        RejectRemoteClients = 0x8
-    }
-
-    [Flags]
-    public enum PipeState : uint
-    {
-        NoWait = 0x1,
-        ReadModeMessage = 0x2
     }
 }

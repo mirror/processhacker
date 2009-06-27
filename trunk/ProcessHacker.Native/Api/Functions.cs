@@ -133,6 +133,14 @@ namespace ProcessHacker.Native.Api
         #region Files
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool GetFileInformationByHandleEx(
+            [In] IntPtr FileHandle,
+            [In] int FileInformationClass,
+            [In] IntPtr FileInformation,
+            [In] int FileInformationLength
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool GetFileSizeEx(
             [In] IntPtr FileHandle,
             [Out] out long FileSize

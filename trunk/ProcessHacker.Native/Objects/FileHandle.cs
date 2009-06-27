@@ -23,6 +23,7 @@
 using System;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -65,6 +66,34 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
         }
 
+        public string GetFileName()
+        {
+            NtStatus status;
+            IoStatusBlock ioStatusBlock;
+
+            using (var data = new MemoryAlloc(0x1000))
+            {
+                if ((status = Win32.NtQueryInformationFile(
+                    this,
+                    out ioStatusBlock,
+                    data,
+                    data.Size,
+                    FileInformationClass.FileNameInformation
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                if (ioStatusBlock.Status >= NtStatus.Error)
+                    Win32.ThrowLastError(ioStatusBlock.Status);
+
+                FileNameInformation info = data.ReadStruct<FileNameInformation>();
+
+                return Marshal.PtrToStringUni(
+                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileNameInformation), "FileName")),
+                    info.FileNameLength / 2
+                    );
+            }
+        }
+
         public long GetSize()
         {
             long fileSize;
@@ -73,6 +102,34 @@ namespace ProcessHacker.Native.Objects
                 Win32.ThrowLastError();
 
             return fileSize;
+        }
+
+        public string GetVolumeLabel()
+        {
+            NtStatus status;
+            IoStatusBlock ioStatusBlock;
+
+            using (var data = new MemoryAlloc(0x400))
+            {
+                if ((status = Win32.NtQueryVolumeInformationFile(
+                    this,
+                    out ioStatusBlock,
+                    data,
+                    data.Size,
+                    FsInformationClass.FileFsVolumeInformation
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                if (ioStatusBlock.Status >= NtStatus.Error)
+                    Win32.ThrowLastError(ioStatusBlock.Status);
+
+                FileFsVolumeInformation info = data.ReadStruct<FileFsVolumeInformation>();
+
+                return Marshal.PtrToStringUni(
+                    data.Memory.Increment(Marshal.OffsetOf(typeof(FileFsVolumeInformation), "VolumeLabel")),
+                    info.VolumeLabelLength / 2
+                    );
+            }
         }
 
         /// <summary>
@@ -145,7 +202,7 @@ namespace ProcessHacker.Native.Objects
 
             // Not a good idea, but...
             if (isb.Status >= NtStatus.Error)
-                Win32.ThrowLastError(status);
+                Win32.ThrowLastError(isb.Status);
 
             // Information contains the return length.
             return isb.Information.ToInt32();

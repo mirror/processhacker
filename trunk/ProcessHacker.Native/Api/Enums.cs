@@ -109,6 +109,24 @@ namespace ProcessHacker.Native.Api
         ForceIfHung = 0x10
     }
 
+    public enum FileCreationDisposition : uint
+    {
+        CreateNew = 1,
+        CreateAlways = 2,
+        OpenExisting = 3,
+        OpenAlways = 4,
+        TruncateExisting
+    }
+
+    [Flags]
+    public enum FileShareMode : uint
+    {
+        Exclusive = 0,
+        Read = 1,
+        Write = 2,
+        Delete = 4
+    }
+
     public enum GdiBlendMode : int
     {
         Black = 1,
@@ -276,6 +294,33 @@ namespace ProcessHacker.Native.Api
         NoRemove = 0,
         Remove = 1,
         NoYield = 2,
+    }
+
+    [Flags]
+    public enum PipeAccessMode : uint
+    {
+        Inbound = 0x1,
+        Outbound = 0x2,
+        Duplex = 0x3,
+        FirstPipeInstance = 0x80000,
+        WriteThrough = 0x80000000,
+        Overlapped = 0x40000000,
+        WriteDac = 0x40000,
+        WriteOwner = 0x80000,
+        AccessSystemSecurity = 0x01000000
+    }
+
+    [Flags]
+    public enum PipeMode : uint
+    {
+        TypeByte = 0x0,
+        TypeMessage = 0x4,
+        ReadModeByte = 0x0,
+        ReadModeMessage = 0x2,
+        Wait = 0x0,
+        NoWait = 0x1,
+        AcceptRemoteClients = 0x0,
+        RejectRemoteClients = 0x8
     }
 
     public enum PoolType : uint

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Forms

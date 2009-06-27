@@ -633,6 +633,16 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtOpenFile(
+            [Out] out IntPtr FileHandle,
+            [In] FileAccess DesiredAccess,
+            [In] ref ObjectAttributes ObjectAttributes,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] FileShareMode ShareAccess,
+            [In] FileCreationDisposition OpenOptions
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtOpenIoCompletion(
             [Out] out IntPtr IoCompletionHandle,
             [In] IoCompletionAccess DesiredAccess,
@@ -785,6 +795,15 @@ namespace ProcessHacker.Native.Api
             [Out] out EventBasicInformation EventInformation,
             [In] int EventInformationLength,
             [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr FileInformation,
+            [In] int FileInformationLength,
+            [In] FileInformationClass FileInformationClass
             );
 
         [DllImport("ntdll.dll")]
@@ -1040,6 +1059,15 @@ namespace ProcessHacker.Native.Api
             [In] IntPtr Buffer,
             [In] IntPtr MemoryInformationLength,
             [Out] [Optional] out IntPtr ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryVolumeInformationFile(
+            [In] IntPtr FileHandle,
+            [Out] out IoStatusBlock IoStatusBlock,
+            [In] IntPtr FsInformation,
+            [In] int FsInformationLength,
+            [In] FsInformationClass FsInformationClass
             );
 
         [DllImport("ntdll.dll")]
