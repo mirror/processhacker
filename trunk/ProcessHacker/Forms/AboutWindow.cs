@@ -130,5 +130,10 @@ namespace ProcessHacker
         {
             Program.TryStart("http://www.at4re.com/download.php?view.1");
         }
+
+        private void linkKerem_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Program.TryStart("http://entwicklung.junetz.de");
+        }
     }
 }
