@@ -38,6 +38,11 @@ namespace ProcessHacker
             buttonChangelog.Visible = System.IO.File.Exists(Application.StartupPath + "\\CHANGELOG.txt");
         }
 
+        private void flowCredits_MouseEnter(object sender, EventArgs e)
+        {
+            flowCredits.Select();
+        }
+
         private void buttonClose_Click(object sender, EventArgs e)
         {
             this.Close();

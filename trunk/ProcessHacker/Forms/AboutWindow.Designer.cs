@@ -50,6 +50,7 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.linkGamingMasteR = new System.Windows.Forms.LinkLabel();
+            this.linkKerem = new System.Windows.Forms.LinkLabel();
             this.linkSysinternals = new System.Windows.Forms.LinkLabel();
             this.linkNtInternals = new System.Windows.Forms.LinkLabel();
             this.linkReactOS = new System.Windows.Forms.LinkLabel();
@@ -60,7 +61,6 @@
             this.labelFiller = new System.Windows.Forms.Label();
             this.buttonChangelog = new System.Windows.Forms.Button();
             this.buttonDiagnostics = new System.Windows.Forms.Button();
-            this.linkKerem = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.flowCredits.SuspendLayout();
             this.SuspendLayout();
@@ -235,6 +235,7 @@
             this.flowCredits.Size = new System.Drawing.Size(318, 215);
             this.flowCredits.TabIndex = 14;
             this.flowCredits.WrapContents = false;
+            this.flowCredits.MouseEnter += new System.EventHandler(this.flowCredits_MouseEnter);
             // 
             // label8
             // 
@@ -330,6 +331,18 @@
             this.linkGamingMasteR.TabStop = true;
             this.linkGamingMasteR.Text = "GamingMasteR - Windows internals advice";
             this.linkGamingMasteR.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkGamingMasteR_LinkClicked);
+            // 
+            // linkKerem
+            // 
+            this.linkKerem.AutoSize = true;
+            this.linkKerem.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.linkKerem.Location = new System.Drawing.Point(6, 133);
+            this.linkKerem.Name = "linkKerem";
+            this.linkKerem.Size = new System.Drawing.Size(161, 13);
+            this.linkKerem.TabIndex = 28;
+            this.linkKerem.TabStop = true;
+            this.linkKerem.Text = "Kerem Gümrükcü - Bug reporting";
+            this.linkKerem.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkKerem_LinkClicked);
             // 
             // linkSysinternals
             // 
@@ -441,18 +454,6 @@
             this.buttonDiagnostics.Text = "Diagnostics...";
             this.buttonDiagnostics.UseVisualStyleBackColor = true;
             this.buttonDiagnostics.Click += new System.EventHandler(this.buttonDiagnostics_Click);
-            // 
-            // linkKerem
-            // 
-            this.linkKerem.AutoSize = true;
-            this.linkKerem.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.linkKerem.Location = new System.Drawing.Point(6, 133);
-            this.linkKerem.Name = "linkKerem";
-            this.linkKerem.Size = new System.Drawing.Size(161, 13);
-            this.linkKerem.TabIndex = 28;
-            this.linkKerem.TabStop = true;
-            this.linkKerem.Text = "Kerem Gümrükcü - Bug reporting";
-            this.linkKerem.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkKerem_LinkClicked);
             // 
             // AboutWindow
             // 
