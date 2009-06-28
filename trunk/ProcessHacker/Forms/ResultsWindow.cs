@@ -82,6 +82,7 @@ namespace ProcessHacker
             this.Size = Properties.Settings.Default.ResultsWindowSize;
 
             ColumnSettings.LoadSettings(Properties.Settings.Default.ResultsListViewColumns, listResults);
+            this.SetPhParent(false);
         }
 
         private void ResultsWindow_FormClosing(object sender, FormClosingEventArgs e)

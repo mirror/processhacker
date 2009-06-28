@@ -2844,6 +2844,7 @@ namespace ProcessHacker
 
             // Force the handle to be created
             { var handle = this.Handle; }
+            Program.HackerWindowHandle = this.Handle;
 
             Logging.Logged += this.QueueMessage;
             Settings.Refresh();

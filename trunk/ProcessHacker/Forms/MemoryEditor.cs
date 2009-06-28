@@ -110,6 +110,7 @@ namespace ProcessHacker
             Program.UpdateWindow(this);
 
             this.Size = Properties.Settings.Default.MemoryWindowSize;
+            this.SetPhParent(false);
         }
 
         private void MemoryEditor_FormClosing(object sender, FormClosingEventArgs e)

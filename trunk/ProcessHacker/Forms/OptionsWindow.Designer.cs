@@ -99,6 +99,7 @@
             this.toolTipProvider = new System.Windows.Forms.ToolTip(this.components);
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonApply = new System.Windows.Forms.Button();
+            this.checkFloatChildWindows = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.textUpdateInterval)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -155,7 +156,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonOK.Location = new System.Drawing.Point(200, 363);
+            this.buttonOK.Location = new System.Drawing.Point(227, 319);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 2;
@@ -167,7 +168,7 @@
             // 
             this.checkShowProcessDomains.AutoSize = true;
             this.checkShowProcessDomains.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowProcessDomains.Location = new System.Drawing.Point(6, 285);
+            this.checkShowProcessDomains.Location = new System.Drawing.Point(211, 213);
             this.checkShowProcessDomains.Name = "checkShowProcessDomains";
             this.checkShowProcessDomains.Size = new System.Drawing.Size(156, 18);
             this.checkShowProcessDomains.TabIndex = 3;
@@ -206,7 +207,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.textSearchEngine.Location = new System.Drawing.Point(134, 58);
             this.textSearchEngine.Name = "textSearchEngine";
-            this.textSearchEngine.Size = new System.Drawing.Size(277, 20);
+            this.textSearchEngine.Size = new System.Drawing.Size(304, 20);
             this.textSearchEngine.TabIndex = 6;
             // 
             // tabControl
@@ -222,11 +223,12 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(425, 345);
+            this.tabControl.Size = new System.Drawing.Size(452, 301);
             this.tabControl.TabIndex = 7;
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add(this.checkFloatChildWindows);
             this.tabGeneral.Controls.Add(this.checkScrollDownProcessTree);
             this.tabGeneral.Controls.Add(this.checkAllowOnlyOneInstance);
             this.tabGeneral.Controls.Add(this.buttonFont);
@@ -247,7 +249,7 @@
             this.tabGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGeneral.Size = new System.Drawing.Size(417, 319);
+            this.tabGeneral.Size = new System.Drawing.Size(444, 275);
             this.tabGeneral.TabIndex = 0;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
@@ -256,7 +258,7 @@
             // 
             this.checkScrollDownProcessTree.AutoSize = true;
             this.checkScrollDownProcessTree.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(6, 261);
+            this.checkScrollDownProcessTree.Location = new System.Drawing.Point(211, 189);
             this.checkScrollDownProcessTree.Name = "checkScrollDownProcessTree";
             this.checkScrollDownProcessTree.Size = new System.Drawing.Size(213, 18);
             this.checkScrollDownProcessTree.TabIndex = 17;
@@ -412,7 +414,7 @@
             this.tabAdvanced.Location = new System.Drawing.Point(4, 22);
             this.tabAdvanced.Name = "tabAdvanced";
             this.tabAdvanced.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAdvanced.Size = new System.Drawing.Size(417, 319);
+            this.tabAdvanced.Size = new System.Drawing.Size(444, 319);
             this.tabAdvanced.TabIndex = 3;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -962,7 +964,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(281, 363);
+            this.buttonCancel.Location = new System.Drawing.Point(308, 319);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 11;
@@ -975,7 +977,7 @@
             this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Enabled = false;
             this.buttonApply.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonApply.Location = new System.Drawing.Point(362, 363);
+            this.buttonApply.Location = new System.Drawing.Point(389, 319);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
             this.buttonApply.TabIndex = 11;
@@ -983,12 +985,23 @@
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
+            // checkFloatChildWindows
+            // 
+            this.checkFloatChildWindows.AutoSize = true;
+            this.checkFloatChildWindows.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkFloatChildWindows.Location = new System.Drawing.Point(211, 166);
+            this.checkFloatChildWindows.Name = "checkFloatChildWindows";
+            this.checkFloatChildWindows.Size = new System.Drawing.Size(124, 18);
+            this.checkFloatChildWindows.TabIndex = 18;
+            this.checkFloatChildWindows.Text = "Float child windows";
+            this.checkFloatChildWindows.UseVisualStyleBackColor = true;
+            // 
             // OptionsWindow
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(449, 398);
+            this.ClientSize = new System.Drawing.Size(476, 354);
             this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.tabControl);
@@ -1095,5 +1108,6 @@
         private System.Windows.Forms.CheckBox checkEnableExperimentalFeatures;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox checkScrollDownProcessTree;
+        private System.Windows.Forms.CheckBox checkFloatChildWindows;
     }
 }

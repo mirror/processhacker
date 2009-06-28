@@ -33,7 +33,7 @@ namespace ProcessHacker.Native.Api
     {
         public const int ExceptionMaximumParameters = 15;
         public const int FlsMaximumAvailable = 128;
-#if _X64
+#if _WIN64
         public const int GdiHandleBufferSize = 60;
 #else
         public const int GdiHandleBufferSize = 34;

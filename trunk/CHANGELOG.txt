@@ -16,6 +16,7 @@ Process Hacker
    * Thread wait analysis now detects NtQueryObject hangs
    * Better file object names without KProcessHacker
    * Better IP address resolving
+   * Child windows float by default
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
    * Small performance improvements

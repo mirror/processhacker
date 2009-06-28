@@ -38,6 +38,7 @@ namespace ProcessHacker
     {
         public HiddenProcessesWindow()
         {
+            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
 

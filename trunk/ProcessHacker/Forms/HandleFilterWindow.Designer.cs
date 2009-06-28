@@ -187,6 +187,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Find Handles or DLLs";
             this.Load += new System.EventHandler(this.HandleFilterWindow_Load);
+            this.VisibleChanged += new System.EventHandler(this.HandleFilterWindow_VisibleChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HandleFilterWindow_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
             this.ResumeLayout(false);

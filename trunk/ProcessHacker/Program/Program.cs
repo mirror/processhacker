@@ -44,6 +44,7 @@ namespace ProcessHacker
         /// The main Process Hacker window instance
         /// </summary>
         public static HackerWindow HackerWindow;
+        public static IntPtr HackerWindowHandle;
 
         public static ProcessAccess MinProcessQueryRights = ProcessAccess.QueryInformation;
         public static ProcessAccess MinProcessReadMemoryRights = ProcessAccess.VmRead;
@@ -1209,6 +1210,32 @@ namespace ProcessHacker
                     e.Handled = true;
                 }
             };
+        }
+
+        /// <summary>
+        /// Floats the window on top of the main Process Hacker window.
+        /// </summary>
+        /// <param name="f">The form to float.</param>
+        /// <remarks>
+        /// Always call this method before calling InitializeComponent in order for the 
+        /// parent to be restored properly.
+        /// </remarks>
+        public static void SetPhParent(this Form f)
+        {
+            f.SetPhParent(true);
+        }
+
+        public static void SetPhParent(this Form f, bool hideInTaskbar)
+        {
+            if (Properties.Settings.Default.FloatChildWindows)
+            {
+                if (hideInTaskbar)
+                    f.ShowInTaskbar = false;
+
+                IntPtr oldParent = Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, Program.HackerWindowHandle);
+
+                f.FormClosing += (sender, e) => Win32.SetWindowLongPtr(f.Handle, GetWindowLongOffset.HwndParent, oldParent);
+            }
         }
 
         private static void windowAlwaysOnTopItemClicked(object sender, EventArgs e)

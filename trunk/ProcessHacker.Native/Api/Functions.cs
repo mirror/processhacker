@@ -2252,32 +2252,36 @@ namespace ProcessHacker.Native.Api
             [In] int exitCode
             );
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-#if(_WIN64)
-		private static extern IntPtr SetWindowLongPtr(
-            [In] IntPtr hWnd, 
-            [In] int index, 
-            [In] [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback
-            );
+#if _WIN64
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Auto)]
 #else
-        private static extern IntPtr SetWindowLong(
-            [In] IntPtr hWnd,
-            [In] int index,
-            [In] [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate windowCallback
-            );
-#endif
-
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLong", CharSet = CharSet.Auto)]
-        public static extern IntPtr SetWindowLongStyle(
+#endif
+		private static extern IntPtr SetWindowLongPtr(
             [In] IntPtr hWnd,
-            [In] int index,
-            [In] WindowStyles style
+            [In] GetWindowLongOffset Index, 
+            [In] [MarshalAs(UnmanagedType.FunctionPtr)] WndProcDelegate WndProc
             );
 
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowLong", CharSet = CharSet.Auto)]
-        public static extern WindowStyles GetWindowLongStyle(
+#if _WIN64
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Auto)]
+#else
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetWindowLong", CharSet = CharSet.Auto)]
+#endif
+        public static extern IntPtr SetWindowLongPtr(
             [In] IntPtr hWnd,
-            [In] int index
+            [In] GetWindowLongOffset Index,
+            [In] IntPtr NewLong
+            );
+
+#if _WIN64
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Auto)]
+#else
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetWindowLong", CharSet = CharSet.Auto)]
+#endif
+        public static extern IntPtr GetWindowLongPtr(
+            [In] IntPtr hWnd,
+            [In] GetWindowLongOffset Index
             );
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]

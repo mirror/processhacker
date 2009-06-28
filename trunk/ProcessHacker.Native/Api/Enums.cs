@@ -184,6 +184,17 @@ namespace ProcessHacker.Native.Api
         DcPen
     }
 
+    public enum GetWindowLongOffset : int
+    {
+        WndProc = -4,
+        HInstance = -6,
+        HwndParent = -8,
+        Id = -12,
+        Style = -16,
+        ExStyle = -20,
+        UserData = -21
+    }
+
     [Flags]
     public enum HeapEntry32Flags : int
     {

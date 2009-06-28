@@ -62,6 +62,7 @@ namespace ProcessHacker
 
         public ProcessWindow(ProcessItem process)
         {
+            this.SetPhParent();
             InitializeComponent();
             this.AddEscapeToClose();
 
@@ -80,6 +81,35 @@ namespace ProcessHacker
             Program.PWindows.Add(_pid, this);
 
             this.FixTabs();
+        }
+
+        private void ProcessWindow_Load(object sender, EventArgs e)
+        {
+            // Load settings.
+            this.Size = Properties.Settings.Default.ProcessWindowSize;
+            buttonSearch.Text = Properties.Settings.Default.SearchType;
+            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
+
+            if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
+                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
+
+            // Load location, cascade if possible.
+            Rectangle bounds = Screen.GetWorkingArea(this);
+            Point location = Properties.Settings.Default.ProcessWindowLocation;
+
+            if (Program.PWindows.Count > 1)
+            {
+                location.X += 20;
+                location.Y += 20;
+            }
+
+            Properties.Settings.Default.ProcessWindowLocation = this.Location = 
+                Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
+
+            // Update the Window menu.
+            Program.UpdateWindow(this);
+
+            SymbolProviderExtensions.ShowWarning(this, false);
         }
 
         public MenuItem WindowMenuItem
@@ -115,35 +145,6 @@ namespace ProcessHacker
         public ListView ServiceListView
         {
             get { return _serviceProps.List; }
-        }
-
-        private void ProcessWindow_Load(object sender, EventArgs e)
-        {
-            // load settings
-            this.Size = Properties.Settings.Default.ProcessWindowSize;
-            buttonSearch.Text = Properties.Settings.Default.SearchType;
-            checkHideHandlesNoName.Checked = Properties.Settings.Default.HideHandlesWithNoName;
-
-            if (tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab] != null)
-                tabControl.SelectedTab = tabControl.TabPages[Properties.Settings.Default.ProcessWindowSelectedTab];
-
-            // load location, cascade if possible
-            Rectangle bounds = Screen.GetWorkingArea(this);
-            Point location = Properties.Settings.Default.ProcessWindowLocation;
-
-            if (Program.PWindows.Count > 1)
-            {
-                location.X += 20;
-                location.Y += 20;
-            }
-
-            Properties.Settings.Default.ProcessWindowLocation = this.Location = 
-                Utils.FitRectangle(new Rectangle(location, this.Size), this).Location;
-
-            // update the Window menu
-            Program.UpdateWindow(this);
-
-            SymbolProviderExtensions.ShowWarning(this, false);
         }
 
         protected override void WndProc(ref Message m)

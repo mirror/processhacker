@@ -80,6 +80,14 @@ namespace ProcessHacker
             this.Visible = false;
         }
 
+        private void HandleFilterWindow_VisibleChanged(object sender, EventArgs e)
+        {
+            if (this.Visible)
+            {
+                this.SetPhParent();
+            }
+        }
+
         private void menuHandle_Popup(object sender, EventArgs e)
         {
             if (listHandles.SelectedItems.Count == 0)

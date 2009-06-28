@@ -1524,5 +1524,17 @@ namespace ProcessHacker.Properties {
                 this["LogWindowAutoScroll"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FloatChildWindows {
+            get {
+                return ((bool)(this["FloatChildWindows"]));
+            }
+            set {
+                this["FloatChildWindows"] = value;
+            }
+        }
     }
 }
