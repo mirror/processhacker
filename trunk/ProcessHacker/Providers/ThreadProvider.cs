@@ -140,7 +140,8 @@ namespace ProcessHacker
                             using (var phandle =
                                 new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
                             {
-                                _symbols.LoadProcessModules(phandle);
+                                try { _symbols.LoadProcessModules(phandle); }
+                                catch { }
 
                                 // If we have KPH load kernel modules so we can get the kernel-mode stack.
                                 if (KProcessHacker.Instance != null)
