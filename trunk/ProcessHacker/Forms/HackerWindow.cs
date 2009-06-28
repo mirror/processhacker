@@ -739,7 +739,11 @@ namespace ProcessHacker
             this.Visible = !this.Visible;
 
             if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.Location = Properties.Settings.Default.WindowLocation;
+                this.Size = Properties.Settings.Default.WindowSize;
                 this.WindowState = FormWindowState.Normal;
+            }
 
             this.Activate();
         }

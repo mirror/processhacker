@@ -27,6 +27,7 @@ Process Hacker
    * Removed several annoying thread-related warnings
    * Network connections now display process IDs
    * Ctrl+C in the log window
+   * Window location problem when hiding and restoring the window
 
 1.3.8.5
  * NEW/IMPROVED:
