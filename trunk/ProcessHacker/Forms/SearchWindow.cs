@@ -159,10 +159,10 @@ namespace ProcessHacker
             if (tabControl.SelectedTab == tabLiteral)
             {
                 hexBoxSearch.Select();
-                hexBoxSearch.Focus();
             }
             else if (tabControl.SelectedTab == tabRegex)
             {
+                // HACK
                 textRegex.Focus();
                 textRegex.Select();
                 textRegex.Select(textRegex.Text.Length, 0);
@@ -171,12 +171,12 @@ namespace ProcessHacker
             else if (tabControl.SelectedTab == tabString)
             {
                 textStringMS.SelectAll();
-                textStringMS.Focus();
+                textStringMS.Select();
             }
             else if (tabControl.SelectedTab == tabHeap)
             {
                 textHeapMS.SelectAll();
-                textHeapMS.Focus();
+                textHeapMS.Select();
             }
         }
     }

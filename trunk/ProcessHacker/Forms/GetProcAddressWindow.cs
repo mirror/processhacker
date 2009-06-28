@@ -38,7 +38,6 @@ namespace ProcessHacker
 
             _fileName = fileName;
 
-            textProcName.Focus();
             textProcName.Select();
         }
 

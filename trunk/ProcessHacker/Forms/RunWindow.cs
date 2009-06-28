@@ -98,7 +98,6 @@ namespace ProcessHacker
             }
 
             textCmdLine.Text = Properties.Settings.Default.RunAsCommand;
-            textCmdLine.Focus();
             textCmdLine.Select();
         }
 

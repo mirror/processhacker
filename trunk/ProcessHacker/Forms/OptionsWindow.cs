@@ -200,7 +200,7 @@ namespace ProcessHacker
                 MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                textUpdateInterval.Focus();
+                textUpdateInterval.Select();
             }
         }
 
@@ -215,7 +215,7 @@ namespace ProcessHacker
                 MessageBox.Show("The entered value is not valid.", "Process Hacker", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                textIconMenuProcesses.Focus();
+                textIconMenuProcesses.Select();
             }
         }
 

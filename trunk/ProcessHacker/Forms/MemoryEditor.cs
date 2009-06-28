@@ -102,7 +102,6 @@ namespace ProcessHacker
             }
 
             hexBoxMemory.Select();
-            hexBoxMemory.Focus();
         }
 
         private void MemoryEditor_Load(object sender, EventArgs e)
