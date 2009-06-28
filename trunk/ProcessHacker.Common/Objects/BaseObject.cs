@@ -323,8 +323,31 @@ namespace ProcessHacker.Common.Objects
             return this.Dereference(1, managed);
         }
 
-        private int Dereference(int count, bool managed)
+        /// <summary>
+        /// Decreases the reference count of the object.
+        /// </summary>
+        /// <param name="count">The number of times to dereference the object.</param>
+        /// <returns>The new reference count.</returns>
+        public int Dereference(int count)
         {
+            return this.Dereference(count, true);
+        }
+
+        /// <summary>
+        /// Decreases the reference count of the object.
+        /// </summary>
+        /// <param name="count">The number of times to dereference the object.</param>
+        /// <param name="managed">Whether to dispose managed resources.</param>
+        /// <returns>The new reference count.</returns>
+        public int Dereference(int count, bool managed)
+        {
+            // Initial parameter validation.
+            if (count == 0)
+                return Interlocked.Add(ref _refCount, 0);
+            if (count < 0)
+                throw new ArgumentException("Cannot dereference a negative number of times.");
+
+            // Critical, prevent thread abortion.
             Thread.BeginCriticalRegion();
 
             if (managed)
@@ -340,6 +363,7 @@ namespace ProcessHacker.Common.Objects
                 // Decrease the reference count.
                 int newRefCount = Interlocked.Add(ref _refCount, -count);
 
+                // Should not happen.
                 if (newRefCount < 0)
                     throw new InvalidOperationException("Reference count cannot be negative.");
 
@@ -394,12 +418,28 @@ namespace ProcessHacker.Common.Objects
         /// </remarks>
         public int Reference()
         {
+            return this.Reference(1);
+        }
+
+        /// <summary>
+        /// Increases the reference count of the object.
+        /// </summary>
+        /// <param name="count">The number of times to reference the object.</param>
+        /// <returns>The new reference count.</returns>
+        public int Reference(int count)
+        {
+            // Don't do anything if the object isn't owned.
             if (!_owned)
                 return 0;
+            // Parameter validation.
+            if (count == 0)
+                return Interlocked.Add(ref _refCount, 0);
+            if (count < 0)
+                throw new ArgumentException("Cannot reference a negative number of times.");
 
-            Interlocked.Increment(ref _referencedCount);
+            Interlocked.Add(ref _referencedCount, count);
 
-            return Interlocked.Increment(ref _refCount);
+            return Interlocked.Add(ref _refCount, count);
         }
 
         /// <summary>

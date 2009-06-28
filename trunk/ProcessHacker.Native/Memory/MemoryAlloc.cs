@@ -88,9 +88,6 @@ namespace ProcessHacker.Native
         {
             _memory = Marshal.AllocHGlobal((int)size);
             _size = size;
-
-            if (size > 0)
-                GC.AddMemoryPressure(size);
         }
 
         protected sealed override void DisposeObject(bool disposing)
@@ -101,8 +98,6 @@ namespace ProcessHacker.Native
         protected virtual void Free()
         {
             Marshal.FreeHGlobal(this);
-            if (_size > 0)
-                GC.RemoveMemoryPressure(_size);
         }
 
         /// <summary>
@@ -254,12 +249,8 @@ namespace ProcessHacker.Native
         /// <param name="newSize">The new size of the allocation.</param>
         public virtual void Resize(int newSize)
         {
-            if (_size > 0)
-                GC.RemoveMemoryPressure(_size);
             _memory = Marshal.ReAllocHGlobal(_memory, new IntPtr(newSize));
             _size = newSize;
-            if (_size > 0)
-                GC.AddMemoryPressure(_size);
         }
 
         /// <summary>
