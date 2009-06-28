@@ -22,6 +22,7 @@
 
 using System;
 using System.Threading;
+using ProcessHacker.Common.Threading;
 
 namespace ProcessHacker.Common.Objects
 {
@@ -102,7 +103,7 @@ namespace ProcessHacker.Common.Objects
         /// <summary>
         /// Synchronization for all reference-related methods.
         /// </summary>
-        private object _refLock = new object();
+        private FastMutex _refMutex = new FastMutex();
         /// <summary>
         /// The reference count of the object.
         /// </summary>
@@ -181,7 +182,7 @@ namespace ProcessHacker.Common.Objects
             Thread.BeginCriticalRegion();
 
             if (managed)
-                Monitor.Enter(_refLock);
+                _refMutex.Acquire();
 
             try
             {
@@ -209,7 +210,7 @@ namespace ProcessHacker.Common.Objects
             finally
             {
                 if (managed)
-                    Monitor.Exit(_refLock);
+                    _refMutex.Release();
 
                 Thread.EndCriticalRegion();
             }
@@ -267,6 +268,14 @@ namespace ProcessHacker.Common.Objects
         }
 
         /// <summary>
+        /// Gets the mutex used internally to synchronize object disposal.
+        /// </summary>
+        protected FastMutex ReferenceMutex
+        {
+            get { return _refMutex; }
+        }
+
+        /// <summary>
         /// Gets the current weak reference count of the object.
         /// </summary>
         /// <remarks>
@@ -278,6 +287,9 @@ namespace ProcessHacker.Common.Objects
             get { return Thread.VolatileRead(ref _weakRefCount); }
         }
 
+        /// <summary>
+        /// Disables the finalizer if it is not already disabled.
+        /// </summary>
         private void DisableFinalizer()
         {
             lock (_finalizerRegisterLock)
@@ -351,7 +363,7 @@ namespace ProcessHacker.Common.Objects
             Thread.BeginCriticalRegion();
 
             if (managed)
-                Monitor.Enter(_refLock);
+                _refMutex.Acquire();
 
             try
             {
@@ -380,7 +392,7 @@ namespace ProcessHacker.Common.Objects
             finally
             {
                 if (managed)
-                    Monitor.Exit(_refLock);
+                    _refMutex.Release();
 
                 Thread.EndCriticalRegion();
             }
@@ -394,6 +406,9 @@ namespace ProcessHacker.Common.Objects
             DelayedReleasePool.CurrentPool.AddDereference(this);
         }
 
+        /// <summary>
+        /// Enables the finalizer if it is not already enabled.
+        /// </summary>
         private void EnableFinalizer()
         {
             lock (_finalizerRegisterLock)

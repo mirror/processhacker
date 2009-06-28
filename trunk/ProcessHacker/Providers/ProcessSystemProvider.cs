@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Messaging;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -98,7 +99,7 @@ namespace ProcessHacker
 
     public class ProcessSystemProvider : Provider<int, ProcessItem>
     {
-        public class FileProcessResult
+        public class FileProcessMessage : Message
         {
             public int Stage;
             public int Pid;
@@ -159,10 +160,10 @@ namespace ProcessHacker
         public ReadOnlyCollection<string> MostCpuHistory { get { return _mostUsageHistory[false]; } }
         public ReadOnlyCollection<string> MostIoHistory { get { return _mostUsageHistory[true]; } }
 
-        private delegate FileProcessResult ProcessFileDelegate(int pid, string fileName, bool useCache);
+        private delegate FileProcessMessage ProcessFileDelegate(int pid, string fileName, bool useCache);
 
+        private MessageQueue _messageQueue = new MessageQueue();
         private Dictionary<string, VerifyResult> _fileResults = new Dictionary<string, VerifyResult>();
-        private Queue<FileProcessResult> _fpResults = new Queue<FileProcessResult>();
         private DeltaManager<SystemStats, long> _longDeltas = 
             new DeltaManager<SystemStats, long>(Subtractor.Int64Subtractor, EnumComparer<SystemStats>.Instance);
         private DeltaManager<string, long> _cpuDeltas = new DeltaManager<string, long>(Subtractor.Int64Subtractor);
@@ -199,6 +200,19 @@ namespace ProcessHacker
         {
             this.Name = this.GetType().Name;
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+
+            // Add the file processing results listener.
+            _messageQueue.AddListener(
+                new MessageQueueListener<FileProcessMessage>((message) =>
+                    {
+                        if (this.Dictionary.ContainsKey(message.Pid))
+                        {
+                            ProcessItem item = this.Dictionary[message.Pid];
+
+                            this.FillFpResult(item, message);
+                            item.JustProcessed = true;
+                        }
+                    }));
 
             SystemBasicInformation basic;
             int retLen;
@@ -251,11 +265,6 @@ namespace ProcessHacker
             _longHistory.Add(SystemStats.PhysicalMemory);
         }
 
-        public Queue<FileProcessResult> FileProcessingQueue
-        {
-            get { return _fpResults; }
-        }
-
         private void UpdateProcessorPerf()
         {
             int retLen;
@@ -293,7 +302,7 @@ namespace ProcessHacker
                  out _performance, Marshal.SizeOf(typeof(SystemPerformanceInformation)), out retLen);
         }
 
-        private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced)
+        private FileProcessMessage ProcessFileStage1(int pid, string fileName, bool forced)
         {
             return ProcessFileStage1(pid, fileName, forced, true);
         }
@@ -301,9 +310,9 @@ namespace ProcessHacker
         /// <summary>
         /// Stage 1 File Processing - gets the process file name, icon and command line.
         /// </summary>
-        private FileProcessResult ProcessFileStage1(int pid, string fileName, bool forced, bool addToQueue)
+        private FileProcessMessage ProcessFileStage1(int pid, string fileName, bool forced, bool addToQueue)
         {
-            FileProcessResult fpResult = new FileProcessResult();
+            FileProcessMessage fpResult = new FileProcessMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x1;
@@ -346,10 +355,7 @@ namespace ProcessHacker
             { }
 
             if (addToQueue)
-            {
-                lock (_fpResults)
-                    _fpResults.Enqueue(fpResult);
-            }
+                _messageQueue.Enqueue(fpResult);
 
             WorkQueue.GlobalQueueWorkItemTag(
                 new ProcessFileDelegate(this.ProcessFileStage1a),
@@ -376,9 +382,9 @@ namespace ProcessHacker
         /// the action on the GUI thread because COM interop requires that these calls are made 
         /// on an STA thread. ThreadPool worker threads are all MTA.
         /// </remarks>
-        private FileProcessResult ProcessFileStage1a(int pid, string fileName, bool forced)
+        private FileProcessMessage ProcessFileStage1a(int pid, string fileName, bool forced)
         {
-            FileProcessResult fpResult = new FileProcessResult();
+            FileProcessMessage fpResult = new FileProcessMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x1a;
@@ -411,8 +417,7 @@ namespace ProcessHacker
                 }
             }));
 
-            lock (_fpResults)
-                _fpResults.Enqueue(fpResult);
+            _messageQueue.Enqueue(fpResult);
 
             if (this.FileProcessingComplete != null)
                 this.FileProcessingComplete(fpResult.Stage, pid);
@@ -423,9 +428,9 @@ namespace ProcessHacker
         /// <summary>
         /// Stage 2 File Processing - gets whether the process file is packed or signed.
         /// </summary>
-        private FileProcessResult ProcessFileStage2(int pid, string fileName, bool forced)
+        private FileProcessMessage ProcessFileStage2(int pid, string fileName, bool forced)
         {
-            FileProcessResult fpResult = new FileProcessResult();
+            FileProcessMessage fpResult = new FileProcessMessage();
 
             fpResult.Pid = pid;
             fpResult.Stage = 0x2;
@@ -518,8 +523,7 @@ namespace ProcessHacker
             catch
             { }
 
-            lock (_fpResults)
-                _fpResults.Enqueue(fpResult);
+            _messageQueue.Enqueue(fpResult);
 
             if (this.FileProcessingComplete != null)
                 this.FileProcessingComplete(fpResult.Stage, pid);
@@ -614,7 +618,7 @@ namespace ProcessHacker
                 );
         }
 
-        private void FillFpResult(ProcessItem item, FileProcessResult result)
+        private void FillFpResult(ProcessItem item, FileProcessMessage result)
         {
             if (result.Stage == 0x1)
             {
@@ -807,24 +811,8 @@ namespace ProcessHacker
                 }
             }
 
-            lock (_fpResults)
-            {
-                while (_fpResults.Count > 0)
-                {
-                    var result = _fpResults.Dequeue();
-
-                    // Dictionary may contain items newdictionary doesn't contain, 
-                    // because we just removed terminated processes. However, 
-                    // the look-for-modified-processes section relies on Dictionary!
-                    if (Dictionary.ContainsKey(result.Pid))
-                    {
-                        ProcessItem item = this.Dictionary[result.Pid];
-
-                        this.FillFpResult(item, result);
-                        item.JustProcessed = true;
-                    }
-                }
-            }
+            // Receive any processing results.
+            _messageQueue.Listen();
 
             // look for new processes
             foreach (int pid in procs.Keys)

@@ -51,6 +51,8 @@
     <Compile Include="BaseConverter.cs" />
     <Compile Include="ByteStreamReader.cs" />
     <Compile Include="CircularBuffer.cs" />
+    <Compile Include="Messaging\Message.cs" />
+    <Compile Include="Messaging\MessageQueueListener.cs" />
     <Compile Include="Objects\SecuredHandleTable.cs" />
     <Compile Include="Threading\FastMutex.cs" />
     <Compile Include="Objects\DelayedReleasePool.cs" />
@@ -65,6 +67,7 @@
     <Compile Include="Objects\IReferenceCountedObject.cs" />
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
+    <Compile Include="Messaging\MessageQueue.cs" />
     <Compile Include="Threading\RundownProtection.cs" />
     <Compile Include="Threading\SpinLock.cs" />
     <Compile Include="Tokenizer.cs" />

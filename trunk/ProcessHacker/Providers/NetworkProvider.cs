@@ -27,11 +27,21 @@ using System.Net;
 using System.Net.Sockets;
 using ProcessHacker.Common;
 using ProcessHacker.Native;
+using System;
+using ProcessHacker.Common.Messaging;
 
 namespace ProcessHacker
 {
     public class NetworkProvider : Provider<string, NetworkConnection>
     {
+        private class AddressResolveMessage : Message
+        {
+            public string Id;
+            public bool Remote;
+            public string HostName;
+        }
+
+        private MessageQueue _messageQueue = new MessageQueue();
         private Dictionary<long, string> _resolveCache =
             new Dictionary<long, string>();
 
@@ -39,7 +49,31 @@ namespace ProcessHacker
             : base()
         {
             this.Name = this.GetType().Name;
-            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);   
+            this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
+
+            _messageQueue.AddListener(
+                new MessageQueueListener<AddressResolveMessage>((message) =>
+                    {
+                        if (Dictionary.ContainsKey(message.Id))
+                        {
+                            try
+                            {
+                                var modConnection = Dictionary[message.Id];
+
+                                if (message.Remote)
+                                    modConnection.RemoteString = message.HostName;
+                                else
+                                    modConnection.LocalString = message.HostName;
+
+                                OnDictionaryModified(Dictionary[message.Id], modConnection);
+                                Dictionary[message.Id] = modConnection;
+                            }
+                            catch (Exception ex)
+                            {
+                                Logging.Log(ex);
+                            }
+                        }
+                    }));
         }
 
         private void UpdateOnce()
@@ -47,7 +81,10 @@ namespace ProcessHacker
             var networkDict = Windows.GetNetworkConnections();
             var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
             var keyDict = new Dictionary<string, NetworkConnection>();
-            var newDict = new Dictionary<string, NetworkConnection>(this.Dictionary);
+            Dictionary<string, NetworkConnection> newDict;
+
+            lock (this.Dictionary)
+                newDict = new Dictionary<string, NetworkConnection>(this.Dictionary);
 
             // flattens list, assigns IDs and counts
             foreach (var list in networkDict.Values)
@@ -78,21 +115,21 @@ namespace ProcessHacker
                 keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), connection);
             }
 
-            foreach (var connection in Dictionary.Values)
+            // Get resolve results.
+            _messageQueue.Listen();
+
+            foreach (var connection in this.Dictionary.Values)
             {
                 if (!keyDict.ContainsKey(connection.Id))
                 {
-                    lock (Dictionary)
-                    {
-                        OnDictionaryRemoved(connection);   
-                        newDict.Remove(connection.Id);
-                    }
+                    OnDictionaryRemoved(connection);
+                    newDict.Remove(connection.Id);
                 }
             }
 
             foreach (var connection in keyDict.Values)
             {
-                if (!Dictionary.ContainsKey(connection.Id))
+                if (!this.Dictionary.ContainsKey(connection.Id))
                 {
                     NetworkConnection newConnection = connection;
 
@@ -159,20 +196,17 @@ namespace ProcessHacker
                 {
                     if (connection.State != Dictionary[connection.Id].State)
                     {
-                        lock (Dictionary)
-                        {
-                            var newConnection = Dictionary[connection.Id];
+                        var newConnection = Dictionary[connection.Id];
 
-                            newConnection.State = connection.State;
+                        newConnection.State = connection.State;
 
-                            OnDictionaryModified(Dictionary[connection.Id], newConnection);
-                            Dictionary[connection.Id] = connection;
-                        }
+                        OnDictionaryModified(Dictionary[connection.Id], newConnection);
+                        Dictionary[connection.Id] = connection;
                     }
                 }
             }
 
-            Dictionary = newDict;
+            this.Dictionary = newDict;
         }
 
         private void ResolveAddresses(string id, bool remote, IPAddress address)
@@ -213,29 +247,12 @@ namespace ProcessHacker
                 }
             }
 
-            // Update the connection item.
-            if (Dictionary.ContainsKey(id))
+            _messageQueue.Enqueue(new AddressResolveMessage()
             {
-                lock (Dictionary)
-                {
-                    if (Dictionary.ContainsKey(id))
-                    {
-                        try
-                        {
-                            var modConnection = Dictionary[id];
-
-                            if (remote)
-                                modConnection.RemoteString = hostName;
-                            else
-                                modConnection.LocalString = hostName;
-
-                            OnDictionaryModified(Dictionary[id], modConnection);
-                            Dictionary[id] = modConnection;
-                        }
-                        catch { }
-                    }
-                }
-            }
+                Id = id,
+                Remote = remote,
+                HostName = hostName
+            });
         }
     }
 }

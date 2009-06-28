@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Messaging;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
@@ -60,7 +61,7 @@ namespace ProcessHacker
 
     public class ThreadProvider : Provider<int, ThreadItem>
     {
-        private class ResolveResult
+        private class ResolveMessage : Message
         {
             public int Tid;
             public string Symbol;
@@ -77,7 +78,7 @@ namespace ProcessHacker
         private SymbolProvider _symbols;
         private int _pid;
         private int _loading = 0;
-        private Queue<ResolveResult> _resolveResults = new Queue<ResolveResult>();
+        private MessageQueue _messageQueue = new MessageQueue();
         private EventWaitHandle _moduleLoadCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private bool _waitedForLoad = false;
 
@@ -86,6 +87,17 @@ namespace ProcessHacker
         {
             this.Name = this.GetType().Name;
             _pid = pid;
+
+            _messageQueue.AddListener(
+                new MessageQueueListener<ResolveMessage>((message) =>
+                    {
+                        if (message.Symbol != null)
+                        {
+                            this.Dictionary[message.Tid].StartAddress = message.Symbol;
+                            this.Dictionary[message.Tid].StartAddressLevel = message.ResolveLevel;
+                            this.Dictionary[message.Tid].JustResolved = true;
+                        }
+                    }));
 
             this.ProviderUpdate += new ProviderUpdateOnce(UpdateOnce);
             this.Disposed += ThreadProvider_Disposed;
@@ -207,7 +219,7 @@ namespace ProcessHacker
 
         private void ResolveThreadStartAddress(int tid, ulong startAddress)
         {
-            ResolveResult result = new ResolveResult();
+            ResolveMessage result = new ResolveMessage();
 
             result.Tid = tid;
 
@@ -234,9 +246,7 @@ namespace ProcessHacker
                 try
                 {
                     result.Symbol = _symbols.GetSymbolFromAddress(startAddress, out result.ResolveLevel);
-
-                    lock (_resolveResults)
-                        _resolveResults.Enqueue(result);
+                    _messageQueue.Enqueue(result);
                 }
                 catch
                 { }
@@ -305,20 +315,8 @@ namespace ProcessHacker
                 }
             }
 
-            lock (_resolveResults)
-            {
-                while (_resolveResults.Count > 0)
-                {
-                    var result = _resolveResults.Dequeue();
-
-                    if (result.Symbol != null)
-                    {
-                        this.Dictionary[result.Tid].StartAddress = result.Symbol;
-                        this.Dictionary[result.Tid].StartAddressLevel = result.ResolveLevel;
-                        this.Dictionary[result.Tid].JustResolved = true;
-                    }
-                }
-            }
+            // Get resolve results.
+            _messageQueue.Listen();
 
             // look for new threads
             foreach (int tid in threads.Keys)

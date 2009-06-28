@@ -24,13 +24,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Objects;
 
 namespace ProcessHacker
 {                                                 
     /// <summary>
     /// Provides services for continuously updating a dictionary.
     /// </summary>
-    public abstract class Provider<TKey, TValue> : IProvider, IDisposable
+    public abstract class Provider<TKey, TValue> : BaseObject, IProvider
     {
         /// <summary>
         /// A generic delegate which is used when updating the dictionary.
@@ -99,10 +100,8 @@ namespace ProcessHacker
         private Thread _thread;
         private IDictionary<TKey, TValue> _dictionary;
 
-        private object _disposeLock = new object();
         private object _busyLock = new object();
         private bool _disposing = false;
-        private bool _disposed = false;
         private bool _busy = false;
         private bool _createThread = true;
         private bool _enabled = false;
@@ -136,64 +135,37 @@ namespace ProcessHacker
             _dictionary = dictionary;
         }
 
-        ~Provider()
-        {
-            this.Dispose(false);
-        }
-
-        private void Dispose(bool disposing)
-        {
+        protected override void DisposeObject(bool disposing)
+        {   
             Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): disposing (" + disposing.ToString() + ")");
 
-            try
+            _disposing = true;
+
+            if (disposing)
+                Monitor.Enter(_busyLock);
+
+            if (_thread != null)
             {
-                _disposing = true;
+                _thread.Abort();
+                _thread = null;
+            }
 
-                if (disposing)
+            if (this.Disposed != null)
+            {
+                try
                 {
-                    Monitor.Enter(_disposeLock);
-                    Monitor.Enter(_busyLock);
+                    this.Disposed(this);
                 }
-
-                if (!_disposed)
+                catch (Exception ex)
                 {
-                    _disposed = true;
-
-                    if (_thread != null)
-                    {
-                        _thread.Abort();
-                        _thread = null;
-                    }
-
-                    if (this.Disposed != null)
-                    {
-                        try
-                        {
-                            this.Disposed(this);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logging.Log(ex);
-                        }
-                    }
+                    Logging.Log(ex);
                 }
             }
-            finally
-            {
-                if (disposing)
-                {
-                    Monitor.Exit(_busyLock);
-                    Monitor.Exit(_disposeLock);
-                }
-            }
+
+            if (disposing)
+                Monitor.Exit(_busyLock);
 
             Logging.Log(Logging.Importance.Information, "Provider (" + this.Name + "): finished disposing (" + disposing.ToString() + ")");
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public string Name
