@@ -177,24 +177,40 @@ namespace ProcessHacker
 
         private void ResolveAddresses(string id, bool remote, IPAddress address)
         {
-            IPHostEntry entry = null;
+            string hostName = null;
+            bool inCache = false;
 
-            try
-            {
-                entry = Dns.GetHostEntry(address);
-            }
-            catch (SocketException)
-            {
-                // Host was not found.
-                return;
-            }
-
-            // Update the cache.
+            // Last minute check of the cache.
             lock (_resolveCache)
             {
-                // Add the name if not present already.
-                if (!_resolveCache.ContainsKey(address.Address))
-                    _resolveCache.Add(address.Address, entry.HostName);
+                if (_resolveCache.ContainsKey(address.Address))
+                {
+                    hostName = _resolveCache[address.Address];
+                    inCache = true;
+                }
+            }
+
+            // If it wasn't in the cache, resolve the address.
+            if (!inCache)
+            {
+                try
+                {
+                    hostName = Dns.GetHostEntry(address).HostName;
+                }
+                catch (SocketException)
+                {
+                    // Host was not found.
+                    return;
+                }
+
+                // Update the cache.
+                lock (_resolveCache)
+                {
+                    // Add the name if not present already.
+                    if (hostName != null)
+                        if (!_resolveCache.ContainsKey(address.Address))
+                            _resolveCache.Add(address.Address, hostName);
+                }
             }
 
             // Update the connection item.
@@ -209,9 +225,9 @@ namespace ProcessHacker
                             var modConnection = Dictionary[id];
 
                             if (remote)
-                                modConnection.RemoteString = entry.HostName;
+                                modConnection.RemoteString = hostName;
                             else
-                                modConnection.LocalString = entry.HostName;
+                                modConnection.LocalString = hostName;
 
                             OnDictionaryModified(Dictionary[id], modConnection);
                             Dictionary[id] = modConnection;
