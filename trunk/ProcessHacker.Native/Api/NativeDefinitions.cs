@@ -42,6 +42,10 @@ namespace ProcessHacker.Native.Api
         public const int MaximumWaitObjects = 64;
         public const int MaxKeyNameLength = 512;
         public const int MaxKeyValueNameLength = 32767;
+        public const int MaxStackDepth = 32;
+        public const int ProcessHandleTracingMaxStacks = 16;
+        public static readonly int ProcessHandleTracingQueryHandleTraceOffset =
+            Marshal.OffsetOf(typeof(ProcessHandleTracingQuery), "HandleTrace").ToInt32();
         public const int SecurityDescriptorMinLength = 20;
         public const int SecurityDescriptorRevision = 1;
         public static readonly int SecurityMaxSidSize =

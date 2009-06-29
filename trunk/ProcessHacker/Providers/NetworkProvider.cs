@@ -115,9 +115,6 @@ namespace ProcessHacker
                 keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), connection);
             }
 
-            // Get resolve results.
-            _messageQueue.Listen();
-
             foreach (var connection in this.Dictionary.Values)
             {
                 if (!keyDict.ContainsKey(connection.Id))
@@ -126,6 +123,9 @@ namespace ProcessHacker
                     newDict.Remove(connection.Id);
                 }
             }
+
+            // Get resolve results.
+            _messageQueue.Listen();
 
             foreach (var connection in keyDict.Values)
             {

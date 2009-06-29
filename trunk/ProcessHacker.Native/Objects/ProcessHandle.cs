@@ -431,6 +431,23 @@ namespace ProcessHacker.Native.Objects
         }
 
         /// <summary>
+        /// Disables the collection of handle stack traces.
+        /// </summary>
+        public void DisableHandleTracing()
+        {
+            NtStatus status;
+
+            // Length 0 and NULL disables handle tracing.
+            if ((status = Win32.NtSetInformationProcess(
+                this,
+                ProcessInformationClass.ProcessHandleTracing,
+                IntPtr.Zero,
+                0
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
         /// Removes as many pages as possible from the process' working set. This requires the 
         /// PROCESS_QUERY_INFORMATION and PROCESS_SET_INFORMATION permissions.
         /// </summary>
@@ -438,6 +455,24 @@ namespace ProcessHacker.Native.Objects
         {
             if (!Win32.EmptyWorkingSet(this))
                 Win32.ThrowLastError();
+        }
+
+        /// <summary>
+        /// Enables the collection of handle stack traces. This requires 
+        /// PROCESS_SET_INFORMATION access.
+        /// </summary>
+        public void EnableHandleTracing()
+        {
+            NtStatus status;
+            ProcessHandleTracingEnable phte = new ProcessHandleTracingEnable();
+
+            if ((status = Win32.NtSetInformationProcess(
+                this,
+                ProcessInformationClass.ProcessHandleTracing,
+                ref phte,
+                Marshal.SizeOf(phte)
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
         }
 
         /// <summary>
@@ -926,6 +961,84 @@ namespace ProcessHacker.Native.Objects
 
                     return handles;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets a handle stack trace by its handle.
+        /// </summary>
+        /// <param name="handle">A handle to the stack trace to retrieve.</param>
+        /// <returns>A stack trace if the handle is valid, otherwise null.</returns>
+        public ProcessHandleTrace GetHandleTrace(IntPtr handle)
+        {
+            var collection = this.GetHandleTraces(handle);
+
+            // If the collection contains the stack trace, return it. 
+            // Otherwise, return null.
+            if (collection.ContainsKey(handle))
+                return collection[handle];
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Gets a collection of handle stack traces. This requires 
+        /// PROCESS_QUERY_INFORMATION access.
+        /// </summary>
+        /// <returns>A collection of handle stack traces.</returns>
+        public ProcessHandleTraceCollection GetHandleTraces()
+        {
+            return this.GetHandleTraces(IntPtr.Zero);
+        }
+
+        /// <summary>
+        /// Gets a collection of handle stack traces. This requires 
+        /// PROCESS_QUERY_INFORMATION access.
+        /// </summary>
+        /// <param name="handle">
+        /// A handle to the stack trace to retrieve. If this parameter is 
+        /// zero, all stack traces will be retrieved.
+        /// </param>
+        /// <returns>A collection of handle stack traces.</returns>
+        public ProcessHandleTraceCollection GetHandleTraces(IntPtr handle)
+        {
+            NtStatus status = NtStatus.Success;
+            int retLength;
+
+            using (var data = new MemoryAlloc(0x10000))
+            {
+                var query = new ProcessHandleTracingQuery();
+
+                // If Handle is not NULL, NtQueryInformationProcess will 
+                // get a specific stack trace. Otherwise, it will get 
+                // all of the stack traces.
+                query.Handle = handle;
+                data.WriteStruct<ProcessHandleTracingQuery>(query);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    status = Win32.NtQueryInformationProcess(
+                        this,
+                        ProcessInformationClass.ProcessHandleTracing,
+                        data,
+                        data.Size,
+                        out retLength
+                        );
+
+                    if (status == NtStatus.InfoLengthMismatch)
+                    {
+                        data.Resize(data.Size * 4);
+                        continue;
+                    }
+
+                    if (status >= NtStatus.Error)
+                        Win32.ThrowLastError(status);
+
+                    return new ProcessHandleTraceCollection(data);
+                }
+
+                Win32.ThrowLastError(status);
+                return null; // Silences the compiler.
             }
         }
 
@@ -1853,6 +1966,92 @@ namespace ProcessHacker.Native.Objects
             }
 
             return writtenLen;
+        }
+    }
+
+    public class ProcessHandleTrace
+    {
+        private IntPtr _handle;
+        private ClientId _clientId;
+        private IntPtr[] _stack;
+
+        internal ProcessHandleTrace(ProcessHandleTracingEntry entry)
+        {
+            _handle = entry.Handle;
+            _clientId = entry.ClientId;
+
+            // Find the first occurrence of a NULL to find where the trace stops.
+            int zeroIndex = Array.IndexOf<IntPtr>(entry.Stacks, IntPtr.Zero);
+
+            // If there was no NULL, copy the entire array.
+            if (zeroIndex == -1)
+                zeroIndex = entry.Stacks.Length;
+
+            // Copy the actual stack trace, excluding NULLs.
+            _stack = new IntPtr[zeroIndex];
+            Array.Copy(entry.Stacks, 0, _stack, 0, zeroIndex);
+        }
+
+        public ClientId ClientId
+        {
+            get { return _clientId; }
+        }
+
+        public IntPtr Handle
+        {
+            get { return _handle; }
+        }
+
+        public IntPtr[] Stack
+        {
+            get { return _stack; }
+        }
+    }
+
+    public class ProcessHandleTraceCollection
+    {
+        private IntPtr _handle;
+        private Dictionary<IntPtr, ProcessHandleTrace> _traces
+            = new Dictionary<IntPtr,ProcessHandleTrace>();
+
+        internal ProcessHandleTraceCollection(MemoryAlloc data)
+        {
+            if (data.Size < Marshal.SizeOf(typeof(ProcessHandleTracingQuery)))
+                throw new ArgumentException("Data memory allocation is too small.");
+
+            var query = data.ReadStruct<ProcessHandleTracingQuery>();
+
+            _handle = query.Handle;
+
+            for (int i = 0; i < query.TotalTraces; i++)
+            {
+                var entry = data.ReadStruct<ProcessHandleTracingEntry>(
+                    Win32.ProcessHandleTracingQueryHandleTraceOffset,
+                    i
+                    );
+
+                _traces.Add(entry.Handle, new ProcessHandleTrace(entry));
+            }
+        }
+
+        public ProcessHandleTrace this[IntPtr handle]
+        {
+            get { return _traces[handle]; }
+        }
+
+        public IntPtr Handle
+        {
+            get { return _handle; }
+        }
+
+        public IEnumerable<ProcessHandleTrace> Traces
+        {
+            get { return _traces.Values; }
+        }
+
+        public bool ContainsKey(IntPtr handle)
+        {
+            return _traces.ContainsKey(handle);
         }
     }
 

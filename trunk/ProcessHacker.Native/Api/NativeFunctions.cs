@@ -1267,6 +1267,14 @@ namespace ProcessHacker.Native.Api
             );
 
         [DllImport("ntdll.dll")]
+        public static extern NtStatus NtSetInformationProcess(
+            [In] IntPtr ProcessHandle,
+            [In] ProcessInformationClass ProcessInformationClass,
+            [In] ref ProcessHandleTracingEnable ProcessInformation,
+            [In] int ProcessInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
         public static extern NtStatus NtSetInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,

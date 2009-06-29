@@ -1076,6 +1076,39 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessHandleTracingEnable
+    {
+        public int Flags; // No flags. Set to 0.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessHandleTracingEnableEx
+    {
+        public int Flags; // No flags. Set to 0.
+        public int TotalSlots;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessHandleTracingEntry
+    {
+        public IntPtr Handle;
+        public ClientId ClientId;
+        public int Type;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = Win32.ProcessHandleTracingMaxStacks)]
+        public IntPtr[] Stacks;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ProcessHandleTracingQuery
+    {
+        public IntPtr Handle;
+        public int TotalTraces;
+        public char HandleTrace;
+        // An array of ProcessHandleTracingEntry structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct QuotaLimits
     {
         public int PagedPoolLimit;
@@ -1133,6 +1166,29 @@ namespace ProcessHacker.Native.Api
         public IntPtr CommittedHandles;
         public IntPtr UnCommittedHandles;
         public IntPtr MaxReservedHandles;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessBacktraceInformation
+    {
+        public IntPtr SymbolicBackTrace; // PCHAR, always NULL.
+        public int TraceCount;
+        public ushort Index;
+        public ushort Depth;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = Win32.MaxStackDepth)]
+        public IntPtr[] BackTrace;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessBacktraces
+    {
+        public int CommittedMemory;
+        public int ReservedMemory;
+        public int NumberOfBackTraceLookups;
+        public int NumberOfBackTraces;
+        public char BackTraces; // RtlProcessBacktraceInformation[] BackTraces
+        // Array of RtlProcessBacktraceInformation structures follows.
     }
 
     [StructLayout(LayoutKind.Sequential)]
