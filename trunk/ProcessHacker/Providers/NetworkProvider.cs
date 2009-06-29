@@ -66,6 +66,10 @@ namespace ProcessHacker
                             OnDictionaryModified(Dictionary[message.Id], modConnection);
                             Dictionary[message.Id] = modConnection;
                         }
+                        else
+                        {
+                            Logging.Log(Logging.Importance.Warning, message.Id + " was not present!");
+                        }
                     }));
         }
 
@@ -74,10 +78,8 @@ namespace ProcessHacker
             var networkDict = Windows.GetNetworkConnections();
             var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
             var keyDict = new Dictionary<string, NetworkConnection>();
-            Dictionary<string, NetworkConnection> newDict;
-
-            lock (this.Dictionary)
-                newDict = new Dictionary<string, NetworkConnection>(this.Dictionary);
+            Dictionary<string, NetworkConnection> newDict = 
+                new Dictionary<string, NetworkConnection>(this.Dictionary);
 
             // flattens list, assigns IDs and counts
             foreach (var list in networkDict.Values)
@@ -146,7 +148,7 @@ namespace ProcessHacker
                                     // Queue for resolve.
                                     WorkQueue.GlobalQueueWorkItemTag(
                                         new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                        "network-resolve",
+                                        "network-resolve-local",
                                         newConnection.Id,
                                         false,
                                         newConnection.Local.Address
@@ -171,7 +173,7 @@ namespace ProcessHacker
                                 {
                                     WorkQueue.GlobalQueueWorkItemTag(
                                         new Action<string, bool, IPAddress>(this.ResolveAddresses),
-                                        "network-resolve",
+                                        "network-resolve-remote",
                                         newConnection.Id,
                                         true,
                                         newConnection.Remote.Address
@@ -234,7 +236,7 @@ namespace ProcessHacker
                 lock (_resolveCache)
                 {
                     // Add the name if not present already.
-                    if (hostName != null)
+                    if (!string.IsNullOrEmpty(hostName))
                         if (!_resolveCache.ContainsKey(address.Address))
                             _resolveCache.Add(address.Address, hostName);
                 }
