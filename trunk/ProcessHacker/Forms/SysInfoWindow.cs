@@ -3,7 +3,7 @@
  *   system information window
  * 
  * Copyright (C) 2008-2009 wj32
- * Copyright (C) 2008 Dean
+ * Copyright (C) 2008-2009 Dean
  * 
  * This file is part of Process Hacker.
  * 
@@ -31,6 +31,9 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
+    //todo Properties.Settings.Default.IndicatorPhysicalMemoryColor;
+    //     Properties.Settings.Default.IndicatorIOColor;
+    //     IO Indicator
     public partial class SysInfoWindow : Form
     {
         private bool _isFirstPaint = true;
@@ -60,7 +63,11 @@ namespace ProcessHacker
         }
 
         private void LoadStage1()
-        {
+        {   
+            //
+            indicatorPhysical.Maximum = (int)_pages;
+            
+
             plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
             plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
             plotterCPU.GetToolTip = i =>
@@ -139,6 +146,18 @@ namespace ProcessHacker
 
         private void UpdateGraphs()
         {
+            //
+            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
+            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
+            indicatorCpu.Data1 = (int)(Program.ProcessProvider.CurrentCpuKernelUsage * indicatorCpu.Maximum);
+            indicatorCpu.Data2 = (int)(Program.ProcessProvider.CurrentCpuUserUsage * indicatorCpu.Maximum);
+            indicatorCpu.TextValue = (Program.ProcessProvider.CurrentCpuUsage * 100).ToString("F2") + "%";
+
+            //
+            //indicatorIO
+                   
+
+
             plotterCPU.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
             plotterCPU.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
             plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
@@ -201,6 +220,11 @@ namespace ProcessHacker
             labelPMC.Text = Utils.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
             labelPSC.Text = Utils.GetNiceSizeName((ulong)info.SystemCache * _pageSize);
             labelPMT.Text = Utils.GetNiceSizeName((ulong)_pages * _pageSize);
+            
+            //
+            indicatorPhysical.Data1 = info.SystemCache;
+            indicatorPhysical.TextValue = ((float)info.SystemCache / _pages * 100).ToString("F2") + "%";
+           
 
             labelCacheCurrent.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
             labelCachePeak.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);

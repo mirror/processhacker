@@ -131,6 +131,9 @@
     <EmbeddedResource Include="Components\EventProperties.resx">
       <DependentUpon>EventProperties.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\Indicator.resx">
+      <DependentUpon>Indicator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\JobProperties.resx">
       <DependentUpon>JobProperties.cs</DependentUpon>
     </EmbeddedResource>
@@ -369,6 +372,12 @@
     </Compile>
     <Compile Include="Components\EventProperties.Designer.cs">
       <DependentUpon>EventProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\Indicator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\Indicator.Designer.cs">
+      <DependentUpon>Indicator.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\MutantProperties.cs">
       <SubType>UserControl</SubType>
