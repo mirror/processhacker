@@ -56,22 +56,15 @@ namespace ProcessHacker
                     {
                         if (Dictionary.ContainsKey(message.Id))
                         {
-                            try
-                            {
-                                var modConnection = Dictionary[message.Id];
+                            var modConnection = Dictionary[message.Id];
 
-                                if (message.Remote)
-                                    modConnection.RemoteString = message.HostName;
-                                else
-                                    modConnection.LocalString = message.HostName;
+                            if (message.Remote)
+                                modConnection.RemoteString = message.HostName;
+                            else
+                                modConnection.LocalString = message.HostName;
 
-                                OnDictionaryModified(Dictionary[message.Id], modConnection);
-                                Dictionary[message.Id] = modConnection;
-                            }
-                            catch (Exception ex)
-                            {
-                                Logging.Log(ex);
-                            }
+                            OnDictionaryModified(Dictionary[message.Id], modConnection);
+                            Dictionary[message.Id] = modConnection;
                         }
                     }));
         }
@@ -172,7 +165,7 @@ namespace ProcessHacker
                                 if (_resolveCache.ContainsKey(newConnection.Remote.Address.Address))
                                 {
                                     // We have the resolved address.
-                                    newConnection.LocalString = _resolveCache[newConnection.Remote.Address.Address];
+                                    newConnection.RemoteString = _resolveCache[newConnection.Remote.Address.Address];
                                 }
                                 else
                                 {
