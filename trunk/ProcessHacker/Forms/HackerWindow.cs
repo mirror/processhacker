@@ -869,6 +869,8 @@ namespace ProcessHacker
                 {
                     if (processP.Dictionary[processSelectedPID].SessionId != Program.CurrentSessionId)
                         injectDllProcessMenuItem.Enabled = false;
+                    else
+                        injectDllProcessMenuItem.Enabled = true;
                 }
                 catch (Exception ex)
                 {
