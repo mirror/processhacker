@@ -136,25 +136,35 @@ namespace ProcessAnalyzer
 
                             _symbols.PreloadModules = true;
 
-                            foreach (var module in phandle.GetModules())
+                            try
                             {
-                                try
+                                foreach (var module in phandle.GetModules())
                                 {
-                                    symbols.LoadModule(module.FileName, module.BaseAddress);
+                                    try
+                                    {
+                                        symbols.LoadModule(module.FileName, module.BaseAddress);
+                                    }
+                                    catch
+                                    { }
                                 }
-                                catch
-                                { }
                             }
+                            catch
+                            { }
 
-                            foreach (var module in Windows.GetKernelModules())
+                            try
                             {
-                                try
+                                foreach (var module in Windows.GetKernelModules())
                                 {
-                                    symbols.LoadModule(module.FileName, module.BaseAddress);
+                                    try
+                                    {
+                                        symbols.LoadModule(module.FileName, module.BaseAddress);
+                                    }
+                                    catch
+                                    { }
                                 }
-                                catch
-                                { }
                             }
+                            catch
+                            { }
                         }));
                 }
 
