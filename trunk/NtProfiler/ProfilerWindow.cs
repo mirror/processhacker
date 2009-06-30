@@ -48,6 +48,9 @@ namespace NtProfiler
             catch
             { }
 
+            Win32.LoadLibrary("C:\\Program Files\\Debugging Tools for Windows (x86)\\dbghelp.dll");
+            SymbolProvider.Options |= SymbolOptions.DeferredLoads;
+
             listModules.ListViewItemSorter = new SortedListViewComparer(listModules)
             {
                 SortColumn = 1,
