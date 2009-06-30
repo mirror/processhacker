@@ -12,6 +12,7 @@ using ProcessHacker.Native.Symbols;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Common;
+using ProcessHacker.Common.Ui;
 
 namespace ProcessAnalyzer
 {
@@ -33,6 +34,8 @@ namespace ProcessAnalyzer
             { }
 
             Win32.LoadLibrary("C:\\Program Files\\Debugging Tools for Windows (x86)\\dbghelp.dll");
+
+            listHandleTraces.ListViewItemSorter = new SortedListViewComparer(listHandleTraces);
         }
 
         private void MainWindow_Shown(object sender, EventArgs e)
@@ -59,6 +62,7 @@ namespace ProcessAnalyzer
                 ListViewItem item = new ListViewItem(
                     new string[]
                     {
+                        i.ToString(),
                         "0x" + trace.Handle.ToString("x"),
                         trace.Type.ToString(),
                         trace.ClientId.ThreadId.ToString()

@@ -36,17 +36,18 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabHandleTracing = new System.Windows.Forms.TabPage();
-            this.buttonEnableHandleTracing = new System.Windows.Forms.Button();
-            this.buttonDisableHandleTracing = new System.Windows.Forms.Button();
-            this.buttonSnapshot = new System.Windows.Forms.Button();
+            this.listHandleStack = new System.Windows.Forms.ListView();
+            this.columnAddress = new System.Windows.Forms.ColumnHeader();
+            this.columnSymbol = new System.Windows.Forms.ColumnHeader();
             this.listHandleTraces = new System.Windows.Forms.ListView();
             this.columnHandle = new System.Windows.Forms.ColumnHeader();
             this.columnType = new System.Windows.Forms.ColumnHeader();
             this.columnTid = new System.Windows.Forms.ColumnHeader();
-            this.listHandleStack = new System.Windows.Forms.ListView();
-            this.columnAddress = new System.Windows.Forms.ColumnHeader();
-            this.columnSymbol = new System.Windows.Forms.ColumnHeader();
             this.columnHandleName = new System.Windows.Forms.ColumnHeader();
+            this.buttonSnapshot = new System.Windows.Forms.Button();
+            this.buttonDisableHandleTracing = new System.Windows.Forms.Button();
+            this.buttonEnableHandleTracing = new System.Windows.Forms.Button();
+            this.columnIndex = new System.Windows.Forms.ColumnHeader();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabHandleTracing.SuspendLayout();
@@ -117,72 +118,6 @@
             this.tabHandleTracing.Text = "Handle Tracing";
             this.tabHandleTracing.UseVisualStyleBackColor = true;
             // 
-            // buttonEnableHandleTracing
-            // 
-            this.buttonEnableHandleTracing.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonEnableHandleTracing.Location = new System.Drawing.Point(6, 6);
-            this.buttonEnableHandleTracing.Name = "buttonEnableHandleTracing";
-            this.buttonEnableHandleTracing.Size = new System.Drawing.Size(75, 23);
-            this.buttonEnableHandleTracing.TabIndex = 0;
-            this.buttonEnableHandleTracing.Text = "Enable";
-            this.buttonEnableHandleTracing.UseVisualStyleBackColor = true;
-            this.buttonEnableHandleTracing.Click += new System.EventHandler(this.buttonEnableHandleTracing_Click);
-            // 
-            // buttonDisableHandleTracing
-            // 
-            this.buttonDisableHandleTracing.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonDisableHandleTracing.Location = new System.Drawing.Point(87, 6);
-            this.buttonDisableHandleTracing.Name = "buttonDisableHandleTracing";
-            this.buttonDisableHandleTracing.Size = new System.Drawing.Size(75, 23);
-            this.buttonDisableHandleTracing.TabIndex = 0;
-            this.buttonDisableHandleTracing.Text = "Disable";
-            this.buttonDisableHandleTracing.UseVisualStyleBackColor = true;
-            this.buttonDisableHandleTracing.Click += new System.EventHandler(this.buttonDisableHandleTracing_Click);
-            // 
-            // buttonSnapshot
-            // 
-            this.buttonSnapshot.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonSnapshot.Location = new System.Drawing.Point(168, 6);
-            this.buttonSnapshot.Name = "buttonSnapshot";
-            this.buttonSnapshot.Size = new System.Drawing.Size(75, 23);
-            this.buttonSnapshot.TabIndex = 0;
-            this.buttonSnapshot.Text = "Snapshot";
-            this.buttonSnapshot.UseVisualStyleBackColor = true;
-            this.buttonSnapshot.Click += new System.EventHandler(this.buttonSnapshot_Click);
-            // 
-            // listHandleTraces
-            // 
-            this.listHandleTraces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listHandleTraces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHandle,
-            this.columnType,
-            this.columnTid,
-            this.columnHandleName});
-            this.listHandleTraces.FullRowSelect = true;
-            this.listHandleTraces.HideSelection = false;
-            this.listHandleTraces.Location = new System.Drawing.Point(6, 35);
-            this.listHandleTraces.MultiSelect = false;
-            this.listHandleTraces.Name = "listHandleTraces";
-            this.listHandleTraces.Size = new System.Drawing.Size(675, 185);
-            this.listHandleTraces.TabIndex = 1;
-            this.listHandleTraces.UseCompatibleStateImageBehavior = false;
-            this.listHandleTraces.View = System.Windows.Forms.View.Details;
-            this.listHandleTraces.SelectedIndexChanged += new System.EventHandler(this.listHandleTraces_SelectedIndexChanged);
-            // 
-            // columnHandle
-            // 
-            this.columnHandle.Text = "Handle";
-            // 
-            // columnType
-            // 
-            this.columnType.Text = "Type";
-            this.columnType.Width = 120;
-            // 
-            // columnTid
-            // 
-            this.columnTid.Text = "TID";
-            // 
             // listHandleStack
             // 
             this.listHandleStack.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -211,10 +146,81 @@
             this.columnSymbol.Text = "Symbol";
             this.columnSymbol.Width = 300;
             // 
+            // listHandleTraces
+            // 
+            this.listHandleTraces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listHandleTraces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnIndex,
+            this.columnHandle,
+            this.columnType,
+            this.columnTid,
+            this.columnHandleName});
+            this.listHandleTraces.FullRowSelect = true;
+            this.listHandleTraces.HideSelection = false;
+            this.listHandleTraces.Location = new System.Drawing.Point(6, 35);
+            this.listHandleTraces.MultiSelect = false;
+            this.listHandleTraces.Name = "listHandleTraces";
+            this.listHandleTraces.Size = new System.Drawing.Size(675, 185);
+            this.listHandleTraces.TabIndex = 1;
+            this.listHandleTraces.UseCompatibleStateImageBehavior = false;
+            this.listHandleTraces.View = System.Windows.Forms.View.Details;
+            this.listHandleTraces.SelectedIndexChanged += new System.EventHandler(this.listHandleTraces_SelectedIndexChanged);
+            // 
+            // columnHandle
+            // 
+            this.columnHandle.Text = "Handle";
+            // 
+            // columnType
+            // 
+            this.columnType.Text = "Type";
+            this.columnType.Width = 120;
+            // 
+            // columnTid
+            // 
+            this.columnTid.Text = "TID";
+            // 
             // columnHandleName
             // 
             this.columnHandleName.Text = "Handle Name";
             this.columnHandleName.Width = 300;
+            // 
+            // buttonSnapshot
+            // 
+            this.buttonSnapshot.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonSnapshot.Location = new System.Drawing.Point(168, 6);
+            this.buttonSnapshot.Name = "buttonSnapshot";
+            this.buttonSnapshot.Size = new System.Drawing.Size(75, 23);
+            this.buttonSnapshot.TabIndex = 0;
+            this.buttonSnapshot.Text = "Snapshot";
+            this.buttonSnapshot.UseVisualStyleBackColor = true;
+            this.buttonSnapshot.Click += new System.EventHandler(this.buttonSnapshot_Click);
+            // 
+            // buttonDisableHandleTracing
+            // 
+            this.buttonDisableHandleTracing.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonDisableHandleTracing.Location = new System.Drawing.Point(87, 6);
+            this.buttonDisableHandleTracing.Name = "buttonDisableHandleTracing";
+            this.buttonDisableHandleTracing.Size = new System.Drawing.Size(75, 23);
+            this.buttonDisableHandleTracing.TabIndex = 0;
+            this.buttonDisableHandleTracing.Text = "Disable";
+            this.buttonDisableHandleTracing.UseVisualStyleBackColor = true;
+            this.buttonDisableHandleTracing.Click += new System.EventHandler(this.buttonDisableHandleTracing_Click);
+            // 
+            // buttonEnableHandleTracing
+            // 
+            this.buttonEnableHandleTracing.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonEnableHandleTracing.Location = new System.Drawing.Point(6, 6);
+            this.buttonEnableHandleTracing.Name = "buttonEnableHandleTracing";
+            this.buttonEnableHandleTracing.Size = new System.Drawing.Size(75, 23);
+            this.buttonEnableHandleTracing.TabIndex = 0;
+            this.buttonEnableHandleTracing.Text = "Enable";
+            this.buttonEnableHandleTracing.UseVisualStyleBackColor = true;
+            this.buttonEnableHandleTracing.Click += new System.EventHandler(this.buttonEnableHandleTracing_Click);
+            // 
+            // columnIndex
+            // 
+            this.columnIndex.Text = "Index";
             // 
             // MainWindow
             // 
@@ -257,6 +263,7 @@
         private System.Windows.Forms.ColumnHeader columnAddress;
         private System.Windows.Forms.ColumnHeader columnSymbol;
         private System.Windows.Forms.ColumnHeader columnHandleName;
+        private System.Windows.Forms.ColumnHeader columnIndex;
     }
 }
 
