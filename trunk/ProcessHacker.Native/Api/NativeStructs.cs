@@ -1093,7 +1093,7 @@ namespace ProcessHacker.Native.Api
     {
         public IntPtr Handle;
         public ClientId ClientId;
-        public int Type;
+        public HandleTraceType Type;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = Win32.ProcessHandleTracingMaxStacks)]
         public IntPtr[] Stacks;

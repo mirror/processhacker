@@ -50,7 +50,7 @@ namespace ProcessHacker.Native
         {
             ShFileInfo shinfo = new ShFileInfo();
 
-            if (fileName == null || fileName == "")
+            if (string.IsNullOrEmpty(fileName))
                 throw new Exception("File name cannot be empty.");
 
             try

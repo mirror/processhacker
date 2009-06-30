@@ -214,6 +214,13 @@ namespace ProcessHacker.Native.Api
         AuditObjectClose = 0x4
     }
 
+    public enum HandleTraceType : int
+    {
+        Open = 1,
+        Close = 2,
+        BadRef = 3
+    }
+
     [Flags]
     public enum HashStringAlgorithm : int
     {

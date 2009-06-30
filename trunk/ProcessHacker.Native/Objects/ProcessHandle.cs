@@ -27,6 +27,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
+using System.Collections.ObjectModel;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -962,23 +963,6 @@ namespace ProcessHacker.Native.Objects
                     return handles;
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets a handle stack trace by its handle.
-        /// </summary>
-        /// <param name="handle">A handle to the stack trace to retrieve.</param>
-        /// <returns>A stack trace if the handle is valid, otherwise null.</returns>
-        public ProcessHandleTrace GetHandleTrace(IntPtr handle)
-        {
-            var collection = this.GetHandleTraces(handle);
-
-            // If the collection contains the stack trace, return it. 
-            // Otherwise, return null.
-            if (collection.ContainsKey(handle))
-                return collection[handle];
-            else
-                return null;
         }
 
         /// <summary>
@@ -1971,14 +1955,16 @@ namespace ProcessHacker.Native.Objects
 
     public class ProcessHandleTrace
     {
-        private IntPtr _handle;
         private ClientId _clientId;
+        private IntPtr _handle;
         private IntPtr[] _stack;
+        private HandleTraceType _type;
 
         internal ProcessHandleTrace(ProcessHandleTracingEntry entry)
         {
-            _handle = entry.Handle;
             _clientId = entry.ClientId;
+            _handle = entry.Handle;
+            _type = entry.Type;
 
             // Find the first occurrence of a NULL to find where the trace stops.
             int zeroIndex = Array.IndexOf<IntPtr>(entry.Stacks, IntPtr.Zero);
@@ -2006,22 +1992,30 @@ namespace ProcessHacker.Native.Objects
         {
             get { return _stack; }
         }
+
+        public HandleTraceType Type
+        {
+            get { return _type; }
+        }
     }
 
-    public class ProcessHandleTraceCollection
+    public class ProcessHandleTraceCollection : ReadOnlyCollection<ProcessHandleTrace>
     {
         private IntPtr _handle;
-        private Dictionary<IntPtr, ProcessHandleTrace> _traces
-            = new Dictionary<IntPtr,ProcessHandleTrace>();
 
         internal ProcessHandleTraceCollection(MemoryAlloc data)
+            : base(new List<ProcessHandleTrace>())
         {
             if (data.Size < Marshal.SizeOf(typeof(ProcessHandleTracingQuery)))
                 throw new ArgumentException("Data memory allocation is too small.");
 
+            // Read the structure.
             var query = data.ReadStruct<ProcessHandleTracingQuery>();
 
             _handle = query.Handle;
+
+            // Get the handle traces.
+            IList<ProcessHandleTrace> traces = this.Items;
 
             for (int i = 0; i < query.TotalTraces; i++)
             {
@@ -2030,28 +2024,13 @@ namespace ProcessHacker.Native.Objects
                     i
                     );
 
-                _traces.Add(entry.Handle, new ProcessHandleTrace(entry));
+                traces.Add(new ProcessHandleTrace(entry));
             }
-        }
-
-        public ProcessHandleTrace this[IntPtr handle]
-        {
-            get { return _traces[handle]; }
         }
 
         public IntPtr Handle
         {
             get { return _handle; }
-        }
-
-        public IEnumerable<ProcessHandleTrace> Traces
-        {
-            get { return _traces.Values; }
-        }
-
-        public bool ContainsKey(IntPtr handle)
-        {
-            return _traces.ContainsKey(handle);
         }
     }
 
