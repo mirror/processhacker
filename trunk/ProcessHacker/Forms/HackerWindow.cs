@@ -1164,12 +1164,21 @@ namespace ProcessHacker
 
                 try
                 {
+                    Exception exception = null;
+
                     ThreadStart dumpProcess = () =>
                         {
-                            using (var phandle = new ProcessHandle(processSelectedPID,
-                                ProcessAccess.DupHandle | ProcessAccess.QueryInformation |
-                                ProcessAccess.SuspendResume | ProcessAccess.VmRead))
-                                phandle.WriteDump(sfd.FileName);
+                            try
+                            {
+                                using (var phandle = new ProcessHandle(processSelectedPID,
+                                    ProcessAccess.DupHandle | ProcessAccess.QueryInformation |
+                                    ProcessAccess.SuspendResume | ProcessAccess.VmRead))
+                                    phandle.WriteDump(sfd.FileName);
+                            }
+                            catch (Exception ex2)
+                            {
+                                exception = ex2;
+                            }
                         };
 
                     if (OSVersion.HasTaskDialogs)
@@ -1199,11 +1208,23 @@ namespace ProcessHacker
                                     if (!t.IsAlive)
                                     {
                                         taskDialog.EnableButton((int)DialogResult.OK, false);
-                                        taskDialog.SetMainInstruction("The dump file has been created.");
-                                        taskDialog.SetContent(
-                                            "The dump file has been saved at: <a href=\"file\">" + sfd.FileName + "</a>.");
                                         taskDialog.SetProgressBarMarquee(false, 0);
                                         taskDialog.SetMarqueeProgressBar(false);
+
+                                        if (exception == null)
+                                        {
+                                            taskDialog.SetMainInstruction("The dump file has been created.");
+                                            taskDialog.SetContent(
+                                                "The dump file has been saved at: <a href=\"file\">" + sfd.FileName + "</a>.");
+                                        }
+                                        else
+                                        {
+                                            taskDialog.UpdateMainIcon(TaskDialogIcon.Warning);
+                                            taskDialog.SetMainInstruction("Unable to create the dump file.");
+                                            taskDialog.SetContent(
+                                                "The dump file could not be created: " + exception.Message
+                                                );
+                                        }
                                     }
                                 }
                                 else if (args.Notification == TaskDialogNotification.HyperlinkClicked)
@@ -1224,6 +1245,9 @@ namespace ProcessHacker
                     {
                         // No task dialogs, do the thing on the GUI thread.
                         dumpProcess();
+
+                        if (exception != null)
+                            PhUtils.ShowMessage(exception);
                     }
                 }
                 catch (Exception ex)

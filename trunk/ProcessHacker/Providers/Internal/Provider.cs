@@ -67,7 +67,7 @@ namespace ProcessHacker
         /// </summary>
         protected event ProviderUpdateOnce ProviderUpdate;
 
-        public event Action<IProvider> Disposed;
+        public new event Action<IProvider> Disposed;
 
         public event ProviderUpdateOnce BeforeUpdate;
 
