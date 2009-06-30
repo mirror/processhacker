@@ -27,12 +27,12 @@ when launching programs as other users.
 Process Hacker has an embedded help file (accessible through 
 Hacker > Help).
 
-Process Hacker is brought to you by the small Process Hacker team:
+Process Hacker is brought to you by the Process Hacker team:
  * wj32 (Project Manager)
+ * Dean (Developer)
  * Fliser (Developer)
  * XhmikosR (Installer Developer, Tester)
 Inactive:
- * Dean (Developer)
  * Mikalai Chaly (Developer)
  * Uday Shanbhag (Developer)
 
