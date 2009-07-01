@@ -632,12 +632,9 @@ namespace ProcessHacker.Native
 
     public struct NetworkConnection
     {
-        public string Id;
         public int Pid;
         public NetworkProtocol Protocol;
-        public string LocalString;
         public IPEndPoint Local;
-        public string RemoteString;
         public IPEndPoint Remote;
         public MibTcpState State;
         public object Tag;

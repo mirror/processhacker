@@ -568,7 +568,7 @@ namespace ProcessHacker
 
                     try
                     {
-                        networkP.Dictionary[item.Name].CloseTcpConnection();
+                        networkP.Dictionary[item.Name].Connection.CloseTcpConnection();
                     }
                     catch
                     {

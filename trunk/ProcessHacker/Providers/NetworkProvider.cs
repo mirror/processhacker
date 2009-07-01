@@ -22,17 +22,34 @@
 
 #pragma warning disable 0618
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using ProcessHacker.Common;
-using ProcessHacker.Native;
-using System;
 using ProcessHacker.Common.Messaging;
+using ProcessHacker.Native;
 
 namespace ProcessHacker
 {
-    public class NetworkProvider : Provider<string, NetworkConnection>
+    public class NetworkItem : ICloneable
+    {
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public int Tag;
+        public string Id;
+        public NetworkConnection Connection;
+        public string LocalString;
+        public string RemoteString;
+        public bool LocalTouched;
+        public bool RemoteTouched;
+        public bool JustProcessed;
+    }
+
+    public class NetworkProvider : Provider<string, NetworkItem>
     {
         private class AddressResolveMessage : Message
         {
@@ -53,33 +70,28 @@ namespace ProcessHacker
 
             _messageQueue.AddListener(
                 new MessageQueueListener<AddressResolveMessage>((message) =>
+                {
+                    if (Dictionary.ContainsKey(message.Id))
                     {
-                        if (Dictionary.ContainsKey(message.Id))
-                        {
-                            var modConnection = Dictionary[message.Id];
+                        var item = Dictionary[message.Id];
 
-                            if (message.Remote)
-                                modConnection.RemoteString = message.HostName;
-                            else
-                                modConnection.LocalString = message.HostName;
-
-                            OnDictionaryModified(Dictionary[message.Id], modConnection);
-                            Dictionary[message.Id] = modConnection;
-                        }
+                        if (message.Remote)
+                            item.RemoteString = message.HostName;
                         else
-                        {
-                            Logging.Log(Logging.Importance.Warning, message.Id + " was not present!");
-                        }
-                    }));
+                            item.LocalString = message.HostName;
+
+                        item.JustProcessed = true;
+                    }
+                }));
         }
 
         private void UpdateOnce()
         {
             var networkDict = Windows.GetNetworkConnections();
             var preKeyDict = new Dictionary<string, KeyValuePair<int, NetworkConnection>>();
-            var keyDict = new Dictionary<string, NetworkConnection>();
-            Dictionary<string, NetworkConnection> newDict = 
-                new Dictionary<string, NetworkConnection>(this.Dictionary);
+            var keyDict = new Dictionary<string, NetworkItem>();
+            Dictionary<string, NetworkItem> newDict =
+                new Dictionary<string, NetworkItem>(this.Dictionary);
 
             // flattens list, assigns IDs and counts
             foreach (var list in networkDict.Values)
@@ -105,9 +117,11 @@ namespace ProcessHacker
             foreach (string s in preKeyDict.Keys)
             {
                 var connection = preKeyDict[s].Value;
+                NetworkItem item = new NetworkItem();
 
-                connection.Id = s + "-" + preKeyDict[s].Key.ToString();
-                keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), connection);
+                item.Id = s + "-" + preKeyDict[s].Key.ToString();
+                item.Connection = connection;
+                keyDict.Add(s + "-" + preKeyDict[s].Key.ToString(), item);
             }
 
             foreach (var connection in this.Dictionary.Values)
@@ -126,22 +140,20 @@ namespace ProcessHacker
             {
                 if (!this.Dictionary.ContainsKey(connection.Id))
                 {
-                    NetworkConnection newConnection = connection;
-
-                    newConnection.Tag = this.RunCount;
+                    connection.Tag = this.RunCount;
 
                     // Resolve the IP addresses.
-                    if (newConnection.Local != null)
+                    if (connection.Connection.Local != null)
                     {
-                        if (newConnection.Local.Address.ToString() != "0.0.0.0")
+                        if (connection.Connection.Local.Address.ToString() != "0.0.0.0")
                         {
                             // See if IP address is in the cache.
                             lock (_resolveCache)
                             {
-                                if (_resolveCache.ContainsKey(newConnection.Local.Address.Address))
+                                if (_resolveCache.ContainsKey(connection.Connection.Local.Address.Address))
                                 {
                                     // We have the resolved address.
-                                    newConnection.LocalString = _resolveCache[newConnection.Local.Address.Address];
+                                    connection.LocalString = _resolveCache[connection.Connection.Local.Address.Address];
                                 }
                                 else
                                 {
@@ -149,34 +161,34 @@ namespace ProcessHacker
                                     WorkQueue.GlobalQueueWorkItemTag(
                                         new Action<string, bool, IPAddress>(this.ResolveAddresses),
                                         "network-resolve-local",
-                                        newConnection.Id,
+                                        connection.Id,
                                         false,
-                                        newConnection.Local.Address
+                                        connection.Connection.Local.Address
                                         );
                                 }
                             }
                         }
                     }
 
-                    if (newConnection.Remote != null)
+                    if (connection.Connection.Remote != null)
                     {
-                        if (newConnection.Remote.Address.ToString() != "0.0.0.0")
+                        if (connection.Connection.Remote.Address.ToString() != "0.0.0.0")
                         {
                             lock (_resolveCache)
                             {
-                                if (_resolveCache.ContainsKey(newConnection.Remote.Address.Address))
+                                if (_resolveCache.ContainsKey(connection.Connection.Remote.Address.Address))
                                 {
                                     // We have the resolved address.
-                                    newConnection.RemoteString = _resolveCache[newConnection.Remote.Address.Address];
+                                    connection.RemoteString = _resolveCache[connection.Connection.Remote.Address.Address];
                                 }
                                 else
                                 {
                                     WorkQueue.GlobalQueueWorkItemTag(
                                         new Action<string, bool, IPAddress>(this.ResolveAddresses),
                                         "network-resolve-remote",
-                                        newConnection.Id,
+                                        connection.Id,
                                         true,
-                                        newConnection.Remote.Address
+                                        connection.Connection.Remote.Address
                                         );
                                 }
                             }
@@ -184,19 +196,22 @@ namespace ProcessHacker
                     }
 
                     // Update the dictionary.
-                    newDict.Add(newConnection.Id, newConnection);
-                    OnDictionaryAdded(newConnection);
+                    newDict.Add(connection.Id, connection);
+                    OnDictionaryAdded(connection);
                 }
                 else
                 {
-                    if (connection.State != Dictionary[connection.Id].State)
+                    if (
+                        connection.Connection.State != Dictionary[connection.Id].Connection.State ||
+                        Dictionary[connection.Id].JustProcessed
+                        )
                     {
-                        var newConnection = Dictionary[connection.Id];
+                        NetworkItem oldConnection = Dictionary[connection.Id].Clone() as NetworkItem;
 
-                        newConnection.State = connection.State;
+                        newDict[connection.Id].Connection.State = connection.Connection.State;
+                        newDict[connection.Id].JustProcessed = false;
 
-                        OnDictionaryModified(Dictionary[connection.Id], newConnection);
-                        Dictionary[connection.Id] = connection;
+                        OnDictionaryModified(oldConnection, newDict[connection.Id]);
                     }
                 }
             }
