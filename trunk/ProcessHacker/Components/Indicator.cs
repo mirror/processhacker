@@ -67,7 +67,7 @@ namespace ProcessHacker.Components
         }
         protected override void OnPaint(PaintEventArgs e)
         {
-            SolidBrush brush = new SolidBrush(this.ForeColor);
+            //SolidBrush brush = new SolidBrush(this.ForeColor);
             SolidBrush brush1 = new SolidBrush(this.Color1);
             SolidBrush brush2 = new SolidBrush(this.Color2);
             int width = base.ClientSize.Width;
@@ -77,7 +77,7 @@ namespace ProcessHacker.Components
             RectangleF layoutRectangle = new RectangleF(0f, (float)num1, (float)width, (float)height);
             StringFormat format = new StringFormat(StringFormatFlags.NoWrap);
             format.Alignment = StringAlignment.Center;
-            e.Graphics.DrawString(this.Text, this.Font, brush, layoutRectangle, format);
+            e.Graphics.DrawString(this.Text, this.Font, brush1, layoutRectangle, format);
             int num2 = (((height - 6) - 4) - this.Font.Height) - 4;
             num2++;
             int num3 = num2 / 3;
@@ -125,7 +125,9 @@ namespace ProcessHacker.Components
                 }
             }
             pen.Dispose();
-            brush.Dispose();
+            //brush.Dispose();
+            brush1.Dispose();
+            brush2.Dispose();
         }
         protected override CreateParams CreateParams
         {

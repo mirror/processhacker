@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Common;
+using ProcessHacker.Extensions;
 using ProcessHacker.Components;
 using ProcessHacker.Native.Api;
 
@@ -153,9 +154,17 @@ namespace ProcessHacker
             indicatorCpu.Data2 = (int)(Program.ProcessProvider.CurrentCpuUserUsage * indicatorCpu.Maximum);
             indicatorCpu.TextValue = (Program.ProcessProvider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
-            //
-            //indicatorIO
-                   
+            //           
+            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
+            long max = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(plotterIO.Width/plotterIO.EffectiveMoveStep).Max();
+            indicatorIO.Maximum = (int)max;
+            indicatorIO.Data1 = (int)(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
+            indicatorIO.TextValue = Utils.GetNiceSizeName(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
+
+
+            plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
+            plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
+                  
 
 
             plotterCPU.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
@@ -223,8 +232,8 @@ namespace ProcessHacker
             
             //
             indicatorPhysical.Data1 = info.SystemCache;
-            indicatorPhysical.TextValue = ((float)info.SystemCache / _pages * 100).ToString("F2") + "%";
-           
+            //indicatorPhysical.TextValue = ((float)info.SystemCache / _pages * 100).ToString("F2") + "%";
+            indicatorPhysical.TextValue = Utils.GetNiceSizeName((ulong)(info.SystemCache * _pageSize));
 
             labelCacheCurrent.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
             labelCachePeak.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);

@@ -361,6 +361,7 @@
     <None Include="Asm\AsmMisc.cs" />
     <None Include="Asm\AsmData.cs" />
     <None Include="Asm\AsmDefinitions.cs" />
+    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Components\EventPairProperties.cs">
       <SubType>UserControl</SubType>
     </Compile>
