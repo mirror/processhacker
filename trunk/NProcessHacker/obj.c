@@ -84,10 +84,13 @@ NTSTATUS PhQueryNameFileObject(
     QueryFileObjectFileHandle = FileHandle;
     QueryFileObjectBuffer.Length = FileObjectNameInformationLength;
     QueryFileObjectBuffer.Name = FileObjectNameInformation;
+    QueryFileObjectBuffer.Initialized = TRUE;
     /* Allow the worker thread to start. */
     SetEvent(QueryFileObjectStartEvent);
     /* Wait for the work to complete, with a timeout of 1 second. */
     waitResult = WaitForSingleObject(QueryFileObjectCompletedEvent, 1000);
+    /* Set the buffer as uninitialized. */
+    QueryFileObjectBuffer.Initialized = FALSE;
 
     /* Return normally if the work was completed. */
     if (waitResult == WAIT_OBJECT_0)
@@ -135,16 +138,20 @@ ULONG PhpQueryFileObjectThreadStart(
         if (WaitForSingleObject(QueryFileObjectStartEvent, INFINITE) != WAIT_OBJECT_0)
             continue;
 
-        QueryFileObjectBuffer.Status = NtQueryObject(
-            QueryFileObjectFileHandle,
-            ObjectNameInformation,
-            QueryFileObjectBuffer.Name,
-            QueryFileObjectBuffer.Length,
-            &QueryFileObjectBuffer.ReturnLength
-            );
+        /* Make sure we actually have work. */
+        if (QueryFileObjectBuffer.Initialized)
+        {
+            QueryFileObjectBuffer.Status = NtQueryObject(
+                QueryFileObjectFileHandle,
+                ObjectNameInformation,
+                QueryFileObjectBuffer.Name,
+                QueryFileObjectBuffer.Length,
+                &QueryFileObjectBuffer.ReturnLength
+                );
 
-        /* Work done. */
-        SetEvent(QueryFileObjectCompletedEvent);
+            /* Work done. */
+            SetEvent(QueryFileObjectCompletedEvent);
+        }
     }
 
     return 0;

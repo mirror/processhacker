@@ -27,6 +27,7 @@
 
 typedef struct _PH_QUERY_FILE_OBJECT_BUFFER
 {
+    LOGICAL Initialized;
     NTSTATUS Status;
     ULONG Length;
     ULONG ReturnLength;
