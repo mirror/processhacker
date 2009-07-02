@@ -45,6 +45,8 @@
             this.resumeThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.inspectTEBMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.analyzeMenuItem = new System.Windows.Forms.MenuItem();
+            this.analyzeWaitMenuItem = new System.Windows.Forms.MenuItem();
             this.priorityThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.timeCriticalThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.highestThreadMenuItem = new System.Windows.Forms.MenuItem();
@@ -76,8 +78,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
             this.fileModule = new ProcessHacker.Components.FileNameBox();
-            this.analyzeMenuItem = new System.Windows.Forms.MenuItem();
-            this.analyzeWaitMenuItem = new System.Windows.Forms.MenuItem();
+            this.forceTerminateThreadMenuItem = new System.Windows.Forms.MenuItem();
             this.tableInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
             this.SuspendLayout();
@@ -130,6 +131,7 @@
             this.menuThread.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.inspectThreadMenuItem,
             this.terminateThreadMenuItem,
+            this.forceTerminateThreadMenuItem,
             this.suspendThreadMenuItem,
             this.resumeThreadMenuItem,
             this.inspectTEBMenuItem,
@@ -159,31 +161,44 @@
             // suspendThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.suspendThreadMenuItem, global::ProcessHacker.Properties.Resources.control_pause_blue);
-            this.suspendThreadMenuItem.Index = 2;
+            this.suspendThreadMenuItem.Index = 3;
             this.suspendThreadMenuItem.Text = "&Suspend";
             this.suspendThreadMenuItem.Click += new System.EventHandler(this.suspendThreadMenuItem_Click);
             // 
             // resumeThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.resumeThreadMenuItem, global::ProcessHacker.Properties.Resources.control_play_blue);
-            this.resumeThreadMenuItem.Index = 3;
+            this.resumeThreadMenuItem.Index = 4;
             this.resumeThreadMenuItem.Text = "&Resume";
             this.resumeThreadMenuItem.Click += new System.EventHandler(this.resumeThreadMenuItem_Click);
             // 
             // inspectTEBMenuItem
             // 
-            this.inspectTEBMenuItem.Index = 4;
+            this.inspectTEBMenuItem.Index = 5;
             this.inspectTEBMenuItem.Text = "Inspect TEB...";
             this.inspectTEBMenuItem.Click += new System.EventHandler(this.inspectTEBMenuItem_Click);
             // 
             // menuItem4
             // 
-            this.menuItem4.Index = 5;
+            this.menuItem4.Index = 6;
             this.menuItem4.Text = "-";
+            // 
+            // analyzeMenuItem
+            // 
+            this.analyzeMenuItem.Index = 7;
+            this.analyzeMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.analyzeWaitMenuItem});
+            this.analyzeMenuItem.Text = "Analyze";
+            // 
+            // analyzeWaitMenuItem
+            // 
+            this.analyzeWaitMenuItem.Index = 0;
+            this.analyzeWaitMenuItem.Text = "Wait";
+            this.analyzeWaitMenuItem.Click += new System.EventHandler(this.analyzeWaitMenuItem_Click);
             // 
             // priorityThreadMenuItem
             // 
-            this.priorityThreadMenuItem.Index = 7;
+            this.priorityThreadMenuItem.Index = 8;
             this.priorityThreadMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.timeCriticalThreadMenuItem,
             this.highestThreadMenuItem,
@@ -245,18 +260,18 @@
             // 
             // menuItem9
             // 
-            this.menuItem9.Index = 8;
+            this.menuItem9.Index = 9;
             this.menuItem9.Text = "-";
             // 
             // copyThreadMenuItem
             // 
             this.vistaMenu.SetImage(this.copyThreadMenuItem, global::ProcessHacker.Properties.Resources.page_copy);
-            this.copyThreadMenuItem.Index = 9;
+            this.copyThreadMenuItem.Index = 10;
             this.copyThreadMenuItem.Text = "C&opy";
             // 
             // selectAllThreadMenuItem
             // 
-            this.selectAllThreadMenuItem.Index = 10;
+            this.selectAllThreadMenuItem.Index = 11;
             this.selectAllThreadMenuItem.Text = "Select &All";
             this.selectAllThreadMenuItem.Click += new System.EventHandler(this.selectAllThreadMenuItem_Click);
             // 
@@ -481,18 +496,11 @@
             this.fileModule.Size = new System.Drawing.Size(368, 24);
             this.fileModule.TabIndex = 6;
             // 
-            // analyzeMenuItem
+            // forceTerminateThreadMenuItem
             // 
-            this.analyzeMenuItem.Index = 6;
-            this.analyzeMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.analyzeWaitMenuItem});
-            this.analyzeMenuItem.Text = "Analyze";
-            // 
-            // analyzeWaitMenuItem
-            // 
-            this.analyzeWaitMenuItem.Index = 0;
-            this.analyzeWaitMenuItem.Text = "Wait";
-            this.analyzeWaitMenuItem.Click += new System.EventHandler(this.analyzeWaitMenuItem_Click);
+            this.forceTerminateThreadMenuItem.Index = 2;
+            this.forceTerminateThreadMenuItem.Text = "Force Terminate";
+            this.forceTerminateThreadMenuItem.Click += new System.EventHandler(this.forceTerminateThreadMenuItem_Click);
             // 
             // ThreadList
             // 
@@ -560,5 +568,6 @@
         private System.Windows.Forms.Label labelTEBAddress;
         private System.Windows.Forms.MenuItem analyzeMenuItem;
         private System.Windows.Forms.MenuItem analyzeWaitMenuItem;
+        private System.Windows.Forms.MenuItem forceTerminateThreadMenuItem;
     }
 }

@@ -81,6 +81,14 @@ pre {
       <dd>If enabled, Process Hacker will allow only one instance of itself. Any attempts to start 
       a new instance will show the existing instance.</dd>
       
+      <dt>Float child windows</dt>
+      <dd>If enabled, child windows such as process properties and the memory editor will float 
+      above the main Process Hacker window.</dd>
+      
+      <dt>Scroll down the process tree at startup</dt>
+      <dd>If enabled, Process Hacker will scroll down the process tree to the first instance of 
+      explorer.exe running as the current user at startup.</dd>
+      
       <dt>Show user/group domains</dt>
       <dd>If enabled, Process Hacker will show the domain of users and groups: <code>user</code> 
       would be shown as <code>machine-name\user</code>.</dd>
@@ -92,13 +100,7 @@ pre {
       <dd>Some handles cannot be displayed by a user-mode program like Process Hacker; this 
       option enables <em>KProcessHacker</em> which allows Process Hacker 
       to display all handles and bypass rootkits/security software. If enabled, it will be 
-      loaded the next time Process Hacker is started.<br />
-      Specifically, it provides Process Hacker 
-      with the following features:<br />
-      The ability to display all file handles,<br />
-      The ability to open any process or thread without being intercepted by rootkits/security 
-      software, and<br />
-      The ability to protect and unprotect processes.</dd>
+      loaded the next time Process Hacker is started.</dd>
       
       <dt>Verify signatures and perform additional checks</dt>
       <dd>This option affects newly created processes, and controls whether Process Hacker will 
@@ -156,9 +158,10 @@ pre {
       <dd>Highlighting for processes associated with a job object.</dd>
       
       <dt>.NET Processes</dt>
-      <dd>Highlighting for managed processes. Note that this currently only 
-      highlights pure CLR executables - mixed code executables and processes hosting 
-      .NET code will not be highlighted.</dd>
+      <dd>Highlighting for managed (.NET) processes.</dd>
+      
+      <dt>POSIX Processes</dt>
+      <dd>Highlighting for POSIX subsystem processes (also known as Subsystem for UNIX-based Applications).</dd>
       
       <dt>Packed/Dangerous Processes</dt>
       <dd>Highlighting for packed images and images with invalid signatures. These processes 
@@ -276,13 +279,20 @@ pre {
       <dd>Allows you to view and modify the process' CPU affinity (the CPUs on which it is allowed 
       to run).</dd>
       
+      <dt>Create Dump File...</dt>
+      <dd>Allows you to create a crash dump file for the process. This operation does not actually 
+      cause the process to crash or terminate.</dd>
+      
+      <dt>Terminator...</dt>
+      <dd>A tool which tries to terminate the selected process using many different techniques.</dd>
+      
+      <dt>Detach from Debugger</dt>
+      <dd>Detaches the process from any debugger. This will cause any attached debuggers to stop working.</dd>
+      
       <dt>Inject DLL...</dt>
       <dd>Allows you to select a DLL file (or any other PE image) that will be injected into 
       the selected process. This option is only available for processes running in the same 
       session as Process Hacker (usually processes in the same user account).</dd>
-      
-      <dt>Terminator...</dt>
-      <dd>A tool which tries to terminate the selected process using many different techniques.</dd>
 
       <dt>Priority</dt>
       <dd>Sets the process's priority - Real Time, High, Above Normal, Normal, Below Normal, Idle.
@@ -304,6 +314,62 @@ pre {
       <dt>Select All</dt>
       <dd>Selects all items in the list.</dd>
     </dl>
+    
+    <h2>Terminator tests</h2>
+    <dl>
+      <dt>TP1</dt>
+      <dd>Terminates the process using the TerminateProcess function.</dd>
+      
+      <dt>TP2</dt>
+      <dd>Uses the CreateRemoteThread function to create a thread in the target process which 
+      terminates the process.</dd>
+      
+      <dt>TT1</dt>
+      <dd>Terminates the process' threads by using the TerminateThread function.</dd>
+      
+      <dt>TT2</dt>
+      <dd>Sets the contexts of the process' threads to point to the ExitProcess function. The 
+      process will be terminated when one of the threads are context switched to.</dd>
+      
+      <dt>TP1a</dt>
+      <dd>(Vista only.) Uses NtGetNextProcess to open a handle to the process and terminate it 
+      using TerminateProcess.</dd>
+      
+      <dt>TT1a</dt>
+      <dd>(Vista only.) Uses NtGetNextThread to open a handle to each of the process' threads and 
+      terminates them using TerminateThread.</dd>
+      
+      <dt>CH1</dt>
+      <dd>Uses NtDuplicateObject to close the process' handles. This method works best for 
+      complex programs.</dd>
+      
+      <dt>TJ1</dt>
+      <dd>Creates a job, assigns the process to it, and terminates the job, terminating the process.</dd>
+      
+      <dt>TD1</dt>
+      <dd>Creates a debug object, assigns the process to it, and closes the debug object, 
+      terminating the process.</dd>
+      
+      <dt>TP3</dt>
+      <dd>Uses the internal kernel-mode function PsTerminateProcess to terminate the process.</dd>
+      
+      <dt>TT3</dt>
+      <dd>Uses the internal kernel-mode function PspTerminateThreadByPointer to terminate the process' 
+      threads.</dd>
+      
+      <dt>TT4</dt>
+      <dd>Queues a kernel-mode special asynchronous procedure calls (APCs) to each of the process' threads. 
+      This APC calls PspTerminateThreadByPointer to directly terminate the threads. This method will 
+      terminate threads hanging due to kernel-mode code, but the system may crash or freeze because 
+      kernel-mode code is not given the chance to release any resources.</dd>
+      
+      <dt>M1</dt>
+      <dd>Uses WriteProcessMemory to write random data to the process' memory, crashing the process.</dd>
+      
+      <dt>M2</dt>
+      <dd>Uses VirtualProtectEx to prevent the process' pages from being used, crashing the process.</dd>
+    </dl>
+    </h2>
 
     <h1 id="procprops">Process Properties</h1>
     <dl>

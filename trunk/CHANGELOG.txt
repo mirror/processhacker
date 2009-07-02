@@ -8,6 +8,7 @@ Process Hacker
      highlighting
    * Hidden processes scanner can now detect FUTo
    * Ability to terminate system threads
+   * Ability to force terminate threads
    * Ability to create services
    * Ability to set DEP status of processes in other sessions
    * Terminator test: TP1a (TP1, alternative method)

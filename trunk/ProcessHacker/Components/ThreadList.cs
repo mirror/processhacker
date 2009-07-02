@@ -56,6 +56,9 @@ namespace ProcessHacker.Components
             // Use Cycles instead of Context Switches on Vista
             if (OSVersion.HasCycleTime)
                 listThreads.Columns[1].Text = "Cycles Delta";
+            // If KProcessHacker isn't available, hide Force Terminate.
+            if (KProcessHacker.Instance == null)
+                forceTerminateThreadMenuItem.Visible = false;
 
             _highlightingContext = new HighlightingContext(listThreads);
             var comparer = (SortedListViewComparer)
@@ -166,7 +169,7 @@ namespace ProcessHacker.Components
                     labelBasePriority.Text = thread.BasePriority.ToString();
                     labelContextSwitches.Text = thread.ContextSwitchCount.ToString("N0");
 
-                    using (ThreadHandle thandle = new ThreadHandle(tid))
+                    using (ThreadHandle thandle = new ThreadHandle(tid, ThreadAccess.QueryInformation))
                         labelTEBAddress.Text = "0x" + thandle.GetBasicInformation().TebBaseAddress.ToString("x8");
                 }
                 catch
@@ -481,6 +484,7 @@ namespace ProcessHacker.Components
                 lowestThreadMenuItem.Checked = false;
                 idleThreadMenuItem.Checked = false;
                 terminateThreadMenuItem.Text = "&Terminate Thread";
+                forceTerminateThreadMenuItem.Text = "Force Terminate Thread";
                 suspendThreadMenuItem.Text = "&Suspend Thread";
                 resumeThreadMenuItem.Text = "&Resume Thread";
                 priorityThreadMenuItem.Text = "&Priority";
@@ -536,9 +540,11 @@ namespace ProcessHacker.Components
                 menuThread.DisableAll();
 
                 terminateThreadMenuItem.Enabled = true;
+                forceTerminateThreadMenuItem.Enabled = true;
                 suspendThreadMenuItem.Enabled = true;
                 resumeThreadMenuItem.Enabled = true;
                 terminateThreadMenuItem.Text = "&Terminate Threads";
+                forceTerminateThreadMenuItem.Text = "Force Terminate Threads";
                 suspendThreadMenuItem.Text = "&Suspend Threads";
                 resumeThreadMenuItem.Text = "&Resume Threads";
                 copyThreadMenuItem.Enabled = true;
@@ -635,9 +641,17 @@ namespace ProcessHacker.Components
 
                 foreach (ListViewItem item in listThreads.SelectedItems)
                 {
-                    using (var thandle = new ThreadHandle(Int32.Parse(item.SubItems[0].Text),
-                        ThreadAccess.Terminate))
-                        thandle.DangerousTerminate(NtStatus.Success);
+                    int tid = Int32.Parse(item.SubItems[0].Text);
+
+                    try
+                    {
+                        using (var thandle = new ThreadHandle(tid, ThreadAccess.Terminate))
+                            thandle.DangerousTerminate(NtStatus.Success);
+                    }
+                    catch (Exception ex)
+                    {
+                        PhUtils.ShowMessage("Error terminating thread " + tid.ToString(), ex);
+                    }
                 }
 
                 return;
@@ -689,6 +703,30 @@ namespace ProcessHacker.Components
 
                     if (result == DialogResult.Cancel)
                         return;
+                }
+            }
+        }
+
+        private void forceTerminateThreadMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to force terminate the selected thread(s)? " +
+                "This operation may cause the system to crash.", "Process Hacker",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2) == DialogResult.No)
+                return;
+
+            foreach (ListViewItem item in listThreads.SelectedItems)
+            {
+                int tid = Int32.Parse(item.SubItems[0].Text);
+
+                try
+                {
+                    using (var thandle = new ThreadHandle(tid, ThreadAccess.Terminate))
+                        thandle.DangerousTerminate(NtStatus.Success);
+                }
+                catch (Exception ex)
+                {
+                    PhUtils.ShowMessage("Error terminating thread " + tid.ToString(), ex);
                 }
             }
         }

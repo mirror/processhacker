@@ -1,7 +1,7 @@
 ﻿/*
  * Process Hacker Assistant
  * 
- * Copyright (C) 2008 wj32
+ * Copyright (C) 2008-2009 wj32
  * 
  * This file is part of Process Hacker.
  * 
@@ -20,11 +20,8 @@
  */
 
 using System;
-using System.Collections.Generic; 
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Diagnostics;
 using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
