@@ -22,63 +22,52 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using Aga.Controls.Tree;
-using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
-using ProcessHacker.Native.Objects;
-using ProcessHacker.UI;
-using System.Drawing;
 
-namespace ProcessHacker.Extensions
+namespace ProcessHacker.Common
 {
-    public static class LongExtension
+    public static class LongExtensions
     {
         public static long Max(this IEnumerable<long> source)
         {
             if (source == null)
-            {
                 throw new ArgumentNullException("source");
-            }
-            long num = 0;
-            bool flag = false;
-            foreach (int num2 in source)
+
+            long max = 0;
+            bool afterFirst = false;
+
+            foreach (long number in source)
             {
-                if (flag)
+                if (afterFirst)
                 {
-                    if (num2 > num)
-                    {
-                        num = num2;
-                    }
+                    if (number > max)
+                        max = number;
                 }
                 else
                 {
-                    num = num2;
-                    flag = true;
+                    max = number;
+                    afterFirst = true;
                 }
             }
-            //if (!flag)
-            //{
-            //    throw new ArgumentException("source");
-            //}
-            return num;
+
+            return max;
         }
-        public static IList<long> Take(this IList<long> source,int count)
+
+        public static IList<long> Take(this IList<long> source, int count)
         {
             if (source == null)
-            {
                 throw new ArgumentNullException("source");
-            }
-            
-            if(count>=source.Count)
+
+            // If we're trying to take more than we have, return the original set.
+            if(count >= source.Count)
                 return source;
 
-            IList<long> list=new List<long>();                 
-            for (int i=0 ;i<count;i++)
-            {
-                list.Add(source[i]);
-            }          
-            return list;
+            // Create a new list containing the elements.
+            IList<long> newList = new List<long>();
+
+            for (int i = 0; i < count; i++)
+                newList.Add(source[i]);
+
+            return newList;
         }
     }
 }

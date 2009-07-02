@@ -26,15 +26,11 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Common;
-using ProcessHacker.Extensions;
 using ProcessHacker.Components;
 using ProcessHacker.Native.Api;
 
 namespace ProcessHacker
 {
-    //todo Properties.Settings.Default.IndicatorPhysicalMemoryColor;
-    //     Properties.Settings.Default.IndicatorIOColor;
-    //     IO Indicator
     public partial class SysInfoWindow : Form
     {
         private bool _isFirstPaint = true;
@@ -65,10 +61,10 @@ namespace ProcessHacker
 
         private void LoadStage1()
         {   
-            //
+            // Maximum physical memory.
             indicatorPhysical.Maximum = (int)_pages;
-            
 
+            // Set up the plotter controls.
             plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
             plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
             plotterCPU.GetToolTip = i =>
@@ -91,7 +87,7 @@ namespace ProcessHacker
                 "Phys. Memory: " + Utils.GetNiceSizeName(plotterMemory.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
 
-            // create a plotter per CPU
+            // Create a plotter per CPU.
             _cpuPlotters = new Plotter[_noOfCPUs];
             tableCPUs.ColumnCount = (int)_noOfCPUs;
             tableCPUs.ColumnStyles.Clear();
@@ -105,7 +101,7 @@ namespace ProcessHacker
                 _cpuPlotters[i] = plotter = new ProcessHacker.Components.Plotter();
                 plotter.BackColor = Color.Black;
                 plotter.Dock = DockStyle.Fill;
-                plotter.Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0);
+                plotter.Margin = new Padding(i == 0 ? 0 : 3, 0, 0, 0); // nice spacing
                 plotter.UseSecondLine = true;
                 plotter.Data1 = Program.ProcessProvider.FloatHistory[i.ToString() + " Kernel"];
                 plotter.Data2 = Program.ProcessProvider.FloatHistory[i.ToString() + " User"];
@@ -147,25 +143,24 @@ namespace ProcessHacker
 
         private void UpdateGraphs()
         {
-            //
+            // Update the CPU indicator.
             indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
             indicatorCpu.Data1 = (int)(Program.ProcessProvider.CurrentCpuKernelUsage * indicatorCpu.Maximum);
             indicatorCpu.Data2 = (int)(Program.ProcessProvider.CurrentCpuUserUsage * indicatorCpu.Maximum);
             indicatorCpu.TextValue = (Program.ProcessProvider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
-            //           
+            // Update the I/O indicator.
             indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
-            long max = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(plotterIO.Width/plotterIO.EffectiveMoveStep).Max();
+            long max = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(
+                plotterIO.Width / plotterIO.EffectiveMoveStep).Max();
             indicatorIO.Maximum = (int)max;
             indicatorIO.Data1 = (int)(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
             indicatorIO.TextValue = Utils.GetNiceSizeName(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
 
-
+            // Update the plotter settings.
             plotterIO.LongData1 = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther];
             plotterIO.LongData2 = Program.ProcessProvider.LongHistory[SystemStats.IoWrite];
-                  
-
 
             plotterCPU.LineColor1 = Properties.Settings.Default.PlotterCPUKernelColor;
             plotterCPU.LineColor2 = Properties.Settings.Default.PlotterCPUUserColor;
@@ -218,28 +213,35 @@ namespace ProcessHacker
             Win32.NtQuerySystemInformation(SystemInformationClass.SystemFileCacheInformation,
                 out cacheInfo, Marshal.SizeOf(typeof(SystemCacheInformation)), out retLen);
 
+            // Totals
             labelTotalsProcesses.Text = ((ulong)info.ProcessCount).ToString("N0");
             labelTotalsThreads.Text = ((ulong)info.ThreadCount).ToString("N0");
             labelTotalsHandles.Text = ((ulong)info.HandlesCount).ToString("N0");
 
+            // Commit
             labelCCC.Text = Utils.GetNiceSizeName((ulong)perfInfo.CommittedPages * _pageSize);
             labelCCP.Text = Utils.GetNiceSizeName((ulong)perfInfo.PeakCommitment * _pageSize);
             labelCCL.Text = Utils.GetNiceSizeName((ulong)perfInfo.CommitLimit * _pageSize);
 
-            labelPMC.Text = Utils.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
+            // Physical Memory
+            string physMemText = Utils.GetNiceSizeName((ulong)(_pages - perfInfo.AvailablePages) * _pageSize);
+
+            labelPMC.Text = physMemText;
             labelPSC.Text = Utils.GetNiceSizeName((ulong)info.SystemCache * _pageSize);
             labelPMT.Text = Utils.GetNiceSizeName((ulong)_pages * _pageSize);
-            
-            //
-            indicatorPhysical.Data1 = info.SystemCache;
-            //indicatorPhysical.TextValue = ((float)info.SystemCache / _pages * 100).ToString("F2") + "%";
-            indicatorPhysical.TextValue = Utils.GetNiceSizeName((ulong)(info.SystemCache * _pageSize));
 
+            // Update the physical memory indicator here because we have perfInfo available.
+            indicatorPhysical.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
+            indicatorPhysical.Data1 = (int)(_pages - perfInfo.AvailablePages);
+            indicatorPhysical.TextValue = physMemText;
+
+            // File cache
             labelCacheCurrent.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsSize);
             labelCachePeak.Text = Utils.GetNiceSizeName(cacheInfo.SystemCacheWsPeakSize);
             labelCacheMinimum.Text = Utils.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMinimum * _pageSize);
             labelCacheMaximum.Text = Utils.GetNiceSizeName((ulong)cacheInfo.SystemCacheWsMaximum * _pageSize);
 
+            // Paged/Non-paged pools
             labelKPPPU.Text = Utils.GetNiceSizeName((ulong)perfInfo.PagedPoolPages * _pageSize);
             labelKPPVU.Text = Utils.GetNiceSizeName((ulong)perfInfo.PagedPoolUsage * _pageSize);
             labelKPPA.Text = ((ulong)perfInfo.PagedPoolAllocs).ToString("N0");
@@ -248,6 +250,7 @@ namespace ProcessHacker
             labelKPNPA.Text = ((ulong)perfInfo.NonPagedPoolAllocs).ToString("N0");
             labelKPNPF.Text = ((ulong)perfInfo.NonPagedPoolFrees).ToString("N0");
 
+            // Page faults
             labelPFTotal.Text = ((ulong)perfInfo.PageFaults).ToString("N0");
             labelPFCOW.Text = ((ulong)perfInfo.CopyOnWriteFaults).ToString("N0");
             labelPFTrans.Text = ((ulong)perfInfo.TransitionFaults).ToString("N0");
@@ -255,6 +258,7 @@ namespace ProcessHacker
             labelPFDZ.Text = ((ulong)perfInfo.CacheTransitionFaults).ToString("N0");
             labelPFCache.Text = ((ulong)cacheInfo.SystemCacheWsFaults).ToString("N0");
 
+            // I/O
             labelIOR.Text = ((ulong)perfInfo.IoReadOperationCount).ToString("N0");
             labelIORB.Text = Utils.GetNiceSizeName(perfInfo.IoReadTransferCount);
             labelIOW.Text = ((ulong)perfInfo.IoWriteOperationCount).ToString("N0");
@@ -262,6 +266,7 @@ namespace ProcessHacker
             labelIOO.Text = ((ulong)perfInfo.IoOtherOperationCount).ToString("N0");
             labelIOOB.Text = Utils.GetNiceSizeName(perfInfo.IoOtherTransferCount);
 
+            // CPU
             labelCPUContextSwitches.Text = ((ulong)perfInfo.ContextSwitches).ToString("N0");
             labelCPUInterrupts.Text = ((ulong)Program.ProcessProvider.ProcessorPerf.InterruptCount).ToString("N0");
             labelCPUSystemCalls.Text = ((ulong)perfInfo.SystemCalls).ToString("N0");
