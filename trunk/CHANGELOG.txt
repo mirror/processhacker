@@ -13,7 +13,8 @@ Process Hacker
    * Terminator test: TP1a (TP1, alternative method)
    * Terminator test: TT1a (TT1, alternative method)
    * Terminator test: TT4 (dangerous thread termination)
-   * Thread wait analysis now detects NtQueryObject hangs
+   * Thread wait analysis now detects NtQueryObject hangs and 
+     named pipe connections
    * Better file object names without KProcessHacker
    * Better IP address resolving
    * Child windows float by default

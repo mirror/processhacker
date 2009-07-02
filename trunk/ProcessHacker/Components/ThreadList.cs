@@ -952,6 +952,19 @@ namespace ProcessHacker.Components
                                 sb.AppendLine(this.GetHandleString(_pid, handle));
                             }
                             else if (
+                                name.StartsWith("ntdll.dll!ntfscontrolfile") ||
+                                name.StartsWith("ntdll.dll!zwfscontrolfile")
+                                )
+                            {
+                                found = true;
+
+                                IntPtr handle = stackFrame.Params[0];
+
+                                sb.AppendLine("Thread " + tid.ToString() + " is waiting for an FS control request:");
+
+                                sb.AppendLine(this.GetHandleString(_pid, handle));
+                            }
+                            else if (
                                 name.StartsWith("ntdll.dll!ntqueryobject") ||
                                 name.StartsWith("ntdll.dll!zwqueryobject")
                                 )
