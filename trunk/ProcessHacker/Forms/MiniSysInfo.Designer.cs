@@ -45,6 +45,7 @@
             this.plotterCPU.Location = new System.Drawing.Point(0, 0);
             this.plotterCPU.LongData1 = null;
             this.plotterCPU.LongData2 = null;
+            this.plotterCPU.MinMaxValue = ((long)(0));
             this.plotterCPU.MoveStep = 3;
             this.plotterCPU.Name = "plotterCPU";
             this.plotterCPU.OverlaySecondLine = false;
@@ -72,6 +73,7 @@
             this.plotterIO.Location = new System.Drawing.Point(0, 56);
             this.plotterIO.LongData1 = null;
             this.plotterIO.LongData2 = null;
+            this.plotterIO.MinMaxValue = ((long)(0));
             this.plotterIO.MoveStep = 3;
             this.plotterIO.Name = "plotterIO";
             this.plotterIO.OverlaySecondLine = false;
@@ -101,6 +103,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Deactivate += new System.EventHandler(this.MiniSysInfo_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MiniSysInfo_FormClosing);
             this.ResumeLayout(false);
 

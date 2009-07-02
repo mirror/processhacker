@@ -28,6 +28,7 @@ namespace ProcessHacker
 {
     public class UsageIcon : IDisposable
     {
+        public event MouseEventHandler MouseClick;
         public event MouseEventHandler MouseDoubleClick;
 
         private Control _parent;
@@ -36,12 +37,20 @@ namespace ProcessHacker
         public UsageIcon()
         {
             _notifyIcon = new NotifyIcon();
+
+            _notifyIcon.MouseClick += new MouseEventHandler(notifyIcon_MouseClick);
             _notifyIcon.MouseDoubleClick += new MouseEventHandler(notifyIcon_MouseDoubleClick);
         }
 
         public virtual void Dispose()
         {
             _notifyIcon.Dispose();
+        }
+
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (this.MouseClick != null)
+                this.MouseClick(sender, e);
         }
 
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)

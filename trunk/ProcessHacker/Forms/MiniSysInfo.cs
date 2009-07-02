@@ -43,31 +43,10 @@ namespace ProcessHacker
         static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS inset);
 
         MARGINS margins = new MARGINS() { Left = -1, Right = -1, Top = -1, Bottom = -1 };
-        Timer hideTimer = new System.Windows.Forms.Timer() { Interval = 500 };
-        bool renewed = false;
 
         public MiniSysInfo()
         {
             InitializeComponent();
-            hideTimer.Tick += (sender_, e_) =>
-            {
-                Point p, r;
-
-                Win32.GetCursorPos(out p);
-                r = this.PointToClient(p);
-
-                if (r.X < 0 || r.X > this.Width || r.Y < 0 || r.Y > this.Height)
-                {
-                    if (!renewed)
-                    {
-                        hideTimer.Stop();
-                        this.Close();
-                    }
-                }
-
-                renewed = false;
-            };
-            hideTimer.Start();
 
             DwmExtendFrameIntoClientArea(this.Handle, ref margins);
 
@@ -84,11 +63,6 @@ namespace ProcessHacker
             Program.ProcessProvider.Updated += new ProcessSystemProvider.ProviderUpdateOnce(ProcessProvider_Updated);
         }
 
-        public void RenewTimer()
-        {
-            renewed = true;
-        }
-
         protected override void WndProc(ref Message m)
         {        
             base.WndProc(ref m);
@@ -100,6 +74,11 @@ namespace ProcessHacker
                     m.Result = new IntPtr(0);
                 }
             }
+        }
+
+        private void MiniSysInfo_Deactivate(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void MiniSysInfo_FormClosing(object sender, FormClosingEventArgs e)
