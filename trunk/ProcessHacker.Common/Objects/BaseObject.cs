@@ -462,7 +462,7 @@ namespace ProcessHacker.Common.Objects
         /// reference count will decremented when the object is no 
         /// longer reachable.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The new reference count.</returns>
         /// <remarks>
         /// You must not call Dereference to decrement the reference count 
         /// as it will be decremented automatically.
