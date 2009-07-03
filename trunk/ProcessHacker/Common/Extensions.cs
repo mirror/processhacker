@@ -1,6 +1,6 @@
 ﻿/*
  * Process Hacker - 
- *   misc. functions
+ *   long extensions
  * 
  * Copyright (C) 2009 Dean
  * 

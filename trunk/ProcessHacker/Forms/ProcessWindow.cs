@@ -293,7 +293,7 @@ namespace ProcessHacker
             indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
             indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
 
-            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
+            //indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
 
             indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;           
 
@@ -895,16 +895,29 @@ namespace ProcessHacker
             plotterIO.Draw();
 
             //Update the CPU indicator.
-            indicatorCpu.Maximum = (int)((sysTotal*1.0)/long.MaxValue*int.MaxValue);
+            indicatorCpu.Maximum = (int)((procKernel + procUser) * int.MaxValue);
             indicatorCpu.Data1 = (int)(procKernel * indicatorCpu.Maximum);
             indicatorCpu.Data2 = (int)(procUser * indicatorCpu.Maximum);
             indicatorCpu.TextValue = cpuStr;
 
-            //Update the Pvt indicator.            
+            //Update the Pvt indicator. 
+            int count = plotterIO.Width / plotterIO.EffectiveMoveStep;
+            long maxPvt = _processItem.LongHistoryManager[ProcessStats.PrivateMemory].Take(count).Max();
+            long maxWS = _processItem.LongHistoryManager[ProcessStats.WorkingSet].Take(count).Max();
+            if(maxPvt>maxWS)
+                indicatorPvt.Maximum = (int)maxPvt;
+            else
+                indicatorPvt.Maximum = (int)maxWS; 
             indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivateBytes;
             indicatorPvt.TextValue = pvtString;
 
             //Update the I/O Bytes
+            long maxRO = _processItem.LongHistoryManager[ProcessStats.IoReadOther].Take(count).Max();
+            long maxW = _processItem.LongHistoryManager[ProcessStats.IoWrite].Take(count).Max();
+            if (maxRO > maxW)
+                indicatorIO.Maximum = (int)maxRO;
+            else
+                indicatorIO.Maximum = (int)maxW;
             indicatorIO.Data1 = (int)(ioRO);
             indicatorIO.TextValue = ioROString;
         }

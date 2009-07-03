@@ -64,6 +64,13 @@ namespace ProcessHacker
             // Maximum physical memory.
             indicatorPhysical.Maximum = (int)_pages;
 
+            // Set indicators color
+            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
+            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
+            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
+            indicatorPhysical.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;  
+
+
             // Set up the plotter controls.
             plotterCPU.Data1 = Program.ProcessProvider.FloatHistory["Kernel"];
             plotterCPU.Data2 = Program.ProcessProvider.FloatHistory["User"];
@@ -143,18 +150,19 @@ namespace ProcessHacker
 
         private void UpdateGraphs()
         {
-            // Update the CPU indicator.
-            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
-            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
+            // Update the CPU indicator.         
             indicatorCpu.Data1 = (int)(Program.ProcessProvider.CurrentCpuKernelUsage * indicatorCpu.Maximum);
             indicatorCpu.Data2 = (int)(Program.ProcessProvider.CurrentCpuUserUsage * indicatorCpu.Maximum);
             indicatorCpu.TextValue = (Program.ProcessProvider.CurrentCpuUsage * 100).ToString("F2") + "%";
 
-            // Update the I/O indicator.
-            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;
-            long max = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(
-                plotterIO.Width / plotterIO.EffectiveMoveStep).Max();
-            indicatorIO.Maximum = (int)max;
+            // Update the I/O indicator.  
+            int count = plotterIO.Width / plotterIO.EffectiveMoveStep;
+            long maxRO = Program.ProcessProvider.LongHistory[SystemStats.IoReadOther].Take(count).Max();
+            long maxW = Program.ProcessProvider.LongHistory[SystemStats.IoWrite].Take(count).Max();
+            if(maxRO>maxW)
+                indicatorIO.Maximum = (int)maxRO;
+            else
+                indicatorIO.Maximum = (int)maxW;
             indicatorIO.Data1 = (int)(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
             indicatorIO.TextValue = Utils.GetNiceSizeName(Program.ProcessProvider.LongHistory[SystemStats.IoReadOther][0]);
 
@@ -231,7 +239,7 @@ namespace ProcessHacker
             labelPMT.Text = Utils.GetNiceSizeName((ulong)_pages * _pageSize);
 
             // Update the physical memory indicator here because we have perfInfo available.
-            indicatorPhysical.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
+            
             indicatorPhysical.Data1 = (int)(_pages - perfInfo.AvailablePages);
             indicatorPhysical.TextValue = physMemText;
 

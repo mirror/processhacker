@@ -115,12 +115,18 @@ namespace ProcessHacker
             this.tabStatistics = new System.Windows.Forms.TabPage();
             this.tabPerformance = new System.Windows.Forms.TabPage();
             this.tablePerformance = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBoxIO = new System.Windows.Forms.GroupBox();
+            this.indicatorIO = new ProcessHacker.Components.Indicator();
+            this.groupBoxPvt = new System.Windows.Forms.GroupBox();
+            this.indicatorPvt = new ProcessHacker.Components.Indicator();
             this.groupCPUUsage = new System.Windows.Forms.GroupBox();
             this.plotterCPUUsage = new ProcessHacker.Components.Plotter();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.plotterIO = new ProcessHacker.Components.Plotter();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.plotterMemory = new ProcessHacker.Components.Plotter();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.plotterIO = new ProcessHacker.Components.Plotter();
+            this.groupBoxCpu = new System.Windows.Forms.GroupBox();
+            this.indicatorCpu = new ProcessHacker.Components.Indicator();
             this.tabThreads = new System.Windows.Forms.TabPage();
             this.listThreads = new ProcessHacker.Components.ThreadList();
             this.tabToken = new System.Windows.Forms.TabPage();
@@ -151,12 +157,6 @@ namespace ProcessHacker
             this.timerUpdate = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.vistaMenu = new wyDay.Controls.VistaMenu(this.components);
-            this.groupBoxCpu = new System.Windows.Forms.GroupBox();
-            this.groupBoxPvt = new System.Windows.Forms.GroupBox();
-            this.groupBoxIO = new System.Windows.Forms.GroupBox();
-            this.indicatorCpu = new ProcessHacker.Components.Indicator();
-            this.indicatorPvt = new ProcessHacker.Components.Indicator();
-            this.indicatorIO = new ProcessHacker.Components.Indicator();
             this.tabControl.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupProcess.SuspendLayout();
@@ -164,18 +164,18 @@ namespace ProcessHacker
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
             this.tabPerformance.SuspendLayout();
             this.tablePerformance.SuspendLayout();
+            this.groupBoxIO.SuspendLayout();
+            this.groupBoxPvt.SuspendLayout();
             this.groupCPUUsage.SuspendLayout();
-            this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.groupBoxCpu.SuspendLayout();
             this.tabThreads.SuspendLayout();
             this.tabModules.SuspendLayout();
             this.tabMemory.SuspendLayout();
             this.tabEnvironment.SuspendLayout();
             this.tabHandles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).BeginInit();
-            this.groupBoxCpu.SuspendLayout();
-            this.groupBoxPvt.SuspendLayout();
-            this.groupBoxIO.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -611,6 +611,64 @@ namespace ProcessHacker
             this.tablePerformance.Size = new System.Drawing.Size(475, 368);
             this.tablePerformance.TabIndex = 1;
             // 
+            // groupBoxIO
+            // 
+            this.groupBoxIO.Controls.Add(this.indicatorIO);
+            this.groupBoxIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxIO.Location = new System.Drawing.Point(3, 247);
+            this.groupBoxIO.Name = "groupBoxIO";
+            this.groupBoxIO.Size = new System.Drawing.Size(80, 118);
+            this.groupBoxIO.TabIndex = 3;
+            this.groupBoxIO.TabStop = false;
+            this.groupBoxIO.Text = "I/O Bytes";
+            // 
+            // indicatorIO
+            // 
+            this.indicatorIO.BackColor = System.Drawing.Color.Black;
+            this.indicatorIO.Color1 = System.Drawing.Color.Cyan;
+            this.indicatorIO.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorIO.Data1 = 0;
+            this.indicatorIO.Data2 = 0;
+            this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorIO.GraphWidth = 33;
+            this.indicatorIO.Location = new System.Drawing.Point(3, 17);
+            this.indicatorIO.Maximum = 2147483647;
+            this.indicatorIO.Minimum = 0;
+            this.indicatorIO.Name = "indicatorIO";
+            this.indicatorIO.Size = new System.Drawing.Size(74, 98);
+            this.indicatorIO.TabIndex = 1;
+            this.indicatorIO.TextValue = "";
+            // 
+            // groupBoxPvt
+            // 
+            this.groupBoxPvt.Controls.Add(this.indicatorPvt);
+            this.groupBoxPvt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxPvt.Location = new System.Drawing.Point(3, 125);
+            this.groupBoxPvt.Name = "groupBoxPvt";
+            this.groupBoxPvt.Size = new System.Drawing.Size(80, 116);
+            this.groupBoxPvt.TabIndex = 2;
+            this.groupBoxPvt.TabStop = false;
+            this.groupBoxPvt.Text = "Pvt Bytes";
+            // 
+            // indicatorPvt
+            // 
+            this.indicatorPvt.BackColor = System.Drawing.Color.Black;
+            this.indicatorPvt.Color1 = System.Drawing.Color.Orange;
+            this.indicatorPvt.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorPvt.Data1 = 0;
+            this.indicatorPvt.Data2 = 0;
+            this.indicatorPvt.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorPvt.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorPvt.GraphWidth = 33;
+            this.indicatorPvt.Location = new System.Drawing.Point(3, 17);
+            this.indicatorPvt.Maximum = 2147483647;
+            this.indicatorPvt.Minimum = 0;
+            this.indicatorPvt.Name = "indicatorPvt";
+            this.indicatorPvt.Size = new System.Drawing.Size(74, 96);
+            this.indicatorPvt.TabIndex = 1;
+            this.indicatorPvt.TextValue = "";
+            // 
             // groupCPUUsage
             // 
             this.groupCPUUsage.Controls.Add(this.plotterCPUUsage);
@@ -649,6 +707,45 @@ namespace ProcessHacker
             this.plotterCPUUsage.TextPosition = System.Drawing.ContentAlignment.TopLeft;
             this.plotterCPUUsage.UseLongData = false;
             this.plotterCPUUsage.UseSecondLine = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.plotterMemory);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(89, 125);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(383, 116);
+            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Memory (Private Pages, Working Set)";
+            // 
+            // plotterMemory
+            // 
+            this.plotterMemory.BackColor = System.Drawing.Color.Black;
+            this.plotterMemory.Data1 = null;
+            this.plotterMemory.Data2 = null;
+            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.plotterMemory.GridColor = System.Drawing.Color.Green;
+            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
+            this.plotterMemory.LineColor1 = System.Drawing.Color.Orange;
+            this.plotterMemory.LineColor2 = System.Drawing.Color.Cyan;
+            this.plotterMemory.Location = new System.Drawing.Point(3, 17);
+            this.plotterMemory.LongData1 = null;
+            this.plotterMemory.LongData2 = null;
+            this.plotterMemory.MinMaxValue = ((long)(0));
+            this.plotterMemory.MoveStep = -1;
+            this.plotterMemory.Name = "plotterMemory";
+            this.plotterMemory.OverlaySecondLine = true;
+            this.plotterMemory.ShowGrid = true;
+            this.plotterMemory.Size = new System.Drawing.Size(377, 96);
+            this.plotterMemory.TabIndex = 0;
+            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
+            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
+            this.plotterMemory.UseLongData = true;
+            this.plotterMemory.UseSecondLine = true;
             // 
             // groupBox3
             // 
@@ -689,44 +786,34 @@ namespace ProcessHacker
             this.plotterIO.UseLongData = true;
             this.plotterIO.UseSecondLine = true;
             // 
-            // groupBox2
+            // groupBoxCpu
             // 
-            this.groupBox2.Controls.Add(this.plotterMemory);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(89, 125);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(383, 116);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Memory (Private Pages, Working Set)";
+            this.groupBoxCpu.Controls.Add(this.indicatorCpu);
+            this.groupBoxCpu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxCpu.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxCpu.Name = "groupBoxCpu";
+            this.groupBoxCpu.Size = new System.Drawing.Size(80, 116);
+            this.groupBoxCpu.TabIndex = 1;
+            this.groupBoxCpu.TabStop = false;
+            this.groupBoxCpu.Text = "CPU Usage";
             // 
-            // plotterMemory
+            // indicatorCpu
             // 
-            this.plotterMemory.BackColor = System.Drawing.Color.Black;
-            this.plotterMemory.Data1 = null;
-            this.plotterMemory.Data2 = null;
-            this.plotterMemory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.plotterMemory.GridColor = System.Drawing.Color.Green;
-            this.plotterMemory.GridSize = new System.Drawing.Size(12, 12);
-            this.plotterMemory.LineColor1 = System.Drawing.Color.Orange;
-            this.plotterMemory.LineColor2 = System.Drawing.Color.Cyan;
-            this.plotterMemory.Location = new System.Drawing.Point(3, 17);
-            this.plotterMemory.LongData1 = null;
-            this.plotterMemory.LongData2 = null;
-            this.plotterMemory.MinMaxValue = ((long)(0));
-            this.plotterMemory.MoveStep = -1;
-            this.plotterMemory.Name = "plotterMemory";
-            this.plotterMemory.OverlaySecondLine = true;
-            this.plotterMemory.ShowGrid = true;
-            this.plotterMemory.Size = new System.Drawing.Size(377, 96);
-            this.plotterMemory.TabIndex = 0;
-            this.plotterMemory.TextBoxColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.plotterMemory.TextMargin = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPadding = new System.Windows.Forms.Padding(3);
-            this.plotterMemory.TextPosition = System.Drawing.ContentAlignment.TopLeft;
-            this.plotterMemory.UseLongData = true;
-            this.plotterMemory.UseSecondLine = true;
+            this.indicatorCpu.BackColor = System.Drawing.Color.Black;
+            this.indicatorCpu.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.indicatorCpu.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
+            this.indicatorCpu.Data1 = 0;
+            this.indicatorCpu.Data2 = 0;
+            this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
+            this.indicatorCpu.GraphWidth = 33;
+            this.indicatorCpu.Location = new System.Drawing.Point(3, 17);
+            this.indicatorCpu.Maximum = 2147483647;
+            this.indicatorCpu.Minimum = 0;
+            this.indicatorCpu.Name = "indicatorCpu";
+            this.indicatorCpu.Size = new System.Drawing.Size(74, 96);
+            this.indicatorCpu.TabIndex = 0;
+            this.indicatorCpu.TextValue = "";
             // 
             // tabThreads
             // 
@@ -1014,93 +1101,6 @@ namespace ProcessHacker
             this.vistaMenu.ContainerControl = this;
             this.vistaMenu.DelaySetImageCalls = false;
             // 
-            // groupBoxCpu
-            // 
-            this.groupBoxCpu.Controls.Add(this.indicatorCpu);
-            this.groupBoxCpu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxCpu.Location = new System.Drawing.Point(3, 3);
-            this.groupBoxCpu.Name = "groupBoxCpu";
-            this.groupBoxCpu.Size = new System.Drawing.Size(80, 116);
-            this.groupBoxCpu.TabIndex = 1;
-            this.groupBoxCpu.TabStop = false;
-            this.groupBoxCpu.Text = "CPU Usage";
-            // 
-            // groupBoxPvt
-            // 
-            this.groupBoxPvt.Controls.Add(this.indicatorPvt);
-            this.groupBoxPvt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxPvt.Location = new System.Drawing.Point(3, 125);
-            this.groupBoxPvt.Name = "groupBoxPvt";
-            this.groupBoxPvt.Size = new System.Drawing.Size(80, 116);
-            this.groupBoxPvt.TabIndex = 2;
-            this.groupBoxPvt.TabStop = false;
-            this.groupBoxPvt.Text = "Pvt Bytes";
-            // 
-            // groupBoxIO
-            // 
-            this.groupBoxIO.Controls.Add(this.indicatorIO);
-            this.groupBoxIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxIO.Location = new System.Drawing.Point(3, 247);
-            this.groupBoxIO.Name = "groupBoxIO";
-            this.groupBoxIO.Size = new System.Drawing.Size(80, 118);
-            this.groupBoxIO.TabIndex = 3;
-            this.groupBoxIO.TabStop = false;
-            this.groupBoxIO.Text = "I/O Bytes";
-            // 
-            // indicatorCpu
-            // 
-            this.indicatorCpu.BackColor = System.Drawing.Color.Black;
-            this.indicatorCpu.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.indicatorCpu.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorCpu.Data1 = 0;
-            this.indicatorCpu.Data2 = 0;
-            this.indicatorCpu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorCpu.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorCpu.GraphWidth = 33;
-            this.indicatorCpu.Location = new System.Drawing.Point(3, 17);
-            this.indicatorCpu.Maximum = 2147483647;
-            this.indicatorCpu.Minimum = 0;
-            this.indicatorCpu.Name = "indicatorCpu";
-            this.indicatorCpu.Size = new System.Drawing.Size(74, 96);
-            this.indicatorCpu.TabIndex = 0;
-            this.indicatorCpu.TextValue = "";
-            // 
-            // indicatorPvt
-            // 
-            this.indicatorPvt.BackColor = System.Drawing.Color.Black;
-            this.indicatorPvt.Color1 = System.Drawing.Color.Yellow;
-            this.indicatorPvt.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorPvt.Data1 = 0;
-            this.indicatorPvt.Data2 = 0;
-            this.indicatorPvt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorPvt.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorPvt.GraphWidth = 33;
-            this.indicatorPvt.Location = new System.Drawing.Point(3, 17);
-            this.indicatorPvt.Maximum = 2147483647;
-            this.indicatorPvt.Minimum = 0;
-            this.indicatorPvt.Name = "indicatorPvt";
-            this.indicatorPvt.Size = new System.Drawing.Size(74, 96);
-            this.indicatorPvt.TabIndex = 1;
-            this.indicatorPvt.TextValue = "";
-            // 
-            // indicatorIO
-            // 
-            this.indicatorIO.BackColor = System.Drawing.Color.Black;
-            this.indicatorIO.Color1 = System.Drawing.Color.Cyan;
-            this.indicatorIO.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(255)))), ((int)(((byte)(0)))));
-            this.indicatorIO.Data1 = 0;
-            this.indicatorIO.Data2 = 0;
-            this.indicatorIO.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.indicatorIO.ForeColor = System.Drawing.Color.Lime;
-            this.indicatorIO.GraphWidth = 33;
-            this.indicatorIO.Location = new System.Drawing.Point(3, 17);
-            this.indicatorIO.Maximum = 2147483647;
-            this.indicatorIO.Minimum = 0;
-            this.indicatorIO.Name = "indicatorIO";
-            this.indicatorIO.Size = new System.Drawing.Size(74, 98);
-            this.indicatorIO.TabIndex = 1;
-            this.indicatorIO.TextValue = "";
-            // 
             // ProcessWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1125,9 +1125,12 @@ namespace ProcessHacker
             ((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
             this.tabPerformance.ResumeLayout(false);
             this.tablePerformance.ResumeLayout(false);
+            this.groupBoxIO.ResumeLayout(false);
+            this.groupBoxPvt.ResumeLayout(false);
             this.groupCPUUsage.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBoxCpu.ResumeLayout(false);
             this.tabThreads.ResumeLayout(false);
             this.tabModules.ResumeLayout(false);
             this.tabMemory.ResumeLayout(false);
@@ -1136,9 +1139,6 @@ namespace ProcessHacker
             this.tabHandles.ResumeLayout(false);
             this.tabHandles.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu)).EndInit();
-            this.groupBoxCpu.ResumeLayout(false);
-            this.groupBoxPvt.ResumeLayout(false);
-            this.groupBoxIO.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
