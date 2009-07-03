@@ -1766,6 +1766,15 @@ namespace ProcessHacker.Native.Api
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueueUserAPC(
+            [MarshalAs(UnmanagedType.FunctionPtr)]
+            [In] Action<IntPtr> APC,
+            [In] IntPtr ThreadHandle,
+            [In] IntPtr Data
+            );
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetExitCodeThread(
             [In] IntPtr ThreadHandle,
             [Out] out int ExitCode

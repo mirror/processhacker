@@ -616,13 +616,19 @@ namespace ProcessHacker.Native.Objects
 
         /// <summary>
         /// Adds an user-mode asynchronous procedure call (APC) to the thread's APC queue.
-        /// This requires the THREAD_SET_CONTEXT permission.
+        /// This requires THREAD_SET_CONTEXT access.
         /// </summary>
         /// <param name="address">The address of the APC procedure.</param>
         /// <param name="parameter">The parameter to pass to the procedure.</param>
         public void QueueApc(IntPtr address, IntPtr parameter)
         {
             if (!Win32.QueueUserAPC(address, this, parameter))
+                Win32.ThrowLastError();
+        }
+
+        public void QueueApc(Action<IntPtr> action, IntPtr parameter)
+        {
+            if (!Win32.QueueUserAPC(action, this, parameter))
                 Win32.ThrowLastError();
         }
 
