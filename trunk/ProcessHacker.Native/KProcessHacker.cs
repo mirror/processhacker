@@ -305,6 +305,9 @@ namespace ProcessHacker.Native
             int capturedFramesLocal;
             int backTraceHashLocal;
 
+            if (framesToCapture > backTrace.Length)
+                throw new ArgumentOutOfRangeException("Back trace buffer is too small.");
+
             fixed (IntPtr* backTracePtr = backTrace)
             {
                 *(int*)inData = threadHandle;
