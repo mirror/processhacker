@@ -41,7 +41,7 @@ NTSTATUS KphOpenProcessTokenEx(
 {
     NTSTATUS status = STATUS_SUCCESS;
     PEPROCESS processObject;
-    PVOID tokenObject;
+    PACCESS_TOKEN tokenObject;
     HANDLE tokenHandle;
     ACCESS_STATE accessState;
     CHAR auxData[AUX_ACCESS_DATA_SIZE];
