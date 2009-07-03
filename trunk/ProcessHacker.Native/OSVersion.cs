@@ -77,7 +77,7 @@ namespace ProcessHacker.Native
                 _windowsVersion = WindowsVersion.Server2003;
             else if (version.Major == 6 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.Vista;
-            else if (version.Major == 6 && version.Minor == 1)
+            else if ((version.Major == 6 && version.Minor >= 1) || version.Major > 6)
                 _windowsVersion = WindowsVersion.Seven;
 
             if (IsBelow(WindowsVersion.Vista))

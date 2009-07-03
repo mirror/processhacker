@@ -3,6 +3,7 @@
  *   process properties window
  * 
  * Copyright (C) 2008-2009 wj32
+ * Copyright (C) 2009 Dean
  * 
  * This file is part of Process Hacker.
  * 
@@ -286,6 +287,16 @@ namespace ProcessHacker
                 "R+O: " + Utils.GetNiceSizeName(plotterIO.LongData1[i]) + "\n" +
                 "W: " + Utils.GetNiceSizeName(plotterIO.LongData2[i]) + "\n" +
                 Program.ProcessProvider.TimeHistory[i].ToString();
+
+
+            //Set the indicator Color.
+            indicatorCpu.Color1 = Properties.Settings.Default.PlotterCPUKernelColor;
+            indicatorCpu.Color2 = Properties.Settings.Default.PlotterCPUUserColor;
+
+            indicatorPvt.Color1 = Properties.Settings.Default.PlotterMemoryWSColor;
+
+            indicatorIO.Color1 = Properties.Settings.Default.PlotterIOROColor;           
+
 
             this.ApplyFont(Properties.Settings.Default.Font);
 
@@ -853,7 +864,8 @@ namespace ProcessHacker
             plotterMemory.LineColor1 = Properties.Settings.Default.PlotterMemoryPrivateColor;
             plotterMemory.LineColor2 = Properties.Settings.Default.PlotterMemoryWSColor;
             plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
-            plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;
+            plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;          
+
 
             // update graphs
             long sysTotal = sysProvider.LongDeltas[SystemStats.CpuKernel] + sysProvider.LongDeltas[SystemStats.CpuUser]
@@ -863,14 +875,17 @@ namespace ProcessHacker
             long ioRO = item.DeltaManager[ProcessStats.IoRead] + item.DeltaManager[ProcessStats.IoOther];
             long ioW = item.DeltaManager[ProcessStats.IoWrite];
 
-            plotterCPUUsage.Text = ((procKernel + procUser) * 100).ToString("F2") +
-                "% (K: " + (procKernel * 100).ToString("F2") +
+            string cpuStr = ((procKernel + procUser) * 100).ToString("F2") + "%";
+            plotterCPUUsage.Text = cpuStr +
+                " (K: " + (procKernel * 100).ToString("F2") +
                 "%, U: " + (procUser * 100).ToString("F2") + "%)";
 
-            plotterMemory.Text = "Pvt: " + Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes) + 
+            string pvtString = Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.PrivateBytes);
+            plotterMemory.Text = "Pvt: " + pvtString + 
                 ", WS: " + Utils.GetNiceSizeName(item.Process.VirtualMemoryCounters.WorkingSetSize);
 
-            plotterIO.Text = "R+O: " + Utils.GetNiceSizeName(ioRO) + ", W: " + Utils.GetNiceSizeName(ioW);
+            string ioROString = Utils.GetNiceSizeName(ioRO);
+            plotterIO.Text = "R+O: " + ioROString + ", W: " + Utils.GetNiceSizeName(ioW);
 
             plotterCPUUsage.MoveGrid();
             plotterCPUUsage.Draw();
@@ -878,6 +893,20 @@ namespace ProcessHacker
             plotterMemory.Draw();
             plotterIO.MoveGrid();
             plotterIO.Draw();
+
+            //Update the CPU indicator.
+            indicatorCpu.Maximum = (int)((sysTotal*1.0)/long.MaxValue*int.MaxValue);
+            indicatorCpu.Data1 = (int)(procKernel * indicatorCpu.Maximum);
+            indicatorCpu.Data2 = (int)(procUser * indicatorCpu.Maximum);
+            indicatorCpu.TextValue = cpuStr;
+
+            //Update the Pvt indicator.            
+            indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivateBytes;
+            indicatorPvt.TextValue = pvtString;
+
+            //Update the I/O Bytes
+            indicatorIO.Data1 = (int)(ioRO);
+            indicatorIO.TextValue = ioROString;
         }
 
         private void fileCurrentDirectory_TextBoxLeave(object sender, EventArgs e)
