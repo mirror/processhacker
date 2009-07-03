@@ -35,6 +35,11 @@ BOOLEAN KphpSetHandleGrantedAccessEnumCallback(
     __in POBP_SET_HANDLE_GRANTED_ACCESS_DATA Context
     );
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, KphDuplicateObject)
+#pragma alloc_text(PAGE, ObDuplicateObject)
+#endif
+
 /* This attribute is now stored in the GrantedAccess field. */
 ULONG ObpAccessProtectCloseBit = 0x80000000;
 

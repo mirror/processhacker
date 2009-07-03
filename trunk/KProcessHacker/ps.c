@@ -40,6 +40,31 @@ VOID KphpExitSpecialApc(
     PVOID *SystemArgument2
     );
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, KphAssignImpersonationToken)
+#pragma alloc_text(PAGE, KphCaptureStackBackTraceThread)
+#pragma alloc_text(PAGE, KphpCaptureStackBackTraceThread)
+#pragma alloc_text(PAGE, KphpCaptureStackBackTraceThreadSpecialApc)
+#pragma alloc_text(PAGE, KphDangerousTerminateThread)
+#pragma alloc_text(PAGE, KphpExitSpecialApc)
+#pragma alloc_text(PAGE, KphGetContextThread)
+#pragma alloc_text(PAGE, KphGetProcessId)
+#pragma alloc_text(PAGE, KphGetThreadId)
+#pragma alloc_text(PAGE, KphGetThreadWin32Thread)
+#pragma alloc_text(PAGE, KphOpenProcess)
+#pragma alloc_text(PAGE, KphOpenProcessJob)
+#pragma alloc_text(PAGE, KphOpenThread)
+#pragma alloc_text(PAGE, KphOpenThreadProcess)
+#pragma alloc_text(PAGE, KphResumeProcess)
+#pragma alloc_text(PAGE, KphSetContextThread)
+#pragma alloc_text(PAGE, KphSuspendProcess)
+#pragma alloc_text(PAGE, KphResumeProcess)
+#pragma alloc_text(PAGE, KphTerminateProcess)
+#pragma alloc_text(PAGE, KphTerminateThread)
+#pragma alloc_text(PAGE, PsTerminateProcess)
+#pragma alloc_text(PAGE, PspTerminateThreadByPointer)
+#endif
+
 /* KphAcquireProcessRundownProtection
  * 
  * Prevents the process from terminating.

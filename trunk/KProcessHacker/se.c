@@ -23,6 +23,10 @@
 #include "include/kph.h"
 #include "include/se.h"
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, KphOpenProcessTokenEx)
+#endif
+
 /* KphOpenProcessTokenEx
  * 
  * Opens the primary token of the specified process.

@@ -23,6 +23,13 @@
 #define _KPH_PRIVATE
 #include "include/kph.h"
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, GetSystemRoutineAddress)
+#pragma alloc_text(PAGE, KphNtInit)
+#pragma alloc_text(PAGE, OpenProcess)
+#pragma alloc_text(PAGE, SetProcessToken)
+#endif
+
 /* GetSystemRoutineAddress
  * 
  * Gets the address of a function exported by ntoskrnl or hal.

@@ -56,12 +56,12 @@ typedef struct _KV_SCANPROC
 
 NTSTATUS KvInit();
 
-PVOID KvVerifyPrologue(
-    PVOID Address
-    );
-
 PVOID KvScanProc(
     PKV_SCANPROC ScanProc
+    );
+
+PVOID KvVerifyPrologue(
+    PVOID Address
     );
 
 #ifdef EXT

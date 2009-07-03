@@ -40,12 +40,15 @@ static NPAGED_LOOKASIDE_LIST ClientLookasideList;
 static BOOLEAN ProtectionInitialized = FALSE;
 static FAST_MUTEX ProtectionMutex;
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, DriverEntry)
+#pragma alloc_text(PAGE, DriverUnload)
 #pragma alloc_text(PAGE, KphDispatchCreate)
 #pragma alloc_text(PAGE, KphDispatchClose)
 #pragma alloc_text(PAGE, KphDispatchDeviceControl)
 #pragma alloc_text(PAGE, KphDispatchRead)
 #pragma alloc_text(PAGE, KphUnsupported)
-#pragma pack(1)
+#endif
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)
 {
@@ -445,6 +448,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     controlCode = ioStackIrp->Parameters.DeviceIoControl.IoControlCode;
     
     dprintf("IoControl 0x%08x (%s)\n", controlCode, GetIoControlName(controlCode));
+    
+    /* 1-byte packing for KPH input/output structures. */
+    #include <pshpack1.h>
     
     switch (controlCode)
     {
@@ -1772,6 +1778,9 @@ NTSTATUS KphDispatchDeviceControl(PDEVICE_OBJECT DeviceObject, PIRP Irp)
         }
         break;
     }
+    
+    /* Restore the old packing. */
+    #include <poppack.h>
     
 IoControlEnd:
     Irp->IoStatus.Information = retLength;

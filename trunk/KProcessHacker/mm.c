@@ -23,6 +23,16 @@
 #include "include/kph.h"
 #include "include/mm.h"
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, KphReadVirtualMemory)
+#pragma alloc_text(PAGE, KphUnsafeReadVirtualMemory)
+#pragma alloc_text(PAGE, KphWriteVirtualMemory)
+#pragma alloc_text(PAGE, MiDoMappedCopy)
+#pragma alloc_text(PAGE, MiDoPoolCopy)
+#pragma alloc_text(PAGE, MiGetExceptionInfo)
+#pragma alloc_text(PAGE, MmCopyVirtualMemory)
+#endif
+
 /* KphReadVirtualMemory
  * 
  * Reads virtual memory from the specified process.

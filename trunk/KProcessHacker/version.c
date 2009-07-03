@@ -24,6 +24,12 @@
 #include "include/version.h"
 #include "include/debug.h"
 
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text(PAGE, KvInit)
+#pragma alloc_text(PAGE, KvScanProc)
+#pragma alloc_text(PAGE, KvVerifyPrologue)
+#endif
+
 /*
  * mov      edi, edi
  * push     ebp
@@ -292,16 +298,6 @@ NTSTATUS KvInit()
     return status;
 }
 
-PVOID KvVerifyPrologue(
-    PVOID Address
-    )
-{
-    if (memcmp(Address, StandardPrologue, 5) == 0)
-        return Address;
-    else
-        return NULL;
-}
-
 PVOID KvScanProc(
     PKV_SCANPROC ScanProc
     )
@@ -318,4 +314,14 @@ PVOID KvScanProc(
     }
     
     return NULL;
+}
+
+PVOID KvVerifyPrologue(
+    PVOID Address
+    )
+{
+    if (memcmp(Address, StandardPrologue, 5) == 0)
+        return Address;
+    else
+        return NULL;
 }

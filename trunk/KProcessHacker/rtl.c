@@ -125,6 +125,7 @@ BOOLEAN KphCaptureAndAddStack(
             &trace[kmodeFramesFound],
             NULL
             );
+    
     /* Add the trace to the database. */
     return RtlTraceDatabaseAdd(
         Database,
