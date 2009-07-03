@@ -124,7 +124,9 @@ namespace ProcessHacker.Native.Api
         Exclusive = 0,
         Read = 1,
         Write = 2,
-        Delete = 4
+        Delete = 4,
+        ReadWrite = Read | Write,
+        ReadWriteDelete = Read | Write | Delete
     }
 
     public enum GdiBlendMode : int

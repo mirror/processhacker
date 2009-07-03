@@ -29,7 +29,7 @@ namespace ProcessHacker.Native
             this.Handle = SectionHandle.Create(
                 SectionAccess.All,
                 fileHandle.GetSize(),
-                image ? SectionAttributes.Image : 0,
+                image ? SectionAttributes.Image : SectionAttributes.Commit,
                 protection,
                 fileHandle
                 );

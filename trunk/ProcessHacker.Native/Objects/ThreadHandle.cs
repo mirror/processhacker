@@ -21,11 +21,11 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Collections.Generic;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -92,6 +92,11 @@ namespace ProcessHacker.Native.Objects
         public static ThreadHandle GetCurrent()
         {
             return new ThreadHandle(new IntPtr(-2), false);
+        }
+
+        public static ClientId GetCurrentCid()
+        {
+            return new ClientId(ProcessHandle.GetCurrentId(), ThreadHandle.GetCurrentId());
         }
 
         public static int GetCurrentId()

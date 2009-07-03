@@ -75,9 +75,14 @@ namespace ProcessHacker.Native
         { }
 
         public MemoryAlloc(IntPtr memory, bool owned)
+            : this(memory, 0, owned)
+        { }
+
+        public MemoryAlloc(IntPtr memory, int size, bool owned)
             : base(owned)
         {
             _memory = memory;
+            _size = size;
         }
 
         /// <summary>
@@ -281,6 +286,15 @@ namespace ProcessHacker.Native
         public void WriteIntPtr(int offset, IntPtr i)
         {
             Marshal.WriteIntPtr(this, offset, i);
+        }
+
+        public void WriteMemory(int destOffset, MemoryAlloc memory, int srcOffset, int length)
+        {
+            ProcessHacker.Native.Api.Win32.RtlMoveMemory(
+                _memory.Increment(destOffset),
+                memory.Memory.Increment(srcOffset),
+                length.ToIntPtr()
+                );
         }
 
         public void WriteStruct<T>(T s)

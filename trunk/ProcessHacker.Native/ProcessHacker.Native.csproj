@@ -55,11 +55,13 @@
     <Compile Include="Api\NativeStructs.cs" />
     <Compile Include="Api\NtStatus.cs" />
     <Compile Include="Cryptography.cs" />
+    <Compile Include="Lpc\PortMessage.cs" />
     <Compile Include="Memory\MemoryAllocStream.cs" />
     <Compile Include="Memory\PhysicalPages.cs" />
     <Compile Include="Memory\PhysicalPagesMapping.cs" />
     <Compile Include="Memory\Section.cs" />
     <Compile Include="NProcessHacker.cs" />
+    <Compile Include="Objects\PortComHandle.cs" />
     <Compile Include="Objects\IoCompletionHandle.cs" />
     <Compile Include="Objects\TerminalServerHandle.cs" />
     <Compile Include="Security\IoCompletionAccess.cs" />

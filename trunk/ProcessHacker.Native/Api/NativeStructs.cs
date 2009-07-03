@@ -1004,44 +1004,16 @@ namespace ProcessHacker.Native.Api
         public int PagefileLimit;
     }
 
-    [StructLayout(LayoutKind.Explicit)]
-    public struct PortMessage
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PortMessageStruct
     {
-        [StructLayout(LayoutKind.Sequential)]
-        public struct PortMessageTail
-        {
-            public ClientId ClientId;
-            public int MessageId;
-            public IntPtr ClientViewSize;
-        }
-
-        [FieldOffset(0)]
         public short DataLength;
-        [FieldOffset(2)]
         public short TotalLength;
-        [FieldOffset(0)]
-        public int Length;
-
-        [FieldOffset(4)]
         public PortMessageType Type;
-        [FieldOffset(6)]
         public short DataInfoOffset;
-        [FieldOffset(4)]
-        public int ZeroInit;
-
-        [FieldOffset(8)]
-        public PortMessageTail Tail;
-
-        //[FieldOffset(8)]
-        //public ClientId ClientId;
-
-        //[FieldOffset(16)]
-        //public int MessageId;
-
-        //[FieldOffset(20)]
-        //public IntPtr ClientViewSize;
-        //[FieldOffset(20)]
-        //public int CallbackId;
+        public ClientId ClientId;
+        public int MessageId;
+        public IntPtr ClientViewSize;
     }
 
     [StructLayout(LayoutKind.Sequential)]

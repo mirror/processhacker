@@ -109,6 +109,7 @@ namespace ProcessHacker.Native.Api
         SemaphoreLimitExceeded = 0xc0000047,
         SuspendCountExceeded = 0xc000004a,
         ThreadIsTerminating = 0xc000004b,
+        FileInvalid = 0xc0000098,
         NotSameDevice = 0xc00000d4,
         FileRenamed = 0xc00000d5,
         CantWait = 0xc00000d8,
@@ -127,6 +128,7 @@ namespace ProcessHacker.Native.Api
         InvalidParameter10 = 0xc00000f8,
         InvalidParameter11 = 0xc00000f9,
         InvalidParameter12 = 0xc00000fa,
+        MappedFileSizeZero = 0xc000011e,
         PortNotSet = 0xc0000353,
         DebuggerInactive = 0xc0000354,
 
@@ -169,6 +171,15 @@ namespace ProcessHacker.Native.Api
         public static bool IsWarning(this NtStatus status)
         {
             return status >= NtStatus.Warning && status < NtStatus.Error;
+        }
+
+        /// <summary>
+        /// Throws the NT status value as an exception.
+        /// </summary>
+        /// <param name="status">The NT status value.</param>
+        public static void Throw(this NtStatus status)
+        {
+            throw new WindowsException(status);
         }
 
         /// <summary>

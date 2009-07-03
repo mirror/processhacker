@@ -41,7 +41,7 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtAcceptConnectPort(
             [Out] out IntPtr PortHandle,
             [In] [Optional] IntPtr PortContext,
-            [In] ref PortMessage ConnectionRequest,
+            [In] IntPtr ConnectionRequest,
             [In] bool AcceptConnection,
             [Optional] ref PortView ServerView,
             [Out] [Optional] out RemotePortView ClientView
@@ -123,7 +123,19 @@ namespace ProcessHacker.Native.Api
             [Optional] ref RemotePortView ServerView,
             [Out] [Optional] out int MaxMessageLength,
             [Optional] IntPtr ConnectionInformation,
-            [Optional] out int ConnectionInformationLength
+            [Optional] ref int ConnectionInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] ref UnicodeString PortName,
+            [In] ref SecurityQualityOfService SecurityQos,
+            [Optional] IntPtr ClientView,
+            [Optional] IntPtr ServerView,
+            [Out] [Optional] out int MaxMessageLength,
+            [Optional] IntPtr ConnectionInformation,
+            [Optional] ref int ConnectionInformationLength
             );
 
         [DllImport("ntdll.dll")]
@@ -133,9 +145,21 @@ namespace ProcessHacker.Native.Api
             [In] ref SecurityQualityOfService SecurityQos,
             [Optional] ref PortView ClientView,
             [Optional] ref RemotePortView ServerView,
-            [Out] [Optional] out int MaxMessageLength,
+            [Out] [Optional] IntPtr MaxMessageLength,
             [Optional] IntPtr ConnectionInformation,
-            [Optional] int ConnectionInformationLength
+            [Optional] IntPtr ConnectionInformationLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtConnectPort(
+            [Out] out IntPtr PortHandle,
+            [In] ref UnicodeString PortName,
+            [In] ref SecurityQualityOfService SecurityQos,
+            [Optional] IntPtr ClientView,
+            [Optional] IntPtr ServerView,
+            [Out] [Optional] IntPtr MaxMessageLength,
+            [Optional] IntPtr ConnectionInformation,
+            [Optional] IntPtr ConnectionInformationLength
             );
 
         [DllImport("ntdll.dll")]
@@ -552,7 +576,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtImpersonateClientOfPort(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage Message
+            [In] IntPtr Message
             );
 
         [DllImport("ntdll.dll")]
@@ -571,7 +595,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtListenPort(
             [In] IntPtr PortHandle,
-            [Out] out PortMessage ConnectionRequest
+            [In] IntPtr ConnectionRequest
             );
 
         [DllImport("ntdll.dll")]
@@ -1082,7 +1106,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtReadRequestData(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage Message,
+            [In] IntPtr Message,
             [In] int DataEntryIndex,
             [In] IntPtr Buffer,
             [In] IntPtr BufferSize,
@@ -1142,43 +1166,43 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtReplyPort(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage ReplyMessage
+            [In] IntPtr ReplyMessage
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtReplyWaitReceivePort(
             [In] IntPtr PortHandle,
             [Out] [Optional] out IntPtr PortContext,
-            [In] [Optional] ref PortMessage ReplyMessage,
-            [Out] out PortMessage ReceiveMessage
+            [In] [Optional] IntPtr ReplyMessage,
+            [In] IntPtr ReceiveMessage
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtReplyWaitReceivePortEx(
             [In] IntPtr PortHandle,
             [Out] [Optional] out IntPtr PortContext,
-            [In] [Optional] ref PortMessage ReplyMessage,
-            [Out] out PortMessage ReceiveMessage,
+            [In] [Optional] IntPtr ReplyMessage,
+            [In] IntPtr ReceiveMessage,
             [In] [Optional] ref long Timeout
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtReplyWaitReplyPort(
             [In] IntPtr PortHandle,
-            ref PortMessage ReplyMessage
+            [In] IntPtr ReplyMessage
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtRequestPort(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage RequestMessage
+            [In] IntPtr RequestMessage
             );
 
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtRequestWaitReplyPort(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage RequestMessage,
-            [Out] out PortMessage ReplyMessage
+            [In] IntPtr RequestMessage,
+            [In] IntPtr ReplyMessage
             );
 
         [DllImport("ntdll.dll")]
@@ -1464,7 +1488,7 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus NtWriteRequestData(
             [In] IntPtr PortHandle,
-            [In] ref PortMessage Message,
+            [In] IntPtr Message,
             [In] int DataEntryIndex,
             [In] IntPtr Buffer,
             [In] IntPtr BufferSize,
@@ -1527,6 +1551,17 @@ namespace ProcessHacker.Native.Api
             [In] ref RtlHandleTable HandleTable,
             [In] int HandleIndex,
             [Out] out IntPtr Handle
+            );
+
+        #endregion
+
+        #region Memory
+
+        [DllImport("ntdll.dll")]
+        public static extern void RtlMoveMemory(
+            [In] IntPtr Destination,
+            [In] IntPtr Source,
+            [In] IntPtr Length
             );
 
         #endregion
