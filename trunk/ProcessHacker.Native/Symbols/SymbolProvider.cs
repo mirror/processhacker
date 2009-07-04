@@ -85,8 +85,7 @@ namespace ProcessHacker.Native.Symbols
 
         protected override void DisposeObject(bool disposing)
         {
-            if (disposing)
-                Win32.DbgHelpLock.Acquire();
+            Win32.DbgHelpLock.Acquire();
 
             try
             {
@@ -102,8 +101,7 @@ namespace ProcessHacker.Native.Symbols
             }
             finally
             {
-                if (disposing)
-                    Win32.DbgHelpLock.Release();
+                Win32.DbgHelpLock.Release();
             }
         }
 
