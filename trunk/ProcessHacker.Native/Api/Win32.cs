@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using ProcessHacker.Common.Threading;
 using ProcessHacker.Native.Objects;
@@ -46,6 +47,7 @@ namespace ProcessHacker.Native.Api
     /// <summary>
     /// Provides interfacing to the Win32 and Native APIs.
     /// </summary>
+    [SuppressUnmanagedCodeSecurity]
     public static partial class Win32
     {
         private static FastMutex _dbgHelpLock = new FastMutex();

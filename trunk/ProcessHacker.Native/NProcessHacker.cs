@@ -20,15 +20,15 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using ProcessHacker.Native;
-using ProcessHacker.Native.Api;
 using System;
+using System.Runtime.InteropServices;
+using System.Security;
+using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native
 {
-    public class NProcessHacker
+    [SuppressUnmanagedCodeSecurity]
+    public static class NProcessHacker
     {
         public enum WS_INFORMATION_CLASS
         {
