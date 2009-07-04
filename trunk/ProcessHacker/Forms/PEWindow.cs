@@ -63,7 +63,6 @@ namespace ProcessHacker
         {
             this.Size = Properties.Settings.Default.PEWindowSize;
 
-            Program.UpdateWindow(this);
             this.SetPhParent();
         }
 
@@ -122,16 +121,6 @@ namespace ProcessHacker
         public string Id
         {
             get { return _path; } 
-        }
-
-        public MenuItem WindowMenuItem
-        {
-            get { return windowMenuItem; }
-        }
-
-        public wyDay.Controls.VistaMenu VistaMenu
-        {
-            get { return vistaMenu; }
         }
 
         private void Read(string path)
