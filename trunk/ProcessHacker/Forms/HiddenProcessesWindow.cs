@@ -44,6 +44,7 @@ namespace ProcessHacker
 
             listProcesses.ListViewItemSorter = new SortedListViewComparer(listProcesses);
             listProcesses.ContextMenu = listProcesses.GetCopyMenu();
+            listProcesses.AddShortcuts();
             listProcesses.SetDoubleBuffered(true);
             listProcesses.SetTheme("explorer");
 
@@ -469,12 +470,6 @@ namespace ProcessHacker
                 buttonTerminate.Enabled = false;
             else
                 buttonTerminate.Enabled = true;
-        }
-
-        private void HiddenProcessesWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Control && e.KeyCode == Keys.A)
-                Utils.SelectAll(listProcesses.Items);
         }
 
         private void buttonSave_Click(object sender, EventArgs e)

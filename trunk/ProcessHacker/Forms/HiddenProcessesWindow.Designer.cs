@@ -175,7 +175,6 @@
             this.Text = "Hidden Processes";
             this.Load += new System.EventHandler(this.HiddenProcessesWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HiddenProcessesWindow_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HiddenProcessesWindow_KeyDown);
             this.ResumeLayout(false);
 
         }

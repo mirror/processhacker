@@ -561,9 +561,7 @@ namespace ProcessHacker
                 foreach (ListViewItem item in listNetwork.SelectedItems)
                 {
                     if (item.SubItems[3].Text != "TCP" ||
-                        item.SubItems[4].Text == "Listening" ||
-                        item.SubItems[4].Text == "CloseWait" ||
-                        item.SubItems[4].Text == "TimeWait")
+                        item.SubItems[4].Text != "Established")
                         continue;
 
                     try
