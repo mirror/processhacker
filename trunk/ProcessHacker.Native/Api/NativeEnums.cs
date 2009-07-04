@@ -146,6 +146,16 @@ namespace ProcessHacker.Native.Api
         FileIdFullDirectoryInformation, // dir
         FileValidDataLengthInformation,
         FileShortNameInformation, // 40
+        FileIoCompletionNotificationInformation,
+        FileIoStatusBlockRangeInformation,
+        FileIoPriorityHintInformation,
+        FileSfioReserveInformation,
+        FileSfioVolumeInformation, 
+        FileHardLinkInformation,
+        FileProcessIdsUsingFileInformation,
+        FileNormalizedNameInformation,
+        FileNetworkPhysicalNameInformation,
+        FileIdGlobalTxDirectoryInformation, // 50
         FileMaximumInformation
     }
 
