@@ -32,8 +32,6 @@ using System.Windows.Forms;
 using ProcessHacker.Native.Objects;
 using ProcessHacker.Native.Security;
 
-// you won't get some of this stuff from anywhere else... :)
-
 namespace ProcessHacker.Native.Api
 {
     public static partial class Win32

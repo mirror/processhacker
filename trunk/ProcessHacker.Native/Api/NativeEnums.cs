@@ -23,7 +23,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ProcessHacker.Native.Api
 {
@@ -213,6 +212,7 @@ namespace ProcessHacker.Native.Api
         FileFsFullSizeInformation,
         FileFsObjectIdInformation,
         FileFsDriverPathInformation,
+        FileFsVolumeFlagsInformation, // 10
         FileFsMaximumInformation
     }
 

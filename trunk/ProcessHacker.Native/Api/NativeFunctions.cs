@@ -27,8 +27,6 @@ using System;
 using System.Runtime.InteropServices;
 using ProcessHacker.Native.Security;
 
-// you won't get most of this stuff from anywhere else... :)
-
 namespace ProcessHacker.Native.Api
 {
     public static partial class Win32

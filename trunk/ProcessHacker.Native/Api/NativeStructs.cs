@@ -44,7 +44,7 @@ namespace ProcessHacker.Native.Api
         public int ThreadId { get { return this.UniqueThread.ToInt32(); } }
     }
 
-    // NOTE: This x86 CONTEXT ONLY
+    // x86 only
     [StructLayout(LayoutKind.Sequential)]
     public struct Context
     {
