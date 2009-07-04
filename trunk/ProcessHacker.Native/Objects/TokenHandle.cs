@@ -205,14 +205,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A TOKEN_ELEVATION_TYPE enum.</returns>
         public TokenElevationType GetElevationType()
         {
-            MemoryAlloc value = new MemoryAlloc(4);
-            int retLen;
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevationType,
-                value, 4, out retLen))
-                Win32.ThrowLastError();
-
-            return (TokenElevationType)value.ReadInt32(0);
+            return (TokenElevationType)this.GetInformationInt32(TokenInformationClass.TokenElevationType);
         }
 
         /// <summary>
@@ -246,6 +239,17 @@ namespace ProcessHacker.Native.Objects
             }
 
             return sids;
+        }
+
+        private int GetInformationInt32(TokenInformationClass infoClass)
+        {
+            int value;
+            int retLen;
+
+            if (!Win32.GetTokenInformation(this, infoClass, out value, sizeof(int), out retLen))
+                Win32.ThrowLastError();
+
+            return value;
         }
 
         /// <summary>
@@ -332,14 +336,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>The session ID.</returns>
         public int GetSessionId()
         {
-            MemoryAlloc sessionId = new MemoryAlloc(4);
-            int retLen;
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenSessionId,
-                sessionId, 4, out retLen))
-                Win32.ThrowLastError();
-
-            return sessionId.ReadInt32(0);
+            return this.GetInformationInt32(TokenInformationClass.TokenSessionId);
         }
 
         /// <summary>
@@ -402,14 +399,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsElevated()
         {
-            MemoryAlloc value = new MemoryAlloc(4);
-            int retLen;
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenElevation,
-                value, 4, out retLen))
-                Win32.ThrowLastError();
-
-            return value.ReadInt32(0) != 0;
+            return this.GetInformationInt32(TokenInformationClass.TokenElevation) != 0;
         }
 
         /// <summary>
@@ -418,14 +408,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsVirtualizationAllowed()
         {
-            MemoryAlloc value = new MemoryAlloc(4);
-            int retLen;
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationAllowed,
-                value, 4, out retLen))
-                Win32.ThrowLastError();
-
-            return value.ReadInt32(0) != 0;
+            return this.GetInformationInt32(TokenInformationClass.TokenVirtualizationAllowed) != 0;
         }
 
         /// <summary>
@@ -434,14 +417,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A boolean.</returns>
         public bool IsVirtualizationEnabled()
         {
-            MemoryAlloc value = new MemoryAlloc(4);
-            int retLen;
-
-            if (!Win32.GetTokenInformation(this, TokenInformationClass.TokenVirtualizationEnabled,
-                value, 4, out retLen))
-                Win32.ThrowLastError();
-
-            return value.ReadInt32(0) != 0;
+            return this.GetInformationInt32(TokenInformationClass.TokenVirtualizationEnabled) != 0;
         }
 
         /// <summary>

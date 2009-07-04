@@ -144,11 +144,11 @@ namespace ProcessHacker
             if (disposing)
                 Monitor.Enter(_busyLock);
 
-            if (_thread != null)
-            {
-                _thread.Abort();
-                _thread = null;
-            }
+            //if (_thread != null)
+            //{
+            //    _thread.Abort();
+            //    _thread = null;
+            //}
 
             if (this.Disposed != null)
             {
@@ -250,7 +250,7 @@ namespace ProcessHacker
         {
             while (true)
             {
-                if (_enabled)
+                if (_enabled && !_disposing)
                 {
                     this.RunOnce();
                 }
