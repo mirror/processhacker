@@ -77,8 +77,7 @@ namespace ProcessHacker.Native.Symbols
 
                 try
                 {
-                    if (!Win32.SymCleanup(_handle))
-                        Win32.ThrowLastError();
+                    Win32.SymCleanup(_handle);
 
                     // If we didn't use a process handle, we got it from the ID generator.
                     if (_processHandle == null)
