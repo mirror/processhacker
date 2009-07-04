@@ -33,7 +33,6 @@
             this.tableCPUs = new System.Windows.Forms.TableLayoutPanel();
             this.plotterCPU = new ProcessHacker.Components.Plotter();
             this.tableGraphs = new System.Windows.Forms.TableLayoutPanel();
-            this.checkShowOneGraphPerCPU = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.plotterIO = new ProcessHacker.Components.Plotter();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -44,6 +43,7 @@
             this.indicatorIO = new ProcessHacker.Components.Indicator();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.indicatorCpu = new ProcessHacker.Components.Indicator();
+            this.checkShowOneGraphPerCPU = new System.Windows.Forms.CheckBox();
             this.flowInfo = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -95,6 +95,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.labelKPPVU = new System.Windows.Forms.Label();
             this.labelKPPF = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.label20 = new System.Windows.Forms.Label();
@@ -132,6 +133,9 @@
             this.label41 = new System.Windows.Forms.Label();
             this.labelCPUInterrupts = new System.Windows.Forms.Label();
             this.checkAlwaysOnTop = new System.Windows.Forms.CheckBox();
+            this.labelKPPL = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.labelKPNPL = new System.Windows.Forms.Label();
             this.gboxCPUPlotter.SuspendLayout();
             this.tableGraphs.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -234,18 +238,6 @@
             this.tableGraphs.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableGraphs.Size = new System.Drawing.Size(818, 228);
             this.tableGraphs.TabIndex = 3;
-            // 
-            // checkShowOneGraphPerCPU
-            // 
-            this.checkShowOneGraphPerCPU.AutoSize = true;
-            this.checkShowOneGraphPerCPU.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(89, 71);
-            this.checkShowOneGraphPerCPU.Name = "checkShowOneGraphPerCPU";
-            this.checkShowOneGraphPerCPU.Size = new System.Drawing.Size(153, 18);
-            this.checkShowOneGraphPerCPU.TabIndex = 3;
-            this.checkShowOneGraphPerCPU.Text = "Show one graph per CPU";
-            this.checkShowOneGraphPerCPU.UseVisualStyleBackColor = true;
-            this.checkShowOneGraphPerCPU.CheckedChanged += new System.EventHandler(this.checkShowOneGraphPerCPU_CheckedChanged);
             // 
             // groupBox2
             // 
@@ -411,6 +403,18 @@
             this.indicatorCpu.Size = new System.Drawing.Size(74, 43);
             this.indicatorCpu.TabIndex = 8;
             this.indicatorCpu.TextValue = "";
+            // 
+            // checkShowOneGraphPerCPU
+            // 
+            this.checkShowOneGraphPerCPU.AutoSize = true;
+            this.checkShowOneGraphPerCPU.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.checkShowOneGraphPerCPU.Location = new System.Drawing.Point(89, 71);
+            this.checkShowOneGraphPerCPU.Name = "checkShowOneGraphPerCPU";
+            this.checkShowOneGraphPerCPU.Size = new System.Drawing.Size(153, 18);
+            this.checkShowOneGraphPerCPU.TabIndex = 3;
+            this.checkShowOneGraphPerCPU.Text = "Show one graph per CPU";
+            this.checkShowOneGraphPerCPU.UseVisualStyleBackColor = true;
+            this.checkShowOneGraphPerCPU.CheckedChanged += new System.EventHandler(this.checkShowOneGraphPerCPU_CheckedChanged);
             // 
             // flowInfo
             // 
@@ -836,7 +840,7 @@
             this.groupBox7.Controls.Add(this.tableLayoutPanel5);
             this.groupBox7.Location = new System.Drawing.Point(204, 94);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(195, 141);
+            this.groupBox7.Size = new System.Drawing.Size(195, 157);
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Kernel Pools";
@@ -846,13 +850,7 @@
             this.tableLayoutPanel5.ColumnCount = 2;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel5.Controls.Add(this.label23, 0, 6);
-            this.tableLayoutPanel5.Controls.Add(this.labelKPNPF, 0, 6);
-            this.tableLayoutPanel5.Controls.Add(this.label21, 0, 5);
-            this.tableLayoutPanel5.Controls.Add(this.labelKPNPA, 0, 5);
-            this.tableLayoutPanel5.Controls.Add(this.label11, 0, 4);
             this.tableLayoutPanel5.Controls.Add(this.label14, 0, 3);
-            this.tableLayoutPanel5.Controls.Add(this.labelKPNPU, 0, 4);
             this.tableLayoutPanel5.Controls.Add(this.label17, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.label18, 0, 2);
             this.tableLayoutPanel5.Controls.Add(this.labelKPPPU, 1, 0);
@@ -860,25 +858,37 @@
             this.tableLayoutPanel5.Controls.Add(this.label12, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.labelKPPVU, 1, 1);
             this.tableLayoutPanel5.Controls.Add(this.labelKPPF, 1, 3);
+            this.tableLayoutPanel5.Controls.Add(this.label29, 0, 4);
+            this.tableLayoutPanel5.Controls.Add(this.labelKPPL, 1, 4);
+            this.tableLayoutPanel5.Controls.Add(this.label33, 0, 8);
+            this.tableLayoutPanel5.Controls.Add(this.labelKPNPL, 1, 8);
+            this.tableLayoutPanel5.Controls.Add(this.labelKPNPF, 1, 7);
+            this.tableLayoutPanel5.Controls.Add(this.label23, 0, 7);
+            this.tableLayoutPanel5.Controls.Add(this.labelKPNPA, 1, 6);
+            this.tableLayoutPanel5.Controls.Add(this.label21, 0, 6);
+            this.tableLayoutPanel5.Controls.Add(this.labelKPNPU, 1, 5);
+            this.tableLayoutPanel5.Controls.Add(this.label11, 0, 5);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 7;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(189, 122);
+            this.tableLayoutPanel5.RowCount = 9;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(189, 138);
             this.tableLayoutPanel5.TabIndex = 1;
             // 
             // label23
             // 
             this.label23.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 105);
+            this.label23.Location = new System.Drawing.Point(3, 106);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(90, 13);
             this.label23.TabIndex = 9;
@@ -888,9 +898,9 @@
             // 
             this.labelKPNPF.AutoEllipsis = true;
             this.labelKPNPF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPF.Location = new System.Drawing.Point(104, 102);
+            this.labelKPNPF.Location = new System.Drawing.Point(104, 105);
             this.labelKPNPF.Name = "labelKPNPF";
-            this.labelKPNPF.Size = new System.Drawing.Size(82, 20);
+            this.labelKPNPF.Size = new System.Drawing.Size(82, 15);
             this.labelKPNPF.TabIndex = 8;
             this.labelKPNPF.Text = "value";
             this.labelKPNPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -899,7 +909,7 @@
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(3, 87);
+            this.label21.Location = new System.Drawing.Point(3, 91);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(92, 13);
             this.label21.TabIndex = 7;
@@ -909,9 +919,9 @@
             // 
             this.labelKPNPA.AutoEllipsis = true;
             this.labelKPNPA.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPA.Location = new System.Drawing.Point(104, 85);
+            this.labelKPNPA.Location = new System.Drawing.Point(104, 90);
             this.labelKPNPA.Name = "labelKPNPA";
-            this.labelKPNPA.Size = new System.Drawing.Size(82, 17);
+            this.labelKPNPA.Size = new System.Drawing.Size(82, 15);
             this.labelKPNPA.TabIndex = 6;
             this.labelKPNPA.Text = "value";
             this.labelKPNPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -920,7 +930,7 @@
             // 
             this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 70);
+            this.label11.Location = new System.Drawing.Point(3, 76);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(95, 13);
             this.label11.TabIndex = 5;
@@ -930,7 +940,7 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 53);
+            this.label14.Location = new System.Drawing.Point(3, 46);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(67, 13);
             this.label14.TabIndex = 3;
@@ -940,9 +950,9 @@
             // 
             this.labelKPNPU.AutoEllipsis = true;
             this.labelKPNPU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPNPU.Location = new System.Drawing.Point(104, 68);
+            this.labelKPNPU.Location = new System.Drawing.Point(104, 75);
             this.labelKPNPU.Name = "labelKPNPU";
-            this.labelKPNPU.Size = new System.Drawing.Size(82, 17);
+            this.labelKPNPU.Size = new System.Drawing.Size(82, 15);
             this.labelKPNPU.TabIndex = 4;
             this.labelKPNPU.Text = "value";
             this.labelKPNPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -951,7 +961,7 @@
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 2);
+            this.label17.Location = new System.Drawing.Point(3, 1);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(67, 13);
             this.label17.TabIndex = 1;
@@ -961,7 +971,7 @@
             // 
             this.label18.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 36);
+            this.label18.Location = new System.Drawing.Point(3, 31);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(69, 13);
             this.label18.TabIndex = 1;
@@ -973,7 +983,7 @@
             this.labelKPPPU.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelKPPPU.Location = new System.Drawing.Point(104, 0);
             this.labelKPPPU.Name = "labelKPPPU";
-            this.labelKPPPU.Size = new System.Drawing.Size(82, 17);
+            this.labelKPPPU.Size = new System.Drawing.Size(82, 15);
             this.labelKPPPU.TabIndex = 1;
             this.labelKPPPU.Text = "value";
             this.labelKPPPU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -982,9 +992,9 @@
             // 
             this.labelKPPA.AutoEllipsis = true;
             this.labelKPPA.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPA.Location = new System.Drawing.Point(104, 34);
+            this.labelKPPA.Location = new System.Drawing.Point(104, 30);
             this.labelKPPA.Name = "labelKPPA";
-            this.labelKPPA.Size = new System.Drawing.Size(82, 17);
+            this.labelKPPA.Size = new System.Drawing.Size(82, 15);
             this.labelKPPA.TabIndex = 1;
             this.labelKPPA.Text = "value";
             this.labelKPPA.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -993,7 +1003,7 @@
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 19);
+            this.label12.Location = new System.Drawing.Point(3, 16);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(59, 13);
             this.label12.TabIndex = 1;
@@ -1003,9 +1013,9 @@
             // 
             this.labelKPPVU.AutoEllipsis = true;
             this.labelKPPVU.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPVU.Location = new System.Drawing.Point(104, 17);
+            this.labelKPPVU.Location = new System.Drawing.Point(104, 15);
             this.labelKPPVU.Name = "labelKPPVU";
-            this.labelKPPVU.Size = new System.Drawing.Size(82, 17);
+            this.labelKPPVU.Size = new System.Drawing.Size(82, 15);
             this.labelKPPVU.TabIndex = 1;
             this.labelKPPVU.Text = "value";
             this.labelKPPVU.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1014,12 +1024,22 @@
             // 
             this.labelKPPF.AutoEllipsis = true;
             this.labelKPPF.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelKPPF.Location = new System.Drawing.Point(104, 51);
+            this.labelKPPF.Location = new System.Drawing.Point(104, 45);
             this.labelKPPF.Name = "labelKPPF";
-            this.labelKPPF.Size = new System.Drawing.Size(82, 17);
+            this.labelKPPF.Size = new System.Drawing.Size(82, 15);
             this.labelKPPF.TabIndex = 2;
             this.labelKPPF.Text = "value";
             this.labelKPPF.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label29
+            // 
+            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(3, 61);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(62, 13);
+            this.label29.TabIndex = 3;
+            this.label29.Text = "Paged Limit";
             // 
             // groupBox8
             // 
@@ -1460,6 +1480,39 @@
             this.checkAlwaysOnTop.UseVisualStyleBackColor = true;
             this.checkAlwaysOnTop.CheckedChanged += new System.EventHandler(this.checkAlwaysOnTop_CheckedChanged);
             // 
+            // labelKPPL
+            // 
+            this.labelKPPL.AutoEllipsis = true;
+            this.labelKPPL.AutoSize = true;
+            this.labelKPPL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPPL.Location = new System.Drawing.Point(104, 60);
+            this.labelKPPL.Name = "labelKPPL";
+            this.labelKPPL.Size = new System.Drawing.Size(82, 15);
+            this.labelKPPL.TabIndex = 10;
+            this.labelKPPL.Text = "value";
+            this.labelKPPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label33
+            // 
+            this.label33.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(3, 122);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(85, 13);
+            this.label33.TabIndex = 9;
+            this.label33.Text = "Non-Paged Limit";
+            // 
+            // labelKPNPL
+            // 
+            this.labelKPNPL.AutoEllipsis = true;
+            this.labelKPNPL.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelKPNPL.Location = new System.Drawing.Point(104, 120);
+            this.labelKPNPL.Name = "labelKPNPL";
+            this.labelKPNPL.Size = new System.Drawing.Size(82, 18);
+            this.labelKPNPL.TabIndex = 8;
+            this.labelKPNPL.Text = "value";
+            this.labelKPNPL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // SysInfoWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1618,5 +1671,9 @@
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.GroupBox groupBox12;
         private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label labelKPPL;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label labelKPNPL;
     }
 }

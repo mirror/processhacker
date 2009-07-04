@@ -37,7 +37,7 @@ namespace ProcessHacker.Native.Api
     public delegate bool EnumThreadWndProc(IntPtr hWnd, uint param);
     public delegate IntPtr WndProcDelegate(IntPtr hWnd, WindowMessage msg, IntPtr wParam, IntPtr lParam);
 
-    public delegate int SymEnumSymbolsProc(IntPtr pSymInfo, int SymbolSize, int UserContext);
+    public delegate bool SymEnumSymbolsProc(IntPtr SymInfo, int SymbolSize, int UserContext);
     public unsafe delegate bool ReadProcessMemoryProc64(IntPtr ProcessHandle, ulong BaseAddress, byte* Buffer,
         int Size, out int BytesRead);
     public delegate IntPtr FunctionTableAccessProc64(IntPtr ProcessHandle, ulong AddrBase);
@@ -67,6 +67,7 @@ namespace ProcessHacker.Native.Api
         public const uint ShgFiIcon = 0x100;
         public const uint ShgFiLargeIcon = 0x0;
         public const uint ShgFiSmallIcon = 0x1;
+        public static readonly int SymbolInfoNameOffset = Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32();
 
         #endregion    
 

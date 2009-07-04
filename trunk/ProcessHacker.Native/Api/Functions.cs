@@ -1492,7 +1492,7 @@ namespace ProcessHacker.Native.Api
             [In] ulong Address
             );
 
-        [DllImport("dbghelp.dll", SetLastError = true)]
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SymEnumSymbols(
             [In] IntPtr ProcessHandle,
@@ -1518,6 +1518,14 @@ namespace ProcessHacker.Native.Api
             [In] ulong BaseOfDll,
             [In] int Index,
             IntPtr Symbol
+            );
+
+        [DllImport("dbghelp.dll", SetLastError = true, CharSet = CharSet.Ansi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SymFromName(
+            [In] IntPtr ProcessHandle,
+            [In] string Name,
+            [In] IntPtr Symbol
             );
 
         [DllImport("dbghelp.dll", SetLastError = true)]

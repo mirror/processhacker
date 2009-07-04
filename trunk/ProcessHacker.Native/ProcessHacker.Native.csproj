@@ -69,6 +69,7 @@
     <Compile Include="Security\PrivilegeSet.cs" />
     <Compile Include="Security\Sid.cs" />
     <Compile Include="Security\Privilege.cs" />
+    <Compile Include="Symbols\SymbolInformation.cs" />
     <Compile Include="Symbols\SymbolResolveLevel.cs" />
     <Compile Include="Symbols\SymbolProvider.cs" />
     <Compile Include="Api\Extensions.cs" />

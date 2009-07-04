@@ -11,6 +11,7 @@ Process Hacker
    * Ability to force terminate threads
    * Ability to create services
    * Ability to set DEP status of processes in other sessions
+   * Pool limits
    * Terminator test: TP1a (TP1, alternative method)
    * Terminator test: TT1a (TT1, alternative method)
    * Terminator test: TT4 (dangerous thread termination)

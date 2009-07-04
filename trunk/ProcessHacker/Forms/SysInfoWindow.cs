@@ -27,12 +27,17 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ProcessHacker.Common;
 using ProcessHacker.Components;
+using ProcessHacker.Native;
 using ProcessHacker.Native.Api;
+using ProcessHacker.Native.Symbols;
 
 namespace ProcessHacker
 {
     public partial class SysInfoWindow : Form
     {
+        private static IntPtr _mmSizeOfPagedPoolInBytes;
+        private static IntPtr _mmMaximumNonPagedPoolInBytes;
+
         private bool _isFirstPaint = true;
         private Components.Plotter[] _cpuPlotters;
         private uint _noOfCPUs = Program.ProcessProvider.System.NumberOfProcessors;
@@ -47,6 +52,29 @@ namespace ProcessHacker
             this.Size = Properties.Settings.Default.SysInfoWindowSize;
             this.Location = Utils.FitRectangle(new Rectangle(
                 Properties.Settings.Default.SysInfoWindowLocation, this.Size), this).Location;
+
+            // Load the pool limit addresses.
+            if (
+                _mmSizeOfPagedPoolInBytes == IntPtr.Zero && 
+                KProcessHacker.Instance != null
+                )
+            {
+                WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+                    {
+                        try
+                        {
+                            SymbolProvider symbols = new SymbolProvider();
+
+                            symbols.LoadModule(Windows.KernelFileName, Windows.KernelBase);
+                            _mmSizeOfPagedPoolInBytes = 
+                                symbols.GetSymbolFromName("MmSizeOfPagedPoolInBytes").Address.ToIntPtr();
+                            _mmMaximumNonPagedPoolInBytes = 
+                                symbols.GetSymbolFromName("MmMaximumNonPagedPoolInBytes").Address.ToIntPtr();
+                        }
+                        catch
+                        { }
+                    }), "load-mm-addresses");
+            }
         }
 
         private void SysInfoWindow_Paint(object sender, PaintEventArgs e)
@@ -208,6 +236,31 @@ namespace ProcessHacker
             plotterMemory.Draw();
         }
 
+        private unsafe void GetPoolLimits(out int paged, out int nonPaged)
+        {
+            int pagedLocal, nonPagedLocal;
+            int retLength;
+
+            // Read the two variables, stored in kernel-mode memory.
+            KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
+                ProcessHacker.Native.Objects.ProcessHandle.GetCurrent(),
+                _mmSizeOfPagedPoolInBytes.ToInt32(),
+                &pagedLocal,
+                sizeof(int),
+                out retLength
+                );
+            KProcessHacker.Instance.KphReadVirtualMemoryUnsafe(
+                ProcessHacker.Native.Objects.ProcessHandle.GetCurrent(),
+                _mmMaximumNonPagedPoolInBytes.ToInt32(),
+                &nonPagedLocal,
+                sizeof(int),
+                out retLength
+                );
+
+            paged = pagedLocal;
+            nonPaged = nonPagedLocal;
+        }
+
         private void UpdateInfo()
         {
             var perfInfo = Program.ProcessProvider.Performance;
@@ -257,6 +310,40 @@ namespace ProcessHacker
             labelKPNPU.Text = Utils.GetNiceSizeName((ulong)perfInfo.NonPagedPoolUsage * _pageSize);
             labelKPNPA.Text = ((ulong)perfInfo.NonPagedPoolAllocs).ToString("N0");
             labelKPNPF.Text = ((ulong)perfInfo.NonPagedPoolFrees).ToString("N0");
+
+            // Get the pool limits
+            int pagedLimit = 0;
+            int nonPagedLimit = 0;
+
+            if (
+                _mmSizeOfPagedPoolInBytes != IntPtr.Zero && 
+                _mmMaximumNonPagedPoolInBytes != IntPtr.Zero && 
+                KProcessHacker.Instance != null
+                )
+            {
+                try
+                {
+                    this.GetPoolLimits(out pagedLimit, out nonPagedLimit);
+                }
+                catch
+                { }
+            }
+
+            if (pagedLimit != 0 && nonPagedLimit != 0)
+            {
+                labelKPPL.Text = Utils.GetNiceSizeName(pagedLimit);
+                labelKPNPL.Text = Utils.GetNiceSizeName(nonPagedLimit);
+            }
+            else if (KProcessHacker.Instance == null)
+            {
+                labelKPPL.Text = "no driver";
+                labelKPNPL.Text = "no driver";
+            }
+            else
+            {
+                labelKPPL.Text = "no symbols";
+                labelKPNPL.Text = "no symbols";
+            }
 
             // Page faults
             labelPFTotal.Text = ((ulong)perfInfo.PageFaults).ToString("N0");

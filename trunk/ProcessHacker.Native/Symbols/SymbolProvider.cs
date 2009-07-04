@@ -32,8 +32,11 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Symbols
 {
+    public delegate bool SymbolEnumDelegate(SymbolInformation symbolInfo);
+ 
     public class SymbolProvider : BaseObject
     {
+        private const int _maxNameLen = 0x100;
         private static IdGenerator _idGen = new IdGenerator();
 
         public static SymbolOptions Options
@@ -146,6 +149,32 @@ namespace ProcessHacker.Native.Symbols
             {
                 using (Win32.DbgHelpLock.AcquireContext())
                     Win32.SymSetSearchPath(_handle, value);
+            }
+        }
+
+        public void EnumSymbols(ulong moduleBase, SymbolEnumDelegate enumDelegate)
+        {
+            this.EnumSymbols(moduleBase, null, enumDelegate);
+        }
+
+        public void EnumSymbols(string mask, SymbolEnumDelegate enumDelegate)
+        {
+            this.EnumSymbols(0, mask, enumDelegate);
+        }
+
+        public void EnumSymbols(ulong moduleBase, string mask, SymbolEnumDelegate enumDelegate)
+        {
+            using (Win32.DbgHelpLock.AcquireContext())
+            {
+                if (!Win32.SymEnumSymbols(
+                    _handle,
+                    moduleBase,
+                    mask,
+                    (symbolInfo, symbolSize, userContext) =>
+                        enumDelegate(new SymbolInformation(symbolInfo, symbolSize)),
+                    IntPtr.Zero
+                    ))
+                    Win32.ThrowLastError();
             }
         }
 
@@ -266,8 +295,6 @@ namespace ProcessHacker.Native.Symbols
 
         public string GetSymbolFromAddress(ulong address, out SymbolResolveLevel level, out SymbolFlags flags, out string fileName, out string symbolName, out ulong displacement)
         {
-            const int maxNameLen = 0x100;
-
             // Assume failure.
             if (address == 0)
             {
@@ -276,12 +303,12 @@ namespace ProcessHacker.Native.Symbols
                 fileName = null;
             }
 
-            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + maxNameLen))
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
             {
                 var info = new SymbolInfo();
 
                 info.SizeOfStruct = Marshal.SizeOf(info);
-                info.MaxNameLen = maxNameLen - 1;
+                info.MaxNameLen = _maxNameLen - 1;
 
                 Marshal.StructureToPtr(info, data, false);
 
@@ -368,8 +395,7 @@ namespace ProcessHacker.Native.Symbols
                 }
 
                 // If we have everything, return the full symbol name: module!symbol+offset.
-                string name = Marshal.PtrToStringAnsi(
-                    new IntPtr(data + Marshal.OffsetOf(typeof(SymbolInfo), "Name").ToInt32()), info.NameLen);
+                string name = Marshal.PtrToStringAnsi(data.Memory.Increment(Win32.SymbolInfoNameOffset), info.NameLen);
 
                 level = SymbolResolveLevel.Function;
                 flags = info.Flags;
@@ -379,6 +405,27 @@ namespace ProcessHacker.Native.Symbols
                     return fi.Name + "!" + name;
                 else
                     return fi.Name + "!" + name + "+0x" + displacement.ToString("x");
+            }
+        }
+
+        public SymbolInformation GetSymbolFromName(string symbolName)
+        {
+            using (var data = new MemoryAlloc(Marshal.SizeOf(typeof(SymbolInfo)) + _maxNameLen))
+            {
+                var info = new SymbolInfo();
+
+                info.SizeOfStruct = Marshal.SizeOf(info);
+                info.MaxNameLen = _maxNameLen - 1;
+
+                Marshal.StructureToPtr(info, data, false);
+
+                using (Win32.DbgHelpLock.AcquireContext())
+                {
+                    if (!Win32.SymFromName(_handle, symbolName, data))
+                        Win32.ThrowLastError();
+                }
+
+                return new SymbolInformation(data, 0);
             }
         }
 
