@@ -48,7 +48,7 @@ namespace ProcessHacker.Native.Security
         { }
 
         public Privilege(TokenHandle tokenHandle, string name, SePrivilegeAttributes attributes)
-            : this(tokenHandle, name, null, attributes)
+            : this(tokenHandle, name, false, Luid.Empty, attributes)
         { }
 
         public Privilege(Luid luid)
@@ -68,10 +68,10 @@ namespace ProcessHacker.Native.Security
         { }
 
         public Privilege(TokenHandle tokenHandle, Luid luid, SePrivilegeAttributes attributes)
-            : this(tokenHandle, null, luid, attributes)
+            : this(tokenHandle, null, true, luid, attributes)
         { }
 
-        private Privilege(TokenHandle tokenHandle, string name, Luid? luid, SePrivilegeAttributes attributes)
+        private Privilege(TokenHandle tokenHandle, string name, bool hasLuid, Luid luid, SePrivilegeAttributes attributes)
             : base(tokenHandle != null)
         {
             _tokenHandle = tokenHandle;
@@ -82,7 +82,7 @@ namespace ProcessHacker.Native.Security
             _name = name;
             _attributes = attributes;
 
-            if (luid == null)
+            if (!hasLuid)
             {
                 if (_name == null)
                     throw new Exception("You must specify either a LUID or a name.");
@@ -92,7 +92,7 @@ namespace ProcessHacker.Native.Security
             }
             else
             {
-                _luid = luid.Value;
+                _luid = luid;
             }
         }
 

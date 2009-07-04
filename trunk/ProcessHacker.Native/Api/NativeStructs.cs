@@ -702,6 +702,7 @@ namespace ProcessHacker.Native.Api
     [StructLayout(LayoutKind.Explicit, Pack = 4)]
     public struct Luid
     {
+        public static readonly Luid Empty = new Luid();
         public static readonly Luid System = new Luid(0x3e7, 0);
         public static readonly Luid AnonymousLogon = new Luid(0x3e6, 0);
         public static readonly Luid LocalService = new Luid(0x3e5, 0);
