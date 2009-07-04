@@ -107,7 +107,10 @@ namespace ProcessHacker.Native.Objects
             else
             {
                 if (!Win32.OpenProcessToken(handle, access, out h))
+                {
+                    this.MarkAsInvalid();
                     Win32.ThrowLastError();
+                }
             }
 
             this.Handle = h;
@@ -133,7 +136,10 @@ namespace ProcessHacker.Native.Objects
             IntPtr h;
 
             if (!Win32.OpenThreadToken(handle, access, openAsSelf, out h))
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError();
+            }
 
             this.Handle = h;
         }
@@ -223,22 +229,23 @@ namespace ProcessHacker.Native.Objects
 
             Win32.GetTokenInformation(this, infoClass, IntPtr.Zero, 0, out retLen);
 
-            MemoryAlloc data = new MemoryAlloc(retLen);
-
-            if (!Win32.GetTokenInformation(this, infoClass, data,
-                data.Size, out retLen))
-                Win32.ThrowLastError();
-
-            uint count = data.ReadUInt32(0);
-            Sid[] sids = new Sid[count];
-
-            for (int i = 0; i < count; i++)
+            using (MemoryAlloc data = new MemoryAlloc(retLen))
             {
-                var saa = data.ReadStruct<SidAndAttributes>(4, i);
-                sids[i] = new Sid(saa.Sid, saa.Attributes);
-            }
+                if (!Win32.GetTokenInformation(this, infoClass, data,
+                    data.Size, out retLen))
+                    Win32.ThrowLastError();
 
-            return sids;
+                uint count = data.ReadUInt32(0);
+                Sid[] sids = new Sid[count];
+
+                for (int i = 0; i < count; i++)
+                {
+                    var saa = data.ReadStruct<SidAndAttributes>(4, i);
+                    sids[i] = new Sid(saa.Sid, saa.Attributes);
+                }
+
+                return sids;
+            }
         }
 
         private int GetInformationInt32(TokenInformationClass infoClass)

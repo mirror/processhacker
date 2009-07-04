@@ -311,6 +311,23 @@ namespace ProcessHacker.Common.Objects
         }
 
         /// <summary>
+        /// Declares that the object should no longer be owned.
+        /// </summary>
+        protected void DisableOwnership(bool dispose)
+        {
+            using (_refMutex.AcquireContext())
+            {
+                this.ClearWeakReferences();
+
+                if (dispose)
+                    this.Dispose();
+
+                this.DisableFinalizer();
+                _owned = false;
+            }
+        }
+
+        /// <summary>
         /// Decrements the reference count of the object.
         /// </summary>
         /// <returns>The old reference count.</returns>

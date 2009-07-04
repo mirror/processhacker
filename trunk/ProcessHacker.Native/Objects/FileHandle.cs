@@ -63,7 +63,10 @@ namespace ProcessHacker.Native.Objects
             this.Handle = Win32.CreateFile(fileName, desiredAccess, shareMode, 0, creationDisposition, 0, IntPtr.Zero);
 
             if (this.Handle.ToInt32() == -1)
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError();
+            }
         }
 
         public string GetFileName()

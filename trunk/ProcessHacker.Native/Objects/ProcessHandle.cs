@@ -268,6 +268,14 @@ namespace ProcessHacker.Native.Objects
         /// Opens a process.
         /// </summary>
         /// <param name="pid">The ID of the process to open.</param>
+        public ProcessHandle(int pid)
+            : this(pid, ProcessAccess.All)
+        { }
+
+        /// <summary>
+        /// Opens a process.
+        /// </summary>
+        /// <param name="pid">The ID of the process to open.</param>
         /// <param name="access">The desired access to the process.</param>
         public ProcessHandle(int pid, ProcessAccess access)
         {
@@ -295,16 +303,11 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (this.Handle == IntPtr.Zero)
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError();
+            }
         }
-
-        /// <summary>
-        /// Opens a process.
-        /// </summary>
-        /// <param name="pid">The ID of the process to open.</param>
-        public ProcessHandle(int pid)
-            : this(pid, ProcessAccess.All)
-        { }
 
         /// <summary>
         /// Opens a thread's process.

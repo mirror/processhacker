@@ -30,6 +30,9 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a generic Windows handle which acts as a kernel handle by default.
     /// </summary>
+    /// <remarks>
+    /// Handle values of 0 and -1 are considered to be invalid.
+    /// </remarks>
     public class NativeHandle : BaseObject, IEquatable<NativeHandle>, ISecurable, ISynchronizable
     {
         public static NtStatus WaitAll(ISynchronizable[] objects)
@@ -145,7 +148,8 @@ namespace ProcessHacker.Native.Objects
         /// </summary>
         protected virtual void Close()
         {
-            Win32.CloseHandle(_handle);
+            if (_handle != IntPtr.Zero && _handle.ToInt32() != -1)
+                Win32.CloseHandle(_handle);
         }
 
         /// <summary>
@@ -311,6 +315,15 @@ namespace ProcessHacker.Native.Objects
 
             if ((status = Win32.NtMakeTemporaryObject(this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        /// <summary>
+        /// Marks the handle as invalid. This method must only be called from 
+        /// within a derived class constructor.
+        /// </summary>
+        protected void MarkAsInvalid()
+        {
+            this.DisableOwnership(false);
         }
 
         /// <summary>

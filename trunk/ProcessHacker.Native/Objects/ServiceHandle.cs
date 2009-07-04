@@ -68,7 +68,10 @@ namespace ProcessHacker.Native.Objects
                 this.Handle = Win32.OpenService(manager, serviceName, access);
 
                 if (this.Handle == IntPtr.Zero)
+                {
+                    this.MarkAsInvalid();
                     Win32.ThrowLastError();
+                }
             }
         }
 

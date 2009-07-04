@@ -2344,7 +2344,10 @@ namespace ProcessHacker
                 string displayName = session.DomainName + "\\" + session.UserName;
 
                 if (displayName == "\\")
+                {
+                    session.Dispose();
                     continue;
+                }
 
                 MenuItem userMenuItem = new MenuItem();
 
@@ -2430,6 +2433,7 @@ namespace ProcessHacker
                 userMenuItem.MenuItems.Add(currentMenuItem);
 
                 usersMenuItem.MenuItems.Add(userMenuItem);
+                session.Dispose();
             }
         }
 
@@ -2845,9 +2849,9 @@ namespace ProcessHacker
 
             try
             {
-                this.Text +=
-                    " [" + ProcessHandle.GetCurrent().GetToken(TokenAccess.Query).GetUser().GetFullName(true) +
-                    (KProcessHacker.Instance != null ? "+" : "") + "]";
+                using (var thandle = ProcessHandle.GetCurrent().GetToken(TokenAccess.Query))
+                using (var sid = thandle.GetUser())
+                    this.Text += " [" + sid.GetFullName(true) + (KProcessHacker.Instance != null ? "+" : "") + "]";
             }
             catch
             { }

@@ -155,80 +155,82 @@ namespace ProcessHacker.Native
 
             if (result == VerifyResult.NoSignature)
             {
-                FileHandle sourceFile = new FileHandle(fileName, FileAccess.GenericRead, FileShareMode.Read,
-                    FileCreationDisposition.OpenExisting);
-                byte[] hash = new byte[256];
-                int hashLength = 256;
-
-                if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
+                using (FileHandle sourceFile = new FileHandle(fileName, FileAccess.GenericRead, FileShareMode.Read,
+                    FileCreationDisposition.OpenExisting))
                 {
-                    hash = new byte[hashLength];
+                    byte[] hash = new byte[256];
+                    int hashLength = 256;
 
                     if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
-                        return VerifyResult.NoSignature;
-                }
-
-                StringBuilder memberTag = new StringBuilder(hashLength * 2);
-
-                for (int i = 0; i < hashLength; i++)
-                    memberTag.Append(hash[i].ToString("X2"));
-
-                IntPtr catAdmin;
-
-                if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DriverActionVerify, 0))
-                    return VerifyResult.NoSignature;
-
-                IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
-
-                if (catInfo == IntPtr.Zero)
-                {
-                    Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                    return VerifyResult.NoSignature;
-                }
-
-                CatalogInfo ci;
-
-                if (!Win32.CryptCATCatalogInfoFromContext(catInfo, out ci, 0))
-                {
-                    Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
-                    Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                    return VerifyResult.NoSignature;
-                }
-
-                WintrustCatalogInfo wci = new WintrustCatalogInfo();
-
-                wci.Size = Marshal.SizeOf(wci);
-                wci.CatalogFilePath = ci.CatalogFile;
-                wci.MemberFilePath = fileName;
-                wci.MemberTag = memberTag.ToString();
-
-                WintrustData trustData = new WintrustData();
-
-                trustData.Size = 12 * 4;
-                trustData.UIChoice = 1;
-                trustData.UnionChoice = 2;
-                trustData.RevocationChecks = WtRevocationChecks.None;
-
-                if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
-                    trustData.ProvFlags = WtProvFlags.CacheOnlyUrlRetrieval;
-
-                using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
-                {
-                    Marshal.StructureToPtr(wci, mem, false);
-
-                    try
                     {
-                        trustData.UnionData = mem;
+                        hash = new byte[hashLength];
 
-                        uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
-
-                        result = StatusToVerifyResult(winTrustResult);
+                        if (!Win32.CryptCATAdminCalcHashFromFileHandle(sourceFile, ref hashLength, hash, 0))
+                            return VerifyResult.NoSignature;
                     }
-                    finally
+
+                    StringBuilder memberTag = new StringBuilder(hashLength * 2);
+
+                    for (int i = 0; i < hashLength; i++)
+                        memberTag.Append(hash[i].ToString("X2"));
+
+                    IntPtr catAdmin;
+
+                    if (!Win32.CryptCATAdminAcquireContext(out catAdmin, DriverActionVerify, 0))
+                        return VerifyResult.NoSignature;
+
+                    IntPtr catInfo = Win32.CryptCATAdminEnumCatalogFromHash(catAdmin, hash, hashLength, 0, IntPtr.Zero);
+
+                    if (catInfo == IntPtr.Zero)
+                    {
+                        Win32.CryptCATAdminReleaseContext(catAdmin, 0);
+                        return VerifyResult.NoSignature;
+                    }
+
+                    CatalogInfo ci;
+
+                    if (!Win32.CryptCATCatalogInfoFromContext(catInfo, out ci, 0))
                     {
                         Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
                         Win32.CryptCATAdminReleaseContext(catAdmin, 0);
-                        Marshal.DestroyStructure(mem, typeof(WintrustCatalogInfo));
+                        return VerifyResult.NoSignature;
+                    }
+
+                    WintrustCatalogInfo wci = new WintrustCatalogInfo();
+
+                    wci.Size = Marshal.SizeOf(wci);
+                    wci.CatalogFilePath = ci.CatalogFile;
+                    wci.MemberFilePath = fileName;
+                    wci.MemberTag = memberTag.ToString();
+
+                    WintrustData trustData = new WintrustData();
+
+                    trustData.Size = 12 * 4;
+                    trustData.UIChoice = 1;
+                    trustData.UnionChoice = 2;
+                    trustData.RevocationChecks = WtRevocationChecks.None;
+
+                    if (OSVersion.IsAboveOrEqual(WindowsVersion.Vista))
+                        trustData.ProvFlags = WtProvFlags.CacheOnlyUrlRetrieval;
+
+                    using (MemoryAlloc mem = new MemoryAlloc(wci.Size))
+                    {
+                        Marshal.StructureToPtr(wci, mem, false);
+
+                        try
+                        {
+                            trustData.UnionData = mem;
+
+                            uint winTrustResult = Win32.WinVerifyTrust(IntPtr.Zero, DriverActionVerify, ref trustData);
+
+                            result = StatusToVerifyResult(winTrustResult);
+                        }
+                        finally
+                        {
+                            Win32.CryptCATAdminReleaseCatalogContext(catAdmin, catInfo, 0);
+                            Win32.CryptCATAdminReleaseContext(catAdmin, 0);
+                            Marshal.DestroyStructure(mem, typeof(WintrustCatalogInfo));
+                        }
                     }
                 }
             }

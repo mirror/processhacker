@@ -222,7 +222,10 @@ namespace ProcessHacker.Native.Objects
             }
 
             if (this.Handle == IntPtr.Zero)
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError();
+            }
         }
 
         public ThreadHandle(

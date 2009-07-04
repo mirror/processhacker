@@ -130,7 +130,10 @@ namespace ProcessHacker.Native.Objects
 
             // If we don't have a handle assume the process isn't in a job.
             if (this.Handle == IntPtr.Zero)
+            {
+                this.MarkAsInvalid();
                 Win32.ThrowLastError(NtStatus.ProcessNotInJob);
+            }
         }
 
         private T QueryStruct<T>(JobObjectInformationClass informationClass)

@@ -922,8 +922,14 @@ namespace ProcessHacker
                                 {
                                     using (var thandle = queryLimitedHandle.GetToken(TokenAccess.Query))
                                     {
-                                        try { item.Username = thandle.GetUser().GetFullName(true); }
-                                        catch { }
+                                        try
+                                        {
+                                            using (var sid = thandle.GetUser())
+                                                item.Username = sid.GetFullName(true);
+                                        }
+                                        catch
+                                        { }
+
                                         try { item.ElevationType = thandle.GetElevationType(); }
                                         catch { }
                                         try { item.IsElevated = thandle.IsElevated(); }

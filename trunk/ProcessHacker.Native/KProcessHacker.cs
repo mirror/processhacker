@@ -100,7 +100,6 @@ namespace ProcessHacker.Native
         private string _deviceName;
         private FileHandle _fileHandle;
         private uint _baseControlNumber;
-        private ServiceHandle _service;
         private KphFeatures _features;
 
         /// <summary>
@@ -129,7 +128,7 @@ namespace ProcessHacker.Native
 
             bool started = false;
 
-            // delete the service if it exists
+            // Delete the service if it exists.
             try
             {
                 using (var shandle = new ServiceHandle(deviceName))
@@ -143,18 +142,20 @@ namespace ProcessHacker.Native
             catch
             { }
 
+            ServiceHandle service = null;
+
             try
             {
-                ServiceManagerHandle scm =
-                    new ServiceManagerHandle(ScManagerAccess.CreateService);
-
-                _service = scm.CreateService(
-                    deviceName,
-                    deviceName,
-                    ServiceType.KernelDriver,
-                    fileName
-                    );
-                _service.Start();
+                using (var scm = new ServiceManagerHandle(ScManagerAccess.CreateService))
+                {
+                    service = scm.CreateService(
+                        deviceName,
+                        deviceName,
+                        ServiceType.KernelDriver,
+                        fileName
+                        );
+                    service.Start();
+                }
             }
             catch
             { }
@@ -169,11 +170,17 @@ namespace ProcessHacker.Native
 
             try
             {
-                if (!started)
-                    _service.Delete(); // the service will automatically get deleted once it stops
+                if (service != null)
+                {
+                    if (!started)
+                        service.Delete(); // the service will automatically get deleted once it stops
+                }
             }
             catch
             { }
+
+            if (service != null)
+                service.Dispose();
 
             byte[] bytes = _fileHandle.Read(4);
 
