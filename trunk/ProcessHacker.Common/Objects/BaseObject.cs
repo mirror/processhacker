@@ -144,7 +144,7 @@ namespace ProcessHacker.Common.Objects
 
             // Don't need to finalize the object if it doesn't need to be disposed.
             if (!_owned)
-                GC.SuppressFinalize(this);
+                this.DisableFinalizer();
 
             Interlocked.Increment(ref _createdCount);
 #if DEBUG
@@ -161,8 +161,7 @@ namespace ProcessHacker.Common.Objects
             // Get rid of GC ownership if still present.
             this.Dispose(false);
             // Zero the weak reference count.
-            this.Dereference(_weakRefCount, false);
-            _weakRefCount = 0;
+            this.ClearWeakReferences();
         }
 
         /// <summary>
@@ -285,6 +284,15 @@ namespace ProcessHacker.Common.Objects
         public int WeakReferenceCount
         {
             get { return Thread.VolatileRead(ref _weakRefCount); }
+        }
+
+        /// <summary>
+        /// Removes all weak references.
+        /// </summary>
+        private void ClearWeakReferences()
+        {
+            this.Dereference(_weakRefCount, false);
+            _weakRefCount = 0;
         }
 
         /// <summary>
@@ -473,6 +481,7 @@ namespace ProcessHacker.Common.Objects
                 return 0;
 
             Thread.BeginCriticalRegion();
+            _refMutex.Acquire();
 
             try
             {
@@ -482,6 +491,7 @@ namespace ProcessHacker.Common.Objects
             }
             finally
             {
+                _refMutex.Release();
                 Thread.EndCriticalRegion();
             }
         }
