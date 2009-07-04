@@ -970,7 +970,6 @@ namespace ProcessHacker
             this.listMemory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.listMemory.AutomaticSort = false;
             this.listMemory.DoubleBuffered = true;
             this.listMemory.Location = new System.Drawing.Point(6, 54);
             this.listMemory.Name = "listMemory";

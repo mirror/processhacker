@@ -47,7 +47,12 @@ namespace ProcessHacker.Native
         /// <summary>
         /// Windows 7 SP0.
         /// </summary>
-        Seven = 61
+        Seven = 61,
+
+        /// <summary>
+        /// An unreleased version of Windows.
+        /// </summary>
+        Unreleased = int.MaxValue
     }
 
     public static class OSVersion
@@ -77,8 +82,10 @@ namespace ProcessHacker.Native
                 _windowsVersion = WindowsVersion.Server2003;
             else if (version.Major == 6 && version.Minor == 0)
                 _windowsVersion = WindowsVersion.Vista;
-            else if ((version.Major == 6 && version.Minor >= 1) || version.Major > 6)
+            else if (version.Major == 6 && version.Minor == 1)
                 _windowsVersion = WindowsVersion.Seven;
+            else if ((version.Major == 6 && version.Minor > 1) || version.Major > 6)
+                _windowsVersion = WindowsVersion.Unreleased;
 
             if (IsBelow(WindowsVersion.Vista))
             {

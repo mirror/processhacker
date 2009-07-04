@@ -58,7 +58,7 @@ namespace ProcessHacker.Common
                 throw new ArgumentNullException("source");
 
             // If we're trying to take more than we have, return the original set.
-            if(count >= source.Count)
+            if (count >= source.Count)
                 return source;
 
             // Create a new list containing the elements.

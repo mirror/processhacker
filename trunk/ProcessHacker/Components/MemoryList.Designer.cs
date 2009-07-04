@@ -68,9 +68,7 @@
             this.listMemory.TabIndex = 3;
             this.listMemory.UseCompatibleStateImageBehavior = false;
             this.listMemory.View = System.Windows.Forms.View.Details;
-            this.listMemory.VirtualMode = true;
             this.listMemory.DoubleClick += new System.EventHandler(this.listMemory_DoubleClick);
-            this.listMemory.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listMemory_RetrieveVirtualItem);
             // 
             // columnName
             // 
@@ -93,6 +91,7 @@
             // vistaMenu
             // 
             this.vistaMenu.ContainerControl = this;
+            this.vistaMenu.DelaySetImageCalls = false;
             // 
             // changeMemoryProtectionMemoryMenuItem
             // 

@@ -678,7 +678,7 @@ namespace ProcessHacker
         {
             listThreads.List.AddShortcuts();
             listModules.List.AddShortcuts();
-            listMemory.List.AddShortcuts(listMemory.listMemory_RetrieveVirtualItem);
+            listMemory.List.AddShortcuts();
             listHandles.List.AddShortcuts();
             listEnvironment.AddShortcuts();
         }
@@ -866,8 +866,7 @@ namespace ProcessHacker
             plotterIO.LineColor1 = Properties.Settings.Default.PlotterIOROColor;
             plotterIO.LineColor2 = Properties.Settings.Default.PlotterIOWColor;          
 
-
-            // update graphs
+            // Update the graphs.
             long sysTotal = sysProvider.LongDeltas[SystemStats.CpuKernel] + sysProvider.LongDeltas[SystemStats.CpuUser]
                 + sysProvider.LongDeltas[SystemStats.CpuOther];
             float procKernel = (float)item.DeltaManager[ProcessStats.CpuKernel] / sysTotal;
@@ -894,13 +893,13 @@ namespace ProcessHacker
             plotterIO.MoveGrid();
             plotterIO.Draw();
 
-            //Update the CPU indicator.
+            // Update the CPU indicator.
             indicatorCpu.Maximum = (int)((procKernel + procUser) * int.MaxValue);
             indicatorCpu.Data1 = (int)(procKernel * indicatorCpu.Maximum);
             indicatorCpu.Data2 = (int)(procUser * indicatorCpu.Maximum);
             indicatorCpu.TextValue = cpuStr;
 
-            //Update the Pvt indicator. 
+            // Update the Pvt. Memory indicator. 
             int count = plotterIO.Width / plotterIO.EffectiveMoveStep;
             long maxPvt = _processItem.LongHistoryManager[ProcessStats.PrivateMemory].Take(count).Max();
             long maxWS = _processItem.LongHistoryManager[ProcessStats.WorkingSet].Take(count).Max();
@@ -911,7 +910,7 @@ namespace ProcessHacker
             indicatorPvt.Data1 = item.Process.VirtualMemoryCounters.PrivateBytes;
             indicatorPvt.TextValue = pvtString;
 
-            //Update the I/O Bytes
+            // Update the I/O Bytes indicator.
             long maxRO = _processItem.LongHistoryManager[ProcessStats.IoReadOther].Take(count).Max();
             long maxW = _processItem.LongHistoryManager[ProcessStats.IoWrite].Take(count).Max();
             if (maxRO > maxW)
@@ -1070,7 +1069,6 @@ namespace ProcessHacker
         {
             checkHideFreeRegions.Enabled = false;
             this.Cursor = Cursors.WaitCursor;
-            listMemory.AutomaticSort = false;
             listMemory.BeginUpdate();
             _memoryP.IgnoreFreeRegions = checkHideFreeRegions.Checked;
             _memoryP.Updated += new MemoryProvider.ProviderUpdateOnce(_memoryP_Updated);
@@ -1166,8 +1164,6 @@ namespace ProcessHacker
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    listMemory.Sort();
-                    listMemory.AutomaticSort = true;
                     listMemory.EndUpdate();
                     listMemory.Refresh();
                     checkHideFreeRegions.Enabled = true;
