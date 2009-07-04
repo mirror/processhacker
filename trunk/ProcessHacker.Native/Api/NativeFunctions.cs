@@ -1600,15 +1600,15 @@ namespace ProcessHacker.Native.Api
         [DllImport("ntdll.dll")]
         public static extern NtStatus RtlCreateUserProcess(
             [In] ref UnicodeString NtImagePathName,
-            [In] int Attributes,
-            [In] IntPtr ProcessParameters,
+            [In] ObjectFlags Attributes,
+            [In] ref RtlUserProcessParameters ProcessParameters,
             [In] IntPtr ProcessSecurityDescriptor,
             [In] IntPtr ThreadSecurityDescriptor,
             [In] IntPtr ParentProcess,
             [In] bool InheritHandles,
             [In] IntPtr DebugPort,
             [In] IntPtr ExceptionPort,
-            [In] ref RtlUserProcessInformation ProcessInformation
+            [Out] out RtlUserProcessInformation ProcessInformation
             );
 
         [DllImport("ntdll.dll")]

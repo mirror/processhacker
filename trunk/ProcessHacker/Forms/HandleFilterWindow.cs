@@ -131,7 +131,8 @@ namespace ProcessHacker
                     IntPtr handle = new IntPtr((int)BaseConverter.ToNumberParse(listHandles.Items[index].SubItems[3].Text));
 
                     using (ProcessHandle process =
-                           new ProcessHandle((int)listHandles.Items[index].Tag, ProcessAccess.DupHandle))
+                           new ProcessHandle(((SystemHandleInformation)listHandles.SelectedItems[0].Tag).ProcessId, 
+                               ProcessAccess.DupHandle))
                     {
                         Win32.DuplicateObject(process.Handle, handle, 0, 0, DuplicateOptions.CloseSource);
                         remove.Add(listHandles.Items[index]);

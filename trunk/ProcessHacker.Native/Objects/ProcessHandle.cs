@@ -22,12 +22,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Security;
-using System.Collections.ObjectModel;
 
 namespace ProcessHacker.Native.Objects
 {
@@ -57,27 +57,39 @@ namespace ProcessHacker.Native.Objects
         public delegate bool EnumModulesDelegate(ProcessModule module);
 
         /// <summary>
-        /// Creates a process.
+        /// Creates a process and an initial thread.
         /// </summary>
         /// <param name="access">The desired access to the new process.</param>
         /// <param name="fileName">The path to an executable image file.</param>
         /// <param name="inheritHandles">Specify true to inherit handles, otherwise false.</param>
+        /// <param name="threadHandle">A handle to the new thread.</param>
         /// <returns>A handle to the new process.</returns>
-        public static ProcessHandle Create(ProcessAccess access, string fileName, bool inheritHandles)
+        public static ProcessHandle Create(ProcessAccess access, string fileName, bool inheritHandles, out ThreadHandle threadHandle)
         {
             using (var fhandle = new FileHandle(
                 fileName,
                 (FileAccess)StandardRights.Synchronize | FileAccess.Execute | FileAccess.ReadData,
-                FileShareMode.Delete | FileShareMode.Read, FileCreationDisposition.OpenAlways))
+                FileShareMode.Delete | FileShareMode.Read, FileCreationDisposition.OpenAlways
+                ))
             {
                 using (var shandle = 
                     SectionHandle.Create(
                     SectionAccess.All,
                     SectionAttributes.Image,
                     MemoryProtection.Execute,
-                    fhandle))
+                    fhandle
+                    ))
                 {
-                    return Create(access, ProcessHandle.GetCurrent(), inheritHandles, shandle);
+                    ProcessHandle phandle = Create(access, ProcessHandle.GetCurrent(), inheritHandles, shandle);
+
+                    threadHandle = ThreadHandle.CreateUserThread(
+                        phandle,
+                        false,
+                        shandle.GetImageInformation().TransferAddress,
+                        IntPtr.Zero
+                        );
+
+                    return phandle;
                 }
             }
         }
@@ -146,6 +158,50 @@ namespace ProcessHacker.Native.Objects
             }
 
             return new ProcessHandle(handle, true);
+        }
+
+        public static ProcessHandle CreateUserProcess(string fileName, out ClientId clientId, out ThreadHandle threadHandle)
+        {
+            NtStatus status;
+            UnicodeString fileNameStr = new UnicodeString(fileName);
+            RtlUserProcessParameters processParams = new RtlUserProcessParameters();
+            RtlUserProcessInformation processInfo;
+
+            processParams.Length = Marshal.SizeOf(processParams);
+            processParams.MaximumLength = processParams.Length;
+            processParams.ImagePathName = new UnicodeString(fileName);
+            processParams.CommandLine = new UnicodeString(fileName);
+
+            Win32.RtlCreateEnvironment(true, out processParams.Environment);
+
+            try
+            {
+                if ((status = Win32.RtlCreateUserProcess(
+                    ref fileNameStr,
+                    0,
+                    ref processParams,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    false,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    out processInfo
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+
+                clientId = processInfo.ClientId;
+                threadHandle = new ThreadHandle(processInfo.Thread, true);
+
+                return new ProcessHandle(processInfo.Process, true);
+            }
+            finally
+            {
+                fileNameStr.Dispose();
+                processParams.ImagePathName.Dispose();
+                processParams.CommandLine.Dispose();
+                Win32.RtlDestroyEnvironment(processParams.Environment);
+            }
         }
 
         /// <summary>

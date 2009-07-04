@@ -74,6 +74,46 @@ namespace ProcessHacker.Native.Objects
             return new ThreadHandle(handle, true);
         }
 
+        public static ThreadHandle CreateUserThread(
+            ProcessHandle processHandle,
+            bool createSuspended,
+            IntPtr startAddress,
+            IntPtr parameter
+            )
+        {
+            ClientId clientId;
+
+            return CreateUserThread(processHandle, createSuspended, startAddress, parameter, out clientId);
+        }
+
+        public static ThreadHandle CreateUserThread(
+            ProcessHandle processHandle,
+            bool createSuspended,
+            IntPtr startAddress,
+            IntPtr parameter,
+            out ClientId clientId
+            )
+        {
+            NtStatus status;
+            IntPtr threadHandle;
+
+            if ((status = Win32.RtlCreateUserThread(
+                processHandle,
+                IntPtr.Zero,
+                createSuspended,
+                0,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                startAddress,
+                parameter,
+                out threadHandle,
+                out clientId
+                )) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return new ThreadHandle(threadHandle, true);
+        }
+
         /// <summary>
         /// Creates a thread handle using an existing handle. 
         /// The handle will not be closed automatically.

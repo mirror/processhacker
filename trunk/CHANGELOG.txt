@@ -35,6 +35,8 @@ Process Hacker
    * Window location problem when hiding and restoring the window
    * ObjectDisposedExceptions when closing search options windows
    * "Inject DLL" menu item enabling problem
+   * InvalidCastException when attempting to close handles in 
+     the handle filter window
 
 1.3.8.5
  * NEW/IMPROVED:
