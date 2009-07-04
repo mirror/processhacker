@@ -50,7 +50,7 @@ namespace ProcessHacker.Common.Objects
     /// the object will be freed.
     /// </para>
     /// </remarks>
-    public abstract class BaseObject : IDisposable, IReferenceCountedObject
+    public abstract class BaseObject : IDisposable, IRefCounted
     {
         private static int _createdCount = 0;
         private static int _freedCount = 0;

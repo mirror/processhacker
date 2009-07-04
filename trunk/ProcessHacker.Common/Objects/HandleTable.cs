@@ -27,7 +27,7 @@ namespace ProcessHacker.Common.Objects
     public class HandleTableEntry
     {
         private int _handle;
-        private IReferenceCountedObject _object;
+        private IRefCounted _object;
 
         public int Handle
         {
@@ -35,7 +35,7 @@ namespace ProcessHacker.Common.Objects
             internal set { _handle = value; }
         }
 
-        public IReferenceCountedObject Object
+        public IRefCounted Object
         {
             get { return _object; }
             internal set { _object = value; }
@@ -81,7 +81,7 @@ namespace ProcessHacker.Common.Objects
         /// </summary>
         /// <param name="obj">The object to reference.</param>
         /// <returns>The new handle.</returns>
-        public int Allocate(IReferenceCountedObject obj)
+        public int Allocate(IRefCounted obj)
         {
             TEntry entry = new TEntry();
 
@@ -94,7 +94,7 @@ namespace ProcessHacker.Common.Objects
         /// <param name="obj">The object to reference.</param>
         /// <param name="entry">The handle table entry to use.</param>
         /// <returns>The new handle.</returns>
-        public int Allocate(IReferenceCountedObject obj, TEntry entry)
+        public int Allocate(IRefCounted obj, TEntry entry)
         {
             int handle = _handleGenerator.Pop();
 
@@ -142,7 +142,7 @@ namespace ProcessHacker.Common.Objects
         /// <returns>Whether the handle was closed.</returns>
         public bool Free(int handle)
         {
-            IReferenceCountedObject obj;
+            IRefCounted obj;
 
             lock (_handles)
             {
@@ -187,7 +187,7 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has not been referenced and is 
         /// not guaranteed to be valid.
         /// </returns>
-        public IReferenceCountedObject LookupObject(int handle)
+        public IRefCounted LookupObject(int handle)
         {
             return this.LookupEntry(handle).Object;
         }
@@ -202,7 +202,7 @@ namespace ProcessHacker.Common.Objects
         /// not guaranteed to be valid.
         /// </returns>
         public T LookupObject<T>(int handle)
-            where T : class, IReferenceCountedObject
+            where T : class, IRefCounted
         {
             return this.LookupObject(handle) as T;
         }
@@ -215,7 +215,7 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has been referenced and must be 
         /// dereferenced once it is no longer needed.
         /// </returns>
-        public IReferenceCountedObject ReferenceByHandle(int handle)
+        public IRefCounted ReferenceByHandle(int handle)
         {
             TEntry entry;
             return this.ReferenceByHandle(handle, out entry);
@@ -230,13 +230,13 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has been referenced and must be 
         /// dereferenced once it is no longer needed.
         /// </returns>
-        public IReferenceCountedObject ReferenceByHandle(int handle, out TEntry entry)
+        public IRefCounted ReferenceByHandle(int handle, out TEntry entry)
         {
             lock (_handles)
             {
                 if (_handles.ContainsKey(handle))
                 {
-                    IReferenceCountedObject obj = _handles[handle].Object;
+                    IRefCounted obj = _handles[handle].Object;
 
                     obj.Reference();
                     entry = _handles[handle];
@@ -261,7 +261,7 @@ namespace ProcessHacker.Common.Objects
         /// dereferenced once it is no longer needed.
         /// </returns>
         public T ReferenceByHandle<T>(int handle)
-            where T : class, IReferenceCountedObject
+            where T : class, IRefCounted
         {
             TEntry entry;
             return this.ReferenceByHandle<T>(handle, out entry);
@@ -278,9 +278,9 @@ namespace ProcessHacker.Common.Objects
         /// dereferenced once it is no longer needed.
         /// </returns>
         public T ReferenceByHandle<T>(int handle, out TEntry entry)
-            where T : class, IReferenceCountedObject
+            where T : class, IRefCounted
         {
-            IReferenceCountedObject obj = this.ReferenceByHandle(handle, out entry);
+            IRefCounted obj = this.ReferenceByHandle(handle, out entry);
 
             if (obj == null)
                 return null;

@@ -2,7 +2,7 @@
 
 namespace ProcessHacker.Common.Objects
 {
-    public interface IReferenceCountedObject : IDisposable
+    public interface IRefCounted : IDisposable
     {
         /// <summary>
         /// Decrements the reference count of the object.

@@ -64,7 +64,7 @@
     <Compile Include="HistoryManager.cs" />
     <Compile Include="IdGenerator.cs" />
     <Compile Include="Objects\BaseObject.cs" />
-    <Compile Include="Objects\IReferenceCountedObject.cs" />
+    <Compile Include="Objects\IRefCounted.cs" />
     <Compile Include="IResettable.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Messaging\MessageQueue.cs" />
