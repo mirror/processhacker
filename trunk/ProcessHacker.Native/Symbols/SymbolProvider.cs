@@ -34,8 +34,71 @@ namespace ProcessHacker.Native.Symbols
 {
     public delegate bool SymbolEnumDelegate(SymbolInformation symbolInfo);
 
-    public sealed class SymbolProvider : BaseObject
+    public sealed class SymbolProvider : IDisposable
     {
+        private sealed class SymbolHandle : BaseObject
+        {
+            private ProcessHandle _processHandle;
+            private IntPtr _handle;
+
+            public static implicit operator IntPtr(SymbolHandle symbolHandle)
+            {
+                return symbolHandle.Handle;
+            }
+
+            public SymbolHandle()
+            {
+                _handle = new IntPtr(_idGen.Pop());
+
+                using (Win32.DbgHelpLock.AcquireContext())
+                {
+                    if (!Win32.SymInitialize(_handle, null, false))
+                        Win32.ThrowLastError();
+                }
+            }
+
+            public SymbolHandle(ProcessHandle processHandle)
+            {
+                _processHandle = processHandle;
+                _handle = processHandle;
+
+                using (Win32.DbgHelpLock.AcquireContext())
+                {
+                    if (!Win32.SymInitialize(_handle, null, false))
+                        Win32.ThrowLastError();
+                }
+
+                _processHandle.Reference();
+            }
+
+            protected override void DisposeObject(bool disposing)
+            {
+                Win32.DbgHelpLock.Acquire();
+
+                try
+                {
+                    if (!Win32.SymCleanup(_handle))
+                        Win32.ThrowLastError();
+
+                    // If we didn't use a process handle, we got it from the ID generator.
+                    if (_processHandle == null)
+                        _idGen.Push(_handle.ToInt32());
+                    // Otherwise, dereference the process handle.
+                    else
+                        _processHandle.Dereference(disposing);
+                }
+                finally
+                {
+                    Win32.DbgHelpLock.Release();
+                }
+            }
+
+            public IntPtr Handle
+            {
+                get { return _handle; }
+            }
+        }
+
         private const int _maxNameLen = 0x100;
         private static IdGenerator _idGen = new IdGenerator();
 
@@ -54,55 +117,22 @@ namespace ProcessHacker.Native.Symbols
             }
         }
 
-        private ProcessHandle _processHandle;
-        private IntPtr _handle;
+        private SymbolHandle _handle;
         private List<KeyValuePair<ulong, string>> _modules = new List<KeyValuePair<ulong, string>>();
 
         public SymbolProvider()
         {
-            _handle = new IntPtr(_idGen.Pop());
-
-            using (Win32.DbgHelpLock.AcquireContext())
-            {
-                if (!Win32.SymInitialize(_handle, null, false))
-                    Win32.ThrowLastError();
-            }
+            _handle = new SymbolHandle();
         }
 
         public SymbolProvider(ProcessHandle processHandle)
         {
-            _processHandle = processHandle;
-            _handle = processHandle;
-
-            using (Win32.DbgHelpLock.AcquireContext())
-            {
-                if (!Win32.SymInitialize(_handle, null, false))
-                    Win32.ThrowLastError();
-            }
-
-            _processHandle.Reference();
+            _handle = new SymbolHandle(processHandle);
         }
 
-        protected override void DisposeObject(bool disposing)
+        public void Dispose()
         {
-            Win32.DbgHelpLock.Acquire();
-
-            try
-            {
-                if (!Win32.SymCleanup(_handle))
-                    Win32.ThrowLastError();
-
-                // If we didn't use a process handle, we got it from the ID generator.
-                if (_processHandle == null)
-                    _idGen.Push(_handle.ToInt32());
-                // Otherwise, dereference the process handle.
-                else
-                    _processHandle.Dereference(disposing);
-            }
-            finally
-            {
-                Win32.DbgHelpLock.Release();
-            }
+            _handle.Dispose();
         }
 
         public bool Busy

@@ -61,7 +61,6 @@ namespace ProcessHacker
             _pid = PID;
             _tid = TID;
             _symbols = symbols;
-            _symbols.Reference();
 
             this.Text = Program.ProcessProvider.Dictionary[_pid].Name + " (PID " + _pid.ToString() +
                 ") - Thread " + _tid.ToString();
@@ -190,7 +189,6 @@ namespace ProcessHacker
         {
             Properties.Settings.Default.ThreadWindowSize = this.Size;
             Properties.Settings.Default.CallStackColumns = ColumnSettings.SaveSettings(listViewCallStack);
-            _symbols.Dereference();
             _symbols = null;
         }
 

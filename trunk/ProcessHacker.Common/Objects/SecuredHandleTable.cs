@@ -77,7 +77,7 @@ namespace ProcessHacker.Common.Objects
         /// <param name="obj">The object to reference.</param>
         /// <param name="grantedAccess">The granted access to the object.</param>
         /// <returns>The new handle.</returns>
-        public int Allocate<TAccess>(BaseObject obj, TAccess grantedAccess)
+        public int Allocate<TAccess>(IReferenceCountedObject obj, TAccess grantedAccess)
             where TAccess : struct
         {
             TEntry entry = new TEntry();
@@ -97,7 +97,7 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has been referenced and must be 
         /// dereferenced once it is no longer needed.
         /// </returns>
-        public BaseObject ReferenceByHandle<TAccess>(int handle, TAccess access)
+        public IReferenceCountedObject ReferenceByHandle<TAccess>(int handle, TAccess access)
             where TAccess : struct
         {
             return this.ReferenceByHandle<TAccess>(handle, access, false);
@@ -116,11 +116,11 @@ namespace ProcessHacker.Common.Objects
         /// An object. This object has been referenced and must be 
         /// dereferenced once it is no longer needed.
         /// </returns>
-        public BaseObject ReferenceByHandle<TAccess>(int handle, TAccess access, bool throwOnAccessDenied)
+        public IReferenceCountedObject ReferenceByHandle<TAccess>(int handle, TAccess access, bool throwOnAccessDenied)
             where TAccess : struct
         {
             TEntry entry;
-            BaseObject obj;
+            IReferenceCountedObject obj;
 
             // Reference the object.
             obj = this.ReferenceByHandle(handle, out entry);
@@ -158,7 +158,7 @@ namespace ProcessHacker.Common.Objects
         /// dereferenced once it is no longer needed.
         /// </returns>
         public T ReferenceByHandle<T, TAccess>(int handle, TAccess access)
-            where T : BaseObject
+            where T : class, IReferenceCountedObject
             where TAccess : struct
         {
             return this.ReferenceByHandle<T, TAccess>(handle, access, false);
@@ -179,10 +179,10 @@ namespace ProcessHacker.Common.Objects
         /// dereferenced once it is no longer needed.
         /// </returns>
         public T ReferenceByHandle<T, TAccess>(int handle, TAccess access, bool throwOnAccessDenied)
-            where T : BaseObject
+            where T : class, IReferenceCountedObject
             where TAccess : struct
         {
-            BaseObject obj = this.ReferenceByHandle<TAccess>(handle, access, throwOnAccessDenied);
+            IReferenceCountedObject obj = this.ReferenceByHandle<TAccess>(handle, access, throwOnAccessDenied);
 
             if (obj == null)
                 return null;

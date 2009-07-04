@@ -228,7 +228,7 @@ namespace ProcessHacker.Common.Objects
         /// called directly; instead, override this method in a derived class.
         /// </summary>
         /// <param name="disposing">Whether or not to dispose managed objects.</param>
-        protected virtual void DisposeObject(bool disposing) { }
+        protected abstract void DisposeObject(bool disposing);
 
         /// <summary>
         /// Gets whether the object has been freed.
