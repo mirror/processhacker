@@ -2821,19 +2821,22 @@ namespace ProcessHacker
 
         private void LoadStructs()
         {
-            try
-            {
-                if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+            WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
-                    Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
+                    try
+                    {
+                        if (System.IO.File.Exists(Application.StartupPath + "\\structs.txt"))
+                        {
+                            Structs.StructParser parser = new ProcessHacker.Structs.StructParser(Program.Structs);
 
-                    parser.Parse(Application.StartupPath + "\\structs.txt");
-                }
-            }
-            catch (Exception ex)
-            {
-                QueueMessage("Error loading structure definitions: " + ex.Message);
-            }
+                            parser.Parse(Application.StartupPath + "\\structs.txt");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        QueueMessage("Error loading structure definitions: " + ex.Message);
+                    }
+                }), "load-structs");
         }
 
         private void LoadOther()
