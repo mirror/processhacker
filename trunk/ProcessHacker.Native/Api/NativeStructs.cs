@@ -1873,7 +1873,7 @@ namespace ProcessHacker.Native.Api
         public long UserTime;
         public long CreateTime;
         public int WaitTime;
-        public int StartAddress;
+        public IntPtr StartAddress;
         public ClientId ClientId;
         public int Priority;
         public int BasePriority;

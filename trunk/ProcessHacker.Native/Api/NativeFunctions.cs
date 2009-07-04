@@ -931,6 +931,15 @@ namespace ProcessHacker.Native.Api
         public static extern NtStatus NtQueryInformationThread(
             [In] IntPtr ThreadHandle,
             [In] ThreadInformationClass ThreadInformationClass,
+            [Out] out IntPtr ThreadInformation,
+            [In] int ThreadInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus NtQueryInformationThread(
+            [In] IntPtr ThreadHandle,
+            [In] ThreadInformationClass ThreadInformationClass,
             IntPtr ThreadInformation,
             [In] int ThreadInformationLength,
             [Out] [Optional] out int ReturnLength

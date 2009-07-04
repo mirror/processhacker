@@ -135,7 +135,7 @@ namespace ProcessHacker.Components
                     {
                         try
                         {
-                            _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI, out fileName);
+                            _provider.Symbols.GetSymbolFromAddress(_provider.Dictionary[tid].StartAddressI.ToUInt64(), out fileName);
                             fileModule.Text = fileName;
                             fileModule.Enabled = true;
                         }
@@ -151,18 +151,25 @@ namespace ProcessHacker.Components
 
                     if (processThread != null)
                     {
-                        if (processThread.ThreadState == ThreadState.Wait)
+                        try
                         {
-                            labelState.Text = "Wait: " + thread.WaitReason.ToString();
-                        }
-                        else
-                        {
-                            labelState.Text = processThread.ThreadState.ToString();
-                        }
+                            if (processThread.ThreadState == ThreadState.Wait)
+                            {
+                                labelState.Text = "Wait: " + thread.WaitReason.ToString();
+                            }
+                            else
+                            {
+                                labelState.Text = processThread.ThreadState.ToString();
+                            }
 
-                        labelKernelTime.Text = Utils.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
-                        labelUserTime.Text = Utils.GetNiceTimeSpan(processThread.UserProcessorTime);
-                        labelTotalTime.Text = Utils.GetNiceTimeSpan(processThread.TotalProcessorTime);
+                            labelKernelTime.Text = Utils.GetNiceTimeSpan(processThread.PrivilegedProcessorTime);
+                            labelUserTime.Text = Utils.GetNiceTimeSpan(processThread.UserProcessorTime);
+                            labelTotalTime.Text = Utils.GetNiceTimeSpan(processThread.TotalProcessorTime);
+                        }
+                        catch
+                        {
+                            labelState.Text = thread.WaitReason.ToString();
+                        }
                     }
 
                     labelPriority.Text = thread.Priority.ToString();
@@ -607,6 +614,14 @@ namespace ProcessHacker.Components
                     if ((_provider.ProcessAccess & (ProcessAccess.QueryInformation | ProcessAccess.VmRead)) != 0)
                         phandle = _provider.ProcessHandle;
                 }
+
+                // If we have KPH load kernel modules so we can get the kernel-mode stack.
+                try
+                {
+                    _provider.LoadKernelSymbols();
+                }
+                catch
+                { }
 
                 (new ThreadWindow(
                     _pid,

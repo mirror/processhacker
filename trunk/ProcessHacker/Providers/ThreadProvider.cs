@@ -49,7 +49,7 @@ namespace ProcessHacker
         public ulong CyclesDelta;
         public int PriorityI;
         public string Priority;
-        public uint StartAddressI;
+        public IntPtr StartAddressI;
         public string StartAddress;
         public SymbolResolveLevel StartAddressLevel;
         public KWaitReason WaitReason;
@@ -76,6 +76,7 @@ namespace ProcessHacker
         private ProcessHandle _processHandle;
         private ProcessAccess _processAccess;
         private SymbolProvider _symbols;
+        private bool _kernelSymbolsLoaded = false;
         private int _pid;
         private int _loading = 0;
         private MessageQueue _messageQueue = new MessageQueue();
@@ -112,15 +113,22 @@ namespace ProcessHacker
                 }
                 catch
                 {
-                    if (KProcessHacker.Instance != null)
+                    try
                     {
-                        _processAccess = Program.MinProcessReadMemoryRights;
-                        _processHandle = new ProcessHandle(_pid, _processAccess);
+                        if (KProcessHacker.Instance != null)
+                        {
+                            _processAccess = Program.MinProcessReadMemoryRights;
+                            _processHandle = new ProcessHandle(_pid, _processAccess);
+                        }
+                        else
+                        {
+                            _processAccess = Program.MinProcessQueryRights;
+                            _processHandle = new ProcessHandle(_pid, _processAccess);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _processAccess = Program.MinProcessQueryRights;
-                        _processHandle = new ProcessHandle(_pid, _processAccess);
+                        Logging.Log(ex);
                     }
                 }
 
@@ -137,47 +145,54 @@ namespace ProcessHacker
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
                 WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
                 {
-                    _symbols = new SymbolProvider(_processHandle);
-
-                    SymbolProvider.Options = SymbolOptions.DeferredLoads |
-                        (Properties.Settings.Default.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
-
-                    if (Properties.Settings.Default.DbgHelpSearchPath != "")
-                        _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
-
                     try
                     {
-                        if (_pid != 4)
-                        {
-                            using (var phandle =
-                                new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
-                            {
-                                try { _symbols.LoadProcessModules(phandle); }
-                                catch { }
+                        // Use the process handle if we have one, otherwise use the default ID generator.
+                        if (_processHandle != null)
+                            _symbols = new SymbolProvider(_processHandle);
+                        else
+                            _symbols = new SymbolProvider();
 
-                                // If we have KPH load kernel modules so we can get the kernel-mode stack.
-                                if (KProcessHacker.Instance != null)
-                                    _symbols.LoadKernelModules();
-                                // If the process is CSRSS we should load kernel modules 
-                                // due to the presence of kernel-mode threads.
-                                else if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
-                                    _symbols.LoadKernelModules();
+                        SymbolProvider.Options = SymbolOptions.DeferredLoads |
+                            (Properties.Settings.Default.DbgHelpUndecorate ? SymbolOptions.UndName : 0);
+
+                        if (Properties.Settings.Default.DbgHelpSearchPath != "")
+                            _symbols.SearchPath = Properties.Settings.Default.DbgHelpSearchPath;
+
+                        try
+                        {
+                            if (_pid != 4)
+                            {
+                                using (var phandle =
+                                    new ProcessHandle(_pid, Program.MinProcessQueryRights | Program.MinProcessReadMemoryRights))
+                                {
+                                    // Load the process' modules.
+                                    try { _symbols.LoadProcessModules(phandle); }
+                                    catch { }
+
+                                    // If the process is CSRSS we should load kernel modules 
+                                    // due to the presence of kernel-mode threads.
+                                    if (phandle.GetKnownProcessType() == KnownProcess.WindowsSubsystem)
+                                        _symbols.LoadKernelModules();
+                                }
+                            }
+                            else
+                            {
+                                _symbols.LoadKernelModules();
                             }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            _symbols.LoadKernelModules();
+                            Logging.Log(ex);
                         }
                     }
-                    catch (Exception ex)
+                    finally
                     {
-                        Logging.Log(ex);
-                    }
-
-                    lock (_moduleLoadCompletedEvent)
-                    {
-                        if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
-                            _moduleLoadCompletedEvent.Set();
+                        lock (_moduleLoadCompletedEvent)
+                        {
+                            if (!_moduleLoadCompletedEvent.SafeWaitHandle.IsClosed)
+                                _moduleLoadCompletedEvent.Set();
+                        }
                     }
                 }), "symbols-load");
             }
@@ -195,6 +210,20 @@ namespace ProcessHacker
         public ProcessHandle ProcessHandle
         {
             get { return _processHandle; }
+        }
+
+        public void LoadKernelSymbols()
+        {
+            lock (_symbols)
+            {
+                if (!_kernelSymbolsLoaded)
+                {
+                    if (KProcessHacker.Instance != null)
+                        _symbols.LoadKernelModules();
+
+                    _kernelSymbolsLoaded = true;
+                }
+            }
         }
 
         private void ThreadProvider_Disposed(IProvider provider)
@@ -262,7 +291,7 @@ namespace ProcessHacker
 
         public void QueueThreadResolveStartAddress(int tid)
         {
-            this.QueueThreadResolveStartAddress(tid, this.Dictionary[tid].StartAddressI);
+            this.QueueThreadResolveStartAddress(tid, this.Dictionary[tid].StartAddressI.ToUInt64());
         }
 
         public void QueueThreadResolveStartAddress(int tid, ulong startAddress)
@@ -371,7 +400,8 @@ namespace ProcessHacker
                     {
                         try
                         {
-                            item.StartAddressI = KProcessHacker.Instance.GetThreadStartAddress(item.ThreadQueryLimitedHandle);
+                            item.StartAddressI = 
+                                KProcessHacker.Instance.GetThreadStartAddress(item.ThreadQueryLimitedHandle).ToIntPtr();
                         }
                         catch
                         { }
@@ -383,11 +413,13 @@ namespace ProcessHacker
                             using (ThreadHandle thandle =
                                 new ThreadHandle(tid, ThreadAccess.QueryInformation))
                             {
-                                item.StartAddressI = (uint)thandle.GetWin32StartAddress();
+                                item.StartAddressI = thandle.GetWin32StartAddress();
                             }
                         }
                         catch
-                        { }
+                        {
+                            item.StartAddressI = t.StartAddress;
+                        }
                     }
 
                     if (!_waitedForLoad)
@@ -399,7 +431,7 @@ namespace ProcessHacker
                             if (_moduleLoadCompletedEvent.WaitOne(0, false))
                             {
                                 item.StartAddress = this.GetThreadBasicStartAddress(
-                                    item.StartAddressI, out item.StartAddressLevel);
+                                    item.StartAddressI.ToUInt64(), out item.StartAddressLevel);
                             }
                         }
                         catch
@@ -412,7 +444,7 @@ namespace ProcessHacker
                         item.StartAddressLevel = SymbolResolveLevel.Address;
                     }
 
-                    this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
+                    this.QueueThreadResolveStartAddress(tid, item.StartAddressI.ToUInt64());
 
                     newdictionary.Add(tid, item);
                     this.OnDictionaryAdded(item);
@@ -464,7 +496,7 @@ namespace ProcessHacker
                         if (_moduleLoadCompletedEvent.WaitOne(0, false))
                         {
                             newitem.StartAddress = this.GetThreadBasicStartAddress(
-                                newitem.StartAddressI, out newitem.StartAddressLevel);
+                                newitem.StartAddressI.ToUInt64(), out newitem.StartAddressLevel);
                         }
 
                         // If we couldn't resolve it to a module+offset, 
@@ -474,10 +506,10 @@ namespace ProcessHacker
                             item.StartAddressLevel == SymbolResolveLevel.Address &&
                             item.JustResolved)
                         {
-                            if (item.StartAddressI != (uint)t.StartAddress)
+                            if (item.StartAddressI != t.StartAddress)
                             {
-                                item.StartAddressI = (uint)t.StartAddress;
-                                this.QueueThreadResolveStartAddress(tid, item.StartAddressI);
+                                item.StartAddressI = t.StartAddress;
+                                this.QueueThreadResolveStartAddress(tid, item.StartAddressI.ToUInt64());
                             }
                         }
                     }

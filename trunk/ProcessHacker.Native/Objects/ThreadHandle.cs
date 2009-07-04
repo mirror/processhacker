@@ -473,6 +473,19 @@ namespace ProcessHacker.Native.Objects
             return value;
         }
 
+        private IntPtr GetInformationIntPtr(ThreadInformationClass infoClass)
+        {
+            NtStatus status;
+            IntPtr value;
+            int retLength;
+
+            if ((status = Win32.NtQueryInformationThread(
+                this, infoClass, out value, IntPtr.Size, out retLength)) >= NtStatus.Error)
+                Win32.ThrowLastError(status);
+
+            return value;
+        }
+
         /// <summary>
         /// Gets the thread's I/O priority.
         /// </summary>
@@ -591,9 +604,9 @@ namespace ProcessHacker.Native.Objects
         /// <summary>
         /// Gets the thread's Win32 start address.
         /// </summary>
-        public int GetWin32StartAddress()
+        public IntPtr GetWin32StartAddress()
         {
-            return this.GetInformationInt32(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
+            return this.GetInformationIntPtr(ThreadInformationClass.ThreadQuerySetWin32StartAddress);
         }
 
         public void Impersonate(ThreadHandle clientThreadHandle, SecurityImpersonationLevel impersonationLevel)
