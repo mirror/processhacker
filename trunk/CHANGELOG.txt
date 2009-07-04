@@ -18,6 +18,7 @@ Process Hacker
      named pipe connections
    * Better file object names without KProcessHacker
    * Better IP address resolving
+   * CPU, I/O and memory indicators
    * Child windows float by default
    * Automatic tree text coloring, allowing for dark highlighting 
      colors

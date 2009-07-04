@@ -63,7 +63,8 @@ namespace ProcessHacker.Components
         public Indicator()
         {
             InitializeComponent();
-            base.SetStyle(ControlStyles.DoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);                    
+            base.SetStyle(ControlStyles.ResizeRedraw | ControlStyles.UserPaint | 
+                ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);                    
         }
         protected override void OnPaint(PaintEventArgs e)
         {
