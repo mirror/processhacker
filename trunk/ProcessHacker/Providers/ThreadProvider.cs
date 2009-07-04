@@ -71,6 +71,8 @@ namespace ProcessHacker
         public delegate void LoadingStateChangedDelegate(bool loading);
         private delegate void ResolveThreadStartAddressDelegate(int tid, ulong startAddress);
 
+        private static readonly WorkQueue _symbolsWorkQueue = new WorkQueue() { MaxWorkerThreads = 1 };
+
         public event LoadingStateChangedDelegate LoadingStateChanged;
 
         private ProcessHandle _processHandle;
@@ -143,7 +145,7 @@ namespace ProcessHacker
                 }
 
                 // start loading symbols; avoid the UI blocking on the dbghelp call lock
-                WorkQueue.GlobalQueueWorkItemTag(new Action(() =>
+                _symbolsWorkQueue.QueueWorkItemTag(new Action(() =>
                 {
                     try
                     {
@@ -296,7 +298,7 @@ namespace ProcessHacker
 
         public void QueueThreadResolveStartAddress(int tid, ulong startAddress)
         {
-            WorkQueue.GlobalQueueWorkItemTag(
+            _symbolsWorkQueue.QueueWorkItemTag(
                 new ResolveThreadStartAddressDelegate(this.ResolveThreadStartAddress),
                 "thread-resolve",
                 tid, startAddress
