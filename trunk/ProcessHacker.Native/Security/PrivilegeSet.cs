@@ -27,7 +27,7 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Security
 {
-    public class PrivilegeSet : IList<Privilege>
+    public sealed class PrivilegeSet : IList<Privilege>
     {
         private static int _sizeOfLaa = Marshal.SizeOf(typeof(LuidAndAttributes));
 

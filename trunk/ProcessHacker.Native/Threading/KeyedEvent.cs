@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents a keyed event.
     /// </summary>
-    public class KeyedEvent : NativeObject<KeyedEventHandle>
+    public sealed class KeyedEvent : NativeObject<KeyedEventHandle>
     {
         /// <summary>
         /// Creates a new keyed event.

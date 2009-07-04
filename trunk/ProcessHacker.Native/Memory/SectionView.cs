@@ -31,7 +31,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Represents a mapped view of a section.
     /// </summary>
-    public class SectionView : MemoryAlloc
+    public sealed class SectionView : MemoryAlloc
     {
         internal SectionView(IntPtr baseAddress, IntPtr commitSize)
         {

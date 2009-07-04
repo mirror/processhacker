@@ -26,7 +26,7 @@ using System;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class TokenWithLinkedToken : IWithToken
+    public sealed class TokenWithLinkedToken : IWithToken
     {
         private TokenHandle _token;
 

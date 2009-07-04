@@ -28,7 +28,7 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Represents a spinlock, a high-performance mutual exclusion lock.
     /// </summary>
-    public class SpinLock
+    public sealed class SpinLock
     {
         public struct SpinLockContext : IDisposable
         {

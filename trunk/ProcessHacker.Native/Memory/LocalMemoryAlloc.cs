@@ -6,7 +6,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Represents a LocalAlloc() memory allocation.
     /// </summary>
-    public class LocalMemoryAlloc : MemoryAlloc
+    public sealed class LocalMemoryAlloc : MemoryAlloc
     {
         public LocalMemoryAlloc(IntPtr memory)
             : this(memory, true)

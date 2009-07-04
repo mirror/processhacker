@@ -36,7 +36,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents a timer.
     /// </summary>
-    public class Timer : NativeObject<TimerHandle>
+    public sealed class Timer : NativeObject<TimerHandle>
     {
         private TimerCallback _callback;
 

@@ -30,7 +30,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Represents a memory allocation from the PEB.
     /// </summary>
-    public class PebMemoryAlloc : MemoryAlloc
+    public sealed class PebMemoryAlloc : MemoryAlloc
     {
         public PebMemoryAlloc(int size)
         {

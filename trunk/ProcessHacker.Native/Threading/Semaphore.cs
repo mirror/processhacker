@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents a semaphore which can be used to control access to a shared resource.
     /// </summary>
-    public class Semaphore : NativeObject<SemaphoreHandle>
+    public sealed class Semaphore : NativeObject<SemaphoreHandle>
     {
         /// <summary>
         /// Creates a binary semaphore.

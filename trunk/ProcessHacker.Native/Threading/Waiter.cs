@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Threading
 {
     public delegate void ObjectSignaledDelegate(ISynchronizable obj);
 
-    public class Waiter : IDisposable
+    public sealed class Waiter : IDisposable
     {
         private class WaiterThread : IDisposable
         {

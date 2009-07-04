@@ -27,7 +27,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class SemaphoreHandle : NativeHandle<SemaphoreAccess>
+    public sealed class SemaphoreHandle : NativeHandle<SemaphoreAccess>
     {
         public static SemaphoreHandle Create(SemaphoreAccess access, int initialCount, int maximumCount)
         {

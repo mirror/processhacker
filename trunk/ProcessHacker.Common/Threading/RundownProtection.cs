@@ -6,7 +6,7 @@ namespace ProcessHacker.Common.Threading
     /// <summary>
     /// Provides methods for managing object/resource destruction.
     /// </summary>
-    public class RundownProtection
+    public sealed class RundownProtection
     {
         private object _rundownLock = new object();
         private volatile bool _rundownActive = false;

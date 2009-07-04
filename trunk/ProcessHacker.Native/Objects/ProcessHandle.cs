@@ -40,7 +40,7 @@ namespace ProcessHacker.Native.Objects
     /// time a query or set function is called, this lets the users control 
     /// when they want to open handles with certain permissions. This 
     /// means that handles can be cached (by the users).</remarks>
-    public class ProcessHandle : NativeHandle<ProcessAccess>, IWithToken
+    public sealed class ProcessHandle : NativeHandle<ProcessAccess>, IWithToken
     {
         /// <summary>
         /// The callback for enumerating process memory regions.

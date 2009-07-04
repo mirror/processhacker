@@ -27,7 +27,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class SectionHandle : NativeHandle<SectionAccess>
+    public sealed class SectionHandle : NativeHandle<SectionAccess>
     {
         public static SectionHandle Create(
             SectionAccess access,

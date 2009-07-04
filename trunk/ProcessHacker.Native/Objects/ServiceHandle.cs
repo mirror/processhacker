@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows service.
     /// </summary>
-    public class ServiceHandle : ServiceBaseHandle<ServiceAccess>
+    public sealed class ServiceHandle : ServiceBaseHandle<ServiceAccess>
     {
         /// <summary>
         /// Creates a service handle using an existing handle. 

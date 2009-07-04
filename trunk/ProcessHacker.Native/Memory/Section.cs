@@ -7,7 +7,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native
 {
-    public class Section : NativeObject<SectionHandle>
+    public sealed class Section : NativeObject<SectionHandle>
     {
         private MemoryProtection _originalProtection;
 

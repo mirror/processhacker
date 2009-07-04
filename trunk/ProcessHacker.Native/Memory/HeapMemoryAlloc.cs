@@ -28,7 +28,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Represents a heap memory allocation.
     /// </summary>
-    public class HeapMemoryAlloc : MemoryAlloc
+    public sealed class HeapMemoryAlloc : MemoryAlloc
     {
         public HeapMemoryAlloc(int size)
         {

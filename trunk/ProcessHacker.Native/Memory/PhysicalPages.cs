@@ -5,7 +5,7 @@ using ProcessHacker.Native.Objects;
 
 namespace ProcessHacker.Native.Memory
 {
-    public class PhysicalPages : BaseObject
+    public sealed class PhysicalPages : BaseObject
     {
         private ProcessHandle _processHandle;
         private int _count;

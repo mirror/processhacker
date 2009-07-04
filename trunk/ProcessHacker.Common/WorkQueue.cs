@@ -46,12 +46,12 @@ namespace ProcessHacker.Common
     /// <summary>
     /// Manages a work queue which is executed by worker threads.
     /// </summary>
-    public class WorkQueue
+    public sealed class WorkQueue
     {
         /// <summary>
         /// Represents a work item to be executed on a worker thread.
         /// </summary>
-        public class WorkItem
+        public sealed class WorkItem
         {
             private WorkQueue _owner;
             private string _tag;

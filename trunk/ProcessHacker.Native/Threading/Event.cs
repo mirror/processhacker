@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents a thread synchronization event.
     /// </summary>
-    public class Event : NativeObject<EventHandle>
+    public sealed class Event : NativeObject<EventHandle>
     {
         /// <summary>
         /// Creates an event.

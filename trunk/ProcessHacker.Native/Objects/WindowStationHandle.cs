@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class WindowStationHandle : UserHandle<WindowStationAccess>
+    public sealed class WindowStationHandle : UserHandle<WindowStationAccess>
     {
         public static WindowStationHandle GetCurrent()
         {

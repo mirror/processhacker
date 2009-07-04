@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents a mutant which can be used to synchronize access to a shared resource.
     /// </summary>
-    public class Mutant : NativeObject<MutantHandle>
+    public sealed class Mutant : NativeObject<MutantHandle>
     {
         /// <summary>
         /// Creates a mutant.

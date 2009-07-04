@@ -29,7 +29,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class TerminalServerHandle : NativeHandle
+    public sealed class TerminalServerHandle : NativeHandle
     {
         /// <summary>
         /// Gets a handle to the local terminal server.

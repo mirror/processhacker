@@ -28,7 +28,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class KeyedEventHandle : NativeHandle<KeyedEventAccess>
+    public sealed class KeyedEventHandle : NativeHandle<KeyedEventAccess>
     {
         public static KeyedEventHandle Create(KeyedEventAccess access)
         {

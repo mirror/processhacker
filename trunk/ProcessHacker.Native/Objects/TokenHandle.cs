@@ -30,7 +30,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows token.
     /// </summary>
-    public class TokenHandle : NativeHandle<TokenAccess>, IEquatable<TokenHandle>
+    public sealed class TokenHandle : NativeHandle<TokenAccess>, IEquatable<TokenHandle>
     {
         /// <summary>
         /// Creates a token handle using an existing handle. 

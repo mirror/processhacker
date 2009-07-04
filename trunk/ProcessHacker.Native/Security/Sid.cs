@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Security
     /// <summary>
     /// Represents a Windows security identifier (SID).
     /// </summary>
-    public class Sid : BaseObject, IEquatable<Sid>
+    public sealed class Sid : BaseObject, IEquatable<Sid>
     {
         private static readonly byte[] _nullSidAuthority = { 0, 0, 0, 0, 0, 0 };
         private static readonly byte[] _worldSidAuthority = { 0, 0, 0, 0, 0, 1 };

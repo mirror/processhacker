@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class PortHandle : NativeHandle<PortAccess>
+    public sealed class PortHandle : NativeHandle<PortAccess>
     {
         public static PortHandle Create(
             string name,

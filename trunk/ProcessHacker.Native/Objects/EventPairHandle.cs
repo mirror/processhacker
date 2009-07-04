@@ -29,7 +29,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents an event pair, an object consisting of two events, high and low.
     /// </summary>
-    public class EventPairHandle : NativeHandle<EventPairAccess>
+    public sealed class EventPairHandle : NativeHandle<EventPairAccess>
     {
         /// <summary>
         /// Creates an unnamed event pair.

@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Threading
     /// <summary>
     /// Represents an event pair which contains two events, high and low.
     /// </summary>
-    public class EventPair : NativeObject<EventPairHandle>
+    public sealed class EventPair : NativeObject<EventPairHandle>
     {
         /// <summary>
         /// Creates an event pair.

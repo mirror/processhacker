@@ -33,8 +33,8 @@ using ProcessHacker.Native.Objects;
 namespace ProcessHacker.Native.Symbols
 {
     public delegate bool SymbolEnumDelegate(SymbolInformation symbolInfo);
- 
-    public class SymbolProvider : BaseObject
+
+    public sealed class SymbolProvider : BaseObject
     {
         private const int _maxNameLen = 0x100;
         private static IdGenerator _idGen = new IdGenerator();

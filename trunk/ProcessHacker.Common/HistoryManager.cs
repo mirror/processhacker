@@ -38,7 +38,7 @@ namespace ProcessHacker.Common
         }
     }
 
-    public class HistoryManager<TKey, TValue>
+    public sealed class HistoryManager<TKey, TValue>
     {
         private Dictionary<TKey, CircularBuffer<TValue>> _history;
         private Dictionary<TKey, ReadOnlyCollection<TValue>> _readOnlyCollections;

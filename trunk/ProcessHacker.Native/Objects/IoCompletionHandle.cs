@@ -29,7 +29,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class IoCompletionHandle : NativeHandle<IoCompletionAccess>
+    public sealed class IoCompletionHandle : NativeHandle<IoCompletionAccess>
     {
         public static IoCompletionHandle Create(IoCompletionAccess access)
         {

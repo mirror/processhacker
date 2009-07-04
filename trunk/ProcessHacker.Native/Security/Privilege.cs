@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Security
     /// <summary>
     /// Represents a Windows security privilege.
     /// </summary>
-    public class Privilege : BaseObject
+    public sealed class Privilege : BaseObject
     {
         private TokenHandle _tokenHandle;
         private Luid _luid;

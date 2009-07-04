@@ -27,7 +27,7 @@ using System.Text;
 
 namespace ProcessHacker.Common
 {
-    public class ByteStreamReader : Stream
+    public sealed class ByteStreamReader : Stream
     {
         private byte[] _data;
         private long _position;

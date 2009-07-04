@@ -5,7 +5,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class TimerHandle : NativeHandle<TimerAccess>
+    public sealed class TimerHandle : NativeHandle<TimerAccess>
     {
         /// <summary>
         /// Creates a timer.

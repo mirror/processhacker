@@ -31,7 +31,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows job object.
     /// </summary>
-    public class JobObjectHandle : NativeHandle<JobObjectAccess>
+    public sealed class JobObjectHandle : NativeHandle<JobObjectAccess>
     {
         public static JobObjectHandle Create(JobObjectAccess access)
         {

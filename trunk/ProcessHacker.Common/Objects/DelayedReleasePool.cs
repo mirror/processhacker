@@ -39,7 +39,7 @@ namespace ProcessHacker.Common.Objects
     /// <summary>
     /// Represents a pool of objects to be disposed or dereferenced at some point.
     /// </summary>
-    public class DelayedReleasePool : BaseObject
+    public sealed class DelayedReleasePool : BaseObject
     {
         /// <summary>
         /// Describes how an object should be disposed.

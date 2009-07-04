@@ -27,9 +27,9 @@ using System;
 namespace ProcessHacker.Native.Objects
 {
     /// <summary>
-    /// Represents a handle to the Windows service manager.
+    /// Represents a handle to the LSA policy.
     /// </summary>
-    public class LsaPolicyHandle : LsaHandle<PolicyAccess>
+    public sealed class LsaPolicyHandle : LsaHandle<PolicyAccess>
     {
         /// <summary>
         /// Connects to the local LSA policy.

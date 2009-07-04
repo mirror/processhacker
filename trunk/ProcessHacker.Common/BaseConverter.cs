@@ -28,7 +28,7 @@ namespace ProcessHacker.Common
     /// <summary>
     /// Contains methods to parse numbers from string representations using different bases.
     /// </summary>
-    public class BaseConverter
+    public static class BaseConverter
     {
         private static int[] _reverseChars = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 37, 38, 39, 40, 41,

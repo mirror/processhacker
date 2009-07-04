@@ -26,7 +26,7 @@ using ProcessHacker.Native.Security;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class SymbolicLinkHandle : NativeHandle<SymbolicLinkAccess>
+    public sealed class SymbolicLinkHandle : NativeHandle<SymbolicLinkAccess>
     {
         public static SymbolicLinkHandle Create(SymbolicLinkAccess access, string name, string linkTarget)
         {

@@ -35,7 +35,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Provides an interface to KProcessHacker.
     /// </summary>
-    public unsafe class KProcessHacker
+    public sealed unsafe class KProcessHacker
     {
         private static KProcessHacker _instance;
 

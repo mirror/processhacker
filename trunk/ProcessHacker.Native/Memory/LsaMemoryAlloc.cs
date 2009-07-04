@@ -29,7 +29,7 @@ namespace ProcessHacker.Native
     /// <summary>
     /// Represents a memory allocation managed by the Local Security Authority (LSA).
     /// </summary>
-    public class LsaMemoryAlloc : MemoryAlloc
+    public sealed class LsaMemoryAlloc : MemoryAlloc
     {
         public LsaMemoryAlloc(IntPtr memory)
             : this(memory, true)

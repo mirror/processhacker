@@ -3,7 +3,7 @@ using ProcessHacker.Native.Api;
 
 namespace ProcessHacker.Native.Memory
 {
-    public class PhysicalPagesMapping : MemoryAlloc
+    public sealed class PhysicalPagesMapping : MemoryAlloc
     {
         private PhysicalPages _physicalPages;
 

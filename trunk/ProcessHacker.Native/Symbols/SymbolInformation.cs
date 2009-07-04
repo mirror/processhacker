@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Symbols
 {
-    public class SymbolInformation
+    public sealed class SymbolInformation
     {
         internal SymbolInformation(IntPtr symbolInfo, int symbolSize)
         {

@@ -29,7 +29,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to the Windows service manager.
     /// </summary>
-    public class ServiceManagerHandle : ServiceBaseHandle<ScManagerAccess>
+    public sealed class ServiceManagerHandle : ServiceBaseHandle<ScManagerAccess>
     {
         /// <summary>
         /// Connects to the Windows service manager.

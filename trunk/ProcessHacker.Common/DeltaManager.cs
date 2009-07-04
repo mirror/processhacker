@@ -20,14 +20,6 @@
  * along with Process Hacker.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Diagnostics;
-using System.Drawing;   
-using System.Drawing.Drawing2D;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
 using System.Collections.Generic;
 
 namespace ProcessHacker.Common
@@ -119,7 +111,7 @@ namespace ProcessHacker.Common
     /// <summary>
     /// Provides methods for managing deltas of discrete sets of data.
     /// </summary>
-    public class DeltaManager<TKey, TValue>
+    public sealed class DeltaManager<TKey, TValue>
     {
         private Dictionary<TKey, TValue> _values;
         private Dictionary<TKey, TValue> _deltas;

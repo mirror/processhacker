@@ -28,7 +28,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a file.
     /// </summary>
-    public class NamedPipeHandle : FileHandle
+    public sealed class NamedPipeHandle : FileHandle
     {
         public NamedPipeHandle(string name, PipeAccessMode openMode, PipeMode pipeMode, int maxInstances,
             int outBufferSize, int inBufferSize, int defaultTimeOut)

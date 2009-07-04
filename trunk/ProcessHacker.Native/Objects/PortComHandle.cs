@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 
 namespace ProcessHacker.Native.Objects
 {
-    public class PortComHandle : NativeHandle<PortAccess>
+    public sealed class PortComHandle : NativeHandle<PortAccess>
     {
         public static PortComHandle Connect(string portName)
         {

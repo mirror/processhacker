@@ -34,7 +34,7 @@ namespace ProcessHacker.Native.Objects
     /// about tokens other processes have handles to. TokenProperties 
     /// only takes an IWithToken object.
     /// </remarks>
-    public class RemoteTokenHandle : RemoteHandle, IWithToken
+    public sealed class RemoteTokenHandle : RemoteHandle, IWithToken
     {
         public RemoteTokenHandle(ProcessHandle phandle, IntPtr handle)
             : base(phandle, handle)

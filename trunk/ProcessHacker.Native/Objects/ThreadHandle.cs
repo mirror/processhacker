@@ -32,7 +32,7 @@ namespace ProcessHacker.Native.Objects
     /// <summary>
     /// Represents a handle to a Windows thread.
     /// </summary>
-    public class ThreadHandle : NativeHandle<ThreadAccess>, IWithToken
+    public sealed class ThreadHandle : NativeHandle<ThreadAccess>, IWithToken
     {
         public delegate bool WalkStackDelegate(ThreadStackFrame stackFrame);
 
