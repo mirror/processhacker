@@ -56,6 +56,16 @@ namespace ProcessHacker.Native.Objects
         /// <returns>Return true to continue enumerating; return false to stop.</returns>
         public delegate bool EnumModulesDelegate(ProcessModule module);
 
+        private static readonly ProcessHandle _current = new ProcessHandle(new IntPtr(-1), false);
+
+        /// <summary>
+        /// Gets a handle to the current process.
+        /// </summary>
+        public static ProcessHandle Current
+        {
+            get { return _current; }
+        }
+
         /// <summary>
         /// Creates a process and an initial thread.
         /// </summary>
@@ -221,7 +231,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A process handle.</returns>
         public static ProcessHandle GetCurrent()
         {
-            return new ProcessHandle(new IntPtr(-1), false);
+            return Current;
         }
 
         /// <summary>

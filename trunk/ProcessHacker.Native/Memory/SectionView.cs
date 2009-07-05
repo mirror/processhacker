@@ -21,8 +21,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ProcessHacker.Native.Api;
 using ProcessHacker.Native.Objects;
 
@@ -45,6 +43,11 @@ namespace ProcessHacker.Native
 
             if ((status = Win32.NtUnmapViewOfSection(ProcessHandle.GetCurrent(), this)) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public NtStatus Flush()
+        {
+            return ProcessHandle.GetCurrent().FlushMemory(this, this.Size);
         }
 
         public bool IsSameFile(SectionView mappedAsFile)

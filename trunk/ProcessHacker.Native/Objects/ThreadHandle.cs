@@ -36,6 +36,16 @@ namespace ProcessHacker.Native.Objects
     {
         public delegate bool WalkStackDelegate(ThreadStackFrame stackFrame);
 
+        private static readonly ThreadHandle _current = new ThreadHandle(new IntPtr(-2), false);
+
+        /// <summary>
+        /// Gets a handle to the current thread.
+        /// </summary>
+        public static ThreadHandle Current
+        {
+            get { return _current; }
+        }
+
         public static ThreadHandle Create(
             ThreadAccess access,
             string name,
@@ -138,7 +148,7 @@ namespace ProcessHacker.Native.Objects
         /// <returns>A thread handle.</returns>
         public static ThreadHandle GetCurrent()
         {
-            return new ThreadHandle(new IntPtr(-2), false);
+            return Current;
         }
 
         public static ClientId GetCurrentCid()
