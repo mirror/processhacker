@@ -504,7 +504,7 @@ namespace ProcessHacker.Components
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
                         // Use RtlCreateUserThread to bypass session boundaries. Since 
-                        // LdrUnloadDll is a native function we don't need to notify CSRSS.
+                        // LdrUnloadDll is a native function we don't need to notify CSR.
                         var thread = phandle.CreateNativeThread(ldrUnloadDll, baseAddress);
 
                         thread.Wait(1000 * Win32.TimeMsTo100Ns);
