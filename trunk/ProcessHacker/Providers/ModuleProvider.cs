@@ -41,6 +41,7 @@ namespace ProcessHacker
         public int RunId;
         public IntPtr BaseAddress;
         public int Size;
+        public LdrpDataTableEntryFlags Flags;
         public string Name;
         public string FileName;
         public string FileDescription;
@@ -185,7 +186,9 @@ namespace ProcessHacker
                                 modules.Add(info.BaseAddress,
                                     new ProcessModule(
                                         info.BaseAddress,
-                                        info.RegionSize, IntPtr.Zero,
+                                        info.RegionSize,
+                                        IntPtr.Zero,
+                                        0,
                                         fi.Name, fi.FullName));
                             }
                         }
@@ -226,6 +229,7 @@ namespace ProcessHacker
 
                     item.BaseAddress = b;
                     item.Size = m.Size;
+                    item.Flags = m.Flags;
 
                     try
                     {

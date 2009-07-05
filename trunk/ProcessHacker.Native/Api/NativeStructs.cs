@@ -671,21 +671,23 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct LdrModule
+    public struct LdrDataTableEntry
     {
-        public ListEntry InLoadOrderModuleList;
-        public ListEntry InMemoryOrderModuleList;
-        public ListEntry InInitializationOrderModuleList;
-        public IntPtr BaseAddress;
+        public ListEntry InLoadOrderLinks;
+        public ListEntry InMemoryOrderLinks;
+        public ListEntry InInitializationOrderLinks;
+        public IntPtr DllBase;
         public IntPtr EntryPoint;
         public int SizeOfImage;
         public UnicodeString FullDllName;
         public UnicodeString BaseDllName;
-        public int Flags;
+        public LdrpDataTableEntryFlags Flags;
         public short LoadCount;
         public short TlsIndex;
         public ListEntry HashTableEntry;
         public int TimeDateStamp;
+        public IntPtr EntryPointActivationContext;
+        public IntPtr PatchInformation;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -984,8 +986,9 @@ namespace ProcessHacker.Native.Api
     public struct PebLdrData
     {
         public int Length;
-        public char Initialized;
-        public int SsHandle;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool Initialized;
+        public IntPtr SsHandle;
         public ListEntry InLoadOrderModuleList;
         public ListEntry InMemoryOrderModuleList;
         public ListEntry InInitializationOrderModuleList;
@@ -1115,10 +1118,10 @@ namespace ProcessHacker.Native.Api
         public IntPtr OffsetFree;
         public IntPtr CommitSize;
         public IntPtr ViewSize;
-        public IntPtr Modules;
-        public IntPtr BackTraces;
-        public IntPtr Heaps;
-        public IntPtr Locks;
+        public IntPtr Modules; // RtlProcessModules*
+        public IntPtr BackTraces; // RtlProcessBackTraces*
+        public IntPtr Heaps; // RtlProcessHeaps*
+        public IntPtr Locks; // RtlProcessLocks*
         public IntPtr SpecificHeap;
         public IntPtr TargetProcessHandle;
 #if _X64
@@ -1142,7 +1145,26 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RtlProcessBacktraceInformation
+    public struct RtlHeapInformation
+    {
+        public IntPtr BaseAddress;
+        public int Flags;
+        public ushort EntryOverhead;
+        public ushort CreatorBackTraceIndex;
+        public IntPtr BytesAllocated;
+        public IntPtr BytesCommitted;
+        public int NumberOfTags;
+        public int NumberOfEntries;
+        public int NumberOfPseudoTags;
+        public int PseudoTagGranularity;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 5)]
+        public int[] Reserved;
+        public IntPtr Tags;
+        public IntPtr Entries;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessBackTraceInformation
     {
         public IntPtr SymbolicBackTrace; // PCHAR, always NULL.
         public int TraceCount;
@@ -1154,14 +1176,74 @@ namespace ProcessHacker.Native.Api
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct RtlProcessBacktraces
+    public struct RtlProcessBackTraces
     {
         public int CommittedMemory;
         public int ReservedMemory;
         public int NumberOfBackTraceLookups;
         public int NumberOfBackTraces;
-        public char BackTraces; // RtlProcessBacktraceInformation[] BackTraces
-        // Array of RtlProcessBacktraceInformation structures follows.
+        public char BackTraces; // RtlProcessBackTraceInformation[] BackTraces
+        // Array of RtlProcessBackTraceInformation structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessHeaps
+    {
+        public int NumberOfHeaps;
+        public char Heaps; // RtlHeapInformation[] Heaps
+        // Array of RtlHeapInformation structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessLockInformation
+    {
+        public IntPtr Address;
+        public RtlLockType Type;
+        public ushort CreatorBackTraceInformation;
+
+        public IntPtr OwningThread; // TID
+        public int LockCount;
+        public int ContentionCount;
+        public int EntryCount;
+
+        // Valid for critical sections
+        public int RecursionCount;
+
+        // Valid for resources
+        public int NumberOfWaitingShared;
+        public int NumberOfWaitingExclusive;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessLocks
+    {
+        public int NumberOfLocks;
+        public char Locks; // RtlProcessLockInformation[] Locks
+        // Array of RtlProcessLockInformation structures follows.
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    public struct RtlProcessModuleInformation
+    {
+        public IntPtr Section; // empty
+        public IntPtr MappedBase;
+        public IntPtr ImageBase;
+        public int ImageSize;
+        public int Flags;
+        public ushort LoadOrderIndex;
+        public ushort InitOrderIndex;
+        public ushort LoadCount;
+        public ushort OffsetToFileName;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public char[] FullPathName;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RtlProcessModules
+    {
+        public int NumberOfModules;
+        public char Modules; // RtlProcessModuleInformation[] Modules
+        // Array of RtlProcessModuleInformation structures follows.
     }
 
     [StructLayout(LayoutKind.Sequential)]

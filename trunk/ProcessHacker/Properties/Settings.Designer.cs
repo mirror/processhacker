@@ -1548,5 +1548,29 @@ namespace ProcessHacker.Properties {
                 this["FirstRun"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 192, 128")]
+        public global::System.Drawing.Color ColorRelocatedDlls {
+            get {
+                return ((global::System.Drawing.Color)(this["ColorRelocatedDlls"]));
+            }
+            set {
+                this["ColorRelocatedDlls"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseColorRelocatedDlls {
+            get {
+                return ((bool)(this["UseColorRelocatedDlls"]));
+            }
+            set {
+                this["UseColorRelocatedDlls"] = value;
+            }
+        }
     }
 }

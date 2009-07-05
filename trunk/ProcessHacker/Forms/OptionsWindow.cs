@@ -158,8 +158,8 @@ namespace ProcessHacker
                 "Processes with full privileges on a Windows Vista system with UAC enabled.");
             AddToList("ColorJobProcesses", "Job Processes",
                 "Processes associated with a job.");
-            AddToList("ColorDotNetProcesses", ".NET Processes",
-                ".NET, or managed processes.");
+            AddToList("ColorDotNetProcesses", ".NET Processes and DLLs",
+                ".NET, or managed processes and DLLs.");
             AddToList("ColorPosixProcesses", "POSIX Processes",
                 "Processes running under the POSIX subsystem.");
             AddToList("ColorPackedProcesses", "Packed/Dangerous Processes",
@@ -170,6 +170,8 @@ namespace ProcessHacker
                 "Threads that are suspended from execution.");
             AddToList("ColorGuiThreads", "GUI Threads",
                 "Threads that have made at least one GUI-related system call.");
+            AddToList("ColorRelocatedDlls", "Relocated DLLs",
+                "DLLs that were not loaded at their preferred image bases.");
             AddToList("ColorProtectedHandles", "Protected Handles",
                 "Handles that are protected from being closed.");
             AddToList("ColorInheritHandles", "Inherit Handles",

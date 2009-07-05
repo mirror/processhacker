@@ -1516,7 +1516,63 @@ namespace ProcessHacker.Native.Api
 
         #endregion
 
+        #region Loader
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus LdrQueryProcessModuleInformation(
+            [In] IntPtr ModuleInformation, // RtlProcessModules*
+            [In] int ModuleInformationLength,
+            [Out] [Optional] out int ReturnLength
+            );
+
+        #endregion
+
         #region Run-Time Library
+
+        #region Debugging
+
+        [DllImport("ntdll.dll")]
+        // return: RtlDebugInformation*
+        public static extern IntPtr RtlCreateQueryDebugBuffer(
+            [In] [Optional] int MaximumCommit,
+            [In] bool UseEventPair
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlDestroyQueryDebugBuffer(
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryProcessBackTraceInformation(
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryProcessDebugInformation(
+            [In] IntPtr UniqueProcessId,
+            [In] RtlQueryProcessDebugFlags Flags,
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryProcessHeapInformation(
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryProcessLockInformation(
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        [DllImport("ntdll.dll")]
+        public static extern NtStatus RtlQueryProcessModuleInformation(
+            [In] [Optional] IntPtr ProcessHandle,
+            [In] RtlQueryProcessDebugFlags Flags,
+            [In] IntPtr Buffer // RtlDebugInformation*
+            );
+
+        #endregion
 
         #region Handle Tables
 

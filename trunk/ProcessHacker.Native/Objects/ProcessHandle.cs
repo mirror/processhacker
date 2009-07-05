@@ -592,7 +592,7 @@ namespace ProcessHacker.Native.Objects
                     Win32.ThrowLastError();
 
                 if (!enumModulesCallback(new ProcessModule(
-                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint,
+                    moduleInfo.BaseOfDll, moduleInfo.SizeOfImage, moduleInfo.EntryPoint, 0,
                     baseName.ToString(), FileUtils.FixPath(fileName.ToString())
                     )))
                     break;
@@ -607,62 +607,69 @@ namespace ProcessHacker.Native.Objects
         {
             byte* buffer = stackalloc byte[IntPtr.Size];
 
+            // Get the loader data table address.
             this.ReadMemory(this.GetBasicInformation().PebBaseAddress.Increment(Win32.PebLdrOffset), buffer, IntPtr.Size);
 
             IntPtr loaderData = *(IntPtr*)buffer;
 
             PebLdrData* data = stackalloc PebLdrData[1];
+            // Read the loader data table structure.
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
 
-            if (data->Initialized == 0)
+            if (!data->Initialized)
                 throw new Exception("Loader data is not initialized.");
 
             IntPtr currentLink = data->InLoadOrderModuleList.Flink;
             IntPtr startLink = currentLink;
-            LdrModule* currentModule = stackalloc LdrModule[1];
+            LdrDataTableEntry* currentEntry = stackalloc LdrDataTableEntry[1];
             int i = 0;
 
             while (currentLink != IntPtr.Zero)
             {
-                // Stop when we have reached the beginning of the linked list
+                // Stop when we have reached the beginning of the linked list.
                 if (i > 0 && currentLink == startLink)
                     break;
-                // Safety guard
+                // Safety guard.
                 if (i > 0x800)
                     break;
 
-                this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LdrModule)));
+                // Read the loader data table entry.
+                this.ReadMemory(currentLink, currentEntry, Marshal.SizeOf(typeof(LdrDataTableEntry)));
 
-                if (currentModule->BaseAddress != IntPtr.Zero)
+                // Check if the entry is valid.
+                if (currentEntry->DllBase != IntPtr.Zero)
                 {
                     string baseDllName = null;
                     string fullDllName = null;
 
+                    // Read the two strings.
                     try
                     {
-                        baseDllName = currentModule->BaseDllName.Read(this).TrimEnd('\0');
+                        baseDllName = currentEntry->BaseDllName.Read(this).TrimEnd('\0');
                     }
                     catch
                     { }
 
                     try
                     {
-                        fullDllName = FileUtils.FixPath(currentModule->FullDllName.Read(this).TrimEnd('\0'));
+                        fullDllName = FileUtils.FixPath(currentEntry->FullDllName.Read(this).TrimEnd('\0'));
                     }
                     catch
                     { }
 
+                    // Execute the callback.
                     if (!enumModulesCallback(new ProcessModule(
-                        currentModule->BaseAddress,
-                        currentModule->SizeOfImage,
-                        currentModule->EntryPoint,
+                        currentEntry->DllBase,
+                        currentEntry->SizeOfImage,
+                        currentEntry->EntryPoint,
+                        currentEntry->Flags,
                         baseDllName,
                         fullDllName
                         )))
                         break;
                 }
 
-                currentLink = currentModule->InLoadOrderModuleList.Flink;
+                currentLink = currentEntry->InLoadOrderLinks.Flink;
                 i++;
             }
         }
@@ -1845,13 +1852,13 @@ namespace ProcessHacker.Native.Objects
             PebLdrData* data = stackalloc PebLdrData[1];
             this.ReadMemory(loaderData, data, Marshal.SizeOf(typeof(PebLdrData)));
 
-            if (data->Initialized == 0)
+            if (!data->Initialized)
                 throw new Exception("Loader data is not initialized.");
 
             List<ProcessModule> modules = new List<ProcessModule>();
             IntPtr currentLink = data->InLoadOrderModuleList.Flink;
             IntPtr startLink = currentLink;
-            LdrModule* currentModule = stackalloc LdrModule[1];
+            LdrDataTableEntry* currentEntry = stackalloc LdrDataTableEntry[1];
             int i = 0;
 
             while (currentLink != IntPtr.Zero)
@@ -1861,15 +1868,15 @@ namespace ProcessHacker.Native.Objects
                 if (i > 0x800)
                     break;
 
-                this.ReadMemory(currentLink, currentModule, Marshal.SizeOf(typeof(LdrModule)));
+                this.ReadMemory(currentLink, currentEntry, Marshal.SizeOf(typeof(LdrDataTableEntry)));
 
-                if (currentModule->BaseAddress == baseAddress)
+                if (currentEntry->DllBase == baseAddress)
                 {
                     this.WriteMemory(currentLink.Increment(0x38), &count, 2);
                     break;
                 }
 
-                currentLink = currentModule->InLoadOrderModuleList.Flink;
+                currentLink = currentEntry->InLoadOrderLinks.Flink;
                 i++;
             }
         }
@@ -2095,11 +2102,19 @@ namespace ProcessHacker.Native.Objects
 
     public class ProcessModule
     {
-        public ProcessModule(IntPtr baseAddress, int size, IntPtr entryPoint, string baseName, string fileName)
+        public ProcessModule(
+            IntPtr baseAddress,
+            int size,
+            IntPtr entryPoint,
+            LdrpDataTableEntryFlags flags,
+            string baseName,
+            string fileName
+            )
         {
             this.BaseAddress = baseAddress;
             this.Size = size;
             this.EntryPoint = entryPoint;
+            this.Flags = flags;
             this.BaseName = baseName;
             this.FileName = fileName;
         }
@@ -2107,6 +2122,7 @@ namespace ProcessHacker.Native.Objects
         public IntPtr BaseAddress { get; private set; }
         public int Size { get; private set; }
         public IntPtr EntryPoint { get; private set; }
+        public LdrpDataTableEntryFlags Flags { get; private set; }
         public string BaseName { get; private set; }
         public string FileName { get; private set; }
     }

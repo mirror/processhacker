@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -250,6 +251,20 @@ namespace ProcessHacker.Components
             _runCount++;
         }
 
+        private Color GetModuleColor(ModuleItem item)
+        {
+            if (Properties.Settings.Default.UseColorDotNetProcesses &&
+                (item.Flags & LdrpDataTableEntryFlags.CorImage) != 0
+                )
+                return Properties.Settings.Default.ColorDotNetProcesses;
+            else if (Properties.Settings.Default.UseColorRelocatedDlls &&
+                (item.Flags & LdrpDataTableEntryFlags.ImageNotAtBase) != 0
+                )
+                return Properties.Settings.Default.ColorRelocatedDlls;
+            else
+                return SystemColors.Window;
+        }
+
         private void provider_DictionaryAdded(ModuleItem item)
         {
             HighlightedListViewItem litem = new HighlightedListViewItem(_highlightingContext,
@@ -262,6 +277,7 @@ namespace ProcessHacker.Components
             litem.SubItems.Add(new ListViewItem.ListViewSubItem(litem, item.FileDescription));
             litem.ToolTipText = item.FileName;
             litem.Tag = item;
+            litem.NormalColor = this.GetModuleColor(item);
 
             if (item.FileName.Equals(_mainModule, StringComparison.InvariantCultureIgnoreCase))
                 litem.Font = new System.Drawing.Font(litem.Font, System.Drawing.FontStyle.Bold);

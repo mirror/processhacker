@@ -387,6 +387,35 @@ namespace ProcessHacker.Native.Api
     }
 
     [Flags]
+    public enum LdrpDataTableEntryFlags : uint
+    {
+        StaticLink = 0x00000002,
+        ImageDll = 0x00000004,
+        Flag0x8 = 0x00000008,
+        Flag0x10 = 0x00000010,
+        LoadInProgress = 0x00001000,
+        UnloadInProgress = 0x00002000,
+        EntryProcessed = 0x00004000,
+        EntryInserted = 0x00008000,
+        CurrentLoad = 0x00010000,
+        FailedBuiltInLoad = 0x00020000,
+        DontCallForThreads = 0x00040000,
+        ProcessAttachCalled = 0x00080000,
+        DebugSymbolsLoaded = 0x00100000,
+        ImageNotAtBase = 0x00200000,
+        CorImage = 0x00400000,
+        CorOwnsUnmap = 0x00800000,
+        SystemMapped = 0x01000000,
+        ImageVerifying = 0x02000000,
+        DriverDependentDll = 0x04000000,
+        EntryNative = 0x08000000,
+        Redirected = 0x10000000,
+        NonPagedDebugInfo = 0x20000000,
+        MmLoaded = 0x40000000,
+        CompatDatabaseProcessed = 0x80000000
+    }
+
+    [Flags]
     public enum MemExecuteOptions : int
     {
         ExecuteDisable = 0x1,
@@ -631,6 +660,26 @@ namespace ProcessHacker.Native.Api
     {
         NullTerminate = 0x1,
         AllocateNullString = 0x2
+    }
+
+    public enum RtlLockType : ushort
+    {
+        CriticalSection = 0,
+        Resource = 1
+    }
+
+    [Flags]
+    public enum RtlQueryProcessDebugFlags : uint
+    {
+        Modules = 0x00000001,
+        BackTraces = 0x00000002,
+        HeapSummary = 0x00000004,
+        HeapTags = 0x00000008,
+        HeapEntries = 0x00000010,
+        Locks = 0x00000020,
+        Modules32 = 0x00000040,
+
+        NonInvasive = 0x80000000
     }
 
     [Flags]

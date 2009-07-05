@@ -7,22 +7,23 @@ Process Hacker
    * POSIX process support, including command lines and 
      highlighting
    * Hidden processes scanner can now detect FUTo
+   * Highlighting for .NET and relocated DLLs
    * Ability to terminate system threads
    * Ability to force terminate threads
    * Ability to create services
    * Ability to set DEP status of processes in other sessions
-   * Pool limits
+   * Paged and non-paged pool limit display
    * Terminator test: TP1a (TP1, alternative method)
    * Terminator test: TT1a (TT1, alternative method)
    * Terminator test: TT4 (dangerous thread termination)
-   * Thread wait analysis now detects NtQueryObject hangs and 
-     named pipe connections
    * Better file object names without KProcessHacker
    * Better IP address resolving
    * CPU, I/O and memory indicators
    * Child windows float by default
    * dbghelp is now set up automatically when Process Hacker is 
      run the first time
+   * Thread wait analysis now detects NtQueryObject hangs and 
+     named pipe connections
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
    * Small performance improvements
