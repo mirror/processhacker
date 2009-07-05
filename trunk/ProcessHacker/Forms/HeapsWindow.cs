@@ -48,7 +48,23 @@ namespace ProcessHacker
             listHeaps.AddShortcuts();
             listHeaps.ContextMenu = menuHeap;
             GenericViewMenu.AddMenuItems(copyMenuItem.MenuItems, listHeaps, null);
-            listHeaps.ListViewItemSorter = new SortedListViewComparer(listHeaps);
+
+            var comparer = new SortedListViewComparer(listHeaps);
+            listHeaps.ListViewItemSorter = comparer;
+            comparer.CustomSorters.Add(1, (l1, l2) =>
+                {
+                    HeapInformation heap1 = l1.Tag as HeapInformation;
+                    HeapInformation heap2 = l2.Tag as HeapInformation;
+
+                    return heap1.BytesAllocated.CompareTo(heap2.BytesAllocated);
+                });
+            comparer.CustomSorters.Add(2, (l1, l2) =>
+            {
+                HeapInformation heap1 = l1.Tag as HeapInformation;
+                HeapInformation heap2 = l2.Tag as HeapInformation;
+
+                return heap1.BytesCommitted.CompareTo(heap2.BytesCommitted);
+            });
 
             _pid = pid;
 
