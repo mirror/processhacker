@@ -82,7 +82,7 @@ namespace ProcessHacker.Common.Objects
         /// <summary>
         /// Gets the number of times disposable objects have been dereferenced.
         /// </summary>
-        public static int DereferencedCount { get { return _dereferencedCount - _disposedCount - _finalizedCount; } }
+        public static int DereferencedCount { get { return _dereferencedCount; } }
 
 #if DEBUG
         /// <summary>
@@ -144,7 +144,11 @@ namespace ProcessHacker.Common.Objects
 
             // Don't need to finalize the object if it doesn't need to be disposed.
             if (!_owned)
+            {
                 this.DisableFinalizer();
+                _ownedByGc = false;
+                _refCount = 0;
+            }
 
             Interlocked.Increment(ref _createdCount);
 #if DEBUG
@@ -178,6 +182,9 @@ namespace ProcessHacker.Common.Objects
         /// <param name="managed">Whether to dispose managed resources.</param>
         public void Dispose(bool managed)
         {
+            if (!_owned)
+                return;
+
             Thread.BeginCriticalRegion();
 
             if (managed)
@@ -204,6 +211,10 @@ namespace ProcessHacker.Common.Objects
                         Interlocked.Increment(ref _disposedCount);
                     else
                         Interlocked.Increment(ref _finalizedCount);
+                    // The dereferenced count should count the number of times 
+                    // the user has called Dereference, so decrement it 
+                    // because we just called it.
+                    Interlocked.Decrement(ref _dereferencedCount);
                 }
             }
             finally
@@ -325,6 +336,10 @@ namespace ProcessHacker.Common.Objects
                 this.DisableFinalizer();
                 _owned = false;
             }
+
+            // If the object didn't get disposed, pretend the object 
+            // never got created.
+            Interlocked.Decrement(ref _createdCount);
         }
 
         /// <summary>
