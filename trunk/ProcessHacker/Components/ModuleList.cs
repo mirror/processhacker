@@ -444,7 +444,7 @@ namespace ProcessHacker.Components
         private void unloadMenuItem_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to unload this " + 
-                (_pid != 4 ? "library" : "driver") + "?", "Process Hacker",
+                (_pid != 4 ? "module" : "driver") + "?", "Process Hacker",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 return;
 
@@ -490,11 +490,10 @@ namespace ProcessHacker.Components
             {
                 try
                 {
-                    IntPtr kernel32 = Win32.GetModuleHandle("kernel32.dll");
-                    IntPtr freeLibrary = Win32.GetProcAddress(kernel32, "FreeLibrary");
+                    IntPtr ldrUnloadDll = Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "LdrUnloadDll");
 
-                    if (freeLibrary == IntPtr.Zero)
-                        throw new Exception("Could not find the entry point of FreeLibrary in kernel32.dll!");
+                    if (ldrUnloadDll == IntPtr.Zero)
+                        throw new Exception("Could not find LdrUnloadDll in ntdll.dll!");
 
                     using (ProcessHandle phandle = new ProcessHandle(_pid,
                         Program.MinProcessQueryRights | ProcessAccess.VmOperation |
@@ -504,16 +503,12 @@ namespace ProcessHacker.Components
 
                         phandle.SetModuleReferenceCount(baseAddress, 1);
 
-                        var thread = phandle.CreateThread(freeLibrary, baseAddress);
+                        // Use RtlCreateUserThread to bypass session boundaries. Since 
+                        // LdrUnloadDll is a native function we don't need to notify CSRSS.
+                        var thread = phandle.CreateNativeThread(ldrUnloadDll, baseAddress);
 
                         thread.Wait(1000 * Win32.TimeMsTo100Ns);
-
-                        int exitCode = thread.GetExitCode();
-
-                        if (exitCode == 0)
-                        {
-                            throw new Exception("Error unloading the library.");
-                        }
+                        thread.GetExitStatus().ThrowIf();
                     }
                 }
                 catch (Exception ex)

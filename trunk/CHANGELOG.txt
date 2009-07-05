@@ -12,6 +12,7 @@ Process Hacker
    * Ability to force terminate threads
    * Ability to create services
    * Ability to set DEP status of processes in other sessions
+   * Ability to unload modules of processes in other sessions
    * Process heap information
    * Paged and non-paged pool limit display
    * Terminator test: TP1a (TP1, alternative method)

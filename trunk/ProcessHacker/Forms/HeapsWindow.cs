@@ -143,7 +143,9 @@ namespace ProcessHacker
                 using (var phandle = new ProcessHandle(_pid,
                     ProcessAccess.CreateThread | ProcessAccess.QueryInformation | ProcessAccess.VmOperation))
                 {
-                    phandle.CreateThread(
+                    // Use RtlCreateUserThread to cross session boundaries. RtlDestroyHeap doesn't need 
+                    // the Win32 subsystem so we don't have to notify CSRSS.
+                    phandle.CreateNativeThread(
                         Win32.GetProcAddress(Win32.GetModuleHandle("ntdll.dll"), "RtlDestroyHeap"),
                         ((HeapInformation)listHeaps.SelectedItems[0].Tag).Address
                         ).Dispose();

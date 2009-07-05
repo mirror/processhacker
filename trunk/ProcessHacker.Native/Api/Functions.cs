@@ -1871,7 +1871,7 @@ namespace ProcessHacker.Native.Api
             [In] int StackSize,
             [In] IntPtr StartAddress,
             [In] IntPtr Parameter,
-            [In] int CreationFlags,
+            [In] CreationFlags CreationFlags,
             [Out] out int ThreadId
             );
 

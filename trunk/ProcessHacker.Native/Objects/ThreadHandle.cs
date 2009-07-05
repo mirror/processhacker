@@ -74,6 +74,11 @@ namespace ProcessHacker.Native.Objects
             return new ThreadHandle(handle, true);
         }
 
+        public static ThreadHandle CreateUserThread(ProcessHandle processHandle, IntPtr startAddress, IntPtr parameter)
+        {
+            return CreateUserThread(processHandle, false, startAddress, parameter);
+        }
+
         public static ThreadHandle CreateUserThread(
             ProcessHandle processHandle,
             bool createSuspended,
@@ -83,12 +88,14 @@ namespace ProcessHacker.Native.Objects
         {
             ClientId clientId;
 
-            return CreateUserThread(processHandle, createSuspended, startAddress, parameter, out clientId);
+            return CreateUserThread(processHandle, createSuspended, 0, 0, startAddress, parameter, out clientId);
         }
 
         public static ThreadHandle CreateUserThread(
             ProcessHandle processHandle,
             bool createSuspended,
+            int maximumStackSize,
+            int initialStackSize,
             IntPtr startAddress,
             IntPtr parameter,
             out ClientId clientId
@@ -102,8 +109,8 @@ namespace ProcessHacker.Native.Objects
                 IntPtr.Zero,
                 createSuspended,
                 0,
-                IntPtr.Zero,
-                IntPtr.Zero,
+                maximumStackSize.ToIntPtr(),
+                initialStackSize.ToIntPtr(),
                 startAddress,
                 parameter,
                 out threadHandle,
@@ -463,6 +470,15 @@ namespace ProcessHacker.Native.Objects
             return exitCode;
         }
 
+        /// <summary>
+        /// Gets the thread's exit status.
+        /// </summary>
+        /// <returns>A NT status value.</returns>
+        public NtStatus GetExitStatus()
+        {
+            return this.GetBasicInformation().ExitStatus;
+        }
+
         private int GetInformationInt32(ThreadInformationClass infoClass)
         {
             NtStatus status;
@@ -700,6 +716,31 @@ namespace ProcessHacker.Native.Objects
                 param3
                 )) >= NtStatus.Error)
                 Win32.ThrowLastError(status);
+        }
+
+        public void RemoteCall(IntPtr address, IntPtr[] arguments)
+        {
+            NtStatus status;
+            ProcessHandle processHandle;
+
+            if (KProcessHacker.Instance != null)
+                processHandle = this.GetProcess(ProcessAccess.VmWrite);
+            else
+                processHandle = new ProcessHandle(this.GetProcessId(), ProcessAccess.VmWrite);
+
+            using (processHandle)
+            {
+                if ((status = Win32.RtlRemoteCall(
+                    processHandle,
+                    this,
+                    address,
+                    arguments.Length,
+                    arguments,
+                    false,
+                    false
+                    )) >= NtStatus.Error)
+                    Win32.ThrowLastError(status);
+            }
         }
 
         /// <summary>
