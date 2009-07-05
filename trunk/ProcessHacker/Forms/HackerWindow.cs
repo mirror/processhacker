@@ -2223,27 +2223,47 @@ namespace ProcessHacker
             HistoryManager.GlobalMaxCount = Properties.Settings.Default.MaxSamples;
             ProcessHacker.Components.Plotter.GlobalMoveStep = Properties.Settings.Default.PlotterStep;
 
+            // Set up symbols...
+
+            // If this is the first time Process Hacker is being run, try to 
+            // set up symbols automatically to make the user happy :).
+            if (Properties.Settings.Default.FirstRun)
+            {
+                string defaultDbghelp = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) +
+                    "\\Debugging Tools for Windows (x86)\\dbghelp.dll";
+
+                if (System.IO.File.Exists(defaultDbghelp))
+                    Properties.Settings.Default.DbgHelpPath = defaultDbghelp;
+            }
+
+            // If we couldn't load dbghelp.dll from the user's location, load the default one 
+            // in PATH (usually in system32).
             if (Win32.LoadLibrary(Properties.Settings.Default.DbgHelpPath) == IntPtr.Zero)
                 Win32.LoadLibrary("dbghelp.dll");
 
+            // Find the location of the dbghelp.dll we loaded and load symsrv.dll.
             try
             {
-                var modules = ProcessHandle.GetCurrent().GetModules();
-
-                foreach (var module in modules)
-                {
-                    if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                ProcessHandle.GetCurrent().EnumModules((module) =>
                     {
-                        var fi = new System.IO.FileInfo(module.FileName);
+                        if (module.FileName.ToLowerInvariant().EndsWith("dbghelp.dll"))
+                        {
+                            // Load symsrv.dll from the same directory as dbghelp.dll.
+                            var fi = new System.IO.FileInfo(module.FileName);
 
-                        Win32.LoadLibrary(fi.DirectoryName + "\\symsrv.dll");
+                            Win32.LoadLibrary(fi.DirectoryName + "\\symsrv.dll");
 
-                        break;
-                    }
-                }
+                            return false;
+                        }
+
+                        return true;
+                    });
             }
             catch
             { }
+
+            // Set the first run setting here.
+            Properties.Settings.Default.FirstRun = false;
         }
 
         public void QueueMessage(string message)
@@ -2343,6 +2363,7 @@ namespace ProcessHacker
 
                 if (displayName == "\\")
                 {
+                    // Probably the Services or RDP-Tcp session.
                     session.Dispose();
                     continue;
                 }
@@ -2894,8 +2915,8 @@ namespace ProcessHacker
                 treeProcesses.Tree.Select();
 
             this.LoadOther();
-
             this.LoadStructs();
+
             vistaMenu.DelaySetImageCalls = false;
             vistaMenu.PerformPendingSetImageCalls();
             serviceP.RunOnceAsync();
@@ -2921,7 +2942,19 @@ namespace ProcessHacker
             treeProcesses.Draw = this.Visible;
         }
 
+        // ==== Performance hacks section ====
         private bool dontCalculate = true;
+        private int _layoutCount = 0;
+
+        protected override void OnLayout(LayoutEventArgs levent)
+        {
+            _layoutCount++;
+
+            if (_layoutCount < 3)
+                return;
+
+            base.OnLayout(levent);
+        }
 
         protected override void OnResize(EventArgs e)
         {

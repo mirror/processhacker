@@ -143,7 +143,7 @@ namespace ProcessHacker
             catch
             { }
 
-            // Try to upgrade settings
+            // Try to upgrade settings.
             try
             {
                 if (Properties.Settings.Default.NeedsUpgrade)

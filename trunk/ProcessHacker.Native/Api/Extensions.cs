@@ -255,7 +255,8 @@ namespace ProcessHacker.Native.Api
                 {
                     case "File":
                         // Resolves \Device\Harddisk1 into C:, for example.
-                        info.BestName = FileUtils.DeviceFileNameToDos(info.OrigName);
+                        if (!string.IsNullOrEmpty(info.OrigName))
+                            info.BestName = FileUtils.DeviceFileNameToDos(info.OrigName);
 
                         break;
 

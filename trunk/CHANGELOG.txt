@@ -21,6 +21,8 @@ Process Hacker
    * Better IP address resolving
    * CPU, I/O and memory indicators
    * Child windows float by default
+   * dbghelp is now set up automatically when Process Hacker is 
+     run the first time
    * Automatic tree text coloring, allowing for dark highlighting 
      colors
    * Small performance improvements

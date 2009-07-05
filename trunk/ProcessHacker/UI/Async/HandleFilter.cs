@@ -62,6 +62,8 @@ namespace ProcessHacker.FormHelper
 
         private void DoFilter(string strFilter)
         {
+            string lowerFilter = strFilter.ToLower();
+
             // Stop if cancel
             if (!CancelRequested)
             {
@@ -80,7 +82,7 @@ namespace ProcessHacker.FormHelper
 
                     var handle = handles[i];
 
-                    CompareHandlerBestNameWithFilterString(processHandles, handle, strFilter);
+                    CompareHandleBestNameWithFilterString(processHandles, handle, lowerFilter);
                     // test Exception 
                     //if (i > 2000) throw new Exception("test");
                 }
@@ -100,7 +102,7 @@ namespace ProcessHacker.FormHelper
                         {
                             phandle.EnumModules((module) =>
                                 {
-                                    if (module.FileName.ToLower().Contains(strFilter.ToLower()))
+                                    if (module.FileName.ToLower().Contains(lowerFilter))
                                         this.CallDllMatchListView(process.Key, module);
                                     return true;
                                 });
@@ -116,7 +118,7 @@ namespace ProcessHacker.FormHelper
 
                                     string name = phandle.GetMappedFileName(region.BaseAddress);
 
-                                    if (name != null && name.ToLower().Contains(strFilter.ToLower()))
+                                    if (name != null && name.ToLower().Contains(lowerFilter))
                                         this.CallMappedFileMatchListView(process.Key, region.BaseAddress, name);
 
                                     return true;
@@ -133,9 +135,9 @@ namespace ProcessHacker.FormHelper
             }
         }
 
-        private void CompareHandlerBestNameWithFilterString(
+        private void CompareHandleBestNameWithFilterString(
             Dictionary<int, ProcessHandle> processHandles,
-            SystemHandleInformation currhandle, string strFilter)
+            SystemHandleInformation currhandle, string lowerFilter)
         {
             try
             {
@@ -170,7 +172,9 @@ namespace ProcessHacker.FormHelper
 
                 var info = currhandle.GetHandleInfo(processHandles[currhandle.ProcessId]);
 
-                if (!info.BestName.ToLower().Contains(strFilter.ToLower()))
+                if (string.IsNullOrEmpty(info.BestName))
+                    return;
+                if (!info.BestName.ToLower().Contains(lowerFilter))
                     return;
 
                 CallHandleMatchListView(currhandle, info);
